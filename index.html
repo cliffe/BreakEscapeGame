@@ -1,0 +1,1871 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>Office Adventure Game</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            background: #333;
+        }
+        #game-container {
+            position: relative;
+        }
+        #loading {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            color: white;
+            font-family: Arial, sans-serif;
+            font-size: 24px;
+            display: none;
+        }
+    </style>
+    <script src="https://cdn.jsdelivr.net/npm/phaser@3.60.0/dist/phaser.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/easystarjs@0.4.4/bin/easystar-0.4.4.js"></script>
+</head>
+<body>
+    <div id="game-container">
+        <div id="loading">Loading...</div>
+    </div>
+
+    <script>
+        const config = {
+            type: Phaser.AUTO,
+            width: 1280,
+            height: 720,
+            parent: 'game-container',
+            pixelArt: true,
+            physics: {
+                default: 'arcade',
+                arcade: {
+                    gravity: { y: 0 },
+                    debug: true
+                }
+            },
+            scene: {
+                preload: preload,
+                create: create,
+                update: update
+            },
+            inventory: {
+                items: [],
+                display: null
+            }
+        };
+        const TILE_SIZE = 48;
+        const DOOR_ALIGN_OVERLAP = 48*3;
+        const GRID_SIZE = 32;
+        const MOVEMENT_SPEED = 150;
+        const ARRIVAL_THRESHOLD = 8;
+        const PATH_UPDATE_INTERVAL = 500;
+        const STUCK_THRESHOLD = 1;
+        const STUCK_TIME = 500;
+        // Hide rooms initially and on exit
+        const hideRoomsInitially = true;
+        const hideRoomsOnExit = false;
+        const hideNonAdjacentRooms = false;
+
+        // Declare gameScenario as let (not const) so we can assign it later
+        let gameScenario = null;  // Initialize as null
+
+        let game = new Phaser.Game(config);
+        let player;
+        let cursors;
+        let rooms = {};
+        let currentRoom;
+        let inventory = {
+            items: [],
+            container: null
+        };
+        let objectsGroup;
+        let wallsLayer;
+        let discoveredRooms = new Set();
+        let pathfinder;
+        let currentPath = [];
+        let isMoving = false;
+        let targetPoint = null;
+        let lastPathUpdateTime = 0;
+        let stuckTimer = 0;
+        let lastPosition = null;
+        let stuckTime = 0;
+        let currentPlayerRoom = null;
+        let lastPlayerPosition = { x: 0, y: 0 };
+        const ROOM_CHECK_THRESHOLD = 32; // Only check for room changes when player moves this many pixels
+
+        // Add these constants at the top with other constants
+        const INTERACTION_CHECK_INTERVAL = 100; // Only check interactions every 100ms
+        const INTERACTION_RANGE = 2 * TILE_SIZE;
+        const INTERACTION_RANGE_SQ = INTERACTION_RANGE * INTERACTION_RANGE;
+
+
+        // preloads the assets
+        function preload() {
+            // Show loading text
+            document.getElementById('loading').style.display = 'block';
+
+            // Load tilemap files and regular tilesets first
+            this.load.tilemapTiledJSON('room_reception', 'assets/rooms/room_reception.json');
+            this.load.tilemapTiledJSON('room_office', 'assets/rooms/room_office.json');
+            this.load.tilemapTiledJSON('room_ceo', 'assets/rooms/room_ceo.json');
+            this.load.tilemapTiledJSON('room_closet', 'assets/rooms/room_closet.json');
+            this.load.tilemapTiledJSON('room_servers', 'assets/rooms/room_servers.json');
+            this.load.image('Modern_Office_48x48', 'assets/Modern_Office_48x48.png');
+            this.load.image('Room_Builder_48x48', 'assets/Room_Builder_48x48.png');
+            this.load.image('19_Hospital_Shadowless_48x48', 'assets/19_Hospital_Shadowless_48x48.png');
+            this.load.image('18_Jail_Shadowless_48x48', 'assets/18_Jail_Shadowless_48x48.png');
+            this.load.image('1_Generic_Shadowless_48x48', 'assets/1_Generic_Shadowless_48x48.png');
+            this.load.image('11_Halloween_Shadowless_48x48', 'assets/11_Halloween_Shadowless_48x48.png');
+            this.load.image('5_Classroom_and_library_Shadowless_48x48', 'assets/5_Classroom_and_library_Shadowless_48x48.png');
+            
+            // Load object sprites
+            this.load.image('pc', 'assets/objects/pc.png');
+            this.load.image('key', 'assets/objects/key.png');
+            this.load.image('notes', 'assets/objects/notes.png');
+            this.load.image('phone', 'assets/objects/phone.png');
+            this.load.image('suitcase', 'assets/objects/suitcase.png');
+            this.load.image('smartscreen', 'assets/objects/smartscreen.png');
+            this.load.image('photo', 'assets/objects/photo.png');
+            this.load.image('suitcase', 'assets/objects/suitcase.png');
+            this.load.image('safe', 'assets/objects/safe.png');
+            this.load.image('book', 'assets/objects/book.png');
+
+            this.load.json('gameScenarioJSON', 'assets/scenarios/ceo_exfil.json');
+            gameScenario = this.cache.json.get('gameScenarioJSON');
+        }
+
+        // creates the game
+        // hides the loading text
+        // calculates the world bounds
+        // sets the physics world bounds
+        // creates the player
+        // initializes the rooms
+        // validates the doors by room overlap
+        // hides all rooms initially if hideRoomsInitially is true
+        // reveals only the starting room
+        // sets up the camera
+        // sets up the input
+        // creates the inventory display
+        // processes all door collisions
+        // initializes the pathfinder
+        // initializes the inventory
+        function create() {
+            // Hide loading text
+            document.getElementById('loading').style.display = 'none';
+
+            // Ensure gameScenario is loaded before proceeding
+            if (!gameScenario) {
+                gameScenario = this.cache.json.get('gameScenarioJSON');
+            }
+
+            // Now calculate world bounds after scenario is loaded
+            const worldBounds = calculateWorldBounds();
+            
+            // Set the physics world bounds
+            this.physics.world.setBounds(
+                worldBounds.x, 
+                worldBounds.y, 
+                worldBounds.width, 
+                worldBounds.height
+            );
+
+            // Create player first
+            player = this.add.rectangle(400, 300, 32, 32, 0xff0000);
+            this.physics.add.existing(player);
+            player.body.setSize(16, 16);
+            player.body.setOffset(8, 8);
+            player.body.setCollideWorldBounds(true);
+            player.body.setBounce(0);
+            player.body.setDrag(0);
+            player.body.setFriction(0);
+
+            player.setDepth(1000);
+
+            // Initialize room layout after player creation
+            initializeRooms.call(this);
+            validateDoorsByRoomOverlap.call(this);
+
+            // Hide all rooms initially if hideRoomsInitially is true
+            if (hideRoomsInitially) {
+                Object.keys(gameScenario.rooms).forEach(roomId => {
+                    hideRoom.call(this, roomId);
+                });
+            }
+
+            // Explicitly reveal the starting room and ensure its doors are visible
+            const startingRoom = gameScenario.startRoom;
+            revealRoom.call(this, startingRoom);
+            
+            // Force doors visibility for starting room
+            if (rooms[startingRoom] && rooms[startingRoom].doorsLayer) {
+                rooms[startingRoom].doorsLayer.setVisible(true);
+                rooms[startingRoom].doorsLayer.setAlpha(1);
+                console.log(`Starting room doors layer:`, {
+                    visible: rooms[startingRoom].doorsLayer.visible,
+                    alpha: rooms[startingRoom].doorsLayer.alpha,
+                    depth: rooms[startingRoom].doorsLayer.depth
+                });
+            }
+
+            // Setup camera
+            this.cameras.main.startFollow(player);
+            this.cameras.main.setZoom(1);
+
+            // Setup input with proper context
+            this.input.on('pointerdown', (pointer) => {
+                // Check if click is in inventory area
+                const inventoryArea = {
+                    y: this.cameras.main.height - 70,
+                    height: 70
+                };
+                
+                if (pointer.y > inventoryArea.y) {
+                    // Find clicked inventory item
+                    const clickedItem = inventory.items.find(item => {
+                        if (!item) return false;
+                        const bounds = item.getBounds();
+                        return Phaser.Geom.Rectangle.Contains(
+                            bounds,
+                            pointer.x,
+                            pointer.y
+                        );
+                    });
+                    
+                    if (clickedItem) {
+                        console.log('Inventory item clicked:', clickedItem.name);
+                        handleObjectInteraction(clickedItem);
+                        return;
+                    }
+                }
+                
+                // if not clicking inventory, handle as movement
+                console.log('Click detected at:', pointer.worldX, pointer.worldY);
+                movePlayerToPoint.call(this, pointer.worldX, pointer.worldY);
+            });
+
+            // creates the inventory display
+            createInventoryDisplay.call(this);
+
+            // Add this new call after all rooms are created
+            processAllDoorCollisions.call(this);
+
+            // Initialize pathfinder
+            initializePathfinder.call(this);
+
+            // Initialize game systems
+            initializeInventory.call(this);
+
+            // Add this line after processAllDoorCollisions()
+            setupDoorOverlapChecks.call(this);
+
+            // introduce the scenario
+            introduceScenario.call(this);
+
+            // Enable physics debug only in development
+            this.physics.world.debugGraphic.clear();
+            this.physics.world.drawDebug = false;
+
+            // Optimize physics world
+            this.physics.world.setBounds(
+                worldBounds.x, 
+                worldBounds.y, 
+                worldBounds.width, 
+                worldBounds.height,
+                true  // Enable bounds collision
+            );
+            
+            // Optimize physics settings
+            this.physics.world.setFPS(60);
+            this.physics.world.step(1/60);
+        }
+
+        function update() {
+            // updates the player's movement
+            updatePlayerMovement.call(this);
+            
+            // checks for object interactions
+            checkObjectInteractions.call(this);
+            
+            // checks for room transitions
+            checkRoomTransitions.call(this);
+            
+            // adds a circle to the start of the path
+            if (currentPath && currentPath.length > 0 && isMoving) {
+                this.add.circle(currentPath[0].x, currentPath[0].y, 5, 0xff0000).setDepth(1000);
+            }
+        }
+
+        // introduces the scenario
+        function introduceScenario() {
+            console.log(gameScenario.scenario_brief);
+            alert(gameScenario.scenario_brief);
+        }
+
+        // initializes the rooms
+        // calculates the positions of the rooms
+        // creates the rooms
+        function initializeRooms() {
+            // Calculate room positions and create room instances
+            let roomPositions = calculateRoomPositions();
+            
+            Object.entries(gameScenario.rooms).forEach(([roomId, roomData]) => {
+                const position = roomPositions[roomId];
+                createRoom.call(this, roomId, roomData, position);
+            });
+        }
+
+        // calculates the positions of the rooms
+        // calculates the dimensions of the rooms
+        // calculates the positions of the rooms based on the dimensions and overlaps
+        function calculateRoomPositions() {
+            const OVERLAP = 96;
+            const positions = {};
+            
+            console.log('=== Starting Room Position Calculations ===');
+            
+            // Get room dimensions from tilemaps
+            const roomDimensions = {};
+            Object.entries(gameScenario.rooms).forEach(([roomId, roomData]) => {
+                const map = game.cache.tilemap.get(roomData.type);
+                console.log(`Debug - Room ${roomId}:`, {
+                    mapData: map,
+                    fullData: map?.data,
+                    json: map?.json
+                });
+                
+                // Try different ways to access the data
+                if (map) {
+                    let width, height;
+                    if (map.json) {
+                        width = map.json.width;
+                        height = map.json.height;
+                    } else if (map.data) {
+                        width = map.data.width;
+                        height = map.data.height;
+                    } else {
+                        width = map.width;
+                        height = map.height;
+                    }
+                    
+                    roomDimensions[roomId] = {
+                        width: width * 48,  // tile width is 48
+                        height: height * 48 // tile height is 48
+                    };
+                    console.log(`Room ${roomId} dimensions:`, roomDimensions[roomId]);
+                } else {
+                    console.error(`Could not find tilemap data for room ${roomId}`);
+                    // Fallback to default dimensions if needed
+                    roomDimensions[roomId] = {
+                        width: 800,  // default width
+                        height: 600  // default height
+                    };
+                }
+            });
+            
+            // Start with reception room at origin
+            positions[gameScenario.startRoom] = { x: 0, y: 0 };
+            console.log(`Starting room ${gameScenario.startRoom} position:`, positions[gameScenario.startRoom]);
+            
+            // Process rooms level by level, starting from reception
+            const processed = new Set([gameScenario.startRoom]);
+            const queue = [gameScenario.startRoom];
+            
+            while (queue.length > 0) {
+                const currentRoomId = queue.shift();
+                const currentRoom = gameScenario.rooms[currentRoomId];
+                const currentPos = positions[currentRoomId];
+                const currentDimensions = roomDimensions[currentRoomId];
+                
+                console.log(`\nProcessing room ${currentRoomId}`);
+                console.log('Current position:', currentPos);
+                console.log('Connections:', currentRoom.connections);
+                
+                Object.entries(currentRoom.connections).forEach(([direction, connected]) => {
+                    console.log(`\nProcessing ${direction} connection:`, connected);
+                    
+                    if (Array.isArray(connected)) {
+                        const rooms = connected.filter(r => !processed.has(r));
+                        console.log('Unprocessed connected rooms:', rooms);
+                        if (rooms.length === 0) return;
+                        
+                        if (direction === 'north' || direction === 'south') {
+                            const firstRoom = rooms[0];
+                            const firstRoomWidth = roomDimensions[firstRoom].width;
+                            const firstRoomHeight = roomDimensions[firstRoom].height;
+                            
+                            const secondRoom = rooms[1];
+                            const secondRoomWidth = roomDimensions[secondRoom].width;
+                            const secondRoomHeight = roomDimensions[secondRoom].height;
+                            
+                            if (direction === 'north') {
+                                // First room - right edge aligns with current room's left edge
+                                positions[firstRoom] = {
+                                    x: currentPos.x - firstRoomWidth + DOOR_ALIGN_OVERLAP,
+                                    y: currentPos.y - firstRoomHeight + OVERLAP
+                                };
+                                
+                                // Second room - left edge aligns with current room's right edge
+                                positions[secondRoom] = {
+                                    x: currentPos.x + currentDimensions.width - DOOR_ALIGN_OVERLAP,
+                                    y: currentPos.y - secondRoomHeight + OVERLAP
+                                };
+                            } else if (direction === 'south') {
+                                // First room - left edge aligns with current room's right edge
+                                positions[firstRoom] = {
+                                    x: currentPos.x - firstRoomWidth + DOOR_ALIGN_OVERLAP,
+                                    y: currentPos.y + currentDimensions.height - OVERLAP
+                                };
+                                
+                                // Second room - right edge aligns with current room's left edge
+                                positions[secondRoom] = {
+                                    x: currentPos.x + currentDimensions.width - DOOR_ALIGN_OVERLAP,
+                                    y: currentPos.y + currentDimensions.height - secondRoomHeight - OVERLAP
+                                };
+                            }
+                            
+                            rooms.forEach(roomId => {
+                                processed.add(roomId);
+                                queue.push(roomId);
+                                console.log(`Positioned room ${roomId} at:`, positions[roomId]);
+                            });
+                        }
+                    } else {
+                        if (processed.has(connected)) {
+                            console.log(`Room ${connected} already processed, skipping`);
+                            return;
+                        }
+                        
+                        const connectedDimensions = roomDimensions[connected];
+                        
+                        // Center the connected room
+                        const x = currentPos.x + 
+                            (currentDimensions.width - connectedDimensions.width) / 2;
+                        const y = direction === 'north'
+                            ? currentPos.y - connectedDimensions.height + OVERLAP
+                            : currentPos.y + currentDimensions.height - OVERLAP;
+                        
+                        positions[connected] = { x, y };
+                        processed.add(connected);
+                        queue.push(connected);
+                        
+                        console.log(`Positioned single room ${connected} at:`, positions[connected]);
+                    }
+                });
+            }
+            
+            console.log('\n=== Final Room Positions ===');
+            Object.entries(positions).forEach(([roomId, pos]) => {
+                console.log(`${roomId}:`, pos);
+            });
+            
+            return positions;
+        }
+
+        // creates a room
+        // creates the tilemap for the room
+        // creates the layers for the room
+        // adds the objects to the room
+        function createRoom(roomId, roomData, position) {
+            try {
+                console.log(`Creating room ${roomId} of type ${roomData.type}`);
+                
+                const map = this.make.tilemap({ key: roomData.type });
+                const tilesets = [];
+                
+                // Add tilesets
+                const regularTilesets = map.tilesets.filter(t => !t.name.includes('Interiors_48x48'));
+                regularTilesets.forEach(tileset => {
+                    const loadedTileset = map.addTilesetImage(tileset.name, tileset.name);
+                    if (loadedTileset) {
+                        tilesets.push(loadedTileset);
+                        console.log(`Added regular tileset: ${tileset.name}`);
+                    }
+                });
+
+                // Initialize room data structure first
+                rooms[roomId] = {
+                    map,
+                    layers: {},
+                    wallsLayers: [],
+                    position
+                };
+
+                const layers = rooms[roomId].layers;
+                const wallsLayers = rooms[roomId].wallsLayers;
+                
+                // IMPORTANT: This counter ensures unique layer IDs across ALL rooms and should not be removed
+                if (!window.globalLayerCounter) window.globalLayerCounter = 0;
+
+                // Calculate base depth for this room's layers
+                const roomDepth = position.y * 100;
+                
+                // Create doors layer first with a specific depth
+                const doorsLayerIndex = map.layers.findIndex(layer => 
+                    layer.name.toLowerCase().includes('doors'));
+                let doorsLayer = null;
+                if (doorsLayerIndex !== -1) {
+                    window.globalLayerCounter++;
+                    const uniqueDoorsId = `${roomId}_doors_${window.globalLayerCounter}`;
+                    doorsLayer = map.createLayer(doorsLayerIndex, tilesets, position.x, position.y);
+                    if (doorsLayer) {
+                        doorsLayer.name = uniqueDoorsId;
+                        // Set doors layer depth higher than other layers
+                        doorsLayer.setDepth(roomDepth + 500);
+                        layers[uniqueDoorsId] = doorsLayer;
+                        rooms[roomId].doorsLayer = doorsLayer;
+                    }
+                }
+
+                // Create other layers with appropriate depths
+                map.layers.forEach((layerData, index) => {
+                    // Skip the doors layer as we already created it
+                    if (index === doorsLayerIndex) return;
+
+                    window.globalLayerCounter++;
+                    const uniqueLayerId = `${roomId}_${layerData.name}_${window.globalLayerCounter}`;
+                    
+                    const layer = map.createLayer(index, tilesets, position.x, position.y);
+                    if (layer) {
+                        layer.name = uniqueLayerId;
+                        
+                        // Set depth based on layer type and room position
+                        if (layerData.name.toLowerCase().includes('floor')) {
+                            layer.setDepth(roomDepth + 100);
+                        } else if (layerData.name.toLowerCase().includes('walls')) {
+                            layer.setDepth(roomDepth + 200);
+                            // Handle walls layer collision
+                            try {
+                                layer.setCollisionByExclusion([-1]);
+                                
+                                if (doorsLayer) {
+                                    const doorTiles = doorsLayer.getTilesWithin()
+                                        .filter(tile => tile.index !== -1);
+                                    
+                                    doorTiles.forEach(doorTile => {
+                                        const wallTile = layer.getTileAt(doorTile.x, doorTile.y);
+                                        if (wallTile) {
+                                            if (!doorTile.properties?.locked) {
+                                                wallTile.setCollision(false);
+                                            }
+                                        }
+                                    });
+                                }
+                                
+                                wallsLayers.push(layer);
+                                console.log(`Added collision to wall layer: ${uniqueLayerId}`);
+                            } catch (e) {
+                                console.warn(`Error setting up collisions for ${uniqueLayerId}:`, e);
+                            }
+                        } else if (layerData.name.toLowerCase().includes('props')) {
+                            layer.setDepth(roomDepth + 300);
+                        } else {
+                            layer.setDepth(roomDepth + 400);
+                        }
+                        
+                        layers[uniqueLayerId] = layer;
+                        layer.setVisible(false);
+                        layer.setAlpha(0);
+                    }
+                });
+
+                // Add collisions between player and wall layers
+                if (player && player.body) {
+                    wallsLayers.forEach(wallLayer => {
+                        if (wallLayer) {
+                            this.physics.add.collider(player, wallLayer);
+                            console.log(`Added collision between player and wall layer: ${wallLayer.name}`);
+                        }
+                    });
+                }
+
+                // Store door layer reference for later processing
+                if (doorsLayer) {
+                    rooms[roomId].doorsLayer = doorsLayer;
+                }
+
+                // Update object creation to handle new structure
+                const objectsLayer = map.getObjectLayer('Object Layer 1');
+                if (objectsLayer && objectsLayer.objects) {
+                    rooms[roomId].objects = {};
+                    
+                    objectsLayer.objects.forEach(obj => {
+                        // Find matching object in scenario data
+                        const scenarioObject = gameScenario.rooms[roomId].objects.find(
+                            item => item.type === obj.name
+                        );
+                        
+                        // Check if this object should be active in the current scenario
+                        const isActiveObject = scenarioObject !== undefined;
+                        
+                        const sprite = this.add.sprite(
+                            position.x + obj.x,
+                            position.y + (obj.gid !== undefined ? obj.y - obj.height : obj.y),
+                            obj.name
+                        );
+                        
+                        sprite.setOrigin(0, 0);
+                        sprite.name = obj.name;
+                        sprite.setInteractive({ useHandCursor: true });
+                        sprite.setDepth(1001);
+                        sprite.originalAlpha = 1;
+                        sprite.active = isActiveObject;
+                        
+                        // Store scenario data with sprite for later use
+                        if (isActiveObject) {
+                            sprite.scenarioData = scenarioObject;
+                        }
+                        
+                        // Initially hide all objects - they'll be shown when room is revealed
+                        sprite.setVisible(false);
+                        
+                        if (obj.rotation) {
+                            sprite.setRotation(Phaser.Math.DegToRad(obj.rotation));
+                        }
+                        
+                        rooms[roomId].objects[obj.name] = sprite;
+                        
+                        // Add click handler for all objects
+                        sprite.on('pointerdown', () => {
+                            if (isActiveObject) {
+                                console.log(`Clicked active object ${obj.name}`);
+                                handleObjectInteraction(sprite);
+                            } else {
+                                alert("Nothing of note here");
+                            }
+                        });
+                    });
+                }
+
+            } catch (error) {
+                console.error(`Error creating room ${roomId}:`, error);
+                console.error('Error details:', error.stack);
+            }
+        }
+
+        // reveals a room
+        // reveals all layers and objects in the room
+        function revealRoom(roomId) {
+            if (rooms[roomId]) {
+                const room = rooms[roomId];
+                
+                // Reveal all layers
+                Object.values(room.layers).forEach(layer => {
+                    if (layer && layer.setVisible) {
+                        layer.setVisible(true);
+                        layer.setAlpha(1);
+                    }
+                });
+                
+                // Explicitly reveal doors layer if it exists
+                if (room.doorsLayer) {
+                    room.doorsLayer.setVisible(true);
+                    room.doorsLayer.setAlpha(1);
+                }
+                
+                // Show all objects
+                if (room.objects) {
+                    Object.values(room.objects).forEach(obj => {
+                        if (obj && obj.setVisible && obj.active) { // Only show active objects
+                            obj.setVisible(true);
+                            obj.alpha = obj.active ? (obj.originalAlpha || 1) : 0.3;
+                        }
+                    });
+                }
+                
+                discoveredRooms.add(roomId);
+            }
+            currentRoom = roomId;
+        }
+
+        // moves the player to a point
+        // ensures the coordinates are within the world bounds
+        function movePlayerToPoint(x, y) {
+            const worldBounds = this.physics.world.bounds;
+            
+            // Ensure coordinates are within bounds
+            x = Phaser.Math.Clamp(x, worldBounds.x, worldBounds.x + worldBounds.width);
+            y = Phaser.Math.Clamp(y, worldBounds.y, worldBounds.y + worldBounds.height);
+            
+            targetPoint = { x, y };
+            isMoving = true;
+        }
+
+        // updates the player's movement
+        // moves the player towards the target point
+        // stops if a collision is detected
+        function updatePlayerMovement() {
+            if (!isMoving || !targetPoint) {
+                if (player.body.velocity.x !== 0 || player.body.velocity.y !== 0) {
+                    player.body.setVelocity(0, 0);
+                }
+                return;
+            }
+
+            // Cache player position
+            const px = player.x;
+            const py = player.y;
+            
+            // Use squared distance for performance
+            const dx = targetPoint.x - px;
+            const dy = targetPoint.y - py;
+            const distanceSq = dx * dx + dy * dy;
+
+            // Reached target point
+            if (distanceSq < ARRIVAL_THRESHOLD * ARRIVAL_THRESHOLD) {
+                isMoving = false;
+                player.body.setVelocity(0, 0);
+                return;
+            }
+
+            // Only check room transitions periodically
+            const movedX = Math.abs(px - lastPlayerPosition.x);
+            const movedY = Math.abs(py - lastPlayerPosition.y);
+            
+            if (movedX > ROOM_CHECK_THRESHOLD || movedY > ROOM_CHECK_THRESHOLD) {
+                updatePlayerRoom();
+                lastPlayerPosition.x = px;
+                lastPlayerPosition.y = py;
+            }
+
+            // Normalize movement vector for consistent speed
+            const distance = Math.sqrt(distanceSq);
+            const velocityX = (dx / distance) * MOVEMENT_SPEED;
+            const velocityY = (dy / distance) * MOVEMENT_SPEED;
+
+            // Only update velocity if it changed significantly
+            const currentVX = player.body.velocity.x;
+            const currentVY = player.body.velocity.y;
+            const velocityDiffX = Math.abs(currentVX - velocityX);
+            const velocityDiffY = Math.abs(currentVY - velocityY);
+
+            if (velocityDiffX > 1 || velocityDiffY > 1) {
+                player.body.setVelocity(velocityX, velocityY);
+            }
+
+            // Stop if collision detected
+            if (player.body.blocked.none === false) {
+                isMoving = false;
+                player.body.setVelocity(0, 0);
+            }
+        }
+
+        // creates the inventory display
+        // creates the background and slot outlines
+        function createInventoryDisplay() {
+            
+            // Create slot outlines
+            const slotsContainer = this.add.container(110, this.cameras.main.height - 60)
+                .setScrollFactor(0)
+                .setDepth(2001);
+            
+            // Create 10 slot outlines
+            for (let i = 0; i < 10; i++) {
+                const outline = this.add.rectangle(
+                    i * 60, 
+                    0,
+                    50,
+                    50,
+                    0x666666,
+                    0.3
+                );
+                outline.setStrokeStyle(1, 0x666666);
+                slotsContainer.add(outline);
+            }
+            
+            // Initialize inventory container with highest depth
+            inventory.container = this.add.container(110, this.cameras.main.height - 60)
+                .setScrollFactor(0)
+                .setDepth(2002);
+
+            // Modify the input event to check if clicking on inventory
+            this.input.on('pointerdown', (pointer) => {
+                // Convert pointer position to world coordinates
+                const worldPoint = this.cameras.main.getWorldPoint(pointer.x, pointer.y);
+                
+                // Check if click is in inventory area
+                const inventoryArea = {
+                    x: 100,
+                    y: this.cameras.main.height - 70,
+                    width: this.cameras.main.width - 200,
+                    height: 70
+                };
+                
+                if (pointer.y > inventoryArea.y) {
+                    // Click is in inventory area, let the inventory sprites handle it
+                    return;
+                }
+                
+                // Otherwise, handle as movement click
+                console.log('Click detected at:', worldPoint.x, worldPoint.y);
+                movePlayerToPoint.call(this, worldPoint.x, worldPoint.y);
+            });
+        }
+
+        // checks for object interactions
+        // highlights the object if the player is in range
+        // handles the click event for the object
+        function checkObjectInteractions() {
+            // Skip if not enough time has passed since last check
+            const currentTime = performance.now();
+            if (this.lastInteractionCheck && 
+                currentTime - this.lastInteractionCheck < INTERACTION_CHECK_INTERVAL) {
+                return;
+            }
+            this.lastInteractionCheck = currentTime;
+
+            const playerRoom = currentPlayerRoom;
+            if (!playerRoom || !rooms[playerRoom].objects) return;
+
+            // Cache player position
+            const px = player.x;
+            const py = player.y;
+            
+            // Get only objects within viewport bounds plus some margin
+            const camera = this.cameras.main;
+            const margin = INTERACTION_RANGE;
+            const viewBounds = {
+                left: camera.scrollX - margin,
+                right: camera.scrollX + camera.width + margin,
+                top: camera.scrollY - margin,
+                bottom: camera.scrollY + camera.height + margin
+            };
+
+            Object.values(rooms[playerRoom].objects).forEach(obj => {
+                // Skip inactive objects and those outside viewport
+                if (!obj.active || 
+                    obj.x < viewBounds.left || 
+                    obj.x > viewBounds.right || 
+                    obj.y < viewBounds.top || 
+                    obj.y > viewBounds.bottom) {
+                    return;
+                }
+
+                // Use squared distance for performance
+                const dx = px - obj.x;
+                const dy = py - obj.y;
+                const distanceSq = dx * dx + dy * dy;
+
+                if (distanceSq <= INTERACTION_RANGE_SQ) {
+                    if (!obj.isHighlighted) {
+                        obj.isHighlighted = true;
+                        obj.setTint(0xdddddd);  // Simple highlight without tween
+                    }
+                } else if (obj.isHighlighted) {
+                    obj.isHighlighted = false;
+                    obj.clearTint();
+                }
+            });
+        }
+
+        // checks for room transitions
+        function checkRoomTransitions() {
+            // Now handled by physics overlap
+        }
+
+        // calculates the world bounds
+        function calculateWorldBounds() {
+            if (!gameScenario || !gameScenario.rooms) {
+                console.error('Game scenario not loaded properly');
+                // Return default bounds
+                return {
+                    x: -1800,
+                    y: -1800,
+                    width: 3600,
+                    height: 3600
+                };
+            }
+
+            let minX = -1800, minY = -1800, maxX = 1800, maxY = 1800;
+            
+            // Check all room positions to determine world bounds
+            Object.values(gameScenario.rooms).forEach(room => {
+                const position = calculateRoomPositions()[room.id];
+                if (position) {
+                    // Assuming each room is 800x600
+                    minX = Math.min(minX, position.x);
+                    minY = Math.min(minY, position.y);
+                    maxX = Math.max(maxX, position.x + 800);
+                    maxY = Math.max(maxY, position.y + 600);
+                }
+            });
+
+            // Add some padding
+            const padding = 200;
+            return {
+                x: minX - padding,
+                y: minY - padding,
+                width: (maxX - minX) + (padding * 2),
+                height: (maxY - minY) + (padding * 2)
+            };
+        }
+
+        // processes all door-wall interactions
+        function processAllDoorCollisions() {
+            Object.entries(rooms).forEach(([roomId, room]) => {
+                if (room.doorsLayer) {
+                    const doorTiles = room.doorsLayer.getTilesWithin()
+                        .filter(tile => tile.index !== -1);
+
+                    // Find all rooms that overlap with this room
+                    Object.entries(rooms).forEach(([otherId, otherRoom]) => {
+                        if (roomsOverlap(room.position, otherRoom.position)) {
+                            otherRoom.wallsLayers.forEach(wallLayer => {
+                                processDoorCollisions(doorTiles, wallLayer, room.doorsLayer);
+                            });
+                        }
+                    });
+                }
+            });
+        }
+
+        // processes door collisions
+        // sets the collision of the door tile to false
+        // visually indicates the door opening
+        function processDoorCollisions(doorTiles, wallLayer, doorsLayer) {
+            doorTiles.forEach(doorTile => {
+                // Convert door tile coordinates to world coordinates
+                const worldX = doorsLayer.x + (doorTile.x * doorsLayer.tilemap.tileWidth);
+                const worldY = doorsLayer.y + (doorTile.y * doorsLayer.tilemap.tileHeight);
+                
+                // Convert world coordinates back to the wall layer's local coordinates
+                const wallX = Math.floor((worldX - wallLayer.x) / wallLayer.tilemap.tileWidth);
+                const wallY = Math.floor((worldY - wallLayer.y) / wallLayer.tilemap.tileHeight);
+                
+                const wallTile = wallLayer.getTileAt(wallX, wallY);
+                if (wallTile) {
+                    if (doorTile.properties?.locked) {
+                        wallTile.setCollision(true);
+                    } else {
+                        wallTile.setCollision(false);
+                    }
+                }
+            });
+        }
+
+        // checks if two rooms overlap
+        function roomsOverlap(pos1, pos2) {
+            // Add some tolerance for overlap detection
+            const OVERLAP_TOLERANCE = 48; // One tile width
+            const ROOM_WIDTH = 800;
+            const ROOM_HEIGHT = 600;
+            
+            return !(pos1.x + ROOM_WIDTH - OVERLAP_TOLERANCE < pos2.x || 
+                     pos1.x > pos2.x + ROOM_WIDTH - OVERLAP_TOLERANCE || 
+                     pos1.y + ROOM_HEIGHT - OVERLAP_TOLERANCE < pos2.y || 
+                     pos1.y > pos2.y + ROOM_HEIGHT - OVERLAP_TOLERANCE);
+        }
+
+        // initializes the pathfinder
+        // creates a grid of the world
+        function initializePathfinder() {
+            const worldBounds = this.physics.world.bounds;
+            const gridWidth = Math.ceil(worldBounds.width / GRID_SIZE);
+            const gridHeight = Math.ceil(worldBounds.height / GRID_SIZE);
+            
+            try {
+                pathfinder = new EasyStar.js();
+                const grid = Array(gridHeight).fill().map(() => Array(gridWidth).fill(0));
+                
+                // Mark walls
+                Object.values(rooms).forEach(room => {
+                    room.wallsLayers.forEach(wallLayer => {
+                        wallLayer.getTilesWithin().forEach(tile => {
+                            // Only mark as unwalkable if the tile collides AND hasn't been disabled for doors
+                            if (tile.collides && tile.canCollide) {  // Add check for canCollide
+                                const gridX = Math.floor((tile.x * TILE_SIZE + wallLayer.x - worldBounds.x) / GRID_SIZE);
+                                const gridY = Math.floor((tile.y * TILE_SIZE + wallLayer.y - worldBounds.y) / GRID_SIZE);
+                                
+                                if (gridX >= 0 && gridX < gridWidth && gridY >= 0 && gridY < gridHeight) {
+                                    grid[gridY][gridX] = 1;
+                                }
+                            }
+                        });
+                    });
+                });
+
+                pathfinder.setGrid(grid);
+                pathfinder.setAcceptableTiles([0]);
+                pathfinder.enableDiagonals();
+                
+                console.log('Pathfinding initialized successfully');
+            } catch (error) {
+                console.error('Error initializing pathfinder:', error);
+            }
+        }
+
+        // smooths the path
+        function smoothPath(path) {
+            if (path.length <= 2) return path;
+            
+            const smoothed = [path[0]];
+            for (let i = 1; i < path.length - 1; i++) {
+                const prev = path[i - 1];
+                const current = path[i];
+                const next = path[i + 1];
+                
+                // Calculate the angle change
+                const angle1 = Phaser.Math.Angle.Between(prev.x, prev.y, current.x, current.y);
+                const angle2 = Phaser.Math.Angle.Between(current.x, current.y, next.x, next.y);
+                const angleDiff = Math.abs(Phaser.Math.Angle.Wrap(angle1 - angle2));
+                
+                // Only keep points where there's a significant direction change
+                if (angleDiff > 0.2) { // About 11.5 degrees
+                    smoothed.push(current);
+                }
+            }
+            smoothed.push(path[path.length - 1]);
+            
+            return smoothed;
+        }
+
+        // debugs the path
+        function debugPath(path) {
+            if (!path) return;
+            console.log('Current path:', {
+                pathLength: path.length,
+                currentTarget: path[0],
+                playerPos: { x: player.x, y: player.y },
+                isMoving: isMoving
+            });
+        }
+
+        // optimizes the path
+        function optimizePath(path) {
+            if (path.length <= 2) return path;
+            
+            const optimized = [path[0]];
+            let currentPoint = 0;
+            
+            while (currentPoint < path.length - 1) {
+                // Look ahead as far as possible along a straight line
+                let furthestVisible = currentPoint + 1;
+                for (let i = currentPoint + 2; i < path.length; i++) {
+                    if (canMoveDirectly(path[currentPoint], path[i])) {
+                        furthestVisible = i;
+                    } else {
+                        break;
+                    }
+                }
+                
+                // Add the furthest visible point to our optimized path
+                optimized.push(path[furthestVisible]);
+                currentPoint = furthestVisible;
+            }
+            
+            return optimized;
+        }
+
+        // checks if direct movement is possible
+        function canMoveDirectly(start, end) {
+            // Check if there are any walls between start and end points
+            const distance = Phaser.Math.Distance.Between(start.x, start.y, end.x, end.y);
+            const angle = Phaser.Math.Angle.Between(start.x, start.y, end.x, end.y);
+            
+            // Check several points along the line
+            const steps = Math.ceil(distance / (GRID_SIZE / 2));
+            const stepSize = distance / steps;
+            
+            for (let i = 1; i < steps; i++) {
+                const pointX = start.x + Math.cos(angle) * (stepSize * i);
+                const pointY = start.y + Math.sin(angle) * (stepSize * i);
+                
+                // Check if this point intersects with any walls
+                let collision = false;
+                Object.values(rooms).forEach(room => {
+                    room.wallsLayers.forEach(wallLayer => {
+                        const tile = wallLayer.getTileAtWorldXY(pointX, pointY);
+                        if (tile && tile.collides) {
+                            collision = true;
+                        }
+                    });
+                });
+                
+                if (collision) {
+                    return false;
+                }
+            }
+            
+            return true;
+        }
+
+        // updates the player's room
+        function updatePlayerRoom() {
+            // Update last position
+            lastPlayerPosition = { x: player.x, y: player.y };
+
+            let overlappingRooms = [];
+
+            // Check all rooms for overlap
+            for (const [roomId, room] of Object.entries(rooms)) {
+                const bounds = getRoomBounds(roomId);
+                if (isPlayerInBounds(bounds)) {
+                    overlappingRooms.push(roomId);
+                    
+                    // Reveal room if not already visible
+                    if (!discoveredRooms.has(roomId)) {
+                        console.log(`Player overlapping room: ${roomId}`);
+                        revealRoom(roomId);
+                    }
+                }
+            }
+
+            // If we're not overlapping any rooms
+            if (overlappingRooms.length === 0) {
+                console.log('Player not in any room');
+                currentPlayerRoom = null;
+                return null;
+            }
+
+            // Update current room (use the first overlapping room as the "main" room)
+            if (currentPlayerRoom !== overlappingRooms[0]) {
+                console.log(`Player's main room changed to: ${overlappingRooms[0]}`);
+                currentPlayerRoom = overlappingRooms[0];
+                onRoomChange(overlappingRooms[0]);
+            }
+
+            return currentPlayerRoom;
+        }
+
+        // gets the bounds of a room
+        function getRoomBounds(roomId) {
+            const room = rooms[roomId];
+            return {
+                x: room.position.x,
+                y: room.position.y,
+                width: room.map.widthInPixels,
+                height: room.map.heightInPixels
+            };
+        }
+
+        // checks if the player is in bounds
+        function isPlayerInBounds(bounds) {
+            const buffer = 0; // Changed from TILE_SIZE (48) to 0
+            return (
+                player.x >= bounds.x - buffer &&
+                player.x <= bounds.x + bounds.width + buffer &&
+                player.y >= bounds.y - buffer &&
+                player.y <= bounds.y + bounds.height + buffer
+            );
+        }
+
+        // handles room changes
+        // reveals the new room
+        // hides rooms that aren't connected and aren't currently being overlapped
+        function onRoomChange(newRoomId) {
+            // Reveal the new room (although it should already be revealed)
+            revealRoom.call(this, newRoomId);
+            
+            // Only hide rooms that aren't connected AND aren't currently being overlapped
+            Object.keys(rooms).forEach(roomId => {
+                const bounds = getRoomBounds(roomId);
+                const playerOverlapping = isPlayerInBounds(bounds);
+                
+                if (hideNonAdjacentRooms && !playerOverlapping && !isConnectedRoom(newRoomId, roomId)) {
+                    hideRoom.call(this, roomId);
+                }
+            });
+        }
+
+        // hides a room
+        function hideRoom(roomId) {
+            if (rooms[roomId]) {
+                const room = rooms[roomId];
+                
+                // Hide all layers
+                Object.values(room.layers).forEach(layer => {
+                    if (layer && layer.setVisible) {
+                        layer.setVisible(false);
+                        layer.setAlpha(0);
+                    }
+                });
+
+                // Hide all objects (both active and inactive)
+                if (room.objects) {
+                    Object.values(room.objects).forEach(obj => {
+                        if (obj && obj.setVisible) {
+                            obj.setVisible(false);
+                        }
+                    });
+                }
+            }
+        }
+
+        // checks if rooms are connected
+        function isConnectedRoom(currentRoomId, checkRoomId) {
+            const currentRoom = gameScenario.rooms[currentRoomId];
+            if (!currentRoom || !currentRoom.connections) return false;
+
+            // Check all connections
+            return Object.values(currentRoom.connections).some(connection => {
+                if (Array.isArray(connection)) {
+                    return connection.includes(checkRoomId);
+                }
+                return connection === checkRoomId;
+            });
+        }
+
+        // handles interactions with objects
+        // displays the object's data in an alert
+        function handleObjectInteraction(sprite) {
+            if (!sprite || !sprite.scenarioData) {
+                console.warn('Invalid sprite or missing scenario data');
+                return;
+            }
+            
+            // Skip range check for inventory items
+            const isInventoryItem = inventory.items.includes(sprite);
+            if (!isInventoryItem) {
+                // Check if player is in range
+                const dx = player.x - sprite.x;
+                const dy = player.y - sprite.y;
+                const distanceSq = dx * dx + dy * dy;
+                
+                if (distanceSq > INTERACTION_RANGE_SQ) {
+                    // alert("Too far away to interact with this object.");
+                    return;
+                }
+            }
+            
+            const data = sprite.scenarioData;
+            let message = `${data.name}\n\n`;
+            message += `Observations: ${data.observations}\n\n`;
+            
+            // Check for locked state in scenarioData
+            if (data.locked === true) {
+                console.log('Item is locked:', data);
+                handleUnlock(sprite, 'item');
+                return;
+            }
+            
+            if (data.readable && data.text) {
+                message += `Text: ${data.text}\n\n`;
+            }
+            
+            if (data.contents && !data.locked) {
+                // Handle container contents
+                message += `You found the following items:\n`;
+                data.contents.forEach(item => {
+                    message += `- ${item.name}\n`;
+                });
+                alert(message);
+                
+                // Add all contents to inventory
+                data.contents.forEach(item => {
+                    // Ensure the item type matches the preloaded asset name
+                    const contentSprite = createInventorySprite({
+                        ...item,
+                        type: item.type.toLowerCase() // Ensure type matches asset name
+                    });
+                    if (contentSprite) {
+                        addToInventory(contentSprite);
+                    }
+                });
+                
+                // Clear contents after adding to inventory
+                data.contents = [];
+                return;
+            }
+            
+            if (data.takeable) {
+                message += `This item can be taken\n\n`;
+                
+                if (!inventory || !Array.isArray(inventory.items)) {
+                    console.error('Inventory not properly initialized');
+                    return;
+                }
+                
+                const isInRoom = currentRoom && 
+                                rooms[currentRoom] && 
+                                rooms[currentRoom].objects && 
+                                rooms[currentRoom].objects[sprite.name];
+                        
+                const itemIdentifier = createItemIdentifier(sprite.scenarioData);
+                        
+                const isInInventory = inventory.items.some(item => 
+                    item && createItemIdentifier(item.scenarioData) === itemIdentifier
+                );
+                        
+                if (isInRoom && !isInInventory) {
+                    console.log('Adding item to inventory:', itemIdentifier);
+                    addToInventory(sprite);
+                }
+            }
+            
+            alert(message);
+        }
+
+        // adds an item to the inventory
+        // removes the item from the room if it exists
+        // creates a new sprite for the item in the inventory
+        function addToInventory(sprite) {
+            if (!sprite || !sprite.scenarioData) {
+                console.warn('Invalid sprite for inventory');
+                return;
+            }
+            
+            try {
+                // Remove from room if it exists
+                if (currentRoom && 
+                    rooms[currentRoom] && 
+                    rooms[currentRoom].objects && 
+                    rooms[currentRoom].objects[sprite.name]) {
+                    
+                    const roomObj = rooms[currentRoom].objects[sprite.name];
+                    roomObj.setVisible(false);
+                    roomObj.active = false;
+                }
+                
+                const scene = sprite.scene;
+                
+                // Create new sprite for inventory
+                const inventorySprite = scene.add.sprite(
+                    inventory.items.length * 60 + 100,
+                    0,
+                    sprite.name
+                );
+                
+                inventorySprite.setScale(0.8);
+                inventorySprite.setInteractive({ useHandCursor: true, pixelPerfect: true });
+                inventorySprite.scenarioData = {
+                    ...sprite.scenarioData,
+                    foundIn: currentRoom ? gameScenario.rooms[currentRoom].name || currentRoom : 'unknown location'
+                };
+                inventorySprite.name = sprite.name;
+                
+                // Set depth higher than container
+                inventorySprite.setDepth(2003);
+
+                // Add pointer events
+                inventorySprite.on('pointerdown', function(event) {
+                    event.stopPropagation();
+                    handleObjectInteraction(this);
+                });
+                
+                inventorySprite.on('pointerover', function() {
+                    this.setTint(0xdddddd);
+                });
+                
+                inventorySprite.on('pointerout', function() {
+                    this.clearTint();
+                });
+                
+                inventory.container.add(inventorySprite);
+                inventory.items.push(inventorySprite);
+                
+                console.log('Item added to inventory:', {
+                    name: sprite.name,
+                    totalItems: inventory.items.length
+                });
+            } catch (error) {
+                console.error('Error adding item to inventory:', error);
+            }
+        }
+
+        // initializes inventory
+        // creates the background and slot outlines
+        function initializeInventory() {
+            // Reset inventory state
+            inventory.items = [];
+            
+            // Create slot outlines
+            const slotsContainer = this.add.container(110, this.cameras.main.height - 60) // Shifted 100px to the right
+                .setScrollFactor(0)
+                .setDepth(2001);
+            
+            // Create 10 slot outlines
+            for (let i = 0; i < 10; i++) {
+                const outline = this.add.rectangle(
+                    i * 60, 
+                    0,
+                    50,  // slightly smaller than spacing
+                    50,
+                    0x666666,
+                    0.3
+                );
+                outline.setStrokeStyle(1, 0x666666);
+                slotsContainer.add(outline);
+            }
+            
+            // Initialize inventory container
+            inventory.container = this.add.container(10, this.cameras.main.height - 60)
+                .setScrollFactor(0)
+                .setDepth(2001);
+            
+            console.log('Inventory initialized:', inventory); // Debug log
+        }
+
+        // runs after rooms are fully set up
+        // checks if doors are overlapping rooms and removes them if they are not
+        function validateDoorsByRoomOverlap() {
+            // First, run the existing door validation
+            Object.entries(rooms).forEach(([roomId, room]) => {
+                if (!room.doorsLayer) return;
+
+                const doorTiles = room.doorsLayer.getTilesWithin().filter(tile => tile.index !== -1);
+                
+                doorTiles.forEach(doorTile => {
+                    // Calculate world coordinates for this door tile
+                    const doorWorldX = room.doorsLayer.x + (doorTile.x * TILE_SIZE);
+                    const doorWorldY = room.doorsLayer.y + (doorTile.y * TILE_SIZE);
+                    
+                    // Create a door check area that extends in all directions
+                    const doorCheckArea = {
+                        x: doorWorldX - DOOR_ALIGN_OVERLAP,
+                        y: doorWorldY - DOOR_ALIGN_OVERLAP,
+                        width: DOOR_ALIGN_OVERLAP * 2,
+                        height: DOOR_ALIGN_OVERLAP * 2
+                    };
+                    
+                    // Track overlapping rooms and their data
+                    let overlappingRoomData = [];
+                    
+                    Object.entries(rooms).forEach(([otherId, otherRoom]) => {
+                        const otherBounds = {
+                            x: otherRoom.position.x,
+                            y: otherRoom.position.y,
+                            width: otherRoom.map.widthInPixels,
+                            height: otherRoom.map.heightInPixels
+                        };
+                        
+                        // Check if the door's check area overlaps with this room
+                        if (boundsOverlap(doorCheckArea, otherBounds)) {
+                            overlappingRoomData.push({
+                                id: otherId,
+                                locked: gameScenario.rooms[otherId].locked,
+                                lockType: gameScenario.rooms[otherId].lockType,
+                                requires: gameScenario.rooms[otherId].requires
+                            });
+                            console.log(`Door at (${doorWorldX}, ${doorWorldY}) overlaps with room ${otherId}`);
+                        }
+                    });
+                    
+                    // If door doesn't overlap exactly 2 rooms, remove it
+                    if (overlappingRoomData.length < 2) {
+                        console.log(`Removing door at (${doorWorldX}, ${doorWorldY}) - overlaps ${overlappingRoomData.length} rooms`);
+                        doorTile.index = -1;  // Remove the door tile
+                        
+                        // Restore wall collision where door was removed
+                        room.wallsLayers.forEach(wallLayer => {
+                            const wallTile = wallLayer.getTileAt(doorTile.x, doorTile.y);
+                            if (wallTile) {
+                                wallTile.setCollision(true);
+                            }
+                        });
+                    } else {
+                        // Check if any of the overlapping rooms are locked
+                        const lockedRoom = overlappingRoomData.find(room => room.locked);
+                        
+                        if (lockedRoom) {
+                            // Set the door tile properties to match the locked room
+                            if (!doorTile.properties) doorTile.properties = {};
+                            doorTile.properties.locked = true;
+                            doorTile.properties.lockType = lockedRoom.lockType;
+                            doorTile.properties.requires = lockedRoom.requires;
+                            console.log(`Door at (${doorWorldX}, ${doorWorldY}) marked as locked:`, doorTile.properties);
+                            
+                            // Ensure wall collision remains for locked doors
+                            room.wallsLayers.forEach(wallLayer => {
+                                const wallTile = wallLayer.getTileAt(doorTile.x, doorTile.y);
+                                if (wallTile) {
+                                    wallTile.setCollision(true);
+                                }
+                            });
+                        } else {
+                            // Valid unlocked door - ensure no wall collision
+                            room.wallsLayers.forEach(wallLayer => {
+                                const wallTile = wallLayer.getTileAt(doorTile.x, doorTile.y);
+                                if (wallTile) {
+                                    wallTile.setCollision(false);
+                                }
+                            });
+                        }
+                    }
+                });
+            });
+        }
+
+        function pointInRoomBounds(x, y, bounds) {
+            return (x >= bounds.x && 
+                    x <= bounds.x + bounds.width && 
+                    y >= bounds.y && 
+                    y <= bounds.height);
+        }
+
+        // Add this helper function to check if two bounds overlap
+        function boundsOverlap(bounds1, bounds2) {
+            return !(bounds1.x + bounds1.width < bounds2.x || 
+                     bounds1.x > bounds2.x + bounds2.width || 
+                     bounds1.y + bounds1.height < bounds2.y || 
+                     bounds1.y > bounds2.y + bounds2.height);
+        }
+
+        // Add this new helper function:
+        function createItemIdentifier(scenarioData) {
+            // Combine multiple properties to create a unique identifier
+            const identifierParts = [
+                scenarioData.type,
+                scenarioData.name,
+                // Add more unique properties if available
+                scenarioData.key_id,         // For keys
+                scenarioData.requires,       // For locks
+                scenarioData.text           // For readable items
+            ].filter(Boolean); // Remove any undefined/null values
+            
+            return identifierParts.join('|');
+        }
+
+        // Add this new function after the other function definitions
+        function setupDoorOverlapChecks() {
+            const DOOR_INTERACTION_RANGE = 2 * TILE_SIZE;
+            
+            Object.entries(rooms).forEach(([roomId, room]) => {
+                if (!room.doorsLayer) return;
+
+                const doorTiles = room.doorsLayer.getTilesWithin().filter(tile => tile.index !== -1);
+                
+                doorTiles.forEach(doorTile => {
+                    const worldX = room.doorsLayer.x + (doorTile.x * TILE_SIZE);
+                    const worldY = room.doorsLayer.y + (doorTile.y * TILE_SIZE);
+                    
+                    const zone = this.add.zone(worldX + TILE_SIZE/2, worldY + TILE_SIZE/2, TILE_SIZE, TILE_SIZE);
+                    zone.setInteractive({ useHandCursor: true });
+                    
+                    zone.on('pointerdown', () => {
+                        console.log('Door clicked:', { doorTile, room });
+                        const distance = Phaser.Math.Distance.Between(
+                            player.x, player.y,
+                            worldX + TILE_SIZE/2, worldY + TILE_SIZE/2
+                        );
+                        
+                        if (distance <= DOOR_INTERACTION_RANGE) {
+                            if (doorTile.properties?.locked) {
+                                console.log('Door is locked, attempting unlock');
+                                colorDoorTiles(doorTile, room);
+                                handleDoorUnlock(doorTile, room);
+                            } else {
+                                console.log('Door is not locked');
+                            }
+                        } else {
+                            console.log("Too far from door to interact");
+                        }
+                    });
+
+                    this.physics.world.enable(zone);
+                    this.physics.add.overlap(player, zone, () => {
+                        colorDoorTiles(doorTile, room);
+                    }, null, this);
+                });
+            });
+        }
+
+        function colorDoorTiles(doorTile, room) {
+            // Visual feedback for door tiles
+            const doorTiles = [
+                            room.doorsLayer.getTileAt(doorTile.x, doorTile.y - 1),
+                            room.doorsLayer.getTileAt(doorTile.x, doorTile.y),
+                            room.doorsLayer.getTileAt(doorTile.x, doorTile.y + 1)
+                        ];
+                        doorTiles.forEach(tile => {
+                    if (tile) {
+                        // Use red tint for locked doors, black for unlocked
+                        const tintColor = doorTile.properties?.locked ? 0xff0000 : 0x000000;
+                        tile.tint = tintColor;
+                        tile.tintFill = true;
+                    }
+            });
+        }
+        
+        function handleDoorUnlock(doorTile, room) {
+            console.log('handleDoorUnlock called:', { doorTile, room });
+            doorTile.layer = room.doorsLayer; // Ensure layer reference is set
+            handleUnlock(doorTile, 'door');
+        }
+
+        function handleUnlock(lockable, type) {
+            console.log('handleUnlock called:', { type, lockable });
+            
+            // Check locked state in scenarioData for items
+            const isLocked = type === 'door' ? 
+                lockable.properties?.locked : 
+                lockable.scenarioData?.locked;
+            
+            if (!isLocked) {
+                console.log('Object is not locked');
+                return;
+            }
+            
+            // Get lock requirements based on type
+            const lockRequirements = type === 'door' 
+                ? getLockRequirementsForDoor(lockable)
+                : getLockRequirementsForItem(lockable);
+            
+            console.log('Lock requirements:', lockRequirements);
+            
+            if (!lockRequirements) {
+                console.log('No lock requirements found');
+                return;
+            }
+            
+            switch(lockRequirements.lockType) {
+                case 'key':
+                    const requiredKey = lockRequirements.requires;
+                    console.log('Checking for key:', requiredKey);
+                    const hasKey = inventory.items.some(item => 
+                        item && item.scenarioData && 
+                        item.scenarioData.key_id === requiredKey
+                    );
+
+                    if (hasKey) {
+                        const keyItem = inventory.items.find(item => 
+                            item && item.scenarioData && 
+                            item.scenarioData.key_id === requiredKey
+                        );
+                        const keyName = keyItem?.scenarioData?.name || 'key';
+                        const keyLocation = keyItem?.scenarioData?.foundIn || 'your inventory';
+                        
+                        unlockTarget(lockable, type, lockable.layer); // Pass the layer here
+                        alert(`You used the ${keyName} that you found in ${keyLocation} to unlock the ${type}.`);
+                    } else {
+                        alert(`Requires key: ${requiredKey}`);
+                    }
+                    break;
+
+                case 'pin':
+                    console.log('Handling PIN lock');
+                    const pinInput = prompt(`Enter PIN code:`);
+                    if (pinInput === lockRequirements.requires) {
+                        unlockTarget(lockable, type, lockable.layer); // Pass the layer here
+                        alert(`Correct PIN! The ${type} is now unlocked.`);
+                    } else if (pinInput !== null) {
+                        alert("Incorrect PIN code.");
+                    }
+                    break;
+
+                case 'password':
+                    console.log('Handling password lock');
+                    const passwordInput = prompt(`Enter password:`);
+                    if (passwordInput === lockRequirements.requires) {
+                        unlockTarget(lockable, type, lockable.layer); // Pass the layer here
+                        alert(`Correct password! The ${type} is now unlocked.`);
+                    } else if (passwordInput !== null) {
+                        alert("Incorrect password.");
+                    }
+                    break;
+
+                default:
+                    alert(`Requires: ${lockRequirements.requires}`);
+            }
+        }
+
+        // Generic unlock function
+        function unlockTarget(lockable, type, layer) {
+            if (type === 'door') {
+                if (!layer) {
+                    console.error('Missing layer for door unlock');
+                    return;
+                }
+                unlockDoor(lockable, layer);
+            } else {
+                // Handle item unlocking
+                if (lockable.scenarioData) {
+                    lockable.scenarioData.locked = false;
+                } else {
+                    lockable.locked = false;
+                }
+                
+                // If the item has contents, make them accessible
+                if (lockable.scenarioData?.contents) {
+                    lockable.scenarioData.contents.forEach(item => {
+                        const sprite = createInventorySprite(item);
+                        if (sprite) {
+                            addToInventory(sprite);
+                        }
+                    });
+                }
+            }
+        }
+
+        // Helper function to create inventory sprites for unlocked container contents
+        function createInventorySprite(itemData) {
+            const scene = game.scene.scenes[0]; // Get the main scene
+            if (!scene) return null;
+            
+            // Create sprite with proper texture key based on item type
+            const sprite = scene.add.sprite(0, 0, itemData.type.toLowerCase());
+            sprite.scenarioData = itemData;
+            sprite.name = itemData.type;
+            
+            // Set interactive properties
+            sprite.setInteractive({ useHandCursor: true, pixelPerfect: true });
+            sprite.on('pointerdown', function(event) {
+                event.stopPropagation();
+                handleObjectInteraction(this);
+            });
+            
+            sprite.on('pointerover', function() {
+                this.setTint(0xdddddd);
+            });
+            
+            sprite.on('pointerout', function() {
+                this.clearTint();
+            });
+            
+            return sprite;
+        }
+
+        function unlockDoor(doorTile, doorsLayer) {
+            if (!doorsLayer) {
+                console.error('Missing doorsLayer in unlockDoor');
+                return;
+            }
+
+            // Remove lock properties from this door and adjacent door tiles
+            const doorTiles = [
+                doorsLayer.getTileAt(doorTile.x, doorTile.y - 1),
+                doorsLayer.getTileAt(doorTile.x, doorTile.y),
+                doorsLayer.getTileAt(doorTile.x, doorTile.y + 1),
+                doorsLayer.getTileAt(doorTile.x - 1, doorTile.y),
+                doorsLayer.getTileAt(doorTile.x + 1, doorTile.y)
+            ].filter(tile => tile && tile.index !== -1);
+
+            doorTiles.forEach(tile => {
+                if (tile.properties) {
+                    tile.properties.locked = false;
+                }
+            });
+            
+            // Find the room that contains this doors layer
+            const room = Object.values(rooms).find(r => r.doorsLayer === doorsLayer);
+            if (!room) {
+                console.error('Could not find room for doors layer');
+                return;
+            }
+            
+            // Process each door tile's position to remove wall collisions
+            doorTiles.forEach(tile => {
+                const worldX = doorsLayer.x + (tile.x * TILE_SIZE);
+                const worldY = doorsLayer.y + (tile.y * TILE_SIZE);
+                
+                const doorCheckArea = {
+                    x: worldX - DOOR_ALIGN_OVERLAP,
+                    y: worldY - DOOR_ALIGN_OVERLAP,
+                    width: DOOR_ALIGN_OVERLAP * 2,
+                    height: DOOR_ALIGN_OVERLAP * 2
+                };
+                
+                // Remove collision for this door in ALL overlapping rooms' wall layers
+                Object.entries(rooms).forEach(([otherId, otherRoom]) => {
+                    const otherBounds = {
+                        x: otherRoom.position.x,
+                        y: otherRoom.position.y,
+                        width: otherRoom.map.widthInPixels,
+                        height: otherRoom.map.heightInPixels
+                    };
+                    
+                    if (boundsOverlap(doorCheckArea, otherBounds)) {
+                        otherRoom.wallsLayers.forEach(wallLayer => {
+                            const wallX = Math.floor((worldX - wallLayer.x) / TILE_SIZE);
+                            const wallY = Math.floor((worldY - wallLayer.y) / TILE_SIZE);
+                            
+                            const wallTile = wallLayer.getTileAt(wallX, wallY);
+                            if (wallTile) {
+                                wallTile.setCollision(false);
+                            }
+                        });
+                    }
+                });
+            });
+            
+            // Update door visuals for all affected tiles
+            doorTiles.forEach(tile => {
+                colorDoorTiles(tile, room);
+            });
+        }
+
+        function getLockRequirementsForDoor(doorTile) {
+            console.log('Getting lock requirements for door:', doorTile);
+            
+            if (!doorTile.layer) {
+                console.error('Door tile missing layer reference');
+                return null;
+            }
+
+            const doorWorldX = doorTile.layer.x + (doorTile.x * TILE_SIZE);
+            const doorWorldY = doorTile.layer.y + (doorTile.y * TILE_SIZE);
+            
+            console.log('Door world coordinates:', { doorWorldX, doorWorldY });
+            
+            const overlappingRooms = [];
+            Object.entries(rooms).forEach(([roomId, otherRoom]) => {
+                const doorCheckArea = {
+                    x: doorWorldX - DOOR_ALIGN_OVERLAP,
+                    y: doorWorldY - DOOR_ALIGN_OVERLAP,
+                    width: DOOR_ALIGN_OVERLAP * 2,
+                    height: DOOR_ALIGN_OVERLAP * 2
+                };
+                
+                const roomBounds = {
+                    x: otherRoom.position.x,
+                    y: otherRoom.position.y,
+                    width: otherRoom.map.widthInPixels,
+                    height: otherRoom.map.heightInPixels
+                };
+                
+                if (boundsOverlap(doorCheckArea, roomBounds)) {
+                    console.log(`Room ${roomId} overlaps with door`);
+                    const roomCenterX = roomBounds.x + (roomBounds.width / 2);
+                    const roomCenterY = roomBounds.y + (roomBounds.height / 2);
+                    const distanceToPlayer = Phaser.Math.Distance.Between(
+                        player.x, player.y,
+                        roomCenterX, roomCenterY
+                    );
+                    
+                    overlappingRooms.push({
+                        id: roomId,
+                        room: otherRoom,
+                        distance: distanceToPlayer,
+                        lockType: gameScenario.rooms[roomId].lockType,
+                        requires: gameScenario.rooms[roomId].requires,
+                        locked: gameScenario.rooms[roomId].locked
+                    });
+                }
+            });
+
+            console.log('Overlapping rooms:', overlappingRooms);
+            
+            const lockedRooms = overlappingRooms
+                .filter(r => r.locked)
+                .sort((a, b) => b.distance - a.distance);
+            
+            console.log('Locked rooms:', lockedRooms);
+
+            if (lockedRooms.length > 0) {
+                const targetRoom = lockedRooms[0];
+                const requirements = {
+                    lockType: targetRoom.lockType,
+                    requires: targetRoom.requires
+                };
+                console.log('Returning lock requirements:', requirements);
+                return requirements;
+            }
+            
+            console.log('No lock requirements found');
+            return null;
+        }
+
+        function getLockRequirementsForItem(item) {
+            return {
+                lockType: item.lockType || item.scenarioData?.lockType,
+                requires: item.requires || item.scenarioData?.requires
+            };
+        }
+
+    </script>
+</body>
+</html> 
