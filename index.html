@@ -26,6 +26,67 @@
             font-size: 24px;
             display: none;
         }
+
+        #laptop-popup {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            z-index: 10000;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .laptop-frame {
+            background: #1a1a1a;
+            border-radius: 15px;
+            padding: 20px;
+            width: 90%;
+            max-width: 1200px;
+            height: 80vh;
+            box-shadow: 0 0 30px rgba(0, 0, 0, 0.5);
+        }
+
+        .laptop-screen {
+            background: #fff;
+            height: 100%;
+            border-radius: 8px;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .title-bar {
+            background: #333;
+            color: white;
+            padding: 8px 15px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .close-btn {
+            background: none;
+            border: none;
+            color: white;
+            font-size: 24px;
+            cursor: pointer;
+            padding: 0 5px;
+        }
+
+        .close-btn:hover {
+            color: #ff4444;
+        }
+
+        .laptop-screen iframe {
+            flex: 1;
+            width: 100%;
+            height: 100%;
+            border: none;
+        }
     </style>
     <script src="https://cdn.jsdelivr.net/npm/phaser@3.60.0/dist/phaser.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/easystarjs@0.4.4/bin/easystar-0.4.4.js"></script>
@@ -135,9 +196,62 @@
             this.load.image('suitcase', 'assets/objects/suitcase.png');
             this.load.image('safe', 'assets/objects/safe.png');
             this.load.image('book', 'assets/objects/book.png');
+            this.load.image('workstation', 'assets/objects/workstation.png');
 
             this.load.json('gameScenarioJSON', 'assets/scenarios/ceo_exfil.json');
             gameScenario = this.cache.json.get('gameScenarioJSON');
+        }
+
+        // creates the workstation
+        function addCryptoWorkstation() {
+            console.log('CyberChef: Adding crypto workstation...');
+            const workstationData = {
+                type: "workstation",
+                name: "Crypto Analysis Station",
+                observations: "A powerful workstation for cryptographic analysis"
+            };
+
+            // Create the workstation sprite
+            const workstationSprite = this.add.sprite(0, 0, 'workstation');
+            workstationSprite.setVisible(false);
+            workstationSprite.name = "workstation";
+            workstationSprite.scenarioData = workstationData;
+            workstationSprite.setInteractive({ useHandCursor: true });
+            
+            // Override the default handleObjectInteraction for this specific item
+            workstationSprite.customInteraction = function() {
+                console.log('CyberChef: Workstation custom interaction triggered');
+                // Create popup
+                let popup = document.getElementById('laptop-popup');
+                if (!popup) {
+                    console.log('CyberChef: Creating new popup...');
+                    popup = document.createElement('div');
+                    popup.id = 'laptop-popup';
+                    popup.innerHTML = `
+                        <div class="laptop-frame">
+                            <div class="laptop-screen">
+                                <div class="title-bar">
+                                    <span>CryptoWorkstation</span>
+                                    <button class="close-btn">&times;</button>
+                                </div>
+                                <iframe src="assets/cyberchef/CyberChef_v10.19.4.html" frameborder="0"></iframe>
+                            </div>
+                        </div>
+                    `;
+                    document.body.appendChild(popup);
+
+                    // Add close button handler
+                    popup.querySelector('.close-btn').addEventListener('click', () => {
+                        popup.style.display = 'none';
+                    });
+                }
+                popup.style.display = 'flex';
+                return true;
+            };
+
+            // Add to inventory directly
+            addToInventory(workstationSprite);
+            console.log('CyberChef: Workstation added to inventory');
         }
 
         // creates the game
@@ -260,6 +374,9 @@
 
             // Initialize game systems
             initializeInventory.call(this);
+
+            // Add the workstation to inventory
+            addCryptoWorkstation.call(this);
 
             // Add this line after processAllDoorCollisions()
             setupDoorOverlapChecks.call(this);
@@ -1213,6 +1330,13 @@
         // handles interactions with objects
         // displays the object's data in an alert
         function handleObjectInteraction(sprite) {
+            console.log('CyberChef: handleObjectInteraction called for:', sprite.name, 'Has custom interaction:', !!sprite.customInteraction);
+            
+            if (sprite.customInteraction && sprite.customInteraction()) {
+                console.log('CyberChef: Custom interaction handled');
+                return;
+            }
+            
             if (!sprite || !sprite.scenarioData) {
                 console.warn('Invalid sprite or missing scenario data');
                 return;
@@ -1337,6 +1461,11 @@
                     foundIn: currentRoom ? gameScenario.rooms[currentRoom].name || currentRoom : 'unknown location'
                 };
                 inventorySprite.name = sprite.name;
+                
+                // Copy over the custom interaction if it exists
+                if (sprite.customInteraction) {
+                    inventorySprite.customInteraction = sprite.customInteraction;
+                }
                 
                 // Set depth higher than container
                 inventorySprite.setDepth(2003);
