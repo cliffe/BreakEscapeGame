@@ -1213,62 +1213,62 @@
         // handles interactions with objects
         // displays the object's data in an alert
         function handleObjectInteraction(sprite) {
-    if (!sprite || !sprite.scenarioData) {
-        console.warn('Invalid sprite or missing scenario data');
-        return;
-    }
-    
-    // Skip range check for inventory items
-    const isInventoryItem = inventory.items.includes(sprite);
-    if (!isInventoryItem) {
-        // Check if player is in range
-        const dx = player.x - sprite.x;
-        const dy = player.y - sprite.y;
-        const distanceSq = dx * dx + dy * dy;
-        
-        if (distanceSq > INTERACTION_RANGE_SQ) {
+        if (!sprite || !sprite.scenarioData) {
+            console.warn('Invalid sprite or missing scenario data');
             return;
         }
-    }
-    
-    const data = sprite.scenarioData;
-    let message = `${data.name}\n\n`;
-    message += `Observations: ${data.observations}\n\n`;
-    
-    // Check for locked state in scenarioData
-    if (data.locked === true) {
-        console.log('Item is locked:', data);
-        handleUnlock(sprite, 'item');
-        return;
-    }
-
-    if (data.readable && data.text) {
-        message += `Text: ${data.text}\n\n`;
-    }
-    
-    // Only handle contents if they exist and haven't been collected yet
-    if (data.contents && data.contents.length > 0) {
-        message += `You found the following items:\n`;
-        data.contents.forEach(item => {
-            message += `- ${item.name}\n`;
-        });
-        alert(message);
         
-        // Add all contents to inventory
-        data.contents.forEach(item => {
-            const contentSprite = createInventorySprite({
-                ...item,
-                type: item.type.toLowerCase()
-            });
-            if (contentSprite) {
-                addToInventory(contentSprite);
+        // Skip range check for inventory items
+        const isInventoryItem = inventory.items.includes(sprite);
+        if (!isInventoryItem) {
+            // Check if player is in range
+            const dx = player.x - sprite.x;
+            const dy = player.y - sprite.y;
+            const distanceSq = dx * dx + dy * dy;
+            
+            if (distanceSq > INTERACTION_RANGE_SQ) {
+                return;
             }
-        });
+        }
         
-        // Clear contents after adding to inventory
-        data.contents = [];
-        return;
-    }
+        const data = sprite.scenarioData;
+        let message = `${data.name}\n\n`;
+        message += `Observations: ${data.observations}\n\n`;
+        
+        // Check for locked state in scenarioData
+        if (data.locked === true) {
+            console.log('Item is locked:', data);
+            handleUnlock(sprite, 'item');
+            return;
+        }
+
+        if (data.readable && data.text) {
+            message += `Text: ${data.text}\n\n`;
+        }
+        
+        // Only handle contents if they exist and haven't been collected yet
+        if (data.contents && data.contents.length > 0) {
+            message += `You found the following items:\n`;
+            data.contents.forEach(item => {
+                message += `- ${item.name}\n`;
+            });
+            alert(message);
+            
+            // Add all contents to inventory
+            data.contents.forEach(item => {
+                const contentSprite = createInventorySprite({
+                    ...item,
+                    type: item.type.toLowerCase()
+                });
+                if (contentSprite) {
+                    addToInventory(contentSprite);
+                }
+            });
+        
+            // Clear contents after adding to inventory
+            data.contents = [];
+            return;
+        }
     
             if (data.takeable) {
                 message += `This item can be taken\n\n`;
