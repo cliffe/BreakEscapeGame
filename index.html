@@ -26,6 +26,92 @@
             font-size: 24px;
             display: none;
         }
+
+        #laptop-popup {
+            display: none;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 90%;
+            max-width: 1200px;
+            height: calc(100% - 160px);
+            background: none;
+            z-index: 1000;
+            pointer-events: none;
+        }
+
+        .laptop-frame {
+            background: #1a1a1a;
+            border-radius: 15px;
+            padding: 20px;
+            width: 100%;
+            height: 75%;
+            box-shadow: 0 0 30px rgba(0, 0, 0, 0.5);
+            margin-bottom: 80px;
+            pointer-events: auto;
+        }
+
+        .laptop-screen {
+            background: #fff;
+            height: 100%;
+            border-radius: 8px;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .title-bar {
+            background: #333;
+            color: white;
+            padding: 8px 15px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .close-btn {
+            background: none;
+            border: none;
+            color: white;
+            font-size: 24px;
+            cursor: pointer;
+            padding: 0 5px;
+        }
+
+        .close-btn:hover {
+            color: #ff4444;
+        }
+
+        .laptop-screen iframe {
+            flex: 1;
+            width: 100%;
+            height: 100%;
+            border: none;
+        }
+
+        #cyberchef-container {
+            flex: 1;
+            width: 100%;
+            height: 100%;
+        }
+
+        #cyberchef-container iframe {
+            width: 100%;
+            height: 100%;
+            border: none;
+        }
+
+        .popup-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: calc(100% - 80px);
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 999;
+        }
     </style>
     <script src="https://cdn.jsdelivr.net/npm/phaser@3.60.0/dist/phaser.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/easystarjs@0.4.4/bin/easystar-0.4.4.js"></script>
@@ -135,9 +221,83 @@
             this.load.image('suitcase', 'assets/objects/suitcase.png');
             this.load.image('safe', 'assets/objects/safe.png');
             this.load.image('book', 'assets/objects/book.png');
+            this.load.image('workstation', 'assets/objects/workstation.png');
 
             this.load.json('gameScenarioJSON', 'assets/scenarios/ceo_exfil.json');
             gameScenario = this.cache.json.get('gameScenarioJSON');
+        }
+
+        // creates the workstation
+        function addCryptoWorkstation() {
+            // console.log('CyberChef: Adding crypto workstation...');
+            const workstationData = {
+                type: "workstation",
+                name: "Crypto Analysis Station",
+                observations: "A powerful workstation for cryptographic analysis"
+            };
+
+            // Create the workstation sprite
+            const workstationSprite = this.add.sprite(0, 0, 'workstation');
+            workstationSprite.setVisible(false);
+            workstationSprite.name = "workstation";
+            workstationSprite.scenarioData = workstationData;
+            workstationSprite.setInteractive({ useHandCursor: true });
+            
+            // Override the default handleObjectInteraction for this specific item
+            workstationSprite.openCryptoWorkstation = function() {
+                // console.log('CyberChef: Workstation custom interaction triggered');
+                // Create popup
+                let popup = document.getElementById('laptop-popup');
+                if (!popup) {
+                    // console.log('CyberChef: Creating new popup...');
+                    popup = document.createElement('div');
+                    popup.id = 'laptop-popup';
+                    popup.innerHTML = `
+                        <div class="popup-overlay"></div>
+                        <div class="laptop-frame">
+                            <div class="laptop-screen">
+                                <div class="title-bar">
+                                    <span>CryptoWorkstation</span>
+                                    <button class="close-btn">&times;</button>
+                                </div>
+                                <div id="cyberchef-container"></div>
+                            </div>
+                        </div>
+                    `;
+                    document.body.appendChild(popup);
+
+                    // Find the CyberChef file
+                    fetch('assets/cyberchef/')
+                        .then(response => response.text())
+                        .then(html => {
+                            // Use regex to find the CyberChef filename
+                            const match = html.match(/CyberChef_v[0-9.]+\.html/);
+                            if (match) {
+                                const cyberchefPath = `assets/cyberchef/${match[0]}`;
+                                // Create and append the iframe with the found path
+                                const iframe = document.createElement('iframe');
+                                iframe.src = cyberchefPath;
+                                iframe.frameBorder = "0";
+                                document.getElementById('cyberchef-container').appendChild(iframe);
+                            } else {
+                                console.error('Could not find CyberChef file');
+                            }
+                        })
+                        .catch(error => {
+                            console.error('Error loading CyberChef:', error);
+                        });
+
+                    popup.querySelector('.close-btn').addEventListener('click', () => {
+                        popup.style.display = 'none';
+                    });
+                }
+                popup.style.display = 'flex';
+                return true;
+            };
+
+            // Add to inventory directly
+            addToInventory(workstationSprite);
+            // console.log('CyberChef: Workstation added to inventory');
         }
 
         // creates the game
@@ -260,6 +420,9 @@
 
             // Initialize game systems
             initializeInventory.call(this);
+
+            // Add the workstation to inventory
+            addCryptoWorkstation.call(this);
 
             // Add this line after processAllDoorCollisions()
             setupDoorOverlapChecks.call(this);
@@ -1213,18 +1376,35 @@
         // handles interactions with objects
         // displays the object's data in an alert
         function handleObjectInteraction(sprite) {
-        if (!sprite || !sprite.scenarioData) {
-            console.warn('Invalid sprite or missing scenario data');
-            return;
-        }
-        
-        // Skip range check for inventory items
-        const isInventoryItem = inventory.items.includes(sprite);
-        if (!isInventoryItem) {
-            // Check if player is in range
-            const dx = player.x - sprite.x;
-            const dy = player.y - sprite.y;
-            const distanceSq = dx * dx + dy * dy;
+            console.log('CyberChef: handleObjectInteraction called for:', sprite.name, 'Has open workstation:', !!sprite.openCryptoWorkstation);
+            
+            if (sprite.openCryptoWorkstation && sprite.openCryptoWorkstation()) {
+                console.log('CyberChef: Crypto workstation opened');
+                return;
+            }
+            
+            if (!sprite || !sprite.scenarioData) {
+                console.warn('Invalid sprite or missing scenario data');
+                return;
+            }
+            
+            // Skip range check for inventory items
+            const isInventoryItem = inventory.items.includes(sprite);
+            if (!isInventoryItem) {
+                // Check if player is in range
+                const dx = player.x - sprite.x;
+                const dy = player.y - sprite.y;
+                const distanceSq = dx * dx + dy * dy;
+                
+                if (distanceSq > INTERACTION_RANGE_SQ) {
+                    // alert("Too far away to interact with this object.");
+                    return;
+                }
+            }
+            
+            const data = sprite.scenarioData;
+            let message = `${data.name}\n\n`;
+            message += `Observations: ${data.observations}\n\n`;
             
             if (distanceSq > INTERACTION_RANGE_SQ) {
                 return;
@@ -1260,16 +1440,23 @@
                     ...item,
                     type: item.type.toLowerCase()
                 });
-                if (contentSprite) {
-                    addToInventory(contentSprite);
-                }
-            });
-        
-            // Clear contents after adding to inventory
-            data.contents = [];
-            return;
-        }
-    
+              
+                alert(message);
+                
+                // Add all contents to inventory
+                data.contents.forEach(item => {
+                    // Ensure the item type matches the preloaded asset name
+                    const contentSprite = createInventorySprite(item);
+                    if (contentSprite) {
+                        addToInventory(contentSprite);
+                    }
+                });
+                
+                // Clear contents after adding to inventory
+                data.contents = [];
+                return;
+            }
+            
             if (data.takeable) {
                 message += `This item can be taken\n\n`;
                 
@@ -1335,6 +1522,11 @@
                     foundIn: currentRoom ? gameScenario.rooms[currentRoom].name || currentRoom : 'unknown location'
                 };
                 inventorySprite.name = sprite.name;
+                
+                // Copy over the custom interaction if it exists
+                if (sprite.openCryptoWorkstation) {
+                    inventorySprite.openCryptoWorkstation = sprite.openCryptoWorkstation;
+                }
                 
                 // Set depth higher than container
                 inventorySprite.setDepth(2003);
