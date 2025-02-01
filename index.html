@@ -244,7 +244,7 @@
             workstationSprite.setInteractive({ useHandCursor: true });
             
             // Override the default handleObjectInteraction for this specific item
-            workstationSprite.customInteraction = function() {
+            workstationSprite.openCryptoWorkstation = function() {
                 // console.log('CyberChef: Workstation custom interaction triggered');
                 // Create popup
                 let popup = document.getElementById('laptop-popup');
@@ -1376,10 +1376,10 @@
         // handles interactions with objects
         // displays the object's data in an alert
         function handleObjectInteraction(sprite) {
-            console.log('CyberChef: handleObjectInteraction called for:', sprite.name, 'Has custom interaction:', !!sprite.customInteraction);
+            console.log('CyberChef: handleObjectInteraction called for:', sprite.name, 'Has open workstation:', !!sprite.openCryptoWorkstation);
             
-            if (sprite.customInteraction && sprite.customInteraction()) {
-                console.log('CyberChef: Custom interaction handled');
+            if (sprite.openCryptoWorkstation && sprite.openCryptoWorkstation()) {
+                console.log('CyberChef: Crypto workstation opened');
                 return;
             }
             
@@ -1428,10 +1428,7 @@
                 // Add all contents to inventory
                 data.contents.forEach(item => {
                     // Ensure the item type matches the preloaded asset name
-                    const contentSprite = createInventorySprite({
-                        ...item,
-                        type: item.type.toLowerCase() // Ensure type matches asset name
-                    });
+                    const contentSprite = createInventorySprite(item);
                     if (contentSprite) {
                         addToInventory(contentSprite);
                     }
@@ -1509,8 +1506,8 @@
                 inventorySprite.name = sprite.name;
                 
                 // Copy over the custom interaction if it exists
-                if (sprite.customInteraction) {
-                    inventorySprite.customInteraction = sprite.customInteraction;
+                if (sprite.openCryptoWorkstation) {
+                    inventorySprite.openCryptoWorkstation = sprite.openCryptoWorkstation;
                 }
                 
                 // Set depth higher than container
