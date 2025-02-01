@@ -30,24 +30,26 @@
         #laptop-popup {
             display: none;
             position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0, 0, 0, 0.8);
-            z-index: 10000;
-            justify-content: center;
-            align-items: center;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 90%;
+            max-width: 1200px;
+            height: calc(100% - 160px);
+            background: none;
+            z-index: 1000;
+            pointer-events: none;
         }
 
         .laptop-frame {
             background: #1a1a1a;
             border-radius: 15px;
             padding: 20px;
-            width: 90%;
-            max-width: 1200px;
-            height: 80vh;
+            width: 100%;
+            height: 75%;
             box-shadow: 0 0 30px rgba(0, 0, 0, 0.5);
+            margin-bottom: 80px;
+            pointer-events: auto;
         }
 
         .laptop-screen {
@@ -98,6 +100,17 @@
             width: 100%;
             height: 100%;
             border: none;
+        }
+
+        .popup-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: calc(100% - 80px);
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 999;
         }
     </style>
     <script src="https://cdn.jsdelivr.net/npm/phaser@3.60.0/dist/phaser.min.js"></script>
@@ -240,6 +253,7 @@
                     popup = document.createElement('div');
                     popup.id = 'laptop-popup';
                     popup.innerHTML = `
+                        <div class="popup-overlay"></div>
                         <div class="laptop-frame">
                             <div class="laptop-screen">
                                 <div class="title-bar">
