@@ -1406,23 +1406,41 @@
             let message = `${data.name}\n\n`;
             message += `Observations: ${data.observations}\n\n`;
             
-            // Check for locked state in scenarioData
-            if (data.locked === true) {
-                console.log('Item is locked:', data);
-                handleUnlock(sprite, 'item');
+            if (distanceSq > INTERACTION_RANGE_SQ) {
                 return;
             }
+        }
+        
+        const data = sprite.scenarioData;
+        let message = `${data.name}\n\n`;
+        message += `Observations: ${data.observations}\n\n`;
+        
+        // Check for locked state in scenarioData
+        if (data.locked === true) {
+            console.log('Item is locked:', data);
+            handleUnlock(sprite, 'item');
+            return;
+        }
+
+        if (data.readable && data.text) {
+            message += `Text: ${data.text}\n\n`;
+        }
+        
+        // Only handle contents if they exist and haven't been collected yet
+        if (data.contents && data.contents.length > 0) {
+            message += `You found the following items:\n`;
+            data.contents.forEach(item => {
+                message += `- ${item.name}\n`;
+            });
+            alert(message);
             
-            if (data.readable && data.text) {
-                message += `Text: ${data.text}\n\n`;
-            }
-            
-            if (data.contents && !data.locked) {
-                // Handle container contents
-                message += `You found the following items:\n`;
-                data.contents.forEach(item => {
-                    message += `- ${item.name}\n`;
+            // Add all contents to inventory
+            data.contents.forEach(item => {
+                const contentSprite = createInventorySprite({
+                    ...item,
+                    type: item.type.toLowerCase()
                 });
+              
                 alert(message);
                 
                 // Add all contents to inventory
@@ -1847,20 +1865,34 @@
                 // Handle item unlocking
                 if (lockable.scenarioData) {
                     lockable.scenarioData.locked = false;
+                    // Set new state for containers with contents
+                    if (lockable.scenarioData.contents) {
+                        lockable.scenarioData.isUnlockedButNotCollected = true;
+                    }
                 } else {
                     lockable.locked = false;
-                }
-                
-                // If the item has contents, make them accessible
-                if (lockable.scenarioData?.contents) {
-                    lockable.scenarioData.contents.forEach(item => {
-                        const sprite = createInventorySprite(item);
-                        if (sprite) {
-                            addToInventory(sprite);
-                        }
-                    });
+                    if (lockable.contents) {
+                        lockable.isUnlockedButNotCollected = true;
+                    }
                 }
             }
+        }
+
+        function collectContainerContents(container) {
+            if (!container.scenarioData?.contents || 
+                !container.scenarioData?.isUnlockedButNotCollected) {
+                return;
+            }
+
+            container.scenarioData.contents.forEach(item => {
+                const sprite = createInventorySprite(item);
+                if (sprite) {
+                    addToInventory(sprite);
+                }
+            });
+            
+            container.scenarioData.isUnlockedButNotCollected = false;
+            alert('You collected the items from the container.');
         }
 
         // Helper function to create inventory sprites for unlocked container contents
@@ -2034,7 +2066,8 @@
         function getLockRequirementsForItem(item) {
             return {
                 lockType: item.lockType || item.scenarioData?.lockType,
-                requires: item.requires || item.scenarioData?.requires
+                requires: item.requires || item.scenarioData?.requires,
+                isUnlockedButNotCollected: false
             };
         }
 
