@@ -1854,14 +1854,12 @@
                     // Set new state for containers with contents
                     if (lockable.scenarioData.contents) {
                         lockable.scenarioData.isUnlockedButNotCollected = true;
-                        alert('Container unlocked! You can now collect its contents.');
                         return; // Return early to prevent automatic collection
                     }
                 } else {
                     lockable.locked = false;
                     if (lockable.contents) {
                         lockable.isUnlockedButNotCollected = true;
-                        alert('Container unlocked! You can now collect its contents.');
                         return; // Return early to prevent automatic collection
                     }
                 }
