@@ -1403,22 +1403,10 @@
             }
             
             const data = sprite.scenarioData;
-            let message = `${data.name}\n\n`;
-            message += `Observations: ${data.observations}\n\n`;
             
-            // Check for locked state in scenarioData
-            if (data.locked === true) {
-                console.log('Item is locked:', data);
-                handleUnlock(sprite, 'item');
-                return;
-            }
-            
-            if (data.readable && data.text) {
-                message += `Text: ${data.text}\n\n`;
-            }
-            
-            if (data.contents && data.contents.length > 0) {
-                message += `You found the following items:\n`;
+            // Check if this is an unlocked container that hasn't been collected yet
+            if (data.isUnlockedButNotCollected && data.contents) {
+                let message = `You found the following items:\n`;
                 data.contents.forEach(item => {
                     message += `- ${item.name}\n`;
                 });
@@ -1434,10 +1422,25 @@
                         addToInventory(contentSprite);
                     }
                 });
-            
+                
                 // Clear contents after adding to inventory
                 data.contents = [];
+                data.isUnlockedButNotCollected = false;
                 return;
+            }
+            
+            // Check for locked state in scenarioData
+            if (data.locked === true) {
+                console.log('Item is locked:', data);
+                handleUnlock(sprite, 'item');
+                return;
+            }
+            
+            let message = `${data.name}\n\n`;
+            message += `Observations: ${data.observations}\n\n`;
+            
+            if (data.readable && data.text) {
+                message += `Text: ${data.text}\n\n`;
             }
             
             if (data.takeable) {
@@ -1836,7 +1839,7 @@
             }
         }
 
-        // Generic unlock function
+        // Modify the unlockTarget function
         function unlockTarget(lockable, type, layer) {
             if (type === 'door') {
                 if (!layer) {
@@ -1851,22 +1854,16 @@
                     // Set new state for containers with contents
                     if (lockable.scenarioData.contents) {
                         lockable.scenarioData.isUnlockedButNotCollected = true;
+                        alert('Container unlocked! You can now collect its contents.');
+                        return; // Return early to prevent automatic collection
                     }
                 } else {
                     lockable.locked = false;
                     if (lockable.contents) {
                         lockable.isUnlockedButNotCollected = true;
+                        alert('Container unlocked! You can now collect its contents.');
+                        return; // Return early to prevent automatic collection
                     }
-                }
-                
-                // If the item has contents, make them accessible
-                if (lockable.scenarioData?.contents) {
-                    lockable.scenarioData.contents.forEach(item => {
-                        const sprite = createInventorySprite(item);
-                        if (sprite) {
-                            addToInventory(sprite);
-                        }
-                    });
                 }
             }
         }
