@@ -33,28 +33,12 @@
                 },
                 {
                     "type": "tablet",
-                    "name": "Forgotten Tablet",
-                    "observations": "A tablet device left behind by someone. It seems to be locked.",
+                    "name": "Tablet Device",
+                    "takeable": true,
                     "locked": true,
                     "lockType": "pin",
                     "requires": "1234",
-                    "contents": [
-                        {
-                            "type": "notes",
-                            "name": "Meeting Notes",
-                            "observations": "Confidential meeting notes about upcoming projects",
-                            "readable": true,
-                            "text": "Project Aurora launch scheduled for Q3. Security concerns need to be addressed.",
-                            "takeable": true
-                        },
-                        {
-                            "type": "key",
-                            "name": "Master Key",
-                            "observations": "A key with high security markings",
-                            "takeable": true,
-                            "key_id": "master_key"
-                        }
-                    ]
+                    "observations": "A locked tablet device"
                 }
             ]
         },
