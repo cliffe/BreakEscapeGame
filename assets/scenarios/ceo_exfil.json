@@ -39,6 +39,12 @@
                     "lockType": "pin",
                     "requires": "1234",
                     "observations": "A locked tablet device"
+                },
+                {
+                    "type": "bluetooth_scanner",
+                    "name": "Bluetooth Scanner",
+                    "takeable": true,
+                    "observations": "A device for detecting nearby Bluetooth signals"
                 }
             ]
         },

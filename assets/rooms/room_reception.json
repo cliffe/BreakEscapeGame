@@ -233,6 +233,17 @@
                  "width":48,
                  "x":340,
                  "y":168
+                },
+                {
+                 "height":48,
+                 "id":12,
+                 "name":"bluetooth_scanner",
+                 "rotation":0,
+                 "type":"",
+                 "visible":true,
+                 "width":48,
+                 "x":380,
+                 "y":166
                 }
          ],
          "opacity":1,
