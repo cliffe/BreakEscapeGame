@@ -248,6 +248,7 @@
             this.load.image('workstation', 'assets/objects/workstation.png');
             this.load.image('bluetooth_scanner', 'assets/objects/bluetooth_scanner.png');
             this.load.image('tablet', 'assets/objects/tablet.png');
+            this.load.image('smartwatch', 'assets/objects/smartwatch.png');
 
 
             this.load.json('gameScenarioJSON', 'assets/scenarios/ceo_exfil.json');
@@ -1881,40 +1882,19 @@
                     break;
 
                 case 'bluetooth':
-                    if (lockable.scenarioData?.locked) {
-                        alert("You need a Bluetooth scanner to unlock this device.");
-                        // Don't return here - allow the item to be picked up even without scanner
-                        if (type === 'item' && lockable.scenarioData?.takeable) {
-                            addToInventory(lockable);
-                            // Remove from room objects if it exists there
-                            if (currentRoom && rooms[currentRoom].objects) {
-                                delete rooms[currentRoom].objects[lockable.name];
-                            }
+                    if (type === 'item') {
+                        // Check if the player has an item with the correct MAC address in their inventory
+                        const bluetoothItem = inventory.items.find(item => 
+                          item.scenarioData?.mac === lockRequirements.requires
+                        );
+
+                        if (bluetoothItem) {
+                          unlockTarget(lockable, type);
+                          alert(`The ${lockable.scenarioData.name} unlocks with a satisfying click as the ${bluetoothItem.scenarioData.name} connects via Bluetooth.`);
+                        } else {
+                          alert(`You need a device with the MAC address ${lockRequirements.requires} to unlock this ${type} via Bluetooth.`);
                         }
-                        return;
                     }
-                    
-                    // Calculate distance between player and tablet
-                    const distance = Phaser.Math.Distance.Between(
-                        player.x, player.y,
-                        lockable.x, lockable.y
-                    );
-                    
-                    console.log('Distance to tablet:', distance);
-                    
-                    // Check if player is within range (using BLUETOOTH_SCAN_RANGE)
-                    if (distance <= BLUETOOTH_SCAN_RANGE) {
-                        console.log('Bluetooth unlock success: Player in range', {
-                            itemName: lockable.scenarioData?.name,
-                            itemMac: lockable.scenarioData?.mac,
-                            distance: distance
-                        });
-                        unlockTarget(lockable, type, lockable.layer);
-                        alert(`Bluetooth connection established. Device unlocked.`);
-                        return;
-                    }
-                    
-                    alert("Too far from device to establish Bluetooth connection.");
                     break;
 
                 default:
@@ -2243,6 +2223,20 @@
                     }
                     alert(message);
                     return true;
+                };
+            }
+
+            // Add Bluetooth unlock functionality for items with MAC addresses
+            if (objectData.mac) {
+                sprite.bluetoothUnlock = function() {
+                    // Check if there are any locked objects in the current room that require this MAC address
+                    if (currentRoom && rooms[currentRoom].objects) {
+                        Object.values(rooms[currentRoom].objects).forEach(obj => {
+                            if (obj.scenarioData?.locked && obj.scenarioData?.lockType === 'bluetooth' && obj.scenarioData?.requires === objectData.mac) {
+                                handleUnlock(obj, 'item');
+                            }
+                        });
+                    }
                 };
             }
         }

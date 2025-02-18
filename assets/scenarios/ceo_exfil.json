@@ -164,11 +164,13 @@
                             "observations": "A hastily written note on expensive paper"
                         },
                         {
-                            "type": "key",
-                            "name": "Safe Key",
-                            "takeable": true,
-                            "key_id": "safe_key",
-                            "observations": "A heavy-duty safe key hidden behind server equipment"
+                            "name": "Smartwatch",
+                            "type": "smartwatch",
+                            "observations": "A high-tech smartwatch with a sleek design.",
+                            "mac": "00:11:22:33:44:55",
+                            "locked": true,
+                            "lockType": "bluetooth",
+                            "takeable": true
                         }
                     ]
                 },
@@ -196,9 +198,8 @@
                     "name": "Hidden Safe",
                     "takeable": false,
                     "locked": true,
-                    "lockType": "key",
-                    "requires": "safe_key",
-                    "observations": "A well-hidden wall safe behind a painting",
+                    "lockType": "bluetooth",
+                    "requires": "00:11:22:33:44:55",
                     "contents": [
                         {
                             "type": "notes",
