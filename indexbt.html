@@ -26,92 +26,6 @@
             font-size: 24px;
             display: none;
         }
-
-        #laptop-popup {
-            display: none;
-            position: fixed;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            width: 90%;
-            max-width: 1200px;
-            height: calc(100% - 160px);
-            background: none;
-            z-index: 1000;
-            pointer-events: none;
-        }
-
-        .laptop-frame {
-            background: #1a1a1a;
-            border-radius: 15px;
-            padding: 20px;
-            width: 100%;
-            height: 75%;
-            box-shadow: 0 0 30px rgba(0, 0, 0, 0.5);
-            margin-bottom: 80px;
-            pointer-events: auto;
-        }
-
-        .laptop-screen {
-            background: #fff;
-            height: 100%;
-            border-radius: 8px;
-            overflow: hidden;
-            display: flex;
-            flex-direction: column;
-        }
-
-        .title-bar {
-            background: #333;
-            color: white;
-            padding: 8px 15px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .close-btn {
-            background: none;
-            border: none;
-            color: white;
-            font-size: 24px;
-            cursor: pointer;
-            padding: 0 5px;
-        }
-
-        .close-btn:hover {
-            color: #ff4444;
-        }
-
-        .laptop-screen iframe {
-            flex: 1;
-            width: 100%;
-            height: 100%;
-            border: none;
-        }
-
-        #cyberchef-container {
-            flex: 1;
-            width: 100%;
-            height: 100%;
-        }
-
-        #cyberchef-container iframe {
-            width: 100%;
-            height: 100%;
-            border: none;
-        }
-
-        .popup-overlay {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: calc(100% - 80px);
-            background: rgba(0, 0, 0, 0.5);
-            z-index: 999;
-        }
     </style>
     <script src="https://cdn.jsdelivr.net/npm/phaser@3.60.0/dist/phaser.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/easystarjs@0.4.4/bin/easystar-0.4.4.js"></script>
@@ -190,6 +104,10 @@
         const INTERACTION_RANGE = 2 * TILE_SIZE;
         const INTERACTION_RANGE_SQ = INTERACTION_RANGE * INTERACTION_RANGE;
 
+        // Add new Bluetooth state
+        let bluetoothDevices = [];
+        const BLUETOOTH_SCAN_RANGE = TILE_SIZE * 5;
+        const BLUETOOTH_MIN_SIGNAL = 30;
 
         // preloads the assets
         function preload() {
@@ -221,86 +139,11 @@
             this.load.image('suitcase', 'assets/objects/suitcase.png');
             this.load.image('safe', 'assets/objects/safe.png');
             this.load.image('book', 'assets/objects/book.png');
-            this.load.image('workstation', 'assets/objects/workstation.png');
             this.load.image('bluetooth_scanner', 'assets/objects/bluetooth_scanner.png');
             this.load.image('tablet', 'assets/objects/tablet.png');
 
-
             this.load.json('gameScenarioJSON', 'assets/scenarios/ceo_exfil.json');
             gameScenario = this.cache.json.get('gameScenarioJSON');
-        }
-
-        // creates the workstation
-        function addCryptoWorkstation() {
-            // console.log('CyberChef: Adding crypto workstation...');
-            const workstationData = {
-                type: "workstation",
-                name: "Crypto Analysis Station",
-                observations: "A powerful workstation for cryptographic analysis"
-            };
-
-            // Create the workstation sprite
-            const workstationSprite = this.add.sprite(0, 0, 'workstation');
-            workstationSprite.setVisible(false);
-            workstationSprite.name = "workstation";
-            workstationSprite.scenarioData = workstationData;
-            workstationSprite.setInteractive({ useHandCursor: true });
-            
-            // Override the default handleObjectInteraction for this specific item
-            workstationSprite.openCryptoWorkstation = function() {
-                // console.log('CyberChef: Workstation custom interaction triggered');
-                // Create popup
-                let popup = document.getElementById('laptop-popup');
-                if (!popup) {
-                    // console.log('CyberChef: Creating new popup...');
-                    popup = document.createElement('div');
-                    popup.id = 'laptop-popup';
-                    popup.innerHTML = `
-                        <div class="popup-overlay"></div>
-                        <div class="laptop-frame">
-                            <div class="laptop-screen">
-                                <div class="title-bar">
-                                    <span>CryptoWorkstation</span>
-                                    <button class="close-btn">&times;</button>
-                                </div>
-                                <div id="cyberchef-container"></div>
-                            </div>
-                        </div>
-                    `;
-                    document.body.appendChild(popup);
-
-                    // Find the CyberChef file
-                    fetch('assets/cyberchef/')
-                        .then(response => response.text())
-                        .then(html => {
-                            // Use regex to find the CyberChef filename
-                            const match = html.match(/CyberChef_v[0-9.]+\.html/);
-                            if (match) {
-                                const cyberchefPath = `assets/cyberchef/${match[0]}`;
-                                // Create and append the iframe with the found path
-                                const iframe = document.createElement('iframe');
-                                iframe.src = cyberchefPath;
-                                iframe.frameBorder = "0";
-                                document.getElementById('cyberchef-container').appendChild(iframe);
-                            } else {
-                                console.error('Could not find CyberChef file');
-                            }
-                        })
-                        .catch(error => {
-                            console.error('Error loading CyberChef:', error);
-                        });
-
-                    popup.querySelector('.close-btn').addEventListener('click', () => {
-                        popup.style.display = 'none';
-                    });
-                }
-                popup.style.display = 'flex';
-                return true;
-            };
-
-            // Add to inventory directly
-            addToInventory(workstationSprite);
-            // console.log('CyberChef: Workstation added to inventory');
         }
 
         // creates the game
@@ -424,11 +267,17 @@
             // Initialize game systems
             initializeInventory.call(this);
 
-            // Add the workstation to inventory
-            addCryptoWorkstation.call(this);
-
             // Add this line after processAllDoorCollisions()
             setupDoorOverlapChecks.call(this);
+
+            // Add this before introduceScenario.call(this)
+            console.log('=== Room Objects ===');
+            Object.entries(rooms).forEach(([roomId, room]) => {
+                console.log(`Room ${roomId} objects:`, room.objects);
+            });
+
+            // FIND Add bluetooth scanner
+            //addBluetoothScanner.call(this);
 
             // introduce the scenario
             introduceScenario.call(this);
@@ -808,6 +657,23 @@
                     });
                 }
 
+                // After processing tilemap objects, add scenario-specific objects
+                if (gameScenario.rooms[roomId].objects) {
+                    gameScenario.rooms[roomId].objects.forEach(scenarioObj => {
+                        // Skip if object already exists from tilemap
+                        if (!rooms[roomId].objects[scenarioObj.type]) {
+                            console.log(`Creating scenario object in ${roomId}:`, scenarioObj);
+                            const sprite = createObjectSprite(
+                                this,
+                                scenarioObj,
+                                position.x + TILE_SIZE * 2, // Default position
+                                position.y + TILE_SIZE * 2
+                            );
+                            rooms[roomId].objects[scenarioObj.type] = sprite;
+                        }
+                    });
+                }
+
             } catch (error) {
                 console.error(`Error creating room ${roomId}:`, error);
                 console.error('Error details:', error.stack);
@@ -1018,9 +884,32 @@
                 const distanceSq = dx * dx + dy * dy;
 
                 if (distanceSq <= INTERACTION_RANGE_SQ) {
+                    // Check for Bluetooth unlocking
+                    if (obj.scenarioData?.type === 'tablet' && obj.scenarioData.locked) {
+                        const scanner = inventory.items.find(item => 
+                            item.scenarioData?.type === "bluetooth_scanner"
+                        );
+                        
+                        if (scanner) {
+                            const devices = getBluetoothDevicesInRange({ x: scanner.x, y: scanner.y });
+                            const matchingDevice = devices.find(d => 
+                                d.mac === obj.scenarioData.mac && 
+                                d.signalStrength >= BLUETOOTH_MIN_SIGNAL
+                            );
+                            
+                            if (matchingDevice) {
+                                console.log('=== Tablet Unlocked ===');
+                                console.log('Scanner position:', { x: scanner.x, y: scanner.y });
+                                console.log('Tablet position:', { x: obj.x, y: obj.y });
+                                console.log('Signal strength:', matchingDevice.signalStrength);
+                                obj.scenarioData.locked = false;
+                            }
+                        }
+                    }
+
                     if (!obj.isHighlighted) {
                         obj.isHighlighted = true;
-                        obj.setTint(0xdddddd);  // Simple highlight without tween
+                        obj.setTint(0xdddddd);
                     }
                 } else if (obj.isHighlighted) {
                     obj.isHighlighted = false;
@@ -1379,20 +1268,10 @@
         // handles interactions with objects
         // displays the object's data in an alert
         function handleObjectInteraction(sprite) {
-            console.log('CyberChef: handleObjectInteraction called for:', sprite.name, 'Has open workstation:', !!sprite.openCryptoWorkstation);
-            
-            if (sprite.openCryptoWorkstation && sprite.openCryptoWorkstation()) {
-                console.log('CyberChef: Crypto workstation opened');
-                return;
-            }
-            
-            if (!sprite || !sprite.scenarioData) {
-                console.warn('Invalid sprite or missing scenario data');
-                return;
-            }
-            
-            // Skip range check for inventory items
+            if (!sprite || !sprite.scenarioData) return;
+
             const isInventoryItem = inventory.items.includes(sprite);
+            
             if (!isInventoryItem) {
                 // Check if player is in range
                 const dx = player.x - sprite.x;
@@ -1400,78 +1279,58 @@
                 const distanceSq = dx * dx + dy * dy;
                 
                 if (distanceSq > INTERACTION_RANGE_SQ) {
-                    // alert("Too far away to interact with this object.");
+                    alert("Too far away to interact with this object.");
                     return;
                 }
             }
             
             const data = sprite.scenarioData;
-            
-            // Check if this is an unlocked container that hasn't been collected yet
-            if (data.isUnlockedButNotCollected && data.contents) {
-                let message = `You found the following items:\n`;
-                data.contents.forEach(item => {
-                    message += `- ${item.name}\n`;
-                });
-                alert(message);
-                
-                // Add all contents to inventory
-                data.contents.forEach(item => {
-                    const contentSprite = createInventorySprite({
-                        ...item,
-                        type: item.type.toLowerCase()
-                    });
-                    if (contentSprite) {
-                        addToInventory(contentSprite);
-                    }
-                });
-                
-                // Clear contents after adding to inventory
-                data.contents = [];
-                data.isUnlockedButNotCollected = false;
-                return;
-            }
-            
-            // Check for locked state in scenarioData
-            if (data.locked === true) {
-                console.log('Item is locked:', data);
-                handleUnlock(sprite, 'item');
-                return;
-            }
-            
             let message = `${data.name}\n\n`;
             message += `Observations: ${data.observations}\n\n`;
+            
+            // Add Bluetooth-specific information for tablets
+            if (data.type === 'tablet') {
+                const isLocked = data.locked === true;
+                message += `Status: ${isLocked ? 'Locked' : 'Unlocked'}\n`;
+                if (isLocked) {
+                    message += `Lock Type: ${data.lockType}\n`;
+                    message += `Requires: Bluetooth device with MAC ${data.mac}\n`;
+                    alert(message);
+                    handleUnlock(sprite, 'item');
+                    return;
+                }
+            }
             
             if (data.readable && data.text) {
                 message += `Text: ${data.text}\n\n`;
             }
             
-            if (data.takeable) {
-                message += `This item can be taken\n\n`;
-                
-                if (!inventory || !Array.isArray(inventory.items)) {
-                    console.error('Inventory not properly initialized');
-                    return;
-                }
-                
-                const isInRoom = currentRoom && 
-                                rooms[currentRoom] && 
-                                rooms[currentRoom].objects && 
-                                rooms[currentRoom].objects[sprite.name];
-                        
-                const itemIdentifier = createItemIdentifier(sprite.scenarioData);
-                        
-                const isInInventory = inventory.items.some(item => 
-                    item && createItemIdentifier(item.scenarioData) === itemIdentifier
-                );
-                        
-                if (isInRoom && !isInInventory) {
-                    console.log('Adding item to inventory:', itemIdentifier);
-                    addToInventory(sprite);
-                }
+            if (data.contents && !data.locked) {
+                message += `You found the following items:\n`;
+                data.contents.forEach(item => {
+                    message += `- ${item.name}\n`;
+                });
             }
             
             alert(message);
+
+            // Handle takeable items
+            if (data.takeable && !isInventoryItem) {
+                // Allow pickup if either:
+                // 1. Item is not locked, or
+                // 2. Item uses Bluetooth locking (can be carried to scanner)
+                if (!data.locked || (data.locked && data.lockType === 'bluetooth')) {
+                    console.log('Taking item:', data.name);
+                    addToInventory(sprite);
+                    
+                    // Remove from room objects if it exists there
+                    if (currentRoom && rooms[currentRoom].objects) {
+                        delete rooms[currentRoom].objects[sprite.name];
+                    }
+                } else {
+                    alert("This item is locked and cannot be picked up.");
+                }
+            }
         }
 
         // adds an item to the inventory
@@ -1511,11 +1370,6 @@
                     foundIn: currentRoom ? gameScenario.rooms[currentRoom].name || currentRoom : 'unknown location'
                 };
                 inventorySprite.name = sprite.name;
-                
-                // Copy over the custom interaction if it exists
-                if (sprite.openCryptoWorkstation) {
-                    inventorySprite.openCryptoWorkstation = sprite.openCryptoWorkstation;
-                }
                 
                 // Set depth higher than container
                 inventorySprite.setDepth(2003);
@@ -1562,7 +1416,7 @@
                 const outline = this.add.rectangle(
                     i * 60, 
                     0,
-                    50,  // slightly smaller than spacing
+                    50,
                     50,
                     0x666666,
                     0.3
@@ -1844,12 +1698,6 @@
                         item.scenarioData?.type === "bluetooth_scanner"
                     );
                     
-                    console.log('Bluetooth unlock attempt:', {
-                        itemName: lockable.scenarioData?.name,
-                        itemMac: lockable.scenarioData?.mac,
-                        hasScanner: !!scanner
-                    });
-                    
                     if (!scanner) {
                         alert("You need a Bluetooth scanner to unlock this device.");
                         // Don't return here - allow the item to be picked up even without scanner
@@ -1865,15 +1713,12 @@
                     
                     // If scanner is in inventory, automatically unlock the device
                     if (inventory.items.includes(scanner)) {
-                        console.log('Bluetooth unlock success: Scanner in inventory', {
-                            itemName: lockable.scenarioData?.name,
-                            itemMac: lockable.scenarioData?.mac
-                        });
                         unlockTarget(lockable, type, lockable.layer);
                         alert(`Using Bluetooth scanner from inventory to unlock device.`);
                         return;
                     }
                     
+                    // Otherwise check signal strength based on position
                     const devices = getBluetoothDevicesInRange({ x: scanner.x, y: scanner.y });
                     const matchingDevice = devices.find(d => d.mac === requiredMac && d.signalStrength >= BLUETOOTH_MIN_SIGNAL);
                     
@@ -1890,7 +1735,7 @@
             }
         }
 
-        // Modify the unlockTarget function
+        // Generic unlock function
         function unlockTarget(lockable, type, layer) {
             if (type === 'door') {
                 if (!layer) {
@@ -1902,17 +1747,18 @@
                 // Handle item unlocking
                 if (lockable.scenarioData) {
                     lockable.scenarioData.locked = false;
-                    // Set new state for containers with contents
-                    if (lockable.scenarioData.contents) {
-                        lockable.scenarioData.isUnlockedButNotCollected = true;
-                        return; // Return early to prevent automatic collection
-                    }
                 } else {
                     lockable.locked = false;
-                    if (lockable.contents) {
-                        lockable.isUnlockedButNotCollected = true;
-                        return; // Return early to prevent automatic collection
-                    }
+                }
+                
+                // If the item has contents, make them accessible
+                if (lockable.scenarioData?.contents) {
+                    lockable.scenarioData.contents.forEach(item => {
+                        const sprite = createInventorySprite(item);
+                        if (sprite) {
+                            addToInventory(sprite);
+                        }
+                    });
                 }
             }
         }
@@ -2088,26 +1934,145 @@
         function getLockRequirementsForItem(item) {
             return {
                 lockType: item.lockType || item.scenarioData?.lockType,
-                requires: item.requires || item.scenarioData?.requires,
-                isUnlockedButNotCollected: false
+                requires: item.requires || item.scenarioData?.requires
             };
         }
 
-        function collectContainerContents(container) {
-            if (!container.scenarioData?.contents || 
-                !container.scenarioData?.isUnlockedButNotCollected) {
+        function addBluetoothScanner() {
+            // Check if scanner already exists in inventory
+            const existingScanner = inventory.items.find(item => 
+                item.scenarioData?.type === "bluetooth_scanner"
+            );
+            
+            if (existingScanner) {
+                console.log('Bluetooth scanner already exists in inventory');
                 return;
             }
 
-            container.scenarioData.contents.forEach(item => {
-                const sprite = createInventorySprite(item);
-                if (sprite) {
-                    addToInventory(sprite);
+            const scannerData = {
+                type: "bluetooth_scanner",
+                name: "Bluetooth Scanner",
+                observations: "A specialized tool for detecting and analyzing Bluetooth signals",
+                isScanner: true
+            };
+
+            const scannerSprite = this.add.sprite(0, 0, 'bluetooth_scanner');
+            scannerSprite.setVisible(false);
+            scannerSprite.name = "bluetooth_scanner";
+            scannerSprite.scenarioData = scannerData;
+            scannerSprite.setInteractive({ useHandCursor: true, draggable: true });
+
+            // Add custom scan function
+            scannerSprite.customInteraction = function() {
+                const devices = getBluetoothDevicesInRange({ x: this.x, y: this.y });
+                let message = "Bluetooth Scan Results:\n\n";
+                
+                if (devices.length === 0) {
+                    message += "No devices in range.";
+                } else {
+                    devices.forEach(device => {
+                        message += `Device: ${device.name}\n`;
+                        message += `MAC: ${device.mac}\n`;
+                        message += `Signal: ${Math.round(device.signalStrength)}%\n\n`;
+                    });
+                }
+                
+                alert(message);
+                return true;
+            };
+
+            // Handle dragging
+            scannerSprite.on('drag', function(pointer, dragX, dragY) {
+                this.x = dragX;
+                this.y = dragY;
+                
+                // Check for nearby Bluetooth devices while dragging
+                const devices = getBluetoothDevicesInRange({ x: this.x, y: this.y });
+                devices.forEach(device => {
+                    if (device.signalStrength >= BLUETOOTH_MIN_SIGNAL) {
+                        const matchingItem = inventory.items.find(item => 
+                            item.scenarioData?.mac === device.mac && 
+                            item.scenarioData?.locked
+                        );
+                        if (matchingItem) {
+                            handleUnlock(matchingItem, 'item');
+                        }
+                    }
+                });
+            });
+
+            addToInventory(scannerSprite);
+        }
+
+        function calculateSignalStrength(pos1, pos2) {
+            const distance = Phaser.Math.Distance.Between(
+                pos1.x, pos1.y,
+                pos2.x, pos2.y
+            );
+            console.log('Bluetooth Distance:', distance, 'Signal:', Math.max(0, 100 - (distance / BLUETOOTH_SCAN_RANGE)));
+            return Math.max(0, 100 - (distance / BLUETOOTH_SCAN_RANGE));
+        }
+
+        function getBluetoothDevicesInRange(scannerPos) {
+            console.log('Scanning for Bluetooth devices at:', scannerPos);
+            
+            // Get all items (both in inventory and in rooms)
+            const allItems = [...inventory.items];
+            Object.values(rooms).forEach(room => {
+                if (room.objects) {
+                    allItems.push(...Object.values(room.objects));
                 }
             });
             
-            container.scenarioData.isUnlockedButNotCollected = false;
-            alert('You collected the items from the container.');
+            const devices = allItems
+                .filter(item => item && item.scenarioData?.mac)
+                .map(device => {
+                    const strength = calculateSignalStrength(scannerPos, device);
+                    console.log('Found device:', device.scenarioData.name, 'MAC:', device.scenarioData.mac, 'Strength:', strength);
+                    return {
+                        name: device.scenarioData.name,
+                        mac: device.scenarioData.mac,
+                        position: { x: device.x, y: device.y },
+                        signalStrength: strength
+                    };
+                })
+                .filter(device => device.signalStrength > 0);
+            
+            console.log('Devices in range:', devices);
+            return devices;
+        }
+
+        function createObjectSprite(scene, objectData, x, y) {
+            console.log('=== Creating Object ===');
+            console.log('Type:', objectData.type);
+            console.log('Name:', objectData.name);
+            console.log('Position:', { x, y });
+            console.log('Data:', objectData);
+            
+            const sprite = scene.add.sprite(x, y, objectData.type.toLowerCase());
+            sprite.scenarioData = objectData;
+            sprite.name = objectData.type;
+            
+            if (objectData.type === 'tablet') {
+                console.log('!!! TABLET DETECTED !!!');
+                console.log('Tablet properties:', {
+                    position: { x, y },
+                    locked: objectData.locked,
+                    lockType: objectData.lockType,
+                    mac: objectData.mac,
+                    contents: objectData.contents
+                });
+            }
+
+            // Set interactive properties
+            sprite.setInteractive({ useHandCursor: true });
+            
+            // Fix the pointer event handling
+            sprite.on('pointerdown', function() {
+                handleObjectInteraction(this);
+            });
+            
+            return sprite;
         }
 
     </script>
