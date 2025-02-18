@@ -1711,14 +1711,6 @@
                         return;
                     }
                     
-                    // If scanner is in inventory, automatically unlock the device
-                    if (inventory.items.includes(scanner)) {
-                        unlockTarget(lockable, type, lockable.layer);
-                        alert(`Using Bluetooth scanner from inventory to unlock device.`);
-                        return;
-                    }
-                    
-                    // Otherwise check signal strength based on position
                     const devices = getBluetoothDevicesInRange({ x: scanner.x, y: scanner.y });
                     const matchingDevice = devices.find(d => d.mac === requiredMac && d.signalStrength >= BLUETOOTH_MIN_SIGNAL);
                     
