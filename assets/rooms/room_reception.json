@@ -222,6 +222,18 @@
                  "width":48,
                  "x":236.666666666667,
                  "y":168.666666666667
+                },
+                {
+                 "gid":242,
+                 "height":48,
+                 "id":11,
+                 "name":"tablet",
+                 "rotation":0,
+                 "type":"",
+                 "visible":true,
+                 "width":48,
+                 "x":384,
+                 "y":336
                 }],
          "opacity":1,
          "type":"objectgroup",
