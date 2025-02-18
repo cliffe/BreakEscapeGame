@@ -2123,15 +2123,17 @@
             
             Object.values(rooms[currentRoom].objects).forEach(obj => {
                 if (obj.scenarioData?.type === "tablet" && obj.scenarioData?.locked) {
+                    const deviceRange = (obj.scenarioData?.range || 2) * TILE_SIZE; // Default to 2 if not specified
                     const distance = Phaser.Math.Distance.Between(
                         player.x, player.y,
                         obj.x, obj.y
                     );
                     
-                    if (distance <= BLUETOOTH_SCAN_RANGE) {
+                    if (distance <= deviceRange) {
                         console.log('🔍 TABLET IN RANGE:', {
                             distance: Math.round(distance),
-                            range: BLUETOOTH_SCAN_RANGE
+                            range: deviceRange,
+                            tiles: obj.scenarioData?.range || 2
                         });
                         
                         // Unlock the tablet
