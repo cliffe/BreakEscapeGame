@@ -190,6 +190,10 @@
         const INTERACTION_RANGE = 2 * TILE_SIZE;
         const INTERACTION_RANGE_SQ = INTERACTION_RANGE * INTERACTION_RANGE;
 
+        // Bluetooth constants
+        const BLUETOOTH_SCAN_RANGE = TILE_SIZE * 2; // 2 tiles range for Bluetooth scanning
+        let lastBluetoothScan = 0; // Track last scan time
+        const BLUETOOTH_SCAN_INTERVAL = 500; // Scan every 500ms
 
         // preloads the assets
         function preload() {
@@ -222,6 +226,9 @@
             this.load.image('safe', 'assets/objects/safe.png');
             this.load.image('book', 'assets/objects/book.png');
             this.load.image('workstation', 'assets/objects/workstation.png');
+            this.load.image('bluetooth_scanner', 'assets/objects/bluetooth_scanner.png');
+            this.load.image('tablet', 'assets/objects/tablet.png');
+
 
             this.load.json('gameScenarioJSON', 'assets/scenarios/ceo_exfil.json');
             gameScenario = this.cache.json.get('gameScenarioJSON');
@@ -457,6 +464,13 @@
             
             // checks for room transitions
             checkRoomTransitions.call(this);
+            
+            // Check for Bluetooth devices
+            const currentTime = this.time.now;
+            if (currentTime - lastBluetoothScan >= BLUETOOTH_SCAN_INTERVAL) {
+                checkBluetoothDevices.call(this);
+                lastBluetoothScan = currentTime;
+            }
             
             // adds a circle to the start of the path
             if (currentPath && currentPath.length > 0 && isMoving) {
@@ -1834,6 +1848,43 @@
                     }
                     break;
 
+                case 'bluetooth':
+                    if (lockable.scenarioData?.locked) {
+                        alert("You need a Bluetooth scanner to unlock this device.");
+                        // Don't return here - allow the item to be picked up even without scanner
+                        if (type === 'item' && lockable.scenarioData?.takeable) {
+                            addToInventory(lockable);
+                            // Remove from room objects if it exists there
+                            if (currentRoom && rooms[currentRoom].objects) {
+                                delete rooms[currentRoom].objects[lockable.name];
+                            }
+                        }
+                        return;
+                    }
+                    
+                    // Calculate distance between player and tablet
+                    const distance = Phaser.Math.Distance.Between(
+                        player.x, player.y,
+                        lockable.x, lockable.y
+                    );
+                    
+                    console.log('Distance to tablet:', distance);
+                    
+                    // Check if player is within range (using BLUETOOTH_SCAN_RANGE)
+                    if (distance <= BLUETOOTH_SCAN_RANGE) {
+                        console.log('Bluetooth unlock success: Player in range', {
+                            itemName: lockable.scenarioData?.name,
+                            itemMac: lockable.scenarioData?.mac,
+                            distance: distance
+                        });
+                        unlockTarget(lockable, type, lockable.layer);
+                        alert(`Bluetooth connection established. Device unlocked.`);
+                        return;
+                    }
+                    
+                    alert("Too far from device to establish Bluetooth connection.");
+                    break;
+
                 default:
                     alert(`Requires: ${lockRequirements.requires}`);
             }
@@ -2057,6 +2108,39 @@
             
             container.scenarioData.isUnlockedButNotCollected = false;
             alert('You collected the items from the container.');
+        }
+
+        function checkBluetoothDevices() {
+            // Find scanner in inventory
+            const scanner = inventory.items.find(item => 
+                item.scenarioData?.type === "bluetooth_scanner"
+            );
+            
+            if (!scanner) return;
+            
+            // Find all tablets in the current room
+            if (!currentRoom || !rooms[currentRoom] || !rooms[currentRoom].objects) return;
+            
+            Object.values(rooms[currentRoom].objects).forEach(obj => {
+                if (obj.scenarioData?.type === "tablet" && obj.scenarioData?.locked) {
+                    const distance = Phaser.Math.Distance.Between(
+                        player.x, player.y,
+                        obj.x, obj.y
+                    );
+                    
+                    if (distance <= BLUETOOTH_SCAN_RANGE) {
+                        console.log('🔍 TABLET IN RANGE:', {
+                            distance: Math.round(distance),
+                            range: BLUETOOTH_SCAN_RANGE
+                        });
+                        
+                        // Unlock the tablet
+                        obj.scenarioData.locked = false;
+                        console.log('🔓 TABLET UNLOCKED!');
+                        alert('Bluetooth connection established. Device unlocked.');
+                    }
+                }
+            });
         }
 
     </script>

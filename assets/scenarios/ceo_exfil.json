@@ -30,6 +30,23 @@
                     "takeable": false,
                     "requires": "password",
                     "observations": "The reception's computer, currently locked"
+                },
+                {
+                    "type": "tablet",
+                    "name": "Tablet Device",
+                    "takeable": true,
+                    "locked": true,
+                    "lockType": "bluetooth",
+                    "mac": "00:11:22:33:44:55",
+                    "observations": "A locked tablet device that requires Bluetooth pairing"
+                },
+                {
+                    "type": "bluetooth_scanner",
+                    "name": "Bluetooth Scanner",
+                    "takeable": true,
+                    "observations": "A device for detecting nearby Bluetooth signals",
+                    "canScanBluetooth": true,
+                    "mac": "00:11:22:33:44:55"
                 }
             ]
         },
