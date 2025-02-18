@@ -112,6 +112,20 @@
             background: rgba(0, 0, 0, 0.5);
             z-index: 999;
         }
+
+        #bluetooth-scanner-ui {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            display: none;
+        }
+        
+        .scanner-display {
+            background: rgba(0, 0, 0, 0.8);
+            color: white;
+            padding: 10px;
+            font-family: sans-serif;
+        }
     </style>
     <script src="https://cdn.jsdelivr.net/npm/phaser@3.60.0/dist/phaser.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/easystarjs@0.4.4/bin/easystar-0.4.4.js"></script>
@@ -120,7 +134,13 @@
     <div id="game-container">
         <div id="loading">Loading...</div>
     </div>
-
+    
+    <div id="bluetooth-scanner-ui">
+        <div class="scanner-display">
+            Bluetooth Scanner Active
+        </div>
+    </div>
+    
     <script>
         const config = {
             type: Phaser.AUTO,
@@ -475,6 +495,18 @@
             // adds a circle to the start of the path
             if (currentPath && currentPath.length > 0 && isMoving) {
                 this.add.circle(currentPath[0].x, currentPath[0].y, 5, 0xff0000).setDepth(1000);
+            }
+            
+            // Check if Bluetooth scanner is in inventory
+            const scanner = inventory.items.find(item => 
+                item.scenarioData?.type === "bluetooth_scanner"
+            );
+            
+            const scannerUI = document.getElementById('bluetooth-scanner-ui');
+            if (scanner) {
+                scannerUI.style.display = 'block';
+            } else {
+                scannerUI.style.display = 'none';
             }
         }
 
@@ -1928,7 +1960,22 @@
             sprite.name = itemData.type;
             
             // Set interactive properties
-            sprite.setInteractive({ useHandCursor: true, pixelPerfect: true });
+            sprite.setInteractive({ useHandCursor: true });
+            
+            // Make takeable items draggable
+            if (itemData.takeable) {
+                sprite.setInteractive({ draggable: true });
+                sprite.on('drag', function(pointer, dragX, dragY) {
+                    this.x = dragX;
+                    this.y = dragY;
+                    
+                    // Check for Bluetooth unlocking during drag
+                    if (this.scenarioData?.locked && this.scenarioData?.lockType === 'bluetooth') {
+                        checkBluetoothDevices();
+                    }
+                });
+            }
+            
             sprite.on('pointerdown', function(event) {
                 event.stopPropagation();
                 handleObjectInteraction(this);
@@ -2110,6 +2157,14 @@
             alert('You collected the items from the container.');
         }
 
+        function calculateSignalStrength(pos1, pos2) {
+            const distance = Phaser.Math.Distance.Between(
+                pos1.x, pos1.y,
+                pos2.x, pos2.y
+            );
+            return Math.max(0, 100 - (distance / BLUETOOTH_SCAN_RANGE) * 100);
+        }
+
         function checkBluetoothDevices() {
             // Find scanner in inventory
             const scanner = inventory.items.find(item => 
@@ -2123,15 +2178,23 @@
             
             Object.values(rooms[currentRoom].objects).forEach(obj => {
                 if (obj.scenarioData?.type === "tablet" && obj.scenarioData?.locked) {
+                    const deviceRange = (obj.scenarioData?.range || 2) * TILE_SIZE;
                     const distance = Phaser.Math.Distance.Between(
                         player.x, player.y,
                         obj.x, obj.y
                     );
                     
-                    if (distance <= BLUETOOTH_SCAN_RANGE) {
+                    const signalStrength = calculateSignalStrength(
+                        { x: player.x, y: player.y },
+                        { x: obj.x, y: obj.y }
+                    );
+                    
+                    if (distance <= deviceRange) {
                         console.log('🔍 TABLET IN RANGE:', {
                             distance: Math.round(distance),
-                            range: BLUETOOTH_SCAN_RANGE
+                            range: deviceRange,
+                            tiles: obj.scenarioData?.range || 2,
+                            signalStrength: Math.round(signalStrength) + '%'
                         });
                         
                         // Unlock the tablet
@@ -2141,6 +2204,47 @@
                     }
                 }
             });
+        }
+
+        function createObjectSprite(scene, objectData, x, y) {
+            const sprite = scene.add.sprite(x, y, objectData.type.toLowerCase());
+            sprite.scenarioData = objectData;
+            sprite.name = objectData.type;
+            
+            // Add custom interaction for bluetooth scanner
+            if (objectData.type === 'bluetooth_scanner') {
+                sprite.customInteraction = function() {
+                    if (!currentRoom || !rooms[currentRoom].objects) return false;
+                    
+                    let devices = [];
+                    Object.values(rooms[currentRoom].objects).forEach(obj => {
+                        if (obj.scenarioData?.mac) {
+                            const signalStrength = calculateSignalStrength(
+                                { x: player.x, y: player.y },
+                                { x: obj.x, y: obj.y }
+                            );
+                            devices.push({
+                                name: obj.scenarioData.name,
+                                mac: obj.scenarioData.mac,
+                                signal: Math.round(signalStrength)
+                            });
+                        }
+                    });
+                    
+                    let message = "📱 Bluetooth Scan Results:\n\n";
+                    if (devices.length === 0) {
+                        message += "No devices detected.";
+                    } else {
+                        devices.forEach(device => {
+                            message += `Device: ${device.name}\n`;
+                            message += `MAC: ${device.mac}\n`;
+                            message += `Signal: ${device.signal}%\n\n`;
+                        });
+                    }
+                    alert(message);
+                    return true;
+                };
+            }
         }
 
     </script>
