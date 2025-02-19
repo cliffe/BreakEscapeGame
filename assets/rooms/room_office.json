@@ -318,6 +318,18 @@
                  "y":101.732793522267
                 },
                 {
+                 "gid":417,
+                 "height":48,
+                 "id":16,
+                 "name":"blackboard",
+                 "rotation":0,
+                 "type":"",
+                 "visible":true,
+                 "width":48,
+                 "x":329,
+                 "y":90
+                },
+                {
                  "height":48,
                  "id":15,
                  "name":"fingerprint_kit",
@@ -325,7 +337,7 @@
                  "type":"",
                  "visible":true,
                  "width":48,
-                 "x":390,
+                 "x":432,
                  "y":144
                 }
 

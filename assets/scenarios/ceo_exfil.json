@@ -73,6 +73,15 @@
                     "observations": "A concerning IT department memo"
                 },
                 {
+                    "type": "blackboard",
+                    "name": "Office Blackboard",
+                    "takeable": false,
+                    "hasFingerprint": true,
+                    "fingerprintOwner": "ceo",
+                    "fingerprintQuality": 0.8,
+                    "observations": "A blackboard with some recent writing. The CEO was seen using it earlier."
+                },
+                {
                     "type": "fingerprint_kit",
                     "name": "Fingerprint Kit",
                     "takeable": true,
