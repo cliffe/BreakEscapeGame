@@ -71,6 +71,12 @@
                     "readable": true,
                     "text": "URGENT: Multiple unauthorized access attempts detected from CEO's office IP address",
                     "observations": "A concerning IT department memo"
+                },
+                {
+                    "type": "fingerprint_kit",
+                    "name": "Fingerprint Kit",
+                    "takeable": true,
+                    "observations": "A kit used for collecting fingerprints from surfaces"
                 }
             ]
         },
