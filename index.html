@@ -195,6 +195,11 @@
         let lastBluetoothScan = 0; // Track last scan time
         const BLUETOOTH_SCAN_INTERVAL = 500; // Scan every 500ms
 
+        const gameState = {
+            biometricSamples: [],
+            inventory: inventory
+        };
+
         // preloads the assets
         function preload() {
             // Show loading text
