@@ -1419,6 +1419,22 @@
             
             const data = sprite.scenarioData;
             
+            // Check for fingerprint collection possibility
+            if (data.hasFingerprint) {
+                // Check if player has fingerprint kit
+                const hasKit = inventory.items.some(item => 
+                    item && item.scenarioData && 
+                    item.scenarioData.type === 'fingerprint_kit'
+                );
+                
+                if (hasKit) {
+                    const sample = collectFingerprint(sprite);
+                    if (sample) {
+                        return; // Exit after collecting fingerprint
+                    }
+                }
+            }
+            
             // Check if this is an unlocked container that hasn't been collected yet
             if (data.isUnlockedButNotCollected && data.contents) {
                 let message = `You found the following items:\n`;
@@ -2142,6 +2158,36 @@
                     }
                 }
             });
+        }
+
+        function collectFingerprint(item) {
+            if (!item.scenarioData?.hasFingerprint) {
+                alert("No fingerprints found on this surface.");
+                return null;
+            }
+            
+            const sample = {
+                id: `${item.scenarioData.fingerprintOwner}_${Date.now()}`,
+                type: "fingerprint",
+                owner: item.scenarioData.fingerprintOwner,
+                quality: item.scenarioData.fingerprintQuality,
+                data: generateFingerprintData(item)
+            };
+            
+            gameState.biometricSamples.push(sample);
+            alert(`Successfully collected a fingerprint sample from ${item.scenarioData.name}`);
+            console.log("Collected fingerprint sample:", sample);
+            return sample;
+        }
+
+        function generateFingerprintData(item) {
+            // Placeholder implementation
+            // Replace with actual fingerprint data generation logic
+            return "fingerprint_data";
+        }
+
+        function hasItemInInventory(itemType) {
+            return gameState.inventory.items.some(item => item.scenarioData?.type === itemType);
         }
 
     </script>
