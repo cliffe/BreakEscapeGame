@@ -2709,6 +2709,21 @@
             createSamplesUI();
             setupSamplesUIControls();
         }
+        
+        function generateFingerprintData(sample) {
+            // For spoofed samples, we generate from the original sample data
+            if (sample.data) {
+                return `spoofed_${sample.data}`;
+            }
+            
+            // For original samples from items, we use the item's data
+            if (sample.scenarioData?.fingerprintOwner) {
+                return `fp_${sample.scenarioData.fingerprintOwner}_${Date.now()}`;
+            }
+            
+            // Fallback unique identifier
+            return `fp_unknown_${Date.now()}`;
+        }
 
         // Add spoofing functionality
         function createSpoofedSample(originalSample) {
@@ -2880,6 +2895,7 @@
                 }
             }
         }
+
     </script>
 </body>
 </html> 
