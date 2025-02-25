@@ -3034,10 +3034,10 @@
                 <h3 style="margin: 0; color: #fff; text-align: center;">Lock Picking</h3>
                 <p style="margin: 5px 0; color: #ccc; text-align: center; font-size: 14px;">
                     Toggle tension wrench and manipulate pins to unlock.<br>
-                    🔵 Blue = Pin ready to set<br>
+                    🔵 Blue = Pin moving<br>
                     🟢 Green = Pin set correctly<br>
-                    🔴 Red = Pin dropped<br>
-                    Set all pins in the correct order.
+                    🔴 Red = Over-pushed (reset)<br>
+                    Set all pins in the correct order without resetting.
                 </p>
             `;
             instructions.style.cssText = `
@@ -3082,7 +3082,208 @@
             });
 
             // Add audio feedback
-            const clickSound = new Audio('data:audio/wav;base64,UklGRnoGAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YQoGAACBhYqFbF1fdH2Dam9ycG5wdX2Dg4CBhIWCgX+Af4B/goCDgIJ/gn+BfoF/gn+CgIF/gn+Cf4F/g4CDgIJ/hIGFgoWBhYKGgoaCh4OIg4mEioWLhIyFjYaOhI+FkIaRhZKGk4eUhpWHloeXiJiImYiaiZuKnIqdi56LoIyhjaKOo4+kj6WQppGnkqiTqZSqlauWrJetmK6Zr5qwm7GcsZ2yn7OgtKG1oraitqO3pLiltqe4qLmpuqq7q7ysvq2/rsCwwbHCssOzxbTGtce2yLfJuMq5y7rMu827zrzPvdC+0b/SwdPC1MPVxNbF18bYx9nI2sjbydvK3Mvdy97M383gzuHP4tDj0eTT5dTm1efW6Nfp2Ora69vt3O7d797w3/Lh8+P05fXn9+j46Prs+/D89v77AQYHDA8VGh8lKi8zOD1CRkpPVFhbX2NobHBydHZ4enx+gIGCg4SFhoeIiYqLjI2Oj5CRkpOUlZaXmJmam5ydnp+goaKjpKWmp6ipqqusra6vsLGys7S1tre4ubq7vL2+v8DBwsPExcbHyMnKy8zNzs/Q0dLT1NXW19jZ2tvc3d7f4OHi4+Tl5ufo6err7O3u7/Dx8vP09fb3+Pn6+/z9/v8AAQIDBAUGBwgJCgsMDQ4PEBESExQVFhcYGRobHB0eHyAhIiMkJSYnKCkqKywtLi8wMTIzNDU2Nzg5Ojs8PT4/QEFCQ0RFRkdISUpLTE1OT1BRUlNUVVZXWFlaW1xdXl9gYWJjZGVmZ2hpamtsbW5vcHFyc3R1dnd4eXp7fH1+f4CBgoOEhYaHiImKi4yNjo+QkZKTlJWWl5iZmpucnZ6foKGio6SlpqeoqaqrrK2ur7CxsrO0tba3uLm6u7y9vr/AwcLDxMXGx8jJysvMzc7P0NHS09TV1tfY2drb3N3e3+Dh4uPk5ebn6Onq6+zt7u/w8fLz9PX29/j5+vv8/f7/AAECAwQFBgcICQoLDA0ODxAREhMUFRYXGBkaGxwdHh8gISIjJCUmJygpKissLS4vMDEyMzQ1Njc4OTo7PD0+P0BBQkNERUZHSElKS0xNTk9QUVJTVFVWV1hZWltcXV5fYGFiY2RlZmdoaWprbG1ub3BxcnN0dXZ3eHl6e3x9fn+AgYKDhIWGh4iJiouMjY6PkJGSk5SVlpeYmZqbnJ2en6ChoqOkpaanqKmqq6ytrq+wsbKztLW2t7i5uru8vb6/wMHCw8TFxsfIycrLzM3Oz9DR0tPU1dbX2Nna29zd3t/g4eLj5OXm5+jp6uvs7e7v8PHy8/T19vf4+fr7/P3+/w==');
+            let clickSound = null;
+            const initAudio = () => {
+                if (!clickSound) {
+                    clickSound = new Audio('data:audio/wav;base64,UklGRnoGAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YQoGAACBhYqFbF1fdH2Dam9ycG5wdX2Dg4CBhIWCgX+Af4B/goCDgIJ/gn+BfoF/gn+CgIF/gn+Cf4F/g4CDgIJ/hIGFgoWBhYKGgoaCh4OIg4mEioWLhIyFjYaOhI+FkIaRhZKGk4eUhpWHloeXiJiImYiaiZuKnIqdi56LoIyhjaKOo4+kj6WQppGnkqiTqZSqlauWrJetmK6Zr5qwm7GcsZ2yn7OgtKG1oraitqO3pLiltqe4qLmpuqq7q7ysvq2/rsCwwbHCssOzxbTGtce2yLfJuMq5y7rMu827zrzPvdC+0b/SwdPC1MPVxNbF18bYx9nI2sjbydvK3Mvdy97M383gzuHP4tDj0eTT5dTm1efW6Nfp2Ora69vt3O7d797w3/Lh8+P05fXn9+j46Prs+/D89v77AQYHDA8VGh8lKi8zOD1CRkpPVFhbX2NobHBydHZ4enx+gIGCg4SFhoeIiYqLjI2Oj5CRkpOUlZaXmJmam5ydnp+goaKjpKWmp6ipqqusra6vsLGys7S1tre4ubq7vL2+v8DBwsPExcbHyMnKy8zNzs/Q0dLT1NXW19jZ2tvc3d7f4OHi4+Tl5ufo6err7O3u7/Dx8vP09fb3+Pn6+/z9/v8AAQIDBAUGBwgJCgsMDQ4PEBESExQVFhcYGRobHB0eHyAhIiMkJSYnKCkqKywtLi8wMTIzNDU2Nzg5Ojs8PT4/QEFCQ0RFRkdISUpLTE1OT1BRUlNUVVZXWFlaW1xdXl9gYWJjZGVmZ2hpamtsbW5vcHFyc3R1dnd4eXp7fH1+f4CBgoOEhYaHiImKi4yNjo+QkZKTlJWWl5iZmpucnZ6foKGio6SlpqeoqaqrrK2ur7CxsrO0tba3uLm6u7y9vr/AwcLDxMXGx8jJysvMzc7P0NHS09TV1tfY2drb3N3e3+Dh4uPk5ebn6Onq6+zt7u/w8fLz9PX29/j5+vv8/f7/AAECAwQFBgcICQoLDA0ODxAREhMUFRYXGBkaGxwdHh8gISIjJCUmJygpKissLS4vMDEyMzQ1Njc4OTo7PD0+P0BBQkNERUZHSElKS0xNTk9QUVJTVFVWV1hZWltcXV5fYGFiY2RlZmdoaWprbG1ub3BxcnN0dXZ3eHl6e3x9fn+AgYKDhIWGh4iJiouMjY6PkJGSk5SVlpeYmZqbnJ2en6ChoqOkpaanqKmqq6ytrq+wsbKztLW2t7i5uru8vb6/wMHCw8TFxsfIycrLzM3Oz9DR0tPU1dbX2Nna29zd3t/g4eLj5OXm5+jp6uvs7e7v8PHy8/T19vf4+fr7/P3+/w==');
+                }
+            };
+
+            // Initialize audio on first interaction
+            gameContainer.addEventListener('mousedown', initAudio, { once: true });
+
+            // Add pin binding order and game state
+            const numPins = 5;
+            const bindingOrder = Array.from({length: numPins}, (_, i) => i)
+                .sort(() => Math.random() - 0.5);
+            
+            const gameState = {
+                tensionApplied: false,
+                pinStates: Array(numPins).fill(0), // 0 = down, 1 = moving, 2 = set
+                pinPressTime: Array(numPins).fill(0), // Track how long each pin is pressed
+                currentBindingIndex: 0,
+                hardMode: false,
+                maxPressTime: 1000, // Max time to hold a pin (ms)
+                failCount: 0,
+                maxFails: 3
+            };
+
+            // Create tension wrench toggle
+            const tensionWrench = document.createElement('div');
+            tensionWrench.style.cssText = `
+                width: 100px;
+                height: 30px;
+                background: ${gameState.tensionApplied ? '#666' : '#444'};
+                border: 2px solid #888;
+                border-radius: 5px;
+                cursor: pointer;
+                margin-bottom: 20px;
+                text-align: center;
+                line-height: 30px;
+                color: white;
+            `;
+            tensionWrench.textContent = 'Tension: OFF';
+
+            // Function to reset pins
+            function resetPins(showVisual = true) {
+                gameState.pinStates.fill(0);
+                gameState.pinPressTime.fill(0);
+                gameState.currentBindingIndex = 0;
+                gameState.failCount++;
+
+                if (showVisual) {
+                    Array.from(pinsContainer.children).forEach(pin => {
+                        pin.style.background = '#555';
+                        if (!gameState.hardMode) {
+                            pin.style.transition = 'background-color 0.3s';
+                            pin.style.background = '#f00';
+                            setTimeout(() => pin.style.background = '#555', 300);
+                        }
+                    });
+                }
+
+                if (gameState.failCount >= gameState.maxFails) {
+                    alert("Lock picking failed! The lock is now jammed.");
+                    document.body.removeChild(iframe);
+                    if (currentScene && currentScene.input && currentScene.input.mouse) {
+                        currentScene.input.mouse.enabled = true;
+                    }
+                }
+            }
+
+            tensionWrench.onclick = () => {
+                gameState.tensionApplied = !gameState.tensionApplied;
+                tensionWrench.style.background = gameState.tensionApplied ? '#666' : '#444';
+                tensionWrench.textContent = `Tension: ${gameState.tensionApplied ? 'ON' : 'OFF'}`;
+                if (!gameState.tensionApplied) resetPins(false);
+            };
+
+            // Create pins container
+            const pinsContainer = document.createElement('div');
+            pinsContainer.style.cssText = `
+                display: flex;
+                gap: 10px;
+                background: #333;
+                padding: 20px;
+                border-radius: 10px;
+            `;
+
+            // Create individual pins
+            for (let i = 0; i < numPins; i++) {
+                const pin = document.createElement('div');
+                pin.style.cssText = `
+                    width: 30px;
+                    height: 100px;
+                    background: #555;
+                    border: 2px solid #777;
+                    border-radius: 5px;
+                    cursor: pointer;
+                    position: relative;
+                    transition: transform 0.1s;
+                `;
+
+                const pinNumber = document.createElement('div');
+                pinNumber.style.cssText = `
+                    position: absolute;
+                    top: -20px;
+                    width: 100%;
+                    text-align: center;
+                    color: white;
+                `;
+                pinNumber.textContent = (i + 1).toString();
+                pin.appendChild(pinNumber);
+
+                let pressStartTime = 0;
+                let pressTimer = null;
+
+                function checkPinPress() {
+                    if (pressStartTime === 0) return;
+                    
+                    const pressDuration = Date.now() - pressStartTime;
+                    if (pressDuration > gameState.maxPressTime) {
+                        resetPins();
+                        clearInterval(pressTimer);
+                        pressTimer = null;
+                    }
+                }
+
+                pin.onmousedown = () => {
+                    pressStartTime = Date.now();
+                    pressTimer = setInterval(checkPinPress, 100);
+                    
+                    pin.style.transform = 'translateY(-10px)';
+                    
+                    if (gameState.tensionApplied) {
+                        const bindingPin = bindingOrder[gameState.currentBindingIndex];
+                        if (i === bindingPin) {
+                            if (!gameState.hardMode) {
+                                pin.style.background = '#00f';
+                            }
+                            
+                            // Start a timer to set the pin
+                            setTimeout(() => {
+                                if (pressStartTime !== 0) { // Still pressing
+                                    gameState.pinStates[i] = 2;
+                                    gameState.currentBindingIndex++;
+                                    
+                                    if (clickSound) {
+                                        clickSound.currentTime = 0;
+                                        clickSound.play().catch(e => console.log('Audio play failed:', e));
+                                    }
+                                    
+                                    if (!gameState.hardMode) {
+                                        pin.style.background = '#0f0';
+                                    }
+                                    
+                                    if (gameState.currentBindingIndex >= numPins) {
+                                        setTimeout(() => {
+                                            unlockTarget(lockable, 'door', lockable.layer);
+                                            alert("Lock successfully picked!");
+                                            document.body.removeChild(iframe);
+                                            if (currentScene && currentScene.input && currentScene.input.mouse) {
+                                                currentScene.input.mouse.enabled = true;
+                                            }
+                                        }, 500);
+                                    }
+                                }
+                            }, 500); // Need to hold for 500ms to set
+                        } else if (gameState.pinStates[i] !== 2) {
+                            if (!gameState.hardMode) {
+                                pin.style.background = '#00f';
+                            }
+                            // Start counting towards potential reset
+                            gameState.pinPressTime[i] = Date.now();
+                        }
+                    }
+                };
+
+                pin.onmouseup = pin.onmouseleave = () => {
+                    pressStartTime = 0;
+                    if (pressTimer) {
+                        clearInterval(pressTimer);
+                        pressTimer = null;
+                    }
+                    
+                    pin.style.transform = 'translateY(0)';
+                    if (!gameState.tensionApplied || gameState.pinStates[i] !== 2) {
+                        pin.style.background = '#555';
+                    }
+                };
+
+                pinsContainer.appendChild(pin);
+            }
+
+            difficultySelect.onchange = () => {
+                gameState.hardMode = difficultySelect.value.includes('Hard');
+                Array.from(pinsContainer.children).forEach(pin => {
+                    pin.style.opacity = gameState.hardMode ? '0.1' : '1';
+                });
+            };
+
+            // Add components to game container
+            gameContainer.appendChild(difficultySelect);
+            gameContainer.appendChild(tensionWrench);
+            gameContainer.appendChild(pinsContainer);
 
             // Add close button
             const closeButton = document.createElement('button');
@@ -3103,153 +3304,6 @@
                     currentScene.input.mouse.enabled = true;
                 }
             };
-
-            // Add pin binding order
-            const numPins = 5;
-            const bindingOrder = Array.from({length: numPins}, (_, i) => i)
-                .sort(() => Math.random() - 0.5); // Randomize binding order
-            
-            // Track game state
-            const gameState = {
-                tensionApplied: false,
-                pinStates: Array(numPins).fill(0),
-                currentBindingIndex: 0,
-                hardMode: false
-            };
-
-            // Create tension wrench toggle
-            const tensionWrench = document.createElement('div');
-            tensionWrench.style.cssText = `
-                width: 100px;
-                height: 30px;
-                background: ${gameState.tensionApplied ? '#666' : '#444'};
-                border: 2px solid #888;
-                border-radius: 5px;
-                cursor: pointer;
-                margin-bottom: 20px;
-                text-align: center;
-                line-height: 30px;
-                color: white;
-            `;
-            tensionWrench.textContent = 'Tension: OFF';
-            tensionWrench.onclick = () => {
-                gameState.tensionApplied = !gameState.tensionApplied;
-                tensionWrench.style.background = gameState.tensionApplied ? '#666' : '#444';
-                tensionWrench.textContent = `Tension: ${gameState.tensionApplied ? 'ON' : 'OFF'}`;
-                
-                // Drop pins if tension is released
-                if (!gameState.tensionApplied) {
-                    gameState.pinStates.forEach((_, index) => {
-                        if (gameState.pinStates[index] === 1) { // Only drop binding pins
-                            gameState.pinStates[index] = 0;
-                            updatePinVisual(index);
-                        }
-                    });
-                }
-            };
-
-            // Create lock pins container
-            const pinsContainer = document.createElement('div');
-            pinsContainer.style.cssText = `
-                display: flex;
-                gap: 10px;
-                background: #333;
-                padding: 20px;
-                border-radius: 10px;
-            `;
-
-            function updatePinVisual(index) {
-                const pin = pinsContainer.children[index];
-                if (!gameState.hardMode) {
-                    switch (gameState.pinStates[index]) {
-                        case 0: pin.style.background = '#555'; break; // Down
-                        case 1: pin.style.background = '#00f'; break; // Binding
-                        case 2: pin.style.background = '#0f0'; break; // Set
-                    }
-                }
-            }
-
-            // Create individual pins
-            for (let i = 0; i < numPins; i++) {
-                const pin = document.createElement('div');
-                pin.style.cssText = `
-                    width: 30px;
-                    height: 100px;
-                    background: #555;
-                    border: 2px solid #777;
-                    border-radius: 5px;
-                    cursor: pointer;
-                    position: relative;
-                `;
-                
-                // Add pin number
-                const pinNumber = document.createElement('div');
-                pinNumber.style.cssText = `
-                    position: absolute;
-                    top: -20px;
-                    width: 100%;
-                    text-align: center;
-                    color: white;
-                `;
-                pinNumber.textContent = (i + 1).toString();
-                pin.appendChild(pinNumber);
-
-                pin.onmousedown = () => {
-                    if (!gameState.tensionApplied) return;
-
-                    const bindingPin = bindingOrder[gameState.currentBindingIndex];
-                    if (i === bindingPin) {
-                        gameState.pinStates[i] = 2;
-                        gameState.currentBindingIndex++;
-                        
-                        // Play success click sound
-                        clickSound.currentTime = 0; // Reset sound to start
-                        clickSound.play().catch(e => console.log('Audio play failed:', e));
-                        
-                        if (!gameState.hardMode) {
-                            pin.style.background = '#0f0';
-                        }
-                        
-                        if (gameState.currentBindingIndex >= numPins) {
-                            setTimeout(() => {
-                                unlockTarget(lockable, 'door', lockable.layer);
-                                alert("Lock successfully picked!");
-                                document.body.removeChild(iframe);
-                                if (currentScene && currentScene.input && currentScene.input.mouse) {
-                                    currentScene.input.mouse.enabled = true;
-                                }
-                            }, 500);
-                        }
-                    } else {
-                        gameState.pinStates[i] = 1;
-                        if (!gameState.hardMode) {
-                            pin.style.background = '#00f';
-                        }
-                    }
-                };
-
-                pin.onmouseup = () => {
-                    if (gameState.pinStates[i] === 1) { // Only drop binding pins
-                        gameState.pinStates[i] = 0;
-                        pin.style.background = '#555';
-                    }
-                };
-
-                pinsContainer.appendChild(pin);
-            }
-
-            difficultySelect.onchange = () => {
-                gameState.hardMode = difficultySelect.value.includes('Hard');
-                // Update pin visibility
-                Array.from(pinsContainer.children).forEach(pin => {
-                    pin.style.opacity = gameState.hardMode ? '0.1' : '1';
-                });
-            };
-
-            // Add components to game container
-            gameContainer.appendChild(difficultySelect);
-            gameContainer.appendChild(tensionWrench);
-            gameContainer.appendChild(pinsContainer);
 
             // Assemble the interface
             iframe.appendChild(closeButton);
