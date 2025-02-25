@@ -2880,13 +2880,44 @@
                 const requiredPrints = Math.ceil(totalPrints * 0.4);  // 40% requirement
                 progressText.innerHTML = `
                     <div style="color: #0f0;">Found: ${revealedPrints}/${requiredPrints} required prints</div>
-                    <div style="color: ${overDusted > 9 ? '#f00' : '#fff'}">
-                        Over-dusted: ${overDusted}/10 max
+                    <div style="color: ${overDusted > 24 ? '#f00' : '#fff'}">
+                        Over-dusted: ${overDusted}/25 max
                     </div>
                 `;
                 
-                // Check win condition with 60% requirement
-                if (revealedPrints >= requiredPrints && overDusted < 10) {
+                // Check fail condition first
+                if (overDusted >= 25) {
+                    // Show failure message
+                    const failureMessage = document.createElement('div');
+                    failureMessage.style.cssText = `
+                        position: absolute;
+                        top: 50%;
+                        left: 50%;
+                        transform: translate(-50%, -50%);
+                        background: rgba(0, 0, 0, 0.9);
+                        padding: 20px;
+                        border-radius: 5px;
+                        color: #f00;
+                        font-size: 20px;
+                        text-align: center;
+                        z-index: 1001;
+                    `;
+                    failureMessage.textContent = "Too many over-dusted areas!";
+                    iframe.appendChild(failureMessage);
+                    
+                    // Disable further interaction
+                    isDragging = false;
+                    gameContainer.style.pointerEvents = 'none';
+                    
+                    setTimeout(() => {
+                        document.body.removeChild(iframe);
+                        scene.input.mouse.enabled = true;
+                    }, 1500);
+                    return;
+                }
+                
+                // Check win condition (existing code)
+                if (revealedPrints >= requiredPrints && overDusted < 25) {
                     // Show success message
                     const successMessage = document.createElement('div');
                     successMessage.style.cssText = `
