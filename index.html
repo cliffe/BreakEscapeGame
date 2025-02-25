@@ -1900,7 +1900,17 @@
                         unlockTarget(lockable, type, lockable.layer); // Pass the layer here
                         alert(`You used the ${keyName} that you found in ${keyLocation} to unlock the ${type}.`);
                     } else {
-                        alert(`Requires key: ${requiredKey}`);
+                        // Check for lockpick kit
+                        const hasLockpick = inventory.items.some(item => 
+                            item && item.scenarioData && 
+                            item.scenarioData.type === 'lockpick'
+                        );
+                        
+                        if (hasLockpick) {
+                            alert("This lock can be picked with your lockpick kit!");
+                        } else {
+                            alert(`Requires key: ${requiredKey}`);
+                        }
                     }
                     break;
 
