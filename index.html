@@ -214,6 +214,25 @@
         const SAMPLE_COLLECTION_TIME = 2000; // 2 seconds for collection animation
         const SAMPLE_COLLECTION_COLOR = 0x00ff00; // Green for collection effect
 
+        // Add these constants for the UI
+        const SAMPLE_UI_STYLES = {
+            backgroundColor: 'rgba(0, 0, 0, 0.8)',
+            padding: '10px',
+            color: 'white',
+            fontFamily: 'Arial, sans-serif',
+            fontSize: '14px',
+            border: '1px solid #444',
+            borderRadius: '5px',
+            position: 'fixed',
+            top: '50%',
+            left: '50%',
+            transform: 'translate(-50%, -50%)',
+            zIndex: 1000,
+            maxHeight: '80vh',
+            overflowY: 'auto',
+            display: 'none'
+        };
+
         // preloads the assets
         function preload() {
             // Show loading text
@@ -473,6 +492,9 @@
             // Optimize physics settings
             this.physics.world.setFPS(60);
             this.physics.world.step(1/60);
+
+            // Add this to your scene's create function
+            initializeSamplesUI();
         }
 
         function update() {
@@ -2355,6 +2377,267 @@
             });
 
             return true;
+        }
+
+        // Add this function to check for object interactions
+        function checkObjectInteractions() {
+            // Skip if not enough time has passed since last check
+            const currentTime = performance.now();
+            if (this.lastInteractionCheck && 
+                currentTime - this.lastInteractionCheck < INTERACTION_CHECK_INTERVAL) {
+                return;
+            }
+            this.lastInteractionCheck = currentTime;
+
+            const playerRoom = currentPlayerRoom;
+            if (!playerRoom || !rooms[playerRoom].objects) return;
+
+            // Cache player position
+            const px = player.x;
+            const py = player.y;
+            
+            // Get only objects within viewport bounds plus some margin
+            const camera = this.cameras.main;
+            const margin = INTERACTION_RANGE;
+            const viewBounds = {
+                left: camera.scrollX - margin,
+                right: camera.scrollX + camera.width + margin,
+                top: camera.scrollY - margin,
+                bottom: camera.scrollY + camera.height + margin
+            };
+
+            Object.values(rooms[playerRoom].objects).forEach(obj => {
+                // Skip inactive objects and those outside viewport
+                if (!obj.active || 
+                    obj.x < viewBounds.left || 
+                    obj.x > viewBounds.right || 
+                    obj.y < viewBounds.top || 
+                    obj.y > viewBounds.bottom) {
+                    return;
+                }
+
+                // Use squared distance for performance
+                const dx = px - obj.x;
+                const dy = py - obj.y;
+                const distanceSq = dx * dx + dy * dy;
+
+                if (distanceSq <= INTERACTION_RANGE_SQ) {
+                    if (!obj.isHighlighted) {
+                        obj.isHighlighted = true;
+                        obj.setTint(0xdddddd);  // Simple highlight without tween
+                    }
+                } else if (obj.isHighlighted) {
+                    obj.isHighlighted = false;
+                    obj.clearTint();
+                }
+            });
+        }
+
+        // Add this function to setup scanner interactions
+        function setupScannerInteractions() {
+            Object.values(rooms).forEach(room => {
+                if (!room.objects) return;
+                
+                Object.values(room.objects).forEach(obj => {
+                    if (obj.scenarioData?.biometricType === 'fingerprint') {
+                        // Add visual indicator for scanner
+                        const indicator = obj.scene.add.circle(
+                            obj.x,
+                            obj.y,
+                            20,
+                            0x0000ff,
+                            0.3
+                        );
+                        
+                        // Add pulsing effect
+                        obj.scene.tweens.add({
+                            targets: indicator,
+                            alpha: { from: 0.3, to: 0.1 },
+                            scale: { from: 1, to: 1.2 },
+                            duration: 1000,
+                            yoyo: true,
+                            repeat: -1
+                        });
+                        
+                        // Store reference to indicator
+                        obj.scannerIndicator = indicator;
+                        
+                        // Add hover effect
+                        obj.on('pointerover', function() {
+                            if (this.scannerIndicator) {
+                                this.scannerIndicator.setAlpha(0.5);
+                            }
+                        });
+                        
+                        obj.on('pointerout', function() {
+                            if (this.scannerIndicator) {
+                                this.scannerIndicator.setAlpha(0.3);
+                            }
+                        });
+                    }
+                });
+            });
+        }
+
+        // Add this to your scene initialization
+        function initializeBiometricSystem() {
+            // Initialize gameState if not exists
+            if (!window.gameState) {
+                window.gameState = {
+                    biometricSamples: []
+                };
+            }
+            
+            // Initialize scanner state
+            if (!window.scannerState) {
+                window.scannerState = {
+                    failedAttempts: {},
+                    lockoutTimers: {}
+                };
+            }
+            
+            // Setup scanner visuals and interactions
+            setupScannerInteractions();
+            
+            // Add periodic interaction checks
+            this.time.addEvent({
+                delay: 100,  // Check every 100ms
+                callback: checkObjectInteractions,
+                callbackScope: this,
+                loop: true
+            });
+        }
+
+        // Add function to create and manage the samples UI
+        function createSamplesUI() {
+            // Create container for samples UI if it doesn't exist
+            let samplesUI = document.getElementById('biometric-samples-ui');
+            if (!samplesUI) {
+                samplesUI = document.createElement('div');
+                samplesUI.id = 'biometric-samples-ui';
+                
+                // Apply styles
+                Object.assign(samplesUI.style, SAMPLE_UI_STYLES);
+                
+                // Add close button
+                const closeButton = document.createElement('button');
+                closeButton.textContent = '×';
+                closeButton.style.cssText = `
+                    position: absolute;
+                    right: 10px;
+                    top: 10px;
+                    background: none;
+                    border: none;
+                    color: white;
+                    font-size: 20px;
+                    cursor: pointer;
+                `;
+                closeButton.onclick = () => hideSamplesUI();
+                samplesUI.appendChild(closeButton);
+                
+                document.body.appendChild(samplesUI);
+            }
+            return samplesUI;
+        }
+
+        // Function to show samples UI
+        function showSamplesUI() {
+            const samplesUI = createSamplesUI();
+            samplesUI.style.display = 'block';
+            
+            // Clear existing content
+            while (samplesUI.children.length > 1) { // Keep close button
+                samplesUI.removeChild(samplesUI.lastChild);
+            }
+            
+            // Add title
+            const title = document.createElement('h2');
+            title.textContent = 'Collected Biometric Samples';
+            title.style.cssText = 'margin-top: 0; color: #fff; text-align: center;';
+            samplesUI.appendChild(title);
+            
+            // Add samples
+            if (!gameState.biometricSamples || gameState.biometricSamples.length === 0) {
+                const noSamples = document.createElement('p');
+                noSamples.textContent = 'No samples collected yet.';
+                noSamples.style.textAlign = 'center';
+                samplesUI.appendChild(noSamples);
+                return;
+            }
+            
+            gameState.biometricSamples.forEach(sample => {
+                const sampleElement = document.createElement('div');
+                sampleElement.style.cssText = `
+                    margin: 10px 0;
+                    padding: 10px;
+                    background: rgba(255, 255, 255, 0.1);
+                    border-radius: 5px;
+                `;
+                
+                const qualityPercentage = Math.round(sample.quality * 100);
+                sampleElement.innerHTML = `
+                    <strong>Type:</strong> ${sample.type}<br>
+                    <strong>Owner:</strong> ${sample.owner}<br>
+                    <strong>Quality:</strong> ${qualityPercentage}%<br>
+                    <strong>ID:</strong> ${sample.id}<br>
+                `;
+                
+                // Add quality bar
+                const qualityBar = document.createElement('div');
+                qualityBar.style.cssText = `
+                    width: 100%;
+                    height: 5px;
+                    background: #333;
+                    margin-top: 5px;
+                    border-radius: 2px;
+                `;
+                
+                const qualityFill = document.createElement('div');
+                qualityFill.style.cssText = `
+                    width: ${qualityPercentage}%;
+                    height: 100%;
+                    background: ${getQualityColor(sample.quality)};
+                    border-radius: 2px;
+                    transition: width 0.3s ease;
+                `;
+                
+                qualityBar.appendChild(qualityFill);
+                sampleElement.appendChild(qualityBar);
+                samplesUI.appendChild(sampleElement);
+            });
+        }
+
+        // Helper function to hide samples UI
+        function hideSamplesUI() {
+            const samplesUI = document.getElementById('biometric-samples-ui');
+            if (samplesUI) {
+                samplesUI.style.display = 'none';
+            }
+        }
+
+        // Helper function to get color based on quality
+        function getQualityColor(quality) {
+            if (quality >= 0.8) return '#00ff00';
+            if (quality >= 0.6) return '#ffff00';
+            return '#ff0000';
+        }
+
+        // Add keyboard shortcut to view samples (press 'B')
+        function setupSamplesUIControls() {
+            document.addEventListener('keydown', (event) => {
+                if (event.key.toLowerCase() === 'b') {
+                    showSamplesUI();
+                }
+                if (event.key === 'Escape') {
+                    hideSamplesUI();
+                }
+            });
+        }
+
+        // Add this to your scene's create function
+        function initializeSamplesUI() {
+            createSamplesUI();
+            setupSamplesUIControls();
         }
     </script>
 </body>
