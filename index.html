@@ -2797,6 +2797,8 @@
             
             // Add dragging interaction at container level
             let isDragging = false;
+            let lastDustTime = {};  // Track last dust time for each cell
+
             gameContainer.addEventListener('mousedown', () => isDragging = true);
             gameContainer.addEventListener('mouseup', () => isDragging = false);
             gameContainer.addEventListener('mouseleave', () => isDragging = false);
@@ -2806,11 +2808,21 @@
                 // Get the cell element under the cursor
                 const cell = document.elementFromPoint(e.clientX, e.clientY);
                 if (cell && cell.dataset.dustLevel !== undefined) {
+                    const cellId = `${cell.dataset.x},${cell.dataset.y}`;
+                    const currentTime = Date.now();
                     const dustLevel = parseInt(cell.dataset.dustLevel);
-                    if (dustLevel < 3) {
-                        cell.dataset.dustLevel = (dustLevel + 1).toString();
-                        updateCellColor(cell);
-                        checkProgress();
+                    
+                    // Only allow dusting every 100ms for each cell
+                    if (!lastDustTime[cellId] || currentTime - lastDustTime[cellId] > 100) {
+                        if (dustLevel < 3) {
+                            // Increment dust level with 33% chance after level 1
+                            if (dustLevel < 1 || Math.random() < 0.33) {
+                                cell.dataset.dustLevel = (dustLevel + 1).toString();
+                                updateCellColor(cell);
+                                checkProgress();
+                            }
+                            lastDustTime[cellId] = currentTime;
+                        }
                     }
                 }
             });
