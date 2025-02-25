@@ -233,6 +233,19 @@
             display: 'none'
         };
 
+        // Add these constants for spoofing
+        const SPOOFING_TIME = 3000; // 3 seconds to create spoof
+        const SPOOF_QUALITY_MULTIPLIER = 0.8; // Spoofed prints are slightly lower quality
+
+        // Add these constants for the dusting minigame
+        const DUST_COLORS = {
+            NONE: 0x000000,
+            LIGHT: 0x444444,
+            MEDIUM: 0x888888,
+            HEAVY: 0xcccccc,
+            REVEALED: 0x00ff00
+        };
+
         // preloads the assets
         function preload() {
             // Show loading text
@@ -2580,6 +2593,7 @@
                     <strong>Owner:</strong> ${sample.owner}<br>
                     <strong>Quality:</strong> ${qualityPercentage}%<br>
                     <strong>ID:</strong> ${sample.id}<br>
+                    ${sample.isSpoofed ? '<strong style="color: #ff9900;">SPOOFED SAMPLE</strong><br>' : ''}
                 `;
                 
                 // Add quality bar
@@ -2603,6 +2617,62 @@
                 
                 qualityBar.appendChild(qualityFill);
                 sampleElement.appendChild(qualityBar);
+                
+                // Add spoof button if not already spoofed
+                if (!sample.isSpoofed && hasItemInInventory('spoofing_kit')) {
+                    const spoofButton = document.createElement('button');
+                    spoofButton.textContent = 'Create Spoof';
+                    spoofButton.style.cssText = `
+                        margin-top: 10px;
+                        padding: 5px 10px;
+                        background: #444;
+                        border: none;
+                        color: white;
+                        border-radius: 3px;
+                        cursor: pointer;
+                    `;
+                    spoofButton.onclick = async () => {
+                        spoofButton.disabled = true;
+                        spoofButton.textContent = 'Creating spoof...';
+                        
+                        // Add progress bar
+                        const progressBar = document.createElement('div');
+                        progressBar.style.cssText = `
+                            width: 100%;
+                            height: 2px;
+                            background: #333;
+                            margin-top: 5px;
+                        `;
+                        const progress = document.createElement('div');
+                        progress.style.cssText = `
+                            width: 0%;
+                            height: 100%;
+                            background: #ff9900;
+                            transition: width 0.1s linear;
+                        `;
+                        progressBar.appendChild(progress);
+                        sampleElement.appendChild(progressBar);
+                        
+                        // Animate progress
+                        let currentProgress = 0;
+                        const interval = setInterval(() => {
+                            currentProgress += 2;
+                            progress.style.width = `${currentProgress}%`;
+                        }, SPOOFING_TIME / 50);
+                        
+                        // Create spoof after delay
+                        setTimeout(() => {
+                            clearInterval(interval);
+                            const spoofedSample = createSpoofedSample(sample);
+                            if (spoofedSample) {
+                                gameState.biometricSamples.push(spoofedSample);
+                                showSamplesUI(); // Refresh UI
+                            }
+                        }, SPOOFING_TIME);
+                    };
+                    sampleElement.appendChild(spoofButton);
+                }
+                
                 samplesUI.appendChild(sampleElement);
             });
         }
@@ -2638,6 +2708,177 @@
         function initializeSamplesUI() {
             createSamplesUI();
             setupSamplesUIControls();
+        }
+
+        // Add spoofing functionality
+        function createSpoofedSample(originalSample) {
+            if (!originalSample) {
+                alert("No sample to spoof from!");
+                return null;
+            }
+            
+            // Check if player has required items
+            const hasSpoofingKit = hasItemInInventory('spoofing_kit');
+            if (!hasSpoofingKit) {
+                alert("You need a spoofing kit to create fake fingerprints!");
+                return null;
+            }
+            
+            // Create spoofed sample with slightly degraded quality
+            const spoofedSample = {
+                id: `spoofed_${originalSample.owner}_${Date.now()}`,
+                type: originalSample.type,
+                owner: originalSample.owner,
+                quality: originalSample.quality * SPOOF_QUALITY_MULTIPLIER,
+                data: generateFingerprintData(originalSample),
+                isSpoofed: true
+            };
+            
+            return spoofedSample;
+        }
+
+        // Add dusting minigame
+        function startDustingMinigame(item) {
+            const scene = item.scene;
+            const gameWidth = 400;
+            const gameHeight = 300;
+            
+            // Create container for minigame
+            const container = scene.add.container(
+                scene.cameras.main.centerX - gameWidth/2,
+                scene.cameras.main.centerY - gameHeight/2
+            );
+            
+            // Add background
+            const bg = scene.add.rectangle(0, 0, gameWidth, gameHeight, 0x222222);
+            container.add(bg);
+            
+            // Create grid of cells
+            const cellSize = 20;
+            const gridWidth = Math.floor(gameWidth / cellSize);
+            const gridHeight = Math.floor(gameHeight / cellSize);
+            const cells = [];
+            
+            // Generate random fingerprint pattern
+            const fingerprintCells = new Set();
+            const centerX = Math.floor(gridWidth / 2);
+            const centerY = Math.floor(gridHeight / 2);
+            for (let i = 0; i < 50; i++) {
+                const x = centerX + Math.floor(Math.random() * 6 - 3);
+                const y = centerY + Math.floor(Math.random() * 6 - 3);
+                fingerprintCells.add(`${x},${y}`);
+            }
+            
+            // Create grid cells
+            for (let y = 0; y < gridHeight; y++) {
+                for (let x = 0; x < gridWidth; x++) {
+                    const cell = scene.add.rectangle(
+                        x * cellSize,
+                        y * cellSize,
+                        cellSize - 1,
+                        cellSize - 1,
+                        DUST_COLORS.NONE
+                    );
+                    cell.setOrigin(0, 0);
+                    cell.setInteractive();
+                    cell.dustLevel = 0;
+                    cell.hasFingerprint = fingerprintCells.has(`${x},${y}`);
+                    cells.push(cell);
+                    container.add(cell);
+                    
+                    // Add dusting interaction
+                    cell.on('pointermove', function(pointer) {
+                        if (pointer.isDown) {
+                            this.dustLevel = Math.min(3, this.dustLevel + 1);
+                            this.setFillStyle(getDustColor(this.dustLevel, this.hasFingerprint));
+                            checkDustingProgress();
+                        }
+                    });
+                }
+            }
+            
+            // Add instructions
+            const instructions = scene.add.text(
+                gameWidth/2,
+                -30,
+                'Click and drag to dust for fingerprints.\nReveal the pattern without over-dusting!',
+                {
+                    fontSize: '16px',
+                    fill: '#ffffff',
+                    align: 'center'
+                }
+            );
+            instructions.setOrigin(0.5);
+            container.add(instructions);
+            
+            // Add progress tracking
+            let revealedPrints = 0;
+            let totalPrints = fingerprintCells.size;
+            let overDusted = 0;
+            
+            // Add progress display
+            const progressText = scene.add.text(
+                gameWidth/2,
+                gameHeight + 20,
+                `Revealed: 0/${totalPrints} | Over-dusted: 0`,
+                {
+                    fontSize: '16px',
+                    fill: '#ffffff',
+                    align: 'center'
+                }
+            );
+            progressText.setOrigin(0.5);
+            container.add(progressText);
+            
+            // Add close button
+            const closeButton = scene.add.text(
+                gameWidth - 10,
+                -20,
+                'X',
+                {
+                    fontSize: '20px',
+                    fill: '#ffffff'
+                }
+            );
+            closeButton.setOrigin(1, 0);
+            closeButton.setInteractive();
+            closeButton.on('pointerdown', () => {
+                container.destroy();
+            });
+            container.add(closeButton);
+            
+            function getDustColor(level, hasFingerprint) {
+                if (level === 0) return DUST_COLORS.NONE;
+                if (level === 1) return DUST_COLORS.LIGHT;
+                if (level === 2) return hasFingerprint ? DUST_COLORS.REVEALED : DUST_COLORS.MEDIUM;
+                return DUST_COLORS.HEAVY;
+            }
+            
+            function checkDustingProgress() {
+                revealedPrints = 0;
+                overDusted = 0;
+                
+                cells.forEach(cell => {
+                    if (cell.hasFingerprint && cell.dustLevel === 2) {
+                        revealedPrints++;
+                    }
+                    if (cell.dustLevel === 3) {
+                        overDusted++;
+                    }
+                });
+                
+                progressText.setText(
+                    `Revealed: ${revealedPrints}/${totalPrints} | Over-dusted: ${overDusted}`
+                );
+                
+                // Check win condition
+                if (revealedPrints === totalPrints && overDusted < 10) {
+                    setTimeout(() => {
+                        container.destroy();
+                        collectFingerprint(item);
+                    }, 1000);
+                }
+            }
         }
     </script>
 </body>

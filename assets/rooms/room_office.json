@@ -327,6 +327,17 @@
                  "width":48,
                  "x":390,
                  "y":144
+                },
+                {
+                 "height": 48,
+                 "id": 16,
+                 "name": "spoofing_kit",
+                 "rotation": 0,
+                 "type": "",
+                 "visible": true,
+                 "width": 48,
+                 "x": 340,
+                 "y": 144
                 }
 
                 
