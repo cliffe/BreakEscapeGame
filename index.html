@@ -1908,7 +1908,7 @@
                         
                         if (hasLockpick) {
                             if (confirm("Would you like to attempt picking this lock?")) {
-                                startLockpickingMinigame(lockable, this);
+                                startLockpickingMinigame(lockable, game.scene.scenes[0]);  // Pass the main scene
                             }
                         } else {
                             alert(`Requires key: ${requiredKey}`);
@@ -3011,7 +3011,7 @@
             scene.input.mouse.enabled = false;
         }
 
-        function startLockpickingMinigame(item, scene) {
+        function startLockpickingMinigame(lockable, currentScene) {
             // Create iframe container
             const iframe = document.createElement('div');
             iframe.style.cssText = `
@@ -3078,7 +3078,9 @@
             `;
             closeButton.onclick = () => {
                 document.body.removeChild(iframe);
-                scene.input.mouse.enabled = true;
+                if (currentScene && currentScene.input && currentScene.input.mouse) {
+                    currentScene.input.mouse.enabled = true;
+                }
             };
 
             // Add pin binding order
@@ -3134,6 +3136,15 @@
                 border-radius: 10px;
             `;
 
+            function updatePinVisual(index) {
+                const pin = pinsContainer.children[index];
+                switch (gameState.pinStates[index]) {
+                    case 0: pin.style.background = '#555'; break; // Down
+                    case 1: pin.style.background = '#00f'; break; // Binding
+                    case 2: pin.style.background = '#0f0'; break; // Set
+                }
+            }
+
             // Create individual pins
             for (let i = 0; i < numPins; i++) {
                 const pin = document.createElement('div');
@@ -3171,10 +3182,12 @@
                         // Check win condition
                         if (gameState.currentBindingIndex >= numPins) {
                             setTimeout(() => {
-                                unlockTarget(item, 'door', item.layer);
+                                unlockTarget(lockable, 'door', lockable.layer);
                                 alert("Lock successfully picked!");
                                 document.body.removeChild(iframe);
-                                scene.input.mouse.enabled = true;
+                                if (currentScene && currentScene.input && currentScene.input.mouse) {
+                                    currentScene.input.mouse.enabled = true;
+                                }
                             }, 500);
                         }
                     } else {
@@ -3193,20 +3206,9 @@
                 pinsContainer.appendChild(pin);
             }
 
-            function updatePinVisual(index) {
-                const pin = pinsContainer.children[index];
-                switch (gameState.pinStates[index]) {
-                    case 0: pin.style.background = '#555'; break; // Down
-                    case 1: pin.style.background = '#00f'; break; // Binding
-                    case 2: pin.style.background = '#0f0'; break; // Set
-                }
-            }
-
             // Add components to game container
             gameContainer.appendChild(tensionWrench);
             gameContainer.appendChild(pinsContainer);
-
-            // ... rest of the existing code (close button, etc.)
 
             // Assemble the interface
             iframe.appendChild(closeButton);
@@ -3215,7 +3217,9 @@
             document.body.appendChild(iframe);
             
             // Disable game movement
-            scene.input.mouse.enabled = false;
+            if (currentScene && currentScene.input && currentScene.input.mouse) {
+                currentScene.input.mouse.enabled = false;
+            }
         }
 
     </script>
