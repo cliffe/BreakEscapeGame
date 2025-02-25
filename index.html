@@ -2736,15 +2736,22 @@
             
             // Add instructions
             const instructions = document.createElement('div');
-            instructions.textContent = 'Click and drag to dust for fingerprints.\nReveal the pattern without over-dusting!';
+            instructions.innerHTML = `
+                <h3 style="margin: 0; color: #fff; text-align: center;">Fingerprint Dusting</h3>
+                <p style="margin: 5px 0; color: #ccc; text-align: center; font-size: 14px;">
+                    Drag to dust the surface and reveal fingerprints.<br>
+                    🔍 Gray = Light dusting<br>
+                    🟢 Green = Fingerprint found!<br>
+                    ⚠️ White = Over-dusted (avoid this)<br>
+                    Find all fingerprints with minimal over-dusting.
+                </p>
+            `;
             instructions.style.cssText = `
                 position: absolute;
                 top: 10px;
                 left: 50%;
                 transform: translateX(-50%);
-                color: white;
-                text-align: center;
-                font-size: 16px;
+                width: 90%;
             `;
             
             // Add progress display
@@ -2764,10 +2771,23 @@
             const fingerprintCells = new Set();
             const centerX = Math.floor(gridSize / 2);
             const centerY = Math.floor(gridSize / 2);
+
+            // Create a larger pattern (about 50 cells) spread around the center
             for (let i = 0; i < 50; i++) {
-                const x = centerX + Math.floor(Math.random() * 6 - 3);
-                const y = centerY + Math.floor(Math.random() * 6 - 3);
-                fingerprintCells.add(`${x},${y}`);
+                const x = centerX + Math.floor(Math.random() * 10 - 5);  // Increased spread
+                const y = centerY + Math.floor(Math.random() * 10 - 5);  // Increased spread
+                if (x >= 0 && x < gridSize && y >= 0 && y < gridSize) {
+                    fingerprintCells.add(`${x},${y}`);
+                }
+            }
+
+            // If we didn't get enough cells, add more until we reach target
+            while (fingerprintCells.size < 50) {
+                const x = centerX + Math.floor(Math.random() * 12 - 6);
+                const y = centerY + Math.floor(Math.random() * 12 - 6);
+                if (x >= 0 && x < gridSize && y >= 0 && y < gridSize) {
+                    fingerprintCells.add(`${x},${y}`);
+                }
             }
             
             // Track progress
@@ -2831,10 +2851,18 @@
                 const dustLevel = parseInt(cell.dataset.dustLevel);
                 const hasFingerprint = cell.dataset.hasFingerprint === 'true';
                 
-                if (dustLevel === 0) cell.style.background = 'black';
-                else if (dustLevel === 1) cell.style.background = '#444';
-                else if (dustLevel === 2) cell.style.background = hasFingerprint ? '#0f0' : '#888';
-                else cell.style.background = '#ccc';
+                if (dustLevel === 0) {
+                    cell.style.background = 'black';
+                }
+                else if (dustLevel === 1) {
+                    cell.style.background = '#444';
+                }
+                else if (dustLevel === 2) {
+                    cell.style.background = hasFingerprint ? '#0f0' : '#888';
+                }
+                else {
+                    cell.style.background = '#ccc';
+                }
             }
             
             function checkProgress() {
@@ -2849,14 +2877,63 @@
                     if (dustLevel === 3) overDusted++;
                 });
                 
-                progressText.textContent = `Revealed: ${revealedPrints}/${totalPrints} | Over-dusted: ${overDusted}`;
+                const requiredPrints = Math.ceil(totalPrints * 0.4);  // 40% requirement
+                progressText.innerHTML = `
+                    <div style="color: #0f0;">Found: ${revealedPrints}/${requiredPrints} required prints</div>
+                    <div style="color: ${overDusted > 9 ? '#f00' : '#fff'}">
+                        Over-dusted: ${overDusted}/10 max
+                    </div>
+                `;
                 
-                if (revealedPrints === totalPrints && overDusted < 10) {
+                // Check win condition with 60% requirement
+                if (revealedPrints >= requiredPrints && overDusted < 10) {
+                    // Show success message
+                    const successMessage = document.createElement('div');
+                    successMessage.style.cssText = `
+                        position: absolute;
+                        top: 50%;
+                        left: 50%;
+                        transform: translate(-50%, -50%);
+                        background: rgba(0, 0, 0, 0.9);
+                        padding: 20px;
+                        border-radius: 5px;
+                        color: #0f0;
+                        font-size: 20px;
+                        text-align: center;
+                        z-index: 1001;
+                    `;
+                    successMessage.textContent = "Fingerprint successfully collected!";
+                    iframe.appendChild(successMessage);
+                    
+                    // Disable further interaction
+                    isDragging = false;
+                    gameContainer.style.pointerEvents = 'none';
+                    
                     setTimeout(() => {
+                        // Add fingerprint to gameState
+                        if (!gameState.biometricSamples) {
+                            gameState.biometricSamples = [];
+                        }
+                        
+                        const sample = {
+                            id: generateFingerprintData(item),
+                            type: 'fingerprint',
+                            owner: item.scenarioData.fingerprintOwner,
+                            quality: Math.random() * 0.3 + 0.7,  // Random quality between 0.7 and 1.0
+                            data: generateFingerprintData(item)
+                        };
+                        
+                        gameState.biometricSamples.push(sample);
+                        
+                        // Remove the minigame
                         document.body.removeChild(iframe);
                         scene.input.mouse.enabled = true;
-                        collectFingerprint(item);
-                    }, 1000);
+                        
+                        // Mark item as collected
+                        if (item.scenarioData) {
+                            item.scenarioData.hasFingerprint = false;
+                        }
+                    }, 1500);
                 }
             }
             
