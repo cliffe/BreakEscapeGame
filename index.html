@@ -195,6 +195,57 @@
         let lastBluetoothScan = 0; // Track last scan time
         const BLUETOOTH_SCAN_INTERVAL = 500; // Scan every 500ms
 
+        const gameState = {
+            biometricSamples: [],
+            inventory: inventory
+        };
+
+        // Add these constants near the top with other constants
+        const SCANNER_LOCKOUT_TIME = 30000; // 30 seconds lockout
+        const MAX_FAILED_ATTEMPTS = 3;
+
+        // Add this to track failed attempts
+        const scannerState = {
+            failedAttempts: {},  // tracks failures by scanner ID
+            lockoutTimers: {}    // tracks lockout end times
+        };
+
+        // Add these constants near the top with other constants
+        const SAMPLE_COLLECTION_TIME = 2000; // 2 seconds for collection animation
+        const SAMPLE_COLLECTION_COLOR = 0x00ff00; // Green for collection effect
+
+        // Add these constants for the UI
+        const SAMPLE_UI_STYLES = {
+            backgroundColor: 'rgba(0, 0, 0, 0.8)',
+            padding: '10px',
+            color: 'white',
+            fontFamily: 'Arial, sans-serif',
+            fontSize: '14px',
+            border: '1px solid #444',
+            borderRadius: '5px',
+            position: 'fixed',
+            top: '50%',
+            left: '50%',
+            transform: 'translate(-50%, -50%)',
+            zIndex: 1000,
+            maxHeight: '80vh',
+            overflowY: 'auto',
+            display: 'none'
+        };
+
+        // Add these constants for spoofing
+        const SPOOFING_TIME = 3000; // 3 seconds to create spoof
+        const SPOOF_QUALITY_MULTIPLIER = 0.8; // Spoofed prints are slightly lower quality
+
+        // Add these constants for the dusting minigame
+        const DUST_COLORS = {
+            NONE: 0x000000,
+            LIGHT: 0x444444,
+            MEDIUM: 0x888888,
+            HEAVY: 0xcccccc,
+            REVEALED: 0x00ff00
+        };
+
         // preloads the assets
         function preload() {
             // Show loading text
@@ -228,6 +279,7 @@
             this.load.image('workstation', 'assets/objects/workstation.png');
             this.load.image('bluetooth_scanner', 'assets/objects/bluetooth_scanner.png');
             this.load.image('tablet', 'assets/objects/tablet.png');
+            this.load.image('fingerprint_kit', 'assets/objects/fingerprint_kit.png');
 
 
             this.load.json('gameScenarioJSON', 'assets/scenarios/ceo_exfil.json');
@@ -453,6 +505,9 @@
             // Optimize physics settings
             this.physics.world.setFPS(60);
             this.physics.world.step(1/60);
+
+            // Add this to your scene's create function
+            initializeSamplesUI();
         }
 
         function update() {
@@ -1418,6 +1473,28 @@
             
             const data = sprite.scenarioData;
             
+            // Add inside handleObjectInteraction before the fingerprint check
+            if (data.biometricType === 'fingerprint') {
+                handleBiometricScan(sprite, player);
+                return;
+            }
+            
+            // Check for fingerprint collection possibility
+            if (data.hasFingerprint) {
+                // Check if player has fingerprint kit
+                const hasKit = inventory.items.some(item => 
+                    item && item.scenarioData && 
+                    item.scenarioData.type === 'fingerprint_kit'
+                );
+                
+                if (hasKit) {
+                    const sample = collectFingerprint(sprite);
+                    if (sample) {
+                        return; // Exit after collecting fingerprint
+                    }
+                }
+            }
+            
             // Check if this is an unlocked container that hasn't been collected yet
             if (data.isUnlockedButNotCollected && data.contents) {
                 let message = `You found the following items:\n`;
@@ -2141,6 +2218,784 @@
                     }
                 }
             });
+        }
+
+        // Add helper function to generate fingerprint data
+        function generateFingerprintData(item) {
+            // In a real implementation, this would generate unique fingerprint patterns
+            // For now, we'll just create a unique identifier
+            return `fp_${item.scenarioData.fingerprintOwner}_${Date.now()}`;
+        }
+
+        // Add helper function to check if player has required collection tools
+        function hasItemInInventory(itemType) {
+            return inventory.items.some(item => 
+                item && item.scenarioData && 
+                item.scenarioData.type === itemType
+            );
+        }
+
+        // Add this function after the other utility functions
+        function handleBiometricScan(scanner, player) {
+            const scannerId = scanner.scenarioData.id || scanner.name;
+            
+            // Check if scanner is locked out
+            if (scannerState.lockoutTimers[scannerId] && 
+                Date.now() < scannerState.lockoutTimers[scannerId]) {
+                const remainingTime = Math.ceil((scannerState.lockoutTimers[scannerId] - Date.now()) / 1000);
+                alert(`Scanner locked out. Try again in ${remainingTime} seconds.`);
+                return false;
+            }
+
+            if (!scanner.scenarioData?.biometricType === 'fingerprint') {
+                console.warn('Invalid scanner type');
+                return false;
+            }
+
+            // Check if player has valid fingerprint sample
+            const validSample = gameState.biometricSamples.find(sample => 
+                sample.type === 'fingerprint' &&
+                scanner.scenarioData.acceptedSamples.includes(sample.owner)
+            );
+
+            if (!validSample) {
+                handleScannerFailure(scannerId);
+                alert("No valid fingerprint sample found.");
+                return false;
+            }
+
+            // Check sample quality
+            const qualityThreshold = 0.7;
+            if (validSample.quality < qualityThreshold) {
+                handleScannerFailure(scannerId);
+                alert("Fingerprint sample quality too poor for scanning.");
+                return false;
+            }
+
+            // Success case - reset failed attempts
+            scannerState.failedAttempts[scannerId] = 0;
+            alert("Biometric scan successful!");
+            
+            // Add visual feedback
+            const successEffect = scanner.scene.add.circle(
+                scanner.x, 
+                scanner.y, 
+                32, 
+                0x00ff00, 
+                0.5
+            );
+            scanner.scene.tweens.add({
+                targets: successEffect,
+                alpha: 0,
+                scale: 2,
+                duration: 1000,
+                onComplete: () => successEffect.destroy()
+            });
+            
+            // If the scanner is protecting something, unlock it
+            if (scanner.scenarioData.unlocks) {
+                const targetObject = rooms[currentRoom].objects[scanner.scenarioData.unlocks];
+                if (targetObject) {
+                    targetObject.scenarioData.locked = false;
+                    targetObject.scenarioData.isUnlockedButNotCollected = true;
+                }
+            }
+            
+            return true;
+        }
+
+        // Add this new function to handle scanner failures
+        function handleScannerFailure(scannerId) {
+            // Initialize failed attempts if not exists
+            if (!scannerState.failedAttempts[scannerId]) {
+                scannerState.failedAttempts[scannerId] = 0;
+            }
+            
+            // Increment failed attempts
+            scannerState.failedAttempts[scannerId]++;
+            
+            // Check if we should lockout
+            if (scannerState.failedAttempts[scannerId] >= MAX_FAILED_ATTEMPTS) {
+                scannerState.lockoutTimers[scannerId] = Date.now() + SCANNER_LOCKOUT_TIME;
+                alert(`Too many failed attempts. Scanner locked for ${SCANNER_LOCKOUT_TIME/1000} seconds.`);
+            } else {
+                const remainingAttempts = MAX_FAILED_ATTEMPTS - scannerState.failedAttempts[scannerId];
+                alert(`Scan failed. ${remainingAttempts} attempts remaining before lockout.`);
+            }
+        }
+
+        // Modify collectFingerprint to include visual feedback
+        function collectFingerprint(item) {
+            if (!item.scenarioData?.hasFingerprint) {
+                alert("No fingerprints found on this surface.");
+                return null;
+            }
+            
+            // Check if player has required items
+            if (!hasItemInInventory('fingerprint_kit')) {
+                alert("You need a fingerprint kit to collect samples!");
+                return null;
+            }
+            
+            // Start the dusting minigame
+            startDustingMinigame(item);
+            return true;
+        }
+
+        // Add this function to check for object interactions
+        function checkObjectInteractions() {
+            // Skip if not enough time has passed since last check
+            const currentTime = performance.now();
+            if (this.lastInteractionCheck && 
+                currentTime - this.lastInteractionCheck < INTERACTION_CHECK_INTERVAL) {
+                return;
+            }
+            this.lastInteractionCheck = currentTime;
+
+            const playerRoom = currentPlayerRoom;
+            if (!playerRoom || !rooms[playerRoom].objects) return;
+
+            // Cache player position
+            const px = player.x;
+            const py = player.y;
+            
+            // Get only objects within viewport bounds plus some margin
+            const camera = this.cameras.main;
+            const margin = INTERACTION_RANGE;
+            const viewBounds = {
+                left: camera.scrollX - margin,
+                right: camera.scrollX + camera.width + margin,
+                top: camera.scrollY - margin,
+                bottom: camera.scrollY + camera.height + margin
+            };
+
+            Object.values(rooms[playerRoom].objects).forEach(obj => {
+                // Skip inactive objects and those outside viewport
+                if (!obj.active || 
+                    obj.x < viewBounds.left || 
+                    obj.x > viewBounds.right || 
+                    obj.y < viewBounds.top || 
+                    obj.y > viewBounds.bottom) {
+                    return;
+                }
+
+                // Use squared distance for performance
+                const dx = px - obj.x;
+                const dy = py - obj.y;
+                const distanceSq = dx * dx + dy * dy;
+
+                if (distanceSq <= INTERACTION_RANGE_SQ) {
+                    if (!obj.isHighlighted) {
+                        obj.isHighlighted = true;
+                        obj.setTint(0xdddddd);  // Simple highlight without tween
+                    }
+                } else if (obj.isHighlighted) {
+                    obj.isHighlighted = false;
+                    obj.clearTint();
+                }
+            });
+        }
+
+        // Add this function to setup scanner interactions
+        function setupScannerInteractions() {
+            Object.values(rooms).forEach(room => {
+                if (!room.objects) return;
+                
+                Object.values(room.objects).forEach(obj => {
+                    if (obj.scenarioData?.biometricType === 'fingerprint') {
+                        // Add visual indicator for scanner
+                        const indicator = obj.scene.add.circle(
+                            obj.x,
+                            obj.y,
+                            20,
+                            0x0000ff,
+                            0.3
+                        );
+                        
+                        // Add pulsing effect
+                        obj.scene.tweens.add({
+                            targets: indicator,
+                            alpha: { from: 0.3, to: 0.1 },
+                            scale: { from: 1, to: 1.2 },
+                            duration: 1000,
+                            yoyo: true,
+                            repeat: -1
+                        });
+                        
+                        // Store reference to indicator
+                        obj.scannerIndicator = indicator;
+                        
+                        // Add hover effect
+                        obj.on('pointerover', function() {
+                            if (this.scannerIndicator) {
+                                this.scannerIndicator.setAlpha(0.5);
+                            }
+                        });
+                        
+                        obj.on('pointerout', function() {
+                            if (this.scannerIndicator) {
+                                this.scannerIndicator.setAlpha(0.3);
+                            }
+                        });
+                    }
+                });
+            });
+        }
+
+        // Add this to your scene initialization
+        function initializeBiometricSystem() {
+            // Initialize gameState if not exists
+            if (!window.gameState) {
+                window.gameState = {
+                    biometricSamples: []
+                };
+            }
+            
+            // Initialize scanner state
+            if (!window.scannerState) {
+                window.scannerState = {
+                    failedAttempts: {},
+                    lockoutTimers: {}
+                };
+            }
+            
+            // Setup scanner visuals and interactions
+            setupScannerInteractions();
+            
+            // Add periodic interaction checks
+            this.time.addEvent({
+                delay: 100,  // Check every 100ms
+                callback: checkObjectInteractions,
+                callbackScope: this,
+                loop: true
+            });
+        }
+
+        // Add function to create and manage the samples UI
+        function createSamplesUI() {
+            // Create container for samples UI if it doesn't exist
+            let samplesUI = document.getElementById('biometric-samples-ui');
+            if (!samplesUI) {
+                samplesUI = document.createElement('div');
+                samplesUI.id = 'biometric-samples-ui';
+                
+                // Apply styles
+                Object.assign(samplesUI.style, SAMPLE_UI_STYLES);
+                
+                // Add close button
+                const closeButton = document.createElement('button');
+                closeButton.textContent = '×';
+                closeButton.style.cssText = `
+                    position: absolute;
+                    right: 10px;
+                    top: 10px;
+                    background: none;
+                    border: none;
+                    color: white;
+                    font-size: 20px;
+                    cursor: pointer;
+                `;
+                closeButton.onclick = () => hideSamplesUI();
+                samplesUI.appendChild(closeButton);
+                
+                document.body.appendChild(samplesUI);
+            }
+            return samplesUI;
+        }
+
+        // Function to show samples UI
+        function showSamplesUI() {
+            const samplesUI = createSamplesUI();
+            samplesUI.style.display = 'block';
+            
+            // Clear existing content
+            while (samplesUI.children.length > 1) { // Keep close button
+                samplesUI.removeChild(samplesUI.lastChild);
+            }
+            
+            // Add title
+            const title = document.createElement('h2');
+            title.textContent = 'Collected Biometric Samples';
+            title.style.cssText = 'margin-top: 0; color: #fff; text-align: center;';
+            samplesUI.appendChild(title);
+            
+            // Add samples
+            if (!gameState.biometricSamples || gameState.biometricSamples.length === 0) {
+                const noSamples = document.createElement('p');
+                noSamples.textContent = 'No samples collected yet.';
+                noSamples.style.textAlign = 'center';
+                samplesUI.appendChild(noSamples);
+                return;
+            }
+            
+            gameState.biometricSamples.forEach(sample => {
+                const sampleElement = document.createElement('div');
+                sampleElement.style.cssText = `
+                    margin: 10px 0;
+                    padding: 10px;
+                    background: rgba(255, 255, 255, 0.1);
+                    border-radius: 5px;
+                `;
+                
+                const qualityPercentage = Math.round(sample.quality * 100);
+                sampleElement.innerHTML = `
+                    <strong>Type:</strong> ${sample.type}<br>
+                    <strong>Owner:</strong> ${sample.owner}<br>
+                    <strong>Quality:</strong> ${qualityPercentage}%<br>
+                    <strong>ID:</strong> ${sample.id}<br>
+                    ${sample.isSpoofed ? '<strong style="color: #ff9900;">SPOOFED SAMPLE</strong><br>' : ''}
+                `;
+                
+                // Add quality bar
+                const qualityBar = document.createElement('div');
+                qualityBar.style.cssText = `
+                    width: 100%;
+                    height: 5px;
+                    background: #333;
+                    margin-top: 5px;
+                    border-radius: 2px;
+                `;
+                
+                const qualityFill = document.createElement('div');
+                qualityFill.style.cssText = `
+                    width: ${qualityPercentage}%;
+                    height: 100%;
+                    background: ${getQualityColor(sample.quality)};
+                    border-radius: 2px;
+                    transition: width 0.3s ease;
+                `;
+                
+                qualityBar.appendChild(qualityFill);
+                sampleElement.appendChild(qualityBar);
+                
+                // Add spoof button if not already spoofed
+                if (!sample.isSpoofed && hasItemInInventory('spoofing_kit')) {
+                    const spoofButton = document.createElement('button');
+                    spoofButton.textContent = 'Create Spoof';
+                    spoofButton.style.cssText = `
+                        margin-top: 10px;
+                        padding: 5px 10px;
+                        background: #444;
+                        border: none;
+                        color: white;
+                        border-radius: 3px;
+                        cursor: pointer;
+                    `;
+                    spoofButton.onclick = async () => {
+                        spoofButton.disabled = true;
+                        spoofButton.textContent = 'Creating spoof...';
+                        
+                        // Add progress bar
+                        const progressBar = document.createElement('div');
+                        progressBar.style.cssText = `
+                            width: 100%;
+                            height: 2px;
+                            background: #333;
+                            margin-top: 5px;
+                        `;
+                        const progress = document.createElement('div');
+                        progress.style.cssText = `
+                            width: 0%;
+                            height: 100%;
+                            background: #ff9900;
+                            transition: width 0.1s linear;
+                        `;
+                        progressBar.appendChild(progress);
+                        sampleElement.appendChild(progressBar);
+                        
+                        // Animate progress
+                        let currentProgress = 0;
+                        const interval = setInterval(() => {
+                            currentProgress += 2;
+                            progress.style.width = `${currentProgress}%`;
+                        }, SPOOFING_TIME / 50);
+                        
+                        // Create spoof after delay
+                        setTimeout(() => {
+                            clearInterval(interval);
+                            const spoofedSample = createSpoofedSample(sample);
+                            if (spoofedSample) {
+                                gameState.biometricSamples.push(spoofedSample);
+                                showSamplesUI(); // Refresh UI
+                            }
+                        }, SPOOFING_TIME);
+                    };
+                    sampleElement.appendChild(spoofButton);
+                }
+                
+                samplesUI.appendChild(sampleElement);
+            });
+        }
+
+        // Helper function to hide samples UI
+        function hideSamplesUI() {
+            const samplesUI = document.getElementById('biometric-samples-ui');
+            if (samplesUI) {
+                samplesUI.style.display = 'none';
+            }
+        }
+
+        // Helper function to get color based on quality
+        function getQualityColor(quality) {
+            if (quality >= 0.8) return '#00ff00';
+            if (quality >= 0.6) return '#ffff00';
+            return '#ff0000';
+        }
+
+        // Add keyboard shortcut to view samples (press 'B')
+        function setupSamplesUIControls() {
+            document.addEventListener('keydown', (event) => {
+                if (event.key.toLowerCase() === 'b') {
+                    showSamplesUI();
+                }
+                if (event.key === 'Escape') {
+                    hideSamplesUI();
+                }
+            });
+        }
+
+        // Add this to your scene's create function
+        function initializeSamplesUI() {
+            createSamplesUI();
+            setupSamplesUIControls();
+        }
+        
+        function generateFingerprintData(sample) {
+            // For spoofed samples, we generate from the original sample data
+            if (sample.data) {
+                return `spoofed_${sample.data}`;
+            }
+            
+            // For original samples from items, we use the item's data
+            if (sample.scenarioData?.fingerprintOwner) {
+                return `fp_${sample.scenarioData.fingerprintOwner}_${Date.now()}`;
+            }
+            
+            // Fallback unique identifier
+            return `fp_unknown_${Date.now()}`;
+        }
+
+        // Add spoofing functionality
+        function createSpoofedSample(originalSample) {
+            if (!originalSample) {
+                alert("No sample to spoof from!");
+                return null;
+            }
+            
+            // Check if player has required items
+            const hasSpoofingKit = hasItemInInventory('spoofing_kit');
+            if (!hasSpoofingKit) {
+                alert("You need a spoofing kit to create fake fingerprints!");
+                return null;
+            }
+            
+            // Create spoofed sample with slightly degraded quality
+            const spoofedSample = {
+                id: `spoofed_${originalSample.owner}_${Date.now()}`,
+                type: originalSample.type,
+                owner: originalSample.owner,
+                quality: originalSample.quality * SPOOF_QUALITY_MULTIPLIER,
+                data: generateFingerprintData(originalSample),
+                isSpoofed: true
+            };
+            
+            return spoofedSample;
+        }
+
+        // Add dusting minigame
+        function startDustingMinigame(item) {
+            // Create iframe container
+            const iframe = document.createElement('div');
+            iframe.style.cssText = `
+                position: fixed;
+                top: 50%;
+                left: 50%;
+                transform: translate(-50%, -50%);
+                width: 60%;
+                height: 60%;
+                background: rgba(0, 0, 0, 0.9);
+                border: 1px solid #444;
+                z-index: 1000;
+                padding: 20px;
+                border-radius: 5px;
+            `;
+            
+            // Create game container
+            const gameContainer = document.createElement('div');
+            gameContainer.style.cssText = `
+                width: 100%;
+                height: calc(100% - 60px);
+                display: grid;
+                grid-template-columns: repeat(20, minmax(0, 1fr));
+                grid-template-rows: repeat(20, minmax(0, 1fr));
+                gap: 1px;
+                background: #222;
+                padding: 10px;
+                margin-top: 40px;
+            `;
+            
+            // Add instructions
+            const instructions = document.createElement('div');
+            instructions.innerHTML = `
+                <h3 style="margin: 0; color: #fff; text-align: center;">Fingerprint Dusting</h3>
+                <p style="margin: 5px 0; color: #ccc; text-align: center; font-size: 14px;">
+                    Drag to dust the surface and reveal fingerprints.<br>
+                    🔍 Gray = Light dusting<br>
+                    🟢 Green = Fingerprint found!<br>
+                    ⚠️ White = Over-dusted (avoid this)<br>
+                    Find all fingerprints with minimal over-dusting.
+                </p>
+            `;
+            instructions.style.cssText = `
+                position: absolute;
+                top: 10px;
+                left: 50%;
+                transform: translateX(-50%);
+                width: 90%;
+            `;
+            
+            // Add progress display
+            const progressText = document.createElement('div');
+            progressText.style.cssText = `
+                position: absolute;
+                bottom: 10px;
+                left: 50%;
+                transform: translateX(-50%);
+                color: white;
+                text-align: center;
+                font-size: 16px;
+            `;
+            
+            // Generate fingerprint pattern
+            const gridSize = 20;
+            const fingerprintCells = new Set();
+            const centerX = Math.floor(gridSize / 2);
+            const centerY = Math.floor(gridSize / 2);
+
+            // Create a larger pattern (about 50 cells) spread around the center
+            for (let i = 0; i < 50; i++) {
+                const x = centerX + Math.floor(Math.random() * 10 - 5);  // Increased spread
+                const y = centerY + Math.floor(Math.random() * 10 - 5);  // Increased spread
+                if (x >= 0 && x < gridSize && y >= 0 && y < gridSize) {
+                    fingerprintCells.add(`${x},${y}`);
+                }
+            }
+
+            // If we didn't get enough cells, add more until we reach target
+            while (fingerprintCells.size < 50) {
+                const x = centerX + Math.floor(Math.random() * 12 - 6);
+                const y = centerY + Math.floor(Math.random() * 12 - 6);
+                if (x >= 0 && x < gridSize && y >= 0 && y < gridSize) {
+                    fingerprintCells.add(`${x},${y}`);
+                }
+            }
+            
+            // Track progress
+            let revealedPrints = 0;
+            let totalPrints = fingerprintCells.size;
+            let overDusted = 0;
+            
+            // Create grid cells
+            for (let y = 0; y < gridSize; y++) {
+                for (let x = 0; x < gridSize; x++) {
+                    const cell = document.createElement('div');
+                    cell.style.cssText = `
+                        width: 100%;
+                        height: 100%;
+                        background: black;
+                        position: relative;
+                        cursor: pointer;
+                    `;
+                    cell.dataset.x = x;
+                    cell.dataset.y = y;
+                    cell.dataset.dustLevel = '0';
+                    cell.dataset.hasFingerprint = fingerprintCells.has(`${x},${y}`);
+                    
+                    gameContainer.appendChild(cell);
+                }
+            }
+            
+            // Add dragging interaction at container level
+            let isDragging = false;
+            let lastDustTime = {};  // Track last dust time for each cell
+
+            gameContainer.addEventListener('mousedown', () => isDragging = true);
+            gameContainer.addEventListener('mouseup', () => isDragging = false);
+            gameContainer.addEventListener('mouseleave', () => isDragging = false);
+            gameContainer.addEventListener('mousemove', (e) => {
+                if (!isDragging) return;
+                
+                // Get the cell element under the cursor
+                const cell = document.elementFromPoint(e.clientX, e.clientY);
+                if (cell && cell.dataset.dustLevel !== undefined) {
+                    const cellId = `${cell.dataset.x},${cell.dataset.y}`;
+                    const currentTime = Date.now();
+                    const dustLevel = parseInt(cell.dataset.dustLevel);
+                    
+                    // Only allow dusting every 100ms for each cell
+                    if (!lastDustTime[cellId] || currentTime - lastDustTime[cellId] > 100) {
+                        if (dustLevel < 3) {
+                            // Increment dust level with 33% chance after level 1
+                            if (dustLevel < 1 || Math.random() < 0.33) {
+                                cell.dataset.dustLevel = (dustLevel + 1).toString();
+                                updateCellColor(cell);
+                                checkProgress();
+                            }
+                            lastDustTime[cellId] = currentTime;
+                        }
+                    }
+                }
+            });
+            
+            function updateCellColor(cell) {
+                const dustLevel = parseInt(cell.dataset.dustLevel);
+                const hasFingerprint = cell.dataset.hasFingerprint === 'true';
+                
+                if (dustLevel === 0) {
+                    cell.style.background = 'black';
+                }
+                else if (dustLevel === 1) {
+                    cell.style.background = '#444';
+                }
+                else if (dustLevel === 2) {
+                    cell.style.background = hasFingerprint ? '#0f0' : '#888';
+                }
+                else {
+                    cell.style.background = '#ccc';
+                }
+            }
+            
+            function checkProgress() {
+                revealedPrints = 0;
+                overDusted = 0;
+                
+                gameContainer.childNodes.forEach(cell => {
+                    const dustLevel = parseInt(cell.dataset.dustLevel);
+                    const hasFingerprint = cell.dataset.hasFingerprint === 'true';
+                    
+                    if (hasFingerprint && dustLevel === 2) revealedPrints++;
+                    if (dustLevel === 3) overDusted++;
+                });
+                
+                const requiredPrints = Math.ceil(totalPrints * 0.4);  // 40% requirement
+                progressText.innerHTML = `
+                    <div style="color: #0f0;">Found: ${revealedPrints}/${requiredPrints} required prints</div>
+                    <div style="color: ${overDusted > 24 ? '#f00' : '#fff'}">
+                        Over-dusted: ${overDusted}/25 max
+                    </div>
+                `;
+                
+                // Check fail condition first
+                if (overDusted >= 25) {
+                    // Show failure message
+                    const failureMessage = document.createElement('div');
+                    failureMessage.style.cssText = `
+                        position: absolute;
+                        top: 50%;
+                        left: 50%;
+                        transform: translate(-50%, -50%);
+                        background: rgba(0, 0, 0, 0.9);
+                        padding: 20px;
+                        border-radius: 5px;
+                        color: #f00;
+                        font-size: 20px;
+                        text-align: center;
+                        z-index: 1001;
+                    `;
+                    failureMessage.textContent = "Too many over-dusted areas!";
+                    iframe.appendChild(failureMessage);
+                    
+                    // Disable further interaction
+                    isDragging = false;
+                    gameContainer.style.pointerEvents = 'none';
+                    
+                    setTimeout(() => {
+                        document.body.removeChild(iframe);
+                        scene.input.mouse.enabled = true;
+                    }, 1500);
+                    return;
+                }
+                
+                // Check win condition (existing code)
+                if (revealedPrints >= requiredPrints && overDusted < 25) {
+                    // Show success message
+                    const successMessage = document.createElement('div');
+                    successMessage.style.cssText = `
+                        position: absolute;
+                        top: 50%;
+                        left: 50%;
+                        transform: translate(-50%, -50%);
+                        background: rgba(0, 0, 0, 0.9);
+                        padding: 20px;
+                        border-radius: 5px;
+                        color: #0f0;
+                        font-size: 20px;
+                        text-align: center;
+                        z-index: 1001;
+                    `;
+                    successMessage.textContent = "Fingerprint successfully collected!";
+                    iframe.appendChild(successMessage);
+                    
+                    // Disable further interaction
+                    isDragging = false;
+                    gameContainer.style.pointerEvents = 'none';
+                    
+                    setTimeout(() => {
+                        // Add fingerprint to gameState
+                        if (!gameState.biometricSamples) {
+                            gameState.biometricSamples = [];
+                        }
+                        
+                        const sample = {
+                            id: generateFingerprintData(item),
+                            type: 'fingerprint',
+                            owner: item.scenarioData.fingerprintOwner,
+                            quality: Math.random() * 0.3 + 0.7,  // Random quality between 0.7 and 1.0
+                            data: generateFingerprintData(item)
+                        };
+                        
+                        gameState.biometricSamples.push(sample);
+                        
+                        // Remove the minigame
+                        document.body.removeChild(iframe);
+                        scene.input.mouse.enabled = true;
+                        
+                        // Mark item as collected
+                        if (item.scenarioData) {
+                            item.scenarioData.hasFingerprint = false;
+                        }
+                    }, 1500);
+                }
+            }
+            
+            // Add close button
+            const closeButton = document.createElement('button');
+            closeButton.textContent = 'X';
+            closeButton.style.cssText = `
+                position: absolute;
+                right: 10px;
+                top: 10px;
+                background: none;
+                border: none;
+                color: white;
+                font-size: 20px;
+                cursor: pointer;
+            `;
+            closeButton.onclick = () => {
+                document.body.removeChild(iframe);
+                scene.input.mouse.enabled = true;
+            };
+            
+            // Assemble the interface
+            iframe.appendChild(closeButton);
+            iframe.appendChild(instructions);
+            iframe.appendChild(gameContainer);
+            iframe.appendChild(progressText);
+            document.body.appendChild(iframe);
+            
+            // Disable game movement
+            const scene = item.scene;
+            scene.input.mouse.enabled = false;
         }
 
     </script>

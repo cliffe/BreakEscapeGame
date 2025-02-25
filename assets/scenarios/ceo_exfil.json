@@ -62,7 +62,10 @@
                     "name": "Office Computer",
                     "takeable": false,
                     "requires": "password",
-                    "observations": "A computer with a cybersecurity alert on screen"
+                    "hasFingerprint": true,
+                    "fingerprintOwner": "ceo",
+                    "fingerprintQuality": 0.9,
+                    "observations": "A computer with a cybersecurity alert on screen. There might be fingerprints on the keyboard."
                 },
                 {
                     "type": "notes",
@@ -71,6 +74,18 @@
                     "readable": true,
                     "text": "URGENT: Multiple unauthorized access attempts detected from CEO's office IP address",
                     "observations": "A concerning IT department memo"
+                },
+                {
+                    "type": "fingerprint_kit",
+                    "name": "Fingerprint Kit",
+                    "takeable": true,
+                    "observations": "A kit used for collecting fingerprints from surfaces"
+                },
+                {
+                    "type": "spoofing_kit",
+                    "name": "Fingerprint Spoofing Kit",
+                    "takeable": true,
+                    "observations": "A specialized kit containing silicone, gelatin, and other materials for creating artificial fingerprints"
                 }
             ]
         },
