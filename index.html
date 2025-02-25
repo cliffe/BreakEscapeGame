@@ -1897,7 +1897,7 @@
                         const keyName = keyItem?.scenarioData?.name || 'key';
                         const keyLocation = keyItem?.scenarioData?.foundIn || 'your inventory';
                         
-                        unlockTarget(lockable, type, lockable.layer); // Pass the layer here
+                        unlockTarget(lockable, type, lockable.layer);
                         alert(`You used the ${keyName} that you found in ${keyLocation} to unlock the ${type}.`);
                     } else {
                         // Check for lockpick kit
@@ -1907,7 +1907,10 @@
                         );
                         
                         if (hasLockpick) {
-                            alert("This lock can be picked with your lockpick kit!");
+                            if (confirm("Would you like to attempt picking this lock?")) {
+                                unlockTarget(lockable, type, lockable.layer);
+                                alert("You successfully picked the lock!");
+                            }
                         } else {
                             alert(`Requires key: ${requiredKey}`);
                         }
