@@ -141,6 +141,12 @@
                     "readable": true,
                     "text": "Large data transfers detected to unknown external IPs - All originating from CEO's office",
                     "observations": "Suspicious network activity logs"
+                },
+                {
+                    "type": "lockpick",
+                    "name": "Lock Pick Kit",
+                    "takeable": true,
+                    "observations": "A professional lock picking kit with various picks and tension wrenches"
                 }
             ]
         },

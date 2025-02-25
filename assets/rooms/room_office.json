@@ -338,6 +338,17 @@
                  "width": 48,
                  "x": 340,
                  "y": 144
+                },
+                {
+                 "height": 48,
+                 "id": 17,
+                 "name": "lockpick",
+                 "rotation": 0,
+                 "type": "",
+                 "visible": true,
+                 "width": 48,
+                 "x": 330,
+                 "y": 144
                 }
 
                 
@@ -349,7 +360,7 @@
          "y":0
         }],
  "nextlayerid":12,
- "nextobjectid":16,
+ "nextobjectid":18,
  "orientation":"orthogonal",
  "renderorder":"right-down",
  "tiledversion":"1.11.0",
