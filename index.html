@@ -3235,16 +3235,7 @@
                                         pin.style.background = '#0f0';
                                     }
                                     
-                                    if (gameState.currentBindingIndex >= numPins) {
-                                        setTimeout(() => {
-                                            unlockTarget(lockable, 'door', lockable.layer);
-                                            alert("Lock successfully picked!");
-                                            document.body.removeChild(iframe);
-                                            if (currentScene && currentScene.input && currentScene.input.mouse) {
-                                                currentScene.input.mouse.enabled = true;
-                                            }
-                                        }, 500);
-                                    }
+                                    checkWinCondition();
                                 }
                             }, 500); // Need to hold for 500ms to set
                         } else if (gameState.pinStates[i] !== 2) {
@@ -3314,6 +3305,22 @@
             // Disable game movement
             if (currentScene && currentScene.input && currentScene.input.mouse) {
                 currentScene.input.mouse.enabled = false;
+            }
+
+            // Add this function before the pin creation loop
+            function checkWinCondition() {
+                if (gameState.currentBindingIndex >= numPins) {
+                    setTimeout(() => {
+                        unlockTarget(lockable, 'door', lockable.layer);
+                        alert("Lock successfully picked!");
+                        document.body.removeChild(iframe);
+                        if (currentScene && currentScene.input && currentScene.input.mouse) {
+                            currentScene.input.mouse.enabled = true;
+                        }
+                    }, 500);
+                    return true;
+                }
+                return false;
             }
         }
 
