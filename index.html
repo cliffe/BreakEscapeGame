@@ -2791,26 +2791,29 @@
                     cell.dataset.dustLevel = '0';
                     cell.dataset.hasFingerprint = fingerprintCells.has(`${x},${y}`);
                     
-                    let isDragging = false;
-                    
-                    // Add dusting interaction
-                    cell.addEventListener('mousedown', () => isDragging = true);
-                    cell.addEventListener('mouseup', () => isDragging = false);
-                    cell.addEventListener('mouseleave', () => isDragging = false);
-                    cell.addEventListener('mousemove', (e) => {
-                        if (!isDragging) return;
-                        
-                        const dustLevel = parseInt(cell.dataset.dustLevel);
-                        if (dustLevel < 3) {
-                            cell.dataset.dustLevel = (dustLevel + 1).toString();
-                            updateCellColor(cell);
-                            checkProgress();
-                        }
-                    });
-                    
                     gameContainer.appendChild(cell);
                 }
             }
+            
+            // Add dragging interaction at container level
+            let isDragging = false;
+            gameContainer.addEventListener('mousedown', () => isDragging = true);
+            gameContainer.addEventListener('mouseup', () => isDragging = false);
+            gameContainer.addEventListener('mouseleave', () => isDragging = false);
+            gameContainer.addEventListener('mousemove', (e) => {
+                if (!isDragging) return;
+                
+                // Get the cell element under the cursor
+                const cell = document.elementFromPoint(e.clientX, e.clientY);
+                if (cell && cell.dataset.dustLevel !== undefined) {
+                    const dustLevel = parseInt(cell.dataset.dustLevel);
+                    if (dustLevel < 3) {
+                        cell.dataset.dustLevel = (dustLevel + 1).toString();
+                        updateCellColor(cell);
+                        checkProgress();
+                    }
+                }
+            });
             
             function updateCellColor(cell) {
                 const dustLevel = parseInt(cell.dataset.dustLevel);
