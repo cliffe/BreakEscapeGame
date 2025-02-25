@@ -200,6 +200,20 @@
             inventory: inventory
         };
 
+        // Add these constants near the top with other constants
+        const SCANNER_LOCKOUT_TIME = 30000; // 30 seconds lockout
+        const MAX_FAILED_ATTEMPTS = 3;
+
+        // Add this to track failed attempts
+        const scannerState = {
+            failedAttempts: {},  // tracks failures by scanner ID
+            lockoutTimers: {}    // tracks lockout end times
+        };
+
+        // Add these constants near the top with other constants
+        const SAMPLE_COLLECTION_TIME = 2000; // 2 seconds for collection animation
+        const SAMPLE_COLLECTION_COLOR = 0x00ff00; // Green for collection effect
+
         // preloads the assets
         function preload() {
             // Show loading text
@@ -1424,6 +1438,12 @@
             
             const data = sprite.scenarioData;
             
+            // Add inside handleObjectInteraction before the fingerprint check
+            if (data.biometricType === 'fingerprint') {
+                handleBiometricScan(sprite, player);
+                return;
+            }
+            
             // Check for fingerprint collection possibility
             if (data.hasFingerprint) {
                 // Check if player has fingerprint kit
@@ -2165,36 +2185,177 @@
             });
         }
 
+        // Add helper function to generate fingerprint data
+        function generateFingerprintData(item) {
+            // In a real implementation, this would generate unique fingerprint patterns
+            // For now, we'll just create a unique identifier
+            return `fp_${item.scenarioData.fingerprintOwner}_${Date.now()}`;
+        }
+
+        // Add helper function to check if player has required collection tools
+        function hasItemInInventory(itemType) {
+            return inventory.items.some(item => 
+                item && item.scenarioData && 
+                item.scenarioData.type === itemType
+            );
+        }
+
+        // Add this function after the other utility functions
+        function handleBiometricScan(scanner, player) {
+            const scannerId = scanner.scenarioData.id || scanner.name;
+            
+            // Check if scanner is locked out
+            if (scannerState.lockoutTimers[scannerId] && 
+                Date.now() < scannerState.lockoutTimers[scannerId]) {
+                const remainingTime = Math.ceil((scannerState.lockoutTimers[scannerId] - Date.now()) / 1000);
+                alert(`Scanner locked out. Try again in ${remainingTime} seconds.`);
+                return false;
+            }
+
+            if (!scanner.scenarioData?.biometricType === 'fingerprint') {
+                console.warn('Invalid scanner type');
+                return false;
+            }
+
+            // Check if player has valid fingerprint sample
+            const validSample = gameState.biometricSamples.find(sample => 
+                sample.type === 'fingerprint' &&
+                scanner.scenarioData.acceptedSamples.includes(sample.owner)
+            );
+
+            if (!validSample) {
+                handleScannerFailure(scannerId);
+                alert("No valid fingerprint sample found.");
+                return false;
+            }
+
+            // Check sample quality
+            const qualityThreshold = 0.7;
+            if (validSample.quality < qualityThreshold) {
+                handleScannerFailure(scannerId);
+                alert("Fingerprint sample quality too poor for scanning.");
+                return false;
+            }
+
+            // Success case - reset failed attempts
+            scannerState.failedAttempts[scannerId] = 0;
+            alert("Biometric scan successful!");
+            
+            // Add visual feedback
+            const successEffect = scanner.scene.add.circle(
+                scanner.x, 
+                scanner.y, 
+                32, 
+                0x00ff00, 
+                0.5
+            );
+            scanner.scene.tweens.add({
+                targets: successEffect,
+                alpha: 0,
+                scale: 2,
+                duration: 1000,
+                onComplete: () => successEffect.destroy()
+            });
+            
+            // If the scanner is protecting something, unlock it
+            if (scanner.scenarioData.unlocks) {
+                const targetObject = rooms[currentRoom].objects[scanner.scenarioData.unlocks];
+                if (targetObject) {
+                    targetObject.scenarioData.locked = false;
+                    targetObject.scenarioData.isUnlockedButNotCollected = true;
+                }
+            }
+            
+            return true;
+        }
+
+        // Add this new function to handle scanner failures
+        function handleScannerFailure(scannerId) {
+            // Initialize failed attempts if not exists
+            if (!scannerState.failedAttempts[scannerId]) {
+                scannerState.failedAttempts[scannerId] = 0;
+            }
+            
+            // Increment failed attempts
+            scannerState.failedAttempts[scannerId]++;
+            
+            // Check if we should lockout
+            if (scannerState.failedAttempts[scannerId] >= MAX_FAILED_ATTEMPTS) {
+                scannerState.lockoutTimers[scannerId] = Date.now() + SCANNER_LOCKOUT_TIME;
+                alert(`Too many failed attempts. Scanner locked for ${SCANNER_LOCKOUT_TIME/1000} seconds.`);
+            } else {
+                const remainingAttempts = MAX_FAILED_ATTEMPTS - scannerState.failedAttempts[scannerId];
+                alert(`Scan failed. ${remainingAttempts} attempts remaining before lockout.`);
+            }
+        }
+
+        // Modify collectFingerprint to include visual feedback
         function collectFingerprint(item) {
             if (!item.scenarioData?.hasFingerprint) {
                 alert("No fingerprints found on this surface.");
                 return null;
             }
             
-            const sample = {
-                id: `${item.scenarioData.fingerprintOwner}_${Date.now()}`,
-                type: "fingerprint",
-                owner: item.scenarioData.fingerprintOwner,
-                quality: item.scenarioData.fingerprintQuality,
-                data: generateFingerprintData(item)
-            };
+            // Create collection effect
+            const scene = item.scene;
+            const collectionEffect = scene.add.circle(
+                item.x, 
+                item.y, 
+                40, 
+                SAMPLE_COLLECTION_COLOR,
+                0.3
+            );
             
-            gameState.biometricSamples.push(sample);
-            alert(`Successfully collected a fingerprint sample from ${item.scenarioData.name}`);
-            console.log("Collected fingerprint sample:", sample);
-            return sample;
-        }
+            // Add scanning animation
+            scene.tweens.add({
+                targets: collectionEffect,
+                scale: { from: 1, to: 1.5 },
+                alpha: { from: 0.3, to: 0 },
+                duration: SAMPLE_COLLECTION_TIME,
+                repeat: 0,
+                yoyo: false,
+                onComplete: () => {
+                    collectionEffect.destroy();
+                    
+                    // Create the sample after animation
+                    const sample = {
+                        id: `${item.scenarioData.fingerprintOwner}_${Date.now()}`,
+                        type: "fingerprint",
+                        owner: item.scenarioData.fingerprintOwner,
+                        quality: item.scenarioData.fingerprintQuality,
+                        data: generateFingerprintData(item)
+                    };
+                    
+                    if (!gameState.biometricSamples) {
+                        gameState.biometricSamples = [];
+                    }
+                    
+                    gameState.biometricSamples.push(sample);
+                    
+                    // Show collection success message with sample details
+                    const qualityPercentage = Math.round(sample.quality * 100);
+                    alert(`Successfully collected a fingerprint sample from ${item.scenarioData.name}\nSample Quality: ${qualityPercentage}%`);
+                    console.log("Collected fingerprint sample:", sample);
+                }
+            });
 
-        function generateFingerprintData(item) {
-            // Placeholder implementation
-            // Replace with actual fingerprint data generation logic
-            return "fingerprint_data";
-        }
+            // Add scanning particles
+            const particles = scene.add.particles(item.x, item.y, 'particle', {
+                speed: 100,
+                scale: { start: 0.2, end: 0 },
+                blendMode: 'ADD',
+                lifespan: 1000,
+                quantity: 1,
+                frequency: 50
+            });
+            
+            // Clean up particles after collection
+            scene.time.delayedCall(SAMPLE_COLLECTION_TIME, () => {
+                particles.destroy();
+            });
 
-        function hasItemInInventory(itemType) {
-            return gameState.inventory.items.some(item => item.scenarioData?.type === itemType);
+            return true;
         }
-
     </script>
 </body>
 </html> 
