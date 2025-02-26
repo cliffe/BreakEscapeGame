@@ -159,6 +159,7 @@
             "locked": true,
             "lockType": "key",
             "requires": "ceo_office_key",
+            "difficulty": "easy",
             "objects": [
                 {
                     "type": "pc",
@@ -173,6 +174,7 @@
                     "locked": true,
                     "lockType": "key",
                     "requires": "briefcase_key",
+                    "difficulty": "medium",
                     "observations": "An expensive leather briefcase with a sturdy lock",
                     "contents": [
                         {
@@ -218,6 +220,7 @@
                     "locked": true,
                     "lockType": "key",
                     "requires": "safe_key",
+                    "difficulty": "hard",
                     "observations": "A well-hidden wall safe behind a painting",
                     "contents": [
                         {
