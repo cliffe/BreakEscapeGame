@@ -1908,7 +1908,21 @@
                         
                         if (hasLockpick) {
                             if (confirm("Would you like to attempt picking this lock?")) {
-                                startLockpickingMinigame(lockable, game.scene.scenes[0]);  // Pass the main scene
+                                let difficulty;
+                                
+                                // If this is a room-level lock, get difficulty from gameScenario
+                                if (lockable.properties?.requires) {
+                                    // Find which room this lock belongs to
+                                    const roomId = Object.keys(gameScenario.rooms).find(roomId => {
+                                        const room = gameScenario.rooms[roomId];
+                                        return room.requires === lockable.properties.requires;
+                                    });
+                                    difficulty = roomId ? gameScenario.rooms[roomId].difficulty : null;
+                                }
+                                
+                                // If not found, try object-level difficulty
+                                difficulty = difficulty || lockable.scenarioData?.difficulty || lockable.properties?.difficulty;
+                                startLockpickingMinigame(lockable, game.scene.scenes[0], difficulty);
                             }
                         } else {
                             alert(`Requires key: ${requiredKey}`);
@@ -3011,7 +3025,7 @@
             scene.input.mouse.enabled = false;
         }
 
-        function startLockpickingMinigame(lockable, currentScene) {
+        function startLockpickingMinigame(lockable, currentScene, difficulty) {
             // Create iframe container
             const iframe = document.createElement('div');
             iframe.style.cssText = `
@@ -3093,7 +3107,7 @@
             gameContainer.addEventListener('mousedown', initAudio, { once: true });
 
             // Add pin binding order and game state
-            const numPins = 5;
+            const numPins = getPinCountForDifficulty(difficulty);
             const bindingOrder = Array.from({length: numPins}, (_, i) => i)
                 .sort(() => Math.random() - 0.5);
             
@@ -3310,17 +3324,29 @@
             // Add this function before the pin creation loop
             function checkWinCondition() {
                 if (gameState.currentBindingIndex >= numPins) {
-                    setTimeout(() => {
-                        unlockTarget(lockable, 'door', lockable.layer);
-                        alert("Lock successfully picked!");
-                        document.body.removeChild(iframe);
-                        if (currentScene && currentScene.input && currentScene.input.mouse) {
-                            currentScene.input.mouse.enabled = true;
-                        }
-                    }, 500);
+                    unlockTarget(lockable, 'door', lockable.layer);
+                    alert("Lock successfully picked!");
+                    document.body.removeChild(iframe);
+                    if (currentScene && currentScene.input && currentScene.input.mouse) {
+                        currentScene.input.mouse.enabled = true;
+                    }
                     return true;
                 }
                 return false;
+            }
+        }
+
+        // Add this function to get pin count based on difficulty
+        function getPinCountForDifficulty(difficulty) {
+            switch(difficulty?.toLowerCase()) {
+                case 'easy':
+                    return 3;
+                case 'medium':
+                    return 5;
+                case 'hard':
+                    return 7;
+                default:
+                    return 5; // Default to medium difficulty
             }
         }
 
