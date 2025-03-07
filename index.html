@@ -3121,6 +3121,8 @@
                 failCount: 0,
                 maxFails: 3,
                 overTensioned: false,
+                lastPinSetTime: 0, // Track when the last pin was set
+                isActivelyPickingPin: false, // Track if we're actively working on a pin
                 tensionRequirements: Array(numPins).fill(0).map(() => {
                     // Each pin requires a specific tension level (1, 2, or 3)
                     const randomValue = Math.random();
@@ -3180,11 +3182,21 @@
             // Create a single function for toggling tension
             function toggleTension() {
                 // Toggle between 3 tension levels (light -> medium -> heavy -> light)
+                const previousTensionLevel = gameState.tensionLevel;
                 gameState.tensionLevel = (gameState.tensionLevel % 3) + 1;
+                
                 updateTensionWrench();
                 
                 // Check if we're over-tensioning - but only if we've started interacting with pins
-                if (gameState.tensionLevel === 3 && gameState.currentBindingIndex > 0) {
+                // AND only if we're actively working on a pin (not just changing tension)
+                const timeSinceLastPinSet = Date.now() - gameState.lastPinSetTime;
+                const isActivelyPickingLock = gameState.isActivelyPickingPin;
+                
+                if (gameState.tensionLevel === 3 && 
+                    gameState.currentBindingIndex > 0 && 
+                    timeSinceLastPinSet > 1000 &&
+                    isActivelyPickingLock) {
+                    
                     // 30% chance of over-tensioning with heavy pressure
                     if (Math.random() < 0.3) {
                         gameState.overTensioned = true;
@@ -3272,13 +3284,22 @@
                 }
 
                 pin.onmousedown = () => {
+                    // First check if this pin is already set
+                    const pinIndex = Array.from(pinsContainer.children).indexOf(pin);
+                    if (gameState.pinStates[pinIndex] === 2) {
+                        // Pin is already set, don't allow interaction
+                        return;
+                    }
+                    
+                    // Set the flag to indicate we're actively picking a pin
+                    gameState.isActivelyPickingPin = true;
+                    
                     pressStartTime = Date.now();
                     pressTimer = setInterval(checkPinPress, 100);
                     
                     pin.style.transform = 'translateY(-10px)';
                     
                     // Each pin has different tension requirements
-                    const pinIndex = Array.from(pinsContainer.children).indexOf(pin);
                     const bindingPin = bindingOrder[gameState.currentBindingIndex];
                     const requiredTension = gameState.tensionRequirements[pinIndex];
                     
@@ -3301,11 +3322,7 @@
                                     if (stillCorrectTension && !gameState.overTensioned) {
                                         gameState.pinStates[pinIndex] = 2;
                                         gameState.currentBindingIndex++;
-                                        
-                                        if (clickSound) {
-                                            clickSound.currentTime = 0;
-                                            clickSound.play().catch(e => console.log('Audio play failed:', e));
-                                        }
+                                        gameState.lastPinSetTime = Date.now(); // Record when this pin was set
                                         
                                         if (!gameState.hardMode) {
                                             pin.style.background = '#0f0';
@@ -3334,6 +3351,9 @@
                 };
 
                 pin.onmouseup = pin.onmouseleave = () => {
+                    // Clear the flag to indicate we're no longer actively picking a pin
+                    gameState.isActivelyPickingPin = false;
+                    
                     pressStartTime = 0;
                     if (pressTimer) {
                         clearInterval(pressTimer);
