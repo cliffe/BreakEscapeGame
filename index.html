@@ -1521,7 +1521,7 @@
                 return;
             }
             
-            // Check for locked state in scenarioData
+            // Check if item is locked
             if (data.locked === true) {
                 console.log('Item is locked:', data);
                 handleUnlock(sprite, 'item');
@@ -3099,7 +3099,7 @@
             let clickSound = null;
             const initAudio = () => {
                 if (!clickSound) {
-                    clickSound = new Audio('data:audio/wav;base64,UklGRnoGAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YQoGAACBhYqFbF1fdH2Dam9ycG5wdX2Dg4CBhIWCgX+Af4B/goCDgIJ/gn+BfoF/gn+CgIF/gn+Cf4F/g4CDgIJ/hIGFgoWBhYKGgoaCh4OIg4mEioWLhIyFjYaOhI+FkIaRhZKGk4eUhpWHloeXiJiImYiaiZuKnIqdi56LoIyhjaKOo4+kj6WQppGnkqiTqZSqlauWrJetmK6Zr5qwm7GcsZ2yn7OgtKG1oraitqO3pLiltqe4qLmpuqq7q7ysvq2/rsCwwbHCssOzxbTGtce2yLfJuMq5y7rMu827zrzPvdC+0b/SwdPC1MPVxNbF18bYx9nI2sjbydvK3Mvdy97M383gzuHP4tDj0eTT5dTm1efW6Nfp2Ora69vt3O7d797w3/Lh8+P05fXn9+j46Prs+/D89v77AQYHDA8VGh8lKi8zOD1CRkpPVFhbX2NobHBydHZ4enx+gIGCg4SFhoeIiYqLjI2Oj5CRkpOUlZaXmJmam5ydnp+goaKjpKWmp6ipqqusra6vsLGys7S1tre4ubq7vL2+v8DBwsPExcbHyMnKy8zNzs/Q0dLT1NXW19jZ2tvc3d7f4OHi4+Tl5ufo6err7O3u7/Dx8vP09fb3+Pn6+/z9/v8AAQIDBAUGBwgJCgsMDQ4PEBESExQVFhcYGRobHB0eHyAhIiMkJSYnKCkqKywtLi8wMTIzNDU2Nzg5Ojs8PT4/QEFCQ0RFRkdISUpLTE1OT1BRUlNUVVZXWFlaW1xdXl9gYWJjZGVmZ2hpamtsbW5vcHFyc3R1dnd4eXp7fH1+f4CBgoOEhYaHiImKi4yNjo+QkZKTlJWWl5iZmpucnZ6foKGio6SlpqeoqaqrrK2ur7CxsrO0tba3uLm6u7y9vr/AwcLDxMXGx8jJysvMzc7P0NHS09TV1tfY2drb3N3e3+Dh4uPk5ebn6Onq6+zt7u/w8fLz9PX29/j5+vv8/f7/AAECAwQFBgcICQoLDA0ODxAREhMUFRYXGBkaGxwdHh8gISIjJCUmJygpKissLS4vMDEyMzQ1Njc4OTo7PD0+P0BBQkNERUZHSElKS0xNTk9QUVJTVFVWV1hZWltcXV5fYGFiY2RlZmdoaWprbG1ub3BxcnN0dXZ3eHl6e3x9fn+AgYKDhIWGh4iJiouMjY6PkJGSk5SVlpeYmZqbnJ2en6ChoqOkpaanqKmqq6ytrq+wsbKztLW2t7i5uru8vb6/wMHCw8TFxsfIycrLzM3Oz9DR0tPU1dbX2Nna29zd3t/g4eLj5OXm5+jp6uvs7e7v8PHy8/T19vf4+fr7/P3+/w==');
+                    clickSound = new Audio('data:audio/wav;base64,UklGRnoGAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YQoGAACBhYqFbF1fdH2Dam9ycG5wdX2Dg4CBhIWCgX+Af4B/goCDgIJ/gn+BfoF/gn+CgIF/gn+Cf4F/g4CDgIJ/hIGFgoWBhYKGgoaCh4OIg4mEioWLhIyFjYaOhI+FkIaRhZKGk4eUhpWHloeXiJiImYiaiZuKnIqdi56LoIyhjaKOo4+kj6WQppGnkqiTqZSqlauWrJetmK6Zr5qwm7GcsZ2yn7OgtKG1oraitqO3pLiltqe4qLmpuqq7q7ysvq2/rsCwwbHCssOzxbTGtce2yLfJuMq5y7rMu827zrzPvdC+0b/SwdPC1MPVxNbF18bYx9nI2sjbydvK3Mvdy97M383gzuHP4tDj0eTT5dTm1efW6Nfp2Ora69vt3O7d797w3/Lh8+P05fXn9+j46Prs+/D89v77AQYHDA8VGh8lKi8zOD1CRkpPVFhbX2NobHBydHZ4enx+gIGCg4SFhoeIiYqLjI2Oj5CRkpOUlZaXmJmam5ydnp+goaKjpKWmp6ipqqusra6vsLGys7S1tre4ubq7vL2+v8DBwsPExcbHyMnKy8zNzs/Q0dLT1NXW19jZ2tvc3d7f4OHi4+Tl5ufo6err7O3u7/Dx8vPz9PX29/j5+vv8/f7/AAECAwQFBgcICQoLDA0ODxAREhMUFRYXGBkaGxwdHh8gISIjJCUmJygpKissLS4vMDEyMzQ1Njc4OTo7PD0+P0BBQkNERUZHSElKS0xNTk9QUVJTVFVWV1hZWltcXV5fYGFiY2RlZmdoaWprbG1ub3BxcnN0dXZ3eHl6e3x9fn+AgYKDhIWGh4iJiouMjY6PkJGSk5SVlpeYmZqbnJ2en6ChoqOkpaanqKmqq6ytrq+wsbKztLW2t7i5uru8vb6/wMHCw8TFxsfIycrLzM3Oz9DR0tPU1dbX2Nna29zd3t/g4eLj5OXm5+jp6uvs7e7v8PHy8/T19vf4+fr7/P3+/w==');
                 }
             };
 
@@ -3324,8 +3324,14 @@
             // Add this function before the pin creation loop
             function checkWinCondition() {
                 if (gameState.currentBindingIndex >= numPins) {
+                    // Update the lockable object's state to be unlocked but not collected
+                    if (lockable.scenarioData) {
+                        lockable.scenarioData.locked = false;
+                        lockable.scenarioData.isUnlockedButNotCollected = true;
+                    }
+                    
                     unlockTarget(lockable, 'door', lockable.layer);
-                    alert("Lock successfully picked!");
+                    alert("Lock successfully picked! You can now interact with it to collect the contents.");
                     document.body.removeChild(iframe);
                     if (currentScene && currentScene.input && currentScene.input.mouse) {
                         currentScene.input.mouse.enabled = true;
