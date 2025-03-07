@@ -159,7 +159,7 @@
             "locked": true,
             "lockType": "key",
             "requires": "ceo_office_key",
-            "difficulty": "hard",
+            "difficulty": "easy",
             "objects": [
                 {
                     "type": "pc",
