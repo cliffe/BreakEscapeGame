@@ -3112,7 +3112,7 @@
                 .sort(() => Math.random() - 0.5);
             
             const gameState = {
-                tensionLevel: 0,
+                tensionLevel: 1, // Start with light tension instead of none
                 pinStates: Array(numPins).fill(0), // 0 = down, 1 = moving, 2 = set
                 pinPressTime: Array(numPins).fill(0), // Track how long each pin is pressed
                 currentBindingIndex: 0,
@@ -3135,7 +3135,7 @@
             tensionWrench.style.cssText = `
                 width: 100px;
                 height: 30px;
-                background: ${gameState.tensionLevel === 0 ? '#444' : gameState.tensionLevel === 1 ? '#666' : gameState.tensionLevel === 2 ? '#888' : '#aaa'};
+                background: ${gameState.tensionLevel === 1 ? '#666' : gameState.tensionLevel === 2 ? '#888' : '#aaa'};
                 border: 2px solid #888;
                 border-radius: 5px;
                 cursor: pointer;
@@ -3179,8 +3179,8 @@
 
             // Create a single function for toggling tension
             function toggleTension() {
-                // Toggle tension levels (none -> light -> medium -> heavy -> none)
-                gameState.tensionLevel = (gameState.tensionLevel + 1) % 4;
+                // Toggle between 3 tension levels (light -> medium -> heavy -> light)
+                gameState.tensionLevel = (gameState.tensionLevel % 3) + 1;
                 updateTensionWrench();
                 
                 // Check if we're over-tensioning - but only if we've started interacting with pins
@@ -3203,11 +3203,6 @@
             function updateTensionWrench() {
                 // Update tension wrench appearance based on level
                 switch(gameState.tensionLevel) {
-                    case 0: // None
-                        tensionWrench.style.background = '#444';
-                        tensionWrench.style.transform = 'rotate(0deg)';
-                        tensionWrench.textContent = 'Tension: NONE';
-                        break;
                     case 1: // Light
                         tensionWrench.style.background = '#666';
                         tensionWrench.style.transform = 'rotate(2deg)';
