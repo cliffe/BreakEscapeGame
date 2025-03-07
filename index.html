@@ -3112,14 +3112,22 @@
                 .sort(() => Math.random() - 0.5);
             
             const gameState = {
-                tensionApplied: false,
+                tensionLevel: 0,
                 pinStates: Array(numPins).fill(0), // 0 = down, 1 = moving, 2 = set
                 pinPressTime: Array(numPins).fill(0), // Track how long each pin is pressed
                 currentBindingIndex: 0,
                 hardMode: false,
                 maxPressTime: 1000, // Max time to hold a pin (ms)
                 failCount: 0,
-                maxFails: 3
+                maxFails: 3,
+                overTensioned: false,
+                tensionRequirements: Array(numPins).fill(0).map(() => {
+                    // Each pin requires a specific tension level (1, 2, or 3)
+                    const randomValue = Math.random();
+                    if (randomValue < 0.33) return 1; // Light tension
+                    if (randomValue < 0.66) return 2; // Medium tension
+                    return 3; // Heavy tension
+                })
             };
 
             // Create tension wrench toggle
@@ -3127,7 +3135,7 @@
             tensionWrench.style.cssText = `
                 width: 100px;
                 height: 30px;
-                background: ${gameState.tensionApplied ? '#666' : '#444'};
+                background: ${gameState.tensionLevel === 0 ? '#444' : gameState.tensionLevel === 1 ? '#666' : gameState.tensionLevel === 2 ? '#888' : '#aaa'};
                 border: 2px solid #888;
                 border-radius: 5px;
                 cursor: pointer;
@@ -3169,7 +3177,8 @@
                 }
             }
 
-            tensionWrench.onclick = () => {
+            // Create a single function for toggling tension
+            function toggleTension() {
                 // Toggle tension levels (none -> light -> medium -> heavy -> none)
                 gameState.tensionLevel = (gameState.tensionLevel + 1) % 4;
                 updateTensionWrench();
@@ -3188,7 +3197,7 @@
                         }, 500);
                     }
                 }
-            };
+            }
 
             // Add this new function to update tension wrench visuals
             function updateTensionWrench() {
@@ -3337,7 +3346,7 @@
                     }
                     
                     pin.style.transform = 'translateY(0)';
-                    if (!gameState.tensionApplied || gameState.pinStates[i] !== 2) {
+                    if (gameState.pinStates[i] !== 2) {
                         pin.style.background = '#555';
                     }
                 };
@@ -3433,60 +3442,26 @@
                 return false;
             }
 
-            // Add these to the gameState object (around line 3120)
-            gameState.tensionRequirements = Array(numPins).fill(0).map(() => {
-                // Each pin requires a specific tension level (1, 2, or 3)
-                // 0 = no tension (not used), 1 = light, 2 = medium, 3 = heavy
-                const randomValue = Math.random();
-                if (randomValue < 0.33) return 1; // Light tension
-                if (randomValue < 0.66) return 2; // Medium tension
-                return 3; // Heavy tension
-            });
-            gameState.tensionLevel = 0; // 0 = none, 1 = light, 2 = medium, 3 = heavy
-            gameState.overTensioned = false;
+            // Use the toggleTension function for both click and keyboard events
+            tensionWrench.onclick = toggleTension;
 
-            // Add keyboard controls for tension
             document.addEventListener('keydown', function(event) {
                 // Only process if the lockpicking minigame is active
                 if (!document.querySelector('div[style*="z-index: 1000"]')) return;
                 
                 if (event.code === 'Space') {
                     event.preventDefault(); // Prevent page scrolling
-                    
-                    // Toggle tension levels (none -> light -> medium -> heavy -> none)
-                    gameState.tensionLevel = (gameState.tensionLevel + 1) % 4;
-                    
-                    // Update tension wrench visuals
-                    updateTensionWrench();
-                    
-                    // Check if we're over-tensioning - but only if we've started interacting with pins
-                    if (gameState.tensionLevel === 3 && gameState.currentBindingIndex > 0) {
-                        // 30% chance of over-tensioning with heavy pressure
-                        if (Math.random() < 0.3) {
-                            gameState.overTensioned = true;
-                            tensionWrench.style.background = '#ff3333';
-                            tensionWrench.style.transform = 'rotate(15deg)';
-                            
-                            setTimeout(() => {
-                                alert("You applied too much tension and jammed the lock!");
-                                resetPins();
-                            }, 500);
-                        }
-                    }
+                    toggleTension();
                 }
             });
 
-            // Replace the logTensionDebugInfo function with this simplified version
-            // that only logs once at the beginning
+            // Keep only the table debug function
             function logTensionDebugInfo() {
-                // Log initial pin information
                 console.log("=== LOCKPICKING DEBUG INFO ===");
                 console.log("Pin binding order and tension requirements:");
                 
-                // Create a table for the console
                 const tableData = [];
                 
-                // First, create entries for each binding position
                 for (let orderIndex = 0; orderIndex < numPins; orderIndex++) {
                     const pinIndex = bindingOrder[orderIndex];
                     const requiredTension = gameState.tensionRequirements[pinIndex];
@@ -3507,81 +3482,6 @@
                 }
                 
                 console.table(tableData);
-            }
-
-            tensionWrench.onclick = () => {
-                // Toggle tension levels (none -> light -> medium -> heavy -> none)
-                gameState.tensionLevel = (gameState.tensionLevel + 1) % 4;
-                updateTensionWrench();
-                
-                // Check if we're over-tensioning - but only if we've started interacting with pins
-                if (gameState.tensionLevel === 3 && gameState.currentBindingIndex > 0) {
-                    // 30% chance of over-tensioning with heavy pressure
-                    if (Math.random() < 0.3) {
-                        gameState.overTensioned = true;
-                        tensionWrench.style.background = '#ff3333';
-                        tensionWrench.style.transform = 'rotate(15deg)';
-                        
-                        setTimeout(() => {
-                            alert("You applied too much tension and jammed the lock!");
-                            resetPins();
-                        }, 500);
-                    }
-                }
-            };
-
-            function getColorForOrder(order) {
-                const colors = ['#ff0000', '#ff7700', '#ffff00', '#00ff00', '#0000ff', '#7700ff', '#ff00ff'];
-                return colors[order % colors.length];
-            }
-
-            // Replace the addTensionDebugDisplay function with this console logging version
-            function logTensionDebugInfo() {
-                // Log initial pin information
-                console.log("=== LOCKPICKING DEBUG INFO ===");
-                console.log("Pin binding order and tension requirements:");
-                
-                // Create a table for the console
-                const tableData = [];
-                
-                // First, create entries for each binding position
-                for (let orderIndex = 0; orderIndex < numPins; orderIndex++) {
-                    const pinIndex = bindingOrder[orderIndex];
-                    const requiredTension = gameState.tensionRequirements[pinIndex];
-                    let tensionNeeded;
-                    
-                    switch(requiredTension) {
-                        case 1: tensionNeeded = 'Light'; break;
-                        case 2: tensionNeeded = 'Medium'; break;
-                        case 3: tensionNeeded = 'Heavy'; break;
-                        default: tensionNeeded = 'Unknown';
-                    }
-                    
-                    tableData.push({
-                        'Binding Order': orderIndex + 1,
-                        'Pin #': pinIndex + 1,
-                        'Tension Required': tensionNeeded
-                    });
-                }
-                
-                console.table(tableData);
-                
-                // Update the updateTensionWrench function to log tension changes
-                const originalUpdateTensionWrench = updateTensionWrench;
-                updateTensionWrench = function() {
-                    originalUpdateTensionWrench();
-                    
-                    // Log which pins can be set with current tension
-                    const settablePins = [];
-            for (let i = 0; i < numPins; i++) {
-                        const requiredTension = gameState.tensionRequirements[i];
-                        const correctTension = (gameState.tensionLevel === requiredTension);
-                                    
-                        if (correctTension) {
-                            settablePins.push(i + 1);
-                        }
-                    }
-                };
             }
 
             // Call this function instead of addTensionDebugDisplay
