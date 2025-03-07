@@ -3286,6 +3286,8 @@
                     // Reset to default first
                     pin.style.background = '#555';
                     pinIndicator.style.background = '#555';
+                    pin.style.animation = '';
+                    pin.style.borderColor = '#777';
                     
                     // If the pin is set, show it as green
                     if (gameState.pinStates[i] === 2) {
@@ -3297,6 +3299,17 @@
                     
                     // Get the current binding pin
                     const bindingPin = bindingOrder[gameState.currentBindingIndex];
+                    
+                    // Generate consistent red herrings based on the current binding index
+                    // This ensures the same pins are highlighted as red herrings until the next pin is set
+                    const redHerringSeeds = [
+                        (bindingPin * 3 + 7) % numPins,
+                        (bindingPin * 5 + 3) % numPins
+                    ];
+                    
+                    // Filter out the binding pin and already set pins from red herrings
+                    const redHerrings = redHerringSeeds.filter(index => 
+                        index !== bindingPin && gameState.pinStates[index] !== 2);
                     
                     // If this is the current binding pin, give a subtle hint based on difficulty
                     if (i === bindingPin) {
@@ -3313,26 +3326,46 @@
                             } else {
                                 pin.style.borderColor = '#ff6666'; // Red for heavy tension
                             }
+                            
+                            // Add a subtle animation
+                            pin.style.animation = 'pinWiggle 2s infinite';
                         } 
-                        // For medium difficulty, just show which pin is binding
+                        // For medium difficulty, just show which pin is binding with less obvious cues
                         else if (difficulty === 'medium') {
                             pinIndicator.style.background = '#ff9900'; // Orange indicator for binding pin
+                            pin.style.animation = 'pinWiggle 3s infinite';
                         }
-                        // For hard difficulty, no visual indicators
+                        // For hard difficulty, very subtle indication
+                        else if (difficulty === 'hard') {
+                            pin.style.animation = 'pinWiggle 4s infinite 0.5s';
+                        }
                     }
-                    
-                    // If we've set at least one pin, provide a subtle hint about the next binding pin
-                    // but only for easy and medium difficulties
-                    if (gameState.currentBindingIndex > 0 && !gameState.hardMode) {
-                        // Make pins slightly "wiggle" based on how close they are to being the binding pin
-                        const distanceFromBinding = Math.abs(i - bindingPin);
-                        
-                        if (distanceFromBinding === 0 && difficulty !== 'hard') {
-                            // This is the binding pin, add a subtle animation
-                            pin.style.animation = 'pinWiggle 2s infinite';
-                        } else if (distanceFromBinding <= 2 && difficulty === 'easy') {
-                            // Close to binding pin, add a very subtle hint for easy difficulty
-                            pin.style.animation = 'pinWiggle 4s infinite';
+                    // If this is a red herring, give misleading feedback
+                    else if (redHerrings.includes(i) && gameState.currentBindingIndex > 0 && difficulty !== 'easy') {
+                        // The amount of misleading feedback depends on difficulty
+                        if (difficulty === 'medium') {
+                            // For medium, make red herrings somewhat convincing
+                            pinIndicator.style.background = '#ff9900'; // Same color as real binding pin
+                            pin.style.animation = 'pinWiggle 3.5s infinite 0.7s'; // Similar wiggle to real pin
+                            
+                            // Randomly assign fake tension indicators to confuse
+                            const fakeTension = Math.floor(Math.random() * 3) + 1;
+                            if (fakeTension === 1) {
+                                pin.style.borderColor = '#66ccff';
+                            } else if (fakeTension === 2) {
+                                pin.style.borderColor = '#9966ff';
+                            } else {
+                                pin.style.borderColor = '#ff6666';
+                            }
+                        }
+                        else if (difficulty === 'hard') {
+                            // For hard, make red herrings very convincing
+                            pin.style.animation = 'pinWiggle 4s infinite 0.3s';
+                            
+                            // On hard, sometimes make a red herring more convincing than the real pin
+                            if (Math.random() < 0.5) {
+                                pinIndicator.style.background = '#ff9900';
+                            }
                         }
                     }
                 }
@@ -3344,9 +3377,11 @@
                     style.textContent = `
                         @keyframes pinWiggle {
                             0% { transform: translateY(0); }
-                            25% { transform: translateY(-2px); }
-                            50% { transform: translateY(0); }
-                            75% { transform: translateY(-1px); }
+                            15% { transform: translateY(-2px); }
+                            30% { transform: translateY(0); }
+                            45% { transform: translateY(-1px); }
+                            60% { transform: translateY(0); }
+                            75% { transform: translateY(-0.5px); }
                             100% { transform: translateY(0); }
                         }
                     `;
@@ -3355,9 +3390,28 @@
 
                 // Update all pins whenever a pin state changes
                 function updateAllPins() {
+                    // Get the current binding pin
+                    const bindingPin = bindingOrder[gameState.currentBindingIndex];
+                    
+                    // Generate consistent red herrings based on the current binding index
+                    const redHerringSeeds = [
+                        (bindingPin * 3 + 7) % numPins,
+                        (bindingPin * 5 + 3) % numPins
+                    ];
+                    
+                    // Filter out the binding pin and already set pins from red herrings
+                    const redHerrings = redHerringSeeds.filter(index => 
+                        index !== bindingPin && gameState.pinStates[index] !== 2);
+                    
                     Array.from(pinsContainer.children).forEach((pin, index) => {
                         // Find the indicator within this pin
                         const indicator = pin.querySelector('div:first-child');
+                        
+                        // Reset styles first
+                        pin.style.background = '#555';
+                        pin.style.animation = '';
+                        pin.style.borderColor = '#777';
+                        if (indicator) indicator.style.background = '#555';
                         
                         // Update based on current game state
                         if (gameState.pinStates[index] === 2) {
@@ -3365,14 +3419,54 @@
                             pin.style.cursor = 'default';
                             if (indicator) indicator.style.background = '#0f0';
                         } else {
-                            pin.style.background = '#555';
                             pin.style.cursor = 'pointer';
-                            if (indicator) indicator.style.background = '#555';
                             
                             // Check if this is the binding pin
-                            const bindingPin = bindingOrder[gameState.currentBindingIndex];
                             if (index === bindingPin && !gameState.hardMode) {
-                                if (indicator) indicator.style.background = '#ff9900';
+                                if (difficulty === 'easy') {
+                                    if (indicator) indicator.style.background = '#ff9900';
+                                    
+                                    // Show tension hint
+                                    const requiredTension = gameState.tensionRequirements[index];
+                                    if (requiredTension === 1) {
+                                        pin.style.borderColor = '#66ccff';
+                                    } else if (requiredTension === 2) {
+                                        pin.style.borderColor = '#9966ff';
+                                    } else {
+                                        pin.style.borderColor = '#ff6666';
+                                    }
+                                    
+                                    pin.style.animation = 'pinWiggle 2s infinite';
+                                } 
+                                else if (difficulty === 'medium') {
+                                    if (indicator) indicator.style.background = '#ff9900';
+                                    pin.style.animation = 'pinWiggle 3s infinite';
+                                }
+                                else if (difficulty === 'hard') {
+                                    pin.style.animation = 'pinWiggle 4s infinite 0.5s';
+                                }
+                            }
+                            // Check if this is a red herring, but only for medium and hard difficulties
+                            else if (redHerrings.includes(index) && gameState.currentBindingIndex > 0 && difficulty !== 'easy') {
+                                if (difficulty === 'medium') {
+                                    if (indicator) indicator.style.background = '#ff9900';
+                                    pin.style.animation = 'pinWiggle 3.5s infinite 0.7s';
+                                    
+                                    const fakeTension = Math.floor(Math.random() * 3) + 1;
+                                    if (fakeTension === 1) {
+                                        pin.style.borderColor = '#66ccff';
+                                    } else if (fakeTension === 2) {
+                                        pin.style.borderColor = '#9966ff';
+                                    } else {
+                                        pin.style.borderColor = '#ff6666';
+                                    }
+                                }
+                                else if (difficulty === 'hard') {
+                                    pin.style.animation = 'pinWiggle 4s infinite 0.3s';
+                                    if (Math.random() < 0.5 && indicator) {
+                                        indicator.style.background = '#ff9900';
+                                    }
+                                }
                             }
                         }
                     });
