@@ -3324,14 +3324,27 @@
             // Add this function before the pin creation loop
             function checkWinCondition() {
                 if (gameState.currentBindingIndex >= numPins) {
-                    // Update the lockable object's state to be unlocked but not collected
-                    if (lockable.scenarioData) {
+                    console.log('Lock picked successfully:', lockable);
+                    
+                    // For doors, we need to check properties and handle differently
+                    if (lockable && lockable.properties && lockable.properties.locked) {
+                        console.log('Unlocking door tile:', lockable);
+                        unlockDoor(lockable, lockable.layer);
+                        alert("Lock successfully picked! The door is now unlocked.");
+                    } 
+                    // For containers and other lockable items
+                    else if (lockable.scenarioData) {
+                        console.log('Unlocking container:', lockable.scenarioData);
                         lockable.scenarioData.locked = false;
-                        lockable.scenarioData.isUnlockedButNotCollected = true;
+                        
+                        if (lockable.scenarioData.contents) {
+                            lockable.scenarioData.isUnlockedButNotCollected = true;
+                            alert("Lock successfully picked! You can now interact with it to collect the contents.");
+                        } else {
+                            alert("Lock successfully picked!");
+                        }
                     }
                     
-                    unlockTarget(lockable, 'door', lockable.layer);
-                    alert("Lock successfully picked! You can now interact with it to collect the contents.");
                     document.body.removeChild(iframe);
                     if (currentScene && currentScene.input && currentScene.input.mouse) {
                         currentScene.input.mouse.enabled = true;
