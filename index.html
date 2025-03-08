@@ -2595,6 +2595,13 @@
             }
             
             try {
+                // Check if the item is already in the inventory
+                const isAlreadyInInventory = inventory.items.some(item => item.name === sprite.name);
+                if (isAlreadyInInventory) {
+                    console.log(`Item ${sprite.name} is already in inventory, not adding again`);
+                    return false;
+                }
+                
                 // Remove from room if it exists
                 if (currentRoom && 
                     rooms[currentRoom] && 
@@ -3032,10 +3039,15 @@
                         
                         // Allow the item to be picked up even if locked
                         if (type === 'item' && lockable.scenarioData?.takeable) {
-                            addToInventory(lockable);
-                            // Remove from room objects if it exists there
-                            if (currentRoom && rooms[currentRoom].objects) {
-                                delete rooms[currentRoom].objects[lockable.name];
+                            // Check if the item is already in the inventory before adding it
+                            const isAlreadyInInventory = inventory.items.some(item => item.name === lockable.name);
+                            
+                            if (!isAlreadyInInventory) {
+                                addToInventory(lockable);
+                                // Remove from room objects if it exists there
+                                if (currentRoom && rooms[currentRoom].objects) {
+                                    delete rooms[currentRoom].objects[lockable.name];
+                                }
                             }
                         }
                         return;
