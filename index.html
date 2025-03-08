@@ -651,6 +651,24 @@
             background-color: #219653;
         }
 
+        /* Bluetooth Unlock Button */
+        .bluetooth-unlock-button {
+            display: inline-block;
+            margin-top: 8px;
+            padding: 5px 10px;
+            background-color: #2980b9;
+            color: white;
+            border: none;
+            border-radius: 3px;
+            font-size: 12px;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+        
+        .bluetooth-unlock-button:hover {
+            background-color: #3498db;
+        }
+
         /* Add a class to preserve hover state during updates */
         .bluetooth-device.hover-preserved {
             background-color: #333;
@@ -3398,38 +3416,87 @@
                 return false;
             }
             
-            // Calculate distance between player and target device
-            const distance = Phaser.Math.Distance.Between(
-                player.x, player.y,
-                target.x, target.y
-            );
+            // Check if target is in inventory or in the environment
+            const isInventoryItem = inventory.items.includes(target);
             
-            debugLog('BLUETOOTH SPOOF ATTEMPT', {
-                deviceName: target.scenarioData?.name,
-                deviceMac: target.scenarioData?.mac,
-                spooferMac: spoofer.scenarioData?.macPaired,
-                distance: Math.round(distance)
-            }, 2);
-            
-            // Check if player is within range
-            if (distance <= BLUETOOTH_SCAN_RANGE) {
-                // Check if the spoofer has the correct MAC address
-                if (spoofer.scenarioData?.macPaired === target.scenarioData?.mac) {
-                    debugLog('BLUETOOTH SPOOF SUCCESS', {
-                        deviceName: target.scenarioData?.name,
-                        mac: target.scenarioData?.mac
-                    }, 1);
-                    
-                    // Unlock the device
-                    target.scenarioData.locked = false;
-                    gameAlert("Bluetooth connection spoofed. Device unlocked.", 'success', 'Spoofing Successful', 4000);
-                    return true;
-                } else {
-                    gameAlert("Bluetooth spoofer MAC address doesn't match the target device.", 'error', 'Spoofing Failed', 4000);
+            // If it's an environment object, check distance
+            if (!isInventoryItem) {
+                // Calculate distance between player and target device
+                const distance = Phaser.Math.Distance.Between(
+                    player.x, player.y,
+                    target.x, target.y
+                );
+                
+                debugLog('BLUETOOTH SPOOF ATTEMPT', {
+                    deviceName: target.scenarioData?.name,
+                    deviceMac: target.scenarioData?.mac,
+                    spooferMac: spoofer.scenarioData?.macPaired,
+                    distance: Math.round(distance),
+                    isInventoryItem: false
+                }, 2);
+                
+                // Check if player is within range
+                if (distance > BLUETOOTH_SCAN_RANGE) {
+                    gameAlert("Too far from device to establish Bluetooth connection.", 'error', 'Connection Failed', 3000);
                     return false;
                 }
             } else {
-                gameAlert("Too far from device to establish Bluetooth connection.", 'error', 'Connection Failed', 3000);
+                // Log attempt for inventory item
+                debugLog('BLUETOOTH SPOOF ATTEMPT', {
+                    deviceName: target.scenarioData?.name,
+                    deviceMac: target.scenarioData?.mac,
+                    spooferMac: spoofer.scenarioData?.macPaired,
+                    isInventoryItem: true,
+                    distance: 0 // Inventory items are always at distance 0
+                }, 2);
+            }
+            
+            // Normalize MAC addresses for comparison
+            const targetMac = target.scenarioData?.mac?.toLowerCase() || "";
+            const spooferMac = spoofer.scenarioData?.macPaired?.toLowerCase() || "";
+            
+            // Check if the spoofer has the correct MAC address
+            if (spooferMac && targetMac && spooferMac === targetMac) {
+                debugLog('BLUETOOTH SPOOF SUCCESS', {
+                    deviceName: target.scenarioData?.name,
+                    mac: target.scenarioData?.mac,
+                    isInventoryItem: isInventoryItem
+                }, 1);
+                
+                // Unlock the device
+                target.scenarioData.locked = false;
+                
+                // If it's an inventory item, update its appearance if needed
+                if (isInventoryItem) {
+                    // Update the item's texture if it has an unlocked version
+                    if (target.scenarioData?.unlockedTexture) {
+                        target.setTexture(target.scenarioData.unlockedTexture);
+                    }
+                    
+                    // If the item has contents, allow them to be collected
+                    if (target.scenarioData?.contents) {
+                        target.scenarioData.isUnlockedButNotCollected = true;
+                        collectContainerContents(target);
+                        
+                        // Remove the device from the bluetoothDevices array
+                        const deviceIndex = bluetoothDevices.findIndex(device => 
+                            device.mac.toLowerCase() === targetMac && device.inInventory
+                        );
+                        
+                        if (deviceIndex !== -1) {
+                            bluetoothDevices.splice(deviceIndex, 1);
+                        }
+                    }
+                }
+                
+                gameAlert("Bluetooth connection spoofed. Device unlocked.", 'success', 'Spoofing Successful', 4000);
+                
+                // Update the Bluetooth panel to reflect the unlocked state
+                updateBluetoothPanel();
+                
+                return true;
+            } else {
+                gameAlert("Bluetooth spoofer MAC address doesn't match the target device.", 'error', 'Spoofing Failed', 4000);
                 return false;
             }
         }
@@ -5109,6 +5176,53 @@
             const hoveredDevice = document.querySelector('.bluetooth-device:hover');
             const hoveredDeviceId = hoveredDevice ? hoveredDevice.dataset.id : null;
             
+            // Add Bluetooth-locked items from inventory to the main bluetoothDevices array
+            inventory.items.forEach(item => {
+                if (item.scenarioData?.lockType === "bluetooth" && item.scenarioData?.locked) {
+                    // Check if this device is already in our list
+                    const deviceMac = item.scenarioData?.mac || "Unknown";
+                    
+                    // Normalize MAC address format (ensure lowercase for comparison)
+                    const normalizedMac = deviceMac.toLowerCase();
+                    
+                    // Check if device already exists in our list
+                    const existingDeviceIndex = bluetoothDevices.findIndex(device => 
+                        device.mac.toLowerCase() === normalizedMac
+                    );
+                    
+                    if (existingDeviceIndex === -1) {
+                        // Add as a new device
+                        const deviceName = item.scenarioData?.name || item.name || "Unknown Device";
+                        const details = `Type: ${item.scenarioData?.type || "Unknown"}\nLocation: Inventory\nStatus: Locked`;
+                        
+                        const newDevice = {
+                            id: `inv_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
+                            name: deviceName,
+                            mac: deviceMac,
+                            details: details,
+                            lastSeen: new Date(),
+                            nearby: true, // Always nearby since it's in inventory
+                            saved: true,  // Auto-save inventory items
+                            signalStrength: 100, // Max strength for inventory items
+                            inInventory: true // Mark as inventory item
+                        };
+                        
+                        // Add to the main bluetoothDevices array
+                        bluetoothDevices.push(newDevice);
+                        console.log('Added inventory device to bluetoothDevices:', newDevice);
+                    } else {
+                        // Update existing device
+                        const existingDevice = bluetoothDevices[existingDeviceIndex];
+                        existingDevice.inInventory = true;
+                        existingDevice.nearby = true;
+                        existingDevice.signalStrength = 100;
+                        existingDevice.lastSeen = new Date();
+                        existingDevice.details = `Type: ${item.scenarioData?.type || "Unknown"}\nLocation: Inventory\nStatus: Locked`;
+                        console.log('Updated existing device with inventory info:', existingDevice);
+                    }
+                }
+            });
+            
             // Filter devices based on search and category
             let filteredDevices = [...bluetoothDevices];
             
@@ -5130,6 +5244,12 @@
             
             // Sort devices with nearby ones first, then by signal strength (highest first for nearby), then by last seen (newest first)
             filteredDevices.sort((a, b) => {
+                // Inventory items first
+                if (a.inInventory !== b.inInventory) {
+                    return a.inInventory ? -1 : 1;
+                }
+                
+                // Then nearby items
                 if (a.nearby !== b.nearby) {
                     return a.nearby ? -1 : 1;
                 }
@@ -5204,6 +5324,10 @@
                     if (device.saved) {
                         deviceContent += `<span class="bluetooth-device-icon">💾</span>`;
                     }
+                    
+                    if (device.inInventory) {
+                        deviceContent += `<span class="bluetooth-device-icon">🎒</span>`;
+                    }
 
                     deviceContent += `</div></div>`;
                     deviceContent += `<div class="bluetooth-device-details">MAC: ${device.mac}\n${device.details}</div>`;
@@ -5228,6 +5352,11 @@
                                 deviceContent += `<div style="font-size: 11px; color: #27ae60; margin-top: 4px;">
                                     You can now use this MAC address to unlock matching Bluetooth locks
                                 </div>`;
+                                
+                                // If this is an inventory item, add an unlock button
+                                if (device.inInventory) {
+                                    deviceContent += `<button class="bluetooth-unlock-button" data-mac="${device.mac}">Unlock Device</button>`;
+                                }
                             }
                         }
                     }
@@ -5237,7 +5366,13 @@
                     deviceElement.innerHTML = deviceContent;
                     
                     // Toggle expanded state when clicked
-                    deviceElement.addEventListener('click', () => {
+                    deviceElement.addEventListener('click', (event) => {
+                        // Don't toggle if clicking on the pair button
+                        if (event.target.classList.contains('bluetooth-pair-button') || 
+                            event.target.closest('.bluetooth-pair-button')) {
+                            return;
+                        }
+                        
                         deviceElement.classList.toggle('expanded');
                         
                         // Mark as saved when expanded
@@ -5301,7 +5436,40 @@
             document.addEventListener('click', function(event) {
                 if (event.target.classList.contains('bluetooth-pair-button')) {
                     const mac = event.target.dataset.mac;
-                    attemptPairingWithDevice(mac);
+                    console.log('Attempting to pair with device MAC:', mac);
+                    
+                    // Find the device in our list
+                    const device = bluetoothDevices.find(device => device.mac === mac);
+                    console.log('Found device:', device);
+                    
+                    if (device) {
+                        attemptPairingWithDevice(mac);
+                    } else {
+                        gameAlert("Device not found in Bluetooth devices list.", 'error', 'Pairing Failed', 3000);
+                    }
+                    
+                    event.stopPropagation(); // Prevent device expanding/collapsing when clicking the button
+                }
+                
+                // Handle unlock button clicks
+                if (event.target.classList.contains('bluetooth-unlock-button')) {
+                    const mac = event.target.dataset.mac;
+                    console.log('Attempting to unlock device MAC:', mac);
+                    
+                    // Find the inventory item with this MAC address
+                    const item = inventory.items.find(item => 
+                        item.scenarioData?.mac === mac && 
+                        item.scenarioData?.lockType === "bluetooth" && 
+                        item.scenarioData?.locked
+                    );
+                    console.log('Found inventory item:', item);
+                    
+                    if (item) {
+                        unlockInventoryDeviceByMac(mac);
+                    } else {
+                        gameAlert("Device not found in inventory.", 'error', 'Unlock Failed', 3000);
+                    }
+                    
                     event.stopPropagation(); // Prevent device expanding/collapsing when clicking the button
                 }
             });
@@ -5309,15 +5477,66 @@
             // Initialize Bluetooth count
             updateBluetoothCount();
         }
+        
+        // Function to unlock a Bluetooth-locked inventory item by MAC address
+        function unlockInventoryDeviceByMac(mac) {
+            console.log('Attempting to unlock inventory device with MAC:', mac);
+            
+            // Normalize MAC address for comparison
+            const normalizedMac = mac.toLowerCase();
+            
+            // Find the inventory item with this MAC address
+            const item = inventory.items.find(item => 
+                item.scenarioData?.mac?.toLowerCase() === normalizedMac && 
+                item.scenarioData?.lockType === "bluetooth" && 
+                item.scenarioData?.locked
+            );
+            
+            if (!item) {
+                console.error('Inventory item not found with MAC:', mac);
+                gameAlert("Device not found in inventory.", 'error', 'Unlock Failed', 3000);
+                return;
+            }
+            
+            console.log('Found inventory item to unlock:', item);
+            
+            // Attempt to spoof the device
+            const success = spoofBluetoothDevice(item);
+            
+            // If successful, remove the device from the bluetoothDevices array
+            if (success) {
+                // Find the device in the bluetoothDevices array
+                const deviceIndex = bluetoothDevices.findIndex(device => 
+                    device.mac.toLowerCase() === normalizedMac && device.inInventory
+                );
+                
+                // Remove it if found
+                if (deviceIndex !== -1) {
+                    console.log('Removing unlocked device from bluetoothDevices array');
+                    bluetoothDevices.splice(deviceIndex, 1);
+                    
+                    // Update the Bluetooth panel to reflect the changes
+                    updateBluetoothPanel();
+                }
+            }
+        }
 
         // Function to handle pairing attempts with Bluetooth devices
         function attemptPairingWithDevice(mac) {
-            // Find the device in our list
-            const device = bluetoothDevices.find(device => device.mac === mac);
+            console.log('Attempting to pair with MAC:', mac);
+            console.log('All Bluetooth devices:', bluetoothDevices);
+            
+            // Find the device in our list (case-insensitive comparison)
+            const normalizedMac = mac.toLowerCase();
+            const device = bluetoothDevices.find(device => device.mac.toLowerCase() === normalizedMac);
+            
             if (!device) {
+                console.error('Device not found with MAC:', mac);
                 gameAlert("Device not found.", 'error', 'Pairing Failed', 3000);
                 return;
             }
+            
+            console.log('Found device for pairing:', device);
             
             // Find spoofer in inventory
             const spoofer = inventory.items.find(item => 
@@ -5330,14 +5549,15 @@
             }
             
             // Check if player is close enough to the device (using the proximity from real-time scanning)
-            if (!device.nearby) {
+            // Skip proximity check for inventory items
+            if (!device.nearby && !device.inInventory) {
                 gameAlert("You need to be closer to the device to pair with it.", 'warning', 'Too Far', 3000);
                 return;
             }
             
             // Check if this device is already paired with
-            if (spoofer.scenarioData?.macPaired === device.mac) {
-                gameAlert(`This device's MAC address (${device.mac}) is already programmed into your spoofer.`, 'info', 'Already Paired', 3000);
+            if (spoofer.scenarioData?.macPaired && spoofer.scenarioData.macPaired.toLowerCase() === normalizedMac) {
+                gameAlert(`This device's MAC address (${mac}) is already programmed into your spoofer.`, 'info', 'Already Paired', 3000);
                 return;
             }
             
@@ -5574,6 +5794,8 @@
                     );
                     
                     if (spoofer) {
+                        console.log('Programming spoofer with MAC address:', device.mac);
+                        
                         // Program the spoofer with the target MAC address
                         spoofer.scenarioData.macPaired = device.mac;
                         
@@ -5586,6 +5808,8 @@
                         
                         // Update the UI to show the pairing was successful
                         device.paired = true;
+                        
+                        // Update the Bluetooth panel to reflect the pairing
                         updateBluetoothPanel();
                     }
                 } else {
