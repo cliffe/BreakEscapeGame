@@ -624,6 +624,24 @@
             font-weight: bold;
             display: none;
         }
+
+        /* Bluetooth Pairing Button */
+        .bluetooth-pair-button {
+            display: inline-block;
+            margin-top: 8px;
+            padding: 5px 10px;
+            background-color: #9b59b6;
+            color: white;
+            border: none;
+            border-radius: 3px;
+            font-size: 12px;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+
+        .bluetooth-pair-button:hover {
+            background-color: #8e44ad;
+        }
     </style>
     <script src="https://cdn.jsdelivr.net/npm/phaser@3.60.0/dist/phaser.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/easystarjs@0.4.4/bin/easystar-0.4.4.js"></script>
@@ -5129,6 +5147,19 @@
 
                     deviceContent += `</div></div>`;
                     deviceContent += `<div class="bluetooth-device-details">MAC: ${device.mac}\n${device.details}</div>`;
+
+                    // Add pairing button only if device is nearby and player has a Bluetooth spoofer
+                    if (device.nearby) {
+                        // Check if player has a Bluetooth spoofer in inventory
+                        const hasSpoofer = inventory.items.some(item => 
+                            item.scenarioData?.type === "bluetooth_spoofer"
+                        );
+                        
+                        if (hasSpoofer) {
+                            deviceContent += `<button class="bluetooth-pair-button" data-mac="${device.mac}">Attempt Pairing</button>`;
+                        }
+                    }
+
                     deviceContent += `<div class="bluetooth-device-timestamp">Last seen: ${formattedDate} ${formattedTime}</div>`;
 
                     deviceElement.innerHTML = deviceContent;
