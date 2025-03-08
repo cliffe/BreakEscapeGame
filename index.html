@@ -27,6 +27,201 @@
             display: none;
         }
 
+        /* Notification System */
+        #notification-container {
+            position: fixed;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 80%;
+            max-width: 600px;
+            z-index: 2000;
+            font-family: Arial, sans-serif;
+            pointer-events: none;
+        }
+
+        .notification {
+            background-color: rgba(0, 0, 0, 0.8);
+            color: white;
+            padding: 15px 20px;
+            margin-bottom: 10px;
+            border-radius: 5px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+            transition: all 0.3s ease;
+            opacity: 0;
+            transform: translateY(-20px);
+            pointer-events: auto;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .notification.show {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .notification.info {
+            border-left: 4px solid #3498db;
+        }
+
+        .notification.success {
+            border-left: 4px solid #2ecc71;
+        }
+
+        .notification.warning {
+            border-left: 4px solid #f39c12;
+        }
+
+        .notification.error {
+            border-left: 4px solid #e74c3c;
+        }
+
+        .notification-title {
+            font-weight: bold;
+            margin-bottom: 5px;
+            font-size: 16px;
+        }
+
+        .notification-message {
+            font-size: 14px;
+            line-height: 1.4;
+        }
+
+        .notification-close {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            cursor: pointer;
+            font-size: 16px;
+            color: #aaa;
+        }
+
+        .notification-close:hover {
+            color: white;
+        }
+
+        .notification-progress {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            height: 3px;
+            background-color: rgba(255, 255, 255, 0.5);
+            width: 100%;
+        }
+
+        /* Notes Panel */
+        #notes-panel {
+            position: fixed;
+            bottom: 80px;
+            right: 20px;
+            width: 300px;
+            max-height: 400px;
+            background-color: rgba(0, 0, 0, 0.8);
+            color: white;
+            border-radius: 5px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+            z-index: 1999;
+            font-family: Arial, sans-serif;
+            display: none;
+            overflow: hidden;
+            transition: all 0.3s ease;
+        }
+
+        #notes-header {
+            background-color: #222;
+            padding: 10px 15px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid #444;
+        }
+
+        #notes-title {
+            font-weight: bold;
+            font-size: 16px;
+        }
+
+        #notes-close {
+            cursor: pointer;
+            font-size: 16px;
+            color: #aaa;
+        }
+
+        #notes-close:hover {
+            color: white;
+        }
+
+        #notes-content {
+            padding: 15px;
+            overflow-y: auto;
+            max-height: 350px;
+        }
+
+        .note-item {
+            margin-bottom: 15px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid #444;
+        }
+
+        .note-item:last-child {
+            margin-bottom: 0;
+            padding-bottom: 0;
+            border-bottom: none;
+        }
+
+        .note-title {
+            font-weight: bold;
+            margin-bottom: 5px;
+            font-size: 14px;
+            color: #3498db;
+        }
+
+        .note-text {
+            font-size: 13px;
+            line-height: 1.4;
+            white-space: pre-wrap;
+        }
+
+        #notes-toggle {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            width: 50px;
+            height: 50px;
+            background-color: #3498db;
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+            z-index: 1998;
+            font-size: 24px;
+            transition: all 0.3s ease;
+        }
+
+        #notes-toggle:hover {
+            background-color: #2980b9;
+            transform: scale(1.1);
+        }
+
+        #notes-count {
+            position: absolute;
+            top: -5px;
+            right: -5px;
+            background-color: #e74c3c;
+            color: white;
+            border-radius: 50%;
+            width: 20px;
+            height: 20px;
+            font-size: 12px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-weight: bold;
+        }
+
         #laptop-popup {
             display: none;
             position: fixed;
@@ -121,6 +316,22 @@
         <div id="loading">Loading...</div>
     </div>
 
+    <!-- Notification System -->
+    <div id="notification-container"></div>
+
+    <!-- Notes Panel -->
+    <div id="notes-panel">
+        <div id="notes-header">
+            <div id="notes-title">Notes</div>
+            <div id="notes-close">×</div>
+        </div>
+        <div id="notes-content"></div>
+    </div>
+    <div id="notes-toggle">
+        <span>📝</span>
+        <div id="notes-count">0</div>
+    </div>
+
     <script>
         const config = {
             type: Phaser.AUTO,
@@ -160,6 +371,181 @@
 
         // Debug system variables - moved to the top
         let debugMode = false;
+        let visualDebugMode = false;
+        let fpsCounter = null;
+        
+        // Notes and notification system
+        const gameNotes = [];
+        let unreadNotes = 0;
+        
+        // Show a notification instead of using alert()
+        function showNotification(message, type = 'info', title = '', duration = 5000) {
+            const notificationContainer = document.getElementById('notification-container');
+            
+            // Create notification element
+            const notification = document.createElement('div');
+            notification.className = `notification ${type}`;
+            
+            // Create notification content
+            let notificationContent = '';
+            if (title) {
+                notificationContent += `<div class="notification-title">${title}</div>`;
+            }
+            notificationContent += `<div class="notification-message">${message}</div>`;
+            notificationContent += `<div class="notification-close">×</div>`;
+            
+            if (duration > 0) {
+                notificationContent += `<div class="notification-progress"></div>`;
+            }
+            
+            notification.innerHTML = notificationContent;
+            
+            // Add to container
+            notificationContainer.appendChild(notification);
+            
+            // Show notification with animation
+            setTimeout(() => {
+                notification.classList.add('show');
+            }, 10);
+            
+            // Add progress animation if duration is set
+            if (duration > 0) {
+                const progress = notification.querySelector('.notification-progress');
+                progress.style.transition = `width ${duration}ms linear`;
+                
+                // Start progress animation
+                setTimeout(() => {
+                    progress.style.width = '0%';
+                }, 10);
+                
+                // Remove notification after duration
+                setTimeout(() => {
+                    removeNotification(notification);
+                }, duration);
+            }
+            
+            // Add close button event listener
+            const closeBtn = notification.querySelector('.notification-close');
+            closeBtn.addEventListener('click', () => {
+                removeNotification(notification);
+            });
+            
+            return notification;
+        }
+        
+        // Remove a notification with animation
+        function removeNotification(notification) {
+            notification.classList.remove('show');
+            
+            // Remove from DOM after animation
+            setTimeout(() => {
+                if (notification.parentNode) {
+                    notification.parentNode.removeChild(notification);
+                }
+            }, 300);
+        }
+        
+        // Add a note to the notes panel
+        function addNote(title, text, important = false) {
+            const note = {
+                id: Date.now(),
+                title: title,
+                text: text,
+                timestamp: new Date(),
+                read: false,
+                important: important
+            };
+            
+            gameNotes.push(note);
+            updateNotesPanel();
+            updateNotesCount();
+            
+            // Show notification for new note
+            showNotification(`New note added: ${title}`, 'info', 'Note Added', 3000);
+            
+            return note;
+        }
+        
+        // Update the notes panel with current notes
+        function updateNotesPanel() {
+            const notesContent = document.getElementById('notes-content');
+            
+            // Sort notes with important ones first, then by timestamp (newest first)
+            const sortedNotes = [...gameNotes].sort((a, b) => {
+                if (a.important !== b.important) {
+                    return a.important ? -1 : 1;
+                }
+                return b.timestamp - a.timestamp;
+            });
+            
+            // Clear current content
+            notesContent.innerHTML = '';
+            
+            // Add notes
+            if (sortedNotes.length === 0) {
+                notesContent.innerHTML = '<div class="note-item">No notes yet.</div>';
+            } else {
+                sortedNotes.forEach(note => {
+                    const noteElement = document.createElement('div');
+                    noteElement.className = 'note-item';
+                    noteElement.dataset.id = note.id;
+                    
+                    let noteContent = `<div class="note-title">`;
+                    if (note.important) {
+                        noteContent += `⭐ `;
+                    }
+                    if (!note.read) {
+                        noteContent += `📌 `;
+                    }
+                    noteContent += `${note.title}</div>`;
+                    noteContent += `<div class="note-text">${note.text}</div>`;
+                    
+                    noteElement.innerHTML = noteContent;
+                    
+                    // Mark as read when clicked
+                    noteElement.addEventListener('click', () => {
+                        if (!note.read) {
+                            note.read = true;
+                            updateNotesCount();
+                            updateNotesPanel();
+                        }
+                    });
+                    
+                    notesContent.appendChild(noteElement);
+                });
+            }
+        }
+        
+        // Update the unread notes count
+        function updateNotesCount() {
+            const notesCount = document.getElementById('notes-count');
+            unreadNotes = gameNotes.filter(note => !note.read).length;
+            
+            notesCount.textContent = unreadNotes;
+            notesCount.style.display = unreadNotes > 0 ? 'flex' : 'none';
+        }
+        
+        // Toggle the notes panel
+        function toggleNotesPanel() {
+            const notesPanel = document.getElementById('notes-panel');
+            const isVisible = notesPanel.style.display === 'block';
+            
+            notesPanel.style.display = isVisible ? 'none' : 'block';
+            
+            // Mark all as read when panel is opened
+            if (!isVisible) {
+                gameNotes.forEach(note => {
+                    note.read = true;
+                });
+                updateNotesCount();
+                updateNotesPanel();
+            }
+        }
+        
+        // Replace alert with our custom notification system
+        function gameAlert(message, type = 'info', title = '', duration = 5000) {
+            return showNotification(message, type, title, duration);
+        }
         
         // Debug logging function that only logs when debug mode is active
         function debugLog(...args) {
@@ -212,13 +598,58 @@
         
         // Listen for backtick key to toggle debug mode
         document.addEventListener('keydown', function(event) {
+            // Toggle debug mode with backtick
             if (event.key === '`') {
-                debugMode = !debugMode;
-                // Use direct console.log with custom formatting to avoid duplicate messages
-                console.log(`%c[DEBUG] === DEBUG MODE ${debugMode ? 'ENABLED' : 'DISABLED'} ===`, 
-                           `color: ${debugMode ? '#00AA00' : '#DD0000'}; font-weight: bold;`);
+                if (event.shiftKey) {
+                    // Toggle visual debug mode with Shift+backtick
+                    visualDebugMode = !visualDebugMode;
+                    console.log(`%c[DEBUG] === VISUAL DEBUG MODE ${visualDebugMode ? 'ENABLED' : 'DISABLED'} ===`, 
+                               `color: ${visualDebugMode ? '#00AA00' : '#DD0000'}; font-weight: bold;`);
+                    
+                    // Update physics debug display if game exists
+                    if (game && game.scene && game.scene.scenes && game.scene.scenes[0]) {
+                        const scene = game.scene.scenes[0];
+                        if (scene.physics && scene.physics.world) {
+                            scene.physics.world.drawDebug = debugMode && visualDebugMode;
+                        }
+                    }
+                } else {
+                    // Regular debug mode toggle
+                    debugMode = !debugMode;
+                    console.log(`%c[DEBUG] === DEBUG MODE ${debugMode ? 'ENABLED' : 'DISABLED'} ===`, 
+                               `color: ${debugMode ? '#00AA00' : '#DD0000'}; font-weight: bold;`);
+                    
+                    // Update physics debug display if game exists
+                    if (game && game.scene && game.scene.scenes && game.scene.scenes[0]) {
+                        const scene = game.scene.scenes[0];
+                        if (scene.physics && scene.physics.world) {
+                            scene.physics.world.drawDebug = debugMode && visualDebugMode;
+                        }
+                    }
+                }
             }
         });
+        
+        // Initialize notes panel
+        document.addEventListener('DOMContentLoaded', function() {
+            // Set up notes toggle button
+            const notesToggle = document.getElementById('notes-toggle');
+            notesToggle.addEventListener('click', toggleNotesPanel);
+            
+            // Set up notes close button
+            const notesClose = document.getElementById('notes-close');
+            notesClose.addEventListener('click', toggleNotesPanel);
+            
+            // Initialize notes count
+            updateNotesCount();
+        });
+        
+        // Function to create or update the FPS counter
+        function updateFPSCounter() {
+            if (fpsCounter) {
+                fpsCounter.textContent = `FPS: ${Math.round(game.loop.actualFps)}`;
+            }
+        }
 
         // Declare gameScenario as let (not const) so we can assign it later
         let gameScenario = null;  // Initialize as null
@@ -620,7 +1051,12 @@
         // introduces the scenario
         function introduceScenario() {
             console.log(gameScenario.scenario_brief);
-            alert(gameScenario.scenario_brief);
+            
+            // Add scenario brief as an important note
+            addNote("Mission Brief", gameScenario.scenario_brief, true);
+            
+            // Show notification
+            gameAlert(gameScenario.scenario_brief, 'info', 'Mission Brief', 8000);
         }
 
         // initializes the rooms
@@ -1550,7 +1986,8 @@
                 const distanceSq = dx * dx + dy * dy;
                 
                 if (distanceSq > INTERACTION_RANGE_SQ) {
-                    // alert("Too far away to interact with this object.");
+                    // Show notification instead of alert
+                    gameAlert("Too far away to interact with this object.", 'warning', '', 2000);
                     return;
                 }
             }
@@ -1585,7 +2022,9 @@
                 data.contents.forEach(item => {
                     message += `- ${item.name}\n`;
                 });
-                alert(message);
+                
+                // Show notification instead of alert
+                gameAlert(message, 'success', 'Items Found', 5000);
                 
                 // Add all contents to inventory
                 data.contents.forEach(item => {
@@ -1616,6 +2055,11 @@
             
             if (data.readable && data.text) {
                 message += `Text: ${data.text}\n\n`;
+                
+                // Add readable text as a note
+                if (data.text.trim().length > 0) {
+                    addNote(data.name, data.text);
+                }
             }
             
             if (data.takeable) {
@@ -1643,7 +2087,8 @@
                 }
             }
             
-            alert(message);
+            // Show notification instead of alert
+            gameAlert(message, 'info', data.name, 7000);
         }
 
         // adds an item to the inventory
@@ -1982,7 +2427,7 @@
                         
                         debugLog('KEY UNLOCK SUCCESS');
                         unlockTarget(lockable, type, lockable.layer);
-                        alert(`You used the ${keyName} that you found in ${keyLocation} to unlock the ${type}.`);
+                        gameAlert(`You used the ${keyName} that you found in ${keyLocation} to unlock the ${type}.`, 'success', 'Unlock Successful', 5000);
                     } else {
                         // Check for lockpick kit
                         const hasLockpick = inventory.items.some(item => 
@@ -2012,7 +2457,7 @@
                             }
                         } else {
                             debugLog('KEY NOT FOUND - FAIL');
-                            alert(`Requires key: ${requiredKey}`);
+                            gameAlert(`Requires key: ${requiredKey}`, 'error', 'Locked', 4000);
                         }
                     }
                     break;
@@ -2023,9 +2468,10 @@
                     if (pinInput === lockRequirements.requires) {
                         unlockTarget(lockable, type, lockable.layer); // Pass the layer here
                         debugLog('PIN CODE SUCCESS');
-                        alert(`Correct PIN! The ${type} is now unlocked.`);
+                        gameAlert(`Correct PIN! The ${type} is now unlocked.`, 'success', 'PIN Accepted', 4000);
                     } else if (pinInput !== null) {
                         debugLog('PIN CODE FAIL');
+                        gameAlert("Incorrect PIN code.", 'error', 'PIN Rejected', 3000);
                     }
                     break;
 
@@ -2035,15 +2481,16 @@
                     if (passwordInput === lockRequirements.requires) {
                         unlockTarget(lockable, type, lockable.layer); // Pass the layer here
                         debugLog('PASSWORD SUCCESS');
-                        alert(`Correct password! The ${type} is now unlocked.`);
+                        gameAlert(`Correct password! The ${type} is now unlocked.`, 'success', 'Password Accepted', 4000);
                     } else if (passwordInput !== null) {
                         debugLog('PASSWORD FAIL');
+                        gameAlert("Incorrect password.", 'error', 'Password Rejected', 3000);
                     }
                     break;
 
                 case 'bluetooth':
                     if (lockable.scenarioData?.locked) {
-                        alert("You need a Bluetooth scanner to unlock this device.");
+                        gameAlert("You need a Bluetooth scanner to unlock this device.", 'warning', 'Bluetooth Required', 4000);
                         // Don't return here - allow the item to be picked up even without scanner
                         if (type === 'item' && lockable.scenarioData?.takeable) {
                             addToInventory(lockable);
@@ -2072,15 +2519,15 @@
                             range: BLUETOOTH_SCAN_RANGE
                         });
                         unlockTarget(lockable, type, lockable.layer);
-                        debugLog('BLUETOOTH UNLOCK SUCCESS');
+                        gameAlert("Bluetooth connection established. Device unlocked.", 'success', 'Connection Successful', 4000);
                         return;
                     }
                     
-                    alert("Too far from device to establish Bluetooth connection.");
+                    gameAlert("Too far from device to establish Bluetooth connection.", 'error', 'Connection Failed', 3000);
                     break;
 
                 default:
-                    alert(`Requires: ${lockRequirements.requires}`);
+                    gameAlert(`Requires: ${lockRequirements.requires}`, 'warning', 'Locked', 4000);
             }
         }
 
@@ -2301,7 +2748,7 @@
             });
             
             container.scenarioData.isUnlockedButNotCollected = false;
-            alert('You collected the items from the container.');
+            gameAlert('You collected the items from the container.', 'success', 'Items Collected', 4000);
         }
 
         function checkBluetoothDevices() {
@@ -2359,12 +2806,13 @@
             if (scannerState.lockoutTimers[scannerId] && 
                 Date.now() < scannerState.lockoutTimers[scannerId]) {
                 const remainingTime = Math.ceil((scannerState.lockoutTimers[scannerId] - Date.now()) / 1000);
-                alert(`Scanner locked out. Try again in ${remainingTime} seconds.`);
+                gameAlert(`Scanner locked out. Try again in ${remainingTime} seconds.`, 'error', 'Scanner Locked', 4000);
                 return false;
             }
 
             if (!scanner.scenarioData?.biometricType === 'fingerprint') {
-                console.warn('Invalid scanner type');
+                debugLog('SCANNER TYPE ERROR - FAIL', scanner.scenarioData);
+                gameAlert('Invalid scanner type', 'error', 'Scanner Error', 3000);
                 return false;
             }
 
@@ -2376,7 +2824,7 @@
 
             if (!validSample) {
                 handleScannerFailure(scannerId);
-                alert("No valid fingerprint sample found.");
+                gameAlert("No valid fingerprint sample found.", 'error', 'Scan Failed', 4000);
                 return false;
             }
 
@@ -2384,13 +2832,13 @@
             const qualityThreshold = 0.7;
             if (validSample.quality < qualityThreshold) {
                 handleScannerFailure(scannerId);
-                alert("Fingerprint sample quality too poor for scanning.");
+                gameAlert("Fingerprint sample quality too poor for scanning.", 'error', 'Scan Failed', 4000);
                 return false;
             }
 
             // Success case - reset failed attempts
             scannerState.failedAttempts[scannerId] = 0;
-            alert("Biometric scan successful!");
+            gameAlert("Biometric scan successful!", 'success', 'Scan Successful', 4000);
             
             // Add visual feedback
             const successEffect = scanner.scene.add.circle(
@@ -2433,23 +2881,23 @@
             // Check if we should lockout
             if (scannerState.failedAttempts[scannerId] >= MAX_FAILED_ATTEMPTS) {
                 scannerState.lockoutTimers[scannerId] = Date.now() + SCANNER_LOCKOUT_TIME;
-                alert(`Too many failed attempts. Scanner locked for ${SCANNER_LOCKOUT_TIME/1000} seconds.`);
+                gameAlert(`Too many failed attempts. Scanner locked for ${SCANNER_LOCKOUT_TIME/1000} seconds.`, 'error', 'Scanner Locked', 5000);
             } else {
                 const remainingAttempts = MAX_FAILED_ATTEMPTS - scannerState.failedAttempts[scannerId];
-                alert(`Scan failed. ${remainingAttempts} attempts remaining before lockout.`);
+                gameAlert(`Scan failed. ${remainingAttempts} attempts remaining before lockout.`, 'warning', 'Scan Failed', 4000);
             }
         }
 
         // Modify collectFingerprint to include visual feedback
         function collectFingerprint(item) {
             if (!item.scenarioData?.hasFingerprint) {
-                alert("No fingerprints found on this surface.");
+                gameAlert("No fingerprints found on this surface.", 'info', 'No Fingerprints', 3000);
                 return null;
             }
             
             // Check if player has required items
             if (!hasItemInInventory('fingerprint_kit')) {
-                alert("You need a fingerprint kit to collect samples!");
+                gameAlert("You need a fingerprint kit to collect samples!", 'warning', 'Missing Equipment', 4000);
                 return null;
             }
             
