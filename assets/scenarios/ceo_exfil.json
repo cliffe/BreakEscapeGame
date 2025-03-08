@@ -45,7 +45,14 @@
                     "name": "Bluetooth Scanner",
                     "takeable": true,
                     "observations": "A device for detecting nearby Bluetooth signals",
-                    "canScanBluetooth": true,
+                    "canScanBluetooth": true
+                },
+                {
+                    "type": "bluetooth_spoofer",
+                    "name": "Bluetooth Spoofer",
+                    "takeable": true,
+                    "observations": "A specialized device that can mimic Bluetooth signals from other devices",
+                    "canSpoofBluetooth": true,
                     "mac": "00:11:22:33:44:55"
                 }
             ]
