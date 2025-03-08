@@ -316,7 +316,43 @@
                  "width":48,
                  "x":100.927703875072,
                  "y":101.732793522267
-                }],
+                },
+                {
+                 "height":48,
+                 "id":15,
+                 "name":"fingerprint_kit",
+                 "rotation":0,
+                 "type":"",
+                 "visible":true,
+                 "width":48,
+                 "x":390,
+                 "y":144
+                },
+                {
+                 "height": 48,
+                 "id": 16,
+                 "name": "spoofing_kit",
+                 "rotation": 0,
+                 "type": "",
+                 "visible": true,
+                 "width": 48,
+                 "x": 340,
+                 "y": 144
+                },
+                {
+                 "height": 48,
+                 "id": 17,
+                 "name": "lockpick",
+                 "rotation": 0,
+                 "type": "",
+                 "visible": true,
+                 "width": 48,
+                 "x": 330,
+                 "y": 144
+                }
+
+                
+               ],
          "opacity":1,
          "type":"objectgroup",
          "visible":true,
@@ -324,7 +360,7 @@
          "y":0
         }],
  "nextlayerid":12,
- "nextobjectid":15,
+ "nextobjectid":18,
  "orientation":"orthogonal",
  "renderorder":"right-down",
  "tiledversion":"1.11.0",

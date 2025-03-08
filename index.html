@@ -27,6 +27,284 @@
             display: none;
         }
 
+        /* Notification System */
+        #notification-container {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            width: 300px;
+            max-width: 80%;
+            z-index: 2000;
+            font-family: Arial, sans-serif;
+            pointer-events: none;
+        }
+
+        .notification {
+            background-color: rgba(0, 0, 0, 0.8);
+            color: white;
+            padding: 15px 20px;
+            margin-bottom: 10px;
+            border-radius: 5px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+            transition: all 0.3s ease;
+            opacity: 0;
+            transform: translateY(-20px);
+            pointer-events: auto;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .notification.show {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .notification.info {
+            border-left: 4px solid #3498db;
+        }
+
+        .notification.success {
+            border-left: 4px solid #2ecc71;
+        }
+
+        .notification.warning {
+            border-left: 4px solid #f39c12;
+        }
+
+        .notification.error {
+            border-left: 4px solid #e74c3c;
+        }
+
+        .notification-title {
+            font-weight: bold;
+            margin-bottom: 5px;
+            font-size: 16px;
+        }
+
+        .notification-message {
+            font-size: 14px;
+            line-height: 1.4;
+        }
+
+        .notification-close {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            cursor: pointer;
+            font-size: 16px;
+            color: #aaa;
+        }
+
+        .notification-close:hover {
+            color: white;
+        }
+
+        .notification-progress {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            height: 3px;
+            background-color: rgba(255, 255, 255, 0.5);
+            width: 100%;
+        }
+
+        /* Notes Panel */
+        #notes-panel {
+            position: fixed;
+            bottom: 80px;
+            right: 20px;
+            width: 350px;
+            max-height: 500px;
+            background-color: rgba(0, 0, 0, 0.9);
+            color: white;
+            border-radius: 5px;
+            box-shadow: 0 2px 15px rgba(0, 0, 0, 0.5);
+            z-index: 1999;
+            font-family: Arial, sans-serif;
+            display: none;
+            overflow: hidden;
+            transition: all 0.3s ease;
+            border: 1px solid #444;
+        }
+
+        #notes-header {
+            background-color: #222;
+            padding: 12px 15px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid #444;
+        }
+
+        #notes-title {
+            font-weight: bold;
+            font-size: 18px;
+            color: #3498db;
+        }
+
+        #notes-close {
+            cursor: pointer;
+            font-size: 18px;
+            color: #aaa;
+            transition: color 0.2s;
+        }
+
+        #notes-close:hover {
+            color: white;
+        }
+        
+        #notes-search-container {
+            padding: 10px 15px;
+            background-color: #333;
+            border-bottom: 1px solid #444;
+        }
+        
+        #notes-search {
+            width: 100%;
+            padding: 8px 10px;
+            border: none;
+            border-radius: 3px;
+            background-color: #222;
+            color: white;
+            font-size: 14px;
+        }
+        
+        #notes-search:focus {
+            outline: none;
+            box-shadow: 0 0 0 2px rgba(52, 152, 219, 0.5);
+        }
+        
+        #notes-categories {
+            display: flex;
+            padding: 5px 15px;
+            background-color: #2c2c2c;
+            border-bottom: 1px solid #444;
+        }
+        
+        .notes-category {
+            padding: 5px 10px;
+            margin-right: 5px;
+            cursor: pointer;
+            border-radius: 3px;
+            font-size: 12px;
+            transition: all 0.2s;
+        }
+        
+        .notes-category.active {
+            background-color: #3498db;
+            color: white;
+        }
+        
+        .notes-category:hover:not(.active) {
+            background-color: #444;
+        }
+
+        #notes-content {
+            padding: 15px;
+            overflow-y: auto;
+            max-height: 350px;
+        }
+
+        .note-item {
+            margin-bottom: 15px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid #444;
+            cursor: pointer;
+            transition: background-color 0.2s;
+            padding: 10px;
+            border-radius: 3px;
+        }
+
+        .note-item:hover {
+            background-color: #333;
+        }
+
+        .note-item:last-child {
+            margin-bottom: 0;
+            padding-bottom: 0;
+            border-bottom: none;
+        }
+
+        .note-title {
+            font-weight: bold;
+            margin-bottom: 5px;
+            font-size: 14px;
+            color: #3498db;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .note-icons {
+            display: flex;
+            gap: 5px;
+        }
+        
+        .note-icon {
+            font-size: 12px;
+            color: #aaa;
+        }
+
+        .note-text {
+            font-size: 13px;
+            line-height: 1.4;
+            white-space: pre-wrap;
+            max-height: 80px;
+            overflow: hidden;
+            transition: max-height 0.3s;
+        }
+        
+        .note-item.expanded .note-text {
+            max-height: 1000px;
+        }
+        
+        .note-timestamp {
+            font-size: 11px;
+            color: #888;
+            margin-top: 5px;
+            text-align: right;
+        }
+
+        #notes-toggle {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            width: 60px;
+            height: 60px;
+            background-color: #3498db;
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+            z-index: 1998;
+            font-size: 28px;
+            transition: all 0.3s ease;
+        }
+
+        #notes-toggle:hover {
+            background-color: #2980b9;
+            transform: scale(1.1);
+        }
+
+        #notes-count {
+            position: absolute;
+            top: -5px;
+            right: -5px;
+            background-color: #e74c3c;
+            color: white;
+            border-radius: 50%;
+            width: 24px;
+            height: 24px;
+            font-size: 14px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-weight: bold;
+        }
+
         #laptop-popup {
             display: none;
             position: fixed;
@@ -112,20 +390,6 @@
             background: rgba(0, 0, 0, 0.5);
             z-index: 999;
         }
-
-        #bluetooth-scanner-ui {
-            position: absolute;
-            top: 10px;
-            right: 10px;
-            display: none;
-        }
-        
-        .scanner-display {
-            background: rgba(0, 0, 0, 0.8);
-            color: white;
-            padding: 10px;
-            font-family: sans-serif;
-        }
     </style>
     <script src="https://cdn.jsdelivr.net/npm/phaser@3.60.0/dist/phaser.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/easystarjs@0.4.4/bin/easystar-0.4.4.js"></script>
@@ -134,13 +398,31 @@
     <div id="game-container">
         <div id="loading">Loading...</div>
     </div>
-    
-    <div id="bluetooth-scanner-ui">
-        <div class="scanner-display">
-            Bluetooth Scanner Active
+
+    <!-- Notification System -->
+    <div id="notification-container"></div>
+
+    <!-- Notes Panel -->
+    <div id="notes-panel">
+        <div id="notes-header">
+            <div id="notes-title">Notes & Information</div>
+            <div id="notes-close">×</div>
         </div>
+        <div id="notes-search-container">
+            <input type="text" id="notes-search" placeholder="Search notes...">
+        </div>
+        <div id="notes-categories">
+            <div class="notes-category active" data-category="all">All</div>
+            <div class="notes-category" data-category="important">Important</div>
+            <div class="notes-category" data-category="unread">Unread</div>
+        </div>
+        <div id="notes-content"></div>
     </div>
-    
+    <div id="notes-toggle">
+        <span>📝</span>
+        <div id="notes-count">0</div>
+    </div>
+
     <script>
         const config = {
             type: Phaser.AUTO,
@@ -177,6 +459,363 @@
         const hideRoomsInitially = true;
         const hideRoomsOnExit = false;
         const hideNonAdjacentRooms = false;
+
+        // Debug system variables - moved to the top
+        let debugMode = false;
+        let debugLevel = 1; // 1 = basic, 2 = detailed, 3 = verbose
+        let visualDebugMode = false;
+        let fpsCounter = null;
+        
+        // Notes and notification system
+        const gameNotes = [];
+        let unreadNotes = 0;
+        
+        // Show a notification instead of using alert()
+        function showNotification(message, type = 'info', title = '', duration = 5000) {
+            const notificationContainer = document.getElementById('notification-container');
+            
+            // Create notification element
+            const notification = document.createElement('div');
+            notification.className = `notification ${type}`;
+            
+            // Create notification content
+            let notificationContent = '';
+            if (title) {
+                notificationContent += `<div class="notification-title">${title}</div>`;
+            }
+            notificationContent += `<div class="notification-message">${message}</div>`;
+            notificationContent += `<div class="notification-close">×</div>`;
+            
+            if (duration > 0) {
+                notificationContent += `<div class="notification-progress"></div>`;
+            }
+            
+            notification.innerHTML = notificationContent;
+            
+            // Add to container
+            notificationContainer.appendChild(notification);
+            
+            // Show notification with animation
+            setTimeout(() => {
+                notification.classList.add('show');
+            }, 10);
+            
+            // Add progress animation if duration is set
+            if (duration > 0) {
+                const progress = notification.querySelector('.notification-progress');
+                progress.style.transition = `width ${duration}ms linear`;
+                
+                // Start progress animation
+                setTimeout(() => {
+                    progress.style.width = '0%';
+                }, 10);
+                
+                // Remove notification after duration
+                setTimeout(() => {
+                    removeNotification(notification);
+                }, duration);
+            }
+            
+            // Add close button event listener
+            const closeBtn = notification.querySelector('.notification-close');
+            closeBtn.addEventListener('click', () => {
+                removeNotification(notification);
+            });
+            
+            return notification;
+        }
+        
+        // Remove a notification with animation
+        function removeNotification(notification) {
+            notification.classList.remove('show');
+            
+            // Remove from DOM after animation
+            setTimeout(() => {
+                if (notification.parentNode) {
+                    notification.parentNode.removeChild(notification);
+                }
+            }, 300);
+        }
+        
+        // Add a note to the notes panel
+        function addNote(title, text, important = false) {
+            // Check if a note with the same title and text already exists
+            const noteExists = gameNotes.some(note => note.title === title && note.text === text);
+            
+            // If the note already exists, don't add it again
+            if (noteExists) {
+                debugLog(`Note "${title}" already exists, not adding duplicate`, 2);
+                return null;
+            }
+            
+            const note = {
+                id: Date.now(),
+                title: title,
+                text: text,
+                timestamp: new Date(),
+                read: false,
+                important: important
+            };
+            
+            gameNotes.push(note);
+            updateNotesPanel();
+            updateNotesCount();
+            
+            // Show notification for new note
+            showNotification(`New note added: ${title}`, 'info', 'Note Added', 3000);
+            
+            return note;
+        }
+        
+        // Update the notes panel with current notes
+        function updateNotesPanel() {
+            const notesContent = document.getElementById('notes-content');
+            const searchTerm = document.getElementById('notes-search')?.value?.toLowerCase() || '';
+            
+            // Get active category
+            const activeCategory = document.querySelector('.notes-category.active')?.dataset.category || 'all';
+            
+            // Filter notes based on search and category
+            let filteredNotes = [...gameNotes];
+            
+            // Apply category filter
+            if (activeCategory === 'important') {
+                filteredNotes = filteredNotes.filter(note => note.important);
+            } else if (activeCategory === 'unread') {
+                filteredNotes = filteredNotes.filter(note => !note.read);
+            }
+            
+            // Apply search filter
+            if (searchTerm) {
+                filteredNotes = filteredNotes.filter(note => 
+                    note.title.toLowerCase().includes(searchTerm) || 
+                    note.text.toLowerCase().includes(searchTerm)
+                );
+            }
+            
+            // Sort notes with important ones first, then by timestamp (newest first)
+            filteredNotes.sort((a, b) => {
+                if (a.important !== b.important) {
+                    return a.important ? -1 : 1;
+                }
+                return b.timestamp - a.timestamp;
+            });
+            
+            // Clear current content
+            notesContent.innerHTML = '';
+            
+            // Add notes
+            if (filteredNotes.length === 0) {
+                if (searchTerm) {
+                    notesContent.innerHTML = '<div class="note-item">No notes match your search.</div>';
+                } else if (activeCategory !== 'all') {
+                    notesContent.innerHTML = `<div class="note-item">No ${activeCategory} notes found.</div>`;
+                } else {
+                    notesContent.innerHTML = '<div class="note-item">No notes yet.</div>';
+                }
+            } else {
+                filteredNotes.forEach(note => {
+                    const noteElement = document.createElement('div');
+                    noteElement.className = 'note-item';
+                    noteElement.dataset.id = note.id;
+                    
+                    // Format the timestamp
+                    const timestamp = new Date(note.timestamp);
+                    const formattedDate = timestamp.toLocaleDateString();
+                    const formattedTime = timestamp.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+                    
+                    let noteContent = `<div class="note-title">
+                        <span>${note.title}</span>
+                        <div class="note-icons">`;
+                    
+                    if (note.important) {
+                        noteContent += `<span class="note-icon">⭐</span>`;
+                    }
+                    if (!note.read) {
+                        noteContent += `<span class="note-icon">📌</span>`;
+                    }
+                    
+                    noteContent += `</div></div>`;
+                    noteContent += `<div class="note-text">${note.text}</div>`;
+                    noteContent += `<div class="note-timestamp">${formattedDate} ${formattedTime}</div>`;
+                    
+                    noteElement.innerHTML = noteContent;
+                    
+                    // Toggle expanded state when clicked
+                    noteElement.addEventListener('click', () => {
+                        noteElement.classList.toggle('expanded');
+                        
+                        // Mark as read when expanded
+                        if (!note.read && noteElement.classList.contains('expanded')) {
+                            note.read = true;
+                            updateNotesCount();
+                            updateNotesPanel();
+                        }
+                    });
+                    
+                    notesContent.appendChild(noteElement);
+                });
+            }
+        }
+        
+        // Update the unread notes count
+        function updateNotesCount() {
+            const notesCount = document.getElementById('notes-count');
+            unreadNotes = gameNotes.filter(note => !note.read).length;
+            
+            notesCount.textContent = unreadNotes;
+            notesCount.style.display = unreadNotes > 0 ? 'flex' : 'none';
+        }
+        
+        // Toggle the notes panel
+        function toggleNotesPanel() {
+            const notesPanel = document.getElementById('notes-panel');
+            const isVisible = notesPanel.style.display === 'block';
+            
+            notesPanel.style.display = isVisible ? 'none' : 'block';
+        }
+        
+        // Replace alert with our custom notification system
+        function gameAlert(message, type = 'info', title = '', duration = 5000) {
+            return showNotification(message, type, title, duration);
+        }
+        
+        // Debug logging function that only logs when debug mode is active
+        function debugLog(message, data = null, level = 1) {
+            if (!debugMode || debugLevel < level) return;
+            
+            // Check if the first argument is a string
+            if (typeof message === 'string') {
+                // Create the formatted debug message
+                const formattedMessage = `[DEBUG] === ${message} ===`;
+                
+                // Determine color based on message content
+                let color = '#0077FF'; // Default blue for general info
+                let fontWeight = 'bold';
+                
+                // Success messages - green
+                if (message.includes('SUCCESS') || 
+                    message.includes('UNLOCKED') || 
+                    message.includes('NOT LOCKED')) {
+                    color = '#00AA00'; // Green
+                }
+                // Error/failure messages - red
+                else if (message.includes('FAIL') || 
+                         message.includes('ERROR') || 
+                         message.includes('NO LOCK REQUIREMENTS FOUND')) {
+                    color = '#DD0000'; // Red
+                }
+                // Sensitive information - purple
+                else if (message.includes('PIN') || 
+                         message.includes('PASSWORD') || 
+                         message.includes('KEY') ||
+                         message.includes('LOCK REQUIREMENTS')) {
+                    color = '#AA00AA'; // Purple
+                }
+                
+                // Add level indicator to the message
+                const levelIndicator = level > 1 ? ` [L${level}]` : '';
+                const finalMessage = formattedMessage + levelIndicator;
+                
+                // Log with formatting
+                if (data) {
+                    console.log(`%c${finalMessage}`, `color: ${color}; font-weight: ${fontWeight};`, data);
+                } else {
+                    console.log(`%c${finalMessage}`, `color: ${color}; font-weight: ${fontWeight};`);
+                }
+            } else {
+                // If not a string, just log as is
+                console.log(message, data);
+            }
+        }
+        
+        // Function to display tension debug info only when debug mode is active
+        function logTensionDebugInfo() {
+            if (!debugMode) return; // Skip all calculations if debug mode is off
+            
+            // Your existing debug code here
+            debugLog("Tension debug information:", null, 2);
+            // Add other debug information as needed
+        }
+        
+        // Listen for backtick key to toggle debug mode
+        document.addEventListener('keydown', function(event) {
+            // Toggle debug mode with backtick
+            if (event.key === '`') {
+                if (event.shiftKey) {
+                    // Toggle visual debug mode with Shift+backtick
+                    visualDebugMode = !visualDebugMode;
+                    console.log(`%c[DEBUG] === VISUAL DEBUG MODE ${visualDebugMode ? 'ENABLED' : 'DISABLED'} ===`, 
+                               `color: ${visualDebugMode ? '#00AA00' : '#DD0000'}; font-weight: bold;`);
+                    
+                    // Update physics debug display if game exists
+                    if (game && game.scene && game.scene.scenes && game.scene.scenes[0]) {
+                        const scene = game.scene.scenes[0];
+                        if (scene.physics && scene.physics.world) {
+                            scene.physics.world.drawDebug = debugMode && visualDebugMode;
+                        }
+                    }
+                } else if (event.ctrlKey) {
+                    // Cycle through debug levels with Ctrl+backtick
+                    if (debugMode) {
+                        debugLevel = (debugLevel % 3) + 1; // Cycle through 1, 2, 3
+                        console.log(`%c[DEBUG] === DEBUG LEVEL ${debugLevel} ===`, 
+                                   `color: #0077FF; font-weight: bold;`);
+                    }
+                } else {
+                    // Regular debug mode toggle
+                    debugMode = !debugMode;
+                    console.log(`%c[DEBUG] === DEBUG MODE ${debugMode ? 'ENABLED' : 'DISABLED'} ===`, 
+                               `color: ${debugMode ? '#00AA00' : '#DD0000'}; font-weight: bold;`);
+                    
+                    // Update physics debug display if game exists
+                    if (game && game.scene && game.scene.scenes && game.scene.scenes[0]) {
+                        const scene = game.scene.scenes[0];
+                        if (scene.physics && scene.physics.world) {
+                            scene.physics.world.drawDebug = debugMode && visualDebugMode;
+                        }
+                    }
+                }
+            }
+        });
+        
+        // Initialize notes panel
+        document.addEventListener('DOMContentLoaded', function() {
+            // Set up notes toggle button
+            const notesToggle = document.getElementById('notes-toggle');
+            notesToggle.addEventListener('click', toggleNotesPanel);
+            
+            // Set up notes close button
+            const notesClose = document.getElementById('notes-close');
+            notesClose.addEventListener('click', toggleNotesPanel);
+            
+            // Set up search functionality
+            const notesSearch = document.getElementById('notes-search');
+            notesSearch.addEventListener('input', updateNotesPanel);
+            
+            // Set up category filters
+            const categories = document.querySelectorAll('.notes-category');
+            categories.forEach(category => {
+                category.addEventListener('click', () => {
+                    // Remove active class from all categories
+                    categories.forEach(c => c.classList.remove('active'));
+                    // Add active class to clicked category
+                    category.classList.add('active');
+                    // Update notes panel
+                    updateNotesPanel();
+                });
+            });
+            
+            // Initialize notes count
+            updateNotesCount();
+        });
+        
+        // Function to create or update the FPS counter
+        function updateFPSCounter() {
+            if (fpsCounter) {
+                fpsCounter.textContent = `FPS: ${Math.round(game.loop.actualFps)}`;
+            }
+        }
 
         // Declare gameScenario as let (not const) so we can assign it later
         let gameScenario = null;  // Initialize as null
@@ -215,6 +854,75 @@
         let lastBluetoothScan = 0; // Track last scan time
         const BLUETOOTH_SCAN_INTERVAL = 500; // Scan every 500ms
 
+        const gameState = {
+            biometricSamples: [],
+            inventory: inventory
+        };
+
+        // Add these constants near the top with other constants
+        const SCANNER_LOCKOUT_TIME = 30000; // 30 seconds lockout
+        const MAX_FAILED_ATTEMPTS = 3;
+
+        // Add this to track failed attempts
+        const scannerState = {
+            failedAttempts: {},  // tracks failures by scanner ID
+            lockoutTimers: {}    // tracks lockout end times
+        };
+
+        // Add these constants near the top with other constants
+        const SAMPLE_COLLECTION_TIME = 2000; // 2 seconds for collection animation
+        const SAMPLE_COLLECTION_COLOR = 0x00ff00; // Green for collection effect
+
+        // Add these constants for the UI
+        const SAMPLE_UI_STYLES = {
+            backgroundColor: 'rgba(0, 0, 0, 0.8)',
+            padding: '10px',
+            color: 'white',
+            fontFamily: 'Arial, sans-serif',
+            fontSize: '14px',
+            border: '1px solid #444',
+            borderRadius: '5px',
+            position: 'fixed',
+            top: '50%',
+            left: '50%',
+            transform: 'translate(-50%, -50%)',
+            zIndex: 1000,
+            maxHeight: '80vh',
+            overflowY: 'auto',
+            display: 'none'
+        };
+
+        // Add these constants for spoofing
+        const SPOOFING_TIME = 3000; // 3 seconds to create spoof
+        const SPOOF_QUALITY_MULTIPLIER = 0.8; // Spoofed prints are slightly lower quality
+
+        // Add these constants for the dusting minigame
+        const DUST_COLORS = {
+            NONE: 0x000000,
+            LIGHT: 0x444444,
+            MEDIUM: 0x888888,
+            HEAVY: 0xcccccc,
+            REVEALED: 0x00ff00
+        };
+
+        const DEBUG_MODE = {
+            get enabled() { return debugMode; },
+            set enabled(value) { debugMode = value; },
+            toggle: function() {
+                debugMode = !debugMode;
+                // No need to log here as the global event listener will handle it
+            },
+            log: function(message, data = null) {
+                if (!debugMode) return;
+                
+                if (data) {
+                    console.log(`%c[DEBUG] === ${message} ===`, 'color: #0077FF; font-weight: bold;', data);
+                } else {
+                    console.log(`%c[DEBUG] === ${message} ===`, 'color: #0077FF; font-weight: bold;');
+                }
+            }
+        };
+
         // preloads the assets
         function preload() {
             // Show loading text
@@ -248,6 +956,8 @@
             this.load.image('workstation', 'assets/objects/workstation.png');
             this.load.image('bluetooth_scanner', 'assets/objects/bluetooth_scanner.png');
             this.load.image('tablet', 'assets/objects/tablet.png');
+            this.load.image('fingerprint_kit', 'assets/objects/fingerprint_kit.png');
+            this.load.image('lockpick', 'assets/objects/lockpick.png');
 
 
             this.load.json('gameScenarioJSON', 'assets/scenarios/ceo_exfil.json');
@@ -425,14 +1135,14 @@
                     });
                     
                     if (clickedItem) {
-                        console.log('Inventory item clicked:', clickedItem.name);
+                        debugLog('INVENTORY ITEM CLICKED', { name: clickedItem.name }, 2);
                         handleObjectInteraction(clickedItem);
                         return;
                     }
                 }
                 
                 // if not clicking inventory, handle as movement
-                console.log('Click detected at:', pointer.worldX, pointer.worldY);
+                debugLog('CLICK DETECTED', { x: pointer.worldX, y: pointer.worldY }, 3);
                 movePlayerToPoint.call(this, pointer.worldX, pointer.worldY);
             });
 
@@ -473,6 +1183,12 @@
             // Optimize physics settings
             this.physics.world.setFPS(60);
             this.physics.world.step(1/60);
+
+            // Add this to your scene's create function
+            initializeSamplesUI();
+
+            // Log initial debug status
+            console.log("%cPress ` (backtick) to toggle debug mode, Ctrl+` to cycle debug levels (1-3), Shift+` for visual debug", "color: #888; font-style: italic;");
         }
 
         function update() {
@@ -496,24 +1212,17 @@
             if (currentPath && currentPath.length > 0 && isMoving) {
                 this.add.circle(currentPath[0].x, currentPath[0].y, 5, 0xff0000).setDepth(1000);
             }
-            
-            // Check if Bluetooth scanner is in inventory
-            const scanner = inventory.items.find(item => 
-                item.scenarioData?.type === "bluetooth_scanner"
-            );
-            
-            const scannerUI = document.getElementById('bluetooth-scanner-ui');
-            if (scanner) {
-                scannerUI.style.display = 'block';
-            } else {
-                scannerUI.style.display = 'none';
-            }
         }
 
         // introduces the scenario
         function introduceScenario() {
             console.log(gameScenario.scenario_brief);
-            alert(gameScenario.scenario_brief);
+            
+            // Add scenario brief as an important note
+            addNote("Mission Brief", gameScenario.scenario_brief, true);
+            
+            // Show notification
+            gameAlert(gameScenario.scenario_brief, 'info', 'Mission Brief', 8000);
         }
 
         // initializes the rooms
@@ -566,7 +1275,7 @@
                         width: width * 48,  // tile width is 48
                         height: height * 48 // tile height is 48
                     };
-                    console.log(`Room ${roomId} dimensions:`, roomDimensions[roomId]);
+                    debugLog('ROOM DIMENSIONS', { roomId, dimensions: roomDimensions[roomId] }, 3);
                 } else {
                     console.error(`Could not find tilemap data for room ${roomId}`);
                     // Fallback to default dimensions if needed
@@ -646,7 +1355,7 @@
                         }
                     } else {
                         if (processed.has(connected)) {
-                            console.log(`Room ${connected} already processed, skipping`);
+                            debugLog('ROOM ALREADY PROCESSED', { roomId: connected }, 3);
                             return;
                         }
                         
@@ -842,10 +1551,10 @@
                         // Add click handler for all objects
                         sprite.on('pointerdown', () => {
                             if (isActiveObject) {
-                                console.log(`Clicked active object ${obj.name}`);
+                                debugLog('OBJECT CLICKED', { name: obj.name }, 2);
                                 handleObjectInteraction(sprite);
                             } else {
-                                alert("Nothing of note here");
+                                gameAlert("Nothing of note here", 'info', '', 2000);
                             }
                         });
                     });
@@ -1011,7 +1720,7 @@
                 }
                 
                 // Otherwise, handle as movement click
-                console.log('Click detected at:', worldPoint.x, worldPoint.y);
+                debugLog('CLICK DETECTED', { x: worldPoint.x, y: worldPoint.y }, 3);
                 movePlayerToPoint.call(this, worldPoint.x, worldPoint.y);
             });
         }
@@ -1422,10 +2131,14 @@
         // handles interactions with objects
         // displays the object's data in an alert
         function handleObjectInteraction(sprite) {
-            console.log('CyberChef: handleObjectInteraction called for:', sprite.name, 'Has open workstation:', !!sprite.openCryptoWorkstation);
+            // Only log detailed object interactions at debug level 2+
+            debugLog('OBJECT INTERACTION', { 
+                name: sprite.name, 
+                hasWorkstation: !!sprite.openCryptoWorkstation 
+            }, 2);
             
             if (sprite.openCryptoWorkstation && sprite.openCryptoWorkstation()) {
-                console.log('CyberChef: Crypto workstation opened');
+                debugLog('WORKSTATION OPENED', null, 1);
                 return;
             }
             
@@ -1443,12 +2156,35 @@
                 const distanceSq = dx * dx + dy * dy;
                 
                 if (distanceSq > INTERACTION_RANGE_SQ) {
-                    // alert("Too far away to interact with this object.");
+                    // Show notification instead of alert
+                    //gameAlert("Too far away to interact with this object.", 'warning', '', 2000);
                     return;
                 }
             }
             
             const data = sprite.scenarioData;
+            
+            // Add inside handleObjectInteraction before the fingerprint check
+            if (data.biometricType === 'fingerprint') {
+                handleBiometricScan(sprite, player);
+                return;
+            }
+            
+            // Check for fingerprint collection possibility
+            if (data.hasFingerprint) {
+                // Check if player has fingerprint kit
+                const hasKit = inventory.items.some(item => 
+                    item && item.scenarioData && 
+                    item.scenarioData.type === 'fingerprint_kit'
+                );
+                
+                if (hasKit) {
+                    const sample = collectFingerprint(sprite);
+                    if (sample) {
+                        return; // Exit after collecting fingerprint
+                    }
+                }
+            }
             
             // Check if this is an unlocked container that hasn't been collected yet
             if (data.isUnlockedButNotCollected && data.contents) {
@@ -1456,7 +2192,9 @@
                 data.contents.forEach(item => {
                     message += `- ${item.name}\n`;
                 });
-                alert(message);
+                
+                // Show notification instead of alert
+                gameAlert(message, 'success', 'Items Found', 5000);
                 
                 // Add all contents to inventory
                 data.contents.forEach(item => {
@@ -1475,9 +2213,9 @@
                 return;
             }
             
-            // Check for locked state in scenarioData
+            // Check if item is locked
             if (data.locked === true) {
-                console.log('Item is locked:', data);
+                debugLog('ITEM LOCKED', data, 2);
                 handleUnlock(sprite, 'item');
                 return;
             }
@@ -1487,34 +2225,79 @@
             
             if (data.readable && data.text) {
                 message += `Text: ${data.text}\n\n`;
+                
+                // Add readable text as a note
+                if (data.text.trim().length > 0) {
+                    const addedNote = addNote(data.name, data.text, data.important || false);
+                    
+                    // Only show notification if a new note was actually added (not a duplicate)
+                    if (addedNote) {
+                        gameAlert(`Added "${data.name}" to your notes.`, 'info', 'Note Added', 3000);
+                        
+                        // If this is a note in the inventory, remove it after adding to notes list
+                        if (isInventoryItem && data.type === 'notes') {
+                            // Remove from inventory after a short delay to allow the player to see the message
+                            setTimeout(() => {
+                                if (removeFromInventory(sprite)) {
+                                    gameAlert(`Removed "${data.name}" from inventory after recording in notes.`, 'success', 'Inventory Updated', 3000);
+                                }
+                            }, 1000);
+                        }
+                    }
+                }
             }
             
             if (data.takeable) {
-                message += `This item can be taken\n\n`;
+                // If it's a note type item that's already been read and added to notes,
+                // don't add it to inventory unless it has a special purpose
+                const isJustInformationalNote = 
+                    data.type === 'notes' && 
+                    data.readable && 
+                    data.text && 
+                    !data.hasSpecialPurpose; // Add this flag to notes that need to be in inventory
                 
-                if (!inventory || !Array.isArray(inventory.items)) {
-                    console.error('Inventory not properly initialized');
-                    return;
-                }
-                
-                const isInRoom = currentRoom && 
-                                rooms[currentRoom] && 
-                                rooms[currentRoom].objects && 
-                                rooms[currentRoom].objects[sprite.name];
+                if (!isJustInformationalNote) {
+                    message += `This item can be taken\n\n`;
+                    
+                    if (!inventory || !Array.isArray(inventory.items)) {
+                        console.error('Inventory not properly initialized');
+                        return;
+                    }
+                    
+                    const isInRoom = currentRoom && 
+                                    rooms[currentRoom] && 
+                                    rooms[currentRoom].objects && 
+                                    rooms[currentRoom].objects[sprite.name];
+                            
+                    const itemIdentifier = createItemIdentifier(sprite.scenarioData);
+                            
+                    const isInInventory = inventory.items.some(item => 
+                        item && createItemIdentifier(item.scenarioData) === itemIdentifier
+                    );
+                            
+                    if (isInRoom && !isInInventory) {
+                        debugLog('INVENTORY ITEM ADDED', { item: itemIdentifier }, 2);
+                        addToInventory(sprite);
+                    }
+                } else {
+                    // For informational notes, just remove them from the room after reading
+                    if (currentRoom && 
+                        rooms[currentRoom] && 
+                        rooms[currentRoom].objects && 
+                        rooms[currentRoom].objects[sprite.name]) {
                         
-                const itemIdentifier = createItemIdentifier(sprite.scenarioData);
+                        const roomObj = rooms[currentRoom].objects[sprite.name];
+                        roomObj.setVisible(false);
+                        roomObj.active = false;
                         
-                const isInInventory = inventory.items.some(item => 
-                    item && createItemIdentifier(item.scenarioData) === itemIdentifier
-                );
-                        
-                if (isInRoom && !isInInventory) {
-                    console.log('Adding item to inventory:', itemIdentifier);
-                    addToInventory(sprite);
+                        // Show notification about adding to notes instead of inventory
+                        gameAlert(`Information recorded in your notes.`, 'success', 'Note Recorded', 3000);
+                    }
                 }
             }
             
-            alert(message);
+            // Show notification instead of alert
+            gameAlert(message, 'info', data.name, 7000);
         }
 
         // adds an item to the inventory
@@ -1580,10 +2363,11 @@
                 inventory.container.add(inventorySprite);
                 inventory.items.push(inventorySprite);
                 
-                console.log('Item added to inventory:', {
+                // Use debugLog with level 3 (verbose) for detailed inventory tracking
+                debugLog('INVENTORY ITEM DETAILS', {
                     name: sprite.name,
                     totalItems: inventory.items.length
-                });
+                }, 3);
             } catch (error) {
                 console.error('Error adding item to inventory:', error);
             }
@@ -1619,7 +2403,7 @@
                 .setScrollFactor(0)
                 .setDepth(2001);
             
-            console.log('Inventory initialized:', inventory); // Debug log
+            debugLog('INVENTORY INITIALIZED', inventory, 2); // Debug log at level 2
         }
 
         // runs after rooms are fully set up
@@ -1767,14 +2551,14 @@
                         
                         if (distance <= DOOR_INTERACTION_RANGE) {
                             if (doorTile.properties?.locked) {
-                                console.log('Door is locked, attempting unlock');
+                                debugLog('DOOR LOCKED - ATTEMPTING UNLOCK', null, 2);
                                 colorDoorTiles(doorTile, room);
                                 handleDoorUnlock(doorTile, room);
                             } else {
-                                console.log('Door is not locked');
+                                debugLog('DOOR NOT LOCKED', null, 2);
                             }
                         } else {
-                            console.log("Too far from door to interact");
+                            debugLog('DOOR TOO FAR TO INTERACT', null, 2);
                         }
                     });
 
@@ -1804,13 +2588,13 @@
         }
         
         function handleDoorUnlock(doorTile, room) {
-            console.log('handleDoorUnlock called:', { doorTile, room });
+            // No need to log here since handleUnlock will log 'UNLOCK ATTEMPT'
             doorTile.layer = room.doorsLayer; // Ensure layer reference is set
             handleUnlock(doorTile, 'door');
         }
 
         function handleUnlock(lockable, type) {
-            console.log('handleUnlock called:', { type, lockable });
+            debugLog('UNLOCK ATTEMPT', null, 2);
             
             // Check locked state in scenarioData for items
             const isLocked = type === 'door' ? 
@@ -1818,7 +2602,7 @@
                 lockable.scenarioData?.locked;
             
             if (!isLocked) {
-                console.log('Object is not locked');
+                debugLog('OBJECT NOT LOCKED', null, 2);
                 return;
             }
             
@@ -1827,17 +2611,17 @@
                 ? getLockRequirementsForDoor(lockable)
                 : getLockRequirementsForItem(lockable);
             
-            console.log('Lock requirements:', lockRequirements);
+            // Don't log lock requirements here since it's already logged in the getter functions
             
             if (!lockRequirements) {
-                console.log('No lock requirements found');
+                // Don't log here since it's already logged in the getter functions if applicable
                 return;
             }
             
             switch(lockRequirements.lockType) {
                 case 'key':
                     const requiredKey = lockRequirements.requires;
-                    console.log('Checking for key:', requiredKey);
+                    debugLog('KEY REQUIRED', requiredKey, 2);
                     const hasKey = inventory.items.some(item => 
                         item && item.scenarioData && 
                         item.scenarioData.key_id === requiredKey
@@ -1851,38 +2635,72 @@
                         const keyName = keyItem?.scenarioData?.name || 'key';
                         const keyLocation = keyItem?.scenarioData?.foundIn || 'your inventory';
                         
-                        unlockTarget(lockable, type, lockable.layer); // Pass the layer here
-                        alert(`You used the ${keyName} that you found in ${keyLocation} to unlock the ${type}.`);
+                        debugLog('KEY UNLOCK SUCCESS', null, 1);
+                        unlockTarget(lockable, type, lockable.layer);
+                        gameAlert(`You used the ${keyName} that you found in ${keyLocation} to unlock the ${type}.`, 'success', 'Unlock Successful', 5000);
                     } else {
-                        alert(`Requires key: ${requiredKey}`);
+                        // Check for lockpick kit
+                        const hasLockpick = inventory.items.some(item => 
+                            item && item.scenarioData && 
+                            item.scenarioData.type === 'lockpick'
+                        );
+                        
+                        if (hasLockpick) {
+                            debugLog('LOCKPICK AVAILABLE', null, 2);
+                            if (confirm("Would you like to attempt picking this lock?")) {
+                                let difficulty;
+                                
+                                // If this is a room-level lock, get difficulty from gameScenario
+                                if (lockable.properties?.requires) {
+                                    // Find which room this lock belongs to
+                                    const roomId = Object.keys(gameScenario.rooms).find(roomId => {
+                                        const room = gameScenario.rooms[roomId];
+                                        return room.requires === lockable.properties.requires;
+                                    });
+                                    difficulty = roomId ? gameScenario.rooms[roomId].difficulty : null;
+                                }
+                                
+                                // If not found, try object-level difficulty
+                                difficulty = difficulty || lockable.scenarioData?.difficulty || lockable.properties?.difficulty;
+                                debugLog('STARTING LOCKPICK MINIGAME', { difficulty }, 2);
+                                startLockpickingMinigame(lockable, game.scene.scenes[0], difficulty);
+                            }
+                        } else {
+                            debugLog('KEY NOT FOUND - FAIL', null, 2);
+                            gameAlert(`Requires key: ${requiredKey}`, 'error', 'Locked', 4000);
+                        }
                     }
                     break;
 
                 case 'pin':
-                    console.log('Handling PIN lock');
+                    debugLog('PIN CODE REQUESTED', null, 2);
                     const pinInput = prompt(`Enter PIN code:`);
                     if (pinInput === lockRequirements.requires) {
                         unlockTarget(lockable, type, lockable.layer); // Pass the layer here
-                        alert(`Correct PIN! The ${type} is now unlocked.`);
+                        debugLog('PIN CODE SUCCESS', null, 1);
+                        gameAlert(`Correct PIN! The ${type} is now unlocked.`, 'success', 'PIN Accepted', 4000);
                     } else if (pinInput !== null) {
-                        alert("Incorrect PIN code.");
+                        debugLog('PIN CODE FAIL', null, 2);
+                        gameAlert("Incorrect PIN code.", 'error', 'PIN Rejected', 3000);
                     }
                     break;
 
                 case 'password':
-                    console.log('Handling password lock');
+                    debugLog('PASSWORD REQUESTED', null, 2);
                     const passwordInput = prompt(`Enter password:`);
                     if (passwordInput === lockRequirements.requires) {
                         unlockTarget(lockable, type, lockable.layer); // Pass the layer here
-                        alert(`Correct password! The ${type} is now unlocked.`);
+                        debugLog('PASSWORD SUCCESS', null, 1);
+                        gameAlert(`Correct password! The ${type} is now unlocked.`, 'success', 'Password Accepted', 4000);
                     } else if (passwordInput !== null) {
-                        alert("Incorrect password.");
+                        debugLog('PASSWORD FAIL', null, 2);
+                        gameAlert("Incorrect password.", 'error', 'Password Rejected', 3000);
                     }
                     break;
 
                 case 'bluetooth':
                     if (lockable.scenarioData?.locked) {
-                        alert("You need a Bluetooth scanner to unlock this device.");
+                        gameAlert("You need a Bluetooth scanner to unlock this device.", 'warning', 'Bluetooth Required', 4000);
                         // Don't return here - allow the item to be picked up even without scanner
                         if (type === 'item' && lockable.scenarioData?.takeable) {
                             addToInventory(lockable);
@@ -1900,25 +2718,26 @@
                         lockable.x, lockable.y
                     );
                     
-                    console.log('Distance to tablet:', distance);
+                    debugLog('BLUETOOTH DISTANCE', distance, 3);
                     
                     // Check if player is within range (using BLUETOOTH_SCAN_RANGE)
                     if (distance <= BLUETOOTH_SCAN_RANGE) {
-                        console.log('Bluetooth unlock success: Player in range', {
+                        debugLog('BLUETOOTH UNLOCK SUCCESS', {
                             itemName: lockable.scenarioData?.name,
                             itemMac: lockable.scenarioData?.mac,
-                            distance: distance
-                        });
+                            distance: Math.round(distance),
+                            range: BLUETOOTH_SCAN_RANGE
+                        }, 1);
                         unlockTarget(lockable, type, lockable.layer);
-                        alert(`Bluetooth connection established. Device unlocked.`);
+                        gameAlert("Bluetooth connection established. Device unlocked.", 'success', 'Connection Successful', 4000);
                         return;
                     }
                     
-                    alert("Too far from device to establish Bluetooth connection.");
+                    gameAlert("Too far from device to establish Bluetooth connection.", 'error', 'Connection Failed', 3000);
                     break;
 
                 default:
-                    alert(`Requires: ${lockRequirements.requires}`);
+                    gameAlert(`Requires: ${lockRequirements.requires}`, 'warning', 'Locked', 4000);
             }
         }
 
@@ -1960,22 +2779,7 @@
             sprite.name = itemData.type;
             
             // Set interactive properties
-            sprite.setInteractive({ useHandCursor: true });
-            
-            // Make takeable items draggable
-            if (itemData.takeable) {
-                sprite.setInteractive({ draggable: true });
-                sprite.on('drag', function(pointer, dragX, dragY) {
-                    this.x = dragX;
-                    this.y = dragY;
-                    
-                    // Check for Bluetooth unlocking during drag
-                    if (this.scenarioData?.locked && this.scenarioData?.lockType === 'bluetooth') {
-                        checkBluetoothDevices();
-                    }
-                });
-            }
-            
+            sprite.setInteractive({ useHandCursor: true, pixelPerfect: true });
             sprite.on('pointerdown', function(event) {
                 event.stopPropagation();
                 handleObjectInteraction(this);
@@ -2062,7 +2866,7 @@
         }
 
         function getLockRequirementsForDoor(doorTile) {
-            console.log('Getting lock requirements for door:', doorTile);
+            debugLog('CHECKING DOOR REQUIREMENTS', null, 3);
             
             if (!doorTile.layer) {
                 console.error('Door tile missing layer reference');
@@ -2072,7 +2876,7 @@
             const doorWorldX = doorTile.layer.x + (doorTile.x * TILE_SIZE);
             const doorWorldY = doorTile.layer.y + (doorTile.y * TILE_SIZE);
             
-            console.log('Door world coordinates:', { doorWorldX, doorWorldY });
+            debugLog('DOOR COORDINATES', { doorWorldX, doorWorldY }, 3);
             
             const overlappingRooms = [];
             Object.entries(rooms).forEach(([roomId, otherRoom]) => {
@@ -2091,7 +2895,7 @@
                 };
                 
                 if (boundsOverlap(doorCheckArea, roomBounds)) {
-                    console.log(`Room ${roomId} overlaps with door`);
+                    debugLog(`ROOM ${roomId} OVERLAPS WITH DOOR`, null, 3);
                     const roomCenterX = roomBounds.x + (roomBounds.width / 2);
                     const roomCenterY = roomBounds.y + (roomBounds.height / 2);
                     const distanceToPlayer = Phaser.Math.Distance.Between(
@@ -2110,13 +2914,13 @@
                 }
             });
 
-            console.log('Overlapping rooms:', overlappingRooms);
+            debugLog('OVERLAPPING ROOMS', overlappingRooms, 3);
             
             const lockedRooms = overlappingRooms
                 .filter(r => r.locked)
                 .sort((a, b) => b.distance - a.distance);
             
-            console.log('Locked rooms:', lockedRooms);
+            debugLog('LOCKED ROOMS', lockedRooms, 3);
 
             if (lockedRooms.length > 0) {
                 const targetRoom = lockedRooms[0];
@@ -2124,11 +2928,11 @@
                     lockType: targetRoom.lockType,
                     requires: targetRoom.requires
                 };
-                console.log('Returning lock requirements:', requirements);
+                debugLog('LOCK REQUIREMENTS', requirements, 2);
                 return requirements;
             }
             
-            console.log('No lock requirements found');
+            debugLog('NO LOCK REQUIREMENTS FOUND', null, 2);
             return null;
         }
 
@@ -2154,15 +2958,7 @@
             });
             
             container.scenarioData.isUnlockedButNotCollected = false;
-            alert('You collected the items from the container.');
-        }
-
-        function calculateSignalStrength(pos1, pos2) {
-            const distance = Phaser.Math.Distance.Between(
-                pos1.x, pos1.y,
-                pos2.x, pos2.y
-            );
-            return Math.max(0, 100 - (distance / BLUETOOTH_SCAN_RANGE) * 100);
+            gameAlert('You collected the items from the container.', 'success', 'Items Collected', 4000);
         }
 
         function checkBluetoothDevices() {
@@ -2178,73 +2974,1647 @@
             
             Object.values(rooms[currentRoom].objects).forEach(obj => {
                 if (obj.scenarioData?.type === "tablet" && obj.scenarioData?.locked) {
-                    const deviceRange = (obj.scenarioData?.range || 2) * TILE_SIZE;
                     const distance = Phaser.Math.Distance.Between(
                         player.x, player.y,
                         obj.x, obj.y
                     );
                     
-                    const signalStrength = calculateSignalStrength(
-                        { x: player.x, y: player.y },
-                        { x: obj.x, y: obj.y }
-                    );
-                    
-                    if (distance <= deviceRange) {
-                        console.log('🔍 TABLET IN RANGE:', {
+                    if (distance <= BLUETOOTH_SCAN_RANGE) {
+                        debugLog('BLUETOOTH DEVICE DETECTED', {
                             distance: Math.round(distance),
-                            range: deviceRange,
-                            tiles: obj.scenarioData?.range || 2,
-                            signalStrength: Math.round(signalStrength) + '%'
-                        });
+                            range: BLUETOOTH_SCAN_RANGE
+                        }, 2);
                         
                         // Unlock the tablet
                         obj.scenarioData.locked = false;
-                        console.log('🔓 TABLET UNLOCKED!');
-                        alert('Bluetooth connection established. Device unlocked.');
+                        debugLog('BLUETOOTH UNLOCK SUCCESS', null, 1);
                     }
                 }
             });
         }
 
-        function createObjectSprite(scene, objectData, x, y) {
-            const sprite = scene.add.sprite(x, y, objectData.type.toLowerCase());
-            sprite.scenarioData = objectData;
-            sprite.name = objectData.type;
+        // Add helper function to generate fingerprint data
+        function generateFingerprintData(item) {
+            // In a real implementation, this would generate unique fingerprint patterns
+            // For now, we'll just create a unique identifier
+            return `fp_${item.scenarioData.fingerprintOwner}_${Date.now()}`;
+        }
+
+        // Add helper function to check if player has required collection tools
+        function hasItemInInventory(itemType) {
+            return inventory.items.some(item => 
+                item && item.scenarioData && 
+                item.scenarioData.type === itemType
+            );
+        }
+
+        // Add this function after the other utility functions
+        function handleBiometricScan(scanner, player) {
+            const scannerId = scanner.scenarioData.id || scanner.name;
             
-            // Add custom interaction for bluetooth scanner
-            if (objectData.type === 'bluetooth_scanner') {
-                sprite.customInteraction = function() {
-                    if (!currentRoom || !rooms[currentRoom].objects) return false;
-                    
-                    let devices = [];
-                    Object.values(rooms[currentRoom].objects).forEach(obj => {
-                        if (obj.scenarioData?.mac) {
-                            const signalStrength = calculateSignalStrength(
-                                { x: player.x, y: player.y },
-                                { x: obj.x, y: obj.y }
-                            );
-                            devices.push({
-                                name: obj.scenarioData.name,
-                                mac: obj.scenarioData.mac,
-                                signal: Math.round(signalStrength)
-                            });
-                        }
-                    });
-                    
-                    let message = "📱 Bluetooth Scan Results:\n\n";
-                    if (devices.length === 0) {
-                        message += "No devices detected.";
-                    } else {
-                        devices.forEach(device => {
-                            message += `Device: ${device.name}\n`;
-                            message += `MAC: ${device.mac}\n`;
-                            message += `Signal: ${device.signal}%\n\n`;
+            // Check if scanner is locked out
+            if (scannerState.lockoutTimers[scannerId] && 
+                Date.now() < scannerState.lockoutTimers[scannerId]) {
+                const remainingTime = Math.ceil((scannerState.lockoutTimers[scannerId] - Date.now()) / 1000);
+                gameAlert(`Scanner locked out. Try again in ${remainingTime} seconds.`, 'error', 'Scanner Locked', 4000);
+                return false;
+            }
+
+            if (!scanner.scenarioData?.biometricType === 'fingerprint') {
+                debugLog('SCANNER TYPE ERROR - FAIL', scanner.scenarioData, 2);
+                gameAlert('Invalid scanner type', 'error', 'Scanner Error', 3000);
+                return false;
+            }
+
+            // Check if player has valid fingerprint sample
+            const validSample = gameState.biometricSamples.find(sample => 
+                sample.type === 'fingerprint' &&
+                scanner.scenarioData.acceptedSamples.includes(sample.owner)
+            );
+
+            if (!validSample) {
+                handleScannerFailure(scannerId);
+                gameAlert("No valid fingerprint sample found.", 'error', 'Scan Failed', 4000);
+                return false;
+            }
+
+            // Check sample quality
+            const qualityThreshold = 0.7;
+            if (validSample.quality < qualityThreshold) {
+                handleScannerFailure(scannerId);
+                gameAlert("Fingerprint sample quality too poor for scanning.", 'error', 'Scan Failed', 4000);
+                return false;
+            }
+
+            // Success case - reset failed attempts
+            scannerState.failedAttempts[scannerId] = 0;
+            gameAlert("Biometric scan successful!", 'success', 'Scan Successful', 4000);
+            
+            // Add visual feedback
+            const successEffect = scanner.scene.add.circle(
+                scanner.x, 
+                scanner.y, 
+                32, 
+                0x00ff00, 
+                0.5
+            );
+            scanner.scene.tweens.add({
+                targets: successEffect,
+                alpha: 0,
+                scale: 2,
+                duration: 1000,
+                onComplete: () => successEffect.destroy()
+            });
+            
+            // If the scanner is protecting something, unlock it
+            if (scanner.scenarioData.unlocks) {
+                const targetObject = rooms[currentRoom].objects[scanner.scenarioData.unlocks];
+                if (targetObject) {
+                    targetObject.scenarioData.locked = false;
+                    targetObject.scenarioData.isUnlockedButNotCollected = true;
+                }
+            }
+            
+            return true;
+        }
+
+        // Add this new function to handle scanner failures
+        function handleScannerFailure(scannerId) {
+            // Initialize failed attempts if not exists
+            if (!scannerState.failedAttempts[scannerId]) {
+                scannerState.failedAttempts[scannerId] = 0;
+            }
+            
+            // Increment failed attempts
+            scannerState.failedAttempts[scannerId]++;
+            
+            // Check if we should lockout
+            if (scannerState.failedAttempts[scannerId] >= MAX_FAILED_ATTEMPTS) {
+                scannerState.lockoutTimers[scannerId] = Date.now() + SCANNER_LOCKOUT_TIME;
+                gameAlert(`Too many failed attempts. Scanner locked for ${SCANNER_LOCKOUT_TIME/1000} seconds.`, 'error', 'Scanner Locked', 5000);
+            } else {
+                const remainingAttempts = MAX_FAILED_ATTEMPTS - scannerState.failedAttempts[scannerId];
+                gameAlert(`Scan failed. ${remainingAttempts} attempts remaining before lockout.`, 'warning', 'Scan Failed', 4000);
+            }
+        }
+
+        // Modify collectFingerprint to include visual feedback
+        function collectFingerprint(item) {
+            if (!item.scenarioData?.hasFingerprint) {
+                gameAlert("No fingerprints found on this surface.", 'info', 'No Fingerprints', 3000);
+                return null;
+            }
+            
+            // Check if player has required items
+            if (!hasItemInInventory('fingerprint_kit')) {
+                gameAlert("You need a fingerprint kit to collect samples!", 'warning', 'Missing Equipment', 4000);
+                return null;
+            }
+            
+            // Start the dusting minigame
+            startDustingMinigame(item);
+            return true;
+        }
+
+        // Add this function to check for object interactions
+        function checkObjectInteractions() {
+            // Skip if not enough time has passed since last check
+            const currentTime = performance.now();
+            if (this.lastInteractionCheck && 
+                currentTime - this.lastInteractionCheck < INTERACTION_CHECK_INTERVAL) {
+                return;
+            }
+            this.lastInteractionCheck = currentTime;
+
+            const playerRoom = currentPlayerRoom;
+            if (!playerRoom || !rooms[playerRoom].objects) return;
+
+            // Cache player position
+            const px = player.x;
+            const py = player.y;
+            
+            // Get only objects within viewport bounds plus some margin
+            const camera = this.cameras.main;
+            const margin = INTERACTION_RANGE;
+            const viewBounds = {
+                left: camera.scrollX - margin,
+                right: camera.scrollX + camera.width + margin,
+                top: camera.scrollY - margin,
+                bottom: camera.scrollY + camera.height + margin
+            };
+
+            Object.values(rooms[playerRoom].objects).forEach(obj => {
+                // Skip inactive objects and those outside viewport
+                if (!obj.active || 
+                    obj.x < viewBounds.left || 
+                    obj.x > viewBounds.right || 
+                    obj.y < viewBounds.top || 
+                    obj.y > viewBounds.bottom) {
+                    return;
+                }
+
+                // Use squared distance for performance
+                const dx = px - obj.x;
+                const dy = py - obj.y;
+                const distanceSq = dx * dx + dy * dy;
+
+                if (distanceSq <= INTERACTION_RANGE_SQ) {
+                    if (!obj.isHighlighted) {
+                        obj.isHighlighted = true;
+                        obj.setTint(0xdddddd);  // Simple highlight without tween
+                    }
+                } else if (obj.isHighlighted) {
+                    obj.isHighlighted = false;
+                    obj.clearTint();
+                }
+            });
+        }
+
+        // Add this function to setup scanner interactions
+        function setupScannerInteractions() {
+            Object.values(rooms).forEach(room => {
+                if (!room.objects) return;
+                
+                Object.values(room.objects).forEach(obj => {
+                    if (obj.scenarioData?.biometricType === 'fingerprint') {
+                        // Add visual indicator for scanner
+                        const indicator = obj.scene.add.circle(
+                            obj.x,
+                            obj.y,
+                            20,
+                            0x0000ff,
+                            0.3
+                        );
+                        
+                        // Add pulsing effect
+                        obj.scene.tweens.add({
+                            targets: indicator,
+                            alpha: { from: 0.3, to: 0.1 },
+                            scale: { from: 1, to: 1.2 },
+                            duration: 1000,
+                            yoyo: true,
+                            repeat: -1
+                        });
+                        
+                        // Store reference to indicator
+                        obj.scannerIndicator = indicator;
+                        
+                        // Add hover effect
+                        obj.on('pointerover', function() {
+                            if (this.scannerIndicator) {
+                                this.scannerIndicator.setAlpha(0.5);
+                            }
+                        });
+                        
+                        obj.on('pointerout', function() {
+                            if (this.scannerIndicator) {
+                                this.scannerIndicator.setAlpha(0.3);
+                            }
                         });
                     }
-                    alert(message);
-                    return true;
+                });
+            });
+        }
+
+        // Add this to your scene initialization
+        function initializeBiometricSystem() {
+            // Initialize gameState if not exists
+            if (!window.gameState) {
+                window.gameState = {
+                    biometricSamples: []
                 };
             }
+            
+            // Initialize scanner state
+            if (!window.scannerState) {
+                window.scannerState = {
+                    failedAttempts: {},
+                    lockoutTimers: {}
+                };
+            }
+            
+            // Setup scanner visuals and interactions
+            setupScannerInteractions();
+            
+            // Add periodic interaction checks
+            this.time.addEvent({
+                delay: 100,  // Check every 100ms
+                callback: checkObjectInteractions,
+                callbackScope: this,
+                loop: true
+            });
+        }
+
+        // Add function to create and manage the samples UI
+        function createSamplesUI() {
+            // Create container for samples UI if it doesn't exist
+            let samplesUI = document.getElementById('biometric-samples-ui');
+            if (!samplesUI) {
+                samplesUI = document.createElement('div');
+                samplesUI.id = 'biometric-samples-ui';
+                
+                // Apply styles
+                Object.assign(samplesUI.style, SAMPLE_UI_STYLES);
+                
+                // Add close button
+                const closeButton = document.createElement('button');
+                closeButton.textContent = '×';
+                closeButton.style.cssText = `
+                    position: absolute;
+                    right: 10px;
+                    top: 10px;
+                    background: none;
+                    border: none;
+                    color: white;
+                    font-size: 20px;
+                    cursor: pointer;
+                `;
+                closeButton.onclick = () => hideSamplesUI();
+                samplesUI.appendChild(closeButton);
+                
+                document.body.appendChild(samplesUI);
+            }
+            return samplesUI;
+        }
+
+        // Function to show samples UI
+        function showSamplesUI() {
+            const samplesUI = createSamplesUI();
+            samplesUI.style.display = 'block';
+            
+            // Clear existing content
+            while (samplesUI.children.length > 1) { // Keep close button
+                samplesUI.removeChild(samplesUI.lastChild);
+            }
+            
+            // Add title
+            const title = document.createElement('h2');
+            title.textContent = 'Collected Biometric Samples';
+            title.style.cssText = 'margin-top: 0; color: #fff; text-align: center;';
+            samplesUI.appendChild(title);
+            
+            // Add samples
+            if (!gameState.biometricSamples || gameState.biometricSamples.length === 0) {
+                const noSamples = document.createElement('p');
+                noSamples.textContent = 'No samples collected yet.';
+                noSamples.style.textAlign = 'center';
+                samplesUI.appendChild(noSamples);
+                return;
+            }
+            
+            gameState.biometricSamples.forEach(sample => {
+                const sampleElement = document.createElement('div');
+                sampleElement.style.cssText = `
+                    margin: 10px 0;
+                    padding: 10px;
+                    background: rgba(255, 255, 255, 0.1);
+                    border-radius: 5px;
+                `;
+                
+                const qualityPercentage = Math.round(sample.quality * 100);
+                sampleElement.innerHTML = `
+                    <strong>Type:</strong> ${sample.type}<br>
+                    <strong>Owner:</strong> ${sample.owner}<br>
+                    <strong>Quality:</strong> ${qualityPercentage}%<br>
+                    <strong>ID:</strong> ${sample.id}<br>
+                    ${sample.isSpoofed ? '<strong style="color: #ff9900;">SPOOFED SAMPLE</strong><br>' : ''}
+                `;
+                
+                // Add quality bar
+                const qualityBar = document.createElement('div');
+                qualityBar.style.cssText = `
+                    width: 100%;
+                    height: 5px;
+                    background: #333;
+                    margin-top: 5px;
+                    border-radius: 2px;
+                `;
+                
+                const qualityFill = document.createElement('div');
+                qualityFill.style.cssText = `
+                    width: ${qualityPercentage}%;
+                    height: 100%;
+                    background: ${getQualityColor(sample.quality)};
+                    border-radius: 2px;
+                    transition: width 0.3s ease;
+                `;
+                
+                qualityBar.appendChild(qualityFill);
+                sampleElement.appendChild(qualityBar);
+                
+                // Add spoof button if not already spoofed
+                if (!sample.isSpoofed && hasItemInInventory('spoofing_kit')) {
+                    const spoofButton = document.createElement('button');
+                    spoofButton.textContent = 'Create Spoof';
+                    spoofButton.style.cssText = `
+                        margin-top: 10px;
+                        padding: 5px 10px;
+                        background: #444;
+                        border: none;
+                        color: white;
+                        border-radius: 3px;
+                        cursor: pointer;
+                    `;
+                    spoofButton.onclick = async () => {
+                        spoofButton.disabled = true;
+                        spoofButton.textContent = 'Creating spoof...';
+                        
+                        // Add progress bar
+                        const progressBar = document.createElement('div');
+                        progressBar.style.cssText = `
+                            width: 100%;
+                            height: 2px;
+                            background: #333;
+                            margin-top: 5px;
+                        `;
+                        const progress = document.createElement('div');
+                        progress.style.cssText = `
+                            width: 0%;
+                            height: 100%;
+                            background: #ff9900;
+                            transition: width 0.1s linear;
+                        `;
+                        progressBar.appendChild(progress);
+                        sampleElement.appendChild(progressBar);
+                        
+                        // Animate progress
+                        let currentProgress = 0;
+                        const interval = setInterval(() => {
+                            currentProgress += 2;
+                            progress.style.width = `${currentProgress}%`;
+                        }, SPOOFING_TIME / 50);
+                        
+                        // Create spoof after delay
+                        setTimeout(() => {
+                            clearInterval(interval);
+                            const spoofedSample = createSpoofedSample(sample);
+                            if (spoofedSample) {
+                                gameState.biometricSamples.push(spoofedSample);
+                                showSamplesUI(); // Refresh UI
+                            }
+                        }, SPOOFING_TIME);
+                    };
+                    sampleElement.appendChild(spoofButton);
+                }
+                
+                samplesUI.appendChild(sampleElement);
+            });
+        }
+
+        // Helper function to hide samples UI
+        function hideSamplesUI() {
+            const samplesUI = document.getElementById('biometric-samples-ui');
+            if (samplesUI) {
+                samplesUI.style.display = 'none';
+            }
+        }
+
+        // Helper function to get color based on quality
+        function getQualityColor(quality) {
+            if (quality >= 0.8) return '#00ff00';
+            if (quality >= 0.6) return '#ffff00';
+            return '#ff0000';
+        }
+
+        // Add keyboard shortcut to view samples (press 'B')
+        function setupSamplesUIControls() {
+            document.addEventListener('keydown', (event) => {
+                if (event.key.toLowerCase() === 'b') {
+                    showSamplesUI();
+                }
+                if (event.key === 'Escape') {
+                    hideSamplesUI();
+                }
+            });
+        }
+
+        // Add this to your scene's create function
+        function initializeSamplesUI() {
+            createSamplesUI();
+            setupSamplesUIControls();
+        }
+        
+        function generateFingerprintData(sample) {
+            // For spoofed samples, we generate from the original sample data
+            if (sample.data) {
+                return `spoofed_${sample.data}`;
+            }
+            
+            // For original samples from items, we use the item's data
+            if (sample.scenarioData?.fingerprintOwner) {
+                return `fp_${sample.scenarioData.fingerprintOwner}_${Date.now()}`;
+            }
+            
+            // Fallback unique identifier
+            return `fp_unknown_${Date.now()}`;
+        }
+
+        // Add spoofing functionality
+        function createSpoofedSample(originalSample) {
+            if (!originalSample) {
+                alert("No sample to spoof from!");
+                return null;
+            }
+            
+            // Check if player has required items
+            const hasSpoofingKit = hasItemInInventory('spoofing_kit');
+            if (!hasSpoofingKit) {
+                alert("You need a spoofing kit to create fake fingerprints!");
+                return null;
+            }
+            
+            // Create spoofed sample with slightly degraded quality
+            const spoofedSample = {
+                id: `spoofed_${originalSample.owner}_${Date.now()}`,
+                type: originalSample.type,
+                owner: originalSample.owner,
+                quality: originalSample.quality * SPOOF_QUALITY_MULTIPLIER,
+                data: generateFingerprintData(originalSample),
+                isSpoofed: true
+            };
+            
+            return spoofedSample;
+        }
+
+        // Add dusting minigame
+        function startDustingMinigame(item) {
+            // Create iframe container
+            const iframe = document.createElement('div');
+            iframe.style.cssText = `
+                position: fixed;
+                top: 50%;
+                left: 50%;
+                transform: translate(-50%, -50%);
+                width: 60%;
+                height: 60%;
+                background: rgba(0, 0, 0, 0.9);
+                border: 1px solid #444;
+                z-index: 1000;
+                padding: 20px;
+                border-radius: 5px;
+            `;
+            
+            // Create game container
+            const gameContainer = document.createElement('div');
+            gameContainer.style.cssText = `
+                width: 100%;
+                height: calc(100% - 60px);
+                display: grid;
+                grid-template-columns: repeat(20, minmax(0, 1fr));
+                grid-template-rows: repeat(20, minmax(0, 1fr));
+                gap: 1px;
+                background: #222;
+                padding: 10px;
+                margin-top: 40px;
+            `;
+            
+            // Add instructions
+            const instructions = document.createElement('div');
+            instructions.innerHTML = `
+                <h3 style="margin: 0; color: #fff; text-align: center;">Fingerprint Dusting</h3>
+                <p style="margin: 5px 0; color: #ccc; text-align: center; font-size: 14px;">
+                    Drag to dust the surface and reveal fingerprints.<br>
+                    🔍 Gray = Light dusting<br>
+                    🟢 Green = Fingerprint found!<br>
+                    ⚠️ White = Over-dusted (avoid this)<br>
+                    Find all fingerprints with minimal over-dusting.
+                </p>
+            `;
+            instructions.style.cssText = `
+                position: absolute;
+                top: 10px;
+                left: 50%;
+                transform: translateX(-50%);
+                width: 90%;
+            `;
+            
+            // Add progress display
+            const progressText = document.createElement('div');
+            progressText.style.cssText = `
+                position: absolute;
+                bottom: 10px;
+                left: 50%;
+                transform: translateX(-50%);
+                color: white;
+                text-align: center;
+                font-size: 16px;
+            `;
+            
+            // Generate fingerprint pattern
+            const gridSize = 20;
+            const fingerprintCells = new Set();
+            const centerX = Math.floor(gridSize / 2);
+            const centerY = Math.floor(gridSize / 2);
+
+            // Create a larger pattern (about 50 cells) spread around the center
+            for (let i = 0; i < 50; i++) {
+                const x = centerX + Math.floor(Math.random() * 10 - 5);  // Increased spread
+                const y = centerY + Math.floor(Math.random() * 10 - 5);  // Increased spread
+                if (x >= 0 && x < gridSize && y >= 0 && y < gridSize) {
+                    fingerprintCells.add(`${x},${y}`);
+                }
+            }
+
+            // If we didn't get enough cells, add more until we reach target
+            while (fingerprintCells.size < 50) {
+                const x = centerX + Math.floor(Math.random() * 12 - 6);
+                const y = centerY + Math.floor(Math.random() * 12 - 6);
+                if (x >= 0 && x < gridSize && y >= 0 && y < gridSize) {
+                    fingerprintCells.add(`${x},${y}`);
+                }
+            }
+            
+            // Track progress
+            let revealedPrints = 0;
+            let totalPrints = fingerprintCells.size;
+            let overDusted = 0;
+            
+            // Create grid cells
+            for (let y = 0; y < gridSize; y++) {
+                for (let x = 0; x < gridSize; x++) {
+                    const cell = document.createElement('div');
+                    cell.style.cssText = `
+                        width: 100%;
+                        height: 100%;
+                        background: black;
+                        position: relative;
+                        cursor: pointer;
+                    `;
+                    cell.dataset.x = x;
+                    cell.dataset.y = y;
+                    cell.dataset.dustLevel = '0';
+                    cell.dataset.hasFingerprint = fingerprintCells.has(`${x},${y}`);
+                    
+                    gameContainer.appendChild(cell);
+                }
+            }
+            
+            // Add dragging interaction at container level
+            let isDragging = false;
+            let lastDustTime = {};  // Track last dust time for each cell
+
+            gameContainer.addEventListener('mousedown', () => isDragging = true);
+            gameContainer.addEventListener('mouseup', () => isDragging = false);
+            gameContainer.addEventListener('mouseleave', () => isDragging = false);
+            gameContainer.addEventListener('mousemove', (e) => {
+                if (!isDragging) return;
+                
+                // Get the cell element under the cursor
+                const cell = document.elementFromPoint(e.clientX, e.clientY);
+                if (cell && cell.dataset.dustLevel !== undefined) {
+                    const cellId = `${cell.dataset.x},${cell.dataset.y}`;
+                    const currentTime = Date.now();
+                    const dustLevel = parseInt(cell.dataset.dustLevel);
+                    
+                    // Only allow dusting every 100ms for each cell
+                    if (!lastDustTime[cellId] || currentTime - lastDustTime[cellId] > 100) {
+                        if (dustLevel < 3) {
+                            // Increment dust level with 33% chance after level 1
+                            if (dustLevel < 1 || Math.random() < 0.33) {
+                                cell.dataset.dustLevel = (dustLevel + 1).toString();
+                                updateCellColor(cell);
+                                checkProgress();
+                            }
+                            lastDustTime[cellId] = currentTime;
+                        }
+                    }
+                }
+            });
+            
+            function updateCellColor(cell) {
+                const dustLevel = parseInt(cell.dataset.dustLevel);
+                const hasFingerprint = cell.dataset.hasFingerprint === 'true';
+                
+                if (dustLevel === 0) {
+                    cell.style.background = 'black';
+                }
+                else if (dustLevel === 1) {
+                    cell.style.background = '#444';
+                }
+                else if (dustLevel === 2) {
+                    cell.style.background = hasFingerprint ? '#0f0' : '#888';
+                }
+                else {
+                    cell.style.background = '#ccc';
+                }
+            }
+            
+            function checkProgress() {
+                revealedPrints = 0;
+                overDusted = 0;
+                
+                gameContainer.childNodes.forEach(cell => {
+                    const dustLevel = parseInt(cell.dataset.dustLevel);
+                    const hasFingerprint = cell.dataset.hasFingerprint === 'true';
+                    
+                    if (hasFingerprint && dustLevel === 2) revealedPrints++;
+                    if (dustLevel === 3) overDusted++;
+                });
+                
+                const requiredPrints = Math.ceil(totalPrints * 0.4);  // 40% requirement
+                progressText.innerHTML = `
+                    <div style="color: #0f0;">Found: ${revealedPrints}/${requiredPrints} required prints</div>
+                    <div style="color: ${overDusted > 24 ? '#f00' : '#fff'}">
+                        Over-dusted: ${overDusted}/25 max
+                    </div>
+                `;
+                
+                // Check fail condition first
+                if (overDusted >= 25) {
+                    // Show failure message
+                    const failureMessage = document.createElement('div');
+                    failureMessage.style.cssText = `
+                        position: absolute;
+                        top: 50%;
+                        left: 50%;
+                        transform: translate(-50%, -50%);
+                        background: rgba(0, 0, 0, 0.9);
+                        padding: 20px;
+                        border-radius: 5px;
+                        color: #f00;
+                        font-size: 20px;
+                        text-align: center;
+                        z-index: 1001;
+                    `;
+                    failureMessage.textContent = "Too many over-dusted areas!";
+                    iframe.appendChild(failureMessage);
+                    
+                    // Disable further interaction
+                    isDragging = false;
+                    gameContainer.style.pointerEvents = 'none';
+                    
+                    setTimeout(() => {
+                        document.body.removeChild(iframe);
+                        scene.input.mouse.enabled = true;
+                    }, 1500);
+                    return;
+                }
+                
+                // Check win condition (existing code)
+                if (revealedPrints >= requiredPrints && overDusted < 25) {
+                    // Show success message
+                    const successMessage = document.createElement('div');
+                    successMessage.style.cssText = `
+                        position: absolute;
+                        top: 50%;
+                        left: 50%;
+                        transform: translate(-50%, -50%);
+                        background: rgba(0, 0, 0, 0.9);
+                        padding: 20px;
+                        border-radius: 5px;
+                        color: #0f0;
+                        font-size: 20px;
+                        text-align: center;
+                        z-index: 1001;
+                    `;
+                    successMessage.textContent = "Fingerprint successfully collected!";
+                    iframe.appendChild(successMessage);
+                    
+                    // Disable further interaction
+                    isDragging = false;
+                    gameContainer.style.pointerEvents = 'none';
+                    
+                    setTimeout(() => {
+                        // Add fingerprint to gameState
+                        if (!gameState.biometricSamples) {
+                            gameState.biometricSamples = [];
+                        }
+                        
+                        const sample = {
+                            id: generateFingerprintData(item),
+                            type: 'fingerprint',
+                            owner: item.scenarioData.fingerprintOwner,
+                            quality: Math.random() * 0.3 + 0.7,  // Random quality between 0.7 and 1.0
+                            data: generateFingerprintData(item)
+                        };
+                        
+                        gameState.biometricSamples.push(sample);
+                        
+                        // Remove the minigame
+                        document.body.removeChild(iframe);
+                        scene.input.mouse.enabled = true;
+                        
+                        // Mark item as collected
+                        if (item.scenarioData) {
+                            item.scenarioData.hasFingerprint = false;
+                        }
+                    }, 1500);
+                }
+            }
+            
+            // Add close button
+            const closeButton = document.createElement('button');
+            closeButton.textContent = 'X';
+            closeButton.style.cssText = `
+                position: absolute;
+                right: 10px;
+                top: 10px;
+                background: none;
+                border: none;
+                color: white;
+                font-size: 20px;
+                cursor: pointer;
+            `;
+            closeButton.onclick = () => {
+                document.body.removeChild(iframe);
+                scene.input.mouse.enabled = true;
+            };
+            
+            // Assemble the interface
+            iframe.appendChild(closeButton);
+            iframe.appendChild(instructions);
+            iframe.appendChild(gameContainer);
+            iframe.appendChild(progressText);
+            document.body.appendChild(iframe);
+            
+            // Disable game movement
+            const scene = item.scene;
+            scene.input.mouse.enabled = false;
+        }
+
+        function startLockpickingMinigame(lockable, currentScene, difficulty) {
+            // Create iframe container
+            const iframe = document.createElement('div');
+            iframe.style.cssText = `
+                position: fixed;
+                top: 50%;
+                left: 50%;
+                transform: translate(-50%, -50%);
+                width: 60%;
+                height: 60%;
+                background: rgba(0, 0, 0, 0.9);
+                border: 1px solid #444;
+                z-index: 1000;
+                padding: 20px;
+                border-radius: 5px;
+            `;
+            
+            // Add instructions
+            const instructions = document.createElement('div');
+            instructions.innerHTML = `
+                <h3 style="margin: 0; color: #fff; text-align: center;">Lock Picking</h3>
+                <p style="margin: 5px 0; color: #ccc; text-align: center; font-size: 14px;">
+                    Use spacebar or click to toggle tension levels. Each pin requires the right amount of tension.<br>
+                    🔵 Blue = Pin moving<br>
+                    🟢 Green = Pin set correctly<br>
+                    🔴 Red = Over-pushed (reset)<br>
+                    Set all pins in the correct order with the right tension without resetting.
+                </p>
+            `;
+            instructions.style.cssText = `
+                position: absolute;
+                top: 10px;
+                left: 50%;
+                transform: translateX(-50%);
+                width: 90%;
+            `;
+
+            // Create game container
+            const gameContainer = document.createElement('div');
+            gameContainer.style.cssText = `
+                width: 100%;
+                height: calc(100% - 60px);
+                display: flex;
+                flex-direction: column;
+                justify-content: center;
+                align-items: center;
+                gap: 20px;
+                margin-top: 40px;
+                background: #222;
+                padding: 10px;
+            `;
+
+            // Add difficulty selection
+            const difficultySelect = document.createElement('select');
+            difficultySelect.style.cssText = `
+                margin-bottom: 10px;
+                padding: 5px;
+                background: #444;
+                color: white;
+                border: 1px solid #666;
+                border-radius: 3px;
+            `;
+            const difficulties = ['Easy - Pins Visible', 'Hard - Audio Only'];
+            difficulties.forEach(diff => {
+                const option = document.createElement('option');
+                option.value = diff;
+                option.textContent = diff;
+                difficultySelect.appendChild(option);
+            });
+
+            // Add audio feedback
+            const lockSounds = {
+                click: null,      // Basic pin movement sound
+                binding: null,    // Sound when a pin is binding (correct tension)
+                set: null,        // Sound when a pin is successfully set
+                reset: null,      // Sound when pins are reset
+                wrong: null,      // Sound when wrong tension or wrong pin
+                tension: null,    // Sound when changing tension
+                success: null,    // Sound when successfully picking the lock
+                overTension: null // Sound when over-tensioning the lock
+            };
+
+            const initAudio = () => {
+                if (!lockSounds.click) {
+                    // Basic click sound (when pressing a pin)
+                    lockSounds.click = new Audio('assets/sounds/lockpick_click.mp3');
+                    
+                    // Binding sound (when a pin is binding with correct tension)
+                    lockSounds.binding = new Audio('assets/sounds/lockpick_binding.mp3');
+                    
+                    // Set sound (when a pin is successfully set)
+                    lockSounds.set = new Audio('assets/sounds/lockpick_set.mp3');
+                    
+                    // Reset sound (when pins are reset)
+                    lockSounds.reset = new Audio('assets/sounds/lockpick_reset.mp3');
+                    
+                    // Wrong sound (when using wrong tension or pressing wrong pin)
+                    lockSounds.wrong = new Audio('assets/sounds/lockpick_wrong.mp3');
+                    
+                    // Tension sound (when changing tension levels)
+                    lockSounds.tension = new Audio('assets/sounds/lockpick_tension.mp3');
+                    
+                    // Success sound (when successfully picking the lock)
+                    lockSounds.success = new Audio('assets/sounds/lockpick_success.mp3');
+                    
+                    // Over-tension sound (when applying too much tension)
+                    lockSounds.overTension = new Audio('assets/sounds/lockpick_overtension.mp3');
+                }
+            };
+
+            // Initialize audio on first interaction
+            gameContainer.addEventListener('mousedown', initAudio, { once: true });
+
+            // Add pin binding order and game state
+            const numPins = getPinCountForDifficulty(difficulty);
+            const bindingOrder = Array.from({length: numPins}, (_, i) => i)
+                .sort(() => Math.random() - 0.5);
+            
+            const gameState = {
+                tensionLevel: 1, // Start with light tension instead of none
+                pinStates: Array(numPins).fill(0), // 0 = down, 1 = moving, 2 = set
+                pinPressTime: Array(numPins).fill(0), // Track how long each pin is pressed
+                currentBindingIndex: 0,
+                hardMode: false,
+                maxPressTime: 1000, // Max time to hold a pin (ms)
+                failCount: 0,
+                maxFails: 3,
+                overTensioned: false,
+                lastPinSetTime: 0, // Track when the last pin was set
+                isActivelyPickingPin: false, // Track if we're actively working on a pin
+                tensionRequirements: Array(numPins).fill(0).map(() => {
+                    // Each pin requires a specific tension level (1, 2, or 3)
+                    const randomValue = Math.random();
+                    if (randomValue < 0.33) return 1; // Light tension
+                    if (randomValue < 0.66) return 2; // Medium tension
+                    return 3; // Heavy tension
+                })
+            };
+
+            // Create tension wrench toggle
+            const tensionWrench = document.createElement('div');
+            tensionWrench.style.cssText = `
+                width: 100px;
+                height: 30px;
+                background: ${gameState.tensionLevel === 1 ? '#666' : gameState.tensionLevel === 2 ? '#888' : '#aaa'};
+                border: 2px solid #888;
+                border-radius: 5px;
+                cursor: pointer;
+                margin-bottom: 20px;
+                text-align: center;
+                line-height: 30px;
+                color: white;
+            `;
+            tensionWrench.textContent = 'Tension: OFF';
+
+            // Function to reset pins
+            function resetPins(showVisual = true) {
+                gameState.pinStates.fill(0);
+                gameState.pinPressTime.fill(0);
+                gameState.currentBindingIndex = 0;
+                gameState.failCount++;
+
+                if (showVisual) {
+                    Array.from(pinsContainer.children).forEach(pin => {
+                        pin.style.background = '#555';
+                        if (!gameState.hardMode) {
+                            pin.style.transition = 'background-color 0.3s';
+                            pin.style.background = '#f00';
+                            setTimeout(() => pin.style.background = '#555', 300);
+                        }
+                    });
+                }
+
+                if (gameState.failCount >= gameState.maxFails) {
+                    alert("Lock picking failed! The lock is now jammed.");
+                    // Safely remove iframe if it exists in the document
+                    const existingIframe = document.querySelector('div[style*="z-index: 1000"]');
+                    if (existingIframe && existingIframe.parentNode) {
+                        existingIframe.parentNode.removeChild(existingIframe);
+                    }
+                    if (currentScene && currentScene.input && currentScene.input.mouse) {
+                        currentScene.input.mouse.enabled = true;
+                    }
+                }
+            }
+
+            // Create a single function for toggling tension
+            function toggleTension() {
+                // Toggle between 3 tension levels (light -> medium -> heavy -> light)
+                const previousTensionLevel = gameState.tensionLevel;
+                gameState.tensionLevel = (gameState.tensionLevel % 3) + 1;
+                
+                // Play tension change sound
+                if (lockSounds.tension) {
+                    lockSounds.tension.currentTime = 0;
+                    lockSounds.tension.play().catch(e => console.log('Audio play failed:', e));
+                }
+                
+                updateTensionWrench();
+                
+                // Check if we're over-tensioning - but only if we've started interacting with pins
+                // AND only if we're actively working on a pin (not just changing tension)
+                const timeSinceLastPinSet = Date.now() - gameState.lastPinSetTime;
+                const isActivelyPickingLock = gameState.isActivelyPickingPin;
+                
+                if (gameState.tensionLevel === 3 && 
+                    gameState.currentBindingIndex > 0 && 
+                    timeSinceLastPinSet > 1000 &&
+                    isActivelyPickingLock) {
+                    
+                    // 30% chance of over-tensioning with heavy pressure
+                    if (Math.random() < 0.3) {
+                        gameState.overTensioned = true;
+                        tensionWrench.style.background = '#ff3333';
+                        tensionWrench.style.transform = 'rotate(15deg)';
+                        
+                        // Play over-tension sound
+                        if (lockSounds.overTension) {
+                            lockSounds.overTension.currentTime = 0;
+                            lockSounds.overTension.play().catch(e => console.log('Audio play failed:', e));
+                        }
+                        
+                        setTimeout(() => {
+                            alert("You applied too much tension and jammed the lock!");
+                            resetPins();
+                        }, 500);
+                    }
+                }
+            }
+
+            // Add this new function to update tension wrench visuals
+            function updateTensionWrench() {
+                // Update tension wrench appearance based on level
+                switch(gameState.tensionLevel) {
+                    case 1: // Light
+                        tensionWrench.style.background = '#666';
+                        tensionWrench.style.transform = 'rotate(2deg)';
+                        tensionWrench.textContent = 'Tension: LIGHT';
+                        break;
+                    case 2: // Medium
+                        tensionWrench.style.background = '#888';
+                        tensionWrench.style.transform = 'rotate(5deg)';
+                        tensionWrench.textContent = 'Tension: MEDIUM';
+                        break;
+                    case 3: // Heavy
+                        tensionWrench.style.background = '#aaa';
+                        tensionWrench.style.transform = 'rotate(8deg)';
+                        tensionWrench.textContent = 'Tension: HEAVY';
+                        break;
+                }
+            }
+
+            // Create pins container
+            const pinsContainer = document.createElement('div');
+            pinsContainer.style.cssText = `
+                display: flex;
+                gap: 10px;
+                background: #333;
+                padding: 20px;
+                border-radius: 10px;
+            `;
+
+            // Create individual pins
+            for (let i = 0; i < numPins; i++) {
+                const pin = document.createElement('div');
+                pin.style.cssText = `
+                    width: 30px;
+                    height: 100px;
+                    background: #555;
+                    border: 2px solid #777;
+                    border-radius: 5px;
+                    cursor: pointer;
+                    position: relative;
+                    transition: transform 0.1s, background-color 0.3s;
+                `;
+
+                // Add a subtle indicator at the bottom of each pin
+                const pinIndicator = document.createElement('div');
+                pinIndicator.style.cssText = `
+                    position: absolute;
+                    bottom: 0;
+                    left: 0;
+                    width: 100%;
+                    height: 5px;
+                    background: #555;
+                    transition: background-color 0.3s;
+                `;
+                pin.appendChild(pinIndicator);
+
+                const pinNumber = document.createElement('div');
+                pinNumber.style.cssText = `
+                    position: absolute;
+                    top: -20px;
+                    width: 100%;
+                    text-align: center;
+                    color: white;
+                `;
+                pinNumber.textContent = (i + 1).toString();
+                pin.appendChild(pinNumber);
+
+                // Function to update pin appearance based on its state and binding status
+                function updatePinAppearance() {
+                    // Reset to default first
+                    pin.style.background = '#555';
+                    pinIndicator.style.background = '#555';
+                    pin.style.animation = '';
+                    pin.style.borderColor = '#777';
+                    
+                    // If the pin is set, show it as green
+                    if (gameState.pinStates[i] === 2) {
+                        pin.style.background = '#0f0';
+                        pin.style.cursor = 'default';
+                        pinIndicator.style.background = '#0f0';
+                        return;
+                    }
+                    
+                    // Get the current binding pin
+                    const bindingPin = bindingOrder[gameState.currentBindingIndex];
+                    
+                    // Generate consistent red herrings based on the current binding index
+                    // This ensures the same pins are highlighted as red herrings until the next pin is set
+                    const redHerringSeeds = [
+                        (bindingPin * 3 + 7) % numPins,
+                        (bindingPin * 5 + 3) % numPins
+                    ];
+                    
+                    // Filter out the binding pin and already set pins from red herrings
+                    const redHerrings = redHerringSeeds.filter(index => 
+                        index !== bindingPin && gameState.pinStates[index] !== 2);
+                    
+                    // If this is the current binding pin, give a subtle hint based on difficulty
+                    if (i === bindingPin) {
+                        // For easy difficulty, make the binding pin more obvious
+                        if (difficulty === 'easy') {
+                            pinIndicator.style.background = '#ff9900'; // Orange indicator for binding pin
+                            
+                            // Also show the required tension level with a color hint
+                            const requiredTension = gameState.tensionRequirements[i];
+                            if (requiredTension === 1) {
+                                pin.style.borderColor = '#66ccff'; // Light blue for light tension
+                            } else if (requiredTension === 2) {
+                                pin.style.borderColor = '#9966ff'; // Purple for medium tension
+                            } else {
+                                pin.style.borderColor = '#ff6666'; // Red for heavy tension
+                            }
+                            
+                            // Add a subtle animation
+                            pin.style.animation = 'pinWiggle 2s infinite';
+                        } 
+                        // For medium difficulty, just show which pin is binding with less obvious cues
+                        else if (difficulty === 'medium') {
+                            pinIndicator.style.background = '#ff9900'; // Orange indicator for binding pin
+                            pin.style.animation = 'pinWiggle 3s infinite';
+                        }
+                        // For hard difficulty, very subtle indication
+                        else if (difficulty === 'hard') {
+                            pin.style.animation = 'pinWiggle 4s infinite 0.5s';
+                        }
+                    }
+                    // If this is a red herring, give misleading feedback
+                    else if (redHerrings.includes(i) && gameState.currentBindingIndex > 0 && difficulty !== 'easy') {
+                        // The amount of misleading feedback depends on difficulty
+                        if (difficulty === 'medium') {
+                            // For medium, make red herrings somewhat convincing
+                            pinIndicator.style.background = '#ff9900'; // Same color as real binding pin
+                            pin.style.animation = 'pinWiggle 3.5s infinite 0.7s'; // Similar wiggle to real pin
+                            
+                            // Randomly assign fake tension indicators to confuse
+                            const fakeTension = Math.floor(Math.random() * 3) + 1;
+                            if (fakeTension === 1) {
+                                pin.style.borderColor = '#66ccff';
+                            } else if (fakeTension === 2) {
+                                pin.style.borderColor = '#9966ff';
+                            } else {
+                                pin.style.borderColor = '#ff6666';
+                            }
+                        }
+                        else if (difficulty === 'hard') {
+                            // For hard, make red herrings very convincing
+                            pin.style.animation = 'pinWiggle 4s infinite 0.3s';
+                            
+                            // On hard, sometimes make a red herring more convincing than the real pin
+                            if (Math.random() < 0.5) {
+                                pinIndicator.style.background = '#ff9900';
+                            }
+                        }
+                    }
+                }
+
+                // Add the wiggle animation to the document
+                if (!document.getElementById('pinWiggleAnimation')) {
+                    const style = document.createElement('style');
+                    style.id = 'pinWiggleAnimation';
+                    style.textContent = `
+                        @keyframes pinWiggle {
+                            0% { transform: translateY(0); }
+                            15% { transform: translateY(-2px); }
+                            30% { transform: translateY(0); }
+                            45% { transform: translateY(-1px); }
+                            60% { transform: translateY(0); }
+                            75% { transform: translateY(-0.5px); }
+                            100% { transform: translateY(0); }
+                        }
+                    `;
+                    document.head.appendChild(style);
+                }
+
+                // Update all pins whenever a pin state changes
+                function updateAllPins() {
+                    // Get the current binding pin
+                    const bindingPin = bindingOrder[gameState.currentBindingIndex];
+                    
+                    // Generate consistent red herrings based on the current binding index
+                    const redHerringSeeds = [
+                        (bindingPin * 3 + 7) % numPins,
+                        (bindingPin * 5 + 3) % numPins
+                    ];
+                    
+                    // Filter out the binding pin and already set pins from red herrings
+                    const redHerrings = redHerringSeeds.filter(index => 
+                        index !== bindingPin && gameState.pinStates[index] !== 2);
+                    
+                    Array.from(pinsContainer.children).forEach((pin, index) => {
+                        // Find the indicator within this pin
+                        const indicator = pin.querySelector('div:first-child');
+                        
+                        // Reset styles first
+                        pin.style.background = '#555';
+                        pin.style.animation = '';
+                        pin.style.borderColor = '#777';
+                        if (indicator) indicator.style.background = '#555';
+                        
+                        // Update based on current game state
+                        if (gameState.pinStates[index] === 2) {
+                            pin.style.background = '#0f0';
+                            pin.style.cursor = 'default';
+                            if (indicator) indicator.style.background = '#0f0';
+                        } else {
+                            pin.style.cursor = 'pointer';
+                            
+                            // Check if this is the binding pin
+                            if (index === bindingPin && !gameState.hardMode) {
+                                if (difficulty === 'easy') {
+                                    if (indicator) indicator.style.background = '#ff9900';
+                                    
+                                    // Show tension hint
+                                    const requiredTension = gameState.tensionRequirements[index];
+                                    if (requiredTension === 1) {
+                                        pin.style.borderColor = '#66ccff';
+                                    } else if (requiredTension === 2) {
+                                        pin.style.borderColor = '#9966ff';
+                                    } else {
+                                        pin.style.borderColor = '#ff6666';
+                                    }
+                                    
+                                    pin.style.animation = 'pinWiggle 2s infinite';
+                                } 
+                                else if (difficulty === 'medium') {
+                                    if (indicator) indicator.style.background = '#ff9900';
+                                    pin.style.animation = 'pinWiggle 3s infinite';
+                                }
+                                else if (difficulty === 'hard') {
+                                    pin.style.animation = 'pinWiggle 4s infinite 0.5s';
+                                }
+                            }
+                            // Check if this is a red herring, but only for medium and hard difficulties
+                            else if (redHerrings.includes(index) && gameState.currentBindingIndex > 0 && difficulty !== 'easy') {
+                                if (difficulty === 'medium') {
+                                    if (indicator) indicator.style.background = '#ff9900';
+                                    pin.style.animation = 'pinWiggle 3.5s infinite 0.7s';
+                                    
+                                    const fakeTension = Math.floor(Math.random() * 3) + 1;
+                                    if (fakeTension === 1) {
+                                        pin.style.borderColor = '#66ccff';
+                                    } else if (fakeTension === 2) {
+                                        pin.style.borderColor = '#9966ff';
+                                    } else {
+                                        pin.style.borderColor = '#ff6666';
+                                    }
+                                }
+                                else if (difficulty === 'hard') {
+                                    pin.style.animation = 'pinWiggle 4s infinite 0.3s';
+                                    if (Math.random() < 0.5 && indicator) {
+                                        indicator.style.background = '#ff9900';
+                                    }
+                                }
+                            }
+                        }
+                    });
+                }
+
+                // Call updatePinAppearance initially and whenever the game state changes
+                updatePinAppearance();
+
+                let pressStartTime = 0;
+                let pressTimer = null;
+
+                function checkPinPress() {
+                    if (pressStartTime === 0) return;
+                    
+                    const pressDuration = Date.now() - pressStartTime;
+                    if (pressDuration > gameState.maxPressTime) {
+                        // Clear the timer first before calling resetPins
+                        clearInterval(pressTimer);
+                        pressTimer = null;
+                        resetPins();
+                    }
+                }
+
+                pin.onmousedown = () => {
+                    // First check if this pin is already set
+                    const pinIndex = Array.from(pinsContainer.children).indexOf(pin);
+                    if (gameState.pinStates[pinIndex] === 2) {
+                        // Pin is already set, don't allow interaction
+                        return;
+                    }
+                    
+                    // Set the flag to indicate we're actively picking a pin
+                    gameState.isActivelyPickingPin = true;
+                    
+                    // Play basic click sound
+                    if (lockSounds.click) {
+                        lockSounds.click.currentTime = 0;
+                        lockSounds.click.play().catch(e => console.log('Audio play failed:', e));
+                    }
+                    
+                    pressStartTime = Date.now();
+                    pressTimer = setInterval(checkPinPress, 100);
+                    
+                    pin.style.transform = 'translateY(-10px)';
+                    
+                    // Each pin has different tension requirements
+                    const bindingPin = bindingOrder[gameState.currentBindingIndex];
+                    const requiredTension = gameState.tensionRequirements[pinIndex];
+                    
+                    // Check if this is the current binding pin
+                    if (pinIndex === bindingPin) {
+                        // This pin needs exactly the right tension level
+                        const correctTension = (gameState.tensionLevel === requiredTension);
+                        
+                        if (correctTension && !gameState.overTensioned) {
+                            // Play binding sound - correct pin with correct tension
+                            if (lockSounds.binding) {
+                                lockSounds.binding.currentTime = 0;
+                                lockSounds.binding.play().catch(e => console.log('Audio play failed:', e));
+                            }
+                            
+                            if (!gameState.hardMode) {
+                                pin.style.background = '#00f';
+                            }
+                            
+                            // Start a timer to set the pin
+                            setTimeout(() => {
+                                if (pressStartTime !== 0) { // Still pressing
+                                    // Double-check tension is still correct
+                                    const stillCorrectTension = (gameState.tensionLevel === requiredTension);
+                                    
+                                    if (stillCorrectTension && !gameState.overTensioned) {
+                                        gameState.pinStates[pinIndex] = 2;
+                                        gameState.currentBindingIndex++;
+                                        gameState.lastPinSetTime = Date.now();
+                                        
+                                        // Play set sound - pin successfully set
+                                        if (lockSounds.set) {
+                                            lockSounds.set.currentTime = 0;
+                                            lockSounds.set.play().catch(e => console.log('Audio play failed:', e));
+                                        }
+                                        
+                                        if (!gameState.hardMode) {
+                                            pin.style.background = '#0f0';
+                                            pinIndicator.style.background = '#0f0';
+                                        }
+                                        
+                                        // Update all pins to show new binding state
+                                        updateAllPins();
+                                        
+                                        checkWinCondition();
+                                    }
+                                }
+                            }, 500);
+                        } else if (gameState.tensionLevel > 0) {
+                            // Wrong tension but trying - give feedback
+                            // Play wrong sound - wrong tension on correct pin
+                            if (lockSounds.wrong) {
+                                lockSounds.wrong.currentTime = 0;
+                                lockSounds.wrong.play().catch(e => console.log('Audio play failed:', e));
+                            }
+                            
+                            if (!gameState.hardMode) {
+                                pin.style.background = '#00f';
+                            }
+                            
+                            // Start counting towards potential reset
+                            gameState.pinPressTime[pinIndex] = Date.now();
+                        }
+                    } else if (gameState.tensionLevel > 0 && gameState.pinStates[pinIndex] !== 2) {
+                        // Wrong pin - give feedback
+                        if (lockSounds.wrong) {
+                            lockSounds.wrong.currentTime = 0;
+                            lockSounds.wrong.play().catch(e => console.log('Audio play failed:', e));
+                        }
+                        
+                        if (!gameState.hardMode) {
+                            pin.style.background = '#00f';
+                        }
+                        // Start counting towards potential reset
+                        gameState.pinPressTime[pinIndex] = Date.now();
+                    }
+                };
+
+                pin.onmouseup = pin.onmouseleave = () => {
+                    // Clear the flag to indicate we're no longer actively picking a pin
+                    gameState.isActivelyPickingPin = false;
+                    
+                    pressStartTime = 0;
+                    if (pressTimer) {
+                        clearInterval(pressTimer);
+                        pressTimer = null;
+                    }
+                    
+                    pin.style.transform = 'translateY(0)';
+                    if (gameState.pinStates[i] !== 2) {
+                        pin.style.background = '#555';
+                        // Update appearance to show binding status
+                        updatePinAppearance();
+                    }
+                };
+
+                pinsContainer.appendChild(pin);
+            }
+
+            difficultySelect.onchange = () => {
+                gameState.hardMode = difficultySelect.value.includes('Hard');
+                Array.from(pinsContainer.children).forEach(pin => {
+                    pin.style.opacity = gameState.hardMode ? '0.1' : '1';
+                });
+            };
+
+            // Add components to game container
+            gameContainer.appendChild(difficultySelect);
+            gameContainer.appendChild(tensionWrench);
+            gameContainer.appendChild(pinsContainer);
+
+            // Add close button
+            const closeButton = document.createElement('button');
+            closeButton.textContent = 'X';
+            closeButton.style.cssText = `
+                position: absolute;
+                right: 10px;
+                top: 10px;
+                background: none;
+                border: none;
+                color: white;
+                font-size: 20px;
+                cursor: pointer;
+            `;
+            closeButton.onclick = () => {
+                document.body.removeChild(iframe);
+                if (currentScene && currentScene.input && currentScene.input.mouse) {
+                    currentScene.input.mouse.enabled = true;
+                }
+            };
+
+            // Assemble the interface
+            iframe.appendChild(closeButton);
+            iframe.appendChild(instructions);
+            iframe.appendChild(gameContainer);
+            document.body.appendChild(iframe);
+            
+            // Disable game movement
+            if (currentScene && currentScene.input && currentScene.input.mouse) {
+                currentScene.input.mouse.enabled = false;
+            }
+
+            // Add this function before the pin creation loop
+            function checkWinCondition() {
+                if (gameState.currentBindingIndex >= numPins) {
+                    // Play success sound
+                    if (lockSounds.success) {
+                        lockSounds.success.currentTime = 0;
+                        lockSounds.success.play().catch(e => console.log('Audio play failed:', e));
+                    }
+                    
+                    console.log('Lock picked successfully:', lockable);
+                    
+                    // Create success message
+                    const successMessage = document.createElement('div');
+                    successMessage.style.cssText = `
+                        position: absolute;
+                        top: 50%;
+                        left: 50%;
+                        transform: translate(-50%, -50%);
+                        background: rgba(0, 0, 0, 0.8);
+                        color: #0f0;
+                        padding: 20px;
+                        border-radius: 10px;
+                        font-size: 24px;
+                        text-align: center;
+                        z-index: 1002;
+                    `;
+                    successMessage.textContent = "Lock successfully picked!";
+                    iframe.appendChild(successMessage);
+                    
+                    // Disable further interaction
+                    gameContainer.style.pointerEvents = 'none';
+                    
+                    setTimeout(() => {
+                        // For doors, we need to check properties and handle differently
+                        if (lockable && lockable.properties && lockable.properties.locked) {
+                            console.log('Unlocking door tile:', lockable);
+                            unlockDoor(lockable, lockable.layer);
+                        } 
+                        // For containers and other lockable items
+                        else if (lockable && lockable.scenarioData) {
+                            console.log('Unlocking container:', lockable.scenarioData);
+                            lockable.scenarioData.locked = false;
+                            
+                            // Set the flag to indicate the container is unlocked but contents not collected
+                            if (lockable.scenarioData.contents && lockable.scenarioData.contents.length > 0) {
+                                lockable.scenarioData.isUnlockedButNotCollected = true;
+                                debugLog('Container unlocked and ready for collection', lockable.scenarioData, 1);
+                            }
+                        }
+                        
+                        // Remove the minigame
+                        document.body.removeChild(iframe);
+                        if (currentScene && currentScene.input && currentScene.input.mouse) {
+                            currentScene.input.mouse.enabled = true;
+                        }
+                    }, 1500);
+                    
+                    return true;
+                }
+                return false;
+            }
+
+            // Use the toggleTension function for both click and keyboard events
+            tensionWrench.onclick = toggleTension;
+
+            document.addEventListener('keydown', function(event) {
+                // Only process if the lockpicking minigame is active
+                if (!document.querySelector('div[style*="z-index: 1000"]')) return;
+                
+                if (event.code === 'Space') {
+                    event.preventDefault(); // Prevent page scrolling
+                    toggleTension();
+                }
+            });
+
+            // Keep only the table debug function
+            function logTensionDebugInfo() {
+                // Only show debug info if debug mode is enabled
+                if (!DEBUG_MODE.enabled) return;
+                
+                DEBUG_MODE.log("=== LOCKPICKING DEBUG INFO ===");
+                DEBUG_MODE.log("Pin binding order and tension requirements:");
+                
+                const tableData = [];
+                
+                for (let orderIndex = 0; orderIndex < numPins; orderIndex++) {
+                    const pinIndex = bindingOrder[orderIndex];
+                    const requiredTension = gameState.tensionRequirements[pinIndex];
+                    let tensionNeeded;
+                    
+                    switch(requiredTension) {
+                        case 1: tensionNeeded = 'Light'; break;
+                        case 2: tensionNeeded = 'Medium'; break;
+                        case 3: tensionNeeded = 'Heavy'; break;
+                        default: tensionNeeded = 'Unknown';
+                    }
+                    
+                    tableData.push({
+                        'Binding Order': orderIndex + 1,
+                        'Pin #': pinIndex + 1,
+                        'Tension Required': tensionNeeded
+                    });
+                }
+                
+                console.table(tableData);
+            }
+
+            // Call this function instead of addTensionDebugDisplay
+            logTensionDebugInfo();
+        }
+
+        // Add this function to get pin count based on difficulty
+        function getPinCountForDifficulty(difficulty) {
+            switch(difficulty?.toLowerCase()) {
+                case 'easy':
+                    return 3;
+                case 'medium':
+                    return 5;
+                case 'hard':
+                    return 7;
+                default:
+                    return 5; // Default to medium difficulty
+            }
+        }
+
+        // removes an item from the inventory
+        function removeFromInventory(sprite) {
+            if (!sprite || !inventory.items) {
+                return false;
+            }
+            
+            try {
+                // Find the index of the sprite in the inventory
+                const index = inventory.items.indexOf(sprite);
+                
+                if (index === -1) {
+                    return false; // Item not found in inventory
+                }
+                
+                // Remove from container
+                inventory.container.remove(sprite);
+                
+                // Remove from items array
+                inventory.items.splice(index, 1);
+                
+                // Destroy the sprite
+                sprite.destroy();
+                
+                // Rearrange remaining items
+                rearrangeInventoryItems();
+                
+                // Log the removal
+                debugLog('INVENTORY ITEM REMOVED', {
+                    name: sprite.name,
+                    totalItems: inventory.items.length
+                }, 2);
+                
+                return true;
+            } catch (error) {
+                console.error('Error removing item from inventory:', error);
+                return false;
+            }
+        }
+        
+        // Rearrange inventory items after removal
+        function rearrangeInventoryItems() {
+            inventory.items.forEach((item, index) => {
+                item.x = index * 60 + 100;
+            });
         }
 
     </script>
