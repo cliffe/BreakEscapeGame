@@ -390,6 +390,204 @@
             background: rgba(0, 0, 0, 0.5);
             z-index: 999;
         }
+
+        /* Bluetooth Scanner Panel */
+        #bluetooth-panel {
+            position: fixed;
+            bottom: 80px;
+            right: 90px;
+            width: 350px;
+            max-height: 500px;
+            background-color: rgba(0, 0, 0, 0.9);
+            color: white;
+            border-radius: 5px;
+            box-shadow: 0 2px 15px rgba(0, 0, 0, 0.5);
+            z-index: 1999;
+            font-family: Arial, sans-serif;
+            display: none;
+            overflow: hidden;
+            transition: all 0.3s ease;
+            border: 1px solid #444;
+        }
+
+        #bluetooth-header {
+            background-color: #222;
+            padding: 12px 15px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid #444;
+        }
+
+        #bluetooth-title {
+            font-weight: bold;
+            font-size: 18px;
+            color: #9b59b6;
+        }
+
+        #bluetooth-close {
+            cursor: pointer;
+            font-size: 18px;
+            color: #aaa;
+            transition: color 0.2s;
+        }
+
+        #bluetooth-close:hover {
+            color: white;
+        }
+        
+        #bluetooth-search-container {
+            padding: 10px 15px;
+            background-color: #333;
+            border-bottom: 1px solid #444;
+        }
+        
+        #bluetooth-search {
+            width: 100%;
+            padding: 8px 10px;
+            border: none;
+            border-radius: 3px;
+            background-color: #222;
+            color: white;
+            font-size: 14px;
+        }
+        
+        #bluetooth-search:focus {
+            outline: none;
+            box-shadow: 0 0 0 2px rgba(155, 89, 182, 0.5);
+        }
+        
+        #bluetooth-categories {
+            display: flex;
+            padding: 5px 15px;
+            background-color: #2c2c2c;
+            border-bottom: 1px solid #444;
+        }
+        
+        .bluetooth-category {
+            padding: 5px 10px;
+            margin-right: 5px;
+            cursor: pointer;
+            border-radius: 3px;
+            font-size: 12px;
+            transition: all 0.2s;
+        }
+        
+        .bluetooth-category.active {
+            background-color: #9b59b6;
+            color: white;
+        }
+        
+        .bluetooth-category:hover:not(.active) {
+            background-color: #444;
+        }
+
+        #bluetooth-content {
+            padding: 15px;
+            overflow-y: auto;
+            max-height: 350px;
+        }
+
+        .bluetooth-device {
+            margin-bottom: 15px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid #444;
+            cursor: pointer;
+            transition: background-color 0.2s;
+            padding: 10px;
+            border-radius: 3px;
+        }
+
+        .bluetooth-device:hover {
+            background-color: #333;
+        }
+
+        .bluetooth-device:last-child {
+            margin-bottom: 0;
+            padding-bottom: 0;
+            border-bottom: none;
+        }
+
+        .bluetooth-device-name {
+            font-weight: bold;
+            margin-bottom: 5px;
+            font-size: 14px;
+            color: #9b59b6;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .bluetooth-device-icons {
+            display: flex;
+            gap: 5px;
+        }
+        
+        .bluetooth-device-icon {
+            font-size: 12px;
+            color: #aaa;
+        }
+
+        .bluetooth-device-details {
+            font-size: 13px;
+            line-height: 1.4;
+            white-space: pre-wrap;
+            max-height: 80px;
+            overflow: hidden;
+            transition: max-height 0.3s;
+        }
+        
+        .bluetooth-device.expanded .bluetooth-device-details {
+            max-height: 1000px;
+        }
+        
+        .bluetooth-device-timestamp {
+            font-size: 11px;
+            color: #888;
+            margin-top: 5px;
+            text-align: right;
+        }
+
+        #bluetooth-toggle {
+            position: fixed;
+            bottom: 20px;
+            right: 90px;
+            width: 60px;
+            height: 60px;
+            background-color: #9b59b6;
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+            z-index: 1998;
+            font-size: 28px;
+            transition: all 0.3s ease;
+        }
+
+        #bluetooth-toggle:hover {
+            background-color: #8e44ad;
+            transform: scale(1.1);
+        }
+
+        #bluetooth-count {
+            position: absolute;
+            top: -5px;
+            right: -5px;
+            background-color: #e74c3c;
+            color: white;
+            border-radius: 50%;
+            width: 24px;
+            height: 24px;
+            font-size: 14px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-weight: bold;
+            display: none;
+        }
     </style>
     <script src="https://cdn.jsdelivr.net/npm/phaser@3.60.0/dist/phaser.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/easystarjs@0.4.4/bin/easystar-0.4.4.js"></script>
@@ -421,6 +619,27 @@
     <div id="notes-toggle">
         <span>📝</span>
         <div id="notes-count">0</div>
+    </div>
+
+    <!-- Bluetooth Scanner Panel -->
+    <div id="bluetooth-panel">
+        <div id="bluetooth-header">
+            <div id="bluetooth-title">Bluetooth Scanner</div>
+            <div id="bluetooth-close">×</div>
+        </div>
+        <div id="bluetooth-search-container">
+            <input type="text" id="bluetooth-search" placeholder="Search devices...">
+        </div>
+        <div id="bluetooth-categories">
+            <div class="bluetooth-category active" data-category="all">All</div>
+            <div class="bluetooth-category" data-category="nearby">Nearby</div>
+            <div class="bluetooth-category" data-category="saved">Saved</div>
+        </div>
+        <div id="bluetooth-content"></div>
+    </div>
+    <div id="bluetooth-toggle" style="display: none;">
+        <span>📡</span>
+        <div id="bluetooth-count">0</div>
     </div>
 
     <script>
@@ -808,6 +1027,9 @@
             
             // Initialize notes count
             updateNotesCount();
+            
+            // Initialize Bluetooth scanner panel
+            initializeBluetoothPanel();
         });
         
         // Function to create or update the FPS counter
@@ -2348,29 +2570,66 @@
                 inventorySprite.setDepth(2003);
 
                 // Add pointer events
-                inventorySprite.on('pointerdown', function(event) {
-                    event.stopPropagation();
-                    handleObjectInteraction(this);
+                inventorySprite.on('pointerdown', function(pointer) {
+                    // Check if this is the Bluetooth scanner
+                    if (this.scenarioData.type === "bluetooth_scanner") {
+                        // Toggle the Bluetooth scanner panel
+                        toggleBluetoothPanel();
+                        return;
+                    }
+                    
+                    // Handle other inventory items as before
+                    handleItemInteraction(this, true);
                 });
                 
                 inventorySprite.on('pointerover', function() {
                     this.setTint(0xdddddd);
+                    
+                    // Show tooltip with item name
+                    const tooltipText = scene.add.text(
+                        this.x, 
+                        this.y - 40, 
+                        this.scenarioData.name, 
+                        { 
+                            fontSize: '14px',
+                            backgroundColor: '#000',
+                            padding: { x: 5, y: 3 },
+                            fixedWidth: 150,
+                            align: 'center'
+                        }
+                    ).setOrigin(0.5, 0.5).setDepth(2004);
+                    
+                    this.tooltip = tooltipText;
                 });
                 
                 inventorySprite.on('pointerout', function() {
                     this.clearTint();
+                    
+                    if (this.tooltip) {
+                        this.tooltip.destroy();
+                        this.tooltip = null;
+                    }
                 });
                 
-                inventory.container.add(inventorySprite);
+                // Add to inventory array
                 inventory.items.push(inventorySprite);
                 
-                // Use debugLog with level 3 (verbose) for detailed inventory tracking
-                debugLog('INVENTORY ITEM DETAILS', {
-                    name: sprite.name,
-                    totalItems: inventory.items.length
-                }, 3);
+                // Add to container
+                inventory.container.add(inventorySprite);
+                
+                // Show notification
+                gameAlert(`Added ${sprite.scenarioData.name} to inventory`, 'success', 'Item Collected', 3000);
+                
+                // If this is the Bluetooth scanner, show the toggle button
+                if (sprite.scenarioData.type === "bluetooth_scanner") {
+                    const bluetoothToggle = document.getElementById('bluetooth-toggle');
+                    bluetoothToggle.style.display = 'flex';
+                }
+                
+                return true;
             } catch (error) {
-                console.error('Error adding item to inventory:', error);
+                console.error('Error adding to inventory:', error);
+                return false;
             }
         }
 
@@ -2701,8 +2960,15 @@
 
                 case 'bluetooth':
                     if (lockable.scenarioData?.locked) {
-                        gameAlert("You need a Bluetooth scanner to unlock this device.", 'warning', 'Bluetooth Required', 4000);
-                        // Don't return here - allow the item to be picked up even without scanner
+                        // Try to spoof the Bluetooth device
+                        const spoofResult = spoofBluetoothDevice(lockable);
+                        
+                        if (spoofResult) {
+                            // If spoofing was successful, unlock the target
+                            unlockTarget(lockable, type, lockable.layer);
+                        }
+                        
+                        // Allow the item to be picked up even if locked
                         if (type === 'item' && lockable.scenarioData?.takeable) {
                             addToInventory(lockable);
                             // Remove from room objects if it exists there
@@ -2712,29 +2978,6 @@
                         }
                         return;
                     }
-                    
-                    // Calculate distance between player and tablet
-                    const distance = Phaser.Math.Distance.Between(
-                        player.x, player.y,
-                        lockable.x, lockable.y
-                    );
-                    
-                    debugLog('BLUETOOTH DISTANCE', distance, 3);
-                    
-                    // Check if player is within range (using BLUETOOTH_SCAN_RANGE)
-                    if (distance <= BLUETOOTH_SCAN_RANGE) {
-                        debugLog('BLUETOOTH UNLOCK SUCCESS', {
-                            itemName: lockable.scenarioData?.name,
-                            itemMac: lockable.scenarioData?.mac,
-                            distance: Math.round(distance),
-                            range: BLUETOOTH_SCAN_RANGE
-                        }, 1);
-                        unlockTarget(lockable, type, lockable.layer);
-                        gameAlert("Bluetooth connection established. Device unlocked.", 'success', 'Connection Successful', 4000);
-                        return;
-                    }
-                    
-                    gameAlert("Too far from device to establish Bluetooth connection.", 'error', 'Connection Failed', 3000);
                     break;
 
                 default:
@@ -2970,11 +3213,17 @@
             
             if (!scanner) return;
             
-            // Find all tablets in the current room
+            // Show the Bluetooth toggle button if it's not already visible
+            const bluetoothToggle = document.getElementById('bluetooth-toggle');
+            if (bluetoothToggle.style.display === 'none') {
+                bluetoothToggle.style.display = 'flex';
+            }
+            
+            // Find all Bluetooth devices in the current room
             if (!currentRoom || !rooms[currentRoom] || !rooms[currentRoom].objects) return;
             
             Object.values(rooms[currentRoom].objects).forEach(obj => {
-                if (obj.scenarioData?.type === "tablet" && obj.scenarioData?.locked) {
+                if (obj.scenarioData?.lockType === "bluetooth") {
                     const distance = Phaser.Math.Distance.Between(
                         player.x, player.y,
                         obj.x, obj.y
@@ -2982,16 +3231,84 @@
                     
                     if (distance <= BLUETOOTH_SCAN_RANGE) {
                         debugLog('BLUETOOTH DEVICE DETECTED', {
+                            deviceName: obj.scenarioData?.name,
+                            deviceMac: obj.scenarioData?.mac,
                             distance: Math.round(distance),
                             range: BLUETOOTH_SCAN_RANGE
                         }, 2);
                         
-                        // Unlock the tablet
-                        obj.scenarioData.locked = false;
-                        debugLog('BLUETOOTH UNLOCK SUCCESS', null, 1);
+                        // Add to Bluetooth scanner panel
+                        const deviceName = obj.scenarioData?.name || "Unknown Device";
+                        const deviceMac = obj.scenarioData?.mac || "Unknown";
+                        const details = `Type: ${obj.scenarioData?.type || "Unknown"}\nDistance: ${Math.round(distance)} units\nSignal Strength: ${Math.max(0, Math.round(100 - (distance / BLUETOOTH_SCAN_RANGE * 100)))}%`;
+                        
+                        addBluetoothDevice(deviceName, deviceMac, details, true);
+                        
+                        // Only show notification for new devices
+                        if (!bluetoothDevices.some(device => device.mac === deviceMac)) {
+                            gameAlert(`Bluetooth device detected: ${deviceName} (MAC: ${deviceMac})`, 'info', 'Bluetooth Scanner', 4000);
+                        }
+                    } else {
+                        // Update device as not nearby if it's in our list
+                        const deviceMac = obj.scenarioData?.mac || "Unknown";
+                        const existingDevice = bluetoothDevices.find(device => device.mac === deviceMac);
+                        
+                        if (existingDevice && existingDevice.nearby) {
+                            existingDevice.nearby = false;
+                            existingDevice.lastSeen = new Date();
+                            updateBluetoothPanel();
+                            updateBluetoothCount();
+                        }
                     }
                 }
             });
+        }
+
+        function spoofBluetoothDevice(target) {
+            // Find spoofer in inventory
+            const spoofer = inventory.items.find(item => 
+                item.scenarioData?.type === "bluetooth_spoofer"
+            );
+            
+            if (!spoofer) {
+                gameAlert("You need a Bluetooth spoofer to unlock this device.", 'warning', 'Bluetooth Spoofer Required', 4000);
+                return false;
+            }
+            
+            // Calculate distance between player and target device
+            const distance = Phaser.Math.Distance.Between(
+                player.x, player.y,
+                target.x, target.y
+            );
+            
+            debugLog('BLUETOOTH SPOOF ATTEMPT', {
+                deviceName: target.scenarioData?.name,
+                deviceMac: target.scenarioData?.mac,
+                spooferMac: spoofer.scenarioData?.mac,
+                distance: Math.round(distance)
+            }, 2);
+            
+            // Check if player is within range
+            if (distance <= BLUETOOTH_SCAN_RANGE) {
+                // Check if the spoofer has the correct MAC address
+                if (spoofer.scenarioData?.mac === target.scenarioData?.mac) {
+                    debugLog('BLUETOOTH SPOOF SUCCESS', {
+                        deviceName: target.scenarioData?.name,
+                        mac: target.scenarioData?.mac
+                    }, 1);
+                    
+                    // Unlock the device
+                    target.scenarioData.locked = false;
+                    gameAlert("Bluetooth connection spoofed. Device unlocked.", 'success', 'Spoofing Successful', 4000);
+                    return true;
+                } else {
+                    gameAlert("Bluetooth spoofer MAC address doesn't match the target device.", 'error', 'Spoofing Failed', 4000);
+                    return false;
+                }
+            } else {
+                gameAlert("Too far from device to establish Bluetooth connection.", 'error', 'Connection Failed', 3000);
+                return false;
+            }
         }
 
         // Add helper function to generate fingerprint data
@@ -4616,6 +4933,185 @@
             inventory.items.forEach((item, index) => {
                 item.x = index * 60 + 100;
             });
+        }
+
+        // Bluetooth scanner system
+        const bluetoothDevices = [];
+        let newBluetoothDevices = 0;
+        
+        // Add a Bluetooth device to the scanner panel
+        function addBluetoothDevice(name, mac, details = "", nearby = true) {
+            // Check if a device with the same MAC already exists
+            const deviceExists = bluetoothDevices.some(device => device.mac === mac);
+            
+            // If the device already exists, update its nearby status
+            if (deviceExists) {
+                const existingDevice = bluetoothDevices.find(device => device.mac === mac);
+                existingDevice.nearby = nearby;
+                existingDevice.lastSeen = new Date();
+                updateBluetoothPanel();
+                return null;
+            }
+            
+            const device = {
+                id: Date.now(),
+                name: name,
+                mac: mac,
+                details: details,
+                nearby: nearby,
+                saved: false,
+                firstSeen: new Date(),
+                lastSeen: new Date()
+            };
+            
+            bluetoothDevices.push(device);
+            updateBluetoothPanel();
+            updateBluetoothCount();
+            
+            // Show notification for new device
+            showNotification(`New Bluetooth device detected: ${name}`, 'info', 'Bluetooth Scanner', 3000);
+            
+            return device;
+        }
+        
+        // Update the Bluetooth scanner panel with current devices
+        function updateBluetoothPanel() {
+            const bluetoothContent = document.getElementById('bluetooth-content');
+            const searchTerm = document.getElementById('bluetooth-search')?.value?.toLowerCase() || '';
+            
+            // Get active category
+            const activeCategory = document.querySelector('.bluetooth-category.active')?.dataset.category || 'all';
+            
+            // Filter devices based on search and category
+            let filteredDevices = [...bluetoothDevices];
+            
+            // Apply category filter
+            if (activeCategory === 'nearby') {
+                filteredDevices = filteredDevices.filter(device => device.nearby);
+            } else if (activeCategory === 'saved') {
+                filteredDevices = filteredDevices.filter(device => device.saved);
+            }
+            
+            // Apply search filter
+            if (searchTerm) {
+                filteredDevices = filteredDevices.filter(device => 
+                    device.name.toLowerCase().includes(searchTerm) || 
+                    device.mac.toLowerCase().includes(searchTerm) ||
+                    device.details.toLowerCase().includes(searchTerm)
+                );
+            }
+            
+            // Sort devices with nearby ones first, then by last seen (newest first)
+            filteredDevices.sort((a, b) => {
+                if (a.nearby !== b.nearby) {
+                    return a.nearby ? -1 : 1;
+                }
+                return new Date(b.lastSeen) - new Date(a.lastSeen);
+            });
+            
+            // Clear current content
+            bluetoothContent.innerHTML = '';
+            
+            // Add devices
+            if (filteredDevices.length === 0) {
+                if (searchTerm) {
+                    bluetoothContent.innerHTML = '<div class="bluetooth-device">No devices match your search.</div>';
+                } else if (activeCategory !== 'all') {
+                    bluetoothContent.innerHTML = `<div class="bluetooth-device">No ${activeCategory} devices found.</div>`;
+                } else {
+                    bluetoothContent.innerHTML = '<div class="bluetooth-device">No devices detected yet.</div>';
+                }
+            } else {
+                filteredDevices.forEach(device => {
+                    const deviceElement = document.createElement('div');
+                    deviceElement.className = 'bluetooth-device';
+                    deviceElement.dataset.id = device.id;
+                    
+                    // Format the timestamp
+                    const timestamp = new Date(device.lastSeen);
+                    const formattedDate = timestamp.toLocaleDateString();
+                    const formattedTime = timestamp.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+                    
+                    let deviceContent = `<div class="bluetooth-device-name">
+                        <span>${device.name}</span>
+                        <div class="bluetooth-device-icons">`;
+                    
+                    if (device.nearby) {
+                        deviceContent += `<span class="bluetooth-device-icon">📶</span>`;
+                    }
+                    if (device.saved) {
+                        deviceContent += `<span class="bluetooth-device-icon">💾</span>`;
+                    }
+                    
+                    deviceContent += `</div></div>`;
+                    deviceContent += `<div class="bluetooth-device-details">MAC: ${device.mac}\n${device.details}</div>`;
+                    deviceContent += `<div class="bluetooth-device-timestamp">Last seen: ${formattedDate} ${formattedTime}</div>`;
+                    
+                    deviceElement.innerHTML = deviceContent;
+                    
+                    // Toggle expanded state when clicked
+                    deviceElement.addEventListener('click', () => {
+                        deviceElement.classList.toggle('expanded');
+                        
+                        // Mark as saved when expanded
+                        if (!device.saved && deviceElement.classList.contains('expanded')) {
+                            device.saved = true;
+                            updateBluetoothCount();
+                            updateBluetoothPanel();
+                        }
+                    });
+                    
+                    bluetoothContent.appendChild(deviceElement);
+                });
+            }
+        }
+        
+        // Update the new Bluetooth devices count
+        function updateBluetoothCount() {
+            const bluetoothCount = document.getElementById('bluetooth-count');
+            newBluetoothDevices = bluetoothDevices.filter(device => !device.saved && device.nearby).length;
+            
+            bluetoothCount.textContent = newBluetoothDevices;
+            bluetoothCount.style.display = newBluetoothDevices > 0 ? 'flex' : 'none';
+        }
+        
+        // Toggle the Bluetooth scanner panel
+        function toggleBluetoothPanel() {
+            const bluetoothPanel = document.getElementById('bluetooth-panel');
+            const isVisible = bluetoothPanel.style.display === 'block';
+            
+            bluetoothPanel.style.display = isVisible ? 'none' : 'block';
+        }
+        
+        // Initialize Bluetooth scanner panel
+        function initializeBluetoothPanel() {
+            // Set up Bluetooth toggle button
+            const bluetoothToggle = document.getElementById('bluetooth-toggle');
+            bluetoothToggle.addEventListener('click', toggleBluetoothPanel);
+            
+            // Set up Bluetooth close button
+            const bluetoothClose = document.getElementById('bluetooth-close');
+            bluetoothClose.addEventListener('click', toggleBluetoothPanel);
+            
+            // Set up search functionality
+            const bluetoothSearch = document.getElementById('bluetooth-search');
+            bluetoothSearch.addEventListener('input', updateBluetoothPanel);
+            
+            // Set up category filters
+            const categories = document.querySelectorAll('.bluetooth-category');
+            categories.forEach(category => {
+                category.addEventListener('click', () => {
+                    // Remove active class from all categories
+                    categories.forEach(c => c.classList.remove('active'));
+                    // Add active class to clicked category
+                    category.classList.add('active');
+                    // Update Bluetooth panel
+                    updateBluetoothPanel();
+                });
+            });
+            
+            // Initialize Bluetooth count
+            updateBluetoothCount();
         }
 
     </script>
