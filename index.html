@@ -540,6 +540,15 @@
         
         // Add a note to the notes panel
         function addNote(title, text, important = false) {
+            // Check if a note with the same title and text already exists
+            const noteExists = gameNotes.some(note => note.title === title && note.text === text);
+            
+            // If the note already exists, don't add it again
+            if (noteExists) {
+                debugLog(`Note "${title}" already exists, not adding duplicate`, 2);
+                return null;
+            }
+            
             const note = {
                 id: Date.now(),
                 title: title,
@@ -2220,10 +2229,12 @@
                 
                 // Add readable text as a note
                 if (data.text.trim().length > 0) {
-                    addNote(data.name, data.text, data.important || false);
+                    const addedNote = addNote(data.name, data.text, data.important || false);
                     
-                    // Show notification about adding to notes
-                    gameAlert(`Added "${data.name}" to your notes.`, 'info', 'Note Added', 3000);
+                    // Only show notification if a new note was actually added (not a duplicate)
+                    if (addedNote) {
+                        gameAlert(`Added "${data.name}" to your notes.`, 'info', 'Note Added', 3000);
+                    }
                 }
             }
             
