@@ -45,7 +45,14 @@
                     "name": "Bluetooth Scanner",
                     "takeable": true,
                     "observations": "A device for detecting nearby Bluetooth signals",
-                    "canScanBluetooth": true,
+                    "canScanBluetooth": true
+                },
+                {
+                    "type": "bluetooth_spoofer",
+                    "name": "Bluetooth Spoofer",
+                    "takeable": true,
+                    "observations": "A specialized device that can mimic Bluetooth signals from other devices",
+                    "canSpoofBluetooth": true,
                     "mac": "00:11:22:33:44:55"
                 }
             ]
@@ -141,6 +148,12 @@
                     "readable": true,
                     "text": "Large data transfers detected to unknown external IPs - All originating from CEO's office",
                     "observations": "Suspicious network activity logs"
+                },
+                {
+                    "type": "lockpick",
+                    "name": "Lock Pick Kit",
+                    "takeable": true,
+                    "observations": "A professional lock picking kit with various picks and tension wrenches"
                 }
             ]
         },
@@ -153,6 +166,7 @@
             "locked": true,
             "lockType": "key",
             "requires": "ceo_office_key",
+            "difficulty": "easy",
             "objects": [
                 {
                     "type": "pc",
@@ -167,6 +181,7 @@
                     "locked": true,
                     "lockType": "key",
                     "requires": "briefcase_key",
+                    "difficulty": "medium",
                     "observations": "An expensive leather briefcase with a sturdy lock",
                     "contents": [
                         {
@@ -212,6 +227,7 @@
                     "locked": true,
                     "lockType": "key",
                     "requires": "safe_key",
+                    "difficulty": "hard",
                     "observations": "A well-hidden wall safe behind a painting",
                     "contents": [
                         {
