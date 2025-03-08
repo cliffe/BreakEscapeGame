@@ -650,6 +650,19 @@
         .bluetooth-pair-button.paired:hover {
             background-color: #219653;
         }
+
+        /* Add a class to preserve hover state during updates */
+        .bluetooth-device.hover-preserved {
+            background-color: #333;
+        }
+
+        /* Add a more specific rule to prevent hover state from being lost when hovering over child elements */
+        .bluetooth-device:hover .bluetooth-device-name,
+        .bluetooth-device:hover .bluetooth-device-details,
+        .bluetooth-device:hover .bluetooth-device-timestamp,
+        .bluetooth-device:hover .bluetooth-pair-button {
+            pointer-events: auto;
+        }
     </style>
     <script src="https://cdn.jsdelivr.net/npm/phaser@3.60.0/dist/phaser.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/easystarjs@0.4.4/bin/easystar-0.4.4.js"></script>
@@ -3279,6 +3292,10 @@
             gameAlert('You collected the items from the container.', 'success', 'Items Collected', 4000);
         }
 
+        // Add a throttle mechanism for Bluetooth panel updates
+        let lastBluetoothPanelUpdate = 0;
+        const BLUETOOTH_UPDATE_THROTTLE = 500; // milliseconds
+
         function checkBluetoothDevices() {
             // Find scanner in inventory
             const scanner = inventory.items.find(item => 
@@ -3298,6 +3315,7 @@
             
             // Keep track of devices detected in this scan
             const detectedDevices = new Set();
+            let needsUpdate = false;
             
             Object.values(rooms[currentRoom].objects).forEach(obj => {
                 if (obj.scenarioData?.lockType === "bluetooth") {
@@ -3328,17 +3346,23 @@
                         
                         if (existingDevice) {
                             // Update existing device details with real-time data
+                            const oldSignalStrength = existingDevice.signalStrength;
                             existingDevice.details = details;
                             existingDevice.lastSeen = new Date();
                             existingDevice.nearby = true;
                             existingDevice.signalStrength = signalStrength;
-                            updateBluetoothPanel();
+                            
+                            // Only mark for update if signal strength changed significantly
+                            if (Math.abs(oldSignalStrength - signalStrength) > 5) {
+                                needsUpdate = true;
+                            }
                         } else {
                             // Add as new device if not already in our list
                             const newDevice = addBluetoothDevice(deviceName, deviceMac, details, true);
                             if (newDevice) {
                                 newDevice.signalStrength = signalStrength;
                                 gameAlert(`Bluetooth device detected: ${deviceName} (MAC: ${deviceMac})`, 'info', 'Bluetooth Scanner', 4000);
+                                needsUpdate = true;
                             }
                         }
                     }
@@ -3350,10 +3374,17 @@
                 if (device.nearby && !detectedDevices.has(device.mac)) {
                     device.nearby = false;
                     device.lastSeen = new Date();
-                    updateBluetoothPanel();
-                    updateBluetoothCount();
+                    needsUpdate = true;
                 }
             });
+            
+            // Only update the panel if needed and not too frequently
+            const now = Date.now();
+            if (needsUpdate && now - lastBluetoothPanelUpdate > BLUETOOTH_UPDATE_THROTTLE) {
+                updateBluetoothPanel();
+                updateBluetoothCount();
+                lastBluetoothPanelUpdate = now;
+            }
         }
 
         function spoofBluetoothDevice(target) {
@@ -5074,6 +5105,10 @@
             // Get active category
             const activeCategory = document.querySelector('.bluetooth-category.active')?.dataset.category || 'all';
             
+            // Store the currently hovered device, if any
+            const hoveredDevice = document.querySelector('.bluetooth-device:hover');
+            const hoveredDeviceId = hoveredDevice ? hoveredDevice.dataset.id : null;
+            
             // Filter devices based on search and category
             let filteredDevices = [...bluetoothDevices];
             
@@ -5124,6 +5159,11 @@
                     const deviceElement = document.createElement('div');
                     deviceElement.className = 'bluetooth-device';
                     deviceElement.dataset.id = device.id;
+                    
+                    // If this was the hovered device, add the hover class
+                    if (hoveredDeviceId && device.id === hoveredDeviceId) {
+                        deviceElement.classList.add('hover-preserved');
+                    }
                     
                     // Format the timestamp
                     const timestamp = new Date(device.lastSeen);
