@@ -30,6 +30,30 @@
                     "takeable": false,
                     "requires": "password",
                     "observations": "The reception's computer, currently locked"
+                },
+                {
+                    "type": "tablet",
+                    "name": "Tablet Device",
+                    "takeable": true,
+                    "locked": true,
+                    "lockType": "bluetooth",
+                    "mac": "00:11:22:33:44:55",
+                    "observations": "A locked tablet device that requires Bluetooth pairing"
+                },
+                {
+                    "type": "bluetooth_scanner",
+                    "name": "Bluetooth Scanner",
+                    "takeable": true,
+                    "observations": "A device for detecting nearby Bluetooth signals",
+                    "canScanBluetooth": true
+                },
+                {
+                    "type": "bluetooth_spoofer",
+                    "name": "Bluetooth Spoofer",
+                    "takeable": true,
+                    "observations": "A specialized device that can mimic Bluetooth signals from other devices",
+                    "canSpoofBluetooth": true,
+                    "mac": "00:11:22:33:44:55"
                 }
             ]
         },
@@ -45,7 +69,10 @@
                     "name": "Office Computer",
                     "takeable": false,
                     "requires": "password",
-                    "observations": "A computer with a cybersecurity alert on screen"
+                    "hasFingerprint": true,
+                    "fingerprintOwner": "ceo",
+                    "fingerprintQuality": 0.9,
+                    "observations": "A computer with a cybersecurity alert on screen. There might be fingerprints on the keyboard."
                 },
                 {
                     "type": "notes",
@@ -54,6 +81,18 @@
                     "readable": true,
                     "text": "URGENT: Multiple unauthorized access attempts detected from CEO's office IP address",
                     "observations": "A concerning IT department memo"
+                },
+                {
+                    "type": "fingerprint_kit",
+                    "name": "Fingerprint Kit",
+                    "takeable": true,
+                    "observations": "A kit used for collecting fingerprints from surfaces"
+                },
+                {
+                    "type": "spoofing_kit",
+                    "name": "Fingerprint Spoofing Kit",
+                    "takeable": true,
+                    "observations": "A specialized kit containing silicone, gelatin, and other materials for creating artificial fingerprints"
                 }
             ]
         },
@@ -109,6 +148,12 @@
                     "readable": true,
                     "text": "Large data transfers detected to unknown external IPs - All originating from CEO's office",
                     "observations": "Suspicious network activity logs"
+                },
+                {
+                    "type": "lockpick",
+                    "name": "Lock Pick Kit",
+                    "takeable": true,
+                    "observations": "A professional lock picking kit with various picks and tension wrenches"
                 }
             ]
         },
@@ -121,6 +166,7 @@
             "locked": true,
             "lockType": "key",
             "requires": "ceo_office_key",
+            "difficulty": "easy",
             "objects": [
                 {
                     "type": "pc",
@@ -135,6 +181,7 @@
                     "locked": true,
                     "lockType": "key",
                     "requires": "briefcase_key",
+                    "difficulty": "medium",
                     "observations": "An expensive leather briefcase with a sturdy lock",
                     "contents": [
                         {
@@ -180,6 +227,7 @@
                     "locked": true,
                     "lockType": "key",
                     "requires": "safe_key",
+                    "difficulty": "hard",
                     "observations": "A well-hidden wall safe behind a painting",
                     "contents": [
                         {

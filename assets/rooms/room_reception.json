@@ -222,7 +222,41 @@
                  "width":48,
                  "x":236.666666666667,
                  "y":168.666666666667
-                }],
+                },
+                {
+                 "height":48,
+                 "id":11,
+                 "name":"tablet",
+                 "rotation":0,
+                 "type":"",
+                 "visible":true,
+                 "width":48,
+                 "x":430,
+                 "y":380
+                },
+                {
+                 "height":48,
+                 "id":12,
+                 "name":"bluetooth_scanner",
+                 "rotation":0,
+                 "type":"",
+                 "visible":true,
+                 "width":48,
+                 "x":380,
+                 "y":166
+                },
+                {
+                 "height":48,
+                 "id":13,
+                 "name":"bluetooth_spoofer",
+                 "rotation":0,
+                 "type":"",
+                 "visible":true,
+                 "width":48,
+                 "x":320,
+                 "y":166
+                }
+         ],
          "opacity":1,
          "type":"objectgroup",
          "visible":true,
@@ -230,7 +264,7 @@
          "y":0
         }],
  "nextlayerid":12,
- "nextobjectid":11,
+ "nextobjectid":14,
  "orientation":"orthogonal",
  "renderorder":"right-down",
  "tiledversion":"1.11.0",
