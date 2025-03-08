@@ -2233,6 +2233,16 @@
                     // Only show notification if a new note was actually added (not a duplicate)
                     if (addedNote) {
                         gameAlert(`Added "${data.name}" to your notes.`, 'info', 'Note Added', 3000);
+                        
+                        // If this is a note in the inventory, remove it after adding to notes list
+                        if (isInventoryItem && data.type === 'notes') {
+                            // Remove from inventory after a short delay to allow the player to see the message
+                            setTimeout(() => {
+                                if (removeFromInventory(sprite)) {
+                                    gameAlert(`Removed "${data.name}" from inventory after recording in notes.`, 'success', 'Inventory Updated', 3000);
+                                }
+                            }, 1000);
+                        }
                     }
                 }
             }
@@ -4559,6 +4569,52 @@
                 default:
                     return 5; // Default to medium difficulty
             }
+        }
+
+        // removes an item from the inventory
+        function removeFromInventory(sprite) {
+            if (!sprite || !inventory.items) {
+                return false;
+            }
+            
+            try {
+                // Find the index of the sprite in the inventory
+                const index = inventory.items.indexOf(sprite);
+                
+                if (index === -1) {
+                    return false; // Item not found in inventory
+                }
+                
+                // Remove from container
+                inventory.container.remove(sprite);
+                
+                // Remove from items array
+                inventory.items.splice(index, 1);
+                
+                // Destroy the sprite
+                sprite.destroy();
+                
+                // Rearrange remaining items
+                rearrangeInventoryItems();
+                
+                // Log the removal
+                debugLog('INVENTORY ITEM REMOVED', {
+                    name: sprite.name,
+                    totalItems: inventory.items.length
+                }, 2);
+                
+                return true;
+            } catch (error) {
+                console.error('Error removing item from inventory:', error);
+                return false;
+            }
+        }
+        
+        // Rearrange inventory items after removal
+        function rearrangeInventoryItems() {
+            inventory.items.forEach((item, index) => {
+                item.x = index * 60 + 100;
+            });
         }
 
     </script>
