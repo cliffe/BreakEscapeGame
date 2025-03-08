@@ -114,22 +114,23 @@
             position: fixed;
             bottom: 80px;
             right: 20px;
-            width: 300px;
-            max-height: 400px;
-            background-color: rgba(0, 0, 0, 0.8);
+            width: 350px;
+            max-height: 500px;
+            background-color: rgba(0, 0, 0, 0.9);
             color: white;
             border-radius: 5px;
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+            box-shadow: 0 2px 15px rgba(0, 0, 0, 0.5);
             z-index: 1999;
             font-family: Arial, sans-serif;
             display: none;
             overflow: hidden;
             transition: all 0.3s ease;
+            border: 1px solid #444;
         }
 
         #notes-header {
             background-color: #222;
-            padding: 10px 15px;
+            padding: 12px 15px;
             display: flex;
             justify-content: space-between;
             align-items: center;
@@ -138,17 +139,65 @@
 
         #notes-title {
             font-weight: bold;
-            font-size: 16px;
+            font-size: 18px;
+            color: #3498db;
         }
 
         #notes-close {
             cursor: pointer;
-            font-size: 16px;
+            font-size: 18px;
             color: #aaa;
+            transition: color 0.2s;
         }
 
         #notes-close:hover {
             color: white;
+        }
+        
+        #notes-search-container {
+            padding: 10px 15px;
+            background-color: #333;
+            border-bottom: 1px solid #444;
+        }
+        
+        #notes-search {
+            width: 100%;
+            padding: 8px 10px;
+            border: none;
+            border-radius: 3px;
+            background-color: #222;
+            color: white;
+            font-size: 14px;
+        }
+        
+        #notes-search:focus {
+            outline: none;
+            box-shadow: 0 0 0 2px rgba(52, 152, 219, 0.5);
+        }
+        
+        #notes-categories {
+            display: flex;
+            padding: 5px 15px;
+            background-color: #2c2c2c;
+            border-bottom: 1px solid #444;
+        }
+        
+        .notes-category {
+            padding: 5px 10px;
+            margin-right: 5px;
+            cursor: pointer;
+            border-radius: 3px;
+            font-size: 12px;
+            transition: all 0.2s;
+        }
+        
+        .notes-category.active {
+            background-color: #3498db;
+            color: white;
+        }
+        
+        .notes-category:hover:not(.active) {
+            background-color: #444;
         }
 
         #notes-content {
@@ -161,6 +210,14 @@
             margin-bottom: 15px;
             padding-bottom: 15px;
             border-bottom: 1px solid #444;
+            cursor: pointer;
+            transition: background-color 0.2s;
+            padding: 10px;
+            border-radius: 3px;
+        }
+
+        .note-item:hover {
+            background-color: #333;
         }
 
         .note-item:last-child {
@@ -174,20 +231,47 @@
             margin-bottom: 5px;
             font-size: 14px;
             color: #3498db;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .note-icons {
+            display: flex;
+            gap: 5px;
+        }
+        
+        .note-icon {
+            font-size: 12px;
+            color: #aaa;
         }
 
         .note-text {
             font-size: 13px;
             line-height: 1.4;
             white-space: pre-wrap;
+            max-height: 80px;
+            overflow: hidden;
+            transition: max-height 0.3s;
+        }
+        
+        .note-item.expanded .note-text {
+            max-height: 1000px;
+        }
+        
+        .note-timestamp {
+            font-size: 11px;
+            color: #888;
+            margin-top: 5px;
+            text-align: right;
         }
 
         #notes-toggle {
             position: fixed;
             bottom: 20px;
             right: 20px;
-            width: 50px;
-            height: 50px;
+            width: 60px;
+            height: 60px;
             background-color: #3498db;
             color: white;
             border-radius: 50%;
@@ -197,7 +281,7 @@
             cursor: pointer;
             box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
             z-index: 1998;
-            font-size: 24px;
+            font-size: 28px;
             transition: all 0.3s ease;
         }
 
@@ -213,9 +297,9 @@
             background-color: #e74c3c;
             color: white;
             border-radius: 50%;
-            width: 20px;
-            height: 20px;
-            font-size: 12px;
+            width: 24px;
+            height: 24px;
+            font-size: 14px;
             display: flex;
             justify-content: center;
             align-items: center;
@@ -322,8 +406,16 @@
     <!-- Notes Panel -->
     <div id="notes-panel">
         <div id="notes-header">
-            <div id="notes-title">Notes</div>
+            <div id="notes-title">Notes & Information</div>
             <div id="notes-close">×</div>
+        </div>
+        <div id="notes-search-container">
+            <input type="text" id="notes-search" placeholder="Search notes...">
+        </div>
+        <div id="notes-categories">
+            <div class="notes-category active" data-category="all">All</div>
+            <div class="notes-category" data-category="important">Important</div>
+            <div class="notes-category" data-category="unread">Unread</div>
         </div>
         <div id="notes-content"></div>
     </div>
@@ -469,9 +561,31 @@
         // Update the notes panel with current notes
         function updateNotesPanel() {
             const notesContent = document.getElementById('notes-content');
+            const searchTerm = document.getElementById('notes-search')?.value?.toLowerCase() || '';
+            
+            // Get active category
+            const activeCategory = document.querySelector('.notes-category.active')?.dataset.category || 'all';
+            
+            // Filter notes based on search and category
+            let filteredNotes = [...gameNotes];
+            
+            // Apply category filter
+            if (activeCategory === 'important') {
+                filteredNotes = filteredNotes.filter(note => note.important);
+            } else if (activeCategory === 'unread') {
+                filteredNotes = filteredNotes.filter(note => !note.read);
+            }
+            
+            // Apply search filter
+            if (searchTerm) {
+                filteredNotes = filteredNotes.filter(note => 
+                    note.title.toLowerCase().includes(searchTerm) || 
+                    note.text.toLowerCase().includes(searchTerm)
+                );
+            }
             
             // Sort notes with important ones first, then by timestamp (newest first)
-            const sortedNotes = [...gameNotes].sort((a, b) => {
+            filteredNotes.sort((a, b) => {
                 if (a.important !== b.important) {
                     return a.important ? -1 : 1;
                 }
@@ -482,29 +596,48 @@
             notesContent.innerHTML = '';
             
             // Add notes
-            if (sortedNotes.length === 0) {
-                notesContent.innerHTML = '<div class="note-item">No notes yet.</div>';
+            if (filteredNotes.length === 0) {
+                if (searchTerm) {
+                    notesContent.innerHTML = '<div class="note-item">No notes match your search.</div>';
+                } else if (activeCategory !== 'all') {
+                    notesContent.innerHTML = `<div class="note-item">No ${activeCategory} notes found.</div>`;
+                } else {
+                    notesContent.innerHTML = '<div class="note-item">No notes yet.</div>';
+                }
             } else {
-                sortedNotes.forEach(note => {
+                filteredNotes.forEach(note => {
                     const noteElement = document.createElement('div');
                     noteElement.className = 'note-item';
                     noteElement.dataset.id = note.id;
                     
-                    let noteContent = `<div class="note-title">`;
+                    // Format the timestamp
+                    const timestamp = new Date(note.timestamp);
+                    const formattedDate = timestamp.toLocaleDateString();
+                    const formattedTime = timestamp.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+                    
+                    let noteContent = `<div class="note-title">
+                        <span>${note.title}</span>
+                        <div class="note-icons">`;
+                    
                     if (note.important) {
-                        noteContent += `⭐ `;
+                        noteContent += `<span class="note-icon">⭐</span>`;
                     }
                     if (!note.read) {
-                        noteContent += `📌 `;
+                        noteContent += `<span class="note-icon">📌</span>`;
                     }
-                    noteContent += `${note.title}</div>`;
+                    
+                    noteContent += `</div></div>`;
                     noteContent += `<div class="note-text">${note.text}</div>`;
+                    noteContent += `<div class="note-timestamp">${formattedDate} ${formattedTime}</div>`;
                     
                     noteElement.innerHTML = noteContent;
                     
-                    // Mark as read when clicked
+                    // Toggle expanded state when clicked
                     noteElement.addEventListener('click', () => {
-                        if (!note.read) {
+                        noteElement.classList.toggle('expanded');
+                        
+                        // Mark as read when expanded
+                        if (!note.read && noteElement.classList.contains('expanded')) {
                             note.read = true;
                             updateNotesCount();
                             updateNotesPanel();
@@ -531,15 +664,6 @@
             const isVisible = notesPanel.style.display === 'block';
             
             notesPanel.style.display = isVisible ? 'none' : 'block';
-            
-            // Mark all as read when panel is opened
-            if (!isVisible) {
-                gameNotes.forEach(note => {
-                    note.read = true;
-                });
-                updateNotesCount();
-                updateNotesPanel();
-            }
         }
         
         // Replace alert with our custom notification system
@@ -639,6 +763,23 @@
             // Set up notes close button
             const notesClose = document.getElementById('notes-close');
             notesClose.addEventListener('click', toggleNotesPanel);
+            
+            // Set up search functionality
+            const notesSearch = document.getElementById('notes-search');
+            notesSearch.addEventListener('input', updateNotesPanel);
+            
+            // Set up category filters
+            const categories = document.querySelectorAll('.notes-category');
+            categories.forEach(category => {
+                category.addEventListener('click', () => {
+                    // Remove active class from all categories
+                    categories.forEach(c => c.classList.remove('active'));
+                    // Add active class to clicked category
+                    category.classList.add('active');
+                    // Update notes panel
+                    updateNotesPanel();
+                });
+            });
             
             // Initialize notes count
             updateNotesCount();
@@ -2058,32 +2199,59 @@
                 
                 // Add readable text as a note
                 if (data.text.trim().length > 0) {
-                    addNote(data.name, data.text);
+                    addNote(data.name, data.text, data.important || false);
+                    
+                    // Show notification about adding to notes
+                    gameAlert(`Added "${data.name}" to your notes.`, 'info', 'Note Added', 3000);
                 }
             }
             
             if (data.takeable) {
-                message += `This item can be taken\n\n`;
+                // If it's a note type item that's already been read and added to notes,
+                // don't add it to inventory unless it has a special purpose
+                const isJustInformationalNote = 
+                    data.type === 'notes' && 
+                    data.readable && 
+                    data.text && 
+                    !data.hasSpecialPurpose; // Add this flag to notes that need to be in inventory
                 
-                if (!inventory || !Array.isArray(inventory.items)) {
-                    console.error('Inventory not properly initialized');
-                    return;
-                }
-                
-                const isInRoom = currentRoom && 
-                                rooms[currentRoom] && 
-                                rooms[currentRoom].objects && 
-                                rooms[currentRoom].objects[sprite.name];
+                if (!isJustInformationalNote) {
+                    message += `This item can be taken\n\n`;
+                    
+                    if (!inventory || !Array.isArray(inventory.items)) {
+                        console.error('Inventory not properly initialized');
+                        return;
+                    }
+                    
+                    const isInRoom = currentRoom && 
+                                    rooms[currentRoom] && 
+                                    rooms[currentRoom].objects && 
+                                    rooms[currentRoom].objects[sprite.name];
+                            
+                    const itemIdentifier = createItemIdentifier(sprite.scenarioData);
+                            
+                    const isInInventory = inventory.items.some(item => 
+                        item && createItemIdentifier(item.scenarioData) === itemIdentifier
+                    );
+                            
+                    if (isInRoom && !isInInventory) {
+                        console.log('Adding item to inventory:', itemIdentifier);
+                        addToInventory(sprite);
+                    }
+                } else {
+                    // For informational notes, just remove them from the room after reading
+                    if (currentRoom && 
+                        rooms[currentRoom] && 
+                        rooms[currentRoom].objects && 
+                        rooms[currentRoom].objects[sprite.name]) {
                         
-                const itemIdentifier = createItemIdentifier(sprite.scenarioData);
+                        const roomObj = rooms[currentRoom].objects[sprite.name];
+                        roomObj.setVisible(false);
+                        roomObj.active = false;
                         
-                const isInInventory = inventory.items.some(item => 
-                    item && createItemIdentifier(item.scenarioData) === itemIdentifier
-                );
-                        
-                if (isInRoom && !isInInventory) {
-                    console.log('Adding item to inventory:', itemIdentifier);
-                    addToInventory(sprite);
+                        // Show notification about adding to notes instead of inventory
+                        gameAlert(`Information recorded in your notes.`, 'success', 'Note Recorded', 3000);
+                    }
                 }
             }
             
