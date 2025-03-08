@@ -2157,7 +2157,7 @@
                 
                 if (distanceSq > INTERACTION_RANGE_SQ) {
                     // Show notification instead of alert
-                    gameAlert("Too far away to interact with this object.", 'warning', '', 2000);
+                    //gameAlert("Too far away to interact with this object.", 'warning', '', 2000);
                     return;
                 }
             }
@@ -4478,6 +4478,12 @@
                         else if (lockable && lockable.scenarioData) {
                             console.log('Unlocking container:', lockable.scenarioData);
                             lockable.scenarioData.locked = false;
+                            
+                            // Set the flag to indicate the container is unlocked but contents not collected
+                            if (lockable.scenarioData.contents && lockable.scenarioData.contents.length > 0) {
+                                lockable.scenarioData.isUnlockedButNotCollected = true;
+                                debugLog('Container unlocked and ready for collection', lockable.scenarioData, 1);
+                            }
                         }
                         
                         // Remove the minigame
