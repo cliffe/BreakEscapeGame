@@ -3407,14 +3407,14 @@
             debugLog('BLUETOOTH SPOOF ATTEMPT', {
                 deviceName: target.scenarioData?.name,
                 deviceMac: target.scenarioData?.mac,
-                spooferMac: spoofer.scenarioData?.mac,
+                spooferMac: spoofer.scenarioData?.macPaired,
                 distance: Math.round(distance)
             }, 2);
             
             // Check if player is within range
             if (distance <= BLUETOOTH_SCAN_RANGE) {
                 // Check if the spoofer has the correct MAC address
-                if (spoofer.scenarioData?.mac === target.scenarioData?.mac) {
+                if (spoofer.scenarioData?.macPaired === target.scenarioData?.mac) {
                     debugLog('BLUETOOTH SPOOF SUCCESS', {
                         deviceName: target.scenarioData?.name,
                         mac: target.scenarioData?.mac
@@ -5217,9 +5217,9 @@
                         
                         if (spoofer) {
                             // Check if this device is already paired with (MAC address programmed to spoofer)
-                            const isPaired = spoofer.scenarioData?.mac === device.mac;
+                            const isPaired = spoofer.scenarioData?.macPaired === device.mac;
                             const buttonClass = isPaired ? 'bluetooth-pair-button paired' : 'bluetooth-pair-button';
-                            const buttonText = isPaired ? 'MAC Address Copied' : 'Copy MAC Address';
+                            const buttonText = isPaired ? 'MAC Address Paired' : 'Pair MAC Address';
                             
                             deviceContent += `<button class="${buttonClass}" data-mac="${device.mac}">${buttonText}</button>`;
                             
@@ -5336,29 +5336,262 @@
             }
             
             // Check if this device is already paired with
-            if (spoofer.scenarioData?.mac === device.mac) {
+            if (spoofer.scenarioData?.macPaired === device.mac) {
                 gameAlert(`This device's MAC address (${device.mac}) is already programmed into your spoofer.`, 'info', 'Already Paired', 3000);
                 return;
             }
             
-            // Show a "working" message
-            gameAlert(`Copying MAC address: ${device.mac}...`, 'info', 'Programming Spoofer', 3000);
+            // Launch the MAC address pairing minigame
+            startBluetoothPairingMinigame(device);
+        }
+
+        // Bluetooth MAC Address Pairing Minigame
+        function startBluetoothPairingMinigame(device) {
+            // Create minigame container
+            const minigameContainer = document.createElement('div');
+            minigameContainer.style.cssText = `
+                position: fixed;
+                top: 50%;
+                left: 50%;
+                transform: translate(-50%, -50%);
+                width: 60%;
+                height: 60%;
+                background: rgba(0, 0, 0, 0.9);
+                border: 1px solid #444;
+                z-index: 1000;
+                padding: 20px;
+                border-radius: 5px;
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+            `;
             
-            // Program the spoofer with the target MAC address
-            spoofer.scenarioData.mac = device.mac;
+            // Add instructions
+            const instructions = document.createElement('div');
+            instructions.innerHTML = `
+                <h3 style="margin: 0; color: #fff; text-align: center;">MAC Address Spoofing</h3>
+                <p style="margin: 5px 0; color: #ccc; text-align: center; font-size: 14px;">
+                    Align the signal frequencies to match the target device's MAC address pattern.<br>
+                    Drag the sliders to adjust each frequency band until all segments turn green.<br>
+                    When all segments are aligned, the MAC address will be successfully paired.
+                </p>
+            `;
+            instructions.style.cssText = `
+                position: absolute;
+                top: 10px;
+                left: 50%;
+                transform: translateX(-50%);
+                width: 90%;
+            `;
+
+            // Create device info display
+            const deviceInfo = document.createElement('div');
+            deviceInfo.innerHTML = `
+                <div style="color: #9b59b6; font-weight: bold; margin-bottom: 5px;">Target Device: ${device.name}</div>
+                <div style="color: #aaa; font-size: 12px;">MAC Address: ${device.mac}</div>
+            `;
+            deviceInfo.style.cssText = `
+                margin-top: 70px;
+                text-align: center;
+                width: 100%;
+            `;
+
+            // Create signal visualization
+            const signalVisualization = document.createElement('div');
+            signalVisualization.style.cssText = `
+                width: 90%;
+                height: 120px;
+                background: #111;
+                border: 1px solid #333;
+                margin: 20px 0;
+                position: relative;
+                overflow: hidden;
+            `;
+
+            // Create frequency bands (6 for MAC address octets)
+            const frequencyBands = document.createElement('div');
+            frequencyBands.style.cssText = `
+                display: flex;
+                width: 90%;
+                justify-content: space-between;
+                margin-bottom: 30px;
+            `;
+
+            // Create sliders for each frequency band
+            const sliders = [];
+            const targetValues = [];
+            const currentValues = [];
+            const segments = [];
             
-            // Show success message
-            setTimeout(() => {
-                gameAlert(`Successfully programmed spoofer with MAC address: ${device.mac}`, 'success', 'Pairing Complete', 4000);
-                debugLog('BLUETOOTH SPOOFER PROGRAMMED', {
-                    deviceName: device.name,
-                    deviceMac: device.mac
-                }, 1);
+            // Parse MAC address to generate target values
+            const macParts = device.mac.split(':');
+            
+            for (let i = 0; i < 6; i++) {
+                // Convert hex to decimal for target value (0-100 range)
+                const hexValue = macParts[i] || '00';
+                const decimalValue = parseInt(hexValue, 16);
+                const targetValue = Math.round((decimalValue / 255) * 100);
+                targetValues.push(targetValue);
                 
-                // Update the UI to show the pairing was successful
-                device.paired = true;
-                updateBluetoothPanel();
-            }, 1500);
+                // Start with random values
+                const initialValue = Math.floor(Math.random() * 100);
+                currentValues.push(initialValue);
+                
+                // Create slider container
+                const sliderContainer = document.createElement('div');
+                sliderContainer.style.cssText = `
+                    display: flex;
+                    flex-direction: column;
+                    align-items: center;
+                    width: 40px;
+                `;
+                
+                // Create slider
+                const slider = document.createElement('input');
+                slider.type = 'range';
+                slider.min = 0;
+                slider.max = 100;
+                slider.value = initialValue;
+                slider.style.cssText = `
+                    width: 120px;
+                    transform: rotate(-90deg);
+                    margin: 50px 0;
+                `;
+                
+                // Create segment in visualization
+                const segment = document.createElement('div');
+                segment.style.cssText = `
+                    position: absolute;
+                    bottom: 0;
+                    left: ${i * (100/6)}%;
+                    width: ${100/6}%;
+                    height: ${initialValue}%;
+                    background: #cc5500;
+                    transition: height 0.2s, background-color 0.3s;
+                `;
+                segments.push(segment);
+                signalVisualization.appendChild(segment);
+                
+                // Create label
+                const label = document.createElement('div');
+                label.textContent = hexValue.toUpperCase();
+                label.style.cssText = `
+                    color: #aaa;
+                    font-size: 12px;
+                    margin-top: 10px;
+                `;
+                
+                // Add event listener to slider
+                slider.addEventListener('input', (e) => {
+                    const value = parseInt(e.target.value);
+                    currentValues[i] = value;
+                    segment.style.height = `${value}%`;
+                    
+                    // Check if this segment is aligned correctly
+                    const isAligned = Math.abs(value - targetValues[i]) <= 5;
+                    segment.style.backgroundColor = isAligned ? '#00cc00' : '#cc5500';
+                    
+                    // Check if all segments are aligned
+                    checkCompletion();
+                });
+                
+                sliders.push(slider);
+                sliderContainer.appendChild(slider);
+                sliderContainer.appendChild(label);
+                frequencyBands.appendChild(sliderContainer);
+            }
+            
+            // Create status message
+            const statusMessage = document.createElement('div');
+            statusMessage.style.cssText = `
+                color: #aaa;
+                font-size: 14px;
+                margin-top: 15px;
+                text-align: center;
+            `;
+            statusMessage.textContent = 'Align all frequency bands...';
+            
+            // Create cancel button
+            const cancelButton = document.createElement('button');
+            cancelButton.textContent = 'Cancel';
+            cancelButton.style.cssText = `
+                background-color: #555;
+                color: white;
+                border: none;
+                border-radius: 3px;
+                padding: 8px 15px;
+                margin-top: 20px;
+                cursor: pointer;
+                font-size: 14px;
+            `;
+            cancelButton.addEventListener('click', () => {
+                endMinigame(false);
+            });
+            
+            // Add all elements to container
+            minigameContainer.appendChild(instructions);
+            minigameContainer.appendChild(deviceInfo);
+            minigameContainer.appendChild(signalVisualization);
+            minigameContainer.appendChild(frequencyBands);
+            minigameContainer.appendChild(statusMessage);
+            minigameContainer.appendChild(cancelButton);
+            
+            // Add container to document
+            document.body.appendChild(minigameContainer);
+            
+            // Function to check if all segments are aligned
+            function checkCompletion() {
+                const allAligned = currentValues.every((value, index) => 
+                    Math.abs(value - targetValues[index]) <= 5
+                );
+                
+                if (allAligned) {
+                    statusMessage.textContent = 'MAC Address pattern matched!';
+                    statusMessage.style.color = '#00cc00';
+                    
+                    // Add success animation
+                    segments.forEach(segment => {
+                        segment.style.backgroundColor = '#00cc00';
+                    });
+                    
+                    // End minigame with success after a short delay
+                    setTimeout(() => {
+                        endMinigame(true);
+                    }, 1500);
+                }
+            }
+            
+            // Function to end minigame
+            function endMinigame(success) {
+                // Remove minigame container
+                document.body.removeChild(minigameContainer);
+                
+                // Call callback with result
+                if (success) {
+                    // Find spoofer in inventory
+                    const spoofer = inventory.items.find(item => 
+                        item.scenarioData?.type === "bluetooth_spoofer"
+                    );
+                    
+                    if (spoofer) {
+                        // Program the spoofer with the target MAC address
+                        spoofer.scenarioData.macPaired = device.mac;
+                        
+                        // Show success message
+                        gameAlert(`Successfully programmed spoofer with MAC address: ${device.mac}`, 'success', 'Pairing Complete', 4000);
+                        debugLog('BLUETOOTH SPOOFER PROGRAMMED', {
+                            deviceName: device.name,
+                            deviceMac: device.mac
+                        }, 1);
+                        
+                        // Update the UI to show the pairing was successful
+                        device.paired = true;
+                        updateBluetoothPanel();
+                    }
+                } else {
+                    gameAlert('Pairing canceled.', 'info', 'Pairing Canceled', 3000);
+                }
+            }
         }
 
     </script>
