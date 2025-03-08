@@ -158,6 +158,68 @@
         const hideRoomsOnExit = false;
         const hideNonAdjacentRooms = false;
 
+        // Debug system variables - moved to the top
+        let debugMode = false;
+        
+        // Debug logging function that only logs when debug mode is active
+        function debugLog(...args) {
+            if (debugMode) {
+                // Check if the first argument is a string
+                if (typeof args[0] === 'string') {
+                    // Create the formatted debug message
+                    const message = args[0];
+                    const formattedMessage = `[DEBUG] === ${message} ===`;
+                    
+                    // Determine color based on message content
+                    let color = '#0077FF'; // Default blue for general info
+                    let fontWeight = 'bold';
+                    
+                    // Success messages - green
+                    if (message.includes('SUCCESS') || 
+                        message.includes('UNLOCKED') || 
+                        message.includes('NOT LOCKED')) {
+                        color = '#00AA00'; // Green
+                    }
+                    // Error/failure messages - red
+                    else if (message.includes('FAIL') || 
+                             message.includes('ERROR') || 
+                             message.includes('NO LOCK REQUIREMENTS FOUND')) {
+                        color = '#DD0000'; // Red
+                    }
+                    // Sensitive information - purple
+                    else if (message.includes('PIN') || 
+                             message.includes('PASSWORD') || 
+                             message.includes('KEY') ||
+                             message.includes('LOCK REQUIREMENTS')) {
+                        color = '#AA00AA'; // Purple
+                    }
+                    
+                    // Replace the first argument with the formatted message and add CSS styling
+                    args.splice(0, 1, '%c' + formattedMessage, `color: ${color}; font-weight: ${fontWeight};`);
+                }
+                console.log(...args);
+            }
+        }
+        
+        // Function to display tension debug info only when debug mode is active
+        function logTensionDebugInfo() {
+            if (!debugMode) return; // Skip all calculations if debug mode is off
+            
+            // Your existing debug code here
+            debugLog("Tension debug information:");
+            // Add other debug information as needed
+        }
+        
+        // Listen for backtick key to toggle debug mode
+        document.addEventListener('keydown', function(event) {
+            if (event.key === '`') {
+                debugMode = !debugMode;
+                // Use direct console.log with custom formatting to avoid duplicate messages
+                console.log(`%c[DEBUG] === DEBUG MODE ${debugMode ? 'ENABLED' : 'DISABLED'} ===`, 
+                           `color: ${debugMode ? '#00AA00' : '#DD0000'}; font-weight: bold;`);
+            }
+        });
+
         // Declare gameScenario as let (not const) so we can assign it later
         let gameScenario = null;  // Initialize as null
 
@@ -244,6 +306,24 @@
             MEDIUM: 0x888888,
             HEAVY: 0xcccccc,
             REVEALED: 0x00ff00
+        };
+
+        const DEBUG_MODE = {
+            get enabled() { return debugMode; },
+            set enabled(value) { debugMode = value; },
+            toggle: function() {
+                debugMode = !debugMode;
+                // No need to log here as the global event listener will handle it
+            },
+            log: function(message, data = null) {
+                if (!debugMode) return;
+                
+                if (data) {
+                    console.log(`%c[DEBUG] === ${message} ===`, 'color: #0077FF; font-weight: bold;', data);
+                } else {
+                    console.log(`%c[DEBUG] === ${message} ===`, 'color: #0077FF; font-weight: bold;');
+                }
+            }
         };
 
         // preloads the assets
@@ -509,6 +589,9 @@
 
             // Add this to your scene's create function
             initializeSamplesUI();
+
+            // Log initial debug status
+            console.log("%cPress ` (backtick) to toggle debug mode", "color: #888; font-style: italic;");
         }
 
         function update() {
@@ -1850,13 +1933,13 @@
         }
         
         function handleDoorUnlock(doorTile, room) {
-            console.log('handleDoorUnlock called:', { doorTile, room });
+            debugLog('DOOR UNLOCK ATTEMPT');
             doorTile.layer = room.doorsLayer; // Ensure layer reference is set
             handleUnlock(doorTile, 'door');
         }
 
         function handleUnlock(lockable, type) {
-            console.log('handleUnlock called:', { type, lockable });
+            debugLog('UNLOCK ATTEMPT');
             
             // Check locked state in scenarioData for items
             const isLocked = type === 'door' ? 
@@ -1864,7 +1947,7 @@
                 lockable.scenarioData?.locked;
             
             if (!isLocked) {
-                console.log('Object is not locked');
+                debugLog('OBJECT NOT LOCKED');
                 return;
             }
             
@@ -1873,17 +1956,17 @@
                 ? getLockRequirementsForDoor(lockable)
                 : getLockRequirementsForItem(lockable);
             
-            console.log('Lock requirements:', lockRequirements);
+            debugLog('LOCK REQUIREMENTS', lockRequirements);
             
             if (!lockRequirements) {
-                console.log('No lock requirements found');
+                debugLog('NO LOCK REQUIREMENTS FOUND');
                 return;
             }
             
             switch(lockRequirements.lockType) {
                 case 'key':
                     const requiredKey = lockRequirements.requires;
-                    console.log('Checking for key:', requiredKey);
+                    debugLog('KEY REQUIRED', requiredKey);
                     const hasKey = inventory.items.some(item => 
                         item && item.scenarioData && 
                         item.scenarioData.key_id === requiredKey
@@ -1897,6 +1980,7 @@
                         const keyName = keyItem?.scenarioData?.name || 'key';
                         const keyLocation = keyItem?.scenarioData?.foundIn || 'your inventory';
                         
+                        debugLog('KEY UNLOCK SUCCESS');
                         unlockTarget(lockable, type, lockable.layer);
                         alert(`You used the ${keyName} that you found in ${keyLocation} to unlock the ${type}.`);
                     } else {
@@ -1907,6 +1991,7 @@
                         );
                         
                         if (hasLockpick) {
+                            debugLog('LOCKPICK AVAILABLE');
                             if (confirm("Would you like to attempt picking this lock?")) {
                                 let difficulty;
                                 
@@ -1922,33 +2007,37 @@
                                 
                                 // If not found, try object-level difficulty
                                 difficulty = difficulty || lockable.scenarioData?.difficulty || lockable.properties?.difficulty;
+                                debugLog('STARTING LOCKPICK MINIGAME', { difficulty });
                                 startLockpickingMinigame(lockable, game.scene.scenes[0], difficulty);
                             }
                         } else {
+                            debugLog('KEY NOT FOUND - FAIL');
                             alert(`Requires key: ${requiredKey}`);
                         }
                     }
                     break;
 
                 case 'pin':
-                    console.log('Handling PIN lock');
+                    debugLog('PIN CODE REQUESTED');
                     const pinInput = prompt(`Enter PIN code:`);
                     if (pinInput === lockRequirements.requires) {
                         unlockTarget(lockable, type, lockable.layer); // Pass the layer here
+                        debugLog('PIN CODE SUCCESS');
                         alert(`Correct PIN! The ${type} is now unlocked.`);
                     } else if (pinInput !== null) {
-                        alert("Incorrect PIN code.");
+                        debugLog('PIN CODE FAIL');
                     }
                     break;
 
                 case 'password':
-                    console.log('Handling password lock');
+                    debugLog('PASSWORD REQUESTED');
                     const passwordInput = prompt(`Enter password:`);
                     if (passwordInput === lockRequirements.requires) {
                         unlockTarget(lockable, type, lockable.layer); // Pass the layer here
+                        debugLog('PASSWORD SUCCESS');
                         alert(`Correct password! The ${type} is now unlocked.`);
                     } else if (passwordInput !== null) {
-                        alert("Incorrect password.");
+                        debugLog('PASSWORD FAIL');
                     }
                     break;
 
@@ -1972,17 +2061,18 @@
                         lockable.x, lockable.y
                     );
                     
-                    console.log('Distance to tablet:', distance);
+                    debugLog('BLUETOOTH DISTANCE', distance);
                     
                     // Check if player is within range (using BLUETOOTH_SCAN_RANGE)
                     if (distance <= BLUETOOTH_SCAN_RANGE) {
-                        console.log('Bluetooth unlock success: Player in range', {
+                        debugLog('BLUETOOTH UNLOCK SUCCESS', {
                             itemName: lockable.scenarioData?.name,
                             itemMac: lockable.scenarioData?.mac,
-                            distance: distance
+                            distance: Math.round(distance),
+                            range: BLUETOOTH_SCAN_RANGE
                         });
                         unlockTarget(lockable, type, lockable.layer);
-                        alert(`Bluetooth connection established. Device unlocked.`);
+                        debugLog('BLUETOOTH UNLOCK SUCCESS');
                         return;
                     }
                     
@@ -2119,7 +2209,7 @@
         }
 
         function getLockRequirementsForDoor(doorTile) {
-            console.log('Getting lock requirements for door:', doorTile);
+            debugLog('CHECKING DOOR REQUIREMENTS');
             
             if (!doorTile.layer) {
                 console.error('Door tile missing layer reference');
@@ -2129,7 +2219,7 @@
             const doorWorldX = doorTile.layer.x + (doorTile.x * TILE_SIZE);
             const doorWorldY = doorTile.layer.y + (doorTile.y * TILE_SIZE);
             
-            console.log('Door world coordinates:', { doorWorldX, doorWorldY });
+            debugLog('DOOR COORDINATES', { doorWorldX, doorWorldY });
             
             const overlappingRooms = [];
             Object.entries(rooms).forEach(([roomId, otherRoom]) => {
@@ -2148,7 +2238,7 @@
                 };
                 
                 if (boundsOverlap(doorCheckArea, roomBounds)) {
-                    console.log(`Room ${roomId} overlaps with door`);
+                    debugLog(`ROOM ${roomId} OVERLAPS WITH DOOR`);
                     const roomCenterX = roomBounds.x + (roomBounds.width / 2);
                     const roomCenterY = roomBounds.y + (roomBounds.height / 2);
                     const distanceToPlayer = Phaser.Math.Distance.Between(
@@ -2167,13 +2257,13 @@
                 }
             });
 
-            console.log('Overlapping rooms:', overlappingRooms);
+            debugLog('OVERLAPPING ROOMS', overlappingRooms);
             
             const lockedRooms = overlappingRooms
                 .filter(r => r.locked)
                 .sort((a, b) => b.distance - a.distance);
             
-            console.log('Locked rooms:', lockedRooms);
+            debugLog('LOCKED ROOMS', lockedRooms);
 
             if (lockedRooms.length > 0) {
                 const targetRoom = lockedRooms[0];
@@ -2181,11 +2271,11 @@
                     lockType: targetRoom.lockType,
                     requires: targetRoom.requires
                 };
-                console.log('Returning lock requirements:', requirements);
+                debugLog('LOCK REQUIREMENTS', requirements);
                 return requirements;
             }
             
-            console.log('No lock requirements found');
+            debugLog('NO LOCK REQUIREMENTS FOUND');
             return null;
         }
 
@@ -2233,15 +2323,14 @@
                     );
                     
                     if (distance <= BLUETOOTH_SCAN_RANGE) {
-                        console.log('🔍 TABLET IN RANGE:', {
+                        debugLog('BLUETOOTH DEVICE DETECTED', {
                             distance: Math.round(distance),
                             range: BLUETOOTH_SCAN_RANGE
                         });
                         
                         // Unlock the tablet
                         obj.scenarioData.locked = false;
-                        console.log('🔓 TABLET UNLOCKED!');
-                        alert('Bluetooth connection established. Device unlocked.');
+                        debugLog('BLUETOOTH UNLOCK SUCCESS');
                     }
                 }
             });
@@ -3770,8 +3859,11 @@
 
             // Keep only the table debug function
             function logTensionDebugInfo() {
-                console.log("=== LOCKPICKING DEBUG INFO ===");
-                console.log("Pin binding order and tension requirements:");
+                // Only show debug info if debug mode is enabled
+                if (!DEBUG_MODE.enabled) return;
+                
+                DEBUG_MODE.log("=== LOCKPICKING DEBUG INFO ===");
+                DEBUG_MODE.log("Pin binding order and tension requirements:");
                 
                 const tableData = [];
                 
