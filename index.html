@@ -463,6 +463,7 @@
 
         // Debug system variables - moved to the top
         let debugMode = false;
+        let debugLevel = 1; // 1 = basic, 2 = detailed, 3 = verbose
         let visualDebugMode = false;
         let fpsCounter = null;
         
@@ -672,42 +673,51 @@
         }
         
         // Debug logging function that only logs when debug mode is active
-        function debugLog(...args) {
-            if (debugMode) {
-                // Check if the first argument is a string
-                if (typeof args[0] === 'string') {
-                    // Create the formatted debug message
-                    const message = args[0];
-                    const formattedMessage = `[DEBUG] === ${message} ===`;
-                    
-                    // Determine color based on message content
-                    let color = '#0077FF'; // Default blue for general info
-                    let fontWeight = 'bold';
-                    
-                    // Success messages - green
-                    if (message.includes('SUCCESS') || 
-                        message.includes('UNLOCKED') || 
-                        message.includes('NOT LOCKED')) {
-                        color = '#00AA00'; // Green
-                    }
-                    // Error/failure messages - red
-                    else if (message.includes('FAIL') || 
-                             message.includes('ERROR') || 
-                             message.includes('NO LOCK REQUIREMENTS FOUND')) {
-                        color = '#DD0000'; // Red
-                    }
-                    // Sensitive information - purple
-                    else if (message.includes('PIN') || 
-                             message.includes('PASSWORD') || 
-                             message.includes('KEY') ||
-                             message.includes('LOCK REQUIREMENTS')) {
-                        color = '#AA00AA'; // Purple
-                    }
-                    
-                    // Replace the first argument with the formatted message and add CSS styling
-                    args.splice(0, 1, '%c' + formattedMessage, `color: ${color}; font-weight: ${fontWeight};`);
+        function debugLog(message, data = null, level = 1) {
+            if (!debugMode || debugLevel < level) return;
+            
+            // Check if the first argument is a string
+            if (typeof message === 'string') {
+                // Create the formatted debug message
+                const formattedMessage = `[DEBUG] === ${message} ===`;
+                
+                // Determine color based on message content
+                let color = '#0077FF'; // Default blue for general info
+                let fontWeight = 'bold';
+                
+                // Success messages - green
+                if (message.includes('SUCCESS') || 
+                    message.includes('UNLOCKED') || 
+                    message.includes('NOT LOCKED')) {
+                    color = '#00AA00'; // Green
                 }
-                console.log(...args);
+                // Error/failure messages - red
+                else if (message.includes('FAIL') || 
+                         message.includes('ERROR') || 
+                         message.includes('NO LOCK REQUIREMENTS FOUND')) {
+                    color = '#DD0000'; // Red
+                }
+                // Sensitive information - purple
+                else if (message.includes('PIN') || 
+                         message.includes('PASSWORD') || 
+                         message.includes('KEY') ||
+                         message.includes('LOCK REQUIREMENTS')) {
+                    color = '#AA00AA'; // Purple
+                }
+                
+                // Add level indicator to the message
+                const levelIndicator = level > 1 ? ` [L${level}]` : '';
+                const finalMessage = formattedMessage + levelIndicator;
+                
+                // Log with formatting
+                if (data) {
+                    console.log(`%c${finalMessage}`, `color: ${color}; font-weight: ${fontWeight};`, data);
+                } else {
+                    console.log(`%c${finalMessage}`, `color: ${color}; font-weight: ${fontWeight};`);
+                }
+            } else {
+                // If not a string, just log as is
+                console.log(message, data);
             }
         }
         
@@ -716,7 +726,7 @@
             if (!debugMode) return; // Skip all calculations if debug mode is off
             
             // Your existing debug code here
-            debugLog("Tension debug information:");
+            debugLog("Tension debug information:", null, 2);
             // Add other debug information as needed
         }
         
@@ -736,6 +746,13 @@
                         if (scene.physics && scene.physics.world) {
                             scene.physics.world.drawDebug = debugMode && visualDebugMode;
                         }
+                    }
+                } else if (event.ctrlKey) {
+                    // Cycle through debug levels with Ctrl+backtick
+                    if (debugMode) {
+                        debugLevel = (debugLevel % 3) + 1; // Cycle through 1, 2, 3
+                        console.log(`%c[DEBUG] === DEBUG LEVEL ${debugLevel} ===`, 
+                                   `color: #0077FF; font-weight: bold;`);
                     }
                 } else {
                     // Regular debug mode toggle
@@ -1110,14 +1127,14 @@
                     });
                     
                     if (clickedItem) {
-                        console.log('Inventory item clicked:', clickedItem.name);
+                        debugLog('INVENTORY ITEM CLICKED', { name: clickedItem.name }, 2);
                         handleObjectInteraction(clickedItem);
                         return;
                     }
                 }
                 
                 // if not clicking inventory, handle as movement
-                console.log('Click detected at:', pointer.worldX, pointer.worldY);
+                debugLog('CLICK DETECTED', { x: pointer.worldX, y: pointer.worldY }, 3);
                 movePlayerToPoint.call(this, pointer.worldX, pointer.worldY);
             });
 
@@ -1163,7 +1180,7 @@
             initializeSamplesUI();
 
             // Log initial debug status
-            console.log("%cPress ` (backtick) to toggle debug mode", "color: #888; font-style: italic;");
+            console.log("%cPress ` (backtick) to toggle debug mode, Ctrl+` to cycle debug levels (1-3), Shift+` for visual debug", "color: #888; font-style: italic;");
         }
 
         function update() {
@@ -1250,7 +1267,7 @@
                         width: width * 48,  // tile width is 48
                         height: height * 48 // tile height is 48
                     };
-                    console.log(`Room ${roomId} dimensions:`, roomDimensions[roomId]);
+                    debugLog('ROOM DIMENSIONS', { roomId, dimensions: roomDimensions[roomId] }, 3);
                 } else {
                     console.error(`Could not find tilemap data for room ${roomId}`);
                     // Fallback to default dimensions if needed
@@ -1330,7 +1347,7 @@
                         }
                     } else {
                         if (processed.has(connected)) {
-                            console.log(`Room ${connected} already processed, skipping`);
+                            debugLog('ROOM ALREADY PROCESSED', { roomId: connected }, 3);
                             return;
                         }
                         
@@ -1526,10 +1543,10 @@
                         // Add click handler for all objects
                         sprite.on('pointerdown', () => {
                             if (isActiveObject) {
-                                console.log(`Clicked active object ${obj.name}`);
+                                debugLog('OBJECT CLICKED', { name: obj.name }, 2);
                                 handleObjectInteraction(sprite);
                             } else {
-                                alert("Nothing of note here");
+                                gameAlert("Nothing of note here", 'info', '', 2000);
                             }
                         });
                     });
@@ -1695,7 +1712,7 @@
                 }
                 
                 // Otherwise, handle as movement click
-                console.log('Click detected at:', worldPoint.x, worldPoint.y);
+                debugLog('CLICK DETECTED', { x: worldPoint.x, y: worldPoint.y }, 3);
                 movePlayerToPoint.call(this, worldPoint.x, worldPoint.y);
             });
         }
@@ -2106,10 +2123,14 @@
         // handles interactions with objects
         // displays the object's data in an alert
         function handleObjectInteraction(sprite) {
-            console.log('CyberChef: handleObjectInteraction called for:', sprite.name, 'Has open workstation:', !!sprite.openCryptoWorkstation);
+            // Only log detailed object interactions at debug level 2+
+            debugLog('OBJECT INTERACTION', { 
+                name: sprite.name, 
+                hasWorkstation: !!sprite.openCryptoWorkstation 
+            }, 2);
             
             if (sprite.openCryptoWorkstation && sprite.openCryptoWorkstation()) {
-                console.log('CyberChef: Crypto workstation opened');
+                debugLog('WORKSTATION OPENED', null, 1);
                 return;
             }
             
@@ -2186,7 +2207,7 @@
             
             // Check if item is locked
             if (data.locked === true) {
-                console.log('Item is locked:', data);
+                debugLog('ITEM LOCKED', data, 2);
                 handleUnlock(sprite, 'item');
                 return;
             }
@@ -2235,7 +2256,7 @@
                     );
                             
                     if (isInRoom && !isInInventory) {
-                        console.log('Adding item to inventory:', itemIdentifier);
+                        debugLog('INVENTORY ITEM ADDED', { item: itemIdentifier }, 2);
                         addToInventory(sprite);
                     }
                 } else {
@@ -2322,10 +2343,11 @@
                 inventory.container.add(inventorySprite);
                 inventory.items.push(inventorySprite);
                 
-                console.log('Item added to inventory:', {
+                // Use debugLog with level 3 (verbose) for detailed inventory tracking
+                debugLog('INVENTORY ITEM DETAILS', {
                     name: sprite.name,
                     totalItems: inventory.items.length
-                });
+                }, 3);
             } catch (error) {
                 console.error('Error adding item to inventory:', error);
             }
@@ -2361,7 +2383,7 @@
                 .setScrollFactor(0)
                 .setDepth(2001);
             
-            console.log('Inventory initialized:', inventory); // Debug log
+            debugLog('INVENTORY INITIALIZED', inventory, 2); // Debug log at level 2
         }
 
         // runs after rooms are fully set up
@@ -2509,14 +2531,14 @@
                         
                         if (distance <= DOOR_INTERACTION_RANGE) {
                             if (doorTile.properties?.locked) {
-                                debugLog('DOOR LOCKED - ATTEMPTING UNLOCK');
+                                debugLog('DOOR LOCKED - ATTEMPTING UNLOCK', null, 2);
                                 colorDoorTiles(doorTile, room);
                                 handleDoorUnlock(doorTile, room);
                             } else {
-                                debugLog('DOOR NOT LOCKED');
+                                debugLog('DOOR NOT LOCKED', null, 2);
                             }
                         } else {
-                            debugLog('DOOR TOO FAR TO INTERACT');
+                            debugLog('DOOR TOO FAR TO INTERACT', null, 2);
                         }
                     });
 
@@ -2552,7 +2574,7 @@
         }
 
         function handleUnlock(lockable, type) {
-            debugLog('UNLOCK ATTEMPT');
+            debugLog('UNLOCK ATTEMPT', null, 2);
             
             // Check locked state in scenarioData for items
             const isLocked = type === 'door' ? 
@@ -2560,7 +2582,7 @@
                 lockable.scenarioData?.locked;
             
             if (!isLocked) {
-                debugLog('OBJECT NOT LOCKED');
+                debugLog('OBJECT NOT LOCKED', null, 2);
                 return;
             }
             
@@ -2579,7 +2601,7 @@
             switch(lockRequirements.lockType) {
                 case 'key':
                     const requiredKey = lockRequirements.requires;
-                    debugLog('KEY REQUIRED', requiredKey);
+                    debugLog('KEY REQUIRED', requiredKey, 2);
                     const hasKey = inventory.items.some(item => 
                         item && item.scenarioData && 
                         item.scenarioData.key_id === requiredKey
@@ -2593,7 +2615,7 @@
                         const keyName = keyItem?.scenarioData?.name || 'key';
                         const keyLocation = keyItem?.scenarioData?.foundIn || 'your inventory';
                         
-                        debugLog('KEY UNLOCK SUCCESS');
+                        debugLog('KEY UNLOCK SUCCESS', null, 1);
                         unlockTarget(lockable, type, lockable.layer);
                         gameAlert(`You used the ${keyName} that you found in ${keyLocation} to unlock the ${type}.`, 'success', 'Unlock Successful', 5000);
                     } else {
@@ -2604,7 +2626,7 @@
                         );
                         
                         if (hasLockpick) {
-                            debugLog('LOCKPICK AVAILABLE');
+                            debugLog('LOCKPICK AVAILABLE', null, 2);
                             if (confirm("Would you like to attempt picking this lock?")) {
                                 let difficulty;
                                 
@@ -2620,38 +2642,38 @@
                                 
                                 // If not found, try object-level difficulty
                                 difficulty = difficulty || lockable.scenarioData?.difficulty || lockable.properties?.difficulty;
-                                debugLog('STARTING LOCKPICK MINIGAME', { difficulty });
+                                debugLog('STARTING LOCKPICK MINIGAME', { difficulty }, 2);
                                 startLockpickingMinigame(lockable, game.scene.scenes[0], difficulty);
                             }
                         } else {
-                            debugLog('KEY NOT FOUND - FAIL');
+                            debugLog('KEY NOT FOUND - FAIL', null, 2);
                             gameAlert(`Requires key: ${requiredKey}`, 'error', 'Locked', 4000);
                         }
                     }
                     break;
 
                 case 'pin':
-                    debugLog('PIN CODE REQUESTED');
+                    debugLog('PIN CODE REQUESTED', null, 2);
                     const pinInput = prompt(`Enter PIN code:`);
                     if (pinInput === lockRequirements.requires) {
                         unlockTarget(lockable, type, lockable.layer); // Pass the layer here
-                        debugLog('PIN CODE SUCCESS');
+                        debugLog('PIN CODE SUCCESS', null, 1);
                         gameAlert(`Correct PIN! The ${type} is now unlocked.`, 'success', 'PIN Accepted', 4000);
                     } else if (pinInput !== null) {
-                        debugLog('PIN CODE FAIL');
+                        debugLog('PIN CODE FAIL', null, 2);
                         gameAlert("Incorrect PIN code.", 'error', 'PIN Rejected', 3000);
                     }
                     break;
 
                 case 'password':
-                    debugLog('PASSWORD REQUESTED');
+                    debugLog('PASSWORD REQUESTED', null, 2);
                     const passwordInput = prompt(`Enter password:`);
                     if (passwordInput === lockRequirements.requires) {
                         unlockTarget(lockable, type, lockable.layer); // Pass the layer here
-                        debugLog('PASSWORD SUCCESS');
+                        debugLog('PASSWORD SUCCESS', null, 1);
                         gameAlert(`Correct password! The ${type} is now unlocked.`, 'success', 'Password Accepted', 4000);
                     } else if (passwordInput !== null) {
-                        debugLog('PASSWORD FAIL');
+                        debugLog('PASSWORD FAIL', null, 2);
                         gameAlert("Incorrect password.", 'error', 'Password Rejected', 3000);
                     }
                     break;
@@ -2676,7 +2698,7 @@
                         lockable.x, lockable.y
                     );
                     
-                    debugLog('BLUETOOTH DISTANCE', distance);
+                    debugLog('BLUETOOTH DISTANCE', distance, 3);
                     
                     // Check if player is within range (using BLUETOOTH_SCAN_RANGE)
                     if (distance <= BLUETOOTH_SCAN_RANGE) {
@@ -2685,7 +2707,7 @@
                             itemMac: lockable.scenarioData?.mac,
                             distance: Math.round(distance),
                             range: BLUETOOTH_SCAN_RANGE
-                        });
+                        }, 1);
                         unlockTarget(lockable, type, lockable.layer);
                         gameAlert("Bluetooth connection established. Device unlocked.", 'success', 'Connection Successful', 4000);
                         return;
@@ -2824,7 +2846,7 @@
         }
 
         function getLockRequirementsForDoor(doorTile) {
-            debugLog('CHECKING DOOR REQUIREMENTS');
+            debugLog('CHECKING DOOR REQUIREMENTS', null, 3);
             
             if (!doorTile.layer) {
                 console.error('Door tile missing layer reference');
@@ -2834,7 +2856,7 @@
             const doorWorldX = doorTile.layer.x + (doorTile.x * TILE_SIZE);
             const doorWorldY = doorTile.layer.y + (doorTile.y * TILE_SIZE);
             
-            debugLog('DOOR COORDINATES', { doorWorldX, doorWorldY });
+            debugLog('DOOR COORDINATES', { doorWorldX, doorWorldY }, 3);
             
             const overlappingRooms = [];
             Object.entries(rooms).forEach(([roomId, otherRoom]) => {
@@ -2853,7 +2875,7 @@
                 };
                 
                 if (boundsOverlap(doorCheckArea, roomBounds)) {
-                    debugLog(`ROOM ${roomId} OVERLAPS WITH DOOR`);
+                    debugLog(`ROOM ${roomId} OVERLAPS WITH DOOR`, null, 3);
                     const roomCenterX = roomBounds.x + (roomBounds.width / 2);
                     const roomCenterY = roomBounds.y + (roomBounds.height / 2);
                     const distanceToPlayer = Phaser.Math.Distance.Between(
@@ -2872,13 +2894,13 @@
                 }
             });
 
-            debugLog('OVERLAPPING ROOMS', overlappingRooms);
+            debugLog('OVERLAPPING ROOMS', overlappingRooms, 3);
             
             const lockedRooms = overlappingRooms
                 .filter(r => r.locked)
                 .sort((a, b) => b.distance - a.distance);
             
-            debugLog('LOCKED ROOMS', lockedRooms);
+            debugLog('LOCKED ROOMS', lockedRooms, 3);
 
             if (lockedRooms.length > 0) {
                 const targetRoom = lockedRooms[0];
@@ -2886,11 +2908,11 @@
                     lockType: targetRoom.lockType,
                     requires: targetRoom.requires
                 };
-                debugLog('LOCK REQUIREMENTS', requirements);
+                debugLog('LOCK REQUIREMENTS', requirements, 2);
                 return requirements;
             }
             
-            debugLog('NO LOCK REQUIREMENTS FOUND');
+            debugLog('NO LOCK REQUIREMENTS FOUND', null, 2);
             return null;
         }
 
@@ -2941,11 +2963,11 @@
                         debugLog('BLUETOOTH DEVICE DETECTED', {
                             distance: Math.round(distance),
                             range: BLUETOOTH_SCAN_RANGE
-                        });
+                        }, 2);
                         
                         // Unlock the tablet
                         obj.scenarioData.locked = false;
-                        debugLog('BLUETOOTH UNLOCK SUCCESS');
+                        debugLog('BLUETOOTH UNLOCK SUCCESS', null, 1);
                     }
                 }
             });
@@ -2979,7 +3001,7 @@
             }
 
             if (!scanner.scenarioData?.biometricType === 'fingerprint') {
-                debugLog('SCANNER TYPE ERROR - FAIL', scanner.scenarioData);
+                debugLog('SCANNER TYPE ERROR - FAIL', scanner.scenarioData, 2);
                 gameAlert('Invalid scanner type', 'error', 'Scanner Error', 3000);
                 return false;
             }
