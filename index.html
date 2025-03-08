@@ -2341,14 +2341,14 @@
                         
                         if (distance <= DOOR_INTERACTION_RANGE) {
                             if (doorTile.properties?.locked) {
-                                console.log('Door is locked, attempting unlock');
+                                debugLog('DOOR LOCKED - ATTEMPTING UNLOCK');
                                 colorDoorTiles(doorTile, room);
                                 handleDoorUnlock(doorTile, room);
                             } else {
-                                console.log('Door is not locked');
+                                debugLog('DOOR NOT LOCKED');
                             }
                         } else {
-                            console.log("Too far from door to interact");
+                            debugLog('DOOR TOO FAR TO INTERACT');
                         }
                     });
 
@@ -2378,7 +2378,7 @@
         }
         
         function handleDoorUnlock(doorTile, room) {
-            debugLog('DOOR UNLOCK ATTEMPT');
+            // No need to log here since handleUnlock will log 'UNLOCK ATTEMPT'
             doorTile.layer = room.doorsLayer; // Ensure layer reference is set
             handleUnlock(doorTile, 'door');
         }
@@ -2401,10 +2401,10 @@
                 ? getLockRequirementsForDoor(lockable)
                 : getLockRequirementsForItem(lockable);
             
-            debugLog('LOCK REQUIREMENTS', lockRequirements);
+            // Don't log lock requirements here since it's already logged in the getter functions
             
             if (!lockRequirements) {
-                debugLog('NO LOCK REQUIREMENTS FOUND');
+                // Don't log here since it's already logged in the getter functions if applicable
                 return;
             }
             
