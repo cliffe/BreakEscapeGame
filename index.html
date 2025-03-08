@@ -547,6 +547,36 @@
             margin-top: 5px;
             text-align: right;
         }
+        
+        /* Bluetooth Signal Strength Bar */
+        .bluetooth-signal-bar-container {
+            margin-top: 8px;
+            width: 100%;
+            height: 20px;
+            background-color: #222;
+            border-radius: 3px;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .bluetooth-signal-bar {
+            height: 100%;
+            background-color: #9b59b6;
+            transition: width 0.5s ease, background-color 0.5s ease;
+        }
+        
+        .bluetooth-signal-text {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            line-height: 20px;
+            text-align: center;
+            color: white;
+            font-size: 11px;
+            font-weight: bold;
+            text-shadow: 0 0 2px rgba(0, 0, 0, 0.8);
+        }
 
         #bluetooth-toggle {
             position: fixed;
@@ -1074,7 +1104,7 @@
         // Bluetooth constants
         const BLUETOOTH_SCAN_RANGE = TILE_SIZE * 2; // 2 tiles range for Bluetooth scanning
         let lastBluetoothScan = 0; // Track last scan time
-        const BLUETOOTH_SCAN_INTERVAL = 500; // Scan every 500ms
+        const BLUETOOTH_SCAN_INTERVAL = 200; // Scan every 200ms for more responsive updates
 
         const gameState = {
             biometricSamples: [],
@@ -3222,6 +3252,9 @@
             // Find all Bluetooth devices in the current room
             if (!currentRoom || !rooms[currentRoom] || !rooms[currentRoom].objects) return;
             
+            // Keep track of devices detected in this scan
+            const detectedDevices = new Set();
+            
             Object.values(rooms[currentRoom].objects).forEach(obj => {
                 if (obj.scenarioData?.lockType === "bluetooth") {
                     const distance = Phaser.Math.Distance.Between(
@@ -3229,37 +3262,52 @@
                         obj.x, obj.y
                     );
                     
+                    const deviceMac = obj.scenarioData?.mac || "Unknown";
+                    
                     if (distance <= BLUETOOTH_SCAN_RANGE) {
+                        detectedDevices.add(deviceMac);
+                        
                         debugLog('BLUETOOTH DEVICE DETECTED', {
                             deviceName: obj.scenarioData?.name,
-                            deviceMac: obj.scenarioData?.mac,
+                            deviceMac: deviceMac,
                             distance: Math.round(distance),
                             range: BLUETOOTH_SCAN_RANGE
                         }, 2);
                         
                         // Add to Bluetooth scanner panel
                         const deviceName = obj.scenarioData?.name || "Unknown Device";
-                        const deviceMac = obj.scenarioData?.mac || "Unknown";
-                        const details = `Type: ${obj.scenarioData?.type || "Unknown"}\nDistance: ${Math.round(distance)} units\nSignal Strength: ${Math.max(0, Math.round(100 - (distance / BLUETOOTH_SCAN_RANGE * 100)))}%`;
+                        const signalStrength = Math.max(0, Math.round(100 - (distance / BLUETOOTH_SCAN_RANGE * 100)));
+                        const details = `Type: ${obj.scenarioData?.type || "Unknown"}\nDistance: ${Math.round(distance)} units\nSignal Strength: ${signalStrength}%`;
                         
-                        addBluetoothDevice(deviceName, deviceMac, details, true);
-                        
-                        // Only show notification for new devices
-                        if (!bluetoothDevices.some(device => device.mac === deviceMac)) {
-                            gameAlert(`Bluetooth device detected: ${deviceName} (MAC: ${deviceMac})`, 'info', 'Bluetooth Scanner', 4000);
-                        }
-                    } else {
-                        // Update device as not nearby if it's in our list
-                        const deviceMac = obj.scenarioData?.mac || "Unknown";
+                        // Check if device already exists in our list
                         const existingDevice = bluetoothDevices.find(device => device.mac === deviceMac);
                         
-                        if (existingDevice && existingDevice.nearby) {
-                            existingDevice.nearby = false;
+                        if (existingDevice) {
+                            // Update existing device details with real-time data
+                            existingDevice.details = details;
                             existingDevice.lastSeen = new Date();
+                            existingDevice.nearby = true;
+                            existingDevice.signalStrength = signalStrength;
                             updateBluetoothPanel();
-                            updateBluetoothCount();
+                        } else {
+                            // Add as new device if not already in our list
+                            const newDevice = addBluetoothDevice(deviceName, deviceMac, details, true);
+                            if (newDevice) {
+                                newDevice.signalStrength = signalStrength;
+                                gameAlert(`Bluetooth device detected: ${deviceName} (MAC: ${deviceMac})`, 'info', 'Bluetooth Scanner', 4000);
+                            }
                         }
                     }
+                }
+            });
+            
+            // Mark devices that weren't detected in this scan as not nearby
+            bluetoothDevices.forEach(device => {
+                if (device.nearby && !detectedDevices.has(device.mac)) {
+                    device.nearby = false;
+                    device.lastSeen = new Date();
+                    updateBluetoothPanel();
+                    updateBluetoothCount();
                 }
             });
         }
@@ -5001,11 +5049,17 @@
                 );
             }
             
-            // Sort devices with nearby ones first, then by last seen (newest first)
+            // Sort devices with nearby ones first, then by signal strength (highest first for nearby), then by last seen (newest first)
             filteredDevices.sort((a, b) => {
                 if (a.nearby !== b.nearby) {
                     return a.nearby ? -1 : 1;
                 }
+                
+                // For nearby devices, sort by signal strength
+                if (a.nearby && b.nearby && a.signalStrength !== b.signalStrength) {
+                    return b.signalStrength - a.signalStrength;
+                }
+                
                 return new Date(b.lastSeen) - new Date(a.lastSeen);
             });
             
@@ -5032,11 +5086,19 @@
                     const formattedDate = timestamp.toLocaleDateString();
                     const formattedTime = timestamp.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
                     
+                    // Get signal color based on strength
+                    const getSignalColor = (strength) => {
+                        if (strength >= 80) return '#00cc00'; // Strong - green
+                        if (strength >= 50) return '#cccc00'; // Medium - yellow
+                        return '#cc5500'; // Weak - orange
+                    };
+                    
                     let deviceContent = `<div class="bluetooth-device-name">
                         <span>${device.name}</span>
                         <div class="bluetooth-device-icons">`;
                     
                     if (device.nearby) {
+                        const signalStrength = device.signalStrength || 0;
                         deviceContent += `<span class="bluetooth-device-icon">📶</span>`;
                     }
                     if (device.saved) {
@@ -5045,6 +5107,17 @@
                     
                     deviceContent += `</div></div>`;
                     deviceContent += `<div class="bluetooth-device-details">MAC: ${device.mac}\n${device.details}</div>`;
+                    
+                    // Add signal strength bar for nearby devices
+                    if (device.nearby && typeof device.signalStrength === 'number') {
+                        const signalColor = getSignalColor(device.signalStrength);
+                        deviceContent += `
+                        <div class="bluetooth-signal-bar-container">
+                            <div class="bluetooth-signal-bar" style="width: ${device.signalStrength}%; background-color: ${signalColor};"></div>
+                            <div class="bluetooth-signal-text">${device.signalStrength}% Signal</div>
+                        </div>`;
+                    }
+                    
                     deviceContent += `<div class="bluetooth-device-timestamp">Last seen: ${formattedDate} ${formattedTime}</div>`;
                     
                     deviceElement.innerHTML = deviceContent;
