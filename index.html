@@ -550,32 +550,38 @@
         
         /* Bluetooth Signal Strength Bar */
         .bluetooth-signal-bar-container {
-            margin-top: 8px;
-            width: 100%;
-            height: 20px;
-            background-color: #222;
-            border-radius: 3px;
-            position: relative;
-            overflow: hidden;
+            margin: 0;
+            display: flex;
+            align-items: flex-end;
+            height: 16px;
         }
-        
+
+        .bluetooth-signal-bars {
+            display: flex;
+            align-items: flex-end;
+            height: 16px;
+            gap: 1px;
+        }
+
         .bluetooth-signal-bar {
-            height: 100%;
-            background-color: #9b59b6;
-            transition: width 0.5s ease, background-color 0.5s ease;
+            width: 3px;
+            background-color: #444;
+            border-radius: 1px;
+            transition: background-color 0.3s ease;
         }
-        
+
+        .bluetooth-signal-bar.active {
+            background-color: currentColor;
+        }
+
+        .bluetooth-signal-bar:nth-child(1) { height: 3px; }
+        .bluetooth-signal-bar:nth-child(2) { height: 6px; }
+        .bluetooth-signal-bar:nth-child(3) { height: 9px; }
+        .bluetooth-signal-bar:nth-child(4) { height: 12px; }
+        .bluetooth-signal-bar:nth-child(5) { height: 16px; }
+
         .bluetooth-signal-text {
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            line-height: 20px;
-            text-align: center;
-            color: white;
-            font-size: 11px;
-            font-weight: bold;
-            text-shadow: 0 0 2px rgba(0, 0, 0, 0.8);
+            display: none;
         }
 
         #bluetooth-toggle {
@@ -5097,29 +5103,34 @@
                         <span>${device.name}</span>
                         <div class="bluetooth-device-icons">`;
                     
-                    if (device.nearby) {
-                        const signalStrength = device.signalStrength || 0;
+                    if (device.nearby && typeof device.signalStrength === 'number') {
+                        const signalColor = getSignalColor(device.signalStrength);
+                        
+                        // Calculate how many bars should be active based on signal strength
+                        const activeBars = Math.ceil(device.signalStrength / 20); // 0-20% = 1 bar, 21-40% = 2 bars, etc.
+                        
+                        deviceContent += `<div class="bluetooth-signal-bar-container">
+                            <div class="bluetooth-signal-bars">`;
+                        
+                        for (let i = 1; i <= 5; i++) {
+                            const isActive = i <= activeBars;
+                            deviceContent += `<div class="bluetooth-signal-bar ${isActive ? 'active' : ''}" style="color: ${signalColor};"></div>`;
+                        }
+                        
+                        deviceContent += `</div></div>`;
+                    } else if (device.nearby) {
+                        // Fallback if signal strength not available
                         deviceContent += `<span class="bluetooth-device-icon">📶</span>`;
                     }
+
                     if (device.saved) {
                         deviceContent += `<span class="bluetooth-device-icon">💾</span>`;
                     }
-                    
+
                     deviceContent += `</div></div>`;
                     deviceContent += `<div class="bluetooth-device-details">MAC: ${device.mac}\n${device.details}</div>`;
-                    
-                    // Add signal strength bar for nearby devices
-                    if (device.nearby && typeof device.signalStrength === 'number') {
-                        const signalColor = getSignalColor(device.signalStrength);
-                        deviceContent += `
-                        <div class="bluetooth-signal-bar-container">
-                            <div class="bluetooth-signal-bar" style="width: ${device.signalStrength}%; background-color: ${signalColor};"></div>
-                            <div class="bluetooth-signal-text">${device.signalStrength}% Signal</div>
-                        </div>`;
-                    }
-                    
                     deviceContent += `<div class="bluetooth-device-timestamp">Last seen: ${formattedDate} ${formattedTime}</div>`;
-                    
+
                     deviceElement.innerHTML = deviceContent;
                     
                     // Toggle expanded state when clicked
