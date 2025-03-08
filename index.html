@@ -642,6 +642,14 @@
         .bluetooth-pair-button:hover {
             background-color: #8e44ad;
         }
+
+        .bluetooth-pair-button.paired {
+            background-color: #27ae60;
+        }
+
+        .bluetooth-pair-button.paired:hover {
+            background-color: #219653;
+        }
     </style>
     <script src="https://cdn.jsdelivr.net/npm/phaser@3.60.0/dist/phaser.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/easystarjs@0.4.4/bin/easystar-0.4.4.js"></script>
@@ -5151,12 +5159,24 @@
                     // Add pairing button only if device is nearby and player has a Bluetooth spoofer
                     if (device.nearby) {
                         // Check if player has a Bluetooth spoofer in inventory
-                        const hasSpoofer = inventory.items.some(item => 
+                        const spoofer = inventory.items.find(item => 
                             item.scenarioData?.type === "bluetooth_spoofer"
                         );
                         
-                        if (hasSpoofer) {
-                            deviceContent += `<button class="bluetooth-pair-button" data-mac="${device.mac}">Attempt Pairing</button>`;
+                        if (spoofer) {
+                            // Check if this device is already paired with (MAC address programmed to spoofer)
+                            const isPaired = spoofer.scenarioData?.mac === device.mac;
+                            const buttonClass = isPaired ? 'bluetooth-pair-button paired' : 'bluetooth-pair-button';
+                            const buttonText = isPaired ? 'MAC Address Copied' : 'Copy MAC Address';
+                            
+                            deviceContent += `<button class="${buttonClass}" data-mac="${device.mac}">${buttonText}</button>`;
+                            
+                            // If device is paired, add a hint about using it to unlock
+                            if (isPaired) {
+                                deviceContent += `<div style="font-size: 11px; color: #27ae60; margin-top: 4px;">
+                                    You can now use this MAC address to unlock matching Bluetooth locks
+                                </div>`;
+                            }
                         }
                     }
 
@@ -5225,8 +5245,68 @@
                 });
             });
             
+            // Set up global event delegation for the pairing buttons
+            document.addEventListener('click', function(event) {
+                if (event.target.classList.contains('bluetooth-pair-button')) {
+                    const mac = event.target.dataset.mac;
+                    attemptPairingWithDevice(mac);
+                    event.stopPropagation(); // Prevent device expanding/collapsing when clicking the button
+                }
+            });
+            
             // Initialize Bluetooth count
             updateBluetoothCount();
+        }
+
+        // Function to handle pairing attempts with Bluetooth devices
+        function attemptPairingWithDevice(mac) {
+            // Find the device in our list
+            const device = bluetoothDevices.find(device => device.mac === mac);
+            if (!device) {
+                gameAlert("Device not found.", 'error', 'Pairing Failed', 3000);
+                return;
+            }
+            
+            // Find spoofer in inventory
+            const spoofer = inventory.items.find(item => 
+                item.scenarioData?.type === "bluetooth_spoofer"
+            );
+            
+            if (!spoofer) {
+                gameAlert("You need a Bluetooth spoofer to pair with this device.", 'warning', 'Spoofer Required', 3000);
+                return;
+            }
+            
+            // Check if player is close enough to the device (using the proximity from real-time scanning)
+            if (!device.nearby) {
+                gameAlert("You need to be closer to the device to pair with it.", 'warning', 'Too Far', 3000);
+                return;
+            }
+            
+            // Check if this device is already paired with
+            if (spoofer.scenarioData?.mac === device.mac) {
+                gameAlert(`This device's MAC address (${device.mac}) is already programmed into your spoofer.`, 'info', 'Already Paired', 3000);
+                return;
+            }
+            
+            // Show a "working" message
+            gameAlert(`Copying MAC address: ${device.mac}...`, 'info', 'Programming Spoofer', 3000);
+            
+            // Program the spoofer with the target MAC address
+            spoofer.scenarioData.mac = device.mac;
+            
+            // Show success message
+            setTimeout(() => {
+                gameAlert(`Successfully programmed spoofer with MAC address: ${device.mac}`, 'success', 'Pairing Complete', 4000);
+                debugLog('BLUETOOTH SPOOFER PROGRAMMED', {
+                    deviceName: device.name,
+                    deviceMac: device.mac
+                }, 1);
+                
+                // Update the UI to show the pairing was successful
+                device.paired = true;
+                updateBluetoothPanel();
+            }, 1500);
         }
 
     </script>
