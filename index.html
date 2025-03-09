@@ -3237,6 +3237,9 @@
             }
             
             // Get lock requirements based on type
+            // lockRequirements should contain:
+            // - lockType: 'key', 'pin', 'password', 'bluetooth', or 'biometric'
+            // - requires: Key ID, PIN code, password, MAC address, or fingerprint owner name
             const lockRequirements = type === 'door' 
                 ? getLockRequirementsForDoor(lockable)
                 : getLockRequirementsForItem(lockable);
@@ -3325,6 +3328,60 @@
                     } else if (passwordInput !== null) {
                         debugLog('PASSWORD FAIL', null, 2);
                         gameAlert("Incorrect password.", 'error', 'Password Rejected', 3000);
+                    }
+                    break;
+
+                case 'biometric':
+                    debugLog('BIOMETRIC AUTHENTICATION REQUESTED', null, 2);
+                    // Check if player has fingerprint kit
+                    const hasFingerPrintKit = inventory.items.some(item => 
+                        item && item.scenarioData && 
+                        item.scenarioData.type === 'fingerprint_kit'
+                    );
+                    
+                    if (!hasFingerPrintKit) {
+                        gameAlert("You need a fingerprint kit to use biometric scanners.", 'warning', 'Missing Equipment', 4000);
+                        return;
+                    }
+                    
+                    // Check if player has required fingerprint sample
+                    const requiredFingerprint = lockRequirements.requires;
+                    debugLog('FINGERPRINT REQUIRED', requiredFingerprint, 2);
+                    
+                    // Check if player has a valid fingerprint sample
+                    const validSample = gameState.biometricSamples.find(sample => 
+                        sample.type === 'fingerprint' &&
+                        sample.owner === requiredFingerprint &&
+                        sample.quality >= 0.7 // Quality threshold
+                    );
+                    
+                    if (validSample) {
+                        debugLog('BIOMETRIC UNLOCK SUCCESS', validSample, 1);
+                        unlockTarget(lockable, type, lockable.layer);
+                        gameAlert(`You successfully used ${validSample.owner}'s fingerprint to unlock the ${type}.`, 
+                                 'success', 'Biometric Authentication Successful', 5000);
+                        
+                        // Play success sound and visual effect
+                        const successEffect = lockable.scene ? lockable.scene.add.circle(
+                            lockable.x, 
+                            lockable.y, 
+                            32, 
+                            0x00ff00, 
+                            0.5
+                        ) : null;
+                        
+                        if (successEffect) {
+                            lockable.scene.tweens.add({
+                                targets: successEffect,
+                                alpha: 0,
+                                scale: 2,
+                                duration: 1000,
+                                onComplete: () => successEffect.destroy()
+                            });
+                        }
+                    } else {
+                        debugLog('BIOMETRIC UNLOCK FAILED', null, 2);
+                        gameAlert(`You don't have the required fingerprint sample.`, 'error', 'Biometric Authentication Failed', 4000);
                     }
                     break;
 
@@ -3544,8 +3601,8 @@
             if (lockedRooms.length > 0) {
                 const targetRoom = lockedRooms[0];
                 const requirements = {
-                    lockType: targetRoom.lockType,
-                    requires: targetRoom.requires
+                    lockType: targetRoom.lockType, // Can be: 'key', 'pin', 'password', 'bluetooth', or 'biometric'
+                    requires: targetRoom.requires  // Key ID, PIN code, password, BT MAC address, or fingerprint owner name
                 };
                 debugLog('LOCK REQUIREMENTS', requirements, 2);
                 return requirements;
@@ -3557,8 +3614,8 @@
 
         function getLockRequirementsForItem(item) {
             return {
-                lockType: item.lockType || item.scenarioData?.lockType,
-                requires: item.requires || item.scenarioData?.requires,
+                lockType: item.lockType || item.scenarioData?.lockType, // Can be: 'key', 'pin', 'password', 'bluetooth', or 'biometric'
+                requires: item.requires || item.scenarioData?.requires, // Key ID, PIN code, password, BT MAC address, or fingerprint owner name
                 isUnlockedButNotCollected: false
             };
         }

@@ -203,7 +203,7 @@
             "locked": true,
             "lockType": "key",
             "requires": "ceo_office_key",
-            "difficulty": "easy",
+            "difficulty": "medium",
             "objects": [
                 {
                     "type": "pc",
@@ -275,10 +275,10 @@
                     "name": "Hidden Safe",
                     "takeable": false,
                     "locked": true,
-                    "lockType": "pin",
-                    "requires": "8741",
+                    "lockType": "biometric",
+                    "requires": "intruder",
                     "difficulty": "hard",
-                    "observations": "A well-hidden wall safe behind a painting",
+                    "observations": "A well-hidden wall safe behind a painting with a fingerprint scanner",
                     "contents": [
                         {
                             "type": "notes",
@@ -338,10 +338,10 @@
                     "name": "Secure Data Safe",
                     "takeable": false,
                     "locked": true,
-                    "lockType": "pin",
-                    "requires": "5923",
+                    "lockType": "biometric",
+                    "requires": "intruder",
                     "difficulty": "medium",
-                    "observations": "A secure safe containing the sensitive research data",
+                    "observations": "A secure safe with a fingerprint scanner containing the sensitive research data",
                     "contents": [
                         {
                             "type": "notes",
@@ -367,10 +367,10 @@
                     "name": "Suspicious Case",
                     "takeable": false,
                     "locked": true,
-                    "lockType": "pin",
-                    "requires": "36714",
+                    "lockType": "biometric",
+                    "requires": "intruder",
                     "difficulty": "hard",
-                    "observations": "A suspicious case hidden behind server racks",
+                    "observations": "A suspicious case hidden behind server racks with a fingerprint scanner",
                     "contents": [
                         {
                             "type": "notes",
