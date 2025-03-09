@@ -266,9 +266,7 @@
         }
 
         #notes-toggle {
-            position: fixed;
-            bottom: 20px;
-            right: 20px;
+            position: relative;
             width: 60px;
             height: 60px;
             background-color: #3498db;
@@ -282,6 +280,7 @@
             z-index: 1998;
             font-size: 28px;
             transition: all 0.3s ease;
+            margin-left: 10px;
         }
 
         #notes-toggle:hover {
@@ -585,9 +584,7 @@
         }
 
         #bluetooth-toggle {
-            position: fixed;
-            bottom: 20px;
-            right: 90px;
+            position: relative;
             width: 60px;
             height: 60px;
             background-color: #9b59b6;
@@ -601,6 +598,7 @@
             z-index: 1998;
             font-size: 28px;
             transition: all 0.3s ease;
+            margin-left: 10px;
         }
 
         #bluetooth-toggle:hover {
@@ -681,6 +679,240 @@
         .bluetooth-device:hover .bluetooth-pair-button {
             pointer-events: auto;
         }
+
+        /* Biometrics Panel */
+        #biometrics-panel {
+            position: fixed;
+            bottom: 80px;
+            right: 160px;
+            width: 350px;
+            max-height: 500px;
+            background-color: rgba(0, 0, 0, 0.9);
+            color: white;
+            border-radius: 5px;
+            box-shadow: 0 2px 15px rgba(0, 0, 0, 0.5);
+            z-index: 1999;
+            font-family: Arial, sans-serif;
+            display: none;
+            overflow: hidden;
+            transition: all 0.3s ease;
+            border: 1px solid #444;
+        }
+
+        #biometrics-header {
+            background-color: #222;
+            padding: 12px 15px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid #444;
+        }
+
+        #biometrics-title {
+            font-weight: bold;
+            font-size: 18px;
+            color: #e74c3c;
+        }
+
+        #biometrics-close {
+            cursor: pointer;
+            font-size: 18px;
+            color: #aaa;
+            transition: color 0.2s;
+        }
+
+        #biometrics-close:hover {
+            color: white;
+        }
+        
+        #biometrics-search-container {
+            padding: 10px 15px;
+            background-color: #333;
+            border-bottom: 1px solid #444;
+        }
+        
+        #biometrics-search {
+            width: 100%;
+            padding: 8px 10px;
+            border: none;
+            border-radius: 3px;
+            background-color: #222;
+            color: white;
+            font-size: 14px;
+        }
+        
+        #biometrics-search:focus {
+            outline: none;
+            box-shadow: 0 0 0 2px rgba(231, 76, 60, 0.5);
+        }
+        
+        #biometrics-categories {
+            display: flex;
+            padding: 5px 15px;
+            background-color: #2c2c2c;
+            border-bottom: 1px solid #444;
+        }
+        
+        .biometrics-category {
+            padding: 5px 10px;
+            margin-right: 5px;
+            cursor: pointer;
+            border-radius: 3px;
+            font-size: 12px;
+            transition: all 0.2s;
+        }
+        
+        .biometrics-category.active {
+            background-color: #e74c3c;
+            color: white;
+        }
+        
+        .biometrics-category:hover:not(.active) {
+            background-color: #444;
+        }
+
+        #biometrics-content {
+            padding: 15px;
+            overflow-y: auto;
+            max-height: 350px;
+        }
+
+        .biometric-sample {
+            margin-bottom: 15px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid #444;
+            cursor: pointer;
+            transition: background-color 0.2s;
+            padding: 10px;
+            border-radius: 3px;
+        }
+
+        .biometric-sample:hover {
+            background-color: #333;
+        }
+
+        .biometric-sample:last-child {
+            margin-bottom: 0;
+            padding-bottom: 0;
+            border-bottom: none;
+        }
+
+        .biometric-sample-name {
+            font-weight: bold;
+            margin-bottom: 5px;
+            font-size: 14px;
+            color: #e74c3c;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .biometric-sample-icons {
+            display: flex;
+            gap: 5px;
+        }
+        
+        .biometric-sample-icon {
+            font-size: 12px;
+            color: #aaa;
+        }
+
+        .biometric-sample-details {
+            font-size: 13px;
+            line-height: 1.4;
+            white-space: pre-wrap;
+            max-height: 80px;
+            overflow: hidden;
+            transition: max-height 0.3s;
+        }
+        
+        .biometric-sample.expanded .biometric-sample-details {
+            max-height: 1000px;
+        }
+        
+        .biometric-sample-timestamp {
+            font-size: 11px;
+            color: #888;
+            margin-top: 5px;
+            text-align: right;
+        }
+
+        .biometric-quality-bar {
+            width: 100%;
+            height: 5px;
+            background: #333;
+            margin-top: 8px;
+            border-radius: 2px;
+            margin-bottom: 8px;
+        }
+
+        .biometric-quality-fill {
+            height: 100%;
+            border-radius: 2px;
+            transition: width 0.3s ease;
+        }
+
+        #biometrics-toggle {
+            position: relative;
+            width: 60px;
+            height: 60px;
+            background-color: #e74c3c;
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+            z-index: 1998;
+            font-size: 28px;
+            transition: all 0.3s ease;
+            margin-left: 10px;
+        }
+
+        #biometrics-toggle:hover {
+            background-color: #c0392b;
+            transform: scale(1.1);
+        }
+
+        #biometrics-count {
+            position: absolute;
+            top: 0;
+            right: 0;
+            background-color: #c0392b;
+            color: white;
+            border-radius: 50%;
+            width: 22px;
+            height: 22px;
+            font-size: 12px;
+            display: none;
+            justify-content: center;
+            align-items: center;
+            font-weight: bold;
+        }
+
+        /* Rest of existing styles follow */
+        .biometric-sample-timestamp {
+            font-size: 11px;
+            color: #888;
+            margin-top: 5px;
+            text-align: right;
+        }
+        
+        /* Toggle Buttons Container */
+        #toggle-buttons-container {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            display: flex;
+            flex-direction: row-reverse;
+            z-index: 1998;
+        }
+        
+        /* Game container */
+        #game-container {
+            position: relative;
+        }
     </style>
     <script src="https://cdn.jsdelivr.net/npm/phaser@3.60.0/dist/phaser.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/easystarjs@0.4.4/bin/easystar-0.4.4.js"></script>
@@ -709,9 +941,21 @@
         </div>
         <div id="notes-content"></div>
     </div>
-    <div id="notes-toggle">
-        <span>📝</span>
-        <div id="notes-count">0</div>
+    
+    <!-- Toggle Buttons Container -->
+    <div id="toggle-buttons-container">
+        <div id="notes-toggle">
+            <span>📝</span>
+            <div id="notes-count">0</div>
+        </div>
+        <div id="bluetooth-toggle" style="display: none;">
+            <span>📡</span>
+            <div id="bluetooth-count">0</div>
+        </div>
+        <div id="biometrics-toggle" style="display: none;">
+            <span>👆</span>
+            <div id="biometrics-count">0</div>
+        </div>
     </div>
 
     <!-- Bluetooth Scanner Panel -->
@@ -730,9 +974,22 @@
         </div>
         <div id="bluetooth-content"></div>
     </div>
-    <div id="bluetooth-toggle" style="display: none;">
-        <span>📡</span>
-        <div id="bluetooth-count">0</div>
+    
+    <!-- Biometrics Panel -->
+    <div id="biometrics-panel">
+        <div id="biometrics-header">
+            <div id="biometrics-title">Biometric Samples</div>
+            <div id="biometrics-close">×</div>
+        </div>
+        <div id="biometrics-search-container">
+            <input type="text" id="biometrics-search" placeholder="Search samples...">
+        </div>
+        <div id="biometrics-categories">
+            <div class="biometrics-category active" data-category="all">All</div>
+            <div class="biometrics-category" data-category="fingerprint">Fingerprints</div>
+            <div class="biometrics-category" data-category="spoofed">Spoofed</div>
+        </div>
+        <div id="biometrics-content"></div>
     </div>
 
     <script>
@@ -1123,6 +1380,9 @@
             
             // Initialize Bluetooth scanner panel
             initializeBluetoothPanel();
+            
+            // Initialize biometrics panel
+            initializeBiometricsPanel();
         });
         
         // Function to create or update the FPS counter
@@ -2726,6 +2986,12 @@
                     bluetoothToggle.style.display = 'flex';
                 }
                 
+                // If this is the fingerprint kit, show the biometrics toggle button
+                if (sprite.scenarioData.type === "fingerprint_kit") {
+                    const biometricsToggle = document.getElementById('biometrics-toggle');
+                    biometricsToggle.style.display = 'flex';
+                }
+                
                 return true;
             } catch (error) {
                 console.error('Error adding to inventory:', error);
@@ -4233,7 +4499,8 @@
                             type: 'fingerprint',
                             owner: item.scenarioData.fingerprintOwner,
                             quality: Math.random() * 0.3 + 0.7,  // Random quality between 0.7 and 1.0
-                            data: generateFingerprintData(item)
+                            data: generateFingerprintData(item),
+                            timestamp: Date.now()
                         };
                         
                         gameState.biometricSamples.push(sample);
@@ -4246,6 +4513,13 @@
                         if (item.scenarioData) {
                             item.scenarioData.hasFingerprint = false;
                         }
+                        
+                        // Update the biometrics panel and count
+                        updateBiometricsPanel();
+                        updateBiometricsCount();
+                        
+                        // Show notification
+                        gameAlert(`Collected ${sample.owner}'s fingerprint sample`, 'success', 'Sample Acquired', 3000);
                     }, 1500);
                 }
             }
@@ -5817,6 +6091,342 @@
                 }
             }
         }
+
+        // Biometrics Panel System
+        // Add this variable to track newly collected samples
+        let newBiometricSamples = 0;
+        
+        // Function to update the biometrics panel with current samples
+        function updateBiometricsPanel() {
+            const biometricsContent = document.getElementById('biometrics-content');
+            const searchTerm = document.getElementById('biometrics-search')?.value?.toLowerCase() || '';
+            
+            // Get active category
+            const activeCategory = document.querySelector('.biometrics-category.active')?.dataset.category || 'all';
+            
+            // Filter samples based on search and category
+            let filteredSamples = [...gameState.biometricSamples || []];
+            
+            // Apply category filter
+            if (activeCategory === 'fingerprint') {
+                // Only show non-spoofed fingerprints in the fingerprint category
+                filteredSamples = filteredSamples.filter(sample => 
+                    sample.type === 'fingerprint' && !sample.isSpoofed
+                );
+            } else if (activeCategory === 'spoofed') {
+                filteredSamples = filteredSamples.filter(sample => sample.isSpoofed);
+            }
+            // The 'all' category shows everything by default
+            
+            // Apply search filter
+            if (searchTerm) {
+                filteredSamples = filteredSamples.filter(sample => 
+                    sample.owner.toLowerCase().includes(searchTerm) || 
+                    sample.type.toLowerCase().includes(searchTerm)
+                );
+            }
+            
+            // Sort samples with highest quality first
+            filteredSamples.sort((a, b) => b.quality - a.quality);
+            
+            // Clear current content
+            biometricsContent.innerHTML = '';
+            
+            // Add samples
+            if (filteredSamples.length === 0) {
+                const noSamples = document.createElement('p');
+                noSamples.textContent = 'No samples found.';
+                noSamples.style.textAlign = 'center';
+                noSamples.style.color = '#aaa';
+                biometricsContent.appendChild(noSamples);
+                return;
+            }
+            
+            filteredSamples.forEach(sample => {
+                const sampleElement = document.createElement('div');
+                sampleElement.className = 'biometric-sample';
+                sampleElement.dataset.id = sample.id;
+                
+                const timestamp = new Date(sample.timestamp || Date.now());
+                const formattedDate = timestamp.toLocaleDateString();
+                const formattedTime = timestamp.toLocaleTimeString();
+                
+                const qualityPercentage = Math.round(sample.quality * 100);
+                
+                let sampleContent = `<div class="biometric-sample-name">
+                    <div>${sample.type.charAt(0).toUpperCase() + sample.type.slice(1)} - ${sample.owner}</div>
+                    <div class="biometric-sample-icons">`;
+                
+                if (sample.isSpoofed) {
+                    sampleContent += `<span class="biometric-sample-icon">🔄</span>`;
+                }
+                
+                sampleContent += `</div></div>`;
+                
+                // Add quality bar
+                sampleContent += `<div class="biometric-quality-bar">
+                    <div class="biometric-quality-fill" style="width: ${qualityPercentage}%; background: ${getQualityColor(sample.quality)};"></div>
+                </div>`;
+                
+                sampleContent += `<div class="biometric-sample-details">
+                    <strong>Type:</strong> ${sample.type}<br>
+                    <strong>Owner:</strong> ${sample.owner}<br>
+                    <strong>Quality:</strong> ${qualityPercentage}%<br>
+                    <strong>ID:</strong> ${sample.id}
+                </div>`;
+                
+                sampleContent += `<div class="biometric-sample-timestamp">Collected: ${formattedDate} ${formattedTime}</div>`;
+                
+                sampleElement.innerHTML = sampleContent;
+                
+                // Add spoof button if not already spoofed
+                if (!sample.isSpoofed && hasItemInInventory('spoofing_kit')) {
+                    const spoofButton = document.createElement('button');
+                    spoofButton.textContent = 'Create Spoof';
+                    spoofButton.style.cssText = `
+                        margin-top: 10px;
+                        padding: 5px 10px;
+                        background: #e74c3c;
+                        border: none;
+                        color: white;
+                        border-radius: 3px;
+                        cursor: pointer;
+                        width: 100%;
+                    `;
+                    spoofButton.onclick = (event) => {
+                        event.stopPropagation(); // Prevent toggling expand/collapse
+                        createSpoofedSampleUI(sample);
+                    };
+                    sampleElement.appendChild(spoofButton);
+                }
+                
+                // Toggle expanded state when clicked
+                sampleElement.addEventListener('click', () => {
+                    sampleElement.classList.toggle('expanded');
+                });
+                
+                biometricsContent.appendChild(sampleElement);
+            });
+        }
+        
+        // Function to create spoofed sample with UI
+        function createSpoofedSampleUI(sample) {
+            // Find the sample element
+            const sampleElement = document.querySelector(`.biometric-sample[data-id="${sample.id}"]`);
+            if (!sampleElement) return;
+            
+            // Disable any existing spoof buttons
+            const existingButton = sampleElement.querySelector('button');
+            if (existingButton) {
+                existingButton.disabled = true;
+                existingButton.textContent = 'Creating spoof...';
+            }
+            
+            // Add progress bar
+            const progressBar = document.createElement('div');
+            progressBar.className = 'biometric-quality-bar';
+            
+            const progress = document.createElement('div');
+            progress.className = 'biometric-quality-fill';
+            progress.style.width = '0%';
+            progress.style.background = '#e67e22';
+            
+            progressBar.appendChild(progress);
+            sampleElement.appendChild(progressBar);
+            
+            // Animate progress
+            let currentProgress = 0;
+            const interval = setInterval(() => {
+                currentProgress += 2;
+                progress.style.width = `${currentProgress}%`;
+            }, SPOOFING_TIME / 50);
+            
+            // Create spoof after delay
+            setTimeout(() => {
+                clearInterval(interval);
+                const spoofedSample = createSpoofedSample(sample);
+                if (spoofedSample) {
+                    gameState.biometricSamples.push(spoofedSample);
+                    updateBiometricsPanel(); // Refresh UI
+                    updateBiometricsCount(); // Update count
+                    gameAlert("Successfully created spoofed sample.", 'success', 'Spoofing Complete', 3000);
+                }
+            }, SPOOFING_TIME);
+        }
+        
+        // Update the biometrics count
+        function updateBiometricsCount() {
+            const biometricsCount = document.getElementById('biometrics-count');
+            if (!biometricsCount) return;
+            
+            // Count all samples
+            const sampleCount = gameState.biometricSamples ? gameState.biometricSamples.length : 0;
+            
+            biometricsCount.textContent = sampleCount;
+            biometricsCount.style.display = sampleCount > 0 ? 'flex' : 'none';
+        }
+        
+        // Toggle the biometrics panel
+        function toggleBiometricsPanel() {
+            const biometricsPanel = document.getElementById('biometrics-panel');
+            const isVisible = biometricsPanel.style.display === 'block';
+            
+            biometricsPanel.style.display = isVisible ? 'none' : 'block';
+            
+            // Update panel on open
+            if (!isVisible) {
+                updateBiometricsPanel();
+            }
+        }
+        
+        // Initialize biometrics panel
+        function initializeBiometricsPanel() {
+            // Set up biometrics toggle button
+            const biometricsToggle = document.getElementById('biometrics-toggle');
+            biometricsToggle.addEventListener('click', toggleBiometricsPanel);
+            
+            // Set up biometrics close button
+            const biometricsClose = document.getElementById('biometrics-close');
+            biometricsClose.addEventListener('click', toggleBiometricsPanel);
+            
+            // Set up search functionality
+            const biometricsSearch = document.getElementById('biometrics-search');
+            biometricsSearch.addEventListener('input', updateBiometricsPanel);
+            
+            // Set up category filters
+            const categories = document.querySelectorAll('.biometrics-category');
+            categories.forEach(category => {
+                category.addEventListener('click', () => {
+                    // Remove active class from all categories
+                    categories.forEach(c => c.classList.remove('active'));
+                    // Add active class to clicked category
+                    category.classList.add('active');
+                    // Update biometrics panel
+                    updateBiometricsPanel();
+                });
+            });
+            
+            // Initialize biometrics count
+            updateBiometricsCount();
+            
+            // Override B key functionality to open biometrics panel
+            // instead of the old popup
+            document.removeEventListener('keydown', setupSamplesUIControls);
+            document.addEventListener('keydown', (event) => {
+                if (event.key.toLowerCase() === 'b') {
+                    toggleBiometricsPanel();
+                }
+            });
+        }
+        
+        // Override the existing methods
+        function showSamplesUI() {
+            toggleBiometricsPanel();
+        }
+        
+        function hideSamplesUI() {
+            const biometricsPanel = document.getElementById('biometrics-panel');
+            biometricsPanel.style.display = 'none';
+        }
+        
+        // Override createSpoofedSample to add timestamp
+        const originalCreateSpoofedSample = createSpoofedSample;
+        createSpoofedSample = function(sample) {
+            const spoofedSample = originalCreateSpoofedSample(sample);
+            if (spoofedSample) {
+                spoofedSample.timestamp = Date.now();
+            }
+            return spoofedSample;
+        };
+        
+        // We don't need this duplicate initialization since we already added it to the existing DOMContentLoaded handler
+        // document.addEventListener('DOMContentLoaded', function() {
+        //     // Existing initialization...
+        //     
+        //     // Initialize biometrics panel
+        //     initializeBiometricsPanel();
+        // });
+
+        // Function to drop an inventory item
+        function dropInventoryItem(item) {
+            try {
+                if (!item || !item.scenarioData) return false;
+                
+                // Get player position
+                const dropPos = {
+                    x: player.x,
+                    y: player.y
+                };
+                
+                // Create a new sprite at the drop position
+                const droppedItem = createInteractiveSprite(
+                    item.scenarioData,
+                    dropPos.x,
+                    dropPos.y,
+                    currentRoom
+                );
+                
+                if (!droppedItem) return false;
+                
+                // Remove from inventory array
+                const itemIndex = inventory.items.indexOf(item);
+                if (itemIndex !== -1) {
+                    inventory.items.splice(itemIndex, 1);
+                }
+                
+                // Remove from inventory container
+                inventory.container.remove(item);
+                
+                // Destroy inventory sprite
+                item.destroy();
+                
+                // Recalculate inventory positions
+                updateInventoryPositions();
+                
+                // Hide bluetooth toggle if we dropped the bluetooth scanner
+                if (item.scenarioData.type === "bluetooth_scanner") {
+                    const bluetoothToggle = document.getElementById('bluetooth-toggle');
+                    bluetoothToggle.style.display = 'none';
+                }
+                
+                // Hide biometrics toggle if we dropped the fingerprint kit
+                if (item.scenarioData.type === "fingerprint_kit") {
+                    const biometricsToggle = document.getElementById('biometrics-toggle');
+                    biometricsToggle.style.display = 'none';
+                }
+                
+                return true;
+            } catch (error) {
+                console.error('Error dropping item:', error);
+                return false;
+            }
+        }
+
+        // Function to initialize the toggle buttons container
+        function initializeToggleButtons() {
+            // Set up notes toggle button
+            const notesToggle = document.getElementById('notes-toggle');
+            if (notesToggle) {
+                notesToggle.addEventListener('click', toggleNotesPanel);
+            }
+            
+            // Set up bluetooth toggle button
+            const bluetoothToggle = document.getElementById('bluetooth-toggle');
+            if (bluetoothToggle) {
+                bluetoothToggle.addEventListener('click', toggleBluetoothPanel);
+            }
+            
+            // Set up biometrics toggle button
+            const biometricsToggle = document.getElementById('biometrics-toggle');
+            if (biometricsToggle) {
+                biometricsToggle.addEventListener('click', toggleBiometricsPanel);
+            }
+        }
+
+        // Call the initialization function when the game starts
+        document.addEventListener('DOMContentLoaded', function() {
+            initializeToggleButtons();
+        });
 
     </script>
 </body>
