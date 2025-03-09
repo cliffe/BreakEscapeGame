@@ -6406,15 +6406,21 @@
         function initializeToggleButtons() {
             // Set up notes toggle button
             const notesToggle = document.getElementById('notes-toggle');
-            notesToggle.addEventListener('click', toggleNotesPanel);
+            if (notesToggle) {
+                notesToggle.addEventListener('click', toggleNotesPanel);
+            }
             
             // Set up bluetooth toggle button
             const bluetoothToggle = document.getElementById('bluetooth-toggle');
-            bluetoothToggle.addEventListener('click', toggleBluetoothPanel);
+            if (bluetoothToggle) {
+                bluetoothToggle.addEventListener('click', toggleBluetoothPanel);
+            }
             
             // Set up biometrics toggle button
             const biometricsToggle = document.getElementById('biometrics-toggle');
-            biometricsToggle.addEventListener('click', toggleBiometricsPanel);
+            if (biometricsToggle) {
+                biometricsToggle.addEventListener('click', toggleBiometricsPanel);
+            }
         }
 
         // Call the initialization function when the game starts
