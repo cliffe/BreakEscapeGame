@@ -39,6 +39,13 @@
                     "fingerprintOwner": "receptionist",
                     "fingerprintQuality": 0.8,
                     "observations": "The reception computer shows a security alert screen. There might be fingerprints on the keyboard."
+                },
+                {
+                    "type": "lockpick",
+                    "name": "Lockpick",
+                    "takeable": true,
+                    "inInventory": true,
+                    "observations": "A tool for picking locks"
                 }
             ]
         },

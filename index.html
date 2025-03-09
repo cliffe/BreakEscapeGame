@@ -1733,6 +1733,9 @@
 
             // Initialize game systems
             initializeInventory.call(this);
+            
+            // Process items marked with inInventory: true in the scenario data
+            processInitialInventoryItems.call(this);
 
             // Add the workstation to inventory
             addCryptoWorkstation.call(this);
@@ -3036,6 +3039,31 @@
                 .setDepth(2001);
             
             debugLog('INVENTORY INITIALIZED', inventory, 2); // Debug log at level 2
+        }
+        
+        // Process all items marked with inInventory: true in the scenario data
+        function processInitialInventoryItems() {
+            debugLog('PROCESSING INITIAL INVENTORY ITEMS', null, 2);
+            
+            // Loop through all rooms in the scenario
+            Object.entries(gameScenario.rooms).forEach(([roomId, roomData]) => {
+                if (!roomData.objects) return;
+                
+                // Check each object in the room
+                roomData.objects.forEach(objectData => {
+                    // If the object has inInventory: true, add it to the player's inventory
+                    if (objectData.takeable && objectData.inInventory === true) {
+                        debugLog('ADDING INITIAL INVENTORY ITEM', objectData, 2);
+                        
+                        // Create a sprite for the item
+                        const sprite = createInventorySprite(objectData);
+                        if (sprite) {
+                            // Add to inventory
+                            addToInventory(sprite);
+                        }
+                    }
+                });
+            });
         }
 
         // runs after rooms are fully set up
