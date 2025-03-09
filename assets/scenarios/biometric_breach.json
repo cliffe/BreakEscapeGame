@@ -46,6 +46,13 @@
                     "takeable": true,
                     "inInventory": true,
                     "observations": "A tool for picking locks"
+                },
+                {
+                    "type": "workstation",
+                    "name": "Crypto Analysis Station",
+                    "takeable": true,
+                    "inInventory": true,
+                    "observations": "A powerful workstation for cryptographic analysis"
                 }
             ]
         },

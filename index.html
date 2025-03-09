@@ -1535,34 +1535,25 @@
             this.load.image('fingerprint_kit', 'assets/objects/fingerprint_kit.png');
             this.load.image('lockpick', 'assets/objects/lockpick.png');
 
-
-            this.load.json('gameScenarioJSON', 'assets/scenarios/biometric_breach.json');
+            //this.load.json('gameScenarioJSON', 'assets/scenarios/biometric_breach.json');
+            this.load.json('gameScenarioJSON', 'assets/scenarios/ceo_exfil.json');
             gameScenario = this.cache.json.get('gameScenarioJSON');
         }
 
         // creates the workstation
-        function addCryptoWorkstation() {
-            // console.log('CyberChef: Adding crypto workstation...');
-            const workstationData = {
-                type: "workstation",
-                name: "Crypto Analysis Station",
-                observations: "A powerful workstation for cryptographic analysis"
-            };
-
+        function createCryptoWorkstation(objectData) {
             // Create the workstation sprite
             const workstationSprite = this.add.sprite(0, 0, 'workstation');
             workstationSprite.setVisible(false);
             workstationSprite.name = "workstation";
-            workstationSprite.scenarioData = workstationData;
+            workstationSprite.scenarioData = objectData;
             workstationSprite.setInteractive({ useHandCursor: true });
             
             // Override the default handleObjectInteraction for this specific item
             workstationSprite.openCryptoWorkstation = function() {
-                // console.log('CyberChef: Workstation custom interaction triggered');
                 // Create popup
                 let popup = document.getElementById('laptop-popup');
                 if (!popup) {
-                    // console.log('CyberChef: Creating new popup...');
                     popup = document.createElement('div');
                     popup.id = 'laptop-popup';
                     popup.innerHTML = `
@@ -1608,9 +1599,7 @@
                 return true;
             };
 
-            // Add to inventory directly
-            addToInventory(workstationSprite);
-            // console.log('CyberChef: Workstation added to inventory');
+            return workstationSprite;
         }
 
         // creates the game
@@ -1737,8 +1726,8 @@
             // Process items marked with inInventory: true in the scenario data
             processInitialInventoryItems.call(this);
 
-            // Add the workstation to inventory
-            addCryptoWorkstation.call(this);
+            // NOTE: Crypto workstation is now handled by processInitialInventoryItems
+            // based on inInventory flag in scenario data - addCryptoWorkstation.call(this);
 
             // Add this line after processAllDoorCollisions()
             setupDoorOverlapChecks.call(this);
@@ -3056,7 +3045,15 @@
                         debugLog('ADDING INITIAL INVENTORY ITEM', objectData, 2);
                         
                         // Create a sprite for the item
-                        const sprite = createInventorySprite(objectData);
+                        let sprite;
+                        
+                        // Special handling for workstation type
+                        if (objectData.type === "workstation") {
+                            sprite = createCryptoWorkstation.call(this, objectData);
+                        } else {
+                            sprite = createInventorySprite(objectData);
+                        }
+                        
                         if (sprite) {
                             // Add to inventory
                             addToInventory(sprite);
