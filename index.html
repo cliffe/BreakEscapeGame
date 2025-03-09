@@ -1549,56 +1549,6 @@
             workstationSprite.scenarioData = objectData;
             workstationSprite.setInteractive({ useHandCursor: true });
             
-            // Override the default handleObjectInteraction for this specific item
-            workstationSprite.openCryptoWorkstation = function() {
-                // Create popup
-                let popup = document.getElementById('laptop-popup');
-                if (!popup) {
-                    popup = document.createElement('div');
-                    popup.id = 'laptop-popup';
-                    popup.innerHTML = `
-                        <div class="popup-overlay"></div>
-                        <div class="laptop-frame">
-                            <div class="laptop-screen">
-                                <div class="title-bar">
-                                    <span>CryptoWorkstation</span>
-                                    <button class="close-btn">&times;</button>
-                                </div>
-                                <div id="cyberchef-container"></div>
-                            </div>
-                        </div>
-                    `;
-                    document.body.appendChild(popup);
-
-                    // Find the CyberChef file
-                    fetch('assets/cyberchef/')
-                        .then(response => response.text())
-                        .then(html => {
-                            // Use regex to find the CyberChef filename
-                            const match = html.match(/CyberChef_v[0-9.]+\.html/);
-                            if (match) {
-                                const cyberchefPath = `assets/cyberchef/${match[0]}`;
-                                // Create and append the iframe with the found path
-                                const iframe = document.createElement('iframe');
-                                iframe.src = cyberchefPath;
-                                iframe.frameBorder = "0";
-                                document.getElementById('cyberchef-container').appendChild(iframe);
-                            } else {
-                                console.error('Could not find CyberChef file');
-                            }
-                        })
-                        .catch(error => {
-                            console.error('Error loading CyberChef:', error);
-                        });
-
-                    popup.querySelector('.close-btn').addEventListener('click', () => {
-                        popup.style.display = 'none';
-                    });
-                }
-                popup.style.display = 'flex';
-                return true;
-            };
-
             return workstationSprite;
         }
 
@@ -2702,16 +2652,17 @@
             // Only log detailed object interactions at debug level 2+
             debugLog('OBJECT INTERACTION', { 
                 name: sprite.name, 
-                hasWorkstation: !!sprite.openCryptoWorkstation 
+                type: sprite.scenarioData?.type
             }, 2);
-            
-            if (sprite.openCryptoWorkstation && sprite.openCryptoWorkstation()) {
-                debugLog('WORKSTATION OPENED', null, 1);
-                return;
-            }
             
             if (!sprite || !sprite.scenarioData) {
                 console.warn('Invalid sprite or missing scenario data');
+                return;
+            }
+            
+            // Handle the Crypto Workstation
+            if (sprite.scenarioData.type === "workstation") {
+                openCryptoWorkstation();
                 return;
             }
             
@@ -2918,11 +2869,6 @@
                     foundIn: currentRoom ? gameScenario.rooms[currentRoom].name || currentRoom : 'unknown location'
                 };
                 inventorySprite.name = sprite.name;
-                
-                // Copy over the custom interaction if it exists
-                if (sprite.openCryptoWorkstation) {
-                    inventorySprite.openCryptoWorkstation = sprite.openCryptoWorkstation;
-                }
                 
                 // Set depth higher than container
                 inventorySprite.setDepth(2003);
@@ -6458,6 +6404,57 @@
         document.addEventListener('DOMContentLoaded', function() {
             initializeToggleButtons();
         });
+
+        // Function to open the crypto workstation
+        function openCryptoWorkstation() {
+            debugLog('OPENING CRYPTO WORKSTATION', null, 1);
+            
+            // Create popup
+            let popup = document.getElementById('laptop-popup');
+            if (!popup) {
+                popup = document.createElement('div');
+                popup.id = 'laptop-popup';
+                popup.innerHTML = `
+                    <div class="popup-overlay"></div>
+                    <div class="laptop-frame">
+                        <div class="laptop-screen">
+                            <div class="title-bar">
+                                <span>CryptoWorkstation</span>
+                                <button class="close-btn">&times;</button>
+                            </div>
+                            <div id="cyberchef-container"></div>
+                        </div>
+                    </div>
+                `;
+                document.body.appendChild(popup);
+
+                // Find the CyberChef file
+                fetch('assets/cyberchef/')
+                    .then(response => response.text())
+                    .then(html => {
+                        // Use regex to find the CyberChef filename
+                        const match = html.match(/CyberChef_v[0-9.]+\.html/);
+                        if (match) {
+                            const cyberchefPath = `assets/cyberchef/${match[0]}`;
+                            // Create and append the iframe with the found path
+                            const iframe = document.createElement('iframe');
+                            iframe.src = cyberchefPath;
+                            iframe.frameBorder = "0";
+                            document.getElementById('cyberchef-container').appendChild(iframe);
+                        } else {
+                            console.error('Could not find CyberChef file');
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error loading CyberChef:', error);
+                    });
+
+                popup.querySelector('.close-btn').addEventListener('click', () => {
+                    popup.style.display = 'none';
+                });
+            }
+            popup.style.display = 'flex';
+        }
 
     </script>
 </body>
