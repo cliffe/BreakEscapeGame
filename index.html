@@ -266,9 +266,7 @@
         }
 
         #notes-toggle {
-            position: fixed;
-            bottom: 20px;
-            right: 20px;
+            position: relative;
             width: 60px;
             height: 60px;
             background-color: #3498db;
@@ -282,6 +280,7 @@
             z-index: 1998;
             font-size: 28px;
             transition: all 0.3s ease;
+            margin-left: 10px;
         }
 
         #notes-toggle:hover {
@@ -585,9 +584,7 @@
         }
 
         #bluetooth-toggle {
-            position: fixed;
-            bottom: 20px;
-            right: 90px;
+            position: relative;
             width: 60px;
             height: 60px;
             background-color: #9b59b6;
@@ -601,6 +598,7 @@
             z-index: 1998;
             font-size: 28px;
             transition: all 0.3s ease;
+            margin-left: 10px;
         }
 
         #bluetooth-toggle:hover {
@@ -855,9 +853,7 @@
         }
 
         #biometrics-toggle {
-            position: fixed;
-            bottom: 20px;
-            right: 160px;
+            position: relative;
             width: 60px;
             height: 60px;
             background-color: #e74c3c;
@@ -871,6 +867,7 @@
             z-index: 1998;
             font-size: 28px;
             transition: all 0.3s ease;
+            margin-left: 10px;
         }
 
         #biometrics-toggle:hover {
@@ -895,6 +892,27 @@
         }
 
         /* Rest of existing styles follow */
+        .biometric-sample-timestamp {
+            font-size: 11px;
+            color: #888;
+            margin-top: 5px;
+            text-align: right;
+        }
+        
+        /* Toggle Buttons Container */
+        #toggle-buttons-container {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            display: flex;
+            flex-direction: row-reverse;
+            z-index: 1998;
+        }
+        
+        /* Game container */
+        #game-container {
+            position: relative;
+        }
     </style>
     <script src="https://cdn.jsdelivr.net/npm/phaser@3.60.0/dist/phaser.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/easystarjs@0.4.4/bin/easystar-0.4.4.js"></script>
@@ -923,9 +941,21 @@
         </div>
         <div id="notes-content"></div>
     </div>
-    <div id="notes-toggle">
-        <span>📝</span>
-        <div id="notes-count">0</div>
+    
+    <!-- Toggle Buttons Container -->
+    <div id="toggle-buttons-container">
+        <div id="notes-toggle">
+            <span>📝</span>
+            <div id="notes-count">0</div>
+        </div>
+        <div id="bluetooth-toggle" style="display: none;">
+            <span>📡</span>
+            <div id="bluetooth-count">0</div>
+        </div>
+        <div id="biometrics-toggle" style="display: none;">
+            <span>👆</span>
+            <div id="biometrics-count">0</div>
+        </div>
     </div>
 
     <!-- Bluetooth Scanner Panel -->
@@ -944,10 +974,6 @@
         </div>
         <div id="bluetooth-content"></div>
     </div>
-    <div id="bluetooth-toggle" style="display: none;">
-        <span>📡</span>
-        <div id="bluetooth-count">0</div>
-    </div>
     
     <!-- Biometrics Panel -->
     <div id="biometrics-panel">
@@ -964,10 +990,6 @@
             <div class="biometrics-category" data-category="spoofed">Spoofed</div>
         </div>
         <div id="biometrics-content"></div>
-    </div>
-    <div id="biometrics-toggle" style="display: none;">
-        <span>👆</span>
-        <div id="biometrics-count">0</div>
     </div>
 
     <script>
@@ -6379,6 +6401,26 @@
                 return false;
             }
         }
+
+        // Function to initialize the toggle buttons container
+        function initializeToggleButtons() {
+            // Set up notes toggle button
+            const notesToggle = document.getElementById('notes-toggle');
+            notesToggle.addEventListener('click', toggleNotesPanel);
+            
+            // Set up bluetooth toggle button
+            const bluetoothToggle = document.getElementById('bluetooth-toggle');
+            bluetoothToggle.addEventListener('click', toggleBluetoothPanel);
+            
+            // Set up biometrics toggle button
+            const biometricsToggle = document.getElementById('biometrics-toggle');
+            biometricsToggle.addEventListener('click', toggleBiometricsPanel);
+        }
+
+        // Call the initialization function when the game starts
+        document.addEventListener('DOMContentLoaded', function() {
+            initializeToggleButtons();
+        });
 
     </script>
 </body>
