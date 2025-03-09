@@ -1,0 +1,197 @@
+{
+    "scenario_brief": "You are a security specialist tasked with investigating a high-security research facility after reports of unauthorized access. Your mission is to use biometric tools to identify the intruder and secure sensitive research data before it's stolen.",
+    "startRoom": "reception",
+    "rooms": {
+        "reception": {
+            "type": "room_reception",
+            "connections": {
+                "north": "lab1"
+            },
+            "objects": [
+                {
+                    "type": "phone",
+                    "name": "Reception Phone",
+                    "takeable": false,
+                    "readable": true,
+                    "text": "Voicemail: 'Security alert: Unauthorized access detected in the biometrics lab. All personnel must verify identity at security checkpoints. Server room PIN changed to 5923. - Security Team'",
+                    "observations": "The reception phone's message light is blinking with an urgent message"
+                },
+                {
+                    "type": "notes",
+                    "name": "Security Log",
+                    "takeable": true,
+                    "readable": true,
+                    "text": "Unusual access patterns detected:\n- Lab 1: 23:45 PM\n- Biometrics Lab: 01:30 AM\n- Server Room: 02:15 AM",
+                    "observations": "A concerning security log from last night"
+                },
+                {
+                    "type": "fingerprint_kit",
+                    "name": "Fingerprint Kit",
+                    "takeable": true,
+                    "inInventory": true,
+                    "observations": "A professional kit for collecting fingerprint samples"
+                },
+                {
+                    "type": "pc",
+                    "name": "Reception Computer",
+                    "takeable": false,
+                    "hasFingerprint": true,
+                    "fingerprintOwner": "receptionist",
+                    "fingerprintQuality": 0.8,
+                    "observations": "The reception computer shows a security alert screen. There might be fingerprints on the keyboard."
+                }
+            ]
+        },
+        "lab1": {
+            "type": "room_office",
+            "connections": {
+                "north": ["biolab", "server"],
+                "south": "reception"
+            },
+            "objects": [
+                {
+                    "type": "pc",
+                    "name": "Lab Computer",
+                    "takeable": false,
+                    "hasFingerprint": true,
+                    "fingerprintOwner": "researcher",
+                    "fingerprintQuality": 0.9,
+                    "observations": "A research computer with data analysis software running. There might be fingerprints on the keyboard."
+                },
+                {
+                    "type": "notes",
+                    "name": "Research Notes",
+                    "takeable": true,
+                    "readable": true,
+                    "text": "Project Sentinel: Biometric security breakthrough. Final test results stored in secure server. Access requires Level 3 clearance or backup key.",
+                    "observations": "Important research notes about a biometric security project"
+                },
+                {
+                    "type": "tablet",
+                    "name": "Security Tablet",
+                    "takeable": true,
+                    "readable": true,
+                    "text": "Security Alert: Unauthorized access to biometrics lab detected at 01:30 AM. Biometric scanner in server room requires admin fingerprint or emergency override key.",
+                    "observations": "A security tablet showing access logs and alerts"
+                },
+                {
+                    "type": "key",
+                    "name": "Biolab Key",
+                    "takeable": true,
+                    "key_id": "biolab_key",
+                    "observations": "A backup key for the biometrics lab, kept for emergencies"
+                }
+            ]
+        },
+        "biolab": {
+            "type": "room_office",
+            "connections": {
+                "south": "lab1"
+            },
+            "locked": true,
+            "lockType": "key",
+            "requires": "biolab_key",
+            "difficulty": "medium",
+            "objects": [
+                {
+                    "type": "pc",
+                    "name": "Biometrics Research Station",
+                    "takeable": false,
+                    "hasFingerprint": true,
+                    "fingerprintOwner": "intruder",
+                    "fingerprintQuality": 0.85,
+                    "observations": "A specialized workstation for biometric research. The screen shows someone was recently using it."
+                },
+                {
+                    "type": "notes",
+                    "name": "Access Log",
+                    "takeable": true,
+                    "readable": true,
+                    "text": "Unusual access pattern detected: Admin credentials used during off-hours. Timestamp matches security alert. Safe PIN code: 8741",
+                    "observations": "A log showing suspicious access to the biometrics lab"
+                },
+                {
+                    "type": "workstation",
+                    "name": "Fingerprint Analysis Station",
+                    "takeable": false,
+                    "observations": "A specialized workstation for analyzing fingerprint samples"
+                },
+                {
+                    "type": "key",
+                    "name": "Server Room Key",
+                    "takeable": true,
+                    "key_id": "server_key",
+                    "observations": "A key to the server room, carelessly left behind by someone"
+                }
+            ]
+        },
+        "server": {
+            "type": "room_servers",
+            "connections": {
+                "south": "lab1"
+            },
+            "locked": true,
+            "lockType": "key",
+            "requires": "server_key",
+            "difficulty": "easy",
+            "objects": [
+                {
+                    "type": "pc",
+                    "name": "Server Terminal",
+                    "takeable": false,
+                    "hasFingerprint": true,
+                    "fingerprintOwner": "admin",
+                    "fingerprintQuality": 0.95,
+                    "observations": "The main server terminal controlling access to research data. There are clear fingerprints on the screen."
+                },
+                {
+                    "type": "safe",
+                    "name": "Secure Data Safe",
+                    "takeable": false,
+                    "locked": true,
+                    "lockType": "pin",
+                    "requires": "8741",
+                    "difficulty": "medium",
+                    "observations": "A secure safe containing the sensitive research data",
+                    "contents": [
+                        {
+                            "type": "notes",
+                            "name": "Project Sentinel Data",
+                            "takeable": true,
+                            "readable": true,
+                            "text": "Complete research data for Project Sentinel biometric security system. Evidence shows unauthorized copy was made at 02:17 AM by someone using spoofed admin credentials.",
+                            "observations": "The complete research data for the biometric security project"
+                        },
+                        {
+                            "type": "key",
+                            "name": "Case Key",
+                            "takeable": true,
+                            "key_id": "case_key",
+                            "observations": "A small key with a strange logo etched on it"
+                        }
+                    ]
+                },
+                {
+                    "type": "suitcase",
+                    "name": "Suspicious Case",
+                    "takeable": false,
+                    "locked": true,
+                    "lockType": "key",
+                    "requires": "case_key",
+                    "difficulty": "hard",
+                    "observations": "A suspicious case hidden behind server racks",
+                    "contents": [
+                        {
+                            "type": "notes",
+                            "name": "Stolen Data",
+                            "takeable": true,
+                            "readable": true,
+                            "text": "Copy of Project Sentinel data and instructions for delivery to competitor. Payment confirmation included.",
+                            "observations": "Evidence of corporate espionage and data theft"
+                        }
+                    ]
+                }
+            ]
+        }
+    }
+} 
