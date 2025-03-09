@@ -1109,11 +1109,19 @@
         // Add a note to the notes panel
         function addNote(title, text, important = false) {
             // Check if a note with the same title and text already exists
-            const noteExists = gameNotes.some(note => note.title === title && note.text === text);
+            const existingNote = gameNotes.find(note => note.title === title && note.text === text);
             
-            // If the note already exists, don't add it again
-            if (noteExists) {
-                debugLog(`Note "${title}" already exists, not adding duplicate`, 2);
+            // If the note already exists, don't add it again but mark it as read
+            if (existingNote) {
+                debugLog(`Note "${title}" already exists, not adding duplicate`, existingNote, 2);
+                
+                // Mark as read if it wasn't already
+                if (!existingNote.read) {
+                    existingNote.read = true;
+                    updateNotesPanel();
+                    updateNotesCount();
+                }
+                
                 return null;
             }
             
@@ -1535,82 +1543,21 @@
             this.load.image('fingerprint_kit', 'assets/objects/fingerprint_kit.png');
             this.load.image('lockpick', 'assets/objects/lockpick.png');
 
-
-            this.load.json('gameScenarioJSON', 'assets/scenarios/ceo_exfil.json');
+            this.load.json('gameScenarioJSON', 'assets/scenarios/biometric_breach.json');
+            //this.load.json('gameScenarioJSON', 'assets/scenarios/ceo_exfil.json');
             gameScenario = this.cache.json.get('gameScenarioJSON');
         }
 
         // creates the workstation
-        function addCryptoWorkstation() {
-            // console.log('CyberChef: Adding crypto workstation...');
-            const workstationData = {
-                type: "workstation",
-                name: "Crypto Analysis Station",
-                observations: "A powerful workstation for cryptographic analysis"
-            };
-
+        function createCryptoWorkstation(objectData) {
             // Create the workstation sprite
             const workstationSprite = this.add.sprite(0, 0, 'workstation');
             workstationSprite.setVisible(false);
             workstationSprite.name = "workstation";
-            workstationSprite.scenarioData = workstationData;
+            workstationSprite.scenarioData = objectData;
             workstationSprite.setInteractive({ useHandCursor: true });
             
-            // Override the default handleObjectInteraction for this specific item
-            workstationSprite.openCryptoWorkstation = function() {
-                // console.log('CyberChef: Workstation custom interaction triggered');
-                // Create popup
-                let popup = document.getElementById('laptop-popup');
-                if (!popup) {
-                    // console.log('CyberChef: Creating new popup...');
-                    popup = document.createElement('div');
-                    popup.id = 'laptop-popup';
-                    popup.innerHTML = `
-                        <div class="popup-overlay"></div>
-                        <div class="laptop-frame">
-                            <div class="laptop-screen">
-                                <div class="title-bar">
-                                    <span>CryptoWorkstation</span>
-                                    <button class="close-btn">&times;</button>
-                                </div>
-                                <div id="cyberchef-container"></div>
-                            </div>
-                        </div>
-                    `;
-                    document.body.appendChild(popup);
-
-                    // Find the CyberChef file
-                    fetch('assets/cyberchef/')
-                        .then(response => response.text())
-                        .then(html => {
-                            // Use regex to find the CyberChef filename
-                            const match = html.match(/CyberChef_v[0-9.]+\.html/);
-                            if (match) {
-                                const cyberchefPath = `assets/cyberchef/${match[0]}`;
-                                // Create and append the iframe with the found path
-                                const iframe = document.createElement('iframe');
-                                iframe.src = cyberchefPath;
-                                iframe.frameBorder = "0";
-                                document.getElementById('cyberchef-container').appendChild(iframe);
-                            } else {
-                                console.error('Could not find CyberChef file');
-                            }
-                        })
-                        .catch(error => {
-                            console.error('Error loading CyberChef:', error);
-                        });
-
-                    popup.querySelector('.close-btn').addEventListener('click', () => {
-                        popup.style.display = 'none';
-                    });
-                }
-                popup.style.display = 'flex';
-                return true;
-            };
-
-            // Add to inventory directly
-            addToInventory(workstationSprite);
-            // console.log('CyberChef: Workstation added to inventory');
+            return workstationSprite;
         }
 
         // creates the game
@@ -1733,9 +1680,12 @@
 
             // Initialize game systems
             initializeInventory.call(this);
+            
+            // Process items marked with inInventory: true in the scenario data
+            processInitialInventoryItems.call(this);
 
-            // Add the workstation to inventory
-            addCryptoWorkstation.call(this);
+            // NOTE: Crypto workstation is now handled by processInitialInventoryItems
+            // based on inInventory flag in scenario data - addCryptoWorkstation.call(this);
 
             // Add this line after processAllDoorCollisions()
             setupDoorOverlapChecks.call(this);
@@ -2710,16 +2660,17 @@
             // Only log detailed object interactions at debug level 2+
             debugLog('OBJECT INTERACTION', { 
                 name: sprite.name, 
-                hasWorkstation: !!sprite.openCryptoWorkstation 
+                type: sprite.scenarioData?.type
             }, 2);
-            
-            if (sprite.openCryptoWorkstation && sprite.openCryptoWorkstation()) {
-                debugLog('WORKSTATION OPENED', null, 1);
-                return;
-            }
             
             if (!sprite || !sprite.scenarioData) {
                 console.warn('Invalid sprite or missing scenario data');
+                return;
+            }
+            
+            // Handle the Crypto Workstation
+            if (sprite.scenarioData.type === "workstation") {
+                openCryptoWorkstation();
                 return;
             }
             
@@ -2732,8 +2683,12 @@
                 const distanceSq = dx * dx + dy * dy;
                 
                 if (distanceSq > INTERACTION_RANGE_SQ) {
-                    // Show notification instead of alert
-                    //gameAlert("Too far away to interact with this object.", 'warning', '', 2000);
+                    // Player is too far away to interact
+                    debugLog('INTERACTION_OUT_OF_RANGE', { 
+                        objectName: sprite.name, 
+                        distance: Math.sqrt(distanceSq),
+                        maxRange: Math.sqrt(INTERACTION_RANGE_SQ)
+                    }, 2);
                     return;
                 }
             }
@@ -2819,6 +2774,18 @@
                                 }
                             }, 1000);
                         }
+                    } else {
+                        // If the note was a duplicate and it's a note in the room (not inventory), 
+                        // still remove it from the room even though we didn't add it to notes again
+                        if (!isInventoryItem && data.type === 'notes' && currentRoom && 
+                            rooms[currentRoom] && rooms[currentRoom].objects && 
+                            rooms[currentRoom].objects[sprite.name]) {
+                            
+                            const roomObj = rooms[currentRoom].objects[sprite.name];
+                            roomObj.setVisible(false);
+                            roomObj.active = false;
+                            debugLog(`Note "${data.name}" was a duplicate, but still removed from room`, 2);
+                        }
                     }
                 }
             }
@@ -2866,6 +2833,9 @@
                         roomObj.setVisible(false);
                         roomObj.active = false;
                         
+                        // Also set the internal property to indicate it's been collected
+                        sprite.collected = true;
+                        
                         // Show notification about adding to notes instead of inventory
                         gameAlert(`Information recorded in your notes.`, 'success', 'Note Recorded', 3000);
                     }
@@ -2886,10 +2856,16 @@
             }
             
             try {
-                // Check if the item is already in the inventory
-                const isAlreadyInInventory = inventory.items.some(item => item.name === sprite.name);
+                // Check if the item is already in the inventory using the unique identifier
+                const itemIdentifier = createItemIdentifier(sprite.scenarioData);
+                console.log(`Checking if item ${itemIdentifier} is already in inventory`);
+                
+                const isAlreadyInInventory = inventory.items.some(item => 
+                    createItemIdentifier(item.scenarioData) === itemIdentifier
+                );
+                
                 if (isAlreadyInInventory) {
-                    console.log(`Item ${sprite.name} is already in inventory, not adding again`);
+                    console.log(`Item ${itemIdentifier} is already in inventory, not adding again`);
                     return false;
                 }
                 
@@ -2921,11 +2897,6 @@
                 };
                 inventorySprite.name = sprite.name;
                 
-                // Copy over the custom interaction if it exists
-                if (sprite.openCryptoWorkstation) {
-                    inventorySprite.openCryptoWorkstation = sprite.openCryptoWorkstation;
-                }
-                
                 // Set depth higher than container
                 inventorySprite.setDepth(2003);
 
@@ -2939,7 +2910,7 @@
                     }
                     
                     // Handle other inventory items as before
-                    handleItemInteraction(this, true);
+                    handleObjectInteraction(this);
                 });
                 
                 inventorySprite.on('pointerover', function() {
@@ -3030,6 +3001,39 @@
                 .setDepth(2001);
             
             debugLog('INVENTORY INITIALIZED', inventory, 2); // Debug log at level 2
+        }
+        
+        // Process all items marked with inInventory: true in the scenario data
+        function processInitialInventoryItems() {
+            debugLog('PROCESSING INITIAL INVENTORY ITEMS', null, 2);
+            
+            // Loop through all rooms in the scenario
+            Object.entries(gameScenario.rooms).forEach(([roomId, roomData]) => {
+                if (!roomData.objects) return;
+                
+                // Check each object in the room
+                roomData.objects.forEach(objectData => {
+                    // If the object has inInventory: true, add it to the player's inventory
+                    if (objectData.takeable && objectData.inInventory === true) {
+                        debugLog('ADDING INITIAL INVENTORY ITEM', objectData, 2);
+                        
+                        // Create a sprite for the item
+                        let sprite;
+                        
+                        // Special handling for workstation type
+                        if (objectData.type === "workstation") {
+                            sprite = createCryptoWorkstation.call(this, objectData);
+                        } else {
+                            sprite = createInventorySprite(objectData);
+                        }
+                        
+                        if (sprite) {
+                            // Add to inventory
+                            addToInventory(sprite);
+                        }
+                    }
+                });
+            });
         }
 
         // runs after rooms are fully set up
@@ -3233,6 +3237,9 @@
             }
             
             // Get lock requirements based on type
+            // lockRequirements should contain:
+            // - lockType: 'key', 'pin', 'password', 'bluetooth', or 'biometric'
+            // - requires: Key ID, PIN code, password, MAC address, or fingerprint owner name
             const lockRequirements = type === 'door' 
                 ? getLockRequirementsForDoor(lockable)
                 : getLockRequirementsForItem(lockable);
@@ -3321,6 +3328,60 @@
                     } else if (passwordInput !== null) {
                         debugLog('PASSWORD FAIL', null, 2);
                         gameAlert("Incorrect password.", 'error', 'Password Rejected', 3000);
+                    }
+                    break;
+
+                case 'biometric':
+                    debugLog('BIOMETRIC AUTHENTICATION REQUESTED', null, 2);
+                    // Check if player has fingerprint kit
+                    const hasFingerPrintKit = inventory.items.some(item => 
+                        item && item.scenarioData && 
+                        item.scenarioData.type === 'fingerprint_kit'
+                    );
+                    
+                    if (!hasFingerPrintKit) {
+                        gameAlert("You need a fingerprint kit to use biometric scanners.", 'warning', 'Missing Equipment', 4000);
+                        return;
+                    }
+                    
+                    // Check if player has required fingerprint sample
+                    const requiredFingerprint = lockRequirements.requires;
+                    debugLog('FINGERPRINT REQUIRED', requiredFingerprint, 2);
+                    
+                    // Check if player has a valid fingerprint sample
+                    const validSample = gameState.biometricSamples.find(sample => 
+                        sample.type === 'fingerprint' &&
+                        sample.owner === requiredFingerprint &&
+                        sample.quality >= 0.7 // Quality threshold
+                    );
+                    
+                    if (validSample) {
+                        debugLog('BIOMETRIC UNLOCK SUCCESS', validSample, 1);
+                        unlockTarget(lockable, type, lockable.layer);
+                        gameAlert(`You successfully used ${validSample.owner}'s fingerprint to unlock the ${type}.`, 
+                                 'success', 'Biometric Authentication Successful', 5000);
+                        
+                        // Play success sound and visual effect
+                        const successEffect = lockable.scene ? lockable.scene.add.circle(
+                            lockable.x, 
+                            lockable.y, 
+                            32, 
+                            0x00ff00, 
+                            0.5
+                        ) : null;
+                        
+                        if (successEffect) {
+                            lockable.scene.tweens.add({
+                                targets: successEffect,
+                                alpha: 0,
+                                scale: 2,
+                                duration: 1000,
+                                onComplete: () => successEffect.destroy()
+                            });
+                        }
+                    } else {
+                        debugLog('BIOMETRIC UNLOCK FAILED', null, 2);
+                        gameAlert(`You don't have the required fingerprint sample.`, 'error', 'Biometric Authentication Failed', 4000);
                     }
                     break;
 
@@ -3540,8 +3601,8 @@
             if (lockedRooms.length > 0) {
                 const targetRoom = lockedRooms[0];
                 const requirements = {
-                    lockType: targetRoom.lockType,
-                    requires: targetRoom.requires
+                    lockType: targetRoom.lockType, // Can be: 'key', 'pin', 'password', 'bluetooth', or 'biometric'
+                    requires: targetRoom.requires  // Key ID, PIN code, password, BT MAC address, or fingerprint owner name
                 };
                 debugLog('LOCK REQUIREMENTS', requirements, 2);
                 return requirements;
@@ -3553,8 +3614,8 @@
 
         function getLockRequirementsForItem(item) {
             return {
-                lockType: item.lockType || item.scenarioData?.lockType,
-                requires: item.requires || item.scenarioData?.requires,
+                lockType: item.lockType || item.scenarioData?.lockType, // Can be: 'key', 'pin', 'password', 'bluetooth', or 'biometric'
+                requires: item.requires || item.scenarioData?.requires, // Key ID, PIN code, password, BT MAC address, or fingerprint owner name
                 isUnlockedButNotCollected: false
             };
         }
@@ -4673,7 +4734,7 @@
                 .sort(() => Math.random() - 0.5);
             
             const gameState = {
-                tensionLevel: 1, // Start with light tension instead of none
+                tensionLevel: 1, // Start with light tension (1)
                 pinStates: Array(numPins).fill(0), // 0 = down, 1 = moving, 2 = set
                 pinPressTime: Array(numPins).fill(0), // Track how long each pin is pressed
                 currentBindingIndex: 0,
@@ -4698,7 +4759,7 @@
             tensionWrench.style.cssText = `
                 width: 100px;
                 height: 30px;
-                background: ${gameState.tensionLevel === 1 ? '#666' : gameState.tensionLevel === 2 ? '#888' : '#aaa'};
+                background: #666;
                 border: 2px solid #888;
                 border-radius: 5px;
                 cursor: pointer;
@@ -4706,8 +4767,9 @@
                 text-align: center;
                 line-height: 30px;
                 color: white;
+                transform: rotate(2deg);
             `;
-            tensionWrench.textContent = 'Tension: OFF';
+            tensionWrench.textContent = 'Tension: LIGHT';
 
             // Function to reset pins
             function resetPins(showVisual = true) {
@@ -6427,6 +6489,57 @@
         document.addEventListener('DOMContentLoaded', function() {
             initializeToggleButtons();
         });
+
+        // Function to open the crypto workstation
+        function openCryptoWorkstation() {
+            debugLog('OPENING CRYPTO WORKSTATION', null, 1);
+            
+            // Create popup
+            let popup = document.getElementById('laptop-popup');
+            if (!popup) {
+                popup = document.createElement('div');
+                popup.id = 'laptop-popup';
+                popup.innerHTML = `
+                    <div class="popup-overlay"></div>
+                    <div class="laptop-frame">
+                        <div class="laptop-screen">
+                            <div class="title-bar">
+                                <span>CryptoWorkstation</span>
+                                <button class="close-btn">&times;</button>
+                            </div>
+                            <div id="cyberchef-container"></div>
+                        </div>
+                    </div>
+                `;
+                document.body.appendChild(popup);
+
+                // Find the CyberChef file
+                fetch('assets/cyberchef/')
+                    .then(response => response.text())
+                    .then(html => {
+                        // Use regex to find the CyberChef filename
+                        const match = html.match(/CyberChef_v[0-9.]+\.html/);
+                        if (match) {
+                            const cyberchefPath = `assets/cyberchef/${match[0]}`;
+                            // Create and append the iframe with the found path
+                            const iframe = document.createElement('iframe');
+                            iframe.src = cyberchefPath;
+                            iframe.frameBorder = "0";
+                            document.getElementById('cyberchef-container').appendChild(iframe);
+                        } else {
+                            console.error('Could not find CyberChef file');
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error loading CyberChef:', error);
+                    });
+
+                popup.querySelector('.close-btn').addEventListener('click', () => {
+                    popup.style.display = 'none';
+                });
+            }
+            popup.style.display = 'flex';
+        }
 
     </script>
 </body>
