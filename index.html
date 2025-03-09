@@ -2886,10 +2886,16 @@
             }
             
             try {
-                // Check if the item is already in the inventory
-                const isAlreadyInInventory = inventory.items.some(item => item.name === sprite.name);
+                // Check if the item is already in the inventory using the unique identifier
+                const itemIdentifier = createItemIdentifier(sprite.scenarioData);
+                console.log(`Checking if item ${itemIdentifier} is already in inventory`);
+                
+                const isAlreadyInInventory = inventory.items.some(item => 
+                    createItemIdentifier(item.scenarioData) === itemIdentifier
+                );
+                
                 if (isAlreadyInInventory) {
-                    console.log(`Item ${sprite.name} is already in inventory, not adding again`);
+                    console.log(`Item ${itemIdentifier} is already in inventory, not adding again`);
                     return false;
                 }
                 
