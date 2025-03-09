@@ -2675,8 +2675,12 @@
                 const distanceSq = dx * dx + dy * dy;
                 
                 if (distanceSq > INTERACTION_RANGE_SQ) {
-                    // Show notification instead of alert
-                    //gameAlert("Too far away to interact with this object.", 'warning', '', 2000);
+                    // Player is too far away to interact
+                    debugLog('INTERACTION_OUT_OF_RANGE', { 
+                        objectName: sprite.name, 
+                        distance: Math.sqrt(distanceSq),
+                        maxRange: Math.sqrt(INTERACTION_RANGE_SQ)
+                    }, 2);
                     return;
                 }
             }
@@ -2883,7 +2887,7 @@
                     }
                     
                     // Handle other inventory items as before
-                    handleItemInteraction(this, true);
+                    handleObjectInteraction(this);
                 });
                 
                 inventorySprite.on('pointerover', function() {
