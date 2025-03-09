@@ -48,6 +48,13 @@
                     "canScanBluetooth": true
                 },
                 {
+                    "type": "workstation",
+                    "name": "Crypto Analysis Station",
+                    "takeable": true,
+                    "inInventory": true,
+                    "observations": "A powerful workstation for cryptographic analysis"
+                },
+                {
                     "type": "bluetooth_spoofer",
                     "name": "Bluetooth Spoofer",
                     "takeable": true,
