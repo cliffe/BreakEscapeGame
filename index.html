@@ -1109,11 +1109,19 @@
         // Add a note to the notes panel
         function addNote(title, text, important = false) {
             // Check if a note with the same title and text already exists
-            const noteExists = gameNotes.some(note => note.title === title && note.text === text);
+            const existingNote = gameNotes.find(note => note.title === title && note.text === text);
             
-            // If the note already exists, don't add it again
-            if (noteExists) {
-                debugLog(`Note "${title}" already exists, not adding duplicate`, 2);
+            // If the note already exists, don't add it again but mark it as read
+            if (existingNote) {
+                debugLog(`Note "${title}" already exists, not adding duplicate`, existingNote, 2);
+                
+                // Mark as read if it wasn't already
+                if (!existingNote.read) {
+                    existingNote.read = true;
+                    updateNotesPanel();
+                    updateNotesCount();
+                }
+                
                 return null;
             }
             
@@ -1535,8 +1543,8 @@
             this.load.image('fingerprint_kit', 'assets/objects/fingerprint_kit.png');
             this.load.image('lockpick', 'assets/objects/lockpick.png');
 
-            //this.load.json('gameScenarioJSON', 'assets/scenarios/biometric_breach.json');
-            this.load.json('gameScenarioJSON', 'assets/scenarios/ceo_exfil.json');
+            this.load.json('gameScenarioJSON', 'assets/scenarios/biometric_breach.json');
+            //this.load.json('gameScenarioJSON', 'assets/scenarios/ceo_exfil.json');
             gameScenario = this.cache.json.get('gameScenarioJSON');
         }
 
@@ -2766,6 +2774,18 @@
                                 }
                             }, 1000);
                         }
+                    } else {
+                        // If the note was a duplicate and it's a note in the room (not inventory), 
+                        // still remove it from the room even though we didn't add it to notes again
+                        if (!isInventoryItem && data.type === 'notes' && currentRoom && 
+                            rooms[currentRoom] && rooms[currentRoom].objects && 
+                            rooms[currentRoom].objects[sprite.name]) {
+                            
+                            const roomObj = rooms[currentRoom].objects[sprite.name];
+                            roomObj.setVisible(false);
+                            roomObj.active = false;
+                            debugLog(`Note "${data.name}" was a duplicate, but still removed from room`, 2);
+                        }
                     }
                 }
             }
@@ -2812,6 +2832,9 @@
                         const roomObj = rooms[currentRoom].objects[sprite.name];
                         roomObj.setVisible(false);
                         roomObj.active = false;
+                        
+                        // Also set the internal property to indicate it's been collected
+                        sprite.collected = true;
                         
                         // Show notification about adding to notes instead of inventory
                         gameAlert(`Information recorded in your notes.`, 'success', 'Note Recorded', 3000);
@@ -4654,7 +4677,7 @@
                 .sort(() => Math.random() - 0.5);
             
             const gameState = {
-                tensionLevel: 1, // Start with light tension instead of none
+                tensionLevel: 1, // Start with light tension (1)
                 pinStates: Array(numPins).fill(0), // 0 = down, 1 = moving, 2 = set
                 pinPressTime: Array(numPins).fill(0), // Track how long each pin is pressed
                 currentBindingIndex: 0,
@@ -4679,7 +4702,7 @@
             tensionWrench.style.cssText = `
                 width: 100px;
                 height: 30px;
-                background: ${gameState.tensionLevel === 1 ? '#666' : gameState.tensionLevel === 2 ? '#888' : '#aaa'};
+                background: #666;
                 border: 2px solid #888;
                 border-radius: 5px;
                 cursor: pointer;
@@ -4687,8 +4710,9 @@
                 text-align: center;
                 line-height: 30px;
                 color: white;
+                transform: rotate(2deg);
             `;
-            tensionWrench.textContent = 'Tension: OFF';
+            tensionWrench.textContent = 'Tension: LIGHT';
 
             // Function to reset pins
             function resetPins(showVisual = true) {

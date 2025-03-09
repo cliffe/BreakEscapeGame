@@ -1,11 +1,12 @@
 {
-    "scenario_brief": "You are a security specialist tasked with investigating a high-security research facility after reports of unauthorized access. Your mission is to use biometric tools to identify the intruder and secure sensitive research data before it's stolen.",
+    "scenario_brief": "You are a security specialist tasked with investigating a high-security research facility after reports of unauthorized access. Your mission is to use biometric tools to identify the intruder, secure sensitive research data, and recover the stolen prototype before it leaves the facility.",
+    "endGoal": "Recover the stolen Project Sentinel prototype from the intruder's hidden exit route and secure all compromised data.",
     "startRoom": "reception",
     "rooms": {
         "reception": {
             "type": "room_reception",
             "connections": {
-                "north": "lab1"
+                "north": "office1"
             },
             "objects": [
                 {
@@ -13,7 +14,7 @@
                     "name": "Reception Phone",
                     "takeable": false,
                     "readable": true,
-                    "text": "Voicemail: 'Security alert: Unauthorized access detected in the biometrics lab. All personnel must verify identity at security checkpoints. Server room PIN changed to 5923. - Security Team'",
+                    "text": "Voicemail: 'Security alert: Unauthorized access detected in the biometrics lab. All personnel must verify identity at security checkpoints. Server room PIN changed to 5923. Security lockdown initiated. - Security Team'",
                     "observations": "The reception phone's message light is blinking with an urgent message"
                 },
                 {
@@ -21,7 +22,7 @@
                     "name": "Security Log",
                     "takeable": true,
                     "readable": true,
-                    "text": "Unusual access patterns detected:\n- Lab 1: 23:45 PM\n- Biometrics Lab: 01:30 AM\n- Server Room: 02:15 AM",
+                    "text": "Unusual access patterns detected:\n- Lab 1: 23:45 PM\n- Biometrics Lab: 01:30 AM\n- Server Room: 02:15 AM\n- Loading Dock: 03:05 AM\n- Director's Office: 03:22 AM",
                     "observations": "A concerning security log from last night"
                 },
                 {
@@ -46,13 +47,28 @@
                     "takeable": true,
                     "inInventory": true,
                     "observations": "A tool for picking locks"
+                },
+                {
+                    "type": "workstation",
+                    "name": "Crypto Analysis Station",
+                    "takeable": true,
+                    "inInventory": true,
+                    "observations": "A powerful workstation for cryptographic analysis"
+                },
+                {
+                    "type": "notes",
+                    "name": "Facility Map",
+                    "takeable": true,
+                    "readable": true,
+                    "text": "Facility Layout:\n- Reception (Main Entrance)\n- Main Office (North of Reception)\n- Administrative Office (North of Main Office)\n- Research Wing (North of Main Office)\n- Director's Office (North of Administrative Office)\n- Server Room (North of Research Wing)\n- Storage Closet (North of Director's Office)",
+                    "observations": "A map of the facility showing all major areas"
                 }
             ]
         },
-        "lab1": {
+        "office1": {
             "type": "room_office",
             "connections": {
-                "north": ["biolab", "server"],
+                "north": ["office2", "office3"],
                 "south": "reception"
             },
             "objects": [
@@ -70,7 +86,7 @@
                     "name": "Research Notes",
                     "takeable": true,
                     "readable": true,
-                    "text": "Project Sentinel: Biometric security breakthrough. Final test results stored in secure server. Access requires Level 3 clearance or backup key.",
+                    "text": "Project Sentinel: Biometric security breakthrough. Final test results stored in secure server. Access requires Level 3 clearance or backup key. The prototype scanner is stored in the Director's office.",
                     "observations": "Important research notes about a biometric security project"
                 },
                 {
@@ -85,24 +101,37 @@
                     "type": "key",
                     "name": "Biolab Key",
                     "takeable": true,
-                    "key_id": "biolab_key",
+                    "key_id": "ceo_office_key",
                     "observations": "A backup key for the biometrics lab, kept for emergencies"
+                },
+                {
+                    "type": "photo",
+                    "name": "Team Photo",
+                    "takeable": true,
+                    "readable": true,
+                    "text": "Project Sentinel Team:\nDr. Eleanor Chen (Director)\nDr. Marcus Patel (Lead Researcher)\nDr. Wei Zhang (Biometrics Specialist)\nAlex Morgan (Security Consultant)",
+                    "observations": "A framed photo of the Project Sentinel research team"
+                },
+                {
+                    "type": "notes",
+                    "name": "Security Guard Schedule",
+                    "takeable": true,
+                    "readable": true,
+                    "text": "Night Shift (00:00-08:00):\n- John Reynolds: Front Entrance\n- Mark Stevens: Lab Wing (ON LEAVE)\n- Sarah Chen: Server Room\n\nNOTE: Due to staffing shortage, server room checks reduced to hourly instead of every 30 minutes.",
+                    "observations": "The security guard rotation schedule for last night"
                 }
             ]
         },
-        "biolab": {
+        "office2": {
             "type": "room_office",
             "connections": {
-                "south": "lab1"
+                "north": "ceo",
+                "south": "office1"
             },
-            "locked": true,
-            "lockType": "key",
-            "requires": "biolab_key",
-            "difficulty": "medium",
             "objects": [
                 {
                     "type": "pc",
-                    "name": "Biometrics Research Station",
+                    "name": "Biometrics Workstation",
                     "takeable": false,
                     "hasFingerprint": true,
                     "fingerprintOwner": "intruder",
@@ -118,37 +147,190 @@
                     "observations": "A log showing suspicious access to the biometrics lab"
                 },
                 {
+                    "type": "notes",
+                    "name": "Fingerprint Comparison Report",
+                    "takeable": true,
+                    "readable": true,
+                    "text": "Fingerprint Analysis:\nRecent unauthorized access shows fingerprints matching consultant Alex Morgan (74% confidence).\n\nNOTE: Further analysis needed for confirmation. Check server room terminal for complete database.",
+                    "observations": "A report analyzing fingerprints found on breached equipment"
+                }
+            ]
+        },
+        "office3": {
+            "type": "room_office",
+            "connections": {
+                "north": "server1",
+                "south": "office1"
+            },
+            "objects": [
+                {
                     "type": "workstation",
                     "name": "Fingerprint Analysis Station",
                     "takeable": false,
                     "observations": "A specialized workstation for analyzing fingerprint samples"
                 },
                 {
+                    "type": "notes",
+                    "name": "Biometric Override Codes",
+                    "takeable": true,
+                    "readable": true,
+                    "text": "Emergency Override Procedure:\n1. Director's Office Biometric Scanner: Code 72958\n2. Loading Dock Security Gate: Code 36714\n\nWARNING: Use only in emergency situations. All uses are logged and reviewed.",
+                    "observations": "A highly sensitive document with emergency override codes"
+                },
+                {
                     "type": "key",
                     "name": "Server Room Key",
                     "takeable": true,
-                    "key_id": "server_key",
+                    "key_id": "briefcase_key",
                     "observations": "A key to the server room, carelessly left behind by someone"
+                },
+                {
+                    "type": "notes",
+                    "name": "Maintenance Log",
+                    "takeable": true,
+                    "readable": true,
+                    "text": "03/07 - HVAC repairs completed\n03/08 - Replaced server room cooling unit\n03/09 - Fixed office lighting circuits\n\nNOTE: Need to repair loading dock camera - currently offline due to power fluctuations.",
+                    "observations": "A maintenance log for the facility"
                 }
             ]
         },
-        "server": {
-            "type": "room_servers",
+        "ceo": {
+            "type": "room_ceo",
             "connections": {
-                "south": "lab1"
+                "north": "closet",
+                "south": "office2"
             },
             "locked": true,
             "lockType": "key",
-            "requires": "server_key",
+            "requires": "ceo_office_key",
             "difficulty": "easy",
+            "objects": [
+                {
+                    "type": "pc",
+                    "name": "Director's Computer",
+                    "takeable": false,
+                    "hasFingerprint": true,
+                    "fingerprintOwner": "director",
+                    "fingerprintQuality": 0.95,
+                    "observations": "The director's high-security computer. Multiple fingerprints visible on the keyboard."
+                },
+                {
+                    "type": "phone",
+                    "name": "Director's Phone",
+                    "takeable": false,
+                    "readable": true,
+                    "text": "Last call: Incoming from Security Office at 02:37 AM. Call log shows Security reporting unauthorized access to server room.",
+                    "observations": "The director's phone with call history displayed"
+                },
+                {
+                    "type": "cabinet",
+                    "name": "Secure Cabinet",
+                    "takeable": false,
+                    "locked": true,
+                    "lockType": "key",
+                    "requires": "safe_key",
+                    "difficulty": "medium",
+                    "observations": "A high-security cabinet where the prototype would normally be stored",
+                    "contents": [
+                        {
+                            "type": "notes",
+                            "name": "Empty Prototype Case",
+                            "takeable": true,
+                            "readable": true,
+                            "text": "PROJECT SENTINEL PROTOTYPE\nProperty of Biometric Research Division\nAUTHORIZED ACCESS ONLY\n\nCase opened at 03:26 AM - SECURITY ALERT TRIGGERED",
+                            "observations": "An empty case that previously held the prototype device",
+                            "important": true
+                        },
+                        {
+                            "type": "notes",
+                            "name": "Project Investors",
+                            "takeable": true,
+                            "readable": true,
+                            "text": "Project Sentinel Investors:\n- US Department of Defense: $15M\n- Northcrest Security Solutions: $8M\n- Rivera Technologies: $5M\n\nNOTE: Alex Morgan previously worked for Rivera Technologies for 3 years before becoming our consultant. Passed all background checks.",
+                            "observations": "A confidential list of project investors and funding sources"
+                        }
+                    ]
+                },
+                {
+                    "type": "notes",
+                    "name": "Director's Calendar",
+                    "takeable": true,
+                    "readable": true,
+                    "text": "Today:\n9:00 AM - Staff Briefing\n11:00 AM - DOD Representative Visit\n2:00 PM - Demo of Project Sentinel Prototype\n\nNOTE: Ensure prototype is prepared for demonstration. Security consultant Alex Morgan to assist with setup.",
+                    "observations": "The director's schedule for today"
+                }
+            ]
+        },
+        "closet": {
+            "type": "room_closet",
+            "connections": {
+                "south": "ceo"
+            },
+            "locked": true,
+            "lockType": "pin",
+            "requires": "72958",
+            "objects": [
+                {
+                    "type": "safe",
+                    "name": "Hidden Safe",
+                    "takeable": false,
+                    "locked": true,
+                    "lockType": "pin",
+                    "requires": "8741",
+                    "difficulty": "hard",
+                    "observations": "A well-hidden wall safe behind a painting",
+                    "contents": [
+                        {
+                            "type": "notes",
+                            "name": "Escape Plan",
+                            "takeable": true,
+                            "readable": true,
+                            "text": "4:00 AM - Meet contact at loading dock\n4:15 AM - Transfer prototype and data\n4:30 AM - Leave separately\n\nBackup plan: If compromised, use maintenance tunnel fire exit. Car parked at south lot.",
+                            "observations": "A detailed escape plan with timing information",
+                            "important": true
+                        },
+                        {
+                            "type": "key",
+                            "name": "Safe Key",
+                            "takeable": true,
+                            "key_id": "safe_key",
+                            "observations": "A small key with 'Secure Cabinet' written on it"
+                        }
+                    ]
+                },
+                {
+                    "type": "notes",
+                    "name": "Scribbled Note",
+                    "takeable": true,
+                    "readable": true,
+                    "text": "A = Meet at dock, 4AM\nN = Bring everything\nM = Getaway car ready\n\nLH will pay other half when delivered.",
+                    "observations": "A hastily scribbled note, partially crumpled"
+                },
+                {
+                    "type": "fingerprint_kit",
+                    "name": "Advanced Fingerprint Kit",
+                    "takeable": true,
+                    "observations": "A more advanced fingerprint collection kit with higher resolution scanning"
+                }
+            ]
+        },
+        "server1": {
+            "type": "room_servers",
+            "connections": {
+                "south": "office3"
+            },
+            "locked": true,
+            "lockType": "key",
+            "requires": "briefcase_key",
+            "difficulty": "medium",
             "objects": [
                 {
                     "type": "pc",
                     "name": "Server Terminal",
                     "takeable": false,
                     "hasFingerprint": true,
-                    "fingerprintOwner": "admin",
-                    "fingerprintQuality": 0.95,
+                    "fingerprintOwner": "intruder",
+                    "fingerprintQuality": 0.98,
                     "observations": "The main server terminal controlling access to research data. There are clear fingerprints on the screen."
                 },
                 {
@@ -157,7 +339,7 @@
                     "takeable": false,
                     "locked": true,
                     "lockType": "pin",
-                    "requires": "8741",
+                    "requires": "5923",
                     "difficulty": "medium",
                     "observations": "A secure safe containing the sensitive research data",
                     "contents": [
@@ -167,14 +349,16 @@
                             "takeable": true,
                             "readable": true,
                             "text": "Complete research data for Project Sentinel biometric security system. Evidence shows unauthorized copy was made at 02:17 AM by someone using spoofed admin credentials.",
-                            "observations": "The complete research data for the biometric security project"
+                            "observations": "The complete research data for the biometric security project",
+                            "important": true
                         },
                         {
-                            "type": "key",
-                            "name": "Case Key",
+                            "type": "notes",
+                            "name": "Security Camera Log",
                             "takeable": true,
-                            "key_id": "case_key",
-                            "observations": "A small key with a strange logo etched on it"
+                            "readable": true,
+                            "text": "Camera footage deleted for the following time periods:\n- Loading Dock: 03:00 AM - 03:30 AM\n- Maintenance Tunnel: 03:10 AM - 03:25 AM\n- Director's Office: 03:20 AM - 03:40 AM\n\nSystem shows credentials used: Alex Morgan, Security Consultant",
+                            "observations": "A report of deleted security camera footage"
                         }
                     ]
                 },
@@ -183,18 +367,29 @@
                     "name": "Suspicious Case",
                     "takeable": false,
                     "locked": true,
-                    "lockType": "key",
-                    "requires": "case_key",
+                    "lockType": "pin",
+                    "requires": "36714",
                     "difficulty": "hard",
                     "observations": "A suspicious case hidden behind server racks",
                     "contents": [
                         {
                             "type": "notes",
-                            "name": "Stolen Data",
+                            "name": "Project Sentinel Prototype",
                             "takeable": true,
                             "readable": true,
-                            "text": "Copy of Project Sentinel data and instructions for delivery to competitor. Payment confirmation included.",
-                            "observations": "Evidence of corporate espionage and data theft"
+                            "text": "PROJECT SENTINEL BIOMETRIC SCANNER PROTOTYPE\nSERIAL: PS-001-X\nCLASSIFICATION: TOP SECRET\n\nWARNING: Authorized handling only. Technology contains classified components.",
+                            "observations": "The stolen prototype device, ready to be smuggled out",
+                            "important": true,
+                            "isEndGoal": true
+                        },
+                        {
+                            "type": "notes",
+                            "name": "Buyer Details",
+                            "takeable": true,
+                            "readable": true,
+                            "text": "Buyer: Lazarus Hacking Group\nPayment: $2.5M total, $500K advance paid\nDelivery instructions: Loading dock 4:00 AM, March 10\nContact code name: Nighthawk\n\nDeliverable: Project Sentinel prototype + all research data",
+                            "observations": "Details of the buyer and the transaction",
+                            "important": true
                         }
                     ]
                 }
