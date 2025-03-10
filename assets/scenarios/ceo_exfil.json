@@ -94,12 +94,6 @@
                     "name": "Fingerprint Kit",
                     "takeable": true,
                     "observations": "A kit used for collecting fingerprints from surfaces"
-                },
-                {
-                    "type": "spoofing_kit",
-                    "name": "Fingerprint Spoofing Kit",
-                    "takeable": true,
-                    "observations": "A specialized kit containing silicone, gelatin, and other materials for creating artificial fingerprints"
                 }
             ]
         },
