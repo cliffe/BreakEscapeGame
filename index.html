@@ -4236,69 +4236,338 @@
             const gameContainer = document.createElement('div');
             gameContainer.style.cssText = `
                 width: 100%;
-                height: calc(100% - 60px);
+                height: calc(100% - 100px);
                 display: grid;
                 grid-template-columns: repeat(20, minmax(0, 1fr));
                 grid-template-rows: repeat(20, minmax(0, 1fr));
-                gap: 1px;
-                background: #222;
+                gap: 2px;
+                background: #1a1a1a;
                 padding: 10px;
-                margin-top: 40px;
+                margin-top: 70px;
+                border-radius: 5px;
+                box-shadow: 0 0 15px rgba(0, 0, 0, 0.5) inset;
+                position: relative;
+                overflow: hidden;
             `;
             
-            // Add instructions
-            const instructions = document.createElement('div');
-            instructions.innerHTML = `
-                <h3 style="margin: 0; color: #fff; text-align: center;">Fingerprint Dusting</h3>
-                <p style="margin: 5px 0; color: #ccc; text-align: center; font-size: 14px;">
-                    Drag to dust the surface and reveal fingerprints.<br>
-                    🔍 Gray = Light dusting<br>
-                    🟢 Green = Fingerprint found!<br>
-                    ⚠️ White = Over-dusted (avoid this)<br>
-                    Find all fingerprints with minimal over-dusting.
-                </p>
-            `;
-            instructions.style.cssText = `
+            // Add background texture/pattern for a more realistic surface
+            const gridBackground = document.createElement('div');
+            gridBackground.style.cssText = `
                 position: absolute;
-                top: 10px;
-                left: 50%;
-                transform: translateX(-50%);
-                width: 90%;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                opacity: 0.3;
+                pointer-events: none;
+                z-index: 0;
+            `;
+            
+            // Create the grid pattern using encoded SVG
+            const svgGrid = `data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='100' height='100' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' fill='%23111'/%3E%3Cpath d='M0 50h100M50 0v100' stroke='%23222' stroke-width='0.5'/%3E%3Cpath d='M25 0v100M75 0v100M0 25h100M0 75h100' stroke='%23191919' stroke-width='0.3'/%3E%3C/svg%3E`;
+            
+            gridBackground.style.backgroundImage = `url('${svgGrid}')`;
+            gameContainer.appendChild(gridBackground);
+            
+            // Add instructions and header with difficulty selection
+            const header = document.createElement('div');
+            header.style.cssText = `
+                position: absolute;
+                top: 0;
+                left: 0;
+                width: 100%;
+                background: rgba(30, 30, 30, 0.9);
+                padding: 10px;
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+            `;
+            
+            header.innerHTML = `
+                <h3 style="margin: 0 0 8px 0; color: #fff; text-align: center;">Fingerprint Dusting</h3>
+                <div style="display: flex; gap: 10px; margin-bottom: 5px;">
+                    <button id="easy-button" class="difficulty-button" style="background: #2ecc71; color: white; border: none; border-radius: 3px; padding: 5px 10px; cursor: pointer;">Easy</button>
+                    <button id="medium-button" class="difficulty-button active" style="background: #f39c12; color: white; border: none; border-radius: 3px; padding: 5px 10px; cursor: pointer;">Medium</button>
+                    <button id="hard-button" class="difficulty-button" style="background: #e74c3c; color: white; border: none; border-radius: 3px; padding: 5px 10px; cursor: pointer;">Hard</button>
+                </div>
+                <p style="margin: 5px 0; color: #ccc; text-align: center; font-size: 12px;">
+                    Drag to dust the surface and reveal fingerprints. Avoid over-dusting!
+                </p>
             `;
             
             // Add progress display
             const progressText = document.createElement('div');
             progressText.style.cssText = `
                 position: absolute;
-                bottom: 10px;
+                bottom: 15px;
                 left: 50%;
                 transform: translateX(-50%);
                 color: white;
                 text-align: center;
                 font-size: 16px;
+                background: rgba(0, 0, 0, 0.6);
+                padding: 5px 15px;
+                border-radius: 15px;
+                z-index: 10;
             `;
+            
+            // Add tool selection
+            const toolsContainer = document.createElement('div');
+            toolsContainer.style.cssText = `
+                position: absolute;
+                bottom: 15px;
+                left: 15px;
+                display: flex;
+                gap: 10px;
+                z-index: 10;
+            `;
+            
+            const tools = [
+                { name: 'Fine Brush', size: 1, color: '#3498db' },
+                { name: 'Medium Brush', size: 2, color: '#2ecc71' },
+                { name: 'Wide Brush', size: 3, color: '#e67e22' }
+            ];
+            
+            let currentTool = tools[1]; // Start with medium brush
+            
+            tools.forEach(tool => {
+                const toolButton = document.createElement('button');
+                toolButton.className = tool.name === currentTool.name ? 'tool-button active' : 'tool-button';
+                toolButton.textContent = tool.name;
+                toolButton.style.cssText = `
+                    background: ${tool.color};
+                    color: white;
+                    border: none;
+                    border-radius: 3px;
+                    padding: 5px 10px;
+                    cursor: pointer;
+                    opacity: ${tool.name === currentTool.name ? '1' : '0.7'};
+                `;
+                
+                toolButton.addEventListener('click', () => {
+                    document.querySelectorAll('.tool-button').forEach(btn => {
+                        btn.classList.remove('active');
+                        btn.style.opacity = '0.7';
+                    });
+                    toolButton.classList.add('active');
+                    toolButton.style.opacity = '1';
+                    currentTool = tool;
+                });
+                
+                toolsContainer.appendChild(toolButton);
+            });
             
             // Generate fingerprint pattern
             const gridSize = 20;
-            const fingerprintCells = new Set();
+            let fingerprintCells = new Set();
             const centerX = Math.floor(gridSize / 2);
             const centerY = Math.floor(gridSize / 2);
-
-            // Create a larger pattern (about 50 cells) spread around the center
-            for (let i = 0; i < 50; i++) {
-                const x = centerX + Math.floor(Math.random() * 10 - 5);  // Increased spread
-                const y = centerY + Math.floor(Math.random() * 10 - 5);  // Increased spread
-                if (x >= 0 && x < gridSize && y >= 0 && y < gridSize) {
-                    fingerprintCells.add(`${x},${y}`);
+            
+            // Game state variables
+            let difficultySettings = {
+                easy: {
+                    requiredCoverage: 0.3, // 30% of prints
+                    maxOverDusted: 35,
+                    fingerprints: 40,
+                    pattern: 'simple'
+                },
+                medium: {
+                    requiredCoverage: 0.4, // 40% of prints
+                    maxOverDusted: 25,
+                    fingerprints: 50,
+                    pattern: 'medium'
+                },
+                hard: {
+                    requiredCoverage: 0.5, // 50% of prints
+                    maxOverDusted: 15,
+                    fingerprints: 60,
+                    pattern: 'complex'
                 }
+            };
+            
+            let currentDifficulty = 'medium';
+            
+            // Generate fingerprint pattern based on difficulty
+            function generateFingerprint(difficulty) {
+                const pattern = difficultySettings[difficulty].pattern;
+                const numPrints = difficultySettings[difficulty].fingerprints;
+                const newFingerprintCells = new Set();
+                
+                if (pattern === 'simple') {
+                    // Simple oval-like pattern
+                    for (let i = 0; i < numPrints; i++) {
+                        const angle = (i / numPrints) * Math.PI * 2;
+                        const distance = 5 + Math.random() * 3;
+                        const x = Math.floor(centerX + Math.cos(angle) * distance);
+                        const y = Math.floor(centerY + Math.sin(angle) * distance);
+                        
+                        if (x >= 0 && x < gridSize && y >= 0 && y < gridSize) {
+                            newFingerprintCells.add(`${x},${y}`);
+                            
+                            // Add a few adjacent cells to make it less sparse
+                            for (let j = 0; j < 2; j++) {
+                                const nx = x + Math.floor(Math.random() * 3) - 1;
+                                const ny = y + Math.floor(Math.random() * 3) - 1;
+                                if (nx >= 0 && nx < gridSize && ny >= 0 && ny < gridSize) {
+                                    newFingerprintCells.add(`${nx},${ny}`);
+                                }
+                            }
+                        }
+                    }
+                } else if (pattern === 'medium') {
+                    // Medium complexity - spiral pattern with variations
+                    for (let i = 0; i < numPrints; i++) {
+                        const t = i / numPrints * 5;
+                        const distance = 2 + t * 0.8;
+                        const noise = Math.random() * 2 - 1;
+                        const x = Math.floor(centerX + Math.cos(t * Math.PI * 2) * (distance + noise));
+                        const y = Math.floor(centerY + Math.sin(t * Math.PI * 2) * (distance + noise));
+                        
+                        if (x >= 0 && x < gridSize && y >= 0 && y < gridSize) {
+                            newFingerprintCells.add(`${x},${y}`);
+                        }
+                    }
+                    
+                    // Add whorls and arches
+                    for (let i = 0; i < 20; i++) {
+                        const angle = (i / 20) * Math.PI * 2;
+                        const distance = 7;
+                        const x = Math.floor(centerX + Math.cos(angle) * distance);
+                        const y = Math.floor(centerY + Math.sin(angle) * distance);
+                        
+                        if (x >= 0 && x < gridSize && y >= 0 && y < gridSize) {
+                            newFingerprintCells.add(`${x},${y}`);
+                            
+                            // Add ridge-like pattern
+                            for (let j = 1; j <= 3; j++) {
+                                const ridgeX = Math.floor(centerX + Math.cos(angle) * (distance - j));
+                                const ridgeY = Math.floor(centerY + Math.sin(angle) * (distance - j));
+                                if (ridgeX >= 0 && ridgeX < gridSize && ridgeY >= 0 && ridgeY < gridSize) {
+                                    newFingerprintCells.add(`${ridgeX},${ridgeY}`);
+                                }
+                            }
+                        }
+                    }
+                } else {
+                    // Complex pattern - detailed whorls and ridge patterns
+                    for (let i = 0; i < numPrints; i++) {
+                        // Main loop - create a complex whorl pattern
+                        const t = i / numPrints * 8;
+                        const distance = 2 + t * 0.6;
+                        const noise = Math.sin(t * 5) * 1.5;
+                        const x = Math.floor(centerX + Math.cos(t * Math.PI * 2) * (distance + noise));
+                        const y = Math.floor(centerY + Math.sin(t * Math.PI * 2) * (distance + noise));
+                        
+                        if (x >= 0 && x < gridSize && y >= 0 && y < gridSize) {
+                            newFingerprintCells.add(`${x},${y}`);
+                        }
+                        
+                        // Add bifurcations and ridge endings
+                        if (i % 5 === 0) {
+                            const bifAngle = t * Math.PI * 2 + Math.PI/4;
+                            const bx = Math.floor(x + Math.cos(bifAngle) * 1);
+                            const by = Math.floor(y + Math.sin(bifAngle) * 1);
+                            if (bx >= 0 && bx < gridSize && by >= 0 && by < gridSize) {
+                                newFingerprintCells.add(`${bx},${by}`);
+                            }
+                        }
+                    }
+                    
+                    // Add delta patterns
+                    for (let d = 0; d < 3; d++) {
+                        const deltaAngle = (d / 3) * Math.PI * 2;
+                        const deltaX = Math.floor(centerX + Math.cos(deltaAngle) * 8);
+                        const deltaY = Math.floor(centerY + Math.sin(deltaAngle) * 8);
+                        
+                        for (let r = 0; r < 5; r++) {
+                            for (let a = 0; a < 3; a++) {
+                                const rayAngle = deltaAngle + (a - 1) * Math.PI/4;
+                                const rx = Math.floor(deltaX + Math.cos(rayAngle) * r);
+                                const ry = Math.floor(deltaY + Math.sin(rayAngle) * r);
+                                if (rx >= 0 && rx < gridSize && ry >= 0 && ry < gridSize) {
+                                    newFingerprintCells.add(`${rx},${ry}`);
+                                }
+                            }
+                        }
+                    }
+                }
+                
+                // Ensure we have at least the minimum number of cells
+                while (newFingerprintCells.size < numPrints) {
+                    const x = centerX + Math.floor(Math.random() * 12 - 6);
+                    const y = centerY + Math.floor(Math.random() * 12 - 6);
+                    if (x >= 0 && x < gridSize && y >= 0 && y < gridSize) {
+                        newFingerprintCells.add(`${x},${y}`);
+                    }
+                }
+                
+                return newFingerprintCells;
             }
-
-            // If we didn't get enough cells, add more until we reach target
-            while (fingerprintCells.size < 50) {
-                const x = centerX + Math.floor(Math.random() * 12 - 6);
-                const y = centerY + Math.floor(Math.random() * 12 - 6);
-                if (x >= 0 && x < gridSize && y >= 0 && y < gridSize) {
-                    fingerprintCells.add(`${x},${y}`);
+            
+            // Initialize with medium difficulty
+            fingerprintCells = generateFingerprint(currentDifficulty);
+            
+            // Create particle container for dust effects
+            const particleContainer = document.createElement('div');
+            particleContainer.style.cssText = `
+                position: absolute;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                pointer-events: none;
+                z-index: 5;
+                overflow: hidden;
+            `;
+            
+            // Create function to add dust particles
+            function createDustParticles(x, y, intensity, color) {
+                const numParticles = Math.floor(5 + intensity * 5); // 5-10 particles based on intensity
+                
+                for (let i = 0; i < numParticles; i++) {
+                    const particle = document.createElement('div');
+                    const size = Math.random() * 3 + 1; // 1-4px
+                    const angle = Math.random() * Math.PI * 2;
+                    const distance = Math.random() * 20 * intensity;
+                    const duration = Math.random() * 1000 + 500; // 500-1500ms
+                    
+                    particle.style.cssText = `
+                        position: absolute;
+                        width: ${size}px;
+                        height: ${size}px;
+                        background: ${color};
+                        border-radius: 50%;
+                        opacity: ${Math.random() * 0.3 + 0.3};
+                        top: ${y}px;
+                        left: ${x}px;
+                        transform: translate(-50%, -50%);
+                        pointer-events: none;
+                        z-index: 6;
+                    `;
+                    
+                    particleContainer.appendChild(particle);
+                    
+                    // Animate the particle
+                    const animation = particle.animate([
+                        { 
+                            transform: 'translate(-50%, -50%)',
+                            opacity: particle.style.opacity
+                        },
+                        {
+                            transform: `translate(
+                                calc(-50% + ${Math.cos(angle) * distance}px), 
+                                calc(-50% + ${Math.sin(angle) * distance}px)
+                            )`,
+                            opacity: 0
+                        }
+                    ], {
+                        duration: duration,
+                        easing: 'cubic-bezier(0.25, 1, 0.5, 1)'
+                    });
+                    
+                    animation.onfinish = () => {
+                        particle.remove();
+                    };
                 }
             }
             
@@ -4306,6 +4575,7 @@
             let revealedPrints = 0;
             let totalPrints = fingerprintCells.size;
             let overDusted = 0;
+            let requiredPrints = Math.ceil(totalPrints * difficultySettings[currentDifficulty].requiredCoverage);
             
             // Create grid cells
             for (let y = 0; y < gridSize; y++) {
@@ -4316,21 +4586,22 @@
                         height: 100%;
                         background: black;
                         position: relative;
+                        transition: background-color 0.1s;
                         cursor: pointer;
                     `;
                     cell.dataset.x = x;
                     cell.dataset.y = y;
                     cell.dataset.dustLevel = '0';
-                    cell.dataset.hasFingerprint = fingerprintCells.has(`${x},${y}`);
+                    cell.dataset.hasFingerprint = fingerprintCells.has(`${x},${y}`) ? 'true' : 'false';
                     
                     gameContainer.appendChild(cell);
                 }
             }
             
-            // Add dragging interaction at container level
+            // Add dragging interaction
             let isDragging = false;
             let lastDustTime = {};  // Track last dust time for each cell
-
+            
             gameContainer.addEventListener('mousedown', () => isDragging = true);
             gameContainer.addEventListener('mouseup', () => isDragging = false);
             gameContainer.addEventListener('mouseleave', () => isDragging = false);
@@ -4340,17 +4611,41 @@
                 // Get the cell element under the cursor
                 const cell = document.elementFromPoint(e.clientX, e.clientY);
                 if (cell && cell.dataset.dustLevel !== undefined) {
+                    // Get cell position for particles
+                    const cellRect = cell.getBoundingClientRect();
+                    
+                    // Calculate relative position within the gameContainer (not the viewport)
+                    const gameContainerRect = gameContainer.getBoundingClientRect();
+                    const particleContainerRect = particleContainer.getBoundingClientRect();
+                    
+                    // Calculate position relative to particle container
+                    const cellCenterX = (cellRect.left + cellRect.width / 2) - particleContainerRect.left;
+                    const cellCenterY = (cellRect.top + cellRect.height / 2) - particleContainerRect.top;
+                    
                     const cellId = `${cell.dataset.x},${cell.dataset.y}`;
                     const currentTime = Date.now();
                     const dustLevel = parseInt(cell.dataset.dustLevel);
                     
-                    // Only allow dusting every 100ms for each cell
-                    if (!lastDustTime[cellId] || currentTime - lastDustTime[cellId] > 100) {
+                    // Tool intensity affects dusting rate and particle effects
+                    const toolIntensity = currentTool.size / 3; // 0.33 to 1
+                    
+                    // Only allow dusting every 50-150ms for each cell (based on tool size)
+                    const cooldown = 150 - (toolIntensity * 100); // 50ms for wide brush, 150ms for fine
+                    
+                    if (!lastDustTime[cellId] || currentTime - lastDustTime[cellId] > cooldown) {
                         if (dustLevel < 3) {
-                            // Increment dust level with 33% chance after level 1
-                            if (dustLevel < 1 || Math.random() < 0.33) {
+                            // Increment dust level with a probability based on tool intensity
+                            const dustProbability = toolIntensity * 0.5 + 0.1; // 0.1-0.6 chance based on tool
+                            
+                            if (dustLevel < 1 || Math.random() < dustProbability) {
                                 cell.dataset.dustLevel = (dustLevel + 1).toString();
                                 updateCellColor(cell);
+                                
+                                // Create dust particles
+                                const hasFingerprint = cell.dataset.hasFingerprint === 'true';
+                                let particleColor = dustLevel === 1 ? '#666' : (hasFingerprint ? '#1aff1a' : '#aaa');
+                                createDustParticles(cellCenterX, cellCenterY, toolIntensity, particleColor);
+                                
                                 checkProgress();
                             }
                             lastDustTime[cellId] = currentTime;
@@ -4365,15 +4660,24 @@
                 
                 if (dustLevel === 0) {
                     cell.style.background = 'black';
+                    cell.style.boxShadow = 'none';
                 }
                 else if (dustLevel === 1) {
                     cell.style.background = '#444';
+                    cell.style.boxShadow = 'inset 0 0 3px rgba(255,255,255,0.2)';
                 }
                 else if (dustLevel === 2) {
-                    cell.style.background = hasFingerprint ? '#0f0' : '#888';
+                    if (hasFingerprint) {
+                        cell.style.background = '#0f0';
+                        cell.style.boxShadow = 'inset 0 0 5px rgba(0,255,0,0.5), 0 0 5px rgba(0,255,0,0.3)';
+                    } else {
+                        cell.style.background = '#888';
+                        cell.style.boxShadow = 'inset 0 0 4px rgba(255,255,255,0.3)';
+                    }
                 }
                 else {
                     cell.style.background = '#ccc';
+                    cell.style.boxShadow = 'inset 0 0 5px rgba(255,255,255,0.5)';
                 }
             }
             
@@ -4382,115 +4686,204 @@
                 overDusted = 0;
                 
                 gameContainer.childNodes.forEach(cell => {
-                    const dustLevel = parseInt(cell.dataset.dustLevel);
-                    const hasFingerprint = cell.dataset.hasFingerprint === 'true';
-                    
-                    if (hasFingerprint && dustLevel === 2) revealedPrints++;
-                    if (dustLevel === 3) overDusted++;
+                    if (cell.dataset) { // Check if it's a cell element
+                        const dustLevel = parseInt(cell.dataset.dustLevel || '0');
+                        const hasFingerprint = cell.dataset.hasFingerprint === 'true';
+                        
+                        if (hasFingerprint && dustLevel === 2) revealedPrints++;
+                        if (dustLevel === 3) overDusted++;
+                    }
                 });
                 
-                const requiredPrints = Math.ceil(totalPrints * 0.4);  // 40% requirement
+                // Update progress display
                 progressText.innerHTML = `
-                    <div style="color: #0f0;">Found: ${revealedPrints}/${requiredPrints} required prints</div>
-                    <div style="color: ${overDusted > 24 ? '#f00' : '#fff'}">
-                        Over-dusted: ${overDusted}/25 max
+                    <div style="margin-bottom: 5px;">
+                        <span style="color: #2ecc71;">Found: ${revealedPrints}/${requiredPrints} required prints</span>
+                        <span style="margin-left: 15px; color: ${overDusted > difficultySettings[currentDifficulty].maxOverDusted * 0.7 ? '#e74c3c' : '#fff'};">
+                            Over-dusted: ${overDusted}/${difficultySettings[currentDifficulty].maxOverDusted} max
+                        </span>
+                    </div>
+                    <div style="height: 6px; width: 100%; background: #333; border-radius: 3px; overflow: hidden;">
+                        <div style="height: 100%; width: ${(revealedPrints/requiredPrints)*100}%; background: #2ecc71; transition: width 0.3s;"></div>
                     </div>
                 `;
                 
                 // Check fail condition first
-                if (overDusted >= 25) {
-                    // Show failure message
-                    const failureMessage = document.createElement('div');
-                    failureMessage.style.cssText = `
-                        position: absolute;
-                        top: 50%;
-                        left: 50%;
-                        transform: translate(-50%, -50%);
-                        background: rgba(0, 0, 0, 0.9);
-                        padding: 20px;
-                        border-radius: 5px;
-                        color: #f00;
-                        font-size: 20px;
-                        text-align: center;
-                        z-index: 1001;
-                    `;
-                    failureMessage.textContent = "Too many over-dusted areas!";
-                    iframe.appendChild(failureMessage);
-                    
-                    // Disable further interaction
-                    isDragging = false;
-                    gameContainer.style.pointerEvents = 'none';
-                    
-                    setTimeout(() => {
-                        document.body.removeChild(iframe);
-                        scene.input.mouse.enabled = true;
-                    }, 1500);
+                if (overDusted >= difficultySettings[currentDifficulty].maxOverDusted) {
+                    showFailure("Too many over-dusted areas!");
                     return;
                 }
                 
-                // Check win condition (existing code)
-                if (revealedPrints >= requiredPrints && overDusted < 25) {
-                    // Show success message
-                    const successMessage = document.createElement('div');
-                    successMessage.style.cssText = `
-                        position: absolute;
-                        top: 50%;
-                        left: 50%;
-                        transform: translate(-50%, -50%);
-                        background: rgba(0, 0, 0, 0.9);
-                        padding: 20px;
-                        border-radius: 5px;
-                        color: #0f0;
-                        font-size: 20px;
-                        text-align: center;
-                        z-index: 1001;
-                    `;
-                    successMessage.textContent = "Fingerprint successfully collected!";
-                    iframe.appendChild(successMessage);
-                    
-                    // Disable further interaction
-                    isDragging = false;
-                    gameContainer.style.pointerEvents = 'none';
-                    
-                    setTimeout(() => {
-                        // Add fingerprint to gameState
-                        if (!gameState.biometricSamples) {
-                            gameState.biometricSamples = [];
-                        }
-                        
-                        const sample = {
-                            id: generateFingerprintData(item),
-                            type: 'fingerprint',
-                            owner: item.scenarioData.fingerprintOwner,
-                            quality: Math.random() * 0.3 + 0.7,  // Random quality between 0.7 and 1.0
-                            data: generateFingerprintData(item),
-                            timestamp: Date.now()
-                        };
-                        
-                        gameState.biometricSamples.push(sample);
-                        
-                        // Remove the minigame
-                        document.body.removeChild(iframe);
-                        scene.input.mouse.enabled = true;
-                        
-                        // Mark item as collected
-                        if (item.scenarioData) {
-                            item.scenarioData.hasFingerprint = false;
-                        }
-                        
-                        // Update the biometrics panel and count
-                        updateBiometricsPanel();
-                        updateBiometricsCount();
-                        
-                        // Show notification
-                        gameAlert(`Collected ${sample.owner}'s fingerprint sample`, 'success', 'Sample Acquired', 3000);
-                    }, 1500);
+                // Check win condition
+                if (revealedPrints >= requiredPrints) {
+                    showSuccess();
                 }
+            }
+            
+            function showSuccess() {
+                // Calculate quality based on dusting precision
+                const dustPenalty = overDusted / difficultySettings[currentDifficulty].maxOverDusted; // 0-1
+                const coverageBonus = revealedPrints / totalPrints; // 0-1
+                
+                // Higher quality for more coverage and less over-dusting
+                const quality = 0.7 + (coverageBonus * 0.25) - (dustPenalty * 0.15);
+                
+                // Show success message
+                const successMessage = document.createElement('div');
+                successMessage.style.cssText = `
+                    position: absolute;
+                    top: 50%;
+                    left: 50%;
+                    transform: translate(-50%, -50%);
+                    background: rgba(0, 0, 0, 0.9);
+                    padding: 20px;
+                    border-radius: 5px;
+                    color: #0f0;
+                    font-size: 20px;
+                    text-align: center;
+                    z-index: 1001;
+                    box-shadow: 0 0 20px rgba(0, 255, 0, 0.3);
+                `;
+                
+                const qualityPercentage = Math.round(quality * 100);
+                const qualityRating = qualityPercentage >= 95 ? 'Perfect' : 
+                                      qualityPercentage >= 85 ? 'Excellent' : 
+                                      qualityPercentage >= 75 ? 'Good' : 'Acceptable';
+                
+                successMessage.innerHTML = `
+                    <div style="font-weight: bold; font-size: 24px; margin-bottom: 10px;">Fingerprint successfully collected!</div>
+                    <div style="font-size: 18px; margin-bottom: 15px;">Quality: ${qualityRating} (${qualityPercentage}%)</div>
+                    <div style="font-size: 14px; color: #aaa;">
+                        Prints revealed: ${revealedPrints}/${totalPrints}<br>
+                        Over-dusted areas: ${overDusted}<br>
+                        Difficulty: ${currentDifficulty.charAt(0).toUpperCase() + currentDifficulty.slice(1)}
+                    </div>
+                `;
+                
+                iframe.appendChild(successMessage);
+                
+                // Disable further interaction
+                isDragging = false;
+                gameContainer.style.pointerEvents = 'none';
+                
+                setTimeout(() => {
+                    // Add fingerprint to gameState
+                    if (!gameState.biometricSamples) {
+                        gameState.biometricSamples = [];
+                    }
+                    
+                    const sample = {
+                        id: generateFingerprintData(item),
+                        type: 'fingerprint',
+                        owner: item.scenarioData.fingerprintOwner,
+                        quality: quality, // Quality between 0.7 and ~1.0
+                        data: generateFingerprintData(item),
+                        timestamp: Date.now()
+                    };
+                    
+                    gameState.biometricSamples.push(sample);
+                    
+                    // Remove the minigame
+                    document.body.removeChild(iframe);
+                    scene.input.mouse.enabled = true;
+                    
+                    // Mark item as collected
+                    if (item.scenarioData) {
+                        item.scenarioData.hasFingerprint = false;
+                    }
+                    
+                    // Update the biometrics panel and count
+                    updateBiometricsPanel();
+                    updateBiometricsCount();
+                    
+                    // Show notification
+                    gameAlert(`Collected ${sample.owner}'s fingerprint sample (${qualityRating} quality)`, 'success', 'Sample Acquired', 3000);
+                }, 2000);
+            }
+            
+            function showFailure(reason) {
+                // Show failure message
+                const failureMessage = document.createElement('div');
+                failureMessage.style.cssText = `
+                    position: absolute;
+                    top: 50%;
+                    left: 50%;
+                    transform: translate(-50%, -50%);
+                    background: rgba(0, 0, 0, 0.9);
+                    padding: 20px;
+                    border-radius: 5px;
+                    color: #f00;
+                    font-size: 20px;
+                    text-align: center;
+                    z-index: 1001;
+                    box-shadow: 0 0 20px rgba(255, 0, 0, 0.3);
+                `;
+                failureMessage.innerHTML = `
+                    <div style="font-weight: bold; margin-bottom: 10px;">${reason}</div>
+                    <div style="font-size: 16px; margin-top: 5px;">Try again with more careful dusting.</div>
+                `;
+                
+                iframe.appendChild(failureMessage);
+                
+                // Disable further interaction
+                isDragging = false;
+                gameContainer.style.pointerEvents = 'none';
+                
+                setTimeout(() => {
+                    document.body.removeChild(iframe);
+                    scene.input.mouse.enabled = true;
+                }, 2000);
+            }
+            
+            // Handle difficulty buttons
+            iframe.addEventListener('click', (e) => {
+                if (e.target.classList.contains('difficulty-button')) {
+                    // Get difficulty from button
+                    const newDifficulty = e.target.id.split('-')[0]; // easy, medium, or hard
+                    
+                    // Only change if different
+                    if (newDifficulty !== currentDifficulty) {
+                        currentDifficulty = newDifficulty;
+                        
+                        // Update active button
+                        document.querySelectorAll('.difficulty-button').forEach(btn => {
+                            btn.classList.remove('active');
+                            btn.style.opacity = '0.7';
+                        });
+                        e.target.classList.add('active');
+                        e.target.style.opacity = '1';
+                        
+                        // Reset the game with new difficulty
+                        resetGame();
+                    }
+                }
+            });
+            
+            function resetGame() {
+                // Reset game state
+                fingerprintCells = generateFingerprint(currentDifficulty);
+                totalPrints = fingerprintCells.size;
+                requiredPrints = Math.ceil(totalPrints * difficultySettings[currentDifficulty].requiredCoverage);
+                revealedPrints = 0;
+                overDusted = 0;
+                
+                // Reset cells
+                gameContainer.childNodes.forEach(node => {
+                    if (node.dataset && node.dataset.x !== undefined) {
+                        const x = parseInt(node.dataset.x);
+                        const y = parseInt(node.dataset.y);
+                        node.dataset.hasFingerprint = fingerprintCells.has(`${x},${y}`) ? 'true' : 'false';
+                        node.dataset.dustLevel = '0';
+                        updateCellColor(node);
+                    }
+                });
+                // Update progress
+                checkProgress();
             }
             
             // Add close button
             const closeButton = document.createElement('button');
-            closeButton.textContent = 'X';
+            closeButton.textContent = '✕';
             closeButton.style.cssText = `
                 position: absolute;
                 right: 10px;
@@ -4500,6 +4893,7 @@
                 color: white;
                 font-size: 20px;
                 cursor: pointer;
+                z-index: 10;
             `;
             closeButton.onclick = () => {
                 document.body.removeChild(iframe);
@@ -4508,10 +4902,15 @@
             
             // Assemble the interface
             iframe.appendChild(closeButton);
-            iframe.appendChild(instructions);
+            iframe.appendChild(header);
             iframe.appendChild(gameContainer);
+            iframe.appendChild(particleContainer);
             iframe.appendChild(progressText);
+            iframe.appendChild(toolsContainer);
             document.body.appendChild(iframe);
+            
+            // Start the game
+            checkProgress();
             
             // Disable game movement
             const scene = item.scene;
