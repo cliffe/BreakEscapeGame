@@ -4223,27 +4223,32 @@
                 top: 50%;
                 left: 50%;
                 transform: translate(-50%, -50%);
-                width: 60%;
-                height: 60%;
+                width: 75%;
+                height: 75%;
                 background: rgba(0, 0, 0, 0.9);
                 border: 1px solid #444;
                 z-index: 1000;
                 padding: 20px;
                 border-radius: 5px;
+                display: flex;
+                flex-direction: column;
+                overflow: hidden;
             `;
             
             // Create game container
             const gameContainer = document.createElement('div');
             gameContainer.style.cssText = `
-                width: 100%;
-                height: calc(100% - 100px);
+                width: 80%;
+                height: 80%;
+                max-width: 600px;
+                max-height: 600px;
                 display: grid;
-                grid-template-columns: repeat(20, minmax(0, 1fr));
-                grid-template-rows: repeat(20, minmax(0, 1fr));
-                gap: 2px;
+                grid-template-columns: repeat(30, 1fr);
+                grid-template-rows: repeat(30, 1fr);
+                gap: 1px;
                 background: #1a1a1a;
-                padding: 10px;
-                margin-top: 70px;
+                padding: 5px;
+                margin: 70px auto 20px auto;
                 border-radius: 5px;
                 box-shadow: 0 0 15px rgba(0, 0, 0, 0.5) inset;
                 position: relative;
@@ -4309,6 +4314,8 @@
                 padding: 5px 15px;
                 border-radius: 15px;
                 z-index: 10;
+                width: 80%;
+                max-width: 500px;
             `;
             
             // Add tool selection
@@ -4320,12 +4327,14 @@
                 display: flex;
                 gap: 10px;
                 z-index: 10;
+                flex-wrap: wrap;
+                max-width: 30%;
             `;
             
             const tools = [
-                { name: 'Fine Brush', size: 1, color: '#3498db', radius: 0 }, // Only affects current cell
-                { name: 'Medium Brush', size: 2, color: '#2ecc71', radius: 1 }, // Affects current cell and adjacent
-                { name: 'Wide Brush', size: 3, color: '#e67e22', radius: 2 }  // Affects current cell and 2 cells around
+                { name: 'Fine', size: 1, color: '#3498db', radius: 0 }, // Only affects current cell
+                { name: 'Medium', size: 2, color: '#2ecc71', radius: 1 }, // Affects current cell and adjacent
+                { name: 'Wide', size: 3, color: '#e67e22', radius: 2 }  // Affects current cell and 2 cells around
             ];
             
             let currentTool = tools[1]; // Start with medium brush
@@ -4358,7 +4367,7 @@
             });
             
             // Generate fingerprint pattern
-            const gridSize = 20;
+            const gridSize = 30; // Increased from 20 to 30
             let fingerprintCells = new Set();
             const centerX = Math.floor(gridSize / 2);
             const centerY = Math.floor(gridSize / 2);
@@ -4367,20 +4376,20 @@
             let difficultySettings = {
                 easy: {
                     requiredCoverage: 0.3, // 30% of prints
-                    maxOverDusted: 35,
-                    fingerprints: 40,
+                    maxOverDusted: 50, // Increased due to more cells
+                    fingerprints: 60, // Increased proportionally
                     pattern: 'simple'
                 },
                 medium: {
                     requiredCoverage: 0.4, // 40% of prints
-                    maxOverDusted: 25,
-                    fingerprints: 50,
+                    maxOverDusted: 40, // Increased due to more cells
+                    fingerprints: 75, // Increased proportionally
                     pattern: 'medium'
                 },
                 hard: {
                     requiredCoverage: 0.5, // 50% of prints
-                    maxOverDusted: 15,
-                    fingerprints: 60,
+                    maxOverDusted: 25, // Increased due to more cells
+                    fingerprints: 90, // Increased proportionally
                     pattern: 'complex'
                 }
             };
