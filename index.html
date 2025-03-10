@@ -4323,9 +4323,9 @@
             `;
             
             const tools = [
-                { name: 'Fine Brush', size: 1, color: '#3498db' },
-                { name: 'Medium Brush', size: 2, color: '#2ecc71' },
-                { name: 'Wide Brush', size: 3, color: '#e67e22' }
+                { name: 'Fine Brush', size: 1, color: '#3498db', radius: 0 }, // Only affects current cell
+                { name: 'Medium Brush', size: 2, color: '#2ecc71', radius: 1 }, // Affects current cell and adjacent
+                { name: 'Wide Brush', size: 3, color: '#e67e22', radius: 2 }  // Affects current cell and 2 cells around
             ];
             
             let currentTool = tools[1]; // Start with medium brush
@@ -4611,46 +4611,95 @@
                 // Get the cell element under the cursor
                 const cell = document.elementFromPoint(e.clientX, e.clientY);
                 if (cell && cell.dataset.dustLevel !== undefined) {
-                    // Get cell position for particles
+                    // Get current cell coordinates
+                    const centerX = parseInt(cell.dataset.x);
+                    const centerY = parseInt(cell.dataset.y);
+                    
+                    // Get a list of cells to dust based on the brush radius
+                    const cellsToDust = [];
+                    const radius = currentTool.radius;
+                    
+                    // Add the current cell and cells within radius
+                    for (let y = centerY - radius; y <= centerY + radius; y++) {
+                        for (let x = centerX - radius; x <= centerX + radius; x++) {
+                            // Skip cells outside the grid
+                            if (x < 0 || x >= gridSize || y < 0 || y >= gridSize) continue;
+                            
+                            // For medium brush, use a diamond pattern (taxicab distance)
+                            if (currentTool.size === 2) {
+                                // Manhattan distance: |x1-x2| + |y1-y2|
+                                const distance = Math.abs(x - centerX) + Math.abs(y - centerY);
+                                if (distance > radius) continue; // Skip if too far away
+                            } 
+                            // For wide brush, use a circle pattern (Euclidean distance)
+                            else if (currentTool.size === 3) {
+                                // Euclidean distance: √[(x1-x2)² + (y1-y2)²]
+                                const distance = Math.sqrt(Math.pow(x - centerX, 2) + Math.pow(y - centerY, 2));
+                                if (distance > radius) continue; // Skip if too far away
+                            }
+                            
+                            // Find this cell in the DOM
+                            const targetCell = gameContainer.querySelector(`[data-x="${x}"][data-y="${y}"]`);
+                            if (targetCell) {
+                                cellsToDust.push(targetCell);
+                            }
+                        }
+                    }
+                    
+                    // Get cell position for particles (center cell)
                     const cellRect = cell.getBoundingClientRect();
-                    
-                    // Calculate relative position within the gameContainer (not the viewport)
-                    const gameContainerRect = gameContainer.getBoundingClientRect();
                     const particleContainerRect = particleContainer.getBoundingClientRect();
-                    
-                    // Calculate position relative to particle container
                     const cellCenterX = (cellRect.left + cellRect.width / 2) - particleContainerRect.left;
                     const cellCenterY = (cellRect.top + cellRect.height / 2) - particleContainerRect.top;
                     
-                    const cellId = `${cell.dataset.x},${cell.dataset.y}`;
-                    const currentTime = Date.now();
-                    const dustLevel = parseInt(cell.dataset.dustLevel);
-                    
-                    // Tool intensity affects dusting rate and particle effects
-                    const toolIntensity = currentTool.size / 3; // 0.33 to 1
-                    
-                    // Only allow dusting every 50-150ms for each cell (based on tool size)
-                    const cooldown = 150 - (toolIntensity * 100); // 50ms for wide brush, 150ms for fine
-                    
-                    if (!lastDustTime[cellId] || currentTime - lastDustTime[cellId] > cooldown) {
-                        if (dustLevel < 3) {
-                            // Increment dust level with a probability based on tool intensity
-                            const dustProbability = toolIntensity * 0.5 + 0.1; // 0.1-0.6 chance based on tool
-                            
-                            if (dustLevel < 1 || Math.random() < dustProbability) {
-                                cell.dataset.dustLevel = (dustLevel + 1).toString();
-                                updateCellColor(cell);
+                    // Process all cells to dust
+                    cellsToDust.forEach(targetCell => {
+                        const cellId = `${targetCell.dataset.x},${targetCell.dataset.y}`;
+                        const currentTime = Date.now();
+                        const dustLevel = parseInt(targetCell.dataset.dustLevel);
+                        
+                        // Tool intensity affects dusting rate and particle effects
+                        const toolIntensity = currentTool.size / 3; // 0.33 to 1
+                        
+                        // Only allow dusting every 50-150ms for each cell (based on tool size)
+                        const cooldown = 150 - (toolIntensity * 100); // 50ms for wide brush, 150ms for fine
+                        
+                        if (!lastDustTime[cellId] || currentTime - lastDustTime[cellId] > cooldown) {
+                            if (dustLevel < 3) {
+                                // Increment dust level with a probability based on tool intensity
+                                const dustProbability = toolIntensity * 0.5 + 0.1; // 0.1-0.6 chance based on tool
                                 
-                                // Create dust particles
-                                const hasFingerprint = cell.dataset.hasFingerprint === 'true';
-                                let particleColor = dustLevel === 1 ? '#666' : (hasFingerprint ? '#1aff1a' : '#aaa');
-                                createDustParticles(cellCenterX, cellCenterY, toolIntensity, particleColor);
-                                
-                                checkProgress();
+                                if (dustLevel < 1 || Math.random() < dustProbability) {
+                                    targetCell.dataset.dustLevel = (dustLevel + 1).toString();
+                                    updateCellColor(targetCell);
+                                    
+                                    // Create dust particles for the current cell or at a position calculated for surrounding cells
+                                    if (targetCell === cell) {
+                                        // Center cell - use the already calculated position
+                                        const hasFingerprint = targetCell.dataset.hasFingerprint === 'true';
+                                        let particleColor = dustLevel === 1 ? '#666' : (hasFingerprint ? '#1aff1a' : '#aaa');
+                                        createDustParticles(cellCenterX, cellCenterY, toolIntensity, particleColor);
+                                    } else {
+                                        // For surrounding cells, calculate their relative position from the center cell
+                                        const targetCellRect = targetCell.getBoundingClientRect();
+                                        const targetCellX = (targetCellRect.left + targetCellRect.width / 2) - particleContainerRect.left;
+                                        const targetCellY = (targetCellRect.top + targetCellRect.height / 2) - particleContainerRect.top;
+                                        
+                                        const hasFingerprint = targetCell.dataset.hasFingerprint === 'true';
+                                        let particleColor = dustLevel === 1 ? '#666' : (hasFingerprint ? '#1aff1a' : '#aaa');
+                                        
+                                        // Create fewer particles for surrounding cells
+                                        const reducedIntensity = toolIntensity * 0.6;
+                                        createDustParticles(targetCellX, targetCellY, reducedIntensity, particleColor);
+                                    }
+                                }
+                                lastDustTime[cellId] = currentTime;
                             }
-                            lastDustTime[cellId] = currentTime;
                         }
-                    }
+                    });
+                    
+                    // Update progress after dusting
+                    checkProgress();
                 }
             });
             
