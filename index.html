@@ -3325,33 +3325,51 @@
                     const requiredFingerprint = lockRequirements.requires;
                     debugLog('BIOMETRIC LOCK REQUIRES', requiredFingerprint, 2);
                     
-                    // Check if the player has collected the required fingerprint
-                    if (gameState.collectedFingerprints && gameState.collectedFingerprints[requiredFingerprint]) {
-                        const fingerprintQuality = gameState.collectedFingerprints[requiredFingerprint];
+                    // Check if we have fingerprints in the biometricSamples collection
+                    const biometricSamples = gameState.biometricSamples || [];
+                    
+                    // Enhanced debugging - Show collected fingerprints
+                    debugLog('BIOMETRIC SAMPLES', JSON.stringify(biometricSamples), 2);
+                    
+                    // Get the required match threshold from the object or use default
+                    const requiredThreshold = typeof lockable.biometricMatchThreshold === 'number' ? 
+                        lockable.biometricMatchThreshold : 0.4;
+                    
+                    debugLog('BIOMETRIC THRESHOLD', requiredThreshold, 2);
+                    
+                    // Find the fingerprint sample for the required person
+                    const fingerprintSample = biometricSamples.find(sample => 
+                        sample.owner === requiredFingerprint
+                    );
+                    
+                    const hasFingerprint = fingerprintSample !== undefined;
+                    debugLog('FINGERPRINT CHECK', `Looking for '${requiredFingerprint}'. Found: ${hasFingerprint}`, 2);
+                    
+                    if (hasFingerprint) {
+                        // Get the quality from the sample
+                        let fingerprintQuality = fingerprintSample.quality;
                         
-                        // Get the required match threshold from the object or use default
-                        const requiredThreshold = lockable.biometricMatchThreshold || 0.75;
-                        
-                        // Get scenario difficulty and adjust threshold accordingly
-                        const scenarioDifficulty = gameState.activeScenario?.difficulty || "medium";
-                        let adjustedThreshold = requiredThreshold;
-                        
-                        // Apply difficulty-based adjustments
-                        if (scenarioDifficulty === "easy") {
-                            // Make it easier to unlock on easy difficulty
-                            adjustedThreshold = Math.max(0.5, adjustedThreshold - 0.1);
-                        } else if (scenarioDifficulty === "hard") {
-                            // Make it harder to unlock on hard difficulty
-                            adjustedThreshold = Math.min(0.95, adjustedThreshold + 0.1);
+                        // Normalize quality to 0-1 range if it's in percentage format
+                        if (fingerprintQuality > 1) {
+                            fingerprintQuality = fingerprintQuality / 100;
                         }
                         
                         debugLog('BIOMETRIC CHECK', 
-                            `Required: ${requiredFingerprint}, Quality: ${fingerprintQuality}, Base Threshold: ${requiredThreshold}, Adjusted for ${scenarioDifficulty}: ${adjustedThreshold}`, 2);
+                            `Required: ${requiredFingerprint}, Quality: ${fingerprintQuality} (${Math.round(fingerprintQuality * 100)}%), Threshold: ${requiredThreshold} (${Math.round(requiredThreshold * 100)}%)`, 2);
                         
-                        // Check if the fingerprint quality meets the adjusted threshold
-                        if (fingerprintQuality >= adjustedThreshold) {
+                        debugLog('QUALITY CHECK', 
+                            `Is ${fingerprintQuality} >= ${requiredThreshold}? ${fingerprintQuality >= requiredThreshold}`, 2);
+                        
+                        // Check if the fingerprint quality meets the threshold
+                        if (fingerprintQuality >= requiredThreshold) {
                             debugLog('BIOMETRIC UNLOCK SUCCESS', null, 1);
                             unlockTarget(lockable, type, lockable.layer);
+                            
+                            // Play unlock sound if available
+                            if (typeof playSound === 'function') {
+                                playSound("unlock");
+                            }
+                            
                             gameAlert(`You successfully unlocked the ${type} with ${requiredFingerprint}'s fingerprint.`, 
                                 'success', 'Biometric Unlock Successful', 5000);
                                 
@@ -3363,17 +3381,19 @@
                                 location: type,
                                 fingerprint: requiredFingerprint,
                                 quality: fingerprintQuality,
-                                threshold: adjustedThreshold,
+                                threshold: requiredThreshold,
                                 timestamp: new Date().toISOString()
                             });
                         } else {
-                            debugLog('BIOMETRIC QUALITY TOO LOW', `${fingerprintQuality} < ${adjustedThreshold}`, 2);
+                            debugLog('BIOMETRIC QUALITY TOO LOW', 
+                                `Quality: ${fingerprintQuality} (${Math.round(fingerprintQuality * 100)}%) < Threshold: ${requiredThreshold} (${Math.round(requiredThreshold * 100)}%)`, 2);
                             gameAlert(`The fingerprint quality (${Math.round(fingerprintQuality * 100)}%) is too low for this lock. 
-                                       It requires at least ${Math.round(adjustedThreshold * 100)}% quality.`,
+                                    It requires at least ${Math.round(requiredThreshold * 100)}% quality.`,
                                 'error', 'Biometric Authentication Failed', 5000);
                         }
                     } else {
-                        debugLog('MISSING REQUIRED FINGERPRINT', requiredFingerprint, 2);
+                        debugLog('MISSING REQUIRED FINGERPRINT', 
+                            `Required: '${requiredFingerprint}', Available: ${biometricSamples.map(s => s.owner).join(", ") || "none"}`, 2);
                         gameAlert(`This ${type} requires ${requiredFingerprint}'s fingerprint, which you haven't collected yet.`,
                             'error', 'Biometric Authentication Failed', 5000);
                     }
@@ -6811,6 +6831,64 @@
                 });
             }
             popup.style.display = 'flex';
+        }
+
+        // Add this function to handle biometric matching near the other utility functions
+        function performBiometricMatch(lockable, ownerFingerprint, qualityThreshold, type) {
+            // Get available biometric samples - assuming they're stored in a global variable
+            // This may need to be adjusted based on how your biometric samples are actually stored
+            const availableSamples = biometricSamples || [];
+            
+            if (!availableSamples || availableSamples.length === 0) {
+                $("#biometric-status").text("No fingerprint samples available.");
+                gameAlert("No fingerprint samples found in database.", 'error', 'Scan Failed', 3000);
+                return;
+            }
+            
+            // Find if we have the owner's fingerprint
+            const matchingSample = availableSamples.find(sample => sample.id === ownerFingerprint);
+            
+            if (!matchingSample) {
+                // No matching sample found
+                $("#biometric-status").text("No match found. Access denied.");
+                gameAlert("Biometric authentication failed.", 'error', 'Access Denied', 3000);
+                
+                setTimeout(function() {
+                    $("#biometrics-panel").hide();
+                }, 2000);
+                return;
+            }
+            
+            // Check quality against threshold
+            const sampleQuality = matchingSample.quality || 0;
+            
+            if (sampleQuality >= qualityThreshold) {
+                // Successful match with sufficient quality
+                $("#biometric-status").text("Match found! Unlocking...");
+                
+                setTimeout(function() {
+                    // Unlock the target
+                    unlockTarget(lockable, type, lockable.layer);
+                    $("#biometrics-panel").hide();
+                    
+                    // Play unlock sound if available
+                    if (typeof playSound === 'function') {
+                        playSound("unlock");
+                    }
+                    
+                    gameAlert(`Biometric match confirmed. ${type.charAt(0).toUpperCase() + type.slice(1)} unlocked.`, 'success', 'Access Granted', 4000);
+                    debugLog('BIOMETRIC AUTHENTICATION SUCCESS', null, 1);
+                }, 1500);
+            } else {
+                // Match found but quality insufficient
+                $("#biometric-status").text("Sample quality insufficient. Access denied.");
+                gameAlert(`Biometric sample quality too low (${sampleQuality}/${qualityThreshold} required).`, 'error', 'Low Quality Sample', 3000);
+                debugLog('BIOMETRIC AUTHENTICATION FAILED - LOW QUALITY', null, 2);
+                
+                setTimeout(function() {
+                    $("#biometrics-panel").hide();
+                }, 2000);
+            }
         }
 
     </script>
