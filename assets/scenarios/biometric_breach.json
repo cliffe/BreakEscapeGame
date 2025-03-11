@@ -82,7 +82,7 @@
             "locked": true,
             "lockType": "biometric",
             "requires": "receptionist",
-            "biometricMatchThreshold": 0.6,
+            "biometricMatchThreshold": 0.5,
             "objects": [
                 {
                     "type": "pc",
@@ -293,7 +293,7 @@
                     "locked": true,
                     "lockType": "biometric",
                     "requires": "intruder",
-                    "difficulty": "hard",
+                    "biometricMatchThreshold": 0.9,
                     "observations": "A well-hidden wall safe behind a painting with a fingerprint scanner",
                     "contents": [
                         {
@@ -321,12 +321,6 @@
                     "readable": true,
                     "text": "A = Meet at dock, 4AM\nN = Bring everything\nM = Getaway car ready\n\nLH will pay other half when delivered.",
                     "observations": "A hastily scribbled note, partially crumpled"
-                },
-                {
-                    "type": "fingerprint_kit",
-                    "name": "Advanced Fingerprint Kit",
-                    "takeable": true,
-                    "observations": "A more advanced fingerprint collection kit with higher resolution scanning"
                 }
             ]
         },
@@ -356,7 +350,7 @@
                     "locked": true,
                     "lockType": "biometric",
                     "requires": "intruder",
-                    "difficulty": "medium",
+                    "biometricMatchThreshold": 0.9,
                     "observations": "A secure safe with a fingerprint scanner containing the sensitive research data",
                     "contents": [
                         {
@@ -385,7 +379,7 @@
                     "locked": true,
                     "lockType": "biometric",
                     "requires": "intruder",
-                    "difficulty": "hard",
+                    "biometricMatchThreshold": 0.9,
                     "observations": "A suspicious case hidden behind server racks with a fingerprint scanner",
                     "contents": [
                         {
