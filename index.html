@@ -3322,56 +3322,60 @@
                     break;
 
                 case 'biometric':
-                    debugLog('BIOMETRIC AUTHENTICATION REQUESTED', null, 2);
-                    // Check if player has fingerprint kit
-                    const hasFingerPrintKit = inventory.items.some(item => 
-                        item && item.scenarioData && 
-                        item.scenarioData.type === 'fingerprint_kit'
-                    );
-                    
-                    if (!hasFingerPrintKit) {
-                        gameAlert("You need a fingerprint kit to use biometric scanners.", 'warning', 'Missing Equipment', 4000);
-                        return;
-                    }
-                    
-                    // Check if player has required fingerprint sample
                     const requiredFingerprint = lockRequirements.requires;
-                    debugLog('FINGERPRINT REQUIRED', requiredFingerprint, 2);
+                    debugLog('BIOMETRIC LOCK REQUIRES', requiredFingerprint, 2);
                     
-                    // Check if player has a valid fingerprint sample
-                    const validSample = gameState.biometricSamples.find(sample => 
-                        sample.type === 'fingerprint' &&
-                        sample.owner === requiredFingerprint &&
-                        sample.quality >= 0.7 // Quality threshold
-                    );
-                    
-                    if (validSample) {
-                        debugLog('BIOMETRIC UNLOCK SUCCESS', validSample, 1);
-                        unlockTarget(lockable, type, lockable.layer);
-                        gameAlert(`You successfully used ${validSample.owner}'s fingerprint to unlock the ${type}.`, 
-                                 'success', 'Biometric Authentication Successful', 5000);
+                    // Check if the player has collected the required fingerprint
+                    if (gameState.collectedFingerprints && gameState.collectedFingerprints[requiredFingerprint]) {
+                        const fingerprintQuality = gameState.collectedFingerprints[requiredFingerprint];
                         
-                        // Play success sound and visual effect
-                        const successEffect = lockable.scene ? lockable.scene.add.circle(
-                            lockable.x, 
-                            lockable.y, 
-                            32, 
-                            0x00ff00, 
-                            0.5
-                        ) : null;
+                        // Get the required match threshold from the object or use default
+                        const requiredThreshold = lockable.biometricMatchThreshold || 0.75;
                         
-                        if (successEffect) {
-                            lockable.scene.tweens.add({
-                                targets: successEffect,
-                                alpha: 0,
-                                scale: 2,
-                                duration: 1000,
-                                onComplete: () => successEffect.destroy()
+                        // Get scenario difficulty and adjust threshold accordingly
+                        const scenarioDifficulty = gameState.activeScenario?.difficulty || "medium";
+                        let adjustedThreshold = requiredThreshold;
+                        
+                        // Apply difficulty-based adjustments
+                        if (scenarioDifficulty === "easy") {
+                            // Make it easier to unlock on easy difficulty
+                            adjustedThreshold = Math.max(0.5, adjustedThreshold - 0.1);
+                        } else if (scenarioDifficulty === "hard") {
+                            // Make it harder to unlock on hard difficulty
+                            adjustedThreshold = Math.min(0.95, adjustedThreshold + 0.1);
+                        }
+                        
+                        debugLog('BIOMETRIC CHECK', 
+                            `Required: ${requiredFingerprint}, Quality: ${fingerprintQuality}, Base Threshold: ${requiredThreshold}, Adjusted for ${scenarioDifficulty}: ${adjustedThreshold}`, 2);
+                        
+                        // Check if the fingerprint quality meets the adjusted threshold
+                        if (fingerprintQuality >= adjustedThreshold) {
+                            debugLog('BIOMETRIC UNLOCK SUCCESS', null, 1);
+                            unlockTarget(lockable, type, lockable.layer);
+                            gameAlert(`You successfully unlocked the ${type} with ${requiredFingerprint}'s fingerprint.`, 
+                                'success', 'Biometric Unlock Successful', 5000);
+                                
+                            // Log the successful biometric unlock
+                            if (!gameState.biometricUnlocks) {
+                                gameState.biometricUnlocks = [];
+                            }
+                            gameState.biometricUnlocks.push({
+                                location: type,
+                                fingerprint: requiredFingerprint,
+                                quality: fingerprintQuality,
+                                threshold: adjustedThreshold,
+                                timestamp: new Date().toISOString()
                             });
+                        } else {
+                            debugLog('BIOMETRIC QUALITY TOO LOW', `${fingerprintQuality} < ${adjustedThreshold}`, 2);
+                            gameAlert(`The fingerprint quality (${Math.round(fingerprintQuality * 100)}%) is too low for this lock. 
+                                       It requires at least ${Math.round(adjustedThreshold * 100)}% quality.`,
+                                'error', 'Biometric Authentication Failed', 5000);
                         }
                     } else {
-                        debugLog('BIOMETRIC UNLOCK FAILED', null, 2);
-                        gameAlert(`You don't have the required fingerprint sample.`, 'error', 'Biometric Authentication Failed', 4000);
+                        debugLog('MISSING REQUIRED FINGERPRINT', requiredFingerprint, 2);
+                        gameAlert(`This ${type} requires ${requiredFingerprint}'s fingerprint, which you haven't collected yet.`,
+                            'error', 'Biometric Authentication Failed', 5000);
                     }
                     break;
 
@@ -4290,11 +4294,6 @@
             
             header.innerHTML = `
                 <h3 style="margin: 0 0 8px 0; color: #fff; text-align: center;">Fingerprint Dusting</h3>
-                <div style="display: flex; gap: 10px; margin-bottom: 5px;">
-                    <button id="easy-button" class="difficulty-button" style="background: #2ecc71; color: white; border: none; border-radius: 3px; padding: 5px 10px; cursor: pointer;">Easy</button>
-                    <button id="medium-button" class="difficulty-button active" style="background: #f39c12; color: white; border: none; border-radius: 3px; padding: 5px 10px; cursor: pointer;">Medium</button>
-                    <button id="hard-button" class="difficulty-button" style="background: #e74c3c; color: white; border: none; border-radius: 3px; padding: 5px 10px; cursor: pointer;">Hard</button>
-                </div>
                 <p style="margin: 5px 0; color: #ccc; text-align: center; font-size: 12px;">
                     Drag to dust the surface and reveal fingerprints. Avoid over-dusting!
                 </p>
@@ -4394,7 +4393,7 @@
                 }
             };
             
-            let currentDifficulty = 'medium';
+            let currentDifficulty = item.scenarioData.fingerprintDifficulty;
             
             // Generate fingerprint pattern based on difficulty
             function generateFingerprint(difficulty) {

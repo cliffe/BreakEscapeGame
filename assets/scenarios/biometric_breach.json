@@ -38,8 +38,8 @@
                     "takeable": false,
                     "hasFingerprint": true,
                     "fingerprintOwner": "receptionist",
-                    "fingerprintQuality": 0.8,
-                    "observations": "The reception computer shows a security alert screen. There might be fingerprints on the keyboard."
+                    "fingerprintDifficulty": "easy",
+                    "observations": "The reception computer shows a security alert screen. There are clear fingerprints on the keyboard."
                 },
                 {
                     "type": "lockpick",
@@ -57,6 +57,14 @@
                 },
                 {
                     "type": "notes",
+                    "name": "Biometric Security Notice",
+                    "takeable": true,
+                    "readable": true,
+                    "text": "ALERT: SECURITY PROTOCOLS UPDATED\n\nAll internal doors now require biometric authentication due to the security breach.\n\nTo proceed: Use your fingerprint kit to collect prints, then present them at door scanners. The main office door requires the receptionist's credentials.\n\nReport any unauthorized access attempts to security immediately.",
+                    "observations": "An important notice about the facility's security measures"
+                },
+                {
+                    "type": "notes",
                     "name": "Facility Map",
                     "takeable": true,
                     "readable": true,
@@ -71,6 +79,10 @@
                 "north": ["office2", "office3"],
                 "south": "reception"
             },
+            "locked": true,
+            "lockType": "biometric",
+            "requires": "receptionist",
+            "biometricMatchThreshold": 0.6,
             "objects": [
                 {
                     "type": "pc",
@@ -78,7 +90,7 @@
                     "takeable": false,
                     "hasFingerprint": true,
                     "fingerprintOwner": "researcher",
-                    "fingerprintQuality": 0.9,
+                    "fingerprintDifficulty": "medium",
                     "observations": "A research computer with data analysis software running. There might be fingerprints on the keyboard."
                 },
                 {
@@ -105,12 +117,12 @@
                     "observations": "A backup key for the biometrics lab, kept for emergencies"
                 },
                 {
-                    "type": "photo",
-                    "name": "Team Photo",
+                    "type": "notes",
+                    "name": "Team Information",
                     "takeable": true,
                     "readable": true,
                     "text": "Project Sentinel Team:\nDr. Eleanor Chen (Director)\nDr. Marcus Patel (Lead Researcher)\nDr. Wei Zhang (Biometrics Specialist)\nAlex Morgan (Security Consultant)",
-                    "observations": "A framed photo of the Project Sentinel research team"
+                    "observations": "Information about the Project Sentinel research team"
                 },
                 {
                     "type": "notes",
@@ -128,6 +140,10 @@
                 "north": "ceo",
                 "south": "office1"
             },
+            "locked": true,
+            "lockType": "biometric",
+            "requires": "researcher",
+            "biometricMatchThreshold": 0.7,
             "objects": [
                 {
                     "type": "pc",
@@ -135,7 +151,7 @@
                     "takeable": false,
                     "hasFingerprint": true,
                     "fingerprintOwner": "intruder",
-                    "fingerprintQuality": 0.85,
+                    "fingerprintDifficulty": "medium",
                     "observations": "A specialized workstation for biometric research. The screen shows someone was recently using it."
                 },
                 {
