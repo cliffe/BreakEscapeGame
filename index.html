@@ -3334,8 +3334,8 @@
                     // Get the required match threshold from the object or use default
                     const requiredThreshold = typeof lockable.biometricMatchThreshold === 'number' ? 
                         lockable.biometricMatchThreshold : 0.4;
-                    
-                    debugLog('BIOMETRIC THRESHOLD', requiredThreshold, 2);
+                    // this needs to be changed to use the scenario, bugged.
+                    debugLog('BIOMETRIC THRESHOLD', requiredThreshold, "this needs to be changed to use the scenario, bugged.",2);
                     
                     // Find the fingerprint sample for the required person
                     const fingerprintSample = biometricSamples.find(sample => 

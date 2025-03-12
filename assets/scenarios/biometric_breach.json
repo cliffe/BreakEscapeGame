@@ -227,7 +227,7 @@
                     "takeable": false,
                     "hasFingerprint": true,
                     "fingerprintOwner": "director",
-                    "fingerprintQuality": 0.95,
+                    "fingerprintDifficulty": "hard",
                     "observations": "The director's high-security computer. Multiple fingerprints visible on the keyboard."
                 },
                 {
@@ -340,7 +340,7 @@
                     "takeable": false,
                     "hasFingerprint": true,
                     "fingerprintOwner": "intruder",
-                    "fingerprintQuality": 0.98,
+                    "fingerprintDifficulty": "medium",
                     "observations": "The main server terminal controlling access to research data. There are clear fingerprints on the screen."
                 },
                 {
