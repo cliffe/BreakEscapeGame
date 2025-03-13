@@ -1008,7 +1008,7 @@
         let unreadNotes = 0;
         
         // Show a notification instead of using alert()
-        function showNotification(message, type = 'info', title = '', duration = 5000) {
+        function showNotification(message, type = 'info', title = '', duration = 5000, position = 'corner') {
             const notificationContainer = document.getElementById('notification-container');
             
             // Create notification element
@@ -1711,7 +1711,7 @@
             addNote("Mission Brief", gameScenario.scenario_brief, true);
             
             // Show notification
-            gameAlert(gameScenario.scenario_brief, 'info', 'Mission Brief', 8000);
+            gameAlert(gameScenario.scenario_brief, 'info', 'Mission Brief', 0);
         }
 
         // initializes the rooms
