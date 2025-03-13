@@ -132,6 +132,7 @@
                     "name": "IT Staff Computer",
                     "takeable": false,
                     "requires": "bluetooth",
+                    "lockType": "bluetooth",
                     "mac": "00:11:22:33:44:55",
                     "observations": "An IT staff computer showing network security logs"
                 },
