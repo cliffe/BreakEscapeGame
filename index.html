@@ -882,6 +882,60 @@
             align-items: center;
             font-weight: bold;
         }
+
+        .tension-control {
+            display: flex;
+            align-items: center;
+            background: #333;
+            padding: 10px 15px;
+            border-radius: 5px;
+            font-size: 14px;
+            gap: 15px;
+        }
+
+        .tension-status {
+            font-size: 13px;
+            color: #ddd;
+        }
+
+        .tension-wrench {
+            position: relative;
+            height: 25px;
+            width: 60px;
+            cursor: pointer;
+        }
+
+        .wrench-handle {
+            position: absolute;
+            top: 10px;
+            right: 0;
+            width: 40px;
+            height: 5px;
+            background: #aaa;
+            border-radius: 2px;
+            transform-origin: right center;
+            transition: transform 0.3s;
+        }
+
+        .wrench-tip {
+            position: absolute;
+            right: 0;
+            top: 5px;
+            width: 10px;
+            height: 15px;
+            background: #888;
+            border-radius: 2px;
+        }
+
+        .tension-wrench.active .wrench-handle {
+            transform: rotate(-20deg);
+            background: #2196F3;
+        }
+        
+        .cylinder {
+            height: 20px;
+            margin-top: -5px;
+        }
     </style>
     <script src="https://cdn.jsdelivr.net/npm/phaser@3.60.0/dist/phaser.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/easystarjs@0.4.4/bin/easystar-0.4.4.js"></script>
@@ -4902,12 +4956,12 @@
                     style.id = 'minigame-framework-styles';
                     style.textContent = `
                         #minigame-container {
-                            position: fixed;
+                position: fixed;
                             top: 0;
                             left: 0;
                             width: 100%;
                             height: 100%;
-                            z-index: 1000;
+                z-index: 1000;
                             display: none;
                         }
                         
@@ -4915,7 +4969,7 @@
                             position: fixed;
                             top: 0;
                             left: 0;
-                            width: 100%;
+                width: 100%;
                             height: 100%;
                             background: rgba(0, 0, 0, 0.5);
                             z-index: 1001;
@@ -4926,7 +4980,7 @@
                             top: 50%;
                             left: 50%;
                             transform: translate(-50%, -50%);
-                            background: #222;
+                background: #222;
                             color: white;
                             border-radius: 10px;
                             box-shadow: 0 0 20px rgba(0,0,0,0.5);
@@ -4936,7 +4990,7 @@
                         
                         .minigame-close {
                             background: #555;
-                            color: white;
+                color: white;
                             border: none;
                             padding: 10px 20px;
                             border-radius: 5px;
@@ -5084,9 +5138,11 @@
                 
                 this.pins = [];
                 this.gameState = {
-                    tension: 0,
+                    tensionApplied: false,
                     gameActive: false,
-                    pinsSet: 0
+                    pinsSet: 0,
+                    currentPin: null,
+                    mouseDown: false
                 };
             }
             
@@ -5107,12 +5163,12 @@
                     style.id = 'lockpicking-styles';
                     style.textContent = `
                         .lock-visual {
-                            display: flex;
+                display: flex;
                             justify-content: center;
                             align-items: flex-end;
                             gap: 15px;
                             height: 120px;
-                            background: #333;
+                background: #333;
                             border-radius: 5px;
                             padding: 15px;
                             position: relative;
@@ -5120,8 +5176,8 @@
                         
                         .pin {
                             width: 40px;
-                            height: 100px;
-                            position: relative;
+                    height: 100px;
+                    position: relative;
                             background: #444;
                             border-radius: 4px 4px 0 0;
                             overflow: visible;
@@ -5131,11 +5187,6 @@
                         
                         .pin:hover {
                             background: #555;
-                            transform: translateY(-2px);
-                        }
-                        
-                        .pin:active {
-                            transform: translateY(0);
                         }
                         
                         .shear-line {
@@ -5148,21 +5199,22 @@
                         }
                         
                         .key-pin {
-                            position: absolute;
-                            bottom: 0;
-                            width: 100%;
+                    position: absolute;
+                    bottom: 0;
+                    width: 100%;
                             height: 0px;
                             background: #dd3333;
-                            transition: height 0.1s;
+                            transition: height 0.05s;
                         }
                         
                         .driver-pin {
-                            position: absolute;
-                            width: 100%;
+                    position: absolute;
+                    width: 100%;
                             height: 40px;
                             background: #3355dd;
-                            transition: bottom 0.1s;
+                            transition: bottom 0.05s;
                             bottom: 40px;
+                            border-radius: 0 0 3px 3px;
                         }
                         
                         .spring {
@@ -5181,7 +5233,7 @@
                                 #999 80%, #999 90%,
                                 transparent 90%, transparent 100%
                             );
-                            transition: height 0.1s;
+                            transition: height 0.05s;
                         }
                         
                         .pin.binding {
@@ -5189,42 +5241,92 @@
                         }
                         
                         .pin.set .driver-pin {
-                            bottom: 42px;
+                            bottom: 42px; /* Just above shear line */
+                            background: #22aa22; /* Green to indicate set */
                         }
                         
                         .pin.set .key-pin {
-                            height: 39px;
+                            height: 39px; /* Just below shear line */
                         }
                         
-                        .tension-control {
-                            display: flex;
-                            flex-direction: column;
-                            padding: 10px;
-                            background: #333;
-                            border-radius: 5px;
+                        .tension-toggle {
+                            display: inline-block;
+                            position: relative;
+                            width: 60px;
+                            height: 34px;
+                            margin: 10px;
                         }
                         
-                        .tension-control label {
-                            margin-bottom: 5px;
+                        .tension-toggle input {
+                            opacity: 0;
+                            width: 0;
+                            height: 0;
                         }
                         
                         .tension-slider {
-                            margin: 10px 0;
+                            position: absolute;
+                            cursor: pointer;
+                            top: 0;
+                            left: 0;
+                            right: 0;
+                            bottom: 0;
+                            background-color: #ccc;
+                            -webkit-transition: .4s;
+                            transition: .4s;
+                            border-radius: 34px;
                         }
                         
-                        .tension-meter {
+                        .tension-slider:before {
+                            position: absolute;
+                            content: "";
+                            height: 26px;
+                            width: 26px;
+                            left: 4px;
+                            bottom: 4px;
+                            background-color: white;
+                            -webkit-transition: .4s;
+                            transition: .4s;
+                            border-radius: 50%;
+                        }
+                        
+                        input:checked + .tension-slider {
+                            background-color: #2196F3;
+                        }
+                        
+                        input:focus + .tension-slider {
+                            box-shadow: 0 0 1px #2196F3;
+                        }
+                        
+                        input:checked + .tension-slider:before {
+                            -webkit-transform: translateX(26px);
+                            -ms-transform: translateX(26px);
+                            transform: translateX(26px);
+                        }
+                        
+                        .cylinder {
+                            display: flex;
+                            justify-content: center;
+                            align-items: center;
                             width: 100%;
-                            height: 10px;
-                            background: #444;
+                            height: 30px;
+                            background: #222;
                             border-radius: 5px;
-                            overflow: hidden;
+                            margin-top: -15px;
+                            position: relative;
+                            z-index: 0;
                         }
                         
-                        .tension-fill {
-                            height: 100%;
-                            width: 0%;
-                            background: linear-gradient(to right, #33cc33, #ffcc00, #cc3333);
-                            transition: width 0.2s;
+                        .cylinder-inner {
+                            width: 80%;
+                            height: 20px;
+                            background: #333;
+                            border-radius: 3px;
+                            transform-origin: center;
+                            transition: transform 0.3s;
+                        }
+                        
+                        .cylinder.rotated .cylinder-inner {
+                            transform: rotate(15deg);
                         }
                         
                         .lockpick-feedback {
@@ -5235,11 +5337,16 @@
                             min-height: 20px;
                         }
                         
-                        .lockpick-timer {
-                            padding: 5px 10px;
+                        .tension-control {
+                            display: flex;
+                            align-items: center;
                             background: #333;
+                            padding: 10px;
                             border-radius: 5px;
-                            text-align: center;
+                        }
+                        
+                        .tension-control label {
+                            flex: 1;
                         }
                         
                         .minigame-scene.success {
@@ -5252,13 +5359,13 @@
                     `;
                     document.head.appendChild(style);
                 }
-                
+
                 // Create header with title and instructions
                 const header = document.createElement('div');
                 header.className = 'lockpick-header';
                 header.innerHTML = `
                     <h2>Lockpicking</h2>
-                    <p>Apply tension with the wrench, then click on pins to lift them to the shear line</p>
+                    <p>Apply tension and hold click on pins to lift them to the shear line</p>
                 `;
                 this.container.appendChild(header);
                 
@@ -5266,6 +5373,12 @@
                 const lockVisual = document.createElement('div');
                 lockVisual.className = 'lock-visual';
                 this.container.appendChild(lockVisual);
+                
+                // Create the cylinder that will rotate when tension is applied
+                const cylinder = document.createElement('div');
+                cylinder.className = 'cylinder';
+                cylinder.innerHTML = '<div class="cylinder-inner"></div>';
+                this.container.appendChild(cylinder);
                 
                 // Create pins with random binding order
                 const bindingOrder = this.shuffleArray([...Array(this.pinCount).keys()]);
@@ -5314,106 +5427,224 @@
                     
                     this.pins.push(pin);
                     
-                    // Add click event to pin
-                    pinElement.addEventListener('click', () => {
-                        if (!this.gameState.gameActive) return;
+                    // Mouse down event - start lifting pin
+                    pinElement.addEventListener('mousedown', (e) => {
+                        if (!this.gameState.gameActive || pin.isSet) return;
                         
-                        // Only allow clicking if we have tension applied
-                        if (this.gameState.tension < 20) {
-                            this.updateFeedback("Apply more tension with the wrench first");
-                            return;
-                        }
+                        // Only proceed if tension is applied
+                        if (!this.gameState.tensionApplied) {
+                            this.updateFeedback("Apply tension first by toggling the wrench");
+                        return;
+                    }
+                    
+                        // Start lifting the pin
+                        this.gameState.mouseDown = true;
+                        this.gameState.currentPin = pin;
+                        this.liftPin();
                         
-                        // Animate the pin moving up
-                        if (!pin.isSet) {
-                            this.animatePinLift(pin);
-                        }
+                        // Prevent text selection
+                        e.preventDefault();
                     });
                 }
                 
-                // Add tension wrench control
+                // Mouse up event - stop lifting pin
+                document.addEventListener('mouseup', () => {
+                    this.gameState.mouseDown = false;
+                    
+                    // If we were in the process of lifting a pin, check if it sets or drops
+                    if (this.gameState.currentPin) {
+                        this.checkPinSet(this.gameState.currentPin);
+                        this.gameState.currentPin = null;
+                    }
+                });
+                
+                // Add tension toggle
                 const tensionControl = document.createElement('div');
                 tensionControl.className = 'tension-control';
                 tensionControl.innerHTML = `
-                    <label>Tension Wrench</label>
-                    <input type="range" min="0" max="100" value="0" class="tension-slider">
-                    <div class="tension-meter"><div class="tension-fill"></div></div>
+                    <div class="tension-wrench">
+                        <div class="wrench-handle"></div>
+                        <div class="wrench-tip"></div>
+                    </div>
+                    <span class="tension-status">Click wrench to apply tension</span>
                 `;
                 this.container.appendChild(tensionControl);
                 
                 // Feedback area
                 this.feedback = document.createElement('div');
                 this.feedback.className = 'lockpick-feedback';
-                this.feedback.textContent = 'Apply tension with the wrench, then click pins to try picking the lock';
+                this.feedback.textContent = 'Apply tension first, then click and hold on pins to lift them';
                 this.container.appendChild(this.feedback);
                 
-                // No timer display anymore
-                
-                // Tension wrench control event
-                const tensionSlider = tensionControl.querySelector('.tension-slider');
-                const tensionFill = tensionControl.querySelector('.tension-fill');
-                
-                tensionSlider.addEventListener('input', () => {
-                    this.gameState.tension = parseInt(tensionSlider.value);
-                    tensionFill.style.width = `${this.gameState.tension}%`;
+                // Tension toggle event
+                const tensionWrench = tensionControl.querySelector('.tension-wrench');
+                const tensionStatus = tensionControl.querySelector('.tension-status');
+
+                tensionWrench.addEventListener('click', () => {
+                    this.gameState.tensionApplied = !this.gameState.tensionApplied;
+                    tensionWrench.classList.toggle('active', this.gameState.tensionApplied);
+                    cylinder.classList.toggle('rotated', this.gameState.tensionApplied);
+                    
+                    // Update status text
+                    tensionStatus.textContent = this.gameState.tensionApplied ? 
+                        'Tension applied' : 'Click wrench to apply tension';
                     
                     // Update which pins are binding
-                    this.updatePinVisuals();
+                    this.updatePinBindings();
                     
-                    // If tension is suddenly reduced, pins may drop
-                    if (this.gameState.tension < 10 && this.gameState.pinsSet > 0) {
-                        // Drop all set pins
+                    // If tension is toggled off, reset any unset pins
+                    if (!this.gameState.tensionApplied) {
                         this.pins.forEach(pin => {
-                            if (pin.isSet) {
-                                pin.isSet = false;
+                            if (!pin.isSet) {
                                 pin.currentHeight = 0;
+                                this.updatePinVisual(pin);
                             }
                         });
-                        this.gameState.pinsSet = 0;
-                        this.updatePinVisuals();
-                        this.updateFeedback("Tension released - all pins dropped!");
+                        this.updateFeedback("Tension released - apply tension before lifting pins");
+                    } else {
+                        this.updateFeedback("Tension applied - click and hold on pins to lift them");
                     }
                 });
             }
             
             start() {
                 super.start();
-                
-                // Set game as active
                 this.gameState.gameActive = true;
+            }
+            
+            // Continuously lift the current pin while mouse is down
+            liftPin() {
+                if (!this.gameState.mouseDown || !this.gameState.currentPin || 
+                    !this.gameState.gameActive || !this.gameState.tensionApplied) {
+                    return;
+                }
                 
-                // No timer setup anymore
+                const pin = this.gameState.currentPin;
+                
+                // Only binding pins can be lifted effectively
+                if (!this.shouldPinBind(pin)) {
+                    // Non-binding pins can be lifted, but with resistance and limited height
+                    pin.currentHeight += 0.01;
+                    if (pin.currentHeight > 0.3) {
+                        pin.currentHeight = 0.3; // Can't lift non-binding pins very high
+                    }
+                } else {
+                    // Binding pins lift smoothly
+                    pin.currentHeight += 0.03;
+                    if (pin.currentHeight > 1) {
+                        pin.currentHeight = 1; // Max height
+                    }
+                }
+                
+                // Update visual
+                this.updatePinVisual(pin);
+                
+                // Continue lifting while mouse is down
+                requestAnimationFrame(() => this.liftPin());
             }
             
-            cleanup() {
-                // No timer to clear anymore
-            }
-            
-            updatePinVisuals() {
-                this.pins.forEach(pin => {
-                    // Update key pin and driver pin heights
-                    pin.elements.keyPin.style.height = `${pin.currentHeight * 40}px`;
-                    pin.elements.driverPin.style.bottom = `${pin.currentHeight * 40 + 1}px`;
-                    pin.elements.spring.style.height = `${20 - pin.currentHeight * 5}px`;
+            // Check if a pin should be set or dropped
+            checkPinSet(pin) {
+                if (!this.gameState.tensionApplied || !this.shouldPinBind(pin)) {
+                    // If no tension or not binding, the pin drops
+                    this.dropPin(pin);
+                    return;
+                }
+                
+                // Check if pin is at the correct height (with some tolerance)
+                const heightDiff = Math.abs(pin.currentHeight - pin.setPoint);
+                
+                if (heightDiff < 0.1) {
+                    // Pin set successfully!
+                    pin.isSet = true;
+                    this.gameState.pinsSet++;
+                    this.updateFeedback(`Pin set at the shear line! (${this.gameState.pinsSet}/${this.pinCount})`);
+                    this.updatePinVisual(pin);
                     
-                    // Show binding state
-                    if (this.shouldPinBind(pin) && !pin.isSet) {
-                        pin.elements.container.classList.add('binding');
+                    // Check if all pins are set
+                    if (this.gameState.pinsSet === this.pinCount) {
+                        this.endGame(true);
+                        return;
+                    }
+                    
+                    // Update which pin is binding next
+                    this.updatePinBindings();
+                } else {
+                    // Pin not at the correct height, drops back down
+                    this.dropPin(pin);
+                    
+                    if (pin.currentHeight > pin.setPoint + 0.1) {
+                        this.updateFeedback("Pin was pushed too far and dropped");
                     } else {
+                        this.updateFeedback("Pin wasn't lifted high enough and dropped");
+                    }
+                }
+            }
+            
+            // Animate a pin dropping down
+            dropPin(pin) {
+                // Don't drop pins that are already set
+                if (pin.isSet) return;
+                
+                const dropInterval = setInterval(() => {
+                    pin.currentHeight -= 0.05;
+                    
+                    if (pin.currentHeight <= 0) {
+                        pin.currentHeight = 0;
+                        clearInterval(dropInterval);
+                    }
+                    
+                    this.updatePinVisual(pin);
+                }, 10);
+            }
+            
+            // Update a single pin's visual appearance
+            updatePinVisual(pin) {
+                // Update key pin and driver pin heights
+                pin.elements.keyPin.style.height = `${pin.currentHeight * 40}px`;
+                pin.elements.driverPin.style.bottom = `${pin.currentHeight * 40 + 1}px`;
+                pin.elements.spring.style.height = `${20 - pin.currentHeight * 5}px`;
+                
+                // Show set state
+                pin.elements.container.classList.toggle('set', pin.isSet);
+            }
+            
+            // Update which pins are binding based on binding order
+            updatePinBindings() {
+                if (!this.gameState.tensionApplied) {
+                    // No binding if no tension
+                    this.pins.forEach(pin => {
                         pin.elements.container.classList.remove('binding');
+                    });
+                    return;
+                }
+                
+                // Find the next unset pin in binding order
+                let bindingPinFound = false;
+                
+                for (let order = 0; order < this.pinCount; order++) {
+                    const nextPin = this.pins.find(p => p.binding === order && !p.isSet);
+                    if (nextPin) {
+                        // Mark this pin as binding
+                        this.pins.forEach(pin => {
+                            pin.elements.container.classList.toggle('binding', pin.index === nextPin.index);
+                        });
+                        bindingPinFound = true;
+                        break;
                     }
-                    
-                    // Show set state
-                    if (pin.isSet) {
-                        pin.elements.container.classList.add('set');
-                    } else {
-                        pin.elements.container.classList.remove('set');
-                    }
-                });
+                }
+                
+                // If no binding pin was found (all pins set), remove binding class from all
+                if (!bindingPinFound) {
+                    this.pins.forEach(pin => {
+                        pin.elements.container.classList.remove('binding');
+                    });
+                }
             }
             
+            // Check if a pin should bind based on binding order
             shouldPinBind(pin) {
-                if (this.gameState.tension < 20) return false;
+                if (!this.gameState.tensionApplied) return false;
                 
                 // Find the next unset pin in binding order
                 for (let order = 0; order < this.pinCount; order++) {
@@ -5424,109 +5655,7 @@
                 }
                 return false;
             }
-            
-            animatePinLift(pin) {
-                // Only the binding pin can be set
-                if (!this.shouldPinBind(pin)) {
-                    this.updateFeedback("This pin isn't binding yet");
-                    
-                    // Small bounce animation to show it's stuck
-                    let height = 0;
-                    const interval = setInterval(() => {
-                        height += 0.05;
-                        if (height >= 0.2) {
-                            clearInterval(interval);
-                            
-                            // Fall back down
-                            const fallInterval = setInterval(() => {
-                                height -= 0.05;
-                                if (height <= 0) {
-                                    height = 0;
-                                    clearInterval(fallInterval);
-                                }
-                                pin.currentHeight = height;
-                                this.updatePinVisuals();
-                            }, 20);
-                        }
-                        pin.currentHeight = height;
-                        this.updatePinVisuals();
-                    }, 20);
-                    
-                    return;
-                }
-                
-                // Start height at current position
-                let height = pin.currentHeight;
-                
-                // Animate lifting to the potential set point
-                const liftInterval = setInterval(() => {
-                    height += 0.05;
-                    
-                    // Check if we're at or past the set point
-                    if (Math.abs(height - pin.setPoint) < 0.1) {
-                        // At the correct height - set the pin!
-                        clearInterval(liftInterval);
-                        pin.currentHeight = pin.setPoint;
-                        pin.isSet = true;
-                        this.gameState.pinsSet++;
-                        this.updatePinVisuals();
-                        this.updateFeedback(`Pin set at the shear line! (${this.gameState.pinsSet}/${this.pinCount})`);
-                        
-                        // Check for win condition
-                        if (this.gameState.pinsSet === this.pinCount) {
-                            this.endGame(true);
-                        }
-                    } 
-                    else if (height > pin.setPoint + 0.1) {
-                        // We went too far - overset the pin
-                        clearInterval(liftInterval);
-                        this.updateFeedback("Pin pushed too far - overset!");
-                        
-                        // Random chance of dropping another pin
-                        if (this.gameState.tension > 60 && Math.random() < 0.3) {
-                            const randomSetPin = this.pins.find(p => p.isSet && Math.random() < 0.5);
-                            if (randomSetPin) {
-                                randomSetPin.isSet = false;
-                                this.gameState.pinsSet--;
-                                this.updateFeedback("A pin dropped! Too much movement");
-                                this.updatePinVisuals();
-                            }
-                        }
-                        
-                        // Animate falling back down
-                        const fallInterval = setInterval(() => {
-                            height -= 0.05;
-                            if (height <= 0) {
-                                height = 0;
-                                clearInterval(fallInterval);
-                            }
-                            pin.currentHeight = height;
-                            this.updatePinVisuals();
-                        }, 20);
-                    }
-                    
-                    // If we reach max height without setting
-                    if (height >= 1) {
-                        clearInterval(liftInterval);
-                        this.updateFeedback("Pin pushed too far!");
-                        
-                        // Fall back down
-                        const fallInterval = setInterval(() => {
-                            height -= 0.05;
-                            if (height <= 0) {
-                                height = 0;
-                                clearInterval(fallInterval);
-                            }
-                            pin.currentHeight = height;
-                            this.updatePinVisuals();
-                        }, 20);
-                    }
-                    
-                    pin.currentHeight = height;
-                    this.updatePinVisuals();
-                }, 20);
-            }
-            
+
             updateFeedback(message) {
                 this.feedback.textContent = message;
             }
@@ -5534,13 +5663,30 @@
             endGame(success) {
                 this.gameState.gameActive = false;
                 
+                // Remove mouse event listeners
+                document.removeEventListener('mouseup', this.mouseUpHandler);
+                
                 if (success) {
                     this.container.classList.add('success');
                     this.updateFeedback("Lock picked successfully!");
                     
                     // Unlock the object in the game
-                    if (typeof unlockTarget === 'function') {
-                        unlockTarget(this.lockable, this.lockable.type || 'object', this.lockable.layer);
+                    if (this.lockable) {
+                        // Set locked to false - this is the crucial part
+                        this.lockable.locked = false;
+                        
+                        // If it's a scenarioData object, also update that property
+                        if (this.lockable.scenarioData) {
+                            this.lockable.scenarioData.locked = false;
+                        }
+                        
+                        // Log successful unlock
+                        if (typeof debugLog === 'function') {
+                            debugLog('LOCKPICK UNLOCK', { 
+                                object: this.lockable, 
+                                success: true 
+                            }, 1);
+                        }
                     }
                 } else {
                     this.container.classList.add('failure');
@@ -5555,6 +5701,11 @@
                     this.complete(success, { lockable: this.lockable });
                 };
                 this.container.appendChild(closeBtn);
+            }
+            
+            cleanup() {
+                // Remove any event listeners
+                document.removeEventListener('mouseup', this.mouseUpHandler);
             }
             
             shuffleArray(array) {

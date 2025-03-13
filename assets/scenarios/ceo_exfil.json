@@ -4,6 +4,10 @@
     "rooms": {
         "reception": {
             "type": "room_reception",
+            "locked": true,
+            "lockType": "key",
+            "requires": "ceo_office_key",
+            "difficulty": "easy",
             "connections": {
                 "north": "office1"
             },
@@ -148,6 +152,7 @@
                     "type": "lockpick",
                     "name": "Lock Pick Kit",
                     "takeable": true,
+                    "inInventory": true,
                     "observations": "A professional lock picking kit with various picks and tension wrenches"
                 }
             ]
