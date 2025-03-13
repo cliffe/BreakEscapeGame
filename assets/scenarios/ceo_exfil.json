@@ -78,7 +78,7 @@
                     "requires": "password",
                     "hasFingerprint": true,
                     "fingerprintOwner": "ceo",
-                    "fingerprintQuality": 0.9,
+                    "fingerprintDifficulty": "medium",
                     "observations": "A computer with a cybersecurity alert on screen. There might be fingerprints on the keyboard."
                 },
                 {
