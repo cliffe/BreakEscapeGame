@@ -3372,9 +3372,12 @@
                     }
                     break;
 
-                case 'bluetooth':
+                    case 'bluetooth':
                     if (lockable.scenarioData?.locked) {
-                        // Allow the item to be picked up even if locked
+                        // Check if we have a matching Bluetooth device in the current room
+                        const matchFound = findMatchingBluetoothDevice(lockable);
+                        
+                        // Allow the item to be picked up regardless of match if it's takeable
                         if (type === 'item' && lockable.scenarioData?.takeable) {
                             // Check if the item is already in the inventory before adding it
                             const isAlreadyInInventory = inventory.items.some(item => item.name === lockable.name);
@@ -3386,11 +3389,27 @@
                                     delete rooms[currentRoom].objects[lockable.name];
                                 }
                             }
+                            
+                            // Only unlock if there's a matching device
+                            if (matchFound) {
+                                unlockTarget(lockable, type, lockable.layer);
+                                gameAlert(`Bluetooth connection established with ${matchFound.name}`, 'success', 'Bluetooth Connected', 3000);
+                            } else {
+                                gameAlert('Item added to inventory but still locked - no matching Bluetooth device in range', 'warning', 'Partial Success', 3000);
+                                return;
+                            }
+                        } else if (matchFound) {
+                            // For non-takeable items, only proceed if there's a match
+                            unlockTarget(lockable, type, lockable.layer);
+                            gameAlert(`Bluetooth connection established with ${matchFound.name}`, 'success', 'Bluetooth Connected', 3000);
+                        } else {
+                            gameAlert('No matching Bluetooth device in range', 'error', 'Connection Failed', 3000);
+                            return;
                         }
-                        return;
                     }
+                    console.log('Bluetooth processing complete');
                     break;
-
+                    
                 default:
                     gameAlert(`Requires: ${lockRequirements.requires}`, 'warning', 'Locked', 4000);
             }
@@ -6366,6 +6385,21 @@
                     $("#biometrics-panel").hide();
                 }, 2000);
             }
+        }
+
+        // Function to find a matching Bluetooth device in the current room
+        function findMatchingBluetoothDevice(device) {
+            if (!device.scenarioData?.mac || !currentRoom) return null;
+            
+            const targetMac = device.scenarioData.mac;
+            const roomObjects = Object.values(rooms[currentRoom].objects || {});
+            
+            // Find any object in the current room with a matching MAC address
+            return roomObjects.find(obj => 
+                obj.scenarioData?.mac && 
+                obj.scenarioData.mac === targetMac && 
+                obj.name !== device.name // Ensure it's not the same device
+            );
         }
 
     </script>
