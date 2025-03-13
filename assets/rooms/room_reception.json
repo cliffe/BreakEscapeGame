@@ -244,17 +244,6 @@
                  "width":48,
                  "x":380,
                  "y":166
-                },
-                {
-                 "height":48,
-                 "id":13,
-                 "name":"bluetooth_spoofer",
-                 "rotation":0,
-                 "type":"",
-                 "visible":true,
-                 "width":48,
-                 "x":320,
-                 "y":166
                 }
          ],
          "opacity":1,
@@ -264,7 +253,7 @@
          "y":0
         }],
  "nextlayerid":12,
- "nextobjectid":14,
+ "nextobjectid":13,
  "orientation":"orthogonal",
  "renderorder":"right-down",
  "tiledversion":"1.11.0",
