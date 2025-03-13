@@ -3313,7 +3313,11 @@
                                 // If not found, try object-level difficulty
                                 difficulty = difficulty || lockable.scenarioData?.difficulty || lockable.properties?.difficulty;
                                 debugLog('STARTING LOCKPICK MINIGAME', { difficulty }, 2);
-                                startLockpickingMinigame(lockable, game.scene.scenes[0], difficulty);
+                                startLockpickingMinigame(lockable, game.scene.scenes[0], difficulty, () => {
+                                    // Add callback to handle successful lockpicking
+                                    unlockTarget(lockable, type, lockable.layer);
+                                    gameAlert(`Successfully picked the lock!`, 'success', 'Lock Picked', 4000);
+                                });
                             }
                         } else {
                             debugLog('KEY NOT FOUND - FAIL', null, 2);
@@ -5721,7 +5725,7 @@
         MinigameFramework.registerScene('lockpicking', LockpickingMinigame);
 
         // Replacement for the startLockpickingMinigame function
-        function startLockpickingMinigame(lockable, scene, difficulty = 'medium') {
+        function startLockpickingMinigame(lockable, scene, difficulty = 'medium', callback) {
             // Initialize the framework if not already done
             if (!MinigameFramework.mainGameScene) {
                 MinigameFramework.init(scene);
@@ -5735,6 +5739,7 @@
                     if (success) {
                         debugLog('LOCKPICK SUCCESS', null, 1);
                         gameAlert(`Successfully picked the lock!`, 'success', 'Lockpicking', 4000);
+                        callback();
                     } else {
                         debugLog('LOCKPICK FAILED', null, 2);
                         gameAlert(`Failed to pick the lock.`, 'error', 'Lockpicking', 4000);
