@@ -4440,36 +4440,364 @@
                 constructor(container, params = {}) {
                     this.container = container;
                     this.params = params;
-                    this.isActive = false;
+                    
+                    // Common game state management
+                    this.gameState = {
+                        isActive: false,
+                        isDragging: false,
+                        mousePosition: { x: 0, y: 0 },
+                        mouseDown: false,
+                        mouseButtonsPressed: [false, false, false],
+                        keyState: {},
+                        success: false,
+                        gameComplete: false,
+                        startTime: 0,
+                        elapsedTime: 0
+                    };
+                    
+                    // Bind event handlers to the instance
+                    this._handleMouseDown = this._handleMouseDown.bind(this);
+                    this._handleMouseUp = this._handleMouseUp.bind(this);
+                    this._handleMouseMove = this._handleMouseMove.bind(this);
+                    this._handleMouseLeave = this._handleMouseLeave.bind(this);
+                    this._handleKeyDown = this._handleKeyDown.bind(this);
+                    this._handleKeyUp = this._handleKeyUp.bind(this);
+                    
+                    // Store event listeners for cleanup
+                    this._eventListeners = [];
                 }
                 
                 init() {
-                    // Show the scene container
+                    console.log(`Initializing minigame scene`);
+                    
+                    // Ensure the scene container is visible
                     this.container.style.display = 'flex';
+                    
+                    // Create standard layout elements
+                    this.createLayout();
                     
                     // Add escape key handler
                     this.escHandler = (e) => {
-                        if (e.key === 'Escape' && this.isActive) {
+                        if (e.key === 'Escape' && this.gameState.isActive) {
                             this.complete(false);
                         }
                     };
                     document.addEventListener('keydown', this.escHandler);
+                    
+                    // Setup common event handling
+                    this.setupEventHandling();
+                    
+                    // Record start time
+                    this.gameState.startTime = Date.now();
+                }
+                
+                // Create standard layout for minigames
+                createLayout() {
+                    // Create and add the header
+                    this.headerElement = document.createElement('div');
+                    this.headerElement.className = 'minigame-header';
+                    this.container.appendChild(this.headerElement);
+                    
+                    // Create the main game container
+                    this.gameContainer = document.createElement('div');
+                    this.gameContainer.className = 'minigame-game-container';
+                    this.gameContainer.style.cssText = `
+                        width: 80%;
+                        height: 80%;
+                        margin: 70px auto 20px auto;
+                        background: #1a1a1a;
+                        border-radius: 5px;
+                        box-shadow: 0 0 15px rgba(0, 0, 0, 0.5) inset;
+                        position: relative;
+                        overflow: hidden;
+                    `;
+                    this.container.appendChild(this.gameContainer);
+                    
+                    // Create message container for notifications, success/failure
+                    this.messageContainer = document.createElement('div');
+                    this.messageContainer.className = 'minigame-message-container';
+                    this.messageContainer.style.cssText = `
+                        position: absolute;
+                        top: 0;
+                        left: 0;
+                        width: 100%;
+                        height: 100%;
+                        pointer-events: none;
+                        z-index: 1000;
+                    `;
+                    this.container.appendChild(this.messageContainer);
+                    
+                    // Create progress display
+                    this.progressContainer = document.createElement('div');
+                    this.progressContainer.style.cssText = `
+                        position: absolute;
+                        bottom: 15px;
+                        left: 50%;
+                        transform: translateX(-50%);
+                        color: white;
+                        text-align: center;
+                        font-size: 16px;
+                        background: rgba(0, 0, 0, 0.6);
+                        padding: 5px 15px;
+                        border-radius: 15px;
+                        z-index: 10;
+                        width: 80%;
+                        max-width: 500px;
+                    `;
+                    this.container.appendChild(this.progressContainer);
+                    
+                    // Create standard close button
+                    const closeButton = document.createElement('button');
+                    closeButton.textContent = '✕';
+                    closeButton.style.cssText = `
+                        position: absolute;
+                        right: 10px;
+                        top: 10px;
+                        background: none;
+                        border: none;
+                        color: white;
+                        font-size: 20px;
+                        cursor: pointer;
+                        z-index: 100;
+                    `;
+                    closeButton.onclick = () => this.complete(false);
+                    this.container.appendChild(closeButton);
+                }
+                
+                // Set up common event handling for mouse, touch, keyboard
+                setupEventHandling() {
+                    // Mouse events
+                    this.addEventListenerWithCleanup(this.gameContainer, 'mousedown', this._handleMouseDown);
+                    this.addEventListenerWithCleanup(document, 'mouseup', this._handleMouseUp);
+                    this.addEventListenerWithCleanup(this.gameContainer, 'mousemove', this._handleMouseMove);
+                    this.addEventListenerWithCleanup(this.gameContainer, 'mouseleave', this._handleMouseLeave);
+                    
+                    // Keyboard events
+                    this.addEventListenerWithCleanup(document, 'keydown', this._handleKeyDown);
+                    this.addEventListenerWithCleanup(document, 'keyup', this._handleKeyUp);
+                    
+                    // Prevent context menu
+                    this.addEventListenerWithCleanup(this.gameContainer, 'contextmenu', (e) => e.preventDefault());
+                }
+                
+                // Utility to add event listener and track it for cleanup
+                addEventListenerWithCleanup(element, eventType, handler, options) {
+                    element.addEventListener(eventType, handler, options);
+                    this._eventListeners.push({ element, eventType, handler });
+                }
+                
+                // Event handlers
+                _handleMouseDown(e) {
+                    console.log("Mouse down in framework handler");
+                    this.gameState.mouseDown = true;
+                    this.gameState.mouseButtonsPressed[e.button] = true;
+                    this.gameState.isDragging = true;
+                    
+                    // Call subclass handler if it exists
+                    if (typeof this.handleMouseDown === 'function') {
+                        this.handleMouseDown(e);
+                    }
+                }
+                
+                _handleMouseUp(e) {
+                    console.log("Mouse up in framework handler");
+                    this.gameState.mouseDown = false;
+                    this.gameState.mouseButtonsPressed[e.button] = false;
+                    this.gameState.isDragging = false;
+                    
+                    // Call subclass handler if it exists
+                    if (typeof this.handleMouseUp === 'function') {
+                        this.handleMouseUp(e);
+                    }
+                }
+                
+                _handleMouseMove(e) {
+                    // Update mouse position
+                    const rect = this.gameContainer.getBoundingClientRect();
+                    this.gameState.mousePosition = {
+                        x: e.clientX - rect.left,
+                        y: e.clientY - rect.top,
+                        clientX: e.clientX,
+                        clientY: e.clientY,
+                        screenX: e.screenX,
+                        screenY: e.screenY
+                    };
+                    
+                    // Call subclass handler if it exists
+                    if (typeof this.handleMouseMove === 'function') {
+                        this.handleMouseMove(e);
+                    }
+                }
+                
+                _handleMouseLeave(e) {
+                    this.gameState.isDragging = false;
+                    
+                    // Call subclass handler if it exists
+                    if (typeof this.handleMouseLeave === 'function') {
+                        this.handleMouseLeave(e);
+                    }
+                }
+                
+                _handleKeyDown(e) {
+                    this.gameState.keyState[e.code] = true;
+                    
+                    // Call subclass handler if it exists
+                    if (typeof this.handleKeyDown === 'function') {
+                        this.handleKeyDown(e);
+                    }
+                }
+                
+                _handleKeyUp(e) {
+                    this.gameState.keyState[e.code] = false;
+                    
+                    // Call subclass handler if it exists
+                    if (typeof this.handleKeyUp === 'function') {
+                        this.handleKeyUp(e);
+                    }
+                }
+                
+                // Message display system
+                showMessage(message, type = 'info', duration = 0) {
+                    // Create a message element
+                    const messageElement = document.createElement('div');
+                    messageElement.className = `minigame-message minigame-message-${type}`;
+                    messageElement.innerHTML = message;
+                    
+                    // Style based on type
+                    let styles = `
+                        position: absolute;
+                        top: 50%;
+                        left: 50%;
+                        transform: translate(-50%, -50%);
+                        padding: 20px;
+                        border-radius: 5px;
+                        text-align: center;
+                        z-index: 1001;
+                        pointer-events: all;
+                        max-width: 90%;
+                        transition: opacity 0.3s;
+                    `;
+                    
+                    switch(type) {
+                        case 'success':
+                            messageElement.className = 'minigame-success-message';
+                            break;
+                        case 'failure':
+                        case 'error':
+                            messageElement.className = 'minigame-failure-message';
+                            break;
+                        default:
+                            styles += `
+                                background: rgba(0, 0, 0, 0.8);
+                                color: white;
+                                box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+                            `;
+                    }
+                    
+                    // Apply styles
+                    messageElement.style.cssText = styles;
+                    
+                    // Add to the message container
+                    this.messageContainer.appendChild(messageElement);
+                    
+                    // Auto-remove after duration, if specified
+                    if (duration > 0) {
+                        setTimeout(() => {
+                            messageElement.style.opacity = '0';
+                            setTimeout(() => {
+                                if (messageElement.parentNode) {
+                                    messageElement.parentNode.removeChild(messageElement);
+                                }
+                            }, 300);
+                        }, duration);
+                    }
+                    
+                    return messageElement;
+                }
+                
+                // Success/failure methods
+                showSuccess(message, autoComplete = true, delay = 2000) {
+                    this.gameState.success = true;
+                    this.gameState.gameComplete = true;
+                    this.container.classList.add('success');
+                    
+                    // Create success message
+                    const successMessage = this.showMessage(message, 'success');
+                    
+                    // Auto-complete after delay
+                    if (autoComplete) {
+                        setTimeout(() => {
+                            this.complete(true);
+                        }, delay);
+                    }
+                    
+                    return successMessage;
+                }
+                
+                showFailure(message, autoComplete = true, delay = 2000) {
+                    this.gameState.success = false;
+                    this.gameState.gameComplete = true;
+                    this.container.classList.add('failure');
+                    
+                    // Create failure message
+                    const failureMessage = this.showMessage(message, 'failure');
+                    
+                    // Auto-complete after delay
+                    if (autoComplete) {
+                        setTimeout(() => {
+                            this.complete(false);
+                        }, delay);
+                    }
+                    
+                    return failureMessage;
+                }
+                
+                // Progress updates
+                updateProgress(current, total, label = '') {
+                    const percentage = Math.min(100, Math.max(0, (current / total) * 100));
+                    
+                    this.progressContainer.innerHTML = `
+                        ${label ? `<div style="margin-bottom: 5px;">${label}</div>` : ''}
+                        <div class="minigame-progress-container">
+                            <div class="minigame-progress-bar" style="width: ${percentage}%;"></div>
+                        </div>
+                    `;
                 }
                 
                 start() {
-                    this.isActive = true;
+                    this.gameState.isActive = true;
+                    console.log("Minigame started");
+                }
+                
+                update(deltaTime) {
+                    // Update elapsed time
+                    this.gameState.elapsedTime = Date.now() - this.gameState.startTime;
+                    
+                    // Override in subclass for game-specific updates
                 }
                 
                 complete(success, result = null) {
-                    this.isActive = false;
+                    console.log(`Minigame complete, success: ${success}`);
+                    this.gameState.isActive = false;
+                    this.gameState.success = success;
+                    
+                    // Remove event listeners
                     document.removeEventListener('keydown', this.escHandler);
+                    this.cleanup();
+                    
                     if (typeof this.params.onComplete === 'function') {
                         this.params.onComplete(success, result);
                     }
                 }
                 
                 cleanup() {
-                    // Cleanup resources
+                    console.log("Cleaning up minigame");
+                    
+                    // Remove all tracked event listeners
+                    this._eventListeners.forEach(({ element, eventType, handler }) => {
+                        element.removeEventListener(eventType, handler);
+                    });
+                    this._eventListeners = [];
                 }
             }
         };
@@ -4484,27 +4812,34 @@
                 this.pinCount = this.difficulty === 'easy' ? 3 : this.difficulty === 'medium' ? 4 : 5;
                 
                 this.pins = [];
-                this.gameState = {
+                
+                // Use gameState from the framework but extend it with lockpicking-specific properties
+                this.lockState = {
                     tensionApplied: false,
-                    gameActive: false,
                     pinsSet: 0,
-                    currentPin: null,
-                    mouseDown: false
+                    currentPin: null
                 };
             }
             
             init() {
+                // Call parent init to set up common components
                 super.init();
                 
-                // Apply styles from the framework instead of inline
+                console.log("Lockpicking minigame initializing");
+                
+                // Configure container size and layout
                 this.container.style.width = '90%';
                 this.container.style.maxWidth = '500px';
                 this.container.style.padding = '20px';
-                this.container.style.display = 'flex';
-                this.container.style.flexDirection = 'column';
                 this.container.style.gap = '15px';
                 
-                // Add styles if they don't exist
+                // Set up header content
+                this.headerElement.innerHTML = `
+                    <h3>Lockpicking</h3>
+                    <p>Apply tension and hold click on pins to lift them to the shear line</p>
+                `;
+                
+                // Add custom styles for the lockpicking minigame if they don't exist
                 if (!document.getElementById('lockpicking-styles')) {
                     const style = document.createElement('style');
                     style.id = 'lockpicking-styles';
@@ -4596,60 +4931,6 @@
                             height: 39px; /* Just below shear line */
                         }
                         
-                        .tension-toggle {
-                            display: inline-block;
-                            position: relative;
-                            width: 60px;
-                            height: 34px;
-                            margin: 10px;
-                        }
-                        
-                        .tension-toggle input {
-                            opacity: 0;
-                            width: 0;
-                            height: 0;
-                        }
-                        
-                        .tension-slider {
-                            position: absolute;
-                            cursor: pointer;
-                            top: 0;
-                            left: 0;
-                            right: 0;
-                            bottom: 0;
-                            background-color: #ccc;
-                            -webkit-transition: .4s;
-                            transition: .4s;
-                            border-radius: 34px;
-                        }
-                        
-                        .tension-slider:before {
-                            position: absolute;
-                            content: "";
-                            height: 26px;
-                            width: 26px;
-                            left: 4px;
-                            bottom: 4px;
-                            background-color: white;
-                            -webkit-transition: .4s;
-                            transition: .4s;
-                            border-radius: 50%;
-                        }
-                        
-                        input:checked + .tension-slider {
-                            background-color: #2196F3;
-                        }
-                        
-                        input:focus + .tension-slider {
-                            box-shadow: 0 0 1px #2196F3;
-                        }
-                        
-                        input:checked + .tension-slider:before {
-                            -webkit-transform: translateX(26px);
-                            -ms-transform: translateX(26px);
-                            transform: translateX(26px);
-                        }
-                        
                         .cylinder {
                             display: flex;
                             justify-content: center;
@@ -4695,31 +4976,116 @@
                         .tension-control label {
                             flex: 1;
                         }
+                        
+                        .tension-wrench {
+                            width: 50px;
+                            height: 30px;
+                            background: #666;
+                            border-radius: 4px;
+                            cursor: pointer;
+                            display: flex;
+                            align-items: center;
+                            justify-content: center;
+                            margin-right: 10px;
+                            transition: transform 0.2s;
+                        }
+                        
+                        .tension-wrench:hover {
+                            background: #777;
+                        }
+                        
+                        .tension-wrench.active {
+                            background: #2196F3;
+                            transform: rotate(-5deg);
+                        }
                     `;
                     document.head.appendChild(style);
                 }
-
-                // Create header with title and instructions using the framework's header class
-                const header = document.createElement('div');
-                header.className = 'minigame-header';
-                header.innerHTML = `
-                    <h3>Lockpicking</h3>
-                    <p>Apply tension and hold click on pins to lift them to the shear line</p>
-                `;
-                this.container.appendChild(header);
                 
-                // Create the lock cylinder visualization
+                // Replace the game container with custom lockpicking interface
+                this.setupLockpickingInterface();
+                
+                // Create pins with random binding order
+                this.createPins();
+                
+                // Update the progress display with lockpicking instructions
+                this.updateFeedback("Apply tension first, then click and hold on pins to lift them");
+            }
+            
+            setupLockpickingInterface() {
+                // Remove default game container (we'll use custom layout)
+                if (this.gameContainer.parentNode) {
+                    this.gameContainer.parentNode.removeChild(this.gameContainer);
+                }
+                
+                // Create the lock visual container
                 const lockVisual = document.createElement('div');
                 lockVisual.className = 'lock-visual';
                 this.container.appendChild(lockVisual);
+                this.lockVisual = lockVisual;
                 
                 // Create the cylinder that will rotate when tension is applied
                 const cylinder = document.createElement('div');
                 cylinder.className = 'cylinder';
                 cylinder.innerHTML = '<div class="cylinder-inner"></div>';
                 this.container.appendChild(cylinder);
+                this.cylinder = cylinder;
                 
-                // Create pins with random binding order
+                // Add tension toggle control
+                const tensionControl = document.createElement('div');
+                tensionControl.className = 'tension-control';
+                tensionControl.innerHTML = `
+                    <div class="tension-wrench">
+                        <div class="wrench-handle"></div>
+                        <div class="wrench-tip"></div>
+                    </div>
+                    <span class="tension-status">Click wrench to apply tension</span>
+                `;
+                this.container.appendChild(tensionControl);
+                
+                // Feedback area
+                const feedback = document.createElement('div');
+                feedback.className = 'lockpick-feedback';
+                this.container.appendChild(feedback);
+                this.feedback = feedback;
+                
+                // Set up tension wrench interaction
+                const tensionWrench = tensionControl.querySelector('.tension-wrench');
+                const tensionStatus = tensionControl.querySelector('.tension-status');
+                
+                tensionWrench.addEventListener('click', () => {
+                    this.lockState.tensionApplied = !this.lockState.tensionApplied;
+                    tensionWrench.classList.toggle('active', this.lockState.tensionApplied);
+                    cylinder.classList.toggle('rotated', this.lockState.tensionApplied);
+                    
+                    // Update status text
+                    tensionStatus.textContent = this.lockState.tensionApplied ? 
+                        'Tension applied' : 'Click wrench to apply tension';
+                    
+                    // Update which pins are binding
+                    this.updatePinBindings();
+                    
+                    // If tension is toggled off, reset any unset pins
+                    if (!this.lockState.tensionApplied) {
+                        this.pins.forEach(pin => {
+                            if (!pin.isSet) {
+                                pin.currentHeight = 0;
+                                this.updatePinVisual(pin);
+                            }
+                        });
+                        this.updateFeedback("Tension released - apply tension before lifting pins");
+                    } else {
+                        this.updateFeedback("Tension applied - click and hold on pins to lift them");
+                    }
+                });
+                
+                // Store references
+                this.tensionWrench = tensionWrench;
+                this.tensionStatus = tensionStatus;
+            }
+            
+            createPins() {
+                // Generate random binding order
                 const bindingOrder = this.shuffleArray([...Array(this.pinCount).keys()]);
                 
                 for (let i = 0; i < this.pinCount; i++) {
@@ -4727,7 +5093,7 @@
                     const pinElement = document.createElement('div');
                     pinElement.className = 'pin';
                     pinElement.dataset.index = i;
-                    lockVisual.appendChild(pinElement);
+                    this.lockVisual.appendChild(pinElement);
                     
                     // Create shear line
                     const shearLine = document.createElement('div');
@@ -4766,99 +5132,48 @@
                     
                     this.pins.push(pin);
                     
-                    // Mouse down event - start lifting pin
-                    pinElement.addEventListener('mousedown', (e) => {
-                        if (!this.gameState.gameActive || pin.isSet) return;
-                        
-                        // Only proceed if tension is applied
-                        if (!this.gameState.tensionApplied) {
-                            this.updateFeedback("Apply tension first by toggling the wrench");
-                            return;
-                        }
-                        
-                        // Start lifting the pin
-                        this.gameState.mouseDown = true;
-                        this.gameState.currentPin = pin;
-                        this.liftPin();
-                        
-                        // Prevent text selection
-                        e.preventDefault();
+                    // Add custom pin click handler
+                    this.addEventListenerWithCleanup(pinElement, 'mousedown', (e) => {
+                        this.handlePinMouseDown(pin, e);
                     });
                 }
-                
-                // Mouse up event - stop lifting pin
-                document.addEventListener('mouseup', () => {
-                    this.gameState.mouseDown = false;
-                    
-                    // If we were in the process of lifting a pin, check if it sets or drops
-                    if (this.gameState.currentPin) {
-                        this.checkPinSet(this.gameState.currentPin);
-                        this.gameState.currentPin = null;
-                    }
-                });
-                
-                // Add tension toggle
-                const tensionControl = document.createElement('div');
-                tensionControl.className = 'tension-control';
-                tensionControl.innerHTML = `
-                    <div class="tension-wrench">
-                        <div class="wrench-handle"></div>
-                        <div class="wrench-tip"></div>
-                    </div>
-                    <span class="tension-status">Click wrench to apply tension</span>
-                `;
-                this.container.appendChild(tensionControl);
-                
-                // Feedback area
-                this.feedback = document.createElement('div');
-                this.feedback.className = 'lockpick-feedback';
-                this.feedback.textContent = 'Apply tension first, then click and hold on pins to lift them';
-                this.container.appendChild(this.feedback);
-                
-                // Tension toggle event
-                const tensionWrench = tensionControl.querySelector('.tension-wrench');
-                const tensionStatus = tensionControl.querySelector('.tension-status');
-
-                tensionWrench.addEventListener('click', () => {
-                    this.gameState.tensionApplied = !this.gameState.tensionApplied;
-                    tensionWrench.classList.toggle('active', this.gameState.tensionApplied);
-                    cylinder.classList.toggle('rotated', this.gameState.tensionApplied);
-                    
-                    // Update status text
-                    tensionStatus.textContent = this.gameState.tensionApplied ? 
-                        'Tension applied' : 'Click wrench to apply tension';
-                    
-                    // Update which pins are binding
-                    this.updatePinBindings();
-                    
-                    // If tension is toggled off, reset any unset pins
-                    if (!this.gameState.tensionApplied) {
-                        this.pins.forEach(pin => {
-                            if (!pin.isSet) {
-                                pin.currentHeight = 0;
-                                this.updatePinVisual(pin);
-                            }
-                        });
-                        this.updateFeedback("Tension released - apply tension before lifting pins");
-                    } else {
-                        this.updateFeedback("Tension applied - click and hold on pins to lift them");
-                    }
-                });
             }
             
-            start() {
-                super.start();
-                this.gameState.gameActive = true;
-            }
-            
-            // Continuously lift the current pin while mouse is down
-            liftPin() {
-                if (!this.gameState.mouseDown || !this.gameState.currentPin || 
-                    !this.gameState.gameActive || !this.gameState.tensionApplied) {
+            // Custom pin mouse down handler
+            handlePinMouseDown(pin, e) {
+                if (!this.gameState.isActive || pin.isSet) return;
+                
+                // Only proceed if tension is applied
+                if (!this.lockState.tensionApplied) {
+                    this.updateFeedback("Apply tension first by toggling the wrench");
                     return;
                 }
                 
-                const pin = this.gameState.currentPin;
+                // Start lifting the pin
+                this.lockState.currentPin = pin;
+                this.liftPin();
+                
+                // Prevent text selection
+                e.preventDefault();
+            }
+            
+            // Override framework's mouse event handlers
+            handleMouseUp(e) {
+                // If we were in the process of lifting a pin, check if it sets or drops
+                if (this.lockState.currentPin) {
+                    this.checkPinSet(this.lockState.currentPin);
+                    this.lockState.currentPin = null;
+                }
+            }
+            
+            // Pin-lifting logic
+            liftPin() {
+                if (!this.gameState.mouseDown || !this.lockState.currentPin || 
+                    !this.gameState.isActive || !this.lockState.tensionApplied) {
+                    return;
+                }
+                
+                const pin = this.lockState.currentPin;
                 
                 // Only binding pins can be lifted effectively
                 if (!this.shouldPinBind(pin)) {
@@ -4884,7 +5199,7 @@
             
             // Check if a pin should be set or dropped
             checkPinSet(pin) {
-                if (!this.gameState.tensionApplied || !this.shouldPinBind(pin)) {
+                if (!this.lockState.tensionApplied || !this.shouldPinBind(pin)) {
                     // If no tension or not binding, the pin drops
                     this.dropPin(pin);
                     return;
@@ -4896,13 +5211,16 @@
                 if (heightDiff < 0.1) {
                     // Pin set successfully!
                     pin.isSet = true;
-                    this.gameState.pinsSet++;
-                    this.updateFeedback(`Pin set at the shear line! (${this.gameState.pinsSet}/${this.pinCount})`);
+                    this.lockState.pinsSet++;
+                    this.updateFeedback(`Pin set at the shear line! (${this.lockState.pinsSet}/${this.pinCount})`);
                     this.updatePinVisual(pin);
                     
+                    // Update progress
+                    this.updateProgress(this.lockState.pinsSet, this.pinCount);
+                    
                     // Check if all pins are set
-                    if (this.gameState.pinsSet === this.pinCount) {
-                        this.endGame(true);
+                    if (this.lockState.pinsSet === this.pinCount) {
+                        this.lockPickingSuccess();
                         return;
                     }
                     
@@ -4950,7 +5268,7 @@
             
             // Update which pins are binding based on binding order
             updatePinBindings() {
-                if (!this.gameState.tensionApplied) {
+                if (!this.lockState.tensionApplied) {
                     // No binding if no tension
                     this.pins.forEach(pin => {
                         pin.elements.container.classList.remove('binding');
@@ -4983,7 +5301,7 @@
             
             // Check if a pin should bind based on binding order
             shouldPinBind(pin) {
-                if (!this.gameState.tensionApplied) return false;
+                if (!this.lockState.tensionApplied) return false;
                 
                 // Find the next unset pin in binding order
                 for (let order = 0; order < this.pinCount; order++) {
@@ -4994,59 +5312,86 @@
                 }
                 return false;
             }
-
+            
+            // Update feedback text
             updateFeedback(message) {
                 this.feedback.textContent = message;
             }
             
-            endGame(success) {
-                this.gameState.gameActive = false;
+            // Handle successful lockpicking
+            lockPickingSuccess() {
+                // Disable game interaction
+                this.gameState.isActive = false;
                 
-                // Remove mouse event listeners
-                document.removeEventListener('mouseup', this.mouseUpHandler);
+                // Update UI
+                this.updateFeedback("Lock picked successfully!");
                 
-                if (success) {
-                    this.container.classList.add('success');
-                    this.updateFeedback("Lock picked successfully!");
+                // Unlock the object in the game
+                if (this.lockable) {
+                    // Set locked to false
+                    this.lockable.locked = false;
                     
-                    // Unlock the object in the game
-                    if (this.lockable) {
-                        // Set locked to false - this is the crucial part
-                        this.lockable.locked = false;
-                        
-                        // If it's a scenarioData object, also update that property
-                        if (this.lockable.scenarioData) {
-                            this.lockable.scenarioData.locked = false;
-                        }
-                        
-                        // Log successful unlock
-                        if (typeof debugLog === 'function') {
-                            debugLog('LOCKPICK UNLOCK', { 
-                                object: this.lockable, 
-                                success: true 
-                            }, 1);
-                        }
+                    // If it's a scenarioData object, also update that property
+                    if (this.lockable.scenarioData) {
+                        this.lockable.scenarioData.locked = false;
                     }
-                } else {
-                    this.container.classList.add('failure');
-                    this.updateFeedback("Failed to pick the lock");
+                    
+                    // Log successful unlock
+                    if (typeof debugLog === 'function') {
+                        debugLog('LOCKPICK UNLOCK', { 
+                            object: this.lockable, 
+                            success: true 
+                        }, 1);
+                    }
                 }
                 
-                // Add close button using the framework's close button class
-                const closeBtn = document.createElement('button');
-                closeBtn.textContent = "Close";
-                closeBtn.className = "minigame-close";
-                closeBtn.onclick = () => {
-                    this.complete(success, { lockable: this.lockable });
-                };
-                this.container.appendChild(closeBtn);
+                // Show success message
+                const successHTML = `
+                    <div style="font-weight: bold; font-size: 24px; margin-bottom: 10px;">Lock picked successfully!</div>
+                    <div style="font-size: 18px; margin-bottom: 15px;">All pins set at the shear line</div>
+                    <div style="font-size: 14px; color: #aaa;">
+                        Difficulty: ${this.difficulty.charAt(0).toUpperCase() + this.difficulty.slice(1)}<br>
+                        Pins: ${this.pinCount}
+                    </div>
+                `;
+                
+                // Use the framework's success message
+                this.showSuccess(successHTML, true, 2000);
+                
+                // Store lockable for the result
+                this.gameResult = { lockable: this.lockable };
             }
             
-            cleanup() {
-                // Remove any event listeners
-                document.removeEventListener('mouseup', this.mouseUpHandler);
+            lockPickingFailure() {
+                // Show failure message
+                const failureHTML = `
+                    <div style="font-weight: bold; margin-bottom: 10px;">Failed to pick the lock</div>
+                    <div style="font-size: 16px; margin-top: 5px;">Try again with more careful pin manipulation</div>
+                `;
+                
+                // Use the framework's failure message
+                this.showFailure(failureHTML, true, 2000);
             }
             
+            start() {
+                super.start();
+                console.log("Lockpicking minigame started");
+                
+                // Initialize game state
+                this.gameState.isActive = true;
+                this.lockState.tensionApplied = false;
+                this.lockState.pinsSet = 0;
+                
+                // Initialize progress
+                this.updateProgress(0, this.pinCount);
+            }
+            
+            complete(success) {
+                // Call parent complete with result
+                super.complete(success, this.gameResult);
+            }
+            
+            // Utility function to shuffle an array
             shuffleArray(array) {
                 for (let i = array.length - 1; i > 0; i--) {
                     const j = Math.floor(Math.random() * (i + 1));
@@ -5764,7 +6109,7 @@
                 
                 this.item = params.item;
                 
-                // Game state variables
+                // Game state variables - using framework's gameState as base
                 this.difficultySettings = {
                     easy: {
                         requiredCoverage: 0.3, // 30% of prints
@@ -5791,7 +6136,6 @@
                 this.fingerprintCells = new Set();
                 this.revealedPrints = 0;
                 this.overDusted = 0;
-                this.isDragging = false;
                 this.lastDustTime = {};
                 
                 // Tools configuration
@@ -5804,28 +6148,24 @@
             }
             
             init() {
+                // Call parent init to set up common components
                 super.init();
                 
-                console.log("Dusting minigame container:", this.container);
+                console.log("Dusting minigame initializing");
                 
-                // Set container to flex display via class instead of inline style
+                // Set container dimensions
                 this.container.style.width = '75%';
                 this.container.style.height = '75%';
                 this.container.style.padding = '20px';
-                this.container.style.display = 'flex';
-                this.container.style.flexDirection = 'column';
                 
-                // Create header with instructions
-                const header = document.createElement('div');
-                header.className = 'minigame-header';
-                header.innerHTML = `
+                // Set up header content
+                this.headerElement.innerHTML = `
                     <h3>Fingerprint Dusting</h3>
                     <p>Drag to dust the surface and reveal fingerprints. Avoid over-dusting!</p>
                 `;
                 
-                // Create game container
-                const gameContainer = document.createElement('div');
-                gameContainer.style.cssText = `
+                // Configure game container
+                this.gameContainer.style.cssText = `
                     width: 80%;
                     height: 80%;
                     max-width: 600px;
@@ -5861,25 +6201,7 @@
                 const svgGrid = `data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='100' height='100' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' fill='%23111'/%3E%3Cpath d='M0 50h100M50 0v100' stroke='%23222' stroke-width='0.5'/%3E%3Cpath d='M25 0v100M75 0v100M0 25h100M0 75h100' stroke='%23191919' stroke-width='0.3'/%3E%3C/svg%3E`;
                 
                 gridBackground.style.backgroundImage = `url('${svgGrid}')`;
-                gameContainer.appendChild(gridBackground);
-                
-                // Add progress display
-                const progressText = document.createElement('div');
-                progressText.style.cssText = `
-                    position: absolute;
-                    bottom: 15px;
-                    left: 50%;
-                    transform: translateX(-50%);
-                    color: white;
-                    text-align: center;
-                    font-size: 16px;
-                    background: rgba(0, 0, 0, 0.6);
-                    padding: 5px 15px;
-                    border-radius: 15px;
-                    z-index: 10;
-                    width: 80%;
-                    max-width: 500px;
-                `;
+                this.gameContainer.appendChild(gridBackground);
                 
                 // Add tool selection
                 const toolsContainer = document.createElement('div');
@@ -5910,13 +6232,11 @@
                     
                     toolsContainer.appendChild(toolButton);
                 });
-                
-                // Generate fingerprint pattern
-                this.fingerprintCells = this.generateFingerprint(this.currentDifficulty);
+                this.container.appendChild(toolsContainer);
                 
                 // Create particle container for dust effects
-                const particleContainer = document.createElement('div');
-                particleContainer.style.cssText = `
+                this.particleContainer = document.createElement('div');
+                this.particleContainer.style.cssText = `
                     position: absolute;
                     top: 0;
                     left: 0;
@@ -5926,10 +6246,26 @@
                     z-index: 5;
                     overflow: hidden;
                 `;
+                this.container.appendChild(this.particleContainer);
+                
+                // Generate fingerprint pattern and set up cells
+                this.fingerprintCells = this.generateFingerprint(this.currentDifficulty);
+                this.setupGrid();
                 
                 // Total prints and required prints calculations
                 this.totalPrints = this.fingerprintCells.size;
                 this.requiredPrints = Math.ceil(this.totalPrints * this.difficultySettings[this.currentDifficulty].requiredCoverage);
+                
+                // Check initial progress
+                this.checkProgress();
+            }
+            
+            // Set up the grid of cells
+            setupGrid() {
+                // Clear any existing cells
+                while (this.gameContainer.firstChild) {
+                    this.gameContainer.removeChild(this.gameContainer.firstChild);
+                }
                 
                 // Create grid cells
                 for (let y = 0; y < this.gridSize; y++) {
@@ -5948,78 +6284,14 @@
                         cell.dataset.dustLevel = '0';
                         cell.dataset.hasFingerprint = this.fingerprintCells.has(`${x},${y}`) ? 'true' : 'false';
                         
-                        gameContainer.appendChild(cell);
+                        this.gameContainer.appendChild(cell);
                     }
                 }
-                
-                // Store references to elements we'll need to update
-                this.gameContainer = gameContainer;
-                this.progressText = progressText;
-                this.particleContainer = particleContainer;
-                
-                // Add dragging interaction - bind these to the instance
-                this.mouseDownHandler = this.handleMouseDown.bind(this);
-                this.mouseUpHandler = this.handleMouseUp.bind(this);
-                this.mouseLeaveHandler = this.handleMouseLeave.bind(this);
-                this.mouseMoveHandler = this.handleMouseMove.bind(this);
-                
-                gameContainer.addEventListener('mousedown', this.mouseDownHandler);
-                document.addEventListener('mouseup', this.mouseUpHandler);
-                gameContainer.addEventListener('mouseleave', this.mouseLeaveHandler);
-                gameContainer.addEventListener('mousemove', this.mouseMoveHandler);
-                
-                // Add close button
-                const closeButton = document.createElement('button');
-                closeButton.textContent = '✕';
-                closeButton.style.cssText = `
-                    position: absolute;
-                    right: 10px;
-                    top: 10px;
-                    background: none;
-                    border: none;
-                    color: white;
-                    font-size: 20px;
-                    cursor: pointer;
-                    z-index: 10;
-                `;
-                closeButton.onclick = () => {
-                    this.complete(false);
-                };
-                
-                // Assemble the interface
-                this.container.appendChild(closeButton);
-                this.container.appendChild(header);
-                this.container.appendChild(gameContainer);
-                this.container.appendChild(particleContainer);
-                this.container.appendChild(progressText);
-                this.container.appendChild(toolsContainer);
-                
-                // Check initial progress
-                this.checkProgress();
             }
             
-            // Mouse event handlers
-            handleMouseDown(e) {
-                console.log("Mouse down");
-                this.isDragging = true;
-                // Immediately start dusting at this position
-                this.handleMouseMove(e);
-            }
-            
-            handleMouseUp() {
-                console.log("Mouse up");
-                this.isDragging = false;
-            }
-            
-            handleMouseLeave() {
-                console.log("Mouse leave");
-                this.isDragging = false;
-            }
-            
+            // Override the framework's mouse event handlers
             handleMouseMove(e) {
-                if (!this.isDragging) return;
-                
-                console.log("Mouse move while dragging");
+                if (!this.gameState.isDragging) return;
                 
                 // Get the cell element under the cursor
                 const cell = document.elementFromPoint(e.clientX, e.clientY);
@@ -6116,30 +6388,12 @@
                 this.checkProgress();
             }
             
-            start() {
-                super.start();
-                console.log("Dusting minigame started");
-                // Disable game movement
-                if (this.params.scene) {
-                    this.params.scene.input.mouse.enabled = false;
-                }
+            // Use the framework's mouseDown handler directly
+            handleMouseDown(e) {
+                // Just start dusting immediately
+                this.handleMouseMove(e);
             }
-            
-            cleanup() {
-                // Remove event listeners
-                this.gameContainer.removeEventListener('mousedown', this.mouseDownHandler);
-                document.removeEventListener('mouseup', this.mouseUpHandler);
-                this.gameContainer.removeEventListener('mouseleave', this.mouseLeaveHandler);
-                this.gameContainer.removeEventListener('mousemove', this.mouseMoveHandler);
-                
-                // Re-enable game movement
-                if (this.params.scene) {
-                    this.params.scene.input.mouse.enabled = true;
-                }
-                
-                console.log("Dusting minigame cleaned up");
-            }
-            
+
             createDustParticles(x, y, intensity, color) {
                 const numParticles = Math.floor(5 + intensity * 5); // 5-10 particles based on intensity
                 
@@ -6231,8 +6485,8 @@
                     }
                 });
                 
-                // Update progress display using the framework's progress bar classes
-                this.progressText.innerHTML = `
+                // Update progress display
+                this.progressContainer.innerHTML = `
                     <div style="margin-bottom: 5px;">
                         <span style="color: #2ecc71;">Found: ${this.revealedPrints}/${this.requiredPrints} required prints</span>
                         <span style="margin-left: 15px; color: ${this.overDusted > this.difficultySettings[this.currentDifficulty].maxOverDusted * 0.7 ? '#e74c3c' : '#fff'};">
@@ -6246,34 +6500,30 @@
                 
                 // Check fail condition first
                 if (this.overDusted >= this.difficultySettings[this.currentDifficulty].maxOverDusted) {
-                    this.showFailure("Too many over-dusted areas!");
+                    this.showFinalFailure("Too many over-dusted areas!");
                     return;
                 }
                 
                 // Check win condition
                 if (this.revealedPrints >= this.requiredPrints) {
-                    this.showSuccess();
+                    this.showFinalSuccess();
                 }
             }
             
-            showSuccess() {
+            showFinalSuccess() {
                 // Calculate quality based on dusting precision
                 const dustPenalty = this.overDusted / this.difficultySettings[this.currentDifficulty].maxOverDusted; // 0-1
                 const coverageBonus = this.revealedPrints / this.totalPrints; // 0-1
                 
                 // Higher quality for more coverage and less over-dusting
                 const quality = 0.7 + (coverageBonus * 0.25) - (dustPenalty * 0.15);
-                
-                // Show success message using the framework's success message class
-                const successMessage = document.createElement('div');
-                successMessage.className = 'minigame-success-message';
-                
                 const qualityPercentage = Math.round(quality * 100);
                 const qualityRating = qualityPercentage >= 95 ? 'Perfect' : 
                                       qualityPercentage >= 85 ? 'Excellent' : 
                                       qualityPercentage >= 75 ? 'Good' : 'Acceptable';
                 
-                successMessage.innerHTML = `
+                // Build success message with detailed stats
+                const successHTML = `
                     <div style="font-weight: bold; font-size: 24px; margin-bottom: 10px;">Fingerprint successfully collected!</div>
                     <div style="font-size: 18px; margin-bottom: 15px;">Quality: ${qualityRating} (${qualityPercentage}%)</div>
                     <div style="font-size: 14px; color: #aaa;">
@@ -6283,44 +6533,50 @@
                     </div>
                 `;
                 
-                this.container.appendChild(successMessage);
-                this.container.classList.add('success');
+                // Use the framework's success message system
+                this.showSuccess(successHTML, true, 2000);
                 
                 // Disable further interaction
-                this.isDragging = false;
                 this.gameContainer.style.pointerEvents = 'none';
                 
-                setTimeout(() => {
-                    this.complete(true, {
-                        quality: quality,
-                        rating: qualityRating
-                    });
-                }, 2000);
+                // Store result for onComplete callback
+                this.gameResult = {
+                    quality: quality,
+                    rating: qualityRating
+                };
             }
             
-            showFailure(reason) {
-                // Show failure message using the framework's failure message class
-                const failureMessage = document.createElement('div');
-                failureMessage.className = 'minigame-failure-message';
-                
-                failureMessage.innerHTML = `
+            showFinalFailure(reason) {
+                // Build failure message
+                const failureHTML = `
                     <div style="font-weight: bold; margin-bottom: 10px;">${reason}</div>
                     <div style="font-size: 16px; margin-top: 5px;">Try again with more careful dusting.</div>
                 `;
                 
-                this.container.appendChild(failureMessage);
-                this.container.classList.add('failure');
+                // Use the framework's failure message system
+                this.showFailure(failureHTML, true, 2000);
                 
                 // Disable further interaction
-                this.isDragging = false;
                 this.gameContainer.style.pointerEvents = 'none';
+            }
+            
+            start() {
+                super.start();
+                console.log("Dusting minigame started");
                 
-                setTimeout(() => {
-                    this.complete(false);
-                }, 2000);
+                // Disable game movement in the main scene
+                if (this.params.scene) {
+                    this.params.scene.input.mouse.enabled = false;
+                }
+            }
+            
+            complete(success) {
+                // Call parent complete with result
+                super.complete(success, this.gameResult);
             }
             
             generateFingerprint(difficulty) {
+                // Existing fingerprint generation logic remains the same
                 const pattern = this.difficultySettings[difficulty].pattern;
                 const numPrints = this.difficultySettings[difficulty].fingerprints;
                 const newFingerprintCells = new Set();
@@ -6436,6 +6692,15 @@
                 }
                 
                 return newFingerprintCells;
+            }
+            
+            cleanup() {
+                super.cleanup();
+                
+                // Re-enable game movement
+                if (this.params.scene) {
+                    this.params.scene.input.mouse.enabled = true;
+                }
             }
         }
 
