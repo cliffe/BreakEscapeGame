@@ -1560,8 +1560,8 @@
             this.load.image('fingerprint_kit', 'assets/objects/fingerprint_kit.png');
             this.load.image('lockpick', 'assets/objects/lockpick.png');
 
-            this.load.json('gameScenarioJSON', 'assets/scenarios/biometric_breach.json');
-            //this.load.json('gameScenarioJSON', 'assets/scenarios/ceo_exfil.json');
+            //this.load.json('gameScenarioJSON', 'assets/scenarios/biometric_breach.json');
+            this.load.json('gameScenarioJSON', 'assets/scenarios/ceo_exfil.json');
             gameScenario = this.cache.json.get('gameScenarioJSON');
         }
 
@@ -2860,7 +2860,7 @@
             }
             
             // Show notification instead of alert
-            gameAlert(message, 'info', data.name, 7000);
+            gameAlert(message, 'info', data.name, 0);
         }
 
         // adds an item to the inventory
@@ -6756,9 +6756,6 @@
                 }
             });
         }
-
-        // Bluetooth scanner system
-// ... existing code ...
     </script>
 </body>
 </html> 
