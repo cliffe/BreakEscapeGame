@@ -5131,17 +5131,11 @@
                         /* Keep driver pin (blue) above the shear line when set */
                         .pin.set .driver-pin {
                             background: #22aa22; /* Green to indicate set */
-                            transform: translateY(-22px); /* Move up above shear line */
                         }
                         
                         /* Reset key pin (red) to the bottom when set */
                         .pin.set .key-pin {
                             transform: translateY(0); /* Keep at bottom */
-                        }
-                        
-                        /* Move spring up with driver pin when set */
-                        .pin.set .spring {
-                            transform: translateY(-22px); /* Move up with driver pin */
                         }
                         
                         .cylinder {
