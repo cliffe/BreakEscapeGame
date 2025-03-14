@@ -4846,29 +4846,31 @@
                     style.textContent = `
                         .lock-visual {
                             display: flex;
-                            justify-content: center;
-                            align-items: flex-end;
-                            gap: 15px;
-                            height: 120px;
-                            background: #333;
+                            justify-content: space-evenly;
+                            align-items: center;
+                            gap: 10px;
+                            height: 150px;
+                            background: #222;
                             border-radius: 5px;
                             padding: 15px;
                             position: relative;
+                            margin-bottom: 10px;
                         }
                         
                         .pin {
-                            width: 40px;
+                            width: 30px;
                             height: 100px;
                             position: relative;
-                            background: #444;
+                            background: #e0d8b0;
                             border-radius: 4px 4px 0 0;
                             overflow: visible;
                             cursor: pointer;
                             transition: transform 0.1s;
+                            margin: 0 5px;
                         }
                         
                         .pin:hover {
-                            background: #555;
+                            background: #f0e8c0;
                         }
                         
                         .shear-line {
@@ -4885,7 +4887,8 @@
                             bottom: 0;
                             width: 100%;
                             height: 0px;
-                            background: #dd3333;
+                            background: #66a3ff;
+                            border-radius: 3px 3px 0 0;
                             transition: height 0.05s;
                         }
                         
@@ -4893,7 +4896,7 @@
                             position: absolute;
                             width: 100%;
                             height: 40px;
-                            background: #3355dd;
+                            background: #66a3ff;
                             transition: bottom 0.05s;
                             bottom: 40px;
                             border-radius: 0 0 3px 3px;
@@ -4929,6 +4932,7 @@
                         
                         .pin.set .key-pin {
                             height: 39px; /* Just below shear line */
+                            background: #22aa22; /* Green to indicate set */
                         }
                         
                         .cylinder {
@@ -4939,7 +4943,7 @@
                             height: 30px;
                             background: #222;
                             border-radius: 5px;
-                            margin-top: -15px;
+                            margin-top: 5px;
                             position: relative;
                             z-index: 0;
                         }
@@ -4963,31 +4967,40 @@
                             border-radius: 5px;
                             text-align: center;
                             min-height: 20px;
+                            margin-top: 10px;
                         }
                         
                         .tension-control {
                             display: flex;
+                            justify-content: space-between;
                             align-items: center;
                             background: #333;
-                            padding: 10px;
+                            padding: 15px;
                             border-radius: 5px;
+                            margin-top: 10px;
                         }
                         
                         .tension-control label {
                             flex: 1;
                         }
                         
+                        .tension-status {
+                            flex: 1;
+                            text-align: right;
+                        }
+                        
                         .tension-wrench {
-                            width: 50px;
-                            height: 30px;
+                            width: 60px;
+                            height: 40px;
                             background: #666;
                             border-radius: 4px;
                             cursor: pointer;
                             display: flex;
                             align-items: center;
                             justify-content: center;
-                            margin-right: 10px;
+                            margin-right: 15px;
                             transition: transform 0.2s;
+                            position: relative;
                         }
                         
                         .tension-wrench:hover {
@@ -4997,6 +5010,21 @@
                         .tension-wrench.active {
                             background: #2196F3;
                             transform: rotate(-5deg);
+                        }
+                        
+                        .wrench-handle {
+                            width: 60%;
+                            height: 10px;
+                            background: #999;
+                            position: absolute;
+                        }
+                        
+                        .wrench-tip {
+                            width: 15px;
+                            height: 25px;
+                            background: #999;
+                            position: absolute;
+                            left: 5px;
                         }
                     `;
                     document.head.appendChild(style);
@@ -5151,7 +5179,18 @@
                 
                 // Start lifting the pin
                 this.lockState.currentPin = pin;
+                this.gameState.mouseDown = true; // Add this line to track mouse state
                 this.liftPin();
+                
+                // Add mouse up listener to document
+                const mouseUpHandler = () => {
+                    this.gameState.mouseDown = false;
+                    this.checkPinSet(this.lockState.currentPin);
+                    this.lockState.currentPin = null;
+                    document.removeEventListener('mouseup', mouseUpHandler);
+                };
+                
+                document.addEventListener('mouseup', mouseUpHandler);
                 
                 // Prevent text selection
                 e.preventDefault();
@@ -5159,17 +5198,15 @@
             
             // Override framework's mouse event handlers
             handleMouseUp(e) {
-                // If we were in the process of lifting a pin, check if it sets or drops
-                if (this.lockState.currentPin) {
-                    this.checkPinSet(this.lockState.currentPin);
-                    this.lockState.currentPin = null;
-                }
+                // The document-level handler above will take care of this
+                // This is still needed for framework compatibility
+                this.gameState.mouseDown = false;
             }
             
             // Pin-lifting logic
             liftPin() {
-                if (!this.gameState.mouseDown || !this.lockState.currentPin || 
-                    !this.gameState.isActive || !this.lockState.tensionApplied) {
+                if (!this.lockState.currentPin || !this.gameState.isActive || 
+                    !this.lockState.tensionApplied || !this.gameState.mouseDown) {
                     return;
                 }
                 
@@ -5194,7 +5231,9 @@
                 this.updatePinVisual(pin);
                 
                 // Continue lifting while mouse is down
-                requestAnimationFrame(() => this.liftPin());
+                if (this.gameState.mouseDown) {
+                    requestAnimationFrame(() => this.liftPin());
+                }
             }
             
             // Check if a pin should be set or dropped
@@ -5355,7 +5394,7 @@
                     </div>
                 `;
                 
-                // Use the framework's success message
+                // Use the framework's success message system
                 this.showSuccess(successHTML, true, 2000);
                 
                 // Store lockable for the result
@@ -5369,7 +5408,7 @@
                     <div style="font-size: 16px; margin-top: 5px;">Try again with more careful pin manipulation</div>
                 `;
                 
-                // Use the framework's failure message
+                // Use the framework's failure message system
                 this.showFailure(failureHTML, true, 2000);
             }
             
