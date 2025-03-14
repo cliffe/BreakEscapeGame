@@ -884,57 +884,223 @@
         }
 
         .tension-control {
-            display: flex;
+            display: grid;
+            grid-template-columns: auto 1fr;
+            gap: 20px;
             align-items: center;
             background: #333;
-            padding: 10px 15px;
+            padding: 20px;
             border-radius: 5px;
-            font-size: 14px;
-            gap: 15px;
+            margin-top: 20px;
         }
-
-        .tension-status {
-            font-size: 13px;
-            color: #ddd;
-        }
-
-        .tension-wrench {
+        
+        .tension-wrench-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 10px;
             position: relative;
-            height: 25px;
+            width: 150px;
+            height: 60px;
+        }
+        
+        .tension-track {
+            width: 100%;
+            height: 10px;
+            background: #444;
+            border-radius: 5px;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .tension-progress {
+            position: absolute;
+                            height: 100%;
+                            width: 0%;
+            background: linear-gradient(to right, #666, #2196F3);
+                            transition: width 0.3s;
+                        }
+                        
+        .tension-status {
+                        font-size: 16px;
+            text-align: left;
+            padding-left: 10px;
+                        }
+                        
+                        .tension-wrench {
             width: 60px;
+            height: 40px;
+            background: #666;
+            border-radius: 4px;
             cursor: pointer;
-        }
-
-        .wrench-handle {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: transform 0.3s, background-color 0.3s;
             position: absolute;
-            top: 10px;
-            right: 0;
-            width: 40px;
-            height: 5px;
-            background: #aaa;
-            border-radius: 2px;
-            transform-origin: right center;
-            transition: transform 0.3s;
+            left: 0;
+            top: 20px;
+            z-index: 2;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.3);
         }
-
-        .wrench-tip {
-            position: absolute;
-            right: 0;
-            top: 5px;
-            width: 10px;
-            height: 15px;
-            background: #888;
-            border-radius: 2px;
+        
+        .tension-wrench:hover {
+            background: #777;
         }
-
-        .tension-wrench.active .wrench-handle {
-            transform: rotate(-20deg);
+        
+        .tension-wrench.active {
             background: #2196F3;
         }
         
+        .wrench-handle {
+            width: 60%;
+            height: 10px;
+            background: #999;
+            position: absolute;
+        }
+        
+        .wrench-tip {
+            width: 20px;
+            height: 30px;
+            background: #999;
+            position: absolute;
+            left: 5px;
+        }
+
         .cylinder {
             height: 20px;
             margin-top: -5px;
+        }
+
+        .lock-visual {
+            display: flex;
+            justify-content: space-evenly;
+            align-items: center;
+            gap: 10px;
+            height: 160px;
+            background: #f0e6a6; /* Light yellow/beige background */
+            border-radius: 5px;
+            padding: 15px;
+            position: relative;
+            margin-bottom: 10px;
+            border: 2px solid #887722;
+        }
+        
+        .pin {
+            width: 30px;
+            height: 110px;
+            position: relative;
+            background: transparent;
+            border-radius: 4px 4px 0 0;
+            overflow: visible;
+            cursor: pointer;
+            transition: transform 0.1s;
+            margin: 0 5px;
+        }
+        
+        .pin:hover {
+            opacity: 0.9;
+        }
+        
+        .shear-line {
+            position: absolute;
+            width: 100%;
+            height: 2px;
+            background: #aa8833;
+            bottom: 50px;
+            z-index: 5;
+        }
+        
+        .key-pin {
+            position: absolute;
+            bottom: 0;
+            width: 100%;
+            height: 0px;
+            background: #dd3333; /* Red for key pins */
+            transition: height 0.05s;
+            border-radius: 0 0 0 0;
+            clip-path: polygon(0 0, 100% 0, 100% 70%, 50% 100%, 0 70%); /* Pointed bottom */
+        }
+        
+        .driver-pin {
+            position: absolute;
+            width: 100%;
+            height: 50px;
+            background: #3388dd; /* Blue for driver pins */
+            transition: bottom 0.05s;
+            bottom: 50px;
+            border-radius: 0 0 0 0;
+        }
+        
+        .spring {
+            position: absolute;
+            bottom: 100px;
+            width: 100%;
+            height: 25px;
+            background: linear-gradient(to bottom, 
+                #cccccc 0%, #cccccc 20%, 
+                #999999 20%, #999999 25%, 
+                #cccccc 25%, #cccccc 40%,
+                #999999 40%, #999999 45%,
+                #cccccc 45%, #cccccc 60%,
+                #999999 60%, #999999 65%,
+                #cccccc 65%, #cccccc 80%,
+                #999999 80%, #999999 85%,
+                #cccccc 85%, #cccccc 100%
+            );
+            transition: height 0.05s;
+        }
+        
+        .pin.binding {
+            box-shadow: 0 0 8px 2px #ffcc00;
+        }
+        
+        .pin.set .driver-pin {
+            bottom: 52px; /* Just above shear line */
+            background: #22aa22; /* Green to indicate set */
+        }
+        
+        .pin.set .key-pin {
+            height: 49px; /* Just below shear line */
+            background: #22aa22; /* Green to indicate set */
+            clip-path: polygon(0 0, 100% 0, 100% 70%, 50% 100%, 0 70%);
+        }
+        
+        .cylinder {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            width: 100%;
+            height: 30px;
+            background: #ddbb77;
+            border-radius: 5px;
+            margin-top: 5px;
+            position: relative;
+            z-index: 0;
+            border: 2px solid #887722;
+        }
+        
+        .cylinder-inner {
+            width: 80%;
+            height: 20px;
+            background: #ccaa66;
+            border-radius: 3px;
+            transform-origin: center;
+            transition: transform 0.3s;
+        }
+        
+        .cylinder.rotated .cylinder-inner {
+            transform: rotate(15deg);
+        }
+        
+        .lockpick-feedback {
+            padding: 15px;
+            background: #333;
+            border-radius: 5px;
+            text-align: center;
+            min-height: 30px;
+            margin-top: 20px;
+            font-size: 16px;
         }
     </style>
     <script src="https://cdn.jsdelivr.net/npm/phaser@3.60.0/dist/phaser.min.js"></script>
@@ -4833,106 +4999,149 @@
                 this.container.style.padding = '20px';
                 this.container.style.gap = '15px';
                 
-                // Set up header content
+                // Set up header content with proper spacing
                 this.headerElement.innerHTML = `
-                    <h3>Lockpicking</h3>
-                    <p>Apply tension and hold click on pins to lift them to the shear line</p>
+                    <h3 style="margin-top: 0; margin-bottom: 10px;">Lockpicking</h3>
+                    <p style="margin-bottom: 20px;">Apply tension and hold click on pins to lift them to the shear line</p>
                 `;
+                this.headerElement.style.marginBottom = '30px'; // Add more space below header
                 
                 // Add custom styles for the lockpicking minigame if they don't exist
                 if (!document.getElementById('lockpicking-styles')) {
                     const style = document.createElement('style');
                     style.id = 'lockpicking-styles';
                     style.textContent = `
+                        /* Game container styles */
+                        .minigame-container {
+                            padding-top: 80px !important; /* Add padding at top to prevent header overlap */
+                            position: relative;
+                        }
+                        
+                        .minigame-header {
+                            position: absolute;
+                            top: 0;
+                            left: 0;
+                            right: 0;
+                            z-index: 10;
+                            background: rgba(34, 34, 34, 0.95);
+                            border-bottom: 1px solid #444;
+                            padding: 10px 20px;
+                            margin-bottom: 20px;
+                        }
+                        
                         .lock-visual {
                             display: flex;
                             justify-content: space-evenly;
                             align-items: center;
-                            gap: 10px;
-                            height: 150px;
-                            background: #222;
+                            gap: 20px;
+                            height: 200px;
+                            background: #f0e6a6; /* Light yellow/beige background */
                             border-radius: 5px;
-                            padding: 15px;
+                            padding: 25px;
                             position: relative;
-                            margin-bottom: 10px;
+                            margin-top: 20px; /* Add top margin for better spacing from header */
+                            margin-bottom: 20px;
+                            border: 2px solid #887722;
+                            z-index: 1; /* Ensure pins are below header */
                         }
                         
+                        /* Rest of existing CSS */
                         .pin {
-                            width: 30px;
-                            height: 100px;
+                            width: 40px;
+                            height: 150px;
                             position: relative;
-                            background: #e0d8b0;
+                            background: transparent;
                             border-radius: 4px 4px 0 0;
                             overflow: visible;
                             cursor: pointer;
                             transition: transform 0.1s;
-                            margin: 0 5px;
+                            margin: 0 15px;
                         }
                         
                         .pin:hover {
-                            background: #f0e8c0;
+                            opacity: 0.9;
                         }
                         
                         .shear-line {
                             position: absolute;
                             width: 100%;
                             height: 2px;
-                            background: #aaa;
-                            bottom: 40px;
+                            background: #aa8833;
+                            bottom: 70px;
                             z-index: 5;
+                        }
+                        
+                        .pin-assembly {
+                            position: absolute;
+                            bottom: 0;
+                            width: 100%;
+                            height: 140px;
+                            transition: transform 0.05s;
                         }
                         
                         .key-pin {
                             position: absolute;
                             bottom: 0;
                             width: 100%;
-                            height: 0px;
-                            background: #66a3ff;
-                            border-radius: 3px 3px 0 0;
-                            transition: height 0.05s;
+                            height: 50px; /* Fixed height for all pins */
+                            background: #dd3333; /* Red for key pins */
+                            border-radius: 0 0 0 0;
+                            clip-path: polygon(0 0, 100% 0, 100% 70%, 50% 100%, 0 70%); /* Pointed bottom */
+                            transition: transform 0.3s;
                         }
                         
                         .driver-pin {
                             position: absolute;
                             width: 100%;
-                            height: 40px;
-                            background: #66a3ff;
-                            transition: bottom 0.05s;
-                            bottom: 40px;
-                            border-radius: 0 0 3px 3px;
+                            height: 70px;
+                            background: #3388dd; /* Blue for driver pins */
+                            bottom: 50px; /* Position right above key pin */
+                            border-radius: 0 0 0 0;
+                            transition: transform 0.3s, background-color 0.3s;
                         }
                         
                         .spring {
                             position: absolute;
-                            bottom: 80px;
+                            bottom: 120px;
                             width: 100%;
-                            height: 20px;
+                            height: 40px;
                             background: linear-gradient(to bottom, 
-                                transparent 0%, transparent 20%, 
-                                #999 20%, #999 30%, 
-                                transparent 30%, transparent 40%,
-                                #999 40%, #999 50%,
-                                transparent 50%, transparent 60%,
-                                #999 60%, #999 70%,
-                                transparent 70%, transparent 80%,
-                                #999 80%, #999 90%,
-                                transparent 90%, transparent 100%
+                                #cccccc 0%, #cccccc 20%, 
+                                #999999 20%, #999999 25%, 
+                                #cccccc 25%, #cccccc 40%,
+                                #999999 40%, #999999 45%,
+                                #cccccc 45%, #cccccc 60%,
+                                #999999 60%, #999999 65%,
+                                #cccccc 65%, #cccccc 80%,
+                                #999999 80%, #999999 85%,
+                                #cccccc 85%, #cccccc 100%
                             );
-                            transition: height 0.05s;
+                            transition: transform 0.3s;
                         }
                         
                         .pin.binding {
                             box-shadow: 0 0 8px 2px #ffcc00;
                         }
                         
-                        .pin.set .driver-pin {
-                            bottom: 42px; /* Just above shear line */
-                            background: #22aa22; /* Green to indicate set */
+                        /* Remove the pin-assembly transform for set pins */
+                        .pin.set .pin-assembly {
+                            transform: none; /* Reset transform so we can control individual pieces */
                         }
                         
-                        .pin.set .key-pin {
-                            height: 39px; /* Just below shear line */
+                        /* Keep driver pin (blue) above the shear line when set */
+                        .pin.set .driver-pin {
                             background: #22aa22; /* Green to indicate set */
+                            transform: translateY(-22px); /* Move up above shear line */
+                        }
+                        
+                        /* Reset key pin (red) to the bottom when set */
+                        .pin.set .key-pin {
+                            transform: translateY(0); /* Keep at bottom */
+                        }
+                        
+                        /* Move spring up with driver pin when set */
+                        .pin.set .spring {
+                            transform: translateY(-22px); /* Move up with driver pin */
                         }
                         
                         .cylinder {
@@ -4941,17 +5150,18 @@
                             align-items: center;
                             width: 100%;
                             height: 30px;
-                            background: #222;
+                            background: #ddbb77;
                             border-radius: 5px;
                             margin-top: 5px;
                             position: relative;
                             z-index: 0;
+                            border: 2px solid #887722;
                         }
                         
                         .cylinder-inner {
                             width: 80%;
                             height: 20px;
-                            background: #333;
+                            background: #ccaa66;
                             border-radius: 3px;
                             transform-origin: center;
                             transition: transform 0.3s;
@@ -4962,31 +5172,57 @@
                         }
                         
                         .lockpick-feedback {
-                            padding: 10px;
+                            padding: 15px;
                             background: #333;
                             border-radius: 5px;
                             text-align: center;
-                            min-height: 20px;
-                            margin-top: 10px;
+                            min-height: 30px;
+                            margin-top: 20px;
+                            font-size: 16px;
                         }
                         
                         .tension-control {
-                            display: flex;
-                            justify-content: space-between;
+                            display: grid;
+                            grid-template-columns: auto 1fr;
+                            gap: 20px;
                             align-items: center;
                             background: #333;
-                            padding: 15px;
+                            padding: 20px;
                             border-radius: 5px;
-                            margin-top: 10px;
+                            margin-top: 20px;
                         }
                         
-                        .tension-control label {
-                            flex: 1;
+                        .tension-wrench-container {
+                            display: flex;
+                            flex-direction: column;
+                            align-items: center;
+                            gap: 10px;
+                            position: relative;
+                            width: 150px;
+                            height: 60px;
+                        }
+                        
+                        .tension-track {
+                            width: 100%;
+                            height: 10px;
+                            background: #444;
+                            border-radius: 5px;
+                            position: relative;
+                            overflow: hidden;
+                        }
+                        
+                        .tension-progress {
+                            position: absolute;
+                            height: 100%;
+                            width: 0%;
+                            background: linear-gradient(to right, #666, #2196F3);
+                            transition: width 0.3s;
                         }
                         
                         .tension-status {
-                            flex: 1;
-                            text-align: right;
+                            font-size: 16px;
+                            text-align: left;
+                            padding-left: 10px;
                         }
                         
                         .tension-wrench {
@@ -4998,9 +5234,12 @@
                             display: flex;
                             align-items: center;
                             justify-content: center;
-                            margin-right: 15px;
-                            transition: transform 0.2s;
-                            position: relative;
+                            transition: transform 0.3s, background-color 0.3s;
+                            position: absolute;
+                            left: 0;
+                            top: 20px;
+                            z-index: 2;
+                            box-shadow: 0 2px 5px rgba(0,0,0,0.3);
                         }
                         
                         .tension-wrench:hover {
@@ -5009,7 +5248,6 @@
                         
                         .tension-wrench.active {
                             background: #2196F3;
-                            transform: rotate(-5deg);
                         }
                         
                         .wrench-handle {
@@ -5020,8 +5258,8 @@
                         }
                         
                         .wrench-tip {
-                            width: 15px;
-                            height: 25px;
+                            width: 20px;
+                            height: 30px;
                             background: #999;
                             position: absolute;
                             left: 5px;
@@ -5029,6 +5267,10 @@
                     `;
                     document.head.appendChild(style);
                 }
+                
+                // Add a class to the container for positioning
+                this.container.classList.add('minigame-container');
+                this.headerElement.classList.add('minigame-header');
                 
                 // Replace the game container with custom lockpicking interface
                 this.setupLockpickingInterface();
@@ -5046,52 +5288,94 @@
                     this.gameContainer.parentNode.removeChild(this.gameContainer);
                 }
                 
+                // Create the content wrapper with padding to avoid header overlap
+                const contentWrapper = document.createElement('div');
+                contentWrapper.style.paddingTop = '10px';
+                this.container.appendChild(contentWrapper);
+                this.contentWrapper = contentWrapper;
+                
+                // Create instructions
+                const instructions = document.createElement('div');
+                instructions.className = 'instructions';
+                instructions.textContent = 'Apply tension first, then click and hold on pins to lift them to the shear line';
+                contentWrapper.appendChild(instructions);
+                
                 // Create the lock visual container
                 const lockVisual = document.createElement('div');
                 lockVisual.className = 'lock-visual';
-                this.container.appendChild(lockVisual);
+                contentWrapper.appendChild(lockVisual);
                 this.lockVisual = lockVisual;
                 
-                // Create the cylinder that will rotate when tension is applied
-                const cylinder = document.createElement('div');
-                cylinder.className = 'cylinder';
-                cylinder.innerHTML = '<div class="cylinder-inner"></div>';
-                this.container.appendChild(cylinder);
-                this.cylinder = cylinder;
+                // Remove cylinder creation - it's no longer needed
                 
-                // Add tension toggle control
+                // Add tension toggle control with horizontal movement
                 const tensionControl = document.createElement('div');
                 tensionControl.className = 'tension-control';
-                tensionControl.innerHTML = `
-                    <div class="tension-wrench">
-                        <div class="wrench-handle"></div>
-                        <div class="wrench-tip"></div>
-                    </div>
-                    <span class="tension-status">Click wrench to apply tension</span>
+                
+                const wrenchContainer = document.createElement('div');
+                wrenchContainer.className = 'tension-wrench-container';
+                
+                const wrenchLabel = document.createElement('div');
+                wrenchLabel.textContent = 'Tension Wrench';
+                wrenchLabel.style.fontSize = '14px';
+                wrenchContainer.appendChild(wrenchLabel);
+                
+                // Add tension track and progress
+                const tensionTrack = document.createElement('div');
+                tensionTrack.className = 'tension-track';
+                
+                const tensionProgress = document.createElement('div');
+                tensionProgress.className = 'tension-progress';
+                tensionTrack.appendChild(tensionProgress);
+                
+                wrenchContainer.appendChild(tensionTrack);
+                
+                const tensionWrench = document.createElement('div');
+                tensionWrench.className = 'tension-wrench';
+                tensionWrench.innerHTML = `
+                    <div class="wrench-handle"></div>
+                    <div class="wrench-tip"></div>
                 `;
-                this.container.appendChild(tensionControl);
+                wrenchContainer.appendChild(tensionWrench);
+                
+                tensionControl.appendChild(wrenchContainer);
+                
+                const tensionStatus = document.createElement('div');
+                tensionStatus.className = 'tension-status';
+                tensionStatus.textContent = 'Click wrench to apply tension';
+                tensionControl.appendChild(tensionStatus);
+                
+                this.contentWrapper.appendChild(tensionControl);
                 
                 // Feedback area
                 const feedback = document.createElement('div');
                 feedback.className = 'lockpick-feedback';
-                this.container.appendChild(feedback);
+                this.contentWrapper.appendChild(feedback);
                 this.feedback = feedback;
                 
-                // Set up tension wrench interaction
-                const tensionWrench = tensionControl.querySelector('.tension-wrench');
-                const tensionStatus = tensionControl.querySelector('.tension-status');
-                
+                // Set up tension wrench interaction with horizontal movement
                 tensionWrench.addEventListener('click', () => {
                     this.lockState.tensionApplied = !this.lockState.tensionApplied;
                     tensionWrench.classList.toggle('active', this.lockState.tensionApplied);
-                    cylinder.classList.toggle('rotated', this.lockState.tensionApplied);
+                    
+                    // Move wrench horizontally instead of rotating
+                    if (this.lockState.tensionApplied) {
+                        // Move to initial right position (25%)
+                        this.updateTensionPosition(25);
+                    } else {
+                        // Return to left position (0%)
+                        this.updateTensionPosition(0);
+                        
+                        // Reset progress fill
+                        tensionProgress.style.width = '0%';
+                    }
                     
                     // Update status text
                     tensionStatus.textContent = this.lockState.tensionApplied ? 
-                        'Tension applied' : 'Click wrench to apply tension';
+                        'Tension applied - now lift pins' : 'Click wrench to apply tension';
                     
                     // Update which pins are binding
-                    this.updatePinBindings();
+                    this.updateBindingPins();
                     
                     // If tension is toggled off, reset any unset pins
                     if (!this.lockState.tensionApplied) {
@@ -5110,6 +5394,27 @@
                 // Store references
                 this.tensionWrench = tensionWrench;
                 this.tensionStatus = tensionStatus;
+                this.tensionProgress = tensionProgress;
+            }
+            
+            // New method to update the tension wrench position
+            updateTensionPosition(percentage) {
+                if (percentage < 0) percentage = 0;
+                if (percentage > 100) percentage = 100;
+                
+                // Calculate position based on container width
+                const containerWidth = this.tensionWrench.parentElement.offsetWidth;
+                const wrenchWidth = this.tensionWrench.offsetWidth;
+                const maxOffset = containerWidth - wrenchWidth;
+                const position = (maxOffset * percentage) / 100;
+                
+                // Update wrench position
+                this.tensionWrench.style.transform = `translateX(${position}px)`;
+                
+                // Update progress bar fill
+                if (this.tensionProgress) {
+                    this.tensionProgress.style.width = `${percentage}%`;
+                }
             }
             
             createPins() {
@@ -5128,30 +5433,49 @@
                     shearLine.className = 'shear-line';
                     pinElement.appendChild(shearLine);
                     
-                    // Create key pin (bottom pin)
+                    // Create pin assembly container
+                    const pinAssembly = document.createElement('div');
+                    pinAssembly.className = 'pin-assembly';
+                    pinElement.appendChild(pinAssembly);
+                    
+                    // Create key pin (bottom pin) with varying height
                     const keyPin = document.createElement('div');
                     keyPin.className = 'key-pin';
-                    pinElement.appendChild(keyPin);
+                    pinAssembly.appendChild(keyPin);
                     
-                    // Create driver pin (top pin)
+                    // Generate random key pin height (30px to 60px)
+                    const keyPinHeight = Math.floor(Math.random() * 31) + 30;
+                    keyPin.style.height = `${keyPinHeight}px`;
+                    
+                    // Create driver pin (top pin) with consistent height
                     const driverPin = document.createElement('div');
                     driverPin.className = 'driver-pin';
-                    pinElement.appendChild(driverPin);
+                    pinAssembly.appendChild(driverPin);
+                    // Position driver pin right above the key pin
+                    driverPin.style.bottom = `${keyPinHeight}px`;
                     
                     // Create spring
                     const spring = document.createElement('div');
                     spring.className = 'spring';
-                    pinElement.appendChild(spring);
+                    pinAssembly.appendChild(spring);
+                    // Position spring above driver pin
+                    spring.style.bottom = `${keyPinHeight + 70}px`; // 70px is driver pin height
+                    
+                    // Calculate the distance from the bottom of the pin to the shear line (70px from bottom)
+                    const distanceToShearLine = 70 - keyPinHeight;
                     
                     // Store pin data
                     const pin = {
                         index: i,
                         binding: bindingOrder.indexOf(i),
-                        setPoint: Math.random() * 0.4 + 0.3, // Point between 30-70% where pin sets
-                        currentHeight: 0,
+                        keyPinHeight: keyPinHeight,
+                        distanceToShearLine: distanceToShearLine,
+                        currentHeight: 0, // How high the pin is currently lifted (0-1 scale)
                         isSet: false,
+                        resistance: Math.random() * 0.02 + 0.01,
                         elements: {
                             container: pinElement,
+                            assembly: pinAssembly,
                             keyPin: keyPin,
                             driverPin: driverPin,
                             spring: spring
@@ -5160,99 +5484,89 @@
                     
                     this.pins.push(pin);
                     
-                    // Add custom pin click handler
-                    this.addEventListenerWithCleanup(pinElement, 'mousedown', (e) => {
-                        this.handlePinMouseDown(pin, e);
+                    // Fix: Use an arrow function to preserve 'this' context
+                    // and define the handler inline instead of referencing this.handlePinMouseDown
+                    const self = this; // Store reference to 'this'
+                    this.addEventListenerWithCleanup(pinElement, 'mousedown', function(e) {
+                        // Skip if game is not active or pin is already set
+                        if (!self.gameState.isActive || pin.isSet) return;
+                        
+                        // Only proceed if tension is applied
+                        if (!self.lockState.tensionApplied) {
+                            self.updateFeedback("Apply tension first by toggling the wrench");
+                            return;
+                        }
+                        
+                        // Play a sound effect when interacting with pins
+                        if (typeof self.playSound === 'function') {
+                            self.playSound('pin_click');
+                        }
+                        
+                        // Start lifting the pin
+                        self.lockState.currentPin = pin;
+                        self.gameState.mouseDown = true;
+                        self.liftPin();
+                        
+                        // Add mouse up listener to document
+                        const mouseUpHandler = function() {
+                            self.gameState.mouseDown = false;
+                            self.checkPinSet(self.lockState.currentPin);
+                            self.lockState.currentPin = null;
+                            document.removeEventListener('mouseup', mouseUpHandler);
+                        };
+                        
+                        document.addEventListener('mouseup', mouseUpHandler);
+                        
+                        // Prevent text selection
+                        e.preventDefault();
                     });
-                }
-            }
-            
-            // Custom pin mouse down handler
-            handlePinMouseDown(pin, e) {
-                if (!this.gameState.isActive || pin.isSet) return;
-                
-                // Only proceed if tension is applied
-                if (!this.lockState.tensionApplied) {
-                    this.updateFeedback("Apply tension first by toggling the wrench");
-                    return;
-                }
-                
-                // Start lifting the pin
-                this.lockState.currentPin = pin;
-                this.gameState.mouseDown = true; // Add this line to track mouse state
-                this.liftPin();
-                
-                // Add mouse up listener to document
-                const mouseUpHandler = () => {
-                    this.gameState.mouseDown = false;
-                    this.checkPinSet(this.lockState.currentPin);
-                    this.lockState.currentPin = null;
-                    document.removeEventListener('mouseup', mouseUpHandler);
-                };
-                
-                document.addEventListener('mouseup', mouseUpHandler);
-                
-                // Prevent text selection
-                e.preventDefault();
-            }
-            
-            // Override framework's mouse event handlers
-            handleMouseUp(e) {
-                // The document-level handler above will take care of this
-                // This is still needed for framework compatibility
-                this.gameState.mouseDown = false;
-            }
-            
-            // Pin-lifting logic
-            liftPin() {
-                if (!this.lockState.currentPin || !this.gameState.isActive || 
-                    !this.lockState.tensionApplied || !this.gameState.mouseDown) {
-                    return;
-                }
-                
-                const pin = this.lockState.currentPin;
-                
-                // Only binding pins can be lifted effectively
-                if (!this.shouldPinBind(pin)) {
-                    // Non-binding pins can be lifted, but with resistance and limited height
-                    pin.currentHeight += 0.01;
-                    if (pin.currentHeight > 0.3) {
-                        pin.currentHeight = 0.3; // Can't lift non-binding pins very high
-                    }
-                } else {
-                    // Binding pins lift smoothly
-                    pin.currentHeight += 0.03;
-                    if (pin.currentHeight > 1) {
-                        pin.currentHeight = 1; // Max height
-                    }
-                }
-                
-                // Update visual
-                this.updatePinVisual(pin);
-                
-                // Continue lifting while mouse is down
-                if (this.gameState.mouseDown) {
-                    requestAnimationFrame(() => this.liftPin());
                 }
             }
             
             // Check if a pin should be set or dropped
             checkPinSet(pin) {
                 if (!this.lockState.tensionApplied || !this.shouldPinBind(pin)) {
-                    // If no tension or not binding, the pin drops
-                    this.dropPin(pin);
+                    // Define dropPin function inline since it's not being found
+                    this.animatePinDrop(pin);
                     return;
                 }
                 
-                // Check if pin is at the correct height (with some tolerance)
-                const heightDiff = Math.abs(pin.currentHeight - pin.setPoint);
+                // Calculate current pin height in pixels
+                const currentLiftInPixels = pin.currentHeight * pin.distanceToShearLine;
                 
-                if (heightDiff < 0.1) {
+                // Check if the top of the key pin (or bottom of driver pin) is exactly at the shear line
+                // Allow a small tolerance of 2 pixels
+                const tolerance = 2;
+                const isAtShearLine = Math.abs(currentLiftInPixels - pin.distanceToShearLine) <= tolerance;
+                
+                if (isAtShearLine) {
                     // Pin set successfully!
                     pin.isSet = true;
                     this.lockState.pinsSet++;
+                    
+                    // Play a satisfying click sound when pin sets
+                    if (typeof this.playSound === 'function') {
+                        this.playSound('pin_set');
+                    }
+                    
+                    // First reset the assembly position
+                    pin.elements.assembly.style.transform = 'none';
+                    
+                    // Calculate exact position for the pin junction to be at the shear line
+                    const exactLift = pin.distanceToShearLine;
+                    pin.elements.assembly.style.transform = `translateY(-${exactLift}px)`;
+                    
+                    // Mark the pin as set
+                    pin.elements.container.classList.add('set');
+                    
+                    // Change color of the driver pin to green
+                    pin.elements.driverPin.style.backgroundColor = '#22aa22';
+                    
                     this.updateFeedback(`Pin set at the shear line! (${this.lockState.pinsSet}/${this.pinCount})`);
-                    this.updatePinVisual(pin);
+                    
+                    // Move the tension wrench further right based on progress
+                    const progressPercentage = 25 + (this.lockState.pinsSet / this.pinCount * 75);
+                    this.updateTensionPosition(progressPercentage);
                     
                     // Update progress
                     this.updateProgress(this.lockState.pinsSet, this.pinCount);
@@ -5264,26 +5578,29 @@
                     }
                     
                     // Update which pin is binding next
-                    this.updatePinBindings();
+                    this.updateBindingPins();
                 } else {
                     // Pin not at the correct height, drops back down
-                    this.dropPin(pin);
+                    this.animatePinDrop(pin);
                     
-                    if (pin.currentHeight > pin.setPoint + 0.1) {
-                        this.updateFeedback("Pin was pushed too far and dropped");
+                    if (currentLiftInPixels > pin.distanceToShearLine) {
+                        this.updateFeedback("Pin was pushed too far past the shear line");
                     } else {
-                        this.updateFeedback("Pin wasn't lifted high enough and dropped");
+                        this.updateFeedback("Pin wasn't lifted high enough to reach the shear line");
                     }
                 }
             }
             
-            // Animate a pin dropping down
-            dropPin(pin) {
+            // Define the animatePinDrop method to replace the missing dropPin method
+            animatePinDrop(pin) {
                 // Don't drop pins that are already set
                 if (pin.isSet) return;
                 
+                // Calculate drop speed based on how high the pin is
+                const dropSpeed = 0.05 + (pin.currentHeight * 0.1);
+                
                 const dropInterval = setInterval(() => {
-                    pin.currentHeight -= 0.05;
+                    pin.currentHeight -= dropSpeed;
                     
                     if (pin.currentHeight <= 0) {
                         pin.currentHeight = 0;
@@ -5294,47 +5611,70 @@
                 }, 10);
             }
             
-            // Update a single pin's visual appearance
+            // Update pin visual based on current height
             updatePinVisual(pin) {
-                // Update key pin and driver pin heights
-                pin.elements.keyPin.style.height = `${pin.currentHeight * 40}px`;
-                pin.elements.driverPin.style.bottom = `${pin.currentHeight * 40 + 1}px`;
-                pin.elements.spring.style.height = `${20 - pin.currentHeight * 5}px`;
+                // Skip visualization update if the pin is set
+                if (pin.isSet) return;
                 
-                // Show set state
-                pin.elements.container.classList.toggle('set', pin.isSet);
+                // Calculate the lift in pixels based on the current progress (0-1) times the distance to the shear line
+                const translateY = pin.currentHeight * pin.distanceToShearLine * -1; // Negative because we're moving up
+                
+                // Move the entire pin assembly up
+                pin.elements.assembly.style.transform = `translateY(${translateY}px)`;
             }
             
-            // Update which pins are binding based on binding order
-            updatePinBindings() {
-                if (!this.lockState.tensionApplied) {
-                    // No binding if no tension
-                    this.pins.forEach(pin => {
-                        pin.elements.container.classList.remove('binding');
-                    });
+            // Pin-lifting logic with realistic physics
+            liftPin() {
+                if (!this.lockState.currentPin || !this.gameState.isActive || 
+                    !this.lockState.tensionApplied || !this.gameState.mouseDown) {
                     return;
                 }
                 
-                // Find the next unset pin in binding order
-                let bindingPinFound = false;
+                const pin = this.lockState.currentPin;
                 
-                for (let order = 0; order < this.pinCount; order++) {
-                    const nextPin = this.pins.find(p => p.binding === order && !p.isSet);
-                    if (nextPin) {
-                        // Mark this pin as binding
-                        this.pins.forEach(pin => {
-                            pin.elements.container.classList.toggle('binding', pin.index === nextPin.index);
-                        });
-                        bindingPinFound = true;
-                        break;
+                // Add realistic resistance based on binding state
+                let liftAmount = 0;
+                
+                // Only binding pins can be lifted effectively
+                if (!this.shouldPinBind(pin)) {
+                    // Non-binding pins can be lifted, but with resistance and limited height
+                    liftAmount = 0.01;
+                    if (pin.currentHeight > 0.3) {
+                        liftAmount = 0.005; // Increased resistance at higher positions
                     }
+                } else {
+                    // Binding pins lift more smoothly but still have some resistance
+                    liftAmount = 0.03 - (pin.resistance * pin.currentHeight);
+                    
+                    // Add slight random variation to simulate realistic feel
+                    liftAmount += (Math.random() * 0.01 - 0.005);
                 }
                 
-                // If no binding pin was found (all pins set), remove binding class from all
-                if (!bindingPinFound) {
-                    this.pins.forEach(pin => {
-                        pin.elements.container.classList.remove('binding');
-                    });
+                // Update pin height
+                pin.currentHeight += liftAmount;
+                
+                // Cap at maximum height
+                if (pin.currentHeight > 1.2) { // Allow overshooting the shear line a bit
+                    pin.currentHeight = 1.2;
+                }
+                
+                // Update visual
+                this.updatePinVisual(pin);
+                
+                // Add subtle feedback when pin is near the shear line
+                const currentLiftInPixels = pin.currentHeight * pin.distanceToShearLine;
+                const distanceToShearLine = Math.abs(currentLiftInPixels - pin.distanceToShearLine);
+                
+                if (distanceToShearLine < 5) {
+                    // Pin is close to the shear line
+                    pin.elements.container.style.boxShadow = "0 0 5px #ffffff";
+                } else {
+                    pin.elements.container.style.boxShadow = "";
+                }
+                
+                // Continue lifting while mouse is down
+                if (this.gameState.mouseDown) {
+                    requestAnimationFrame(() => this.liftPin());
                 }
             }
             
@@ -5437,6 +5777,39 @@
                     [array[i], array[j]] = [array[j], array[i]];
                 }
                 return array;
+            }
+
+            // Add new method for updating binding pins
+            updateBindingPins() {
+                if (!this.lockState.tensionApplied) {
+                    // No binding if no tension
+                    this.pins.forEach(pin => {
+                        pin.elements.container.classList.remove('binding');
+                    });
+                    return;
+                }
+                
+                // Find the next unset pin in binding order
+                let bindingPinFound = false;
+                
+                for (let order = 0; order < this.pinCount; order++) {
+                    const nextPin = this.pins.find(p => p.binding === order && !p.isSet);
+                    if (nextPin) {
+                        // Mark this pin as binding
+                        this.pins.forEach(pin => {
+                            pin.elements.container.classList.toggle('binding', pin.index === nextPin.index);
+                        });
+                        bindingPinFound = true;
+                        break;
+                    }
+                }
+                
+                // If no binding pin was found (all pins set), remove binding class from all
+                if (!bindingPinFound) {
+                    this.pins.forEach(pin => {
+                        pin.elements.container.classList.remove('binding');
+                    });
+                }
             }
         }
 
@@ -6666,15 +7039,6 @@
                         
                         if (x >= 0 && x < this.gridSize && y >= 0 && y < this.gridSize) {
                             newFingerprintCells.add(`${x},${y}`);
-                            
-                            // Add ridge-like pattern
-                            for (let j = 1; j <= 3; j++) {
-                                const ridgeX = Math.floor(centerX + Math.cos(angle) * (distance - j));
-                                const ridgeY = Math.floor(centerY + Math.sin(angle) * (distance - j));
-                                if (ridgeX >= 0 && ridgeX < this.gridSize && ridgeY >= 0 && ridgeY < this.gridSize) {
-                                    newFingerprintCells.add(`${ridgeX},${ridgeY}`);
-                                }
-                            }
                         }
                     }
                 } else {
