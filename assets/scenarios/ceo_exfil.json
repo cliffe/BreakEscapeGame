@@ -4,6 +4,10 @@
     "rooms": {
         "reception": {
             "type": "room_reception",
+            "locked": true,
+            "lockType": "key",
+            "requires": "ceo_office_key",
+            "difficulty": "easy",
             "connections": {
                 "north": "office1"
             },
@@ -53,14 +57,6 @@
                     "takeable": true,
                     "inInventory": true,
                     "observations": "A powerful workstation for cryptographic analysis"
-                },
-                {
-                    "type": "bluetooth_spoofer",
-                    "name": "Bluetooth Spoofer",
-                    "takeable": true,
-                    "observations": "A specialized device that can mimic Bluetooth signals from other devices",
-                    "canSpoofBluetooth": true,
-                    "mac": "00:11:22:33:44:55"
                 }
             ]
         },
@@ -78,7 +74,7 @@
                     "requires": "password",
                     "hasFingerprint": true,
                     "fingerprintOwner": "ceo",
-                    "fingerprintQuality": 0.9,
+                    "fingerprintDifficulty": "medium",
                     "observations": "A computer with a cybersecurity alert on screen. There might be fingerprints on the keyboard."
                 },
                 {
@@ -94,12 +90,6 @@
                     "name": "Fingerprint Kit",
                     "takeable": true,
                     "observations": "A kit used for collecting fingerprints from surfaces"
-                },
-                {
-                    "type": "spoofing_kit",
-                    "name": "Fingerprint Spoofing Kit",
-                    "takeable": true,
-                    "observations": "A specialized kit containing silicone, gelatin, and other materials for creating artificial fingerprints"
                 }
             ]
         },
@@ -145,7 +135,9 @@
                     "type": "pc",
                     "name": "IT Staff Computer",
                     "takeable": false,
-                    "requires": "password",
+                    "requires": "bluetooth",
+                    "lockType": "bluetooth",
+                    "mac": "00:11:22:33:44:55",
                     "observations": "An IT staff computer showing network security logs"
                 },
                 {
@@ -160,6 +152,7 @@
                     "type": "lockpick",
                     "name": "Lock Pick Kit",
                     "takeable": true,
+                    "inInventory": true,
                     "observations": "A professional lock picking kit with various picks and tension wrenches"
                 }
             ]
