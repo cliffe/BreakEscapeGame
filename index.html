@@ -1517,14 +1517,21 @@
             this.load.tilemapTiledJSON('room_ceo', 'assets/rooms/room_ceo.json');
             this.load.tilemapTiledJSON('room_closet', 'assets/rooms/room_closet.json');
             this.load.tilemapTiledJSON('room_servers', 'assets/rooms/room_servers.json');
-            this.load.image('Modern_Office_48x48', 'assets/Modern_Office_48x48.png');
-            this.load.image('Room_Builder_48x48', 'assets/Room_Builder_48x48.png');
-            this.load.image('19_Hospital_Shadowless_48x48', 'assets/19_Hospital_Shadowless_48x48.png');
-            this.load.image('18_Jail_Shadowless_48x48', 'assets/18_Jail_Shadowless_48x48.png');
-            this.load.image('1_Generic_Shadowless_48x48', 'assets/1_Generic_Shadowless_48x48.png');
-            this.load.image('11_Halloween_Shadowless_48x48', 'assets/11_Halloween_Shadowless_48x48.png');
-            this.load.image('5_Classroom_and_library_Shadowless_48x48', 'assets/5_Classroom_and_library_Shadowless_48x48.png');
-            
+
+            // this.load.image('Modern_Office_48x48', 'assets/Modern_Office_48x48.png');
+            // this.load.image('Room_Builder_48x48', 'assets/Room_Builder_48x48.png');
+            // this.load.image('19_Hospital_Shadowless_48x48', 'assets/19_Hospital_Shadowless_48x48.png');
+            // this.load.image('18_Jail_Shadowless_48x48', 'assets/18_Jail_Shadowless_48x48.png');
+            // this.load.image('1_Generic_Shadowless_48x48', 'assets/1_Generic_Shadowless_48x48.png');
+            // this.load.image('11_Halloween_Shadowless_48x48', 'assets/11_Halloween_Shadowless_48x48.png');
+            // this.load.image('5_Classroom_and_library_Shadowless_48x48', 'assets/5_Classroom_and_library_Shadowless_48x48.png');
+
+            this.load.image('room_reception_l', 'assets/rooms/room_reception_l.png');
+            this.load.image('room_office_l', 'assets/rooms/room_office_l.png');
+            this.load.image('room_server_l', 'assets/rooms/room_server_l.png');
+            this.load.image('room_ceo_l', 'assets/rooms/room_ceo_l.png');
+            this.load.image('room_spooky_basement_l', 'assets/rooms/room_spooky_basement_l.png');
+            this.load.image('door', 'assets/tiles/door.png');
             // Load object sprites
             this.load.image('pc', 'assets/objects/pc.png');
             this.load.image('key', 'assets/objects/key.png');
@@ -1542,9 +1549,10 @@
             this.load.image('tablet', 'assets/objects/tablet.png');
             this.load.image('fingerprint_kit', 'assets/objects/fingerprint_kit.png');
             this.load.image('lockpick', 'assets/objects/lockpick.png');
+            this.load.image('spoofing_kit', 'assets/objects/spoofing_kit.png');
 
-            this.load.json('gameScenarioJSON', 'assets/scenarios/biometric_breach.json');
-            //this.load.json('gameScenarioJSON', 'assets/scenarios/ceo_exfil.json');
+            //this.load.json('gameScenarioJSON', 'assets/scenarios/biometric_breach.json');
+            this.load.json('gameScenarioJSON', 'assets/scenarios/ceo_exfil.json');
             gameScenario = this.cache.json.get('gameScenarioJSON');
         }
 
