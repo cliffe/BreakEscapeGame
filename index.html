@@ -1716,6 +1716,7 @@
             this.load.image('room_ceo_l', 'assets/rooms/room_ceo_l.png');
             this.load.image('room_spooky_basement_l', 'assets/rooms/room_spooky_basement_l.png');
             this.load.image('door', 'assets/tiles/door.png');
+
             // Load object sprites
             this.load.image('pc', 'assets/objects/pc.png');
             this.load.image('key', 'assets/objects/key.png');
@@ -1733,6 +1734,12 @@
             this.load.image('fingerprint_kit', 'assets/objects/fingerprint_kit.png');
             this.load.image('lockpick', 'assets/objects/lockpick.png');
             this.load.image('spoofing_kit', 'assets/objects/spoofing_kit.png');
+
+            // Load character sprite sheet instead of single image
+            this.load.spritesheet('hacker', 'assets/characters/hacker.png', {
+                frameWidth: 64,
+                frameHeight: 64
+            });
 
             // Get scenario from URL parameter or use default
             const urlParams = new URLSearchParams(window.location.search);
@@ -1790,17 +1797,104 @@
                 worldBounds.height
             );
 
-            // Create player first
-            player = this.add.rectangle(400, 300, 32, 32, 0xff0000);
+            // Create player as sprite
+            player = this.add.sprite(400, 300, 'hacker', 0);
             this.physics.add.existing(player);
-            player.body.setSize(16, 16);
-            player.body.setOffset(8, 8);
+            
+            // Scale the character up by 25%
+            player.setScale(1.25);
+            
+            // Set smaller collision box at the feet
+            player.body.setSize(15, 10);
+            player.body.setOffset(25, 50); // Adjusted offset to account for scaling
+            
             player.body.setCollideWorldBounds(true);
             player.body.setBounce(0);
             player.body.setDrag(0);
             player.body.setFriction(0);
+            
+            // Enable physics debug to see the collision box
+            this.physics.world.debugGraphic.clear();
+            this.physics.world.drawDebug = true;
+            
+            // Force debug display to be visible and on top
+            this.physics.world.debugGraphic.setVisible(true);
+            this.physics.world.debugGraphic.setDepth(9999);
+            
+            // Set player depth to ensure it renders above most objects
+            player.setDepth(2000);
+            
+            // Track player direction and movement state
+            player.direction = 'down'; // Initial direction
+            player.isMoving = false;
+            player.lastDirection = 'down';
 
-            player.setDepth(1000);
+            // Create animations for each direction
+            this.anims.create({
+                key: 'walk-right',
+                frames: this.anims.generateFrameNumbers('hacker', { start: 1, end: 4 }),
+                frameRate: 8,
+                repeat: -1
+            });
+            
+            this.anims.create({
+                key: 'walk-down',
+                frames: this.anims.generateFrameNumbers('hacker', { start: 6, end: 9 }),
+                frameRate: 8,
+                repeat: -1
+            });
+            
+            this.anims.create({
+                key: 'walk-up',
+                frames: this.anims.generateFrameNumbers('hacker', { start: 11, end: 14 }),
+                frameRate: 8,
+                repeat: -1
+            });
+            
+            this.anims.create({
+                key: 'walk-up-right',
+                frames: this.anims.generateFrameNumbers('hacker', { start: 16, end: 19 }),
+                frameRate: 8,
+                repeat: -1
+            });
+            
+            this.anims.create({
+                key: 'walk-down-right',
+                frames: this.anims.generateFrameNumbers('hacker', { start: 21, end: 24 }),
+                frameRate: 8,
+                repeat: -1
+            });
+            
+            // Create idle frames (first frame of each row)
+            this.anims.create({
+                key: 'idle-right',
+                frames: [{ key: 'hacker', frame: 0 }],
+                frameRate: 1
+            });
+            
+            this.anims.create({
+                key: 'idle-down',
+                frames: [{ key: 'hacker', frame: 5 }],
+                frameRate: 1
+            });
+            
+            this.anims.create({
+                key: 'idle-up',
+                frames: [{ key: 'hacker', frame: 10 }],
+                frameRate: 1
+            });
+            
+            this.anims.create({
+                key: 'idle-up-right',
+                frames: [{ key: 'hacker', frame: 15 }],
+                frameRate: 1
+            });
+            
+            this.anims.create({
+                key: 'idle-down-right',
+                frames: [{ key: 'hacker', frame: 20 }],
+                frameRate: 1
+            });
 
             // Initialize room layout after player creation
             initializeRooms.call(this);
@@ -1913,6 +2007,9 @@
         }
 
         function update() {
+            // Make sure debug is always enabled
+            this.physics.world.drawDebug = true;
+            
             // updates the player's movement
             updatePlayerMovement.call(this);
             
@@ -2342,6 +2439,10 @@
             if (!isMoving || !targetPoint) {
                 if (player.body.velocity.x !== 0 || player.body.velocity.y !== 0) {
                     player.body.setVelocity(0, 0);
+                    player.isMoving = false;
+                    
+                    // Play idle animation based on last direction
+                    player.anims.play(`idle-${player.direction}`, true);
                 }
                 return;
             }
@@ -2359,6 +2460,10 @@
             if (distanceSq < ARRIVAL_THRESHOLD * ARRIVAL_THRESHOLD) {
                 isMoving = false;
                 player.body.setVelocity(0, 0);
+                player.isMoving = false;
+                
+                // Play idle animation based on last direction
+                player.anims.play(`idle-${player.direction}`, true);
                 return;
             }
 
@@ -2377,20 +2482,45 @@
             const velocityX = (dx / distance) * MOVEMENT_SPEED;
             const velocityY = (dy / distance) * MOVEMENT_SPEED;
 
-            // Only update velocity if it changed significantly
-            const currentVX = player.body.velocity.x;
-            const currentVY = player.body.velocity.y;
-            const velocityDiffX = Math.abs(currentVX - velocityX);
-            const velocityDiffY = Math.abs(currentVY - velocityY);
-
-            if (velocityDiffX > 1 || velocityDiffY > 1) {
-                player.body.setVelocity(velocityX, velocityY);
+            // Set velocity directly without checking for changes
+            player.body.setVelocity(velocityX, velocityY);
+            
+            // Determine direction based on velocity
+            const absVX = Math.abs(velocityX);
+            const absVY = Math.abs(velocityY);
+            
+            // Set player direction and animation
+            if (absVX > absVY * 2) {
+                // Mostly horizontal movement
+                player.direction = velocityX > 0 ? 'right' : 'right'; // Use right animation but flip
+                player.setFlipX(velocityX < 0); // Flip sprite horizontally if moving left
+            } else if (absVY > absVX * 2) {
+                // Mostly vertical movement
+                player.direction = velocityY > 0 ? 'down' : 'up';
+                player.setFlipX(false);
+            } else {
+                // Diagonal movement
+                if (velocityY > 0) {
+                    player.direction = 'down-right';
+                } else {
+                    player.direction = 'up-right';
+                }
+                player.setFlipX(velocityX < 0); // Flip sprite horizontally if moving left
+            }
+            
+            // Play appropriate animation if not already playing
+            if (!player.isMoving || player.lastDirection !== player.direction) {
+                player.anims.play(`walk-${player.direction}`, true);
+                player.isMoving = true;
+                player.lastDirection = player.direction;
             }
 
             // Stop if collision detected
             if (player.body.blocked.none === false) {
                 isMoving = false;
                 player.body.setVelocity(0, 0);
+                player.isMoving = false;
+                player.anims.play(`idle-${player.direction}`, true);
             }
         }
 
@@ -2784,13 +2914,33 @@
 
         // checks if the player is in bounds
         function isPlayerInBounds(bounds) {
-            const buffer = 0; // Changed from TILE_SIZE (48) to 0
-            return (
-                player.x >= bounds.x - buffer &&
-                player.x <= bounds.x + bounds.width + buffer &&
-                player.y >= bounds.y - buffer &&
-                player.y <= bounds.y + bounds.height + buffer
-            );
+            // Use the player's physics body bounds for more precise detection
+            const playerBody = player.body;
+            const playerBounds = {
+                left: playerBody.x,
+                right: playerBody.x + playerBody.width,
+                top: playerBody.y,
+                bottom: playerBody.y + playerBody.height
+            };
+            
+            // Calculate the overlap area between player and room
+            const overlapWidth = Math.min(playerBounds.right, bounds.x + bounds.width) - 
+                                 Math.max(playerBounds.left, bounds.x);
+            const overlapHeight = Math.min(playerBounds.bottom, bounds.y + bounds.height) - 
+                                  Math.max(playerBounds.top, bounds.y);
+            
+            // Require a minimum overlap percentage (e.g., 50% of player width/height)
+            const minOverlapPercent = 0.5;
+            const playerWidth = playerBounds.right - playerBounds.left;
+            const playerHeight = playerBounds.bottom - playerBounds.top;
+            
+            const widthOverlapPercent = overlapWidth / playerWidth;
+            const heightOverlapPercent = overlapHeight / playerHeight;
+            
+            return overlapWidth > 0 && 
+                   overlapHeight > 0 && 
+                   widthOverlapPercent >= minOverlapPercent && 
+                   heightOverlapPercent >= minOverlapPercent;
         }
 
         // handles room changes
