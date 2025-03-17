@@ -1734,8 +1734,12 @@
             this.load.image('lockpick', 'assets/objects/lockpick.png');
             this.load.image('spoofing_kit', 'assets/objects/spoofing_kit.png');
 
-            //this.load.json('gameScenarioJSON', 'assets/scenarios/biometric_breach.json');
-            this.load.json('gameScenarioJSON', 'assets/scenarios/ceo_exfil.json');
+            // Get scenario from URL parameter or use default
+            const urlParams = new URLSearchParams(window.location.search);
+            const scenarioFile = urlParams.get('scenario') || 'assets/scenarios/ceo_exfil.json';
+            
+            // Load the specified scenario
+            this.load.json('gameScenarioJSON', scenarioFile);
             gameScenario = this.cache.json.get('gameScenarioJSON');
         }
 
