@@ -1798,7 +1798,7 @@
             );
 
             // Create player as sprite
-            player = this.add.sprite(400, 300, 'hacker', 0);
+            player = this.add.sprite(250, 200, 'hacker', 20);
             this.physics.add.existing(player);
             
             // Scale the character up by 25%
@@ -1813,13 +1813,13 @@
             player.body.setDrag(0);
             player.body.setFriction(0);
             
-            // Enable physics debug to see the collision box
-            this.physics.world.debugGraphic.clear();
-            this.physics.world.drawDebug = true;
+            // // Enable physics debug to see the collision box
+            // this.physics.world.debugGraphic.clear();
+            // this.physics.world.drawDebug = true;
             
-            // Force debug display to be visible and on top
-            this.physics.world.debugGraphic.setVisible(true);
-            this.physics.world.debugGraphic.setDepth(9999);
+            // // Force debug display to be visible and on top
+            // this.physics.world.debugGraphic.setVisible(true);
+            // this.physics.world.debugGraphic.setDepth(9999);
             
             // Set player depth to ensure it renders above most objects
             player.setDepth(2000);
@@ -1924,7 +1924,7 @@
 
             // Setup camera
             this.cameras.main.startFollow(player);
-            this.cameras.main.setZoom(1);
+            this.cameras.main.setZoom(1.5);
 
             // Setup input with proper context
             this.input.on('pointerdown', (pointer) => {
@@ -2008,7 +2008,7 @@
 
         function update() {
             // Make sure debug is always enabled
-            this.physics.world.drawDebug = true;
+            // this.physics.world.drawDebug = true;
             
             // updates the player's movement
             updatePlayerMovement.call(this);
