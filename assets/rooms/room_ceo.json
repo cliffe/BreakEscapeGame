@@ -150,7 +150,32 @@
                  "width":48,
                  "x":329.276113360324,
                  "y":40.7708502024292
-                }],
+                },
+                {
+                 "gid":12041,
+                 "height":48,
+                 "id":26,
+                 "name":"safe1",
+                 "rotation":0,
+                 "type":"",
+                 "visible":true,
+                 "width":48,
+                 "x":150,
+                 "y":400
+                }, 
+                {
+                 "height":48,
+                 "id":3,
+                 "name":"notes",
+                 "rotation":0,
+                 "type":"",
+                 "visible":true,
+                 "width":48,
+                 "x":153.982186234818,
+                 "y":212.255870445344
+                }
+            
+            ],
          "opacity":1,
          "type":"objectgroup",
          "visible":true,

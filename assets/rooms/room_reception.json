@@ -149,7 +149,44 @@
                  "width":48,
                  "x":143.838518642089,
                  "y":191.623488197514
-                }],
+                },
+                {
+                    "gid":12329,
+                    "height":48,
+                    "id":13,
+                    "name":"safe",
+                    "rotation":0,
+                    "type":"",
+                    "visible":true,
+                    "width":48,
+                    "x":192,
+                    "y":96
+                   },
+                   {
+                    "gid":12329,
+                    "height":48,
+                    "id":14,
+                    "name":"safe2",
+                    "rotation":0,
+                    "type":"",
+                    "visible":true,
+                    "width":48,
+                    "x":140,
+                    "y":300
+                   },
+                   {
+                    "gid":12329,
+                    "height":48,
+                    "id":15,
+                    "name":"safe3",
+                    "rotation":0,
+                    "type":"",
+                    "visible":true,
+                    "width":48,
+                    "x":350,
+                    "y":250
+                   }
+            ],
          "opacity":1,
          "type":"objectgroup",
          "visible":true,

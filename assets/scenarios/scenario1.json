@@ -1,5 +1,7 @@
 {
     "scenario_brief": "Your beloved kitty sidekick, Captain Meow, has vanished without a trace! As a renowned adventurer and detective, you suspect foul play. The last clue? A cryptic paw print left on your desk and a strange voicemail message on your phone. Can you crack the codes, follow the trail, and rescue Captain Meow before it’s too late?",
+    "endGoal": "Recover the stolen Project Sentinel prototype from the intruder's hidden exit route and secure all compromised data.",
+
     "startRoom": "reception",
    
     "rooms": {
@@ -49,10 +51,9 @@
             "type": "pc",
             "name": "Office Computer",
             "takeable": false,
-            "requires": "password",
             "hasFingerprint": true,
             "fingerprintOwner": "Mr Moo",
-            "fingerprintQuality": 0.9,
+            "fingerprintDifficulty": "easy",
             "observations": "A computer with a cybersecurity alert on screen. There might be pawprints on the keyboard."
           },
           {
@@ -68,12 +69,6 @@
             "name": "Fingerprint Kit",
             "takeable": true,
             "observations": "A kit used for collecting fingerprints from surfaces"
-          },
-          {
-            "type": "spoofing_kit",
-            "name": "Fingerprint Spoofing Kit",
-            "takeable": true,
-            "observations": "A specialized kit containing silicone, gelatin, and other materials for creating artificial fingerprints"
           }
         ]
       },

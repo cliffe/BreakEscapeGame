@@ -31,7 +31,7 @@
                     "takeable": false,
                     "locked": true,
                     "lockType": "password",
-                    "requires": "timeIsMoney_123",
+                    "requires": "TimeIsMoney_123",
                     "observations": "A locked safe requiring a decrypted password.",
                     "contents": [
                         {
@@ -57,7 +57,7 @@
             "objects": [
                 {
                     "type": "pc",
-                    "name": "Photo hex",
+                    "name": "Render the image and input the colour to open the safe in all lower caps",
                     "takeable": false,
                     "text": "Render the image and input the colour to open the safe in all lower caps",
                     "observations": "89504e470d0a1a0a0000000d4948445200000002000000250806000000681f38aa000000017352474200aece1ce90000000467414d410000b18f0bfc6105000000097048597300000ec300000ec301c76fa8640000001b494441542853637cf1f2ed7f20606062808251061090c360600000d66d0704a06be47e0000000049454e44ae426082"                
@@ -148,10 +148,9 @@
                     "observations": "A locked safe requiring a decrypted password.",
                     "contents": [
                         {
-                            "type": "key",
+                            "type": "notes",
                             "name": "Briefcase Key",
                             "takeable": true,
-                            "key_id": "briefcase_key",
                             "observations": "Congratulations! You've recovered my time machine blueprints and stopped the self-destruct sequence.\n You outsmarted me and for that I believe you deserve these blueprints more than me! \n flag{timemachineflag123}."
                         }
                     ]

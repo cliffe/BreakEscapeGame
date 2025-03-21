@@ -147,7 +147,32 @@
                  "width":48,
                  "x":198.43047889414,
                  "y":282.432633837121
-                }],
+                },
+                {
+                    "gid":242,
+                    "height":48,
+                    "id":10,
+                    "name":"notes",
+                    "rotation":0,
+                    "type":"",
+                    "visible":true,
+                    "width":48,
+                    "x":236.666666666667,
+                    "y":168.666666666667
+                   },
+                   {
+                    "gid":242,
+                    "height":48,
+                    "id":10,
+                    "name":"notes2",
+                    "rotation":0,
+                    "type":"",
+                    "visible":true,
+                    "width":48,
+                    "x":230.666666666667,
+                    "y":168.666666666667
+                   }
+            ],
          "opacity":1,
          "type":"objectgroup",
          "visible":true,

@@ -227,7 +227,42 @@
                  "width":48,
                  "x":268.518863530508,
                  "y":251.312529110387
-                }],
+                },
+                {
+                "gid":428,
+                "height":48,
+                "id":14,
+                "name":"pc2",
+                "rotation":0,
+                "type":"",
+                "visible":true,
+                "width":48,
+                "x":170,
+                "y":193
+               },
+               {
+                "height":48,
+                "id":11,
+                "name":"tablet",
+                "rotation":0,
+                "type":"",
+                "visible":true,
+                "width":48,
+                "x":280,
+                "y":130
+               },
+               {
+                "height":48,
+                "id":12,
+                "name":"bluetooth_scanner",
+                "rotation":0,
+                "type":"",
+                "visible":true,
+                "width":48,
+                "x":380,
+                "y":166
+                }        
+            ],
          "opacity":1,
          "type":"objectgroup",
          "visible":true,
