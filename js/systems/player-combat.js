@@ -130,9 +130,41 @@ export class PlayerCombat {
       hitCount++;
     });
 
+    // Check for chairs in range and direction
+    let chairsHit = 0;
+    if (window.chairs && window.chairs.length > 0) {
+      window.chairs.forEach(chair => {
+        // Only kick swivel chairs with physics bodies
+        if (!chair.isSwivelChair || !chair.body) {
+          return;
+        }
+
+        const chairX = chair.x;
+        const chairY = chair.y;
+        const distance = Phaser.Math.Distance.Between(playerX, playerY, chairX, chairY);
+
+        if (distance > punchRange) {
+          return; // Too far
+        }
+
+        // Check if chair is in the facing direction
+        if (!this.isInDirection(playerX, playerY, chairX, chairY, direction)) {
+          return; // Not in facing direction
+        }
+
+        // Hit landed! Kick the chair
+        this.kickChair(chair);
+        chairsHit++;
+      });
+    }
+
     if (hitCount > 0) {
       console.log(`Player punch hit ${hitCount} NPC(s)`);
-    } else {
+    }
+    if (chairsHit > 0) {
+      console.log(`Player punch hit ${chairsHit} chair(s)`);
+    }
+    if (hitCount === 0 && chairsHit === 0) {
       console.log('Player punch missed');
     }
   }
@@ -191,5 +223,50 @@ export class PlayerCombat {
     }
 
     console.log(`Dealt ${damage} damage to ${npc.id}`);
+  }
+
+  /**
+   * Apply kick velocity to chair
+   * @param {Phaser.GameObjects.Sprite} chair - Chair sprite
+   */
+  kickChair(chair) {
+    if (!chair || !chair.body || !window.player) {
+      return;
+    }
+
+    // Calculate direction from player to chair
+    const dx = chair.x - window.player.x;
+    const dy = chair.y - window.player.y;
+    const distance = Math.sqrt(dx * dx + dy * dy);
+
+    if (distance > 0) {
+      // Normalize the direction vector
+      const dirX = dx / distance;
+      const dirY = dy / distance;
+
+      // Apply a strong kick velocity
+      const kickForce = 1200; // Pixels per second
+      chair.body.setVelocity(dirX * kickForce, dirY * kickForce);
+
+      // Trigger spin direction calculation for visual rotation
+      if (window.calculateChairSpinDirection) {
+        window.calculateChairSpinDirection(window.player, chair);
+      }
+
+      // Visual feedback - flash the chair
+      if (window.spriteEffects) {
+        window.spriteEffects.flashHit(chair);
+      }
+
+      // Light screen shake
+      if (window.screenEffects) {
+        window.screenEffects.shake(2, 150);
+      }
+
+      console.log('CHAIR KICKED', {
+        chairName: chair.name,
+        velocity: { x: dirX * kickForce, y: dirY * kickForce }
+      });
+    }
   }
 }

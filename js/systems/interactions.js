@@ -453,35 +453,13 @@ export function handleObjectInteraction(sprite) {
         });
     }
     
-    // Handle swivel chair interaction - send it flying!
+    // Handle swivel chair interaction - trigger punch to kick it!
     if (sprite.isSwivelChair && sprite.body) {
         const player = window.player;
-        if (player) {
-            // Calculate direction from player to chair
-            const dx = sprite.x - player.x;
-            const dy = sprite.y - player.y;
-            const distance = Math.sqrt(dx * dx + dy * dy);
-            
-            if (distance > 0) {
-                // Normalize the direction vector
-                const dirX = dx / distance;
-                const dirY = dy / distance;
-                
-                // Apply a strong kick velocity
-                const kickForce = 1200; // Pixels per second
-                sprite.body.setVelocity(dirX * kickForce, dirY * kickForce);
-                
-                // Trigger spin direction calculation for visual rotation
-                if (window.calculateChairSpinDirection) {
-                    window.calculateChairSpinDirection(player, sprite);
-                }
-                
-                // Show feedback message
-                console.log('SWIVEL CHAIR KICKED', { 
-                    chairName: sprite.name,
-                    velocity: { x: dirX * kickForce, y: dirY * kickForce }
-                });
-            }
+        if (player && window.playerCombat) {
+            // Trigger punch instead of directly kicking the chair
+            // The punch system will detect the chair and apply kick velocity
+            window.playerCombat.punch();
         }
         return;
     }
