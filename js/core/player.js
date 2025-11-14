@@ -412,7 +412,19 @@ export function updatePlayerMovement() {
     if (!player || !player.body) {
         return;
     }
-    
+
+    // Check if player is KO (knocked out) - disable movement
+    if (window.playerHealth && window.playerHealth.isKO()) {
+        player.body.setVelocity(0, 0);
+        return;
+    }
+
+    // Check if movement is explicitly disabled
+    if (player.disableMovement) {
+        player.body.setVelocity(0, 0);
+        return;
+    }
+
     // Handle keyboard movement (takes priority over mouse movement)
     if (isKeyboardMoving) {
         updatePlayerKeyboardMovement();

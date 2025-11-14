@@ -88,6 +88,13 @@ function damageNPC(npcId, amount) {
   // Check for KO
   if (state.currentHP <= 0) {
     state.isKO = true;
+
+    // Apply KO visual effect to sprite
+    const npc = window.npcManager?.getNPC(npcId);
+    if (npc && npc.sprite && window.spriteEffects) {
+      window.spriteEffects.setKOAlpha(npc.sprite, 0.5);
+    }
+
     if (window.eventDispatcher) {
       window.eventDispatcher.emit(CombatEvents.NPC_KO, { npcId });
     }

@@ -473,16 +473,18 @@ class NPCBehavior {
         const dy = playerPos.y - this.sprite.y;
         const distanceSq = dx * dx + dy * dy;
 
-        // Priority 5: Chase (hostile + close) - stub for now
-        if (this.hostile && distanceSq < this.config.hostile.aggroDistanceSq) {
-            // TODO: Implement chase behavior in future
-            // return 'chase';
+        // Check hostile state from hostile system (overrides config)
+        const isHostile = window.npcHostileSystem && window.npcHostileSystem.isNPCHostile(this.npcId);
+        const isKO = window.npcHostileSystem && window.npcHostileSystem.isNPCKO(this.npcId);
+
+        // If KO, always idle
+        if (isKO) {
+            return 'idle';
         }
 
-        // Priority 4: Flee (hostile + far) - stub for now
-        if (this.hostile) {
-            // TODO: Implement flee behavior in future
-            // return 'flee';
+        // Priority 5: Chase (hostile + in range)
+        if (isHostile && distanceSq < this.config.hostile.aggroDistanceSq) {
+            return 'chase';
         }
 
         // Priority 3: Maintain Personal Space
@@ -964,12 +966,54 @@ class NPCBehavior {
     }
 
     updateHostileBehavior(playerPos, delta) {
-        if (!this.hostile || !playerPos) return false;
+        if (!playerPos) return false;
 
-        // Stub for future chase/flee implementation
-        console.log(`[${this.npcId}] Hostile mode active (influence: ${this.influence})`);
+        // Calculate distance to player
+        const dx = playerPos.x - this.sprite.x;
+        const dy = playerPos.y - this.sprite.y;
+        const distance = Math.sqrt(dx * dx + dy * dy);
 
-        return false; // Not actively chasing/fleeing yet
+        // Get attack range from hostile system
+        const attackRange = window.npcHostileSystem ?
+            window.npcHostileSystem.getState(this.npcId)?.attackRange || 50 : 50;
+
+        // If in attack range, try to attack
+        if (distance <= attackRange) {
+            // Stop moving
+            this.sprite.body.setVelocity(0, 0);
+            this.isMoving = false;
+
+            // Face player
+            this.direction = this.calculateDirection(dx, dy);
+            this.playAnimation('idle', this.direction);
+
+            // Attempt attack
+            if (window.npcCombat) {
+                window.npcCombat.attemptAttack(this.npcId, this.sprite);
+            }
+
+            return true;
+        }
+
+        // Chase player - move towards them
+        const chaseSpeed = this.config.hostile.chaseSpeed || 120;
+
+        // Calculate normalized direction
+        const normalizedDx = dx / distance;
+        const normalizedDy = dy / distance;
+
+        // Set velocity towards player
+        this.sprite.body.setVelocity(
+            normalizedDx * chaseSpeed,
+            normalizedDy * chaseSpeed
+        );
+
+        // Calculate and update direction
+        this.direction = this.calculateDirection(dx, dy);
+        this.playAnimation('walk', this.direction);
+        this.isMoving = true;
+
+        return true;
     }
 
     calculateDirection(dx, dy) {
