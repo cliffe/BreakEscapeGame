@@ -80,7 +80,8 @@ VAR warned_player = false
     That's a pretty thin excuse. I'm going to have to report this incident.
     Move along before I call for backup.
     # display:guard-hostile
-    -> END
+    # exit_conversation
+    -> hub
 }
 
 === claim_official ===
@@ -96,7 +97,8 @@ VAR warned_player = false
     Official? I don't recognize your clearance. Security protocol requires me to log this.
     You're coming with me to speak with my supervisor.
     # display:guard-alert
-    -> END
+    # exit_conversation
+    -> hub
 }
 
 === explain_situation ===
@@ -104,7 +106,7 @@ VAR warned_player = false
 {influence >= 25:
     ~ influence -= 5
     I'm listening. Make it quick.
-    
+
     * [I need to access critical files for the investigation]
         -> explain_files
     * [I'm security testing your protocols]
@@ -116,7 +118,8 @@ VAR warned_player = false
     ~ influence -= 20
     No explanations. Security breach detected. This is being reported.
     # display:guard-arrest
-    -> END
+    # exit_conversation
+    -> hub
 }
 
 === explain_files ===
@@ -131,7 +134,8 @@ VAR warned_player = false
     ~ influence -= 15
     Critical files are locked for a reason. You don't have the clearance.
     # display:guard-hostile
-    -> END
+    # exit_conversation
+    -> hub
 }
 
 === explain_audit ===
@@ -147,7 +151,8 @@ VAR warned_player = false
     ~ influence -= 20
     An audit would be scheduled and documented. This isn't.
     # display:guard-alert
-    -> END
+    # exit_conversation
+    -> hub
 }
 
 === hostile_response ===
@@ -156,7 +161,9 @@ VAR warned_player = false
 That's it. You just made a big mistake.
 SECURITY! CODE VIOLATION IN THE CORRIDOR!
 # display:guard-aggressive
--> END
+# hostile:security_guard
+# exit_conversation
+-> hub
 
 === escalate_conflict ===
 # speaker:security_guard
@@ -164,7 +171,9 @@ SECURITY! CODE VIOLATION IN THE CORRIDOR!
 You've crossed the line! This is a lockdown!
 INTRUDER ALERT! INTRUDER ALERT!
 # display:guard-alarm
--> END
+# hostile:security_guard
+# exit_conversation
+-> hub
 
 === back_down ===
 # speaker:security_guard
@@ -177,7 +186,8 @@ INTRUDER ALERT! INTRUDER ALERT!
     Good thinking. But I've got a full description now.
     # display:guard-watchful
 }
--> END
+# exit_conversation
+-> hub
 
 === passing_through ===
 # speaker:security_guard

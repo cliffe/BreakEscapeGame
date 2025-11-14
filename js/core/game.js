@@ -6,6 +6,10 @@ import { checkObjectInteractions, setGameInstance } from '../systems/interaction
 import { introduceScenario } from '../utils/helpers.js?v=19';
 import '../minigames/index.js?v=2';
 import SoundManager from '../systems/sound-manager.js?v=1';
+import { initPlayerHealth } from '../systems/player-health.js';
+import { initNPCHostileSystem } from '../systems/npc-hostile.js';
+import { COMBAT_CONFIG } from '../config/combat-config.js';
+import { initCombatDebug } from '../utils/combat-debug.js';
 
 // Global variables that will be set by main.js
 let gameScenario;
@@ -561,6 +565,13 @@ export async function create() {
                 console.error('❌ Failed to initialize NPC Behavior Manager:', error);
             });
     }
+
+    // Initialize combat systems
+    COMBAT_CONFIG.validate();
+    window.playerHealth = initPlayerHealth();
+    window.npcHostileSystem = initNPCHostileSystem();
+    initCombatDebug();
+    console.log('✅ Combat systems ready');
 
     // Create only the starting room initially
     const roomPositions = calculateRoomPositions(this);

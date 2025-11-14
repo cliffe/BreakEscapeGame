@@ -208,7 +208,37 @@ export function processGameActionTags(tags, ui) {
                         }
                     }
                     break;
-                    
+
+                case 'hostile':
+                    {
+                        const npcId = param || window.currentConversationNPCId;
+
+                        if (!npcId) {
+                            result.message = '⚠️ hostile tag missing NPC ID';
+                            console.warn(result.message);
+                            break;
+                        }
+
+                        console.log(`🔴 Processing hostile tag for NPC: ${npcId}`);
+
+                        // Set NPC to hostile state
+                        if (window.npcHostileSystem) {
+                            window.npcHostileSystem.setNPCHostile(npcId, true);
+                            result.success = true;
+                            result.message = `⚠️ ${npcId} is now hostile!`;
+                            if (ui) ui.showNotification(result.message, 'warning');
+                        } else {
+                            result.message = '⚠️ Hostile system not initialized';
+                            console.warn(result.message);
+                        }
+
+                        // Emit event for other systems
+                        if (window.eventDispatcher) {
+                            window.eventDispatcher.emit('npc_became_hostile', { npcId });
+                        }
+                    }
+                    break;
+
                 default:
                     // Unknown tag, log but don't fail
                     console.log(`ℹ️ Unknown game action tag: ${action}`);
