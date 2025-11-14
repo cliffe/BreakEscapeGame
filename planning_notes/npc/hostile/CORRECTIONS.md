@@ -35,6 +35,70 @@ The `#exit_conversation` tag tells the game engine to close the conversation UI,
 
 ---
 
+## Exit Conversation Tag - Already Implemented ✅
+
+**Good News**: The `#exit_conversation` tag is **already handled** in the codebase.
+
+**Location**: `/js/minigames/person-chat/person-chat-minigame.js` line 537:
+```javascript
+const shouldExit = result?.tags?.some(tag => tag.includes('exit_conversation'));
+```
+
+When this tag is detected, the minigame:
+1. Shows the NPC's final response
+2. Schedules the conversation to close
+3. Saves the NPC conversation state
+4. Exits the minigame
+
+**No additional handler needed** for `#exit_conversation` - it works out of the box.
+
+---
+
+## Hostile Tag - Needs Implementation ❌
+
+**Required**: The `#hostile` tag needs to be added to the tag processing system.
+
+**Location**: `/js/minigames/helpers/chat-helpers.js`
+
+**Where to Add**: In the `processGameActionTags()` function switch statement (around line 60), add:
+
+```javascript
+case 'hostile': {
+    const npcId = param || window.currentConversationNPCId;
+
+    if (!npcId) {
+        result.message = '⚠️ hostile tag missing NPC ID';
+        console.warn(result.message);
+        break;
+    }
+
+    console.log(`🔴 Processing hostile tag for NPC: ${npcId}`);
+
+    // Set NPC to hostile state
+    if (window.npcHostileSystem) {
+        window.npcHostileSystem.setNPCHostile(npcId, true);
+        result.success = true;
+        result.message = `⚠️ ${npcId} is now hostile!`;
+    } else {
+        result.message = '⚠️ Hostile system not initialized';
+        console.warn(result.message);
+    }
+
+    // Emit event for other systems
+    if (window.eventDispatcher) {
+        window.eventDispatcher.emit('npc_became_hostile', { npcId });
+    }
+
+    break;
+}
+```
+
+**Tag Format**:
+- `#hostile:npcId` - Make specific NPC hostile
+- `#hostile` - Make current conversation NPC hostile (uses `window.currentConversationNPCId`)
+
+---
+
 ## Files Needing Correction
 
 ### 1. implementation_plan.md
@@ -85,25 +149,27 @@ Goodbye!
 ```ink
 === test_hostile ===
 # speaker:test_npc
-This will trigger hostile mode!
+Triggering hostile state for security guard!
+Watch out - they're coming for you!
 # hostile:security_guard
 # exit_conversation
 -> hub
 
 === test_exit ===
 # speaker:test_npc
-This will exit cleanly.
+Exiting the conversation cleanly.
+Goodbye, and good luck!
 # exit_conversation
 -> hub
 ```
 
-Note: The dialogue "You should now be in combat" and "Goodbye!" should come BEFORE the `#exit_conversation` tag, as the conversation closes when that tag is processed.
+**Note**: The dialogue should come BEFORE the `#exit_conversation` tag, as the conversation closes when that tag is processed. Text after the tag won't be shown.
 
 ---
 
 ### 3. implementation_roadmap.md
 
-**Phase 7.2 section** - May reference similar patterns. Should be reviewed for consistency.
+**Phase 7.2 section** - References exit_conversation tag handler needing to be added. This should be removed since it already exists.
 
 ---
 
@@ -248,19 +314,21 @@ Goodbye, and good luck!
 ## Summary of Corrections
 
 1. **Never use `-> END`** - Always use `-> hub`
-2. **Exit pattern**: `# exit_conversation` followed by `-> hub`
+2. **Exit pattern**: `# exit_conversation` followed by `-> hub` (already works!)
 3. **Hostile pattern**: `# hostile:npcId` + `# exit_conversation` + `-> hub`
 4. **Hub pattern**: All conversation paths eventually return to hub
 5. **Multiple exits**: A conversation can have multiple exit points, all using the same pattern
+6. **Exit conversation already implemented**: No need to add handler, it already exists in person-chat-minigame.js
 
 ---
 
 ## Why This Pattern?
 
-From analyzing `helper-npc.ink`:
+From analyzing `helper-npc.ink` and `person-chat-minigame.js`:
 
 - The hub acts as a central conversation state
 - `#exit_conversation` is a **tag** that tells the game engine to close the UI
+- This tag is **already detected** in person-chat-minigame.js
 - The Ink story still needs to resolve to a valid state (the hub)
 - Returning to hub after exit means the NPC state is properly saved
 - If player talks to NPC again, conversation starts at `start` knot, not hub
@@ -275,11 +343,13 @@ When implementing:
 1. ✅ Read this corrections document first
 2. ✅ Never use `-> END` in any Ink file
 3. ✅ Follow the corrected patterns above
-4. ✅ Test each conversation path thoroughly
-5. ✅ Verify `#exit_conversation` closes the UI
-6. ✅ Verify returning to hub doesn't cause issues
-7. ✅ Update security-guard.ink according to recommendations
-8. ✅ Create test-hostile.ink with corrected pattern
+4. ❌ **Don't add** exit_conversation handler - it already exists!
+5. ✅ **Do add** hostile tag handler to chat-helpers.js
+6. ✅ Test each conversation path thoroughly
+7. ✅ Verify `#exit_conversation` closes the UI (should work already)
+8. ✅ Verify returning to hub doesn't cause issues
+9. ✅ Update security-guard.ink according to recommendations
+10. ✅ Create test-hostile.ink with corrected pattern
 
 ---
 
@@ -287,6 +357,8 @@ When implementing:
 
 - **Good Example**: `/scenarios/ink/helper-npc.ink` - Perfect hub pattern usage
 - **Needs Fixing**: `/scenarios/ink/security-guard.ink` - Has 8 `-> END` instances
+- **Exit Tag Implementation**: `/js/minigames/person-chat/person-chat-minigame.js` line 537
+- **Tag Processing**: `/js/minigames/helpers/chat-helpers.js` - Add hostile case here
 - **Pattern Source**: Lines 68-71 of `helper-npc.ink`:
   ```ink
   + [Thanks, I'm good for now.]

@@ -12,27 +12,32 @@ Read these documents in order:
 
 ## Critical Prerequisites (Must Complete First)
 
-### 1. Add Ink Tag Handlers
+### 1. Add Hostile Tag Handler
 
 **File**: `/js/minigames/helpers/chat-helpers.js`
 
-**Location**: In the `processGameActionTags()` function, add these cases to the switch statement (around line 60):
+**Location**: In the `processGameActionTags()` function, add this case to the switch statement (around line 60):
 
 ```javascript
 case 'hostile': {
-    const parts = tag.split(':');
-    const npcId = parts[1] || (ui && ui.npcId);
+    const npcId = param || window.currentConversationNPCId;
 
     if (!npcId) {
-        console.error('hostile tag missing NPC ID');
+        result.message = '⚠️ hostile tag missing NPC ID';
+        console.warn(result.message);
         break;
     }
 
-    console.log(`Processing hostile tag for NPC: ${npcId}`);
+    console.log(`🔴 Processing hostile tag for NPC: ${npcId}`);
 
     // Set NPC to hostile state
     if (window.npcHostileSystem) {
         window.npcHostileSystem.setNPCHostile(npcId, true);
+        result.success = true;
+        result.message = `⚠️ ${npcId} is now hostile!`;
+    } else {
+        result.message = '⚠️ Hostile system not initialized';
+        console.warn(result.message);
     }
 
     // Emit event for other systems
@@ -40,24 +45,11 @@ case 'hostile': {
         window.eventDispatcher.emit('npc_became_hostile', { npcId });
     }
 
-    // Exit conversation after hostile trigger
-    if (ui && typeof ui.exitConversation === 'function') {
-        ui.exitConversation();
-    }
-
-    break;
-}
-
-case 'exit_conversation': {
-    console.log('Processing exit_conversation tag');
-
-    if (ui && typeof ui.exitConversation === 'function') {
-        ui.exitConversation();
-    }
-
     break;
 }
 ```
+
+**Note on Exit Conversation**: ✅ The `#exit_conversation` tag is **already handled** in `/js/minigames/person-chat/person-chat-minigame.js` line 537. **No additional handler needed!**
 
 **Test**: Verify with test Ink file before proceeding.
 
@@ -515,13 +507,42 @@ Follow **implementation_roadmap.md** for detailed phase breakdowns.
 
 ---
 
+## Punch Mechanics Design (For Reference)
+
+### How Punching Works
+
+**Initiation** (Interaction-Based):
+- Player **clicks** on hostile NPC, OR
+- Player presses **'E' key** when near hostile NPC
+- Uses existing interaction system
+
+**Animation**:
+- Player punch animation plays (walk + red tint, 500ms)
+- Animation plays in player's facing direction
+
+**Damage Application** (AOE):
+- After animation completes, check ALL hostile NPCs
+- Damage applies to NPCs that are:
+  1. Within punch range (60 pixels default)
+  2. In player's facing direction (90° cone)
+  3. Not already KO'd
+
+**Result**:
+- Can hit multiple NPCs with one punch if grouped
+- Directional attack (can't hit NPCs behind you)
+- Miss if target moves out of range during animation
+
+**Implementation Note**: Phase 5 will implement this using existing interaction patterns from interactions.js
+
+---
+
 ## Common Issues and Solutions
 
 ### Issue: "Player health not initialized"
 **Solution**: Make sure initPlayerHealth() is called in game.js create()
 
 ### Issue: "hostile tag not working"
-**Solution**: Check that tag handler added to chat-helpers.js and function exported
+**Solution**: Check that tag handler added to chat-helpers.js with correct case statement
 
 ### Issue: "Events not firing"
 **Solution**: Verify window.eventDispatcher exists (should be created by NPC system)
@@ -531,6 +552,9 @@ Follow **implementation_roadmap.md** for detailed phase breakdowns.
 
 ### Issue: "NPC not found"
 **Solution**: Verify NPC exists in scenario and npcManager is initialized
+
+### Issue: "exit_conversation not working"
+**Solution**: This should already work! Check /js/minigames/person-chat/person-chat-minigame.js line 537
 
 ---
 
