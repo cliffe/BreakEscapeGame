@@ -87,7 +87,7 @@ export class PlayerCombat {
    * Applies AOE damage to all NPCs in punch range AND facing direction
    */
   checkForHits() {
-    if (!window.player || !window.npcManager || !window.npcHostileSystem) {
+    if (!window.player) {
       return;
     }
 
@@ -99,36 +99,48 @@ export class PlayerCombat {
     // Get player facing direction
     const direction = window.player.lastDirection || 'down';
 
-    // Get all NPCs
-    const npcs = window.npcManager.getAllNPCs();
+    // Get all NPCs from rooms
     let hitCount = 0;
+    
+    if (window.rooms) {
+      for (const roomId in window.rooms) {
+        const room = window.rooms[roomId];
+        if (!room.npcSprites) continue;
 
-    npcs.forEach(npc => {
-      // Only damage hostile NPCs
-      if (!window.npcHostileSystem.isNPCHostile(npc.id)) {
-        return;
+        room.npcSprites.forEach(npcSprite => {
+          if (!npcSprite || !npcSprite.npcId) return;
+
+          const npcId = npcSprite.npcId;
+
+          // Only damage hostile NPCs
+          if (!window.npcHostileSystem.isNPCHostile(npcId)) {
+            return;
+          }
+
+          // Don't damage NPCs that are already KO
+          if (window.npcHostileSystem.isNPCKO(npcId)) {
+            return;
+          }
+
+          const npcX = npcSprite.x;
+          const npcY = npcSprite.y;
+          const distance = Phaser.Math.Distance.Between(playerX, playerY, npcX, npcY);
+
+          if (distance > punchRange) {
+            return; // Too far
+          }
+
+          // Check if NPC is in the facing direction
+          if (!this.isInDirection(playerX, playerY, npcX, npcY, direction)) {
+            return; // Not in facing direction
+          }
+
+          // Hit landed!
+          this.applyDamage(npcId, punchDamage);
+          hitCount++;
+        });
       }
-
-      // Check if NPC is in range
-      if (!npc.sprite) return;
-
-      const npcX = npc.sprite.x;
-      const npcY = npc.sprite.y;
-      const distance = Phaser.Math.Distance.Between(playerX, playerY, npcX, npcY);
-
-      if (distance > punchRange) {
-        return; // Too far
-      }
-
-      // Check if NPC is in the facing direction
-      if (!this.isInDirection(playerX, playerY, npcX, npcY, direction)) {
-        return; // Not in facing direction
-      }
-
-      // Hit landed!
-      this.applyDamage(npc, punchDamage);
-      hitCount++;
-    });
+    }
 
     // Check for chairs in range and direction
     let chairsHit = 0;
@@ -198,23 +210,48 @@ export class PlayerCombat {
 
   /**
    * Apply damage to NPC
-   * @param {Object} npc - NPC object
+   * @param {string|Object} npcIdOrNPC - NPC ID string or NPC object
    * @param {number} damage - Damage amount
    */
-  applyDamage(npc, damage) {
+  applyDamage(npcIdOrNPC, damage) {
     if (!window.npcHostileSystem) return;
 
+    // Get npcId
+    let npcId;
+    let npcSprite = null;
+    
+    if (typeof npcIdOrNPC === 'string') {
+      npcId = npcIdOrNPC;
+      // Find the sprite for this NPC
+      if (window.rooms) {
+        for (const roomId in window.rooms) {
+          const room = window.rooms[roomId];
+          if (!room.npcSprites) continue;
+          for (const sprite of room.npcSprites) {
+            if (sprite.npcId === npcId) {
+              npcSprite = sprite;
+              break;
+            }
+          }
+          if (npcSprite) break;
+        }
+      }
+    } else {
+      npcId = npcIdOrNPC.id;
+      npcSprite = npcIdOrNPC.sprite;
+    }
+
     // Apply damage
-    window.npcHostileSystem.damageNPC(npc.id, damage);
+    window.npcHostileSystem.damageNPC(npcId, damage);
 
     // Visual feedback
-    if (npc.sprite && window.spriteEffects) {
-      window.spriteEffects.flashDamage(npc.sprite);
+    if (npcSprite && window.spriteEffects) {
+      window.spriteEffects.flashDamage(npcSprite);
     }
 
     // Damage numbers
-    if (npc.sprite && window.damageNumbers) {
-      window.damageNumbers.show(npc.sprite.x, npc.sprite.y - 30, damage, 'damage');
+    if (npcSprite && window.damageNumbers) {
+      window.damageNumbers.show(npcSprite.x, npcSprite.y - 30, damage, 'damage');
     }
 
     // Screen shake (light)
@@ -222,7 +259,7 @@ export class PlayerCombat {
       window.screenEffects.shakeNPCHit();
     }
 
-    console.log(`Dealt ${damage} damage to ${npc.id}`);
+    console.log(`Dealt ${damage} damage to ${npcId}`);
   }
 
   /**

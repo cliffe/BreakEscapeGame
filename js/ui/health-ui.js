@@ -21,41 +21,21 @@ export class HealthUI {
   }
 
   createUI() {
-    // Create container div
+    // Create main container div
     this.container = document.createElement('div');
-    this.container.id = 'health-ui';
-    this.container.style.cssText = `
-      position: fixed;
-      top: 60px;
-      left: 50%;
-      transform: translateX(-50%);
-      display: none;
-      z-index: 100;
-      padding: 10px;
-      background: rgba(0, 0, 0, 0.7);
-      border-radius: 8px;
-      border: 2px solid #444;
-    `;
+    this.container.id = 'health-ui-container';
 
     // Create hearts container
     const heartsContainer = document.createElement('div');
-    heartsContainer.style.cssText = `
-      display: flex;
-      gap: 5px;
-      align-items: center;
-    `;
+    heartsContainer.id = 'health-ui';
+    heartsContainer.className = 'health-ui-display';
 
     // Create 5 heart slots
     for (let i = 0; i < COMBAT_CONFIG.ui.maxHearts; i++) {
-      const heart = document.createElement('div');
-      heart.className = 'heart';
-      heart.style.cssText = `
-        width: 24px;
-        height: 24px;
-        font-size: 24px;
-        line-height: 24px;
-      `;
-      heart.textContent = '❤️';
+      const heart = document.createElement('img');
+      heart.className = 'health-heart';
+      heart.src = 'assets/icons/heart.png';
+      heart.alt = 'HP';
       heartsContainer.appendChild(heart);
       this.hearts.push(heart);
     }
@@ -104,23 +84,23 @@ export class HealthUI {
     this.hearts.forEach((heart, index) => {
       if (index < fullHearts) {
         // Full heart
-        heart.textContent = '❤️';
+        heart.src = 'assets/icons/heart.png';
         heart.style.opacity = '1';
       } else if (index === fullHearts && halfHeart) {
-        // Half heart - use broken heart emoji
-        heart.textContent = '💔';
+        // Half heart
+        heart.src = 'assets/icons/heart-half.png';
         heart.style.opacity = '1';
       } else {
         // Empty heart
-        heart.textContent = '🖤';
-        heart.style.opacity = '0.3';
+        heart.src = 'assets/icons/heart.png';
+        heart.style.opacity = '0.2';
       }
     });
   }
 
   show() {
     if (!this.isVisible) {
-      this.container.style.display = 'block';
+      this.container.style.display = 'flex';
       this.isVisible = true;
     }
   }

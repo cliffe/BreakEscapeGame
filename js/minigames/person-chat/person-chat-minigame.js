@@ -51,6 +51,7 @@ export class PersonChatMinigame extends MinigameScene {
         this.npcId = params.npcId;
         this.title = params.title || 'Conversation';
         this.background = params.background; // Optional background image path from timedConversation
+        this.startKnot = params.startKnot; // Optional knot to jump to (used for event-triggered conversations)
         
         // Verify NPC exists
         const npc = this.npcManager.getNPC(this.npcId);
@@ -308,28 +309,36 @@ export class PersonChatMinigame extends MinigameScene {
                 return;
             }
             
-            // Restore previous conversation state if it exists
-            const stateRestored = npcConversationStateManager.restoreNPCState(
-                this.npcId, 
-                this.inkEngine.story
-            );
+            // If a startKnot was provided (event-triggered conversation), jump directly to it
+            // This skips state restoration and goes straight to the event response
+            if (this.startKnot) {
+                console.log(`⚡ Event-triggered conversation: jumping directly to knot: ${this.startKnot}`);
+                this.conversation.goToKnot(this.startKnot);
+            } else {
+                // Otherwise, restore previous conversation state if it exists
+                const stateRestored = npcConversationStateManager.restoreNPCState(
+                    this.npcId, 
+                    this.inkEngine.story
+                );
+                
+                if (stateRestored) {
+                    // If we restored state, reset the story ended flag in case it was marked as ended before
+                    this.conversation.storyEnded = false;
+                    console.log(`🔄 Continuing previous conversation with ${this.npcId}`);
+                } else {
+                    // First time conversation - navigate to start knot
+                    const startKnot = this.npc.currentKnot || 'start';
+                    this.conversation.goToKnot(startKnot);
+                    console.log(`🆕 Starting new conversation with ${this.npcId}`);
+                }
+            }
             
             // Always sync global variables to ensure they're up to date
             // This is important because other NPCs may have changed global variables
             if (this.inkEngine && this.inkEngine.story) {
                 npcConversationStateManager.syncGlobalVariablesToStory(this.inkEngine.story);
             }
-            
-            if (stateRestored) {
-                // If we restored state, reset the story ended flag in case it was marked as ended before
-                this.conversation.storyEnded = false;
-                console.log(`🔄 Continuing previous conversation with ${this.npcId}`);
-            } else {
-                // First time conversation - navigate to start knot
-                const startKnot = this.npc.currentKnot || 'start';
-                this.conversation.goToKnot(startKnot);
-                console.log(`🆕 Starting new conversation with ${this.npcId}`);
-            }
+
             
             // Re-sync global variables right before showing dialogue to ensure conditionals are evaluated with current values
             // This is critical because Ink evaluates conditionals when continue() is called
@@ -870,6 +879,68 @@ export class PersonChatMinigame extends MinigameScene {
         this.scheduleDialogueAdvance(() => {
             this.complete(true);
         }, 1000);
+    }
+    
+    /**
+     * Jump to a specific knot in the conversation while keeping the minigame active
+     * Called when an event (like lockpicking) is detected during an active conversation
+     * @param {string} knotName - Name of the knot to jump to
+     */
+    jumpToKnot(knotName) {
+        if (!knotName) {
+            console.warn('jumpToKnot: No knot name provided');
+            return false;
+        }
+        
+        if (!this.conversation || !this.conversation.engine || !this.conversation.engine.story) {
+            console.warn('jumpToKnot: Conversation engine not initialized', {
+                hasConversation: !!this.conversation,
+                hasEngine: !!this.conversation?.engine,
+                hasStory: !!this.conversation?.engine?.story
+            });
+            return false;
+        }
+        
+        try {
+            console.log(`🎯 PersonChatMinigame.jumpToKnot() - Starting jump to: ${knotName}`);
+            console.log(`   Current NPC: ${this.npcId}`);
+            console.log(`   Current knot before jump: ${this.conversation.engine.story.state?.currentPathString}`);
+            
+            // Use the conversation's goToKnot method instead of directly calling inkEngine
+            // This ensures NPC state is updated properly
+            const jumpSuccess = this.conversation.goToKnot(knotName);
+            
+            if (!jumpSuccess) {
+                console.error(`❌ conversation.goToKnot() returned false for knot: ${knotName}`);
+                return false;
+            }
+            
+            console.log(`   Knot after jump: ${this.conversation.engine.story.state?.currentPathString}`);
+            
+            // Clear any pending callbacks since we're changing the story
+            if (this.autoAdvanceTimer) {
+                clearTimeout(this.autoAdvanceTimer);
+                this.autoAdvanceTimer = null;
+                console.log(`   Cleared auto-advance timer`);
+            }
+            this.pendingContinueCallback = null;
+            
+            // Clear the UI before showing new content
+            this.ui.hideChoices();
+            console.log(`   Hidden choice buttons`);
+            
+            console.log(`🎯 About to call showCurrentDialogue() to fetch new content...`);
+            
+            // Show the new dialogue at the target knot
+            // This will call conversation.continue() to get the content at the new knot
+            this.showCurrentDialogue();
+            
+            console.log(`✅ Successfully jumped to knot: ${knotName}`);
+            return true;
+        } catch (error) {
+            console.error(`❌ Error jumping to knot ${knotName}:`, error);
+            return false;
+        }
     }
     
     /**

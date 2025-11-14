@@ -232,32 +232,32 @@ export function drawLOSCone(scene, npc, losConfig = {}, color = 0x00ff00, alpha 
   // Set cone opacity to 20%
   const coneAlpha = 0.2;
   
-  console.log(`🟢 Drawing LOS cone for NPC at (${npcPos.x.toFixed(0)}, ${npcPos.y.toFixed(0)}), range: ${scaledRange}px, angle: ${angle}°`);
+  // console.log(`🟢 Drawing LOS cone for NPC at (${npcPos.x.toFixed(0)}, ${npcPos.y.toFixed(0)}), range: ${scaledRange}px, angle: ${angle}°`);
   
   const npcFacing = getNPCFacingDirection(npc);
-  console.log(`   NPC facing: ${npcFacing.toFixed(0)}°`);
+  // console.log(`   NPC facing: ${npcFacing.toFixed(0)}°`);
   
   // Offset cone origin to eye level (30% higher on the NPC sprite)
   const coneOriginY = npcPos.y - (npc._sprite?.height ?? 32) * 0.3;
   const coneOrigin = { x: npcPos.x, y: coneOriginY };
-  console.log(`   Cone origin at eye level: (${coneOrigin.x.toFixed(0)}, ${coneOrigin.y.toFixed(0)})`);
+  // console.log(`   Cone origin at eye level: (${coneOrigin.x.toFixed(0)}, ${coneOrigin.y.toFixed(0)})`);
   
   const npcFacingRad = Phaser.Math.DegToRad(npcFacing);
   const halfAngleRad = Phaser.Math.DegToRad(angle / 2);
   
   // Create graphics object for the cone
   const graphics = scene.add.graphics();
-  console.log(`   📊 Graphics object created - checking properties:`, {
-    graphicsExists: !!graphics,
-    hasScene: !!graphics.scene,
-    sceneKey: graphics.scene?.key,
-    canAdd: typeof graphics.add === 'function'
-  });
+  // console.log(`   📊 Graphics object created - checking properties:`, {
+  //   graphicsExists: !!graphics,
+  //   hasScene: !!graphics.scene,
+  //   sceneKey: graphics.scene?.key,
+  //   canAdd: typeof graphics.add === 'function'
+  // });
   
   // Draw outer range circle (light, semi-transparent)
   graphics.lineStyle(1, color, 0.2);
   graphics.strokeCircle(coneOrigin.x, coneOrigin.y, scaledRange);
-  console.log(`   ⭕ Range circle drawn at (${coneOrigin.x}, ${coneOrigin.y}) radius: ${scaledRange}`);
+  // console.log(`   ⭕ Range circle drawn at (${coneOrigin.x}, ${coneOrigin.y}) radius: ${scaledRange}`);
   
   // Draw the cone fill with radial transparency gradient
   graphics.lineStyle(2, color, 0.2);
@@ -380,15 +380,15 @@ export function drawLOSCone(scene, npc, losConfig = {}, color = 0x00ff00, alpha 
   graphics.setDepth(9999); // On top of everything
   graphics.setAlpha(1.0); // Ensure not transparent
   
-  console.log(`✅ LOS cone rendered successfully:`, {
-    positionX: npcPos.x.toFixed(0),
-    positionY: npcPos.y.toFixed(0),
-    depth: graphics.depth,
-    alpha: graphics.alpha,
-    visible: graphics.visible,
-    active: graphics.active,
-    pointsCount: conePoints.length
-  });
+  // console.log(`✅ LOS cone rendered successfully:`, {
+  //   positionX: npcPos.x.toFixed(0),
+  //   positionY: npcPos.y.toFixed(0),
+  //   depth: graphics.depth,
+  //   alpha: graphics.alpha,
+  //   visible: graphics.visible,
+  //   active: graphics.active,
+  //   pointsCount: conePoints.length
+  // });
   
   return graphics;
 }

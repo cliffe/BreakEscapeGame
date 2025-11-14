@@ -168,13 +168,19 @@ export function checkObjectInteractions() {
             if (distanceSq <= INTERACTION_RANGE_SQ) {
                 if (!obj.isHighlighted) {
                     obj.isHighlighted = true;
-                    obj.setTint(0x4da6ff);  // Blue tint for interactable objects
+                    // Only apply tint if this is a sprite (has setTint method)
+                    if (obj.setTint && typeof obj.setTint === 'function') {
+                        obj.setTint(0x4da6ff);  // Blue tint for interactable objects
+                    }
                     // Add interaction indicator sprite
                     addInteractionIndicator(obj);
                 }
             } else if (obj.isHighlighted) {
                 obj.isHighlighted = false;
-                obj.clearTint();
+                // Only clear tint if this is a sprite
+                if (obj.clearTint && typeof obj.clearTint === 'function') {
+                    obj.clearTint();
+                }
                 // Clean up interaction sprite if exists
                 if (obj.interactionIndicator) {
                     obj.interactionIndicator.destroy();
@@ -279,6 +285,9 @@ export function checkObjectInteractions() {
                     return;
                 }
 
+                // Check if NPC is hostile - don't show talk icon if so
+                const isNPCHostile = sprite.npcId && window.npcHostileSystem && window.npcHostileSystem.isNPCHostile(sprite.npcId);
+
                 // Use squared distance for performance
                 const distanceSq = getInteractionDistance(player, sprite.x, sprite.y);
 
@@ -289,18 +298,25 @@ export function checkObjectInteractions() {
                         if (!sprite.interactionIndicator) {
                             addInteractionIndicator(sprite);
                         }
-                        // Show talk icon and don't apply tint - icon provides visual feedback
-                        if (sprite.interactionIndicator) {
+                        // Show talk icon only if NPC is NOT hostile
+                        if (sprite.interactionIndicator && !isNPCHostile) {
                             sprite.interactionIndicator.setVisible(true);
                             sprite.talkIconVisible = true;
+                        } else if (sprite.interactionIndicator && isNPCHostile) {
+                            sprite.interactionIndicator.setVisible(false);
+                            sprite.talkIconVisible = false;
                         }
-                    } else if (sprite.interactionIndicator && !sprite.talkIconVisible) {
+                    } else if (sprite.interactionIndicator && !sprite.talkIconVisible && !isNPCHostile) {
                         // Update position of talk icon to stay pixel-perfect on NPC
                         const iconX = Math.round(sprite.x + 5);
                         const iconY = Math.round(sprite.y - 38);
                         sprite.interactionIndicator.setPosition(iconX, iconY);
                         sprite.interactionIndicator.setVisible(true);
                         sprite.talkIconVisible = true;
+                    } else if (isNPCHostile && sprite.interactionIndicator && sprite.talkIconVisible) {
+                        // Hide icon if NPC became hostile
+                        sprite.interactionIndicator.setVisible(false);
+                        sprite.talkIconVisible = false;
                     }
                 } else if (sprite.isHighlighted) {
                     sprite.isHighlighted = false;
@@ -950,6 +966,9 @@ export function tryInteractWithNearest() {
         if (nearestObject.doorProperties) {
             // Handle door interaction - triggers unlock/open sequence based on lock state
             handleDoorInteraction(nearestObject);
+        } else if (nearestObject._isNPC) {
+            // Handle NPC interaction with hostile check
+            tryInteractWithNPC(nearestObject);
         } else {
             // Handle regular object interaction
             handleObjectInteraction(nearestObject);

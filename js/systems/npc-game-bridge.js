@@ -472,6 +472,8 @@ export class NPCGameBridge {
    * @returns {Object} Result object with success status
    */
   setNPCHostile(npcId, hostile) {
+    console.log(`🎮 npc-game-bridge.setNPCHostile called: ${npcId} → ${hostile}`);
+    
     if (!window.npcBehaviorManager) {
       const result = { success: false, error: 'NPCBehaviorManager not initialized' };
       this._logAction('setNPCHostile', { npcId, hostile }, result);
@@ -481,6 +483,16 @@ export class NPCGameBridge {
     const behavior = window.npcBehaviorManager.getBehavior(npcId);
     if (behavior) {
       behavior.setState('hostile', hostile);
+      console.log(`🎮 Set behavior hostile for ${npcId}`);
+      
+      // Also update the hostile system to emit events and trigger health bars
+      if (window.npcHostileSystem) {
+        console.log(`🎮 Calling npcHostileSystem.setNPCHostile for ${npcId}`);
+        window.npcHostileSystem.setNPCHostile(npcId, hostile);
+      } else {
+        console.warn(`🎮 npcHostileSystem not found!`);
+      }
+      
       const result = { success: true, npcId, hostile };
       this._logAction('setNPCHostile', { npcId, hostile }, result);
       return result;

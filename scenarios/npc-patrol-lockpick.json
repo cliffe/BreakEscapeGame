@@ -104,6 +104,16 @@
               "cooldown": 0
             }
           ],
+          "itemsHeld": [
+            {
+              "type": "key",
+              "name": "Vault Key",
+              "takeable": true,
+              "key_id": "vault_key",
+              "keyPins": [75, 30, 50, 25],
+              "observations": "A key that unlocks the secure vault door"
+            }
+          ],
           "_comment": "Follows route patrol, detects player within 300px at 140° FOV"
         }
       ],
@@ -124,7 +134,7 @@
       "locked": true,
       "lockType": "key",
       "requires": "vault_key",
-      "keyPins": [75, 30, 50, 100],
+      "keyPins": [75, 30, 50, 25],
       "difficulty": "medium",
       "objects": [
         {
@@ -140,7 +150,7 @@
           "name": "Vault Key",
           "takeable": true,
           "key_id": "vault_key",
-          "keyPins": [75, 30, 50, 100],
+          "keyPins": [75, 30, 50, 25],
           "observations": "A key that unlocks the secure vault door"
         }
       ]

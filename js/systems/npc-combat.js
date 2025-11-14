@@ -26,6 +26,11 @@ export class NPCCombat {
       return false;
     }
 
+    // Don't attack while a minigame is active (conversation, combat, etc.)
+    if (window.MinigameFramework && window.MinigameFramework.currentMinigame) {
+      return false;
+    }
+
     // Check cooldown
     const lastAttackTime = this.npcAttackTimers.get(npcId) || 0;
     const now = Date.now();

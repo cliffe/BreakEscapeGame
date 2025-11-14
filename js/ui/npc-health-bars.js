@@ -22,13 +22,11 @@ export class NPCHealthBars {
       return;
     }
 
-    // Listen for NPC becoming hostile
-    window.eventDispatcher.on(CombatEvents.NPC_BECAME_HOSTILE, (data) => {
-      this.createHealthBar(data.npcId);
-    });
+    console.log('🏥 NPCHealthBars: Setting up event listeners for', CombatEvents.NPC_HOSTILE_CHANGED);
 
     // Listen for NPC hostile state changes
     window.eventDispatcher.on(CombatEvents.NPC_HOSTILE_CHANGED, (data) => {
+      console.log('🏥 NPCHealthBars: Received NPC_HOSTILE_CHANGED event', { npcId: data.npcId, isHostile: data.isHostile });
       if (data.isHostile) {
         this.createHealthBar(data.npcId);
       } else {
@@ -38,6 +36,7 @@ export class NPCHealthBars {
 
     // Listen for NPC KO
     window.eventDispatcher.on(CombatEvents.NPC_KO, (data) => {
+      console.log('🏥 NPCHealthBars: Received NPC_KO event', data);
       this.removeHealthBar(data.npcId);
     });
   }
@@ -54,6 +53,20 @@ export class NPCHealthBars {
       console.warn(`Cannot create health bar for ${npcId}: sprite not found`);
       return;
     }
+
+    // Get NPC health state
+    if (!window.npcHostileSystem) {
+      console.warn(`Cannot create health bar for ${npcId}: npcHostileSystem not found`);
+      return;
+    }
+    
+    const state = window.npcHostileSystem.getState(npcId);
+    if (!state) {
+      console.warn(`Cannot create health bar for ${npcId}: no hostile state found`);
+      return;
+    }
+
+    console.log(`🏥 Creating health bar for ${npcId}, state:`, state);
 
     const width = COMBAT_CONFIG.ui.healthBarWidth;
     const height = COMBAT_CONFIG.ui.healthBarHeight;
@@ -97,30 +110,30 @@ export class NPCHealthBars {
     // Get NPC health state
     if (!window.npcHostileSystem) return;
     const state = window.npcHostileSystem.getState(npcId);
-    if (!state) return;
+    if (!state) {
+      console.warn(`🏥 No state for ${npcId}`);
+      return;
+    }
 
     // Calculate HP percentage
-    const hpPercent = state.currentHP / state.maxHP;
+    const hpPercent = Math.max(0, state.currentHP / state.maxHP);
+    console.log(`🏥 Updating ${npcId}: HP=${state.currentHP}/${state.maxHP} (${Math.round(hpPercent * 100)}%)`);
 
-    // Update bar width
+    // Update bar width - shrinks from right side, stays anchored to left
     const maxWidth = COMBAT_CONFIG.ui.healthBarWidth;
     const currentWidth = maxWidth * hpPercent;
     healthBar.bar.setSize(currentWidth, COMBAT_CONFIG.ui.healthBarHeight);
 
-    // Shift bar position to keep it left-aligned
-    const offsetX = (maxWidth - currentWidth) / 2;
-    healthBar.bar.setX(healthBar.background.x - offsetX);
+    // Position bar so it stays left-aligned with background
+    // Background is centered at its position, so offset the bar by half the difference
+    const bgX = healthBar.background.x;
+    const bgLeftEdge = bgX - (maxWidth / 2);
+    const barCenterX = bgLeftEdge + (currentWidth / 2);
+    
+    healthBar.bar.setPosition(barCenterX, healthBar.background.y);
 
-    // Update color based on HP (green -> yellow -> red)
-    let color;
-    if (hpPercent > 0.5) {
-      color = 0x00ff00; // Green
-    } else if (hpPercent > 0.25) {
-      color = 0xffff00; // Yellow
-    } else {
-      color = 0xff0000; // Red
-    }
-    healthBar.bar.setFillStyle(color);
+    // Always use red for NPC health bar
+    healthBar.bar.setFillStyle(0xff0000); // Red
   }
 
   removeHealthBar(npcId) {
@@ -157,14 +170,22 @@ export class NPCHealthBars {
   }
 
   getNPCSprite(npcId) {
-    // Try to get sprite from NPC manager
-    if (window.npcManager) {
-      const npc = window.npcManager.getNPC(npcId);
-      if (npc && npc.sprite) {
-        return npc.sprite;
+    // Search all rooms for this NPC's sprite
+    if (window.rooms) {
+      for (const roomId in window.rooms) {
+        const room = window.rooms[roomId];
+        if (room.npcSprites) {
+          for (const sprite of room.npcSprites) {
+            if (sprite.npcId === npcId) {
+              console.log(`🏥 Found NPC sprite for ${npcId} in room ${roomId}`);
+              return sprite;
+            }
+          }
+        }
       }
     }
 
+    console.warn(`🏥 Could not find sprite for NPC: ${npcId}`);
     return null;
   }
 

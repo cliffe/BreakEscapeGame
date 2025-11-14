@@ -352,7 +352,8 @@ export default class NPCManager {
     }
     
     // Check cooldown (in milliseconds, default 5000ms = 5s)
-    const cooldown = config.cooldown || 5000;
+    // IMPORTANT: Use ?? instead of || to properly handle cooldown: 0
+    const cooldown = config.cooldown !== undefined && config.cooldown !== null ? config.cooldown : 5000;
     const now = Date.now();
     if (triggered.lastTime && (now - triggered.lastTime < cooldown)) {
       const remainingMs = cooldown - (now - triggered.lastTime);
@@ -407,7 +408,48 @@ export default class NPCManager {
     // Check if this event should trigger a full person-chat conversation
     // instead of just a bark (indicated by conversationMode: 'person-chat')
     if (config.conversationMode === 'person-chat' && npc.npcType === 'person') {
-      console.log(`👤 Starting person-chat conversation for NPC ${npcId}`);
+      console.log(`👤 Handling person-chat for event on NPC ${npcId}`);
+      
+      // CHECK: Is a conversation already active with this NPC?
+      const currentConvNPCId = window.currentConversationNPCId;
+      const activeMinigame = window.MinigameFramework?.currentMinigame;
+      const isPersonChatActive = activeMinigame?.constructor?.name === 'PersonChatMinigame';
+      const isConversationActive = currentConvNPCId === npcId;
+      
+      console.log(`🔍 Event jump check:`, {
+        targetNpcId: npcId,
+        currentConvNPCId: currentConvNPCId,
+        isConversationActive: isConversationActive,
+        activeMinigame: activeMinigame?.constructor?.name || 'none',
+        isPersonChatActive: isPersonChatActive,
+        hasJumpToKnot: typeof activeMinigame?.jumpToKnot === 'function'
+      });
+      
+      if (isConversationActive && isPersonChatActive) {
+        // JUMP TO KNOT in the active conversation instead of starting a new one
+        console.log(`⚡ Active conversation detected with ${npcId}, attempting jump to knot: ${config.knot}`);
+        
+        if (typeof activeMinigame.jumpToKnot === 'function') {
+          try {
+            const jumpSuccess = activeMinigame.jumpToKnot(config.knot);
+            if (jumpSuccess) {
+              console.log(`✅ Successfully jumped to knot ${config.knot} in active conversation`);
+              return;  // Success - exit early
+            } else {
+              console.warn(`⚠️ Failed to jump to knot, falling back to new conversation`);
+            }
+          } catch (error) {
+            console.error(`❌ Error during jumpToKnot: ${error.message}`);
+          }
+        } else {
+          console.warn(`⚠️ jumpToKnot method not available on minigame`);
+        }
+      } else {
+        console.log(`ℹ️ Not jumping: isConversationActive=${isConversationActive}, isPersonChatActive=${isPersonChatActive}`);
+      }
+      
+      // Not in an active conversation OR jump failed - start a new person-chat minigame
+      console.log(`👤 Starting new person-chat conversation for NPC ${npcId}`);
       
       // Close any currently running minigame (like lockpicking) first
       if (window.MinigameFramework && window.MinigameFramework.currentMinigame) {
@@ -910,26 +952,26 @@ export default class NPCManager {
    * Internal: Update or create LOS cone graphics
    */
   _updateLOSVisualizations(scene) {
-    console.log(`🎯 Updating LOS visualizations for ${this.npcs.size} NPCs`);
+    // console.log(`🎯 Updating LOS visualizations for ${this.npcs.size} NPCs`);
     let visualizedCount = 0;
     
     for (const npc of this.npcs.values()) {
       // Only visualize person-type NPCs with LOS config
       if (npc.npcType !== 'person') {
-        console.log(`   Skip "${npc.id}" - not person type (${npc.npcType})`);
+        // console.log(`   Skip "${npc.id}" - not person type (${npc.npcType})`);
         continue;
       }
       
       if (!npc.los || !npc.los.enabled) {
-        console.log(`   Skip "${npc.id}" - no LOS config or disabled`);
+        // console.log(`   Skip "${npc.id}" - no LOS config or disabled`);
         continue;
       }
       
-      console.log(`   Processing "${npc.id}" - has LOS config`, npc.los);
+      // console.log(`   Processing "${npc.id}" - has LOS config`, npc.los);
       
       // Remove old visualization
       if (this.losVisualizations.has(npc.id)) {
-        console.log(`   Clearing old visualization for "${npc.id}"`);
+        // console.log(`   Clearing old visualization for "${npc.id}"`);
         clearLOSCone(this.losVisualizations.get(npc.id));
       }
       
@@ -938,14 +980,14 @@ export default class NPCManager {
       if (graphics) {
         this.losVisualizations.set(npc.id, graphics);
         // Graphics depth is already set inside drawLOSCone to -999
-        console.log(`   ✅ Created visualization for "${npc.id}"`);
+        // console.log(`   ✅ Created visualization for "${npc.id}"`);
         visualizedCount++;
       } else {
         console.log(`   ❌ Failed to create visualization for "${npc.id}"`);
       }
     }
     
-    console.log(`✅ LOS visualization update complete: ${visualizedCount}/${this.npcs.size} visualized`);
+    // console.log(`✅ LOS visualization update complete: ${visualizedCount}/${this.npcs.size} visualized`);
   }
 
   /**
