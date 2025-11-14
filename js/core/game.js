@@ -10,6 +10,15 @@ import { initPlayerHealth } from '../systems/player-health.js';
 import { initNPCHostileSystem } from '../systems/npc-hostile.js';
 import { COMBAT_CONFIG } from '../config/combat-config.js';
 import { initCombatDebug } from '../utils/combat-debug.js';
+import { DamageNumbersSystem } from '../systems/damage-numbers.js';
+import { ScreenEffectsSystem } from '../systems/screen-effects.js';
+import { SpriteEffectsSystem } from '../systems/sprite-effects.js';
+import { AttackTelegraphSystem } from '../systems/attack-telegraph.js';
+import { HealthUI } from '../ui/health-ui.js';
+import { NPCHealthBars } from '../ui/npc-health-bars.js';
+import { GameOverScreen } from '../ui/game-over-screen.js';
+import { PlayerCombat } from '../systems/player-combat.js';
+import { NPCCombat } from '../systems/npc-combat.js';
 
 // Global variables that will be set by main.js
 let gameScenario;
@@ -570,6 +579,20 @@ export async function create() {
     COMBAT_CONFIG.validate();
     window.playerHealth = initPlayerHealth();
     window.npcHostileSystem = initNPCHostileSystem();
+    window.playerCombat = new PlayerCombat(this);
+    window.npcCombat = new NPCCombat(this);
+
+    // Initialize feedback systems
+    window.damageNumbers = new DamageNumbersSystem(this);
+    window.screenEffects = new ScreenEffectsSystem(this);
+    window.spriteEffects = new SpriteEffectsSystem(this);
+    window.attackTelegraph = new AttackTelegraphSystem(this);
+
+    // Initialize UI systems
+    window.healthUI = new HealthUI();
+    window.npcHealthBars = new NPCHealthBars(this);
+    window.gameOverScreen = new GameOverScreen();
+
     initCombatDebug();
     console.log('✅ Combat systems ready');
 
@@ -758,7 +781,18 @@ export function update() {
 
     // Check for object interactions
     checkObjectInteractions.call(this);
-    
+
+    // Update combat feedback systems
+    if (window.damageNumbers) {
+        window.damageNumbers.update();
+    }
+    if (window.attackTelegraph) {
+        window.attackTelegraph.update();
+    }
+    if (window.npcHealthBars) {
+        window.npcHealthBars.update();
+    }
+
     // Check for player bump effect when walking over floor items
     if (window.createPlayerBumpEffect) {
         window.createPlayerBumpEffect();

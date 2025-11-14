@@ -996,10 +996,21 @@ export function tryInteractWithNPC(npcSprite) {
 
     // Only interact if within range
     if (distance <= INTERACTION_RANGE) {
+        // Check if NPC is hostile - if so, trigger punch instead of conversation
+        const npcId = npcSprite.npcId;
+        if (npcId && window.npcHostileSystem && window.npcHostileSystem.isNPCHostile(npcId)) {
+            // Hostile NPC - punch instead of talk
+            if (window.playerCombat) {
+                window.playerCombat.punch();
+            }
+            return true;
+        }
+
+        // Normal NPC interaction (conversation)
         handleObjectInteraction(npcSprite);
         return true; // Interaction successful
     }
-    
+
     // Out of range - caller should handle movement
     return false;
 }
