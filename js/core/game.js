@@ -6,6 +6,7 @@ import { checkObjectInteractions, setGameInstance } from '../systems/interaction
 import { introduceScenario } from '../utils/helpers.js?v=19';
 import '../minigames/index.js?v=2';
 import SoundManager from '../systems/sound-manager.js?v=1';
+import { PersistentStateManager } from '../systems/persistent-state-manager.js';
 
 // Global variables that will be set by main.js
 let gameScenario;
@@ -424,9 +425,32 @@ export function preload() {
     
     // Add cache buster query parameter to prevent browser caching
     scenarioFile = `${scenarioFile}${scenarioFile.includes('?') ? '&' : '?'}v=${Date.now()}`;
-    
+
     // Load the specified scenario
     this.load.json('gameScenarioJSON', scenarioFile);
+
+    // Load persistent state if provided via URL parameter
+    let persistentStateFile = urlParams.get('persistentState');
+    if (persistentStateFile) {
+        console.log('🔄 Persistent state parameter detected:', persistentStateFile);
+
+        // Ensure proper path prefix
+        if (!persistentStateFile.startsWith('persistent-states/')) {
+            persistentStateFile = `persistent-states/${persistentStateFile}`;
+        }
+
+        // Ensure .json extension
+        if (!persistentStateFile.endsWith('.json')) {
+            persistentStateFile = `${persistentStateFile}.json`;
+        }
+
+        // Add cache buster to prevent browser caching
+        persistentStateFile = `${persistentStateFile}?v=${Date.now()}`;
+
+        // Load the persistent state file
+        this.load.json('persistentStateJSON', persistentStateFile);
+        console.log('🔄 Loading persistent state from:', persistentStateFile);
+    }
 }
 
 
@@ -458,12 +482,77 @@ export async function create() {
         return;
     }
     
-    // Initialize global narrative variables from scenario
+    // Initialize persistent state manager
+    window.persistentStateManager = new PersistentStateManager();
+
+    // Load persistent state from cache if it was loaded
+    const urlParams = new URLSearchParams(window.location.search);
+    const persistentStateJSON = this.cache.json.get('persistentStateJSON');
+
+    if (urlParams.has('persistentState')) {
+        if (!persistentStateJSON) {
+            const errorMsg = '⚠️ Persistent state file failed to load';
+            console.error(`❌ [PSM_004] ${errorMsg}`);
+            console.error('   File may be missing, malformed, or network error occurred');
+            console.error('   Proceeding with scenario defaults');
+
+            // Show in-game notification
+            const notification = this.add.text(
+                this.cameras.main.width / 2,
+                20,
+                errorMsg,
+                {
+                    fontSize: '18px',
+                    backgroundColor: '#cc0000',
+                    padding: { x: 15, y: 8 },
+                    color: '#ffffff'
+                }
+            ).setOrigin(0.5, 0).setDepth(10000).setScrollFactor(0);
+
+            this.time.delayedCall(5000, () => notification.destroy());
+        } else {
+            try {
+                // Validate structure
+                if (!persistentStateJSON.version || !persistentStateJSON.variables) {
+                    throw new Error('Invalid persistent state structure - missing version or variables');
+                }
+
+                console.log('✅ Persistent state loaded successfully');
+                console.log(`   Version: ${persistentStateJSON.version}`);
+                console.log(`   Last Scenario: ${persistentStateJSON.lastScenario}`);
+                console.log(`   Timestamp: ${persistentStateJSON.timestamp}`);
+                console.log(`   Variables: ${Object.keys(persistentStateJSON.variables).length}`);
+
+                window.persistentStateManager.loadedState = persistentStateJSON;
+            } catch (error) {
+                console.error('❌ [PSM_001] Invalid persistent state JSON:', error.message);
+                console.error('   Proceeding with scenario defaults');
+            }
+        }
+    }
+
+    // Initialize global narrative variables from scenario (with persistent state merging)
     if (gameScenario.globalVariables) {
-        window.gameState.globalVariables = { ...gameScenario.globalVariables };
-        console.log('🌐 Initialized global variables:', window.gameState.globalVariables);
+        // Extract carry-over metadata from scenario
+        window.persistentStateManager.extractCarryOverMetadata(gameScenario.globalVariables);
+
+        // Merge persistent state with scenario defaults
+        const mergedVariables = window.persistentStateManager.mergeWithScenarioDefaults(
+            persistentStateJSON?.variables,
+            gameScenario.globalVariables
+        );
+
+        // Initialize global variables with merged values
+        window.gameState.globalVariables = mergedVariables;
+        console.log('🌐 Initialized global variables (with persistent state):', window.gameState.globalVariables);
+
+        // Show diff if persistent state was loaded
+        if (persistentStateJSON?.variables && Object.keys(persistentStateJSON.variables).length > 0) {
+            window.persistentStateManager.logStateDiff(mergedVariables);
+        }
     } else {
         window.gameState.globalVariables = {};
+        console.log('🌐 No global variables defined in scenario');
     }
     
     // Normalize keyPins in all rooms and objects from 0-100 scale to 25-65 scale

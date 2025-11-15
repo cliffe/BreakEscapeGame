@@ -277,7 +277,7 @@ function initializeGame() {
         console.log('   Enabled:', window.npcManager?.losVisualizationEnabled ?? 'N/A');
         console.log('   NPCs loaded:', window.npcManager?.npcs?.size ?? 0);
         console.log('   Graphics objects:', window.npcManager?.losVisualizations?.size ?? 0);
-        
+
         if (window.npcManager?.npcs?.size > 0) {
             for (const npc of window.npcManager.npcs.values()) {
                 console.log(`   NPC: "${npc.id}"`);
@@ -287,7 +287,45 @@ function initializeGame() {
             }
         }
     };
-    
+
+    // Persistent State Console Commands
+    // Export current persistent state as JSON object
+    window.exportPersistentState = function() {
+        if (!window.persistentStateManager) {
+            console.error('❌ Persistent state manager not initialized');
+            console.error('   Manager is initialized during game creation');
+            return null;
+        }
+        const scenarioId = window.gameScenario?.scenario_id || 'game';
+        return window.persistentStateManager.exportPersistentState(scenarioId);
+    };
+
+    // Download persistent state as JSON file
+    window.downloadPersistentState = function(filename) {
+        if (!window.persistentStateManager) {
+            console.error('❌ Persistent state manager not initialized');
+            console.error('   Manager is initialized during game creation');
+            return;
+        }
+        window.persistentStateManager.downloadAsJSON(filename);
+    };
+
+    // View current persistent state (formatted console output)
+    window.viewPersistentState = function() {
+        if (!window.persistentStateManager) {
+            console.error('❌ Persistent state manager not initialized');
+            console.error('   Manager is initialized during game creation');
+            return;
+        }
+        window.persistentStateManager.viewPersistentState();
+    };
+
+    // Log available persistent state commands
+    console.log('💾 Persistent State Commands Available:');
+    console.log('  window.exportPersistentState() - Export state as JSON object');
+    console.log('  window.downloadPersistentState(filename) - Download state as file');
+    console.log('  window.viewPersistentState() - View current persistent state');
+
     // Initial setup
     setTimeout(setupPixelArt, 100);
 }

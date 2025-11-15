@@ -1,0 +1,16 @@
+{
+  "version": 1,
+  "timestamp": "2024-11-14T12:00:00.000Z",
+  "lastScenario": "ceo_exfil",
+  "variables": {
+    "npc_trust_helper": 85,
+    "topics_discussed_security": ["encryption", "zero_days", "social_engineering"],
+    "topics_discussed_lore": ["corporate_history", "organization_background"],
+    "narrative_joined_org": true,
+    "mission_ceo_completed": true
+  },
+  "metadata": {
+    "exportedCount": 5,
+    "sessionOnlyCount": 0
+  }
+}

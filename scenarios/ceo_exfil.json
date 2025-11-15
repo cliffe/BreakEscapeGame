@@ -1,5 +1,45 @@
 {
+    "scenario_id": "ceo_exfil",
     "scenario_brief": "Hi! You are a cyber investigator tasked with uncovering evidence of corporate espionage. Anonymous tips suggest the CEO has been selling company secrets, but you need proof.",
+    "globalVariables": {
+        "npc_trust_helper": {
+            "default": 50,
+            "carryOver": true,
+            "type": "number",
+            "description": "Trust level with helpful contact (0-100)"
+        },
+        "npc_trust_gossip_girl": {
+            "default": 30,
+            "carryOver": true,
+            "type": "number",
+            "description": "Trust level with gossip girl (0-100)"
+        },
+        "topics_discussed_security": {
+            "default": [],
+            "carryOver": true,
+            "type": "array",
+            "description": "Security topics discussed with helper NPC"
+        },
+        "topics_discussed_lore": {
+            "default": [],
+            "carryOver": true,
+            "type": "array",
+            "description": "Lore topics discussed across scenarios"
+        },
+        "narrative_joined_org": {
+            "default": false,
+            "carryOver": true,
+            "type": "boolean",
+            "description": "Whether player joined the organization"
+        },
+        "mission_ceo_completed": {
+            "default": false,
+            "carryOver": true,
+            "type": "boolean",
+            "description": "Whether CEO exfil mission was completed"
+        },
+        "temp_current_mission_phase": 1
+    },
     "startRoom": "reception",
     "startItemsInInventory": [
         {

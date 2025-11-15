@@ -208,7 +208,38 @@ export function processGameActionTags(tags, ui) {
                         }
                     }
                     break;
-                    
+
+                case 'export_persistent_state':
+                    console.log('📤 Export persistent state triggered from Ink');
+
+                    // Add small delay to ensure all variable syncs have completed
+                    setTimeout(() => {
+                        if (!window.persistentStateManager) {
+                            result.message = '❌ Persistent state manager not initialized';
+                            console.error(result.message);
+                            return;
+                        }
+
+                        const scenarioId = window.gameScenario?.scenario_id || 'game';
+                        const exported = window.persistentStateManager.exportPersistentState(scenarioId);
+
+                        result.success = true;
+                        result.message = '📤 Persistent state exported to console';
+                        console.log('✅ Persistent state exported:', exported);
+                        console.log('💡 Use window.downloadPersistentState() to save as file');
+
+                        if (ui) ui.showNotification(result.message, 'success');
+
+                        // Future: POST to server
+                        // if (window.persistentStateManager.serverEndpoint) {
+                        //     await window.persistentStateManager.postToServer('/api/save-state', authToken);
+                        // }
+                    }, 100);
+
+                    result.success = true;
+                    result.message = 'Exporting persistent state...';
+                    break;
+
                 default:
                     // Unknown tag, log but don't fail
                     console.log(`ℹ️ Unknown game action tag: ${action}`);

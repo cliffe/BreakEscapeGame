@@ -310,6 +310,10 @@ export default class PersonChatConversation {
                     this.handlePersonalSpace(params[0]);
                     break;
 
+                case 'export_persistent_state':
+                    this.handleExportPersistentState();
+                    break;
+
                 default:
                     console.log(`⚠️ Unknown tag: ${action}`);
             }
@@ -454,6 +458,36 @@ export default class PersonChatConversation {
 
         window.npcGameBridge.setNPCPersonalSpace(this.npcId, distance);
         console.log(`↔️ Set NPC ${this.npcId} personal space: ${distance}px`);
+    }
+
+    /**
+     * Handle export_persistent_state tag - export current persistent state
+     * Tag: #export_persistent_state
+     *
+     * Exports the current carry-over variables to console and optionally to server.
+     * Use this at the end of a scenario when the player achieves victory.
+     */
+    handleExportPersistentState() {
+        console.log('📤 Export persistent state triggered from Ink');
+
+        // Add small delay to ensure all variable syncs have completed
+        setTimeout(() => {
+            if (!window.persistentStateManager) {
+                console.error('❌ Persistent state manager not initialized');
+                return;
+            }
+
+            const scenarioId = window.gameScenario?.scenario_id || 'game';
+            const exported = window.persistentStateManager.exportPersistentState(scenarioId);
+
+            console.log('✅ Persistent state exported:', exported);
+            console.log('💡 Use window.downloadPersistentState() to save as file');
+
+            // Future: POST to server
+            // if (window.persistentStateManager.serverEndpoint) {
+            //     await window.persistentStateManager.postToServer('/api/save-state', authToken);
+            // }
+        }, 100);
     }
 
     /**
