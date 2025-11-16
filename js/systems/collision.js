@@ -369,8 +369,10 @@ export function removeWallTilesForDoorInRoom(roomId, fromRoomId, direction, door
         doorWidth = TILE_SIZE * 2;
         doorHeight = TILE_SIZE;
     } else if (direction === 'east' || direction === 'west') {
-        // For east/west connections, calculate Y position based on room configuration
-        doorY = roomPosition.y + roomHeight / 2; // Center of room
+        // For east/west connections: single tile per room, positioned 3 tiles down from top
+        // Doors are 3 tiles down from top (below top 2 wall tiles)
+        doorY = roomPosition.y + (TILE_SIZE * 2); // 2 tiles down from top (at tile 3)
+
         if (direction === 'east') {
             // Original door is east, so new door should be west
             doorX = roomPosition.x + TILE_SIZE;
@@ -378,8 +380,9 @@ export function removeWallTilesForDoorInRoom(roomId, fromRoomId, direction, door
             // Original door is west, so new door should be east
             doorX = roomPosition.x + roomWidth - TILE_SIZE;
         }
+        // Single tile per room for east/west doors
         doorWidth = TILE_SIZE;
-        doorHeight = TILE_SIZE * 2;
+        doorHeight = TILE_SIZE;
     } else {
         console.log(`Unknown direction: ${direction}`);
         return;

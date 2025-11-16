@@ -970,32 +970,114 @@ function positionNorthSingle(currentRoom, connectedRoom, currentPos, dimensions)
 }
 
 /**
+ * Validate if multiple connections can fit in the given direction
+ * Returns true if valid, false with console error if invalid
+ */
+function validateMultipleConnections(direction, currentRoom, connectedRooms, currentDim, dimensions) {
+    if (direction === 'north' || direction === 'south') {
+        // Check if rooms can fit side-by-side when centered on door positions
+        const edgeInset = TILE_SIZE * 1.5; // 48px
+        const availableWidth = currentDim.widthPx - (edgeInset * 2);
+        const doorCount = connectedRooms.length;
+        const doorSpacing = availableWidth / (doorCount - 1);
+
+        // Calculate total span of rooms when centered on doors
+        let minX = Infinity;
+        let maxX = -Infinity;
+
+        connectedRooms.forEach((roomId, index) => {
+            const connectedDim = dimensions[roomId];
+            const doorX = edgeInset + (doorSpacing * index);
+            const roomLeft = doorX - (connectedDim.widthPx / 2);
+            const roomRight = doorX + (connectedDim.widthPx / 2);
+
+            minX = Math.min(minX, roomLeft);
+            maxX = Math.max(maxX, roomRight);
+        });
+
+        const totalSpan = maxX - minX;
+        const overhang = Math.max(0, totalSpan - currentDim.widthPx);
+
+        if (overhang > GRID_UNIT_WIDTH_PX / 2) { // Allow some small overhang (half grid unit)
+            console.error(`❌ VALIDATION ERROR: Room "${currentRoom}" (${currentDim.gridWidth}×${currentDim.gridHeight} GU, ${currentDim.widthPx}px wide) has ${doorCount} ${direction} connections, but they don't fit!`);
+            console.error(`   Connected rooms total span: ${totalSpan.toFixed(0)}px, overhang: ${overhang.toFixed(0)}px`);
+            console.error(`   Recommendation: Reduce number of connections to ${Math.floor(doorCount * currentDim.widthPx / totalSpan)} or use a wider room (${Math.ceil(totalSpan / GRID_UNIT_WIDTH_PX)}+ GU)`);
+            connectedRooms.forEach((roomId, index) => {
+                const dim = dimensions[roomId];
+                console.error(`   - ${roomId}: ${dim.gridWidth}×${dim.gridHeight} GU (${dim.widthPx}px wide)`);
+            });
+            return false;
+        }
+    } else if (direction === 'east' || direction === 'west') {
+        // Check if rooms can fit stacked vertically when centered on door positions
+        const topY = TILE_SIZE * 2;
+        const bottomY = currentDim.heightPx - (TILE_SIZE * 3);
+        const doorSpacing = (bottomY - topY) / (connectedRooms.length - 1);
+
+        // Calculate total span of rooms when centered on doors
+        let minY = Infinity;
+        let maxY = -Infinity;
+
+        connectedRooms.forEach((roomId, index) => {
+            const connectedDim = dimensions[roomId];
+            const doorY = topY + (doorSpacing * index);
+            // Door is positioned at 2 tiles from top of room
+            const roomTop = doorY - (TILE_SIZE * 2);
+            const roomBottom = roomTop + connectedDim.heightPx;
+
+            minY = Math.min(minY, roomTop);
+            maxY = Math.max(maxY, roomBottom);
+        });
+
+        const totalSpan = maxY - minY;
+        const overhang = Math.max(0, totalSpan - currentDim.heightPx);
+
+        if (overhang > GRID_UNIT_HEIGHT_PX / 2) { // Allow some small overhang (half grid unit)
+            console.error(`❌ VALIDATION ERROR: Room "${currentRoom}" (${currentDim.gridWidth}×${currentDim.gridHeight} GU, ${currentDim.heightPx}px tall) has ${connectedRooms.length} ${direction} connections, but they don't fit!`);
+            console.error(`   Connected rooms total span: ${totalSpan.toFixed(0)}px, overhang: ${overhang.toFixed(0)}px`);
+            console.error(`   Recommendation: Reduce number of connections or use a taller room`);
+            connectedRooms.forEach((roomId, index) => {
+                const dim = dimensions[roomId];
+                console.error(`   - ${roomId}: ${dim.gridWidth}×${dim.gridHeight} GU (${dim.heightPx}px tall)`);
+            });
+            return false;
+        }
+    }
+
+    return true;
+}
+
+/**
  * Position multiple rooms to the north of current room
  */
 function positionNorthMultiple(currentRoom, connectedRooms, currentPos, dimensions) {
     const currentDim = dimensions[currentRoom];
     const positions = {};
 
-    // Calculate total width of all connected rooms
-    const totalWidth = connectedRooms.reduce((sum, roomId) => {
-        return sum + dimensions[roomId].widthPx;
-    }, 0);
+    // CRITICAL: Position rooms based on where doors will be, not just centering widths
+    // This ensures doors align properly between different-sized rooms
 
-    // Determine starting X position (center the group)
-    const startX = currentPos.x + (currentDim.widthPx - totalWidth) / 2;
+    // Calculate where doors will be placed on current room's north wall
+    // (uses same logic as placeNorthDoorsMultiple in doors.js)
+    const edgeInset = TILE_SIZE * 1.5; // 48px
+    const availableWidth = currentDim.widthPx - (edgeInset * 2);
+    const doorCount = connectedRooms.length;
+    const doorSpacing = availableWidth / (doorCount - 1);
 
-    // Position each room left to right
-    let currentX = startX;
-    connectedRooms.forEach(roomId => {
+    connectedRooms.forEach((roomId, index) => {
         const connectedDim = dimensions[roomId];
+
+        // Calculate where the door will be on current room's north wall
+        const doorX = currentPos.x + edgeInset + (doorSpacing * index);
+
+        // Center the connected room on this door position
+        const x = doorX - (connectedDim.widthPx / 2);
 
         // Y position is based on stacking height
         const y = currentPos.y - connectedDim.stackingHeightPx;
 
         // Align to grid
-        positions[roomId] = alignToGrid(currentX, y);
-
-        currentX += connectedDim.widthPx;
+        positions[roomId] = alignToGrid(x, y);
     });
 
     return positions;
@@ -1023,26 +1105,30 @@ function positionSouthMultiple(currentRoom, connectedRooms, currentPos, dimensio
     const currentDim = dimensions[currentRoom];
     const positions = {};
 
-    // Calculate total width
-    const totalWidth = connectedRooms.reduce((sum, roomId) => {
-        return sum + dimensions[roomId].widthPx;
-    }, 0);
+    // CRITICAL: Position rooms based on where doors will be, not just centering widths
+    // This ensures doors align properly between different-sized rooms
 
-    // Determine starting X position (center the group)
-    const startX = currentPos.x + (currentDim.widthPx - totalWidth) / 2;
+    // Calculate where doors will be placed on current room's south wall
+    // (uses same logic as placeSouthDoorsMultiple in doors.js)
+    const edgeInset = TILE_SIZE * 1.5; // 48px
+    const availableWidth = currentDim.widthPx - (edgeInset * 2);
+    const doorCount = connectedRooms.length;
+    const doorSpacing = availableWidth / (doorCount - 1);
 
-    // Position each room left to right
-    let currentX = startX;
-    connectedRooms.forEach(roomId => {
+    connectedRooms.forEach((roomId, index) => {
         const connectedDim = dimensions[roomId];
+
+        // Calculate where the door will be on current room's south wall
+        const doorX = currentPos.x + edgeInset + (doorSpacing * index);
+
+        // Center the connected room on this door position
+        const x = doorX - (connectedDim.widthPx / 2);
 
         // Y position below current room
         const y = currentPos.y + currentDim.stackingHeightPx;
 
         // Align to grid
-        positions[roomId] = alignToGrid(currentX, y);
-
-        currentX += connectedDim.widthPx;
+        positions[roomId] = alignToGrid(x, y);
     });
 
     return positions;
@@ -1070,18 +1156,29 @@ function positionEastMultiple(currentRoom, connectedRooms, currentPos, dimension
     const currentDim = dimensions[currentRoom];
     const positions = {};
 
+    // CRITICAL: Position rooms based on where doors will be, not just stacking vertically
+    // This ensures doors align properly between different-sized rooms
+
     // Position to the right
     const x = currentPos.x + currentDim.widthPx;
 
-    // Stack vertically starting at current Y
-    let currentY = currentPos.y;
-    connectedRooms.forEach(roomId => {
+    // Calculate where doors will be placed on current room's east wall
+    // (uses same logic as placeEastDoorsMultiple in doors.js)
+    const topY = currentPos.y + (TILE_SIZE * 2);
+    const bottomY = currentPos.y + currentDim.heightPx - (TILE_SIZE * 3);
+    const doorSpacing = (bottomY - topY) / (connectedRooms.length - 1);
+
+    connectedRooms.forEach((roomId, index) => {
         const connectedDim = dimensions[roomId];
 
-        // Align to grid
-        positions[roomId] = alignToGrid(x, currentY);
+        // Calculate where the door will be on current room's east wall
+        const doorY = topY + (doorSpacing * index);
 
-        currentY += connectedDim.stackingHeightPx;
+        // Center the connected room on this door position vertically
+        const y = doorY - (TILE_SIZE * 2); // Align with door at 2 tiles from top
+
+        // Align to grid
+        positions[roomId] = alignToGrid(x, y);
     });
 
     return positions;
@@ -1105,20 +1202,32 @@ function positionWestSingle(currentRoom, connectedRoom, currentPos, dimensions) 
  * Position multiple rooms to the west of current room
  */
 function positionWestMultiple(currentRoom, connectedRooms, currentPos, dimensions) {
+    const currentDim = dimensions[currentRoom];
     const positions = {};
 
-    // Stack vertically starting at current Y
-    let currentY = currentPos.y;
-    connectedRooms.forEach(roomId => {
+    // CRITICAL: Position rooms based on where doors will be, not just stacking vertically
+    // This ensures doors align properly between different-sized rooms
+
+    // Calculate where doors will be placed on current room's west wall
+    // (uses same logic as placeWestDoorsMultiple in doors.js)
+    const topY = currentPos.y + (TILE_SIZE * 2);
+    const bottomY = currentPos.y + currentDim.heightPx - (TILE_SIZE * 3);
+    const doorSpacing = (bottomY - topY) / (connectedRooms.length - 1);
+
+    connectedRooms.forEach((roomId, index) => {
         const connectedDim = dimensions[roomId];
 
         // Position to the left
         const x = currentPos.x - connectedDim.widthPx;
 
-        // Align to grid
-        positions[roomId] = alignToGrid(x, currentY);
+        // Calculate where the door will be on current room's west wall
+        const doorY = topY + (doorSpacing * index);
 
-        currentY += connectedDim.stackingHeightPx;
+        // Center the connected room on this door position vertically
+        const y = doorY - (TILE_SIZE * 2); // Align with door at 2 tiles from top
+
+        // Align to grid
+        positions[roomId] = alignToGrid(x, y);
     });
 
     return positions;
@@ -1223,7 +1332,15 @@ export function calculateRoomPositions(gameInstance) {
                 const gridCoords = worldToGrid(position.x, position.y);
                 console.log(`    ${roomId}: positioned at world(${position.x}, ${position.y}) = grid(${gridCoords.gridX}, ${gridCoords.gridY})`);
             } else {
-                // Multiple room connections
+                // Multiple room connections - validate first
+                const currentDim = dimensions[currentRoomId];
+                const isValid = validateMultipleConnections(direction, currentRoomId, unprocessed, currentDim, dimensions);
+
+                if (!isValid) {
+                    console.warn(`⚠️  Skipping invalid connections for ${currentRoomId} ${direction}. Layout may be broken.`);
+                    // Still process them to avoid breaking the game, but with a warning
+                }
+
                 const newPositions = positionMultipleRooms(direction, currentRoomId, unprocessed, currentPos, dimensions);
 
                 unprocessed.forEach(roomId => {

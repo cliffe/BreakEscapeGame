@@ -402,27 +402,46 @@ export function createDoorSpritesForRoom(roomId, position) {
     doorPositions.forEach(doorInfo => {
         const { x: doorX, y: doorY, direction, connectedRoom } = doorInfo;
 
-        // Set door size based on direction
-        let doorWidth = TILE_SIZE;
-        let doorHeight = TILE_SIZE * 2;
+        // Set door size and texture based on direction
+        let doorWidth, doorHeight, doorTexture, flipX;
 
-        if (direction === 'east' || direction === 'west') {
-            doorWidth = TILE_SIZE * 2;
+        if (direction === 'north' || direction === 'south') {
+            // North/South doors: 1 tile wide, 2 tiles tall
+            doorWidth = TILE_SIZE;
+            doorHeight = TILE_SIZE * 2;
+            doorTexture = 'door_32';
+            flipX = false;
+        } else {
+            // East/West doors: 1 tile wide, 1 tile tall (single tile per room)
+            doorWidth = TILE_SIZE;
             doorHeight = TILE_SIZE;
+            doorTexture = 'door_side_sheet_32';
+            // West-facing doors (left room) should be flipped horizontally
+            flipX = (direction === 'west');
         }
 
         console.log(`Creating door sprite at (${doorX}, ${doorY}) for ${roomId} -> ${connectedRoom} (${direction})`);
 
-        // Create a colored rectangle as a fallback if door texture fails
+        // Create door sprite with appropriate texture
         let doorSprite;
         try {
-            doorSprite = gameRef.add.sprite(doorX, doorY, 'door_32');
+            doorSprite = gameRef.add.sprite(doorX, doorY, doorTexture);
+            // Set the initial frame (frame 0 = closed)
+            doorSprite.setFrame(0);
+            // Apply horizontal flip for west-facing doors
+            if (flipX) {
+                doorSprite.setFlipX(true);
+            }
         } catch (error) {
-            console.warn(`Failed to create door sprite with 'door_32' texture, creating colored rectangle instead:`, error);
+            console.warn(`Failed to create door sprite with '${doorTexture}' texture, creating colored rectangle instead:`, error);
             // Create a colored rectangle as fallback
             const graphics = gameRef.add.graphics();
             graphics.fillStyle(0xff0000, 1); // Red color
-            graphics.fillRect(-TILE_SIZE/2, -TILE_SIZE, TILE_SIZE, TILE_SIZE * 2);
+            if (direction === 'north' || direction === 'south') {
+                graphics.fillRect(-TILE_SIZE/2, -TILE_SIZE, TILE_SIZE, TILE_SIZE * 2);
+            } else {
+                graphics.fillRect(-TILE_SIZE/2, -TILE_SIZE/2, TILE_SIZE, TILE_SIZE);
+            }
             graphics.setPosition(doorX, doorY);
             doorSprite = graphics;
         }
@@ -740,7 +759,8 @@ function createAnimatedDoorOnOppositeSide(roomId, fromRoomId, direction, doorWor
         doorWidth = TILE_SIZE * 2;
         doorHeight = TILE_SIZE;
     } else if (direction === 'east' || direction === 'west') {
-        doorWidth = TILE_SIZE * 2;
+        // Single tile per room for east/west doors
+        doorWidth = TILE_SIZE;
         doorHeight = TILE_SIZE;
     } else {
         console.log(`Unknown direction: ${direction}`);

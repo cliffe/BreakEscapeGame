@@ -54,7 +54,12 @@ export function preload() {
     // Load tileset images referenced by the new Tiled map
     this.load.image('office-updated', 'assets/tiles/rooms/room1.png');
     this.load.image('door_sheet_32', 'assets/tiles/door_sheet_32.png');
-    this.load.image('door_side_sheet_32', 'assets/tiles/door_side_sheet_32.png');
+
+    // Load side door spritesheet for east/west doors (6 frames: closed, opening, open, etc.)
+    this.load.spritesheet('door_side_sheet_32', 'assets/tiles/door_side_sheet_32.png', {
+        frameWidth: 32,
+        frameHeight: 32
+    });
     
     // Load table tileset images
     this.load.image('desk-ceo1', 'assets/tables/desk-ceo1.png');
