@@ -781,6 +781,176 @@ function getRoomDimensions(roomId, roomData, gameInstance) {
 }
 
 // ============================================================================
+// VALIDATION FUNCTIONS
+// ============================================================================
+
+/**
+ * Validate that a room's dimensions are multiples of grid units
+ *
+ * @param {string} roomId - Room identifier
+ * @param {Object} dimensions - Room dimensions from getRoomDimensions
+ * @returns {{valid: boolean, errors: string[]}}
+ */
+function validateRoomSize(roomId, dimensions) {
+    const errors = [];
+
+    // Check if width is multiple of grid unit width
+    const widthRemainder = dimensions.widthTiles % GRID_UNIT_WIDTH_TILES;
+    if (widthRemainder !== 0) {
+        errors.push(`Room ${roomId} width ${dimensions.widthTiles} tiles is not a multiple of ${GRID_UNIT_WIDTH_TILES} (grid unit width). Remainder: ${widthRemainder} tiles`);
+    }
+
+    // Check if stacking height is multiple of grid unit height
+    const stackingHeightTiles = dimensions.heightTiles - VISUAL_TOP_TILES;
+    const heightRemainder = stackingHeightTiles % GRID_UNIT_HEIGHT_TILES;
+    if (heightRemainder !== 0) {
+        errors.push(`Room ${roomId} stacking height ${stackingHeightTiles} tiles is not a multiple of ${GRID_UNIT_HEIGHT_TILES} (grid unit height). Remainder: ${heightRemainder} tiles`);
+    }
+
+    return {
+        valid: errors.length === 0,
+        errors
+    };
+}
+
+/**
+ * Validate that all room positions are grid-aligned
+ *
+ * @param {Object} positions - Map of roomId -> {x, y}
+ * @returns {{valid: boolean, errors: string[]}}
+ */
+function validateGridAlignment(positions) {
+    const errors = [];
+
+    Object.entries(positions).forEach(([roomId, pos]) => {
+        // Check X alignment
+        const xRemainder = pos.x % GRID_UNIT_WIDTH_PX;
+        if (xRemainder !== 0) {
+            errors.push(`Room ${roomId} X position ${pos.x} is not grid-aligned (remainder: ${xRemainder}px, should be multiple of ${GRID_UNIT_WIDTH_PX}px)`);
+        }
+
+        // Check Y alignment
+        const yRemainder = pos.y % GRID_UNIT_HEIGHT_PX;
+        if (yRemainder !== 0) {
+            errors.push(`Room ${roomId} Y position ${pos.y} is not grid-aligned (remainder: ${yRemainder}px, should be multiple of ${GRID_UNIT_HEIGHT_PX}px)`);
+        }
+    });
+
+    return {
+        valid: errors.length === 0,
+        errors
+    };
+}
+
+/**
+ * Check if two rooms overlap
+ *
+ * @param {string} roomId1 - First room ID
+ * @param {string} roomId2 - Second room ID
+ * @param {Object} positions - Map of roomId -> {x, y}
+ * @param {Object} dimensions - Map of roomId -> dimensions
+ * @returns {boolean} True if rooms overlap
+ */
+function roomsOverlap(roomId1, roomId2, positions, dimensions) {
+    const pos1 = positions[roomId1];
+    const dim1 = dimensions[roomId1];
+    const pos2 = positions[roomId2];
+    const dim2 = dimensions[roomId2];
+
+    // Check for overlap using AABB (Axis-Aligned Bounding Box) collision
+    const overlap = !(
+        pos1.x + dim1.widthPx <= pos2.x ||
+        pos2.x + dim2.widthPx <= pos1.x ||
+        pos1.y + dim1.stackingHeightPx <= pos2.y ||
+        pos2.y + dim2.stackingHeightPx <= pos1.y
+    );
+
+    return overlap;
+}
+
+/**
+ * Validate that no rooms overlap
+ *
+ * @param {Object} positions - Map of roomId -> {x, y}
+ * @param {Object} dimensions - Map of roomId -> dimensions
+ * @returns {{valid: boolean, errors: string[]}}
+ */
+function validateNoOverlaps(positions, dimensions) {
+    const errors = [];
+    const roomIds = Object.keys(positions);
+
+    // Check each pair of rooms
+    for (let i = 0; i < roomIds.length; i++) {
+        for (let j = i + 1; j < roomIds.length; j++) {
+            const roomId1 = roomIds[i];
+            const roomId2 = roomIds[j];
+
+            if (roomsOverlap(roomId1, roomId2, positions, dimensions)) {
+                const pos1 = positions[roomId1];
+                const pos2 = positions[roomId2];
+                errors.push(`Rooms ${roomId1} and ${roomId2} overlap! ${roomId1} at (${pos1.x}, ${pos1.y}), ${roomId2} at (${pos2.x}, ${pos2.y})`);
+            }
+        }
+    }
+
+    return {
+        valid: errors.length === 0,
+        errors
+    };
+}
+
+/**
+ * Validate all room layout constraints
+ *
+ * @param {Object} dimensions - Map of roomId -> dimensions
+ * @param {Object} positions - Map of roomId -> {x, y}
+ * @returns {{valid: boolean, errors: string[], warnings: string[]}}
+ */
+function validateRoomLayout(dimensions, positions) {
+    const errors = [];
+    const warnings = [];
+
+    console.log('\n=== Validating Room Layout ===');
+
+    // Validate room sizes
+    console.log('Validating room sizes...');
+    Object.entries(dimensions).forEach(([roomId, dim]) => {
+        const result = validateRoomSize(roomId, dim);
+        if (!result.valid) {
+            warnings.push(...result.errors); // Size issues are warnings, not errors
+        }
+    });
+
+    // Validate grid alignment
+    console.log('Validating grid alignment...');
+    const alignmentResult = validateGridAlignment(positions);
+    if (!alignmentResult.valid) {
+        errors.push(...alignmentResult.errors);
+    }
+
+    // Validate no overlaps
+    console.log('Validating room overlaps...');
+    const overlapResult = validateNoOverlaps(positions, dimensions);
+    if (!overlapResult.valid) {
+        errors.push(...overlapResult.errors);
+    }
+
+    const valid = errors.length === 0;
+
+    console.log(`Validation ${valid ? 'PASSED' : 'FAILED'}`);
+    if (warnings.length > 0) {
+        console.log(`${warnings.length} warnings:`);
+        warnings.forEach(w => console.warn(`  ⚠️  ${w}`));
+    }
+    if (errors.length > 0) {
+        console.log(`${errors.length} errors:`);
+        errors.forEach(e => console.error(`  ❌ ${e}`));
+    }
+
+    return { valid, errors, warnings };
+}
+
+// ============================================================================
 // ROOM POSITIONING FUNCTIONS
 // ============================================================================
 
@@ -1075,10 +1245,20 @@ export function calculateRoomPositions(gameInstance) {
         console.log(`${roomId}: world(${pos.x}, ${pos.y}) = grid(${gridCoords.gridX}, ${gridCoords.gridY})`);
     });
 
-    // Store dimensions globally for use by door placement
+    // Phase 5: Validate room layout
+    const validation = validateRoomLayout(dimensions, positions);
+
+    // Store dimensions and positions globally for use by door placement and validation
     window.roomDimensions = dimensions;
+    window.roomPositions = positions;
 
     console.log('\n=== Room Position Calculations Complete ===\n');
+
+    // If validation failed, log but don't block (existing scenarios may have issues)
+    if (!validation.valid) {
+        console.error('⚠️  Room layout validation found errors. The game may not work correctly.');
+    }
+
     return positions;
 }
 
