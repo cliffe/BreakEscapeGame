@@ -2,6 +2,17 @@
 export const TILE_SIZE = 32;
 export const DOOR_ALIGN_OVERLAP = 32 * 3;
 export const GRID_SIZE = 32;
+
+// Grid unit system constants for room layout
+// Grid units are the base stacking size for rooms
+export const GRID_UNIT_WIDTH_TILES = 5;    // 5 tiles wide
+export const GRID_UNIT_HEIGHT_TILES = 4;   // 4 tiles tall (stacking area)
+export const VISUAL_TOP_TILES = 2;         // Top 2 rows are visual wall overlay
+
+// Calculated grid unit sizes in pixels
+export const GRID_UNIT_WIDTH_PX = GRID_UNIT_WIDTH_TILES * TILE_SIZE;    // 160px
+export const GRID_UNIT_HEIGHT_PX = GRID_UNIT_HEIGHT_TILES * TILE_SIZE;  // 128px
+
 export const MOVEMENT_SPEED = 150;
 export const RUN_SPEED_MULTIPLIER = 1.5; // Speed multiplier when holding shift
 export const RUN_ANIMATION_MULTIPLIER = 1.5; // Animation speed multiplier when holding shift

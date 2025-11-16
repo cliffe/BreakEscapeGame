@@ -42,7 +42,18 @@
  */
 
 // Room management system
-import { TILE_SIZE, DOOR_ALIGN_OVERLAP, GRID_SIZE, INTERACTION_RANGE_SQ, INTERACTION_CHECK_INTERVAL } from '../utils/constants.js?v=8';
+import {
+    TILE_SIZE,
+    DOOR_ALIGN_OVERLAP,
+    GRID_SIZE,
+    INTERACTION_RANGE_SQ,
+    INTERACTION_CHECK_INTERVAL,
+    GRID_UNIT_WIDTH_TILES,
+    GRID_UNIT_HEIGHT_TILES,
+    VISUAL_TOP_TILES,
+    GRID_UNIT_WIDTH_PX,
+    GRID_UNIT_HEIGHT_PX
+} from '../utils/constants.js?v=8';
 
 // Import the new system modules
 import { initializeDoors, createDoorSpritesForRoom, checkDoorTransitions, updateDoorSpritesVisibility } from '../systems/doors.js';
@@ -641,147 +652,433 @@ export function calculateWorldBounds(gameInstance) {
     };
 }
 
-export function calculateRoomPositions(gameInstance) {
-    const OVERLAP = 64;
+// ============================================================================
+// GRID UNIT CONVERSION FUNCTIONS
+// ============================================================================
+
+/**
+ * Convert tile dimensions to grid units
+ *
+ * Grid units are the base stacking size: 5 tiles wide × 4 tiles tall
+ * (excluding top 2 visual wall tiles)
+ *
+ * @param {number} widthTiles - Room width in tiles
+ * @param {number} heightTiles - Room height in tiles (including visual wall)
+ * @returns {{gridWidth: number, gridHeight: number}}
+ */
+function tilesToGridUnits(widthTiles, heightTiles) {
+    const gridWidth = Math.floor(widthTiles / GRID_UNIT_WIDTH_TILES);
+
+    // Subtract visual top wall tiles before calculating grid height
+    const stackingHeightTiles = heightTiles - VISUAL_TOP_TILES;
+    const gridHeight = Math.floor(stackingHeightTiles / GRID_UNIT_HEIGHT_TILES);
+
+    return { gridWidth, gridHeight };
+}
+
+/**
+ * Convert grid coordinates to world position
+ *
+ * Grid coordinates are positions in grid unit space.
+ * This converts them to pixel world coordinates.
+ *
+ * @param {number} gridX - Grid X coordinate
+ * @param {number} gridY - Grid Y coordinate
+ * @returns {{x: number, y: number}}
+ */
+function gridToWorld(gridX, gridY) {
+    return {
+        x: gridX * GRID_UNIT_WIDTH_PX,
+        y: gridY * GRID_UNIT_HEIGHT_PX
+    };
+}
+
+/**
+ * Convert world position to grid coordinates
+ *
+ * @param {number} worldX - World X position in pixels
+ * @param {number} worldY - World Y position in pixels
+ * @returns {{gridX: number, gridY: number}}
+ */
+function worldToGrid(worldX, worldY) {
+    return {
+        gridX: Math.floor(worldX / GRID_UNIT_WIDTH_PX),
+        gridY: Math.floor(worldY / GRID_UNIT_HEIGHT_PX)
+    };
+}
+
+/**
+ * Align a world position to the nearest grid boundary
+ *
+ * Uses Math.floor for consistent rounding of negative numbers
+ * (always rounds toward negative infinity)
+ *
+ * @param {number} worldX - World X position
+ * @param {number} worldY - World Y position
+ * @returns {{x: number, y: number}}
+ */
+function alignToGrid(worldX, worldY) {
+    // Use floor for consistent rounding of negative numbers
+    const gridX = Math.floor(worldX / GRID_UNIT_WIDTH_PX);
+    const gridY = Math.floor(worldY / GRID_UNIT_HEIGHT_PX);
+
+    return {
+        x: gridX * GRID_UNIT_WIDTH_PX,
+        y: gridY * GRID_UNIT_HEIGHT_PX
+    };
+}
+
+/**
+ * Extract room dimensions from Tiled JSON data
+ *
+ * Reads the tilemap to get room size and calculates:
+ * - Tile dimensions
+ * - Pixel dimensions
+ * - Grid units
+ * - Stacking height (for positioning calculations)
+ *
+ * @param {string} roomId - Room identifier
+ * @param {Object} roomData - Room data from scenario
+ * @param {Phaser.Game} gameInstance - Game instance for accessing tilemaps
+ * @returns {Object} Dimension data
+ */
+function getRoomDimensions(roomId, roomData, gameInstance) {
+    const map = gameInstance.cache.tilemap.get(roomData.type);
+
+    let widthTiles, heightTiles;
+
+    // Try different ways to access tilemap data
+    if (map && map.json) {
+        widthTiles = map.json.width;
+        heightTiles = map.json.height;
+    } else if (map && map.data) {
+        widthTiles = map.data.width;
+        heightTiles = map.data.height;
+    } else {
+        // Fallback to standard room size
+        console.warn(`Could not read dimensions for ${roomId}, using default 10×10`);
+        widthTiles = 10;
+        heightTiles = 10;
+    }
+
+    // Calculate grid units
+    const { gridWidth, gridHeight } = tilesToGridUnits(widthTiles, heightTiles);
+
+    // Calculate pixel dimensions
+    const widthPx = widthTiles * TILE_SIZE;
+    const heightPx = heightTiles * TILE_SIZE;
+    const stackingHeightPx = (heightTiles - VISUAL_TOP_TILES) * TILE_SIZE;
+
+    return {
+        widthTiles,
+        heightTiles,
+        widthPx,
+        heightPx,
+        stackingHeightPx,
+        gridWidth,
+        gridHeight
+    };
+}
+
+// ============================================================================
+// ROOM POSITIONING FUNCTIONS
+// ============================================================================
+
+/**
+ * Position a single room to the north of current room
+ */
+function positionNorthSingle(currentRoom, connectedRoom, currentPos, dimensions) {
+    const currentDim = dimensions[currentRoom];
+    const connectedDim = dimensions[connectedRoom];
+
+    // Center the connected room above current room
+    const x = currentPos.x + (currentDim.widthPx - connectedDim.widthPx) / 2;
+    const y = currentPos.y - connectedDim.stackingHeightPx;
+
+    // Align to grid using floor (consistent rounding for negatives)
+    return alignToGrid(x, y);
+}
+
+/**
+ * Position multiple rooms to the north of current room
+ */
+function positionNorthMultiple(currentRoom, connectedRooms, currentPos, dimensions) {
+    const currentDim = dimensions[currentRoom];
     const positions = {};
-    const gameScenario = window.gameScenario;
-    
-    console.log('=== Starting Room Position Calculations ===');
-    
-    // Get room dimensions from tilemaps
-    const roomDimensions = {};
-    Object.entries(gameScenario.rooms).forEach(([roomId, roomData]) => {
-        const map = gameInstance.cache.tilemap.get(roomData.type);
-        console.log(`Debug - Room ${roomId}:`, {
-            mapData: map,
-            fullData: map?.data,
-            json: map?.json
-        });
-        
-        // Try different ways to access the data
-        if (map) {
-            let width, height;
-            if (map.json) {
-                width = map.json.width;
-                height = map.json.height;
-            } else if (map.data) {
-                width = map.data.width;
-                height = map.data.height;
-            } else {
-                width = map.width;
-                height = map.height;
-            }
-            
-            roomDimensions[roomId] = {
-                width: width * TILE_SIZE,  // tile width is TILE_SIZE
-                height: height * TILE_SIZE // tile height is TILE_SIZE
-            };
-        } else {
-            console.error(`Could not find tilemap data for room ${roomId}`);
-            // Fallback to default dimensions if needed
-            roomDimensions[roomId] = {
-                width: 320,  // default width (10 tiles at 32px)
-                height: 288  // default height (9 tiles at 32px)
-            };
-        }
+
+    // Calculate total width of all connected rooms
+    const totalWidth = connectedRooms.reduce((sum, roomId) => {
+        return sum + dimensions[roomId].widthPx;
+    }, 0);
+
+    // Determine starting X position (center the group)
+    const startX = currentPos.x + (currentDim.widthPx - totalWidth) / 2;
+
+    // Position each room left to right
+    let currentX = startX;
+    connectedRooms.forEach(roomId => {
+        const connectedDim = dimensions[roomId];
+
+        // Y position is based on stacking height
+        const y = currentPos.y - connectedDim.stackingHeightPx;
+
+        // Align to grid
+        positions[roomId] = alignToGrid(currentX, y);
+
+        currentX += connectedDim.widthPx;
     });
-    
-    // Start with reception room at origin
-    positions[gameScenario.startRoom] = { x: 0, y: 0 };
-    console.log(`Starting room ${gameScenario.startRoom} position:`, positions[gameScenario.startRoom]);
-    
-    // Process rooms level by level, starting from reception
-    const processed = new Set([gameScenario.startRoom]);
-    const queue = [gameScenario.startRoom];
-    
+
+    return positions;
+}
+
+/**
+ * Position a single room to the south of current room
+ */
+function positionSouthSingle(currentRoom, connectedRoom, currentPos, dimensions) {
+    const currentDim = dimensions[currentRoom];
+    const connectedDim = dimensions[connectedRoom];
+
+    // Center the connected room below current room
+    const x = currentPos.x + (currentDim.widthPx - connectedDim.widthPx) / 2;
+    const y = currentPos.y + currentDim.stackingHeightPx;
+
+    // Align to grid
+    return alignToGrid(x, y);
+}
+
+/**
+ * Position multiple rooms to the south of current room
+ */
+function positionSouthMultiple(currentRoom, connectedRooms, currentPos, dimensions) {
+    const currentDim = dimensions[currentRoom];
+    const positions = {};
+
+    // Calculate total width
+    const totalWidth = connectedRooms.reduce((sum, roomId) => {
+        return sum + dimensions[roomId].widthPx;
+    }, 0);
+
+    // Determine starting X position (center the group)
+    const startX = currentPos.x + (currentDim.widthPx - totalWidth) / 2;
+
+    // Position each room left to right
+    let currentX = startX;
+    connectedRooms.forEach(roomId => {
+        const connectedDim = dimensions[roomId];
+
+        // Y position below current room
+        const y = currentPos.y + currentDim.stackingHeightPx;
+
+        // Align to grid
+        positions[roomId] = alignToGrid(currentX, y);
+
+        currentX += connectedDim.widthPx;
+    });
+
+    return positions;
+}
+
+/**
+ * Position a single room to the east of current room
+ */
+function positionEastSingle(currentRoom, connectedRoom, currentPos, dimensions) {
+    const currentDim = dimensions[currentRoom];
+    const connectedDim = dimensions[connectedRoom];
+
+    // Position to the right, aligned at north edge
+    const x = currentPos.x + currentDim.widthPx;
+    const y = currentPos.y;
+
+    // Align to grid
+    return alignToGrid(x, y);
+}
+
+/**
+ * Position multiple rooms to the east of current room
+ */
+function positionEastMultiple(currentRoom, connectedRooms, currentPos, dimensions) {
+    const currentDim = dimensions[currentRoom];
+    const positions = {};
+
+    // Position to the right
+    const x = currentPos.x + currentDim.widthPx;
+
+    // Stack vertically starting at current Y
+    let currentY = currentPos.y;
+    connectedRooms.forEach(roomId => {
+        const connectedDim = dimensions[roomId];
+
+        // Align to grid
+        positions[roomId] = alignToGrid(x, currentY);
+
+        currentY += connectedDim.stackingHeightPx;
+    });
+
+    return positions;
+}
+
+/**
+ * Position a single room to the west of current room
+ */
+function positionWestSingle(currentRoom, connectedRoom, currentPos, dimensions) {
+    const connectedDim = dimensions[connectedRoom];
+
+    // Position to the left, aligned at north edge
+    const x = currentPos.x - connectedDim.widthPx;
+    const y = currentPos.y;
+
+    // Align to grid
+    return alignToGrid(x, y);
+}
+
+/**
+ * Position multiple rooms to the west of current room
+ */
+function positionWestMultiple(currentRoom, connectedRooms, currentPos, dimensions) {
+    const positions = {};
+
+    // Stack vertically starting at current Y
+    let currentY = currentPos.y;
+    connectedRooms.forEach(roomId => {
+        const connectedDim = dimensions[roomId];
+
+        // Position to the left
+        const x = currentPos.x - connectedDim.widthPx;
+
+        // Align to grid
+        positions[roomId] = alignToGrid(x, currentY);
+
+        currentY += connectedDim.stackingHeightPx;
+    });
+
+    return positions;
+}
+
+/**
+ * Route single room positioning to appropriate direction function
+ */
+function positionSingleRoom(direction, currentRoom, connectedRoom, currentPos, dimensions) {
+    switch (direction) {
+        case 'north': return positionNorthSingle(currentRoom, connectedRoom, currentPos, dimensions);
+        case 'south': return positionSouthSingle(currentRoom, connectedRoom, currentPos, dimensions);
+        case 'east': return positionEastSingle(currentRoom, connectedRoom, currentPos, dimensions);
+        case 'west': return positionWestSingle(currentRoom, connectedRoom, currentPos, dimensions);
+        default:
+            console.error(`Unknown direction: ${direction}`);
+            return currentPos;
+    }
+}
+
+/**
+ * Route multiple room positioning to appropriate direction function
+ */
+function positionMultipleRooms(direction, currentRoom, connectedRooms, currentPos, dimensions) {
+    switch (direction) {
+        case 'north': return positionNorthMultiple(currentRoom, connectedRooms, currentPos, dimensions);
+        case 'south': return positionSouthMultiple(currentRoom, connectedRooms, currentPos, dimensions);
+        case 'east': return positionEastMultiple(currentRoom, connectedRooms, currentPos, dimensions);
+        case 'west': return positionWestMultiple(currentRoom, connectedRooms, currentPos, dimensions);
+        default:
+            console.error(`Unknown direction: ${direction}`);
+            return {};
+    }
+}
+
+export function calculateRoomPositions(gameInstance) {
+    const positions = {};
+    const dimensions = {};
+    const processed = new Set();
+    const queue = [];
+    const gameScenario = window.gameScenario;
+
+    console.log('=== NEW ROOM LAYOUT SYSTEM: Starting Room Position Calculations ===');
+
+    // Phase 1: Extract all room dimensions
+    console.log('\n--- Phase 1: Extracting Room Dimensions ---');
+    Object.entries(gameScenario.rooms).forEach(([roomId, roomData]) => {
+        dimensions[roomId] = getRoomDimensions(roomId, roomData, gameInstance);
+        console.log(`Room ${roomId} (${roomData.type}): ${dimensions[roomId].widthTiles}×${dimensions[roomId].heightTiles} tiles = ${dimensions[roomId].gridWidth}×${dimensions[roomId].gridHeight} grid units`);
+    });
+
+    // Phase 2: Place starting room at origin
+    console.log('\n--- Phase 2: Placing Starting Room ---');
+    const startRoomId = gameScenario.startRoom;
+    positions[startRoomId] = { x: 0, y: 0 };
+    processed.add(startRoomId);
+    queue.push(startRoomId);
+    console.log(`Starting room "${startRoomId}" positioned at (0, 0)`);
+
+    // Phase 3: Process rooms breadth-first
+    console.log('\n--- Phase 3: Processing Rooms Breadth-First ---');
     while (queue.length > 0) {
         const currentRoomId = queue.shift();
         const currentRoom = gameScenario.rooms[currentRoomId];
         const currentPos = positions[currentRoomId];
-        const currentDimensions = roomDimensions[currentRoomId];
-        
-        console.log(`\nProcessing room ${currentRoomId}`);
-        console.log('Current position:', currentPos);
-        console.log('Connections:', currentRoom.connections);
-        
-        Object.entries(currentRoom.connections).forEach(([direction, connected]) => {
-            console.log(`\nProcessing ${direction} connection:`, connected);
-            
-            if (Array.isArray(connected)) {
-                const roomsToProcess = connected.filter(r => !processed.has(r));
-                console.log('Unprocessed connected rooms:', roomsToProcess);
-                if (roomsToProcess.length === 0) return;
-                
-                if (direction === 'north' || direction === 'south') {
-                    const firstRoom = roomsToProcess[0];
-                    const firstRoomWidth = roomDimensions[firstRoom].width;
-                    const firstRoomHeight = roomDimensions[firstRoom].height;
-                    
-                    const secondRoom = roomsToProcess[1];
-                    const secondRoomWidth = roomDimensions[secondRoom].width;
-                    const secondRoomHeight = roomDimensions[secondRoom].height;
-                    
-                    if (direction === 'north') {
-                        // First room - right edge aligns with current room's left edge
-                        positions[firstRoom] = {
-                            x: currentPos.x - firstRoomWidth + DOOR_ALIGN_OVERLAP,
-                            y: currentPos.y - firstRoomHeight + OVERLAP
-                        };
-                        
-                        // Second room - left edge aligns with current room's right edge
-                        positions[secondRoom] = {
-                            x: currentPos.x + currentDimensions.width - DOOR_ALIGN_OVERLAP,
-                            y: currentPos.y - secondRoomHeight + OVERLAP
-                        };
-                    } else if (direction === 'south') {
-                        // First room - left edge aligns with current room's right edge
-                        positions[firstRoom] = {
-                            x: currentPos.x - firstRoomWidth + DOOR_ALIGN_OVERLAP,
-                            y: currentPos.y + currentDimensions.height - OVERLAP
-                        };
-                        
-                        // Second room - right edge aligns with current room's left edge
-                        positions[secondRoom] = {
-                            x: currentPos.x + currentDimensions.width - DOOR_ALIGN_OVERLAP,
-                            y: currentPos.y + currentDimensions.height - secondRoomHeight - OVERLAP
-                        };
-                    }
-                    
-                    roomsToProcess.forEach(roomId => {
-                        processed.add(roomId);
-                        queue.push(roomId);
-                        console.log(`Positioned room ${roomId} at:`, positions[roomId]);
-                    });
-                }
+
+        console.log(`\nProcessing room: ${currentRoomId}`);
+        console.log(`  Position: (${currentPos.x}, ${currentPos.y})`);
+
+        // Skip rooms without connections
+        if (!currentRoom.connections) {
+            console.log(`  No connections for ${currentRoomId}`);
+            continue;
+        }
+
+        // Process each direction
+        ['north', 'south', 'east', 'west'].forEach(direction => {
+            const connected = currentRoom.connections[direction];
+            if (!connected) return;
+
+            // Convert to array if single connection
+            const connectedRooms = Array.isArray(connected) ? connected : [connected];
+
+            // Filter out already processed rooms
+            const unprocessed = connectedRooms.filter(roomId => !processed.has(roomId));
+            if (unprocessed.length === 0) {
+                console.log(`  ${direction}: all rooms already processed`);
+                return;
+            }
+
+            console.log(`  ${direction}: positioning ${unprocessed.length} room(s) - ${unprocessed.join(', ')}`);
+
+            // Position rooms based on count
+            if (unprocessed.length === 1) {
+                // Single room connection
+                const roomId = unprocessed[0];
+                const position = positionSingleRoom(direction, currentRoomId, roomId, currentPos, dimensions);
+                positions[roomId] = position;
+                processed.add(roomId);
+                queue.push(roomId);
+
+                const gridCoords = worldToGrid(position.x, position.y);
+                console.log(`    ${roomId}: positioned at world(${position.x}, ${position.y}) = grid(${gridCoords.gridX}, ${gridCoords.gridY})`);
             } else {
-                if (processed.has(connected)) {
-                    return;
-                }
-                
-                const connectedDimensions = roomDimensions[connected];
-                
-                // Center the connected room
-                const x = currentPos.x + 
-                    (currentDimensions.width - connectedDimensions.width) / 2;
-                const y = direction === 'north'
-                    ? currentPos.y - connectedDimensions.height + OVERLAP
-                    : currentPos.y + currentDimensions.height - OVERLAP;
-                
-                
-                positions[connected] = { x, y };
-                processed.add(connected);
-                queue.push(connected);
-                
-                console.log(`Positioned single room ${connected} at:`, positions[connected]);
+                // Multiple room connections
+                const newPositions = positionMultipleRooms(direction, currentRoomId, unprocessed, currentPos, dimensions);
+
+                unprocessed.forEach(roomId => {
+                    positions[roomId] = newPositions[roomId];
+                    processed.add(roomId);
+                    queue.push(roomId);
+
+                    const gridCoords = worldToGrid(newPositions[roomId].x, newPositions[roomId].y);
+                    console.log(`    ${roomId}: positioned at world(${newPositions[roomId].x}, ${newPositions[roomId].y}) = grid(${gridCoords.gridX}, ${gridCoords.gridY})`);
+                });
             }
         });
     }
-    
-    console.log('\n=== Final Room Positions ===');
+
+    // Phase 4: Log final positions
+    console.log('\n--- Phase 4: Final Room Positions ---');
     Object.entries(positions).forEach(([roomId, pos]) => {
-        console.log(`${roomId}:`, pos);
+        const gridCoords = worldToGrid(pos.x, pos.y);
+        console.log(`${roomId}: world(${pos.x}, ${pos.y}) = grid(${gridCoords.gridX}, ${gridCoords.gridY})`);
     });
-    
+
+    // Store dimensions globally for use by door placement
+    window.roomDimensions = dimensions;
+
+    console.log('\n=== Room Position Calculations Complete ===\n');
     return positions;
 }
 
