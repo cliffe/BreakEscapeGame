@@ -32,12 +32,42 @@ Doors must be placed such that they:
 - **Inset**: 1.5 tiles from edge (half tile for wall, 1 tile for door)
 
 ```javascript
-function placeNorthDoorSingle(roomId, roomPosition, roomDimensions, gridCoords) {
+function placeNorthDoorSingle(roomId, roomPosition, roomDimensions, gridCoords,
+                              connectedRoom, gameScenario, allPositions, allDimensions) {
     const roomWidthPx = roomDimensions.widthPx;
 
-    // Deterministic left/right placement based on grid position
-    // Use sum of grid coordinates for deterministic alternation
-    const useRightSide = (gridCoords.x + gridCoords.y) % 2 === 1;
+    // CRITICAL: Check if connected room has multiple connections in opposite direction
+    // If so, we must align with that room's multi-door layout
+    const connectedRoomData = gameScenario.rooms[connectedRoom];
+    const connectedSouthConnections = connectedRoomData?.connections?.south;
+
+    if (Array.isArray(connectedSouthConnections) && connectedSouthConnections.length > 1) {
+        // Connected room has multiple south doors - align with the correct one
+        const indexInArray = connectedSouthConnections.indexOf(roomId);
+
+        if (indexInArray >= 0) {
+            // Calculate where the connected room's door is positioned
+            const connectedPos = allPositions[connectedRoom];
+            const connectedDim = allDimensions[connectedRoom];
+
+            // Use same spacing logic as placeNorthDoorsMultiple
+            const edgeInset = TILE_SIZE * 1.5;
+            const availableWidth = connectedDim.widthPx - (edgeInset * 2);
+            const doorCount = connectedSouthConnections.length;
+            const spacing = availableWidth / (doorCount - 1);
+
+            const alignedDoorX = connectedPos.x + edgeInset + (spacing * indexInArray);
+            const doorY = roomPosition.y + TILE_SIZE;
+
+            return { x: alignedDoorX, y: doorY };
+        }
+    }
+
+    // Default: Deterministic left/right placement based on grid position
+    // CRITICAL FIX: Handle negative grid coordinates correctly
+    // JavaScript modulo with negatives: -5 % 2 = -1 (not 1)
+    const sum = gridCoords.x + gridCoords.y;
+    const useRightSide = ((sum % 2) + 2) % 2 === 1;
 
     let doorX;
     if (useRightSide) {
@@ -93,12 +123,38 @@ function placeNorthDoorsMultiple(roomId, roomPosition, roomDimensions, connected
 Same as North, but door Y position is at bottom:
 
 ```javascript
-function placeSouthDoorSingle(roomId, roomPosition, roomDimensions, gridCoords) {
+function placeSouthDoorSingle(roomId, roomPosition, roomDimensions, gridCoords,
+                              connectedRoom, gameScenario, allPositions, allDimensions) {
     const roomWidthPx = roomDimensions.widthPx;
     const roomHeightPx = roomDimensions.heightPx;
 
-    // Same deterministic placement as north
-    const useRightSide = (gridCoords.x + gridCoords.y) % 2 === 1;
+    // CRITICAL: Check if connected room has multiple north connections
+    const connectedRoomData = gameScenario.rooms[connectedRoom];
+    const connectedNorthConnections = connectedRoomData?.connections?.north;
+
+    if (Array.isArray(connectedNorthConnections) && connectedNorthConnections.length > 1) {
+        // Connected room has multiple north doors - align with the correct one
+        const indexInArray = connectedNorthConnections.indexOf(roomId);
+
+        if (indexInArray >= 0) {
+            const connectedPos = allPositions[connectedRoom];
+            const connectedDim = allDimensions[connectedRoom];
+
+            const edgeInset = TILE_SIZE * 1.5;
+            const availableWidth = connectedDim.widthPx - (edgeInset * 2);
+            const doorCount = connectedNorthConnections.length;
+            const spacing = availableWidth / (doorCount - 1);
+
+            const alignedDoorX = connectedPos.x + edgeInset + (spacing * indexInArray);
+            const doorY = roomPosition.y + roomHeightPx - TILE_SIZE;
+
+            return { x: alignedDoorX, y: doorY };
+        }
+    }
+
+    // Default: deterministic placement with negative modulo fix
+    const sum = gridCoords.x + gridCoords.y;
+    const useRightSide = ((sum % 2) + 2) % 2 === 1;
 
     let doorX;
     if (useRightSide) {
@@ -121,10 +177,45 @@ function placeSouthDoorSingle(roomId, roomPosition, roomDimensions, gridCoords) 
 - **Inset**: 2 tiles from top (below visual wall)
 
 ```javascript
-function placeEastDoorSingle(roomId, roomPosition, roomDimensions) {
+function placeEastDoorSingle(roomId, roomPosition, roomDimensions,
+                             connectedRoom, gameScenario, allPositions, allDimensions) {
     const roomWidthPx = roomDimensions.widthPx;
 
-    // Place at north corner of east edge
+    // CRITICAL: Check if connected room has multiple west connections
+    const connectedRoomData = gameScenario.rooms[connectedRoom];
+    const connectedWestConnections = connectedRoomData?.connections?.west;
+
+    if (Array.isArray(connectedWestConnections) && connectedWestConnections.length > 1) {
+        // Connected room has multiple west doors - align with the correct one
+        const indexInArray = connectedWestConnections.indexOf(roomId);
+
+        if (indexInArray >= 0) {
+            const connectedPos = allPositions[connectedRoom];
+            const connectedDim = allDimensions[connectedRoom];
+
+            // Calculate door Y based on connected room's multi-door spacing
+            const doorCount = connectedWestConnections.length;
+            let alignedDoorY;
+
+            if (doorCount === 1) {
+                alignedDoorY = connectedPos.y + (TILE_SIZE * 2);
+            } else if (indexInArray === 0) {
+                alignedDoorY = connectedPos.y + (TILE_SIZE * 2);
+            } else if (indexInArray === doorCount - 1) {
+                alignedDoorY = connectedPos.y + connectedDim.heightPx - (TILE_SIZE * 3);
+            } else {
+                const firstDoorY = connectedPos.y + (TILE_SIZE * 2);
+                const lastDoorY = connectedPos.y + connectedDim.heightPx - (TILE_SIZE * 3);
+                const spacing = (lastDoorY - firstDoorY) / (doorCount - 1);
+                alignedDoorY = firstDoorY + (spacing * indexInArray);
+            }
+
+            const doorX = roomPosition.x + roomWidthPx - TILE_SIZE;
+            return { x: doorX, y: alignedDoorY };
+        }
+    }
+
+    // Default: place at north corner of east edge
     const doorX = roomPosition.x + roomWidthPx - TILE_SIZE;
     const doorY = roomPosition.y + (TILE_SIZE * 2); // Below visual wall
 
@@ -183,8 +274,43 @@ function placeEastDoorsMultiple(roomId, roomPosition, roomDimensions, connectedR
 Mirror of East connections:
 
 ```javascript
-function placeWestDoorSingle(roomId, roomPosition, roomDimensions) {
-    // Place at north corner of west edge
+function placeWestDoorSingle(roomId, roomPosition, roomDimensions,
+                             connectedRoom, gameScenario, allPositions, allDimensions) {
+    // CRITICAL: Check if connected room has multiple east connections
+    const connectedRoomData = gameScenario.rooms[connectedRoom];
+    const connectedEastConnections = connectedRoomData?.connections?.east;
+
+    if (Array.isArray(connectedEastConnections) && connectedEastConnections.length > 1) {
+        // Connected room has multiple east doors - align with the correct one
+        const indexInArray = connectedEastConnections.indexOf(roomId);
+
+        if (indexInArray >= 0) {
+            const connectedPos = allPositions[connectedRoom];
+            const connectedDim = allDimensions[connectedRoom];
+
+            // Calculate door Y based on connected room's multi-door spacing
+            const doorCount = connectedEastConnections.length;
+            let alignedDoorY;
+
+            if (doorCount === 1) {
+                alignedDoorY = connectedPos.y + (TILE_SIZE * 2);
+            } else if (indexInArray === 0) {
+                alignedDoorY = connectedPos.y + (TILE_SIZE * 2);
+            } else if (indexInArray === doorCount - 1) {
+                alignedDoorY = connectedPos.y + connectedDim.heightPx - (TILE_SIZE * 3);
+            } else {
+                const firstDoorY = connectedPos.y + (TILE_SIZE * 2);
+                const lastDoorY = connectedPos.y + connectedDim.heightPx - (TILE_SIZE * 3);
+                const spacing = (lastDoorY - firstDoorY) / (doorCount - 1);
+                alignedDoorY = firstDoorY + (spacing * indexInArray);
+            }
+
+            const doorX = roomPosition.x + TILE_SIZE;
+            return { x: doorX, y: alignedDoorY };
+        }
+    }
+
+    // Default: place at north corner of west edge
     const doorX = roomPosition.x + TILE_SIZE;
     const doorY = roomPosition.y + (TILE_SIZE * 2);
 

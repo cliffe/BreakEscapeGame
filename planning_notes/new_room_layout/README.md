@@ -50,33 +50,58 @@ This directory contains the complete implementation plan for redesigning the roo
 
 ### Critical Fixes Required
 
-Based on code review, these issues MUST be addressed:
+Based on code reviews (review1 and review2), these issues MUST be addressed:
 
-1. **Door Alignment for Asymmetric Connections** ⚠️ CRITICAL
+1. **Negative Modulo Fix for Door Placement** ⚠️ CRITICAL - ✅ INTEGRATED
+   - JavaScript modulo with negatives: `-5 % 2 = -1` (not `1`)
+   - Fixed: Use `((sum % 2) + 2) % 2` for deterministic door placement
+   - Affects all rooms with negative grid coordinates
+   - **Status**: Integrated into DOOR_PLACEMENT.md
+
+2. **Door Alignment for Asymmetric Connections** ⚠️ CRITICAL - ✅ INTEGRATED
    - When single-connection room links to multi-connection room
    - Doors must align by checking connected room's connection array
-   - See [review1/RECOMMENDATIONS.md](review1/RECOMMENDATIONS.md) for complete solution
+   - Example: office1 (2 north doors) ↔ office2 (1 south door)
+   - **Status**: Integrated into DOOR_PLACEMENT.md (all 4 directions)
 
-2. **Shared Door Positioning Module** ⚠️ CRITICAL
+3. **Consistent Grid Alignment with Math.floor()** ⚠️ CRITICAL - ✅ INTEGRATED
+   - Math.round(-0.5) has ambiguous behavior
+   - Use Math.floor() for consistent rounding toward -infinity
+   - Ensures deterministic positioning for all grid coordinates
+   - **Status**: Integrated into POSITIONING_ALGORITHM.md and GRID_SYSTEM.md
+
+4. **Shared Door Positioning Module** ⚠️ HIGH PRIORITY
    - Create `js/systems/door-positioning.js`
    - Single source of truth for door calculations
    - Eliminates code duplication between doors.js and collision.js
+   - **Status**: Specified in plan, needs implementation
 
-3. **Grid Height Clarification** ✅ RESOLVED
-   - Valid heights documented in GRID_SYSTEM.md
+5. **Grid Height Clarification** ✅ RESOLVED
+   - Valid heights documented in GRID_SYSTEM.md: 6, 10, 14, 18, 22, 26...
+   - Formula: totalHeight = 2 + (N × 4) where N ≥ 1
    - Validation function specified
 
-4. **Connectivity Validation** ⚠️ REQUIRED
+6. **Connectivity Validation** ⚠️ REQUIRED
    - Detect rooms with no path from starting room
    - Log warnings for disconnected rooms
+   - **Status**: Specified in VALIDATION.md
+
+7. **Room Dimension Audit** ⚠️ CRITICAL - ⚠️ ACTION REQUIRED
+   - Audit all room JSON files for valid dimensions
+   - Current rooms may be 10×8 (invalid - should be 10×10 or 10×6)
+   - Must be completed BEFORE implementation begins
+   - **Status**: Documented in review2, needs execution
 
 ## Implementation Strategy
 
 ### Recommended Approach: Incremental with Feature Flag
 
-**Phase 0**: Add feature flag (`USE_NEW_ROOM_LAYOUT = true`)
-- Allows easy rollback
-- Enables gradual testing
+**Phase 0**: Pre-Implementation Audit (2-4 hours) ⚠️ DO FIRST
+- Audit all room JSON files for valid dimensions
+- Update invalid room heights (8 → 10 or 8 → 6)
+- Add feature flag (`USE_NEW_ROOM_LAYOUT = true`)
+- Test feature flag toggle
+- Document room dimension changes
 
 **Phase 1**: Foundation (2-3 hours)
 - Add constants and helper functions

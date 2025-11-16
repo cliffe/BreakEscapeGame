@@ -178,6 +178,37 @@ function checkRoomOverlap(room1, room2) {
 
 ## Alignment Requirements
 
+### CRITICAL: Grid Alignment Rounding
+
+**Important**: All positioning code must use `Math.floor()` for grid alignment, NOT `Math.round()`.
+
+**Reason**: JavaScript's `Math.round()` has ambiguous behavior with negative 0.5:
+- `Math.round(-0.5)` could be `-0` or `-1` (implementation-dependent)
+- `Math.floor(-0.5)` is always `-1` (consistent)
+
+**Correct Implementation**:
+```javascript
+function alignToGrid(worldX, worldY) {
+    const gridX = Math.floor(worldX / GRID_UNIT_WIDTH_PX);
+    const gridY = Math.floor(worldY / GRID_UNIT_HEIGHT_PX);
+    return {
+        x: gridX * GRID_UNIT_WIDTH_PX,
+        y: gridY * GRID_UNIT_HEIGHT_PX
+    };
+}
+```
+
+**Examples**:
+```javascript
+// Positive coordinates
+alignToGrid(80, 0) → (0, 0)  // rounds down
+alignToGrid(160, 128) → (160, 128)  // exact
+
+// Negative coordinates
+alignToGrid(-80, -256) → (-160, -256)  // rounds toward -infinity
+alignToGrid(0, -64) → (0, -128)  // rounds toward -infinity
+```
+
 ### Room Positions
 All room positions must align to grid boundaries:
 

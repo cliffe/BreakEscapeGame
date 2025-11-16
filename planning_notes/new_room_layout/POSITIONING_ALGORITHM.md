@@ -89,6 +89,7 @@ For each direction, we need to:
 
 ```javascript
 function positionNorthSingle(currentRoom, connectedRoom, currentPos, dimensions) {
+    const currentDim = dimensions[currentRoom];
     const connectedDim = dimensions[connectedRoom];
 
     // Center the connected room above current room
@@ -96,10 +97,12 @@ function positionNorthSingle(currentRoom, connectedRoom, currentPos, dimensions)
     const x = currentPos.x + (currentDim.widthPx - connectedDim.widthPx) / 2;
     const y = currentPos.y - connectedDim.stackingHeightPx;
 
-    // Align to grid
+    // Align to grid using floor (consistent rounding for negatives)
+    // CRITICAL: Math.floor ensures consistent behavior with negative coordinates
+    // Math.floor(-80/160) = Math.floor(-0.5) = -1 (rounds toward -infinity)
     return {
-        x: Math.round(x / GRID_UNIT_WIDTH_PX) * GRID_UNIT_WIDTH_PX,
-        y: Math.round(y / GRID_UNIT_HEIGHT_PX) * GRID_UNIT_HEIGHT_PX
+        x: Math.floor(x / GRID_UNIT_WIDTH_PX) * GRID_UNIT_WIDTH_PX,
+        y: Math.floor(y / GRID_UNIT_HEIGHT_PX) * GRID_UNIT_HEIGHT_PX
     };
 }
 ```
@@ -131,10 +134,10 @@ function positionNorthMultiple(currentRoom, connectedRooms, currentPos, dimensio
         // Y position is based on stacking height
         const y = currentPos.y - connectedDim.stackingHeightPx;
 
-        // Align to grid
+        // Align to grid using floor (consistent rounding)
         positions[roomId] = {
-            x: Math.round(currentX / GRID_UNIT_WIDTH_PX) * GRID_UNIT_WIDTH_PX,
-            y: Math.round(y / GRID_UNIT_HEIGHT_PX) * GRID_UNIT_HEIGHT_PX
+            x: Math.floor(currentX / GRID_UNIT_WIDTH_PX) * GRID_UNIT_WIDTH_PX,
+            y: Math.floor(y / GRID_UNIT_HEIGHT_PX) * GRID_UNIT_HEIGHT_PX
         };
 
         currentX += connectedDim.widthPx;
@@ -161,10 +164,10 @@ function positionSouthSingle(currentRoom, connectedRoom, currentPos, dimensions)
     const x = currentPos.x + (currentDim.widthPx - connectedDim.widthPx) / 2;
     const y = currentPos.y + currentDim.stackingHeightPx;
 
-    // Align to grid
+    // Align to grid using floor
     return {
-        x: Math.round(x / GRID_UNIT_WIDTH_PX) * GRID_UNIT_WIDTH_PX,
-        y: Math.round(y / GRID_UNIT_HEIGHT_PX) * GRID_UNIT_HEIGHT_PX
+        x: Math.floor(x / GRID_UNIT_WIDTH_PX) * GRID_UNIT_WIDTH_PX,
+        y: Math.floor(y / GRID_UNIT_HEIGHT_PX) * GRID_UNIT_HEIGHT_PX
     };
 }
 ```
@@ -196,8 +199,8 @@ function positionSouthMultiple(currentRoom, connectedRooms, currentPos, dimensio
         const y = currentPos.y + currentDim.stackingHeightPx;
 
         positions[roomId] = {
-            x: Math.round(currentX / GRID_UNIT_WIDTH_PX) * GRID_UNIT_WIDTH_PX,
-            y: Math.round(y / GRID_UNIT_HEIGHT_PX) * GRID_UNIT_HEIGHT_PX
+            x: Math.floor(currentX / GRID_UNIT_WIDTH_PX) * GRID_UNIT_WIDTH_PX,
+            y: Math.floor(y / GRID_UNIT_HEIGHT_PX) * GRID_UNIT_HEIGHT_PX
         };
 
         currentX += connectedDim.widthPx;
@@ -223,10 +226,10 @@ function positionEastSingle(currentRoom, connectedRoom, currentPos, dimensions) 
     const x = currentPos.x + currentDim.widthPx;
     const y = currentPos.y; // Align north edges
 
-    // Align to grid
+    // Align to grid using floor
     return {
-        x: Math.round(x / GRID_UNIT_WIDTH_PX) * GRID_UNIT_WIDTH_PX,
-        y: Math.round(y / GRID_UNIT_HEIGHT_PX) * GRID_UNIT_HEIGHT_PX
+        x: Math.floor(x / GRID_UNIT_WIDTH_PX) * GRID_UNIT_WIDTH_PX,
+        y: Math.floor(y / GRID_UNIT_HEIGHT_PX) * GRID_UNIT_HEIGHT_PX
     };
 }
 ```
@@ -250,8 +253,8 @@ function positionEastMultiple(currentRoom, connectedRooms, currentPos, dimension
         const connectedDim = dimensions[roomId];
 
         positions[roomId] = {
-            x: Math.round(startX / GRID_UNIT_WIDTH_PX) * GRID_UNIT_WIDTH_PX,
-            y: Math.round(currentY / GRID_UNIT_HEIGHT_PX) * GRID_UNIT_HEIGHT_PX
+            x: Math.floor(startX / GRID_UNIT_WIDTH_PX) * GRID_UNIT_WIDTH_PX,
+            y: Math.floor(currentY / GRID_UNIT_HEIGHT_PX) * GRID_UNIT_HEIGHT_PX
         };
 
         currentY += connectedDim.stackingHeightPx;
@@ -273,9 +276,10 @@ function positionWestSingle(currentRoom, connectedRoom, currentPos, dimensions) 
     const x = currentPos.x - connectedDim.widthPx;
     const y = currentPos.y;
 
+    // Align to grid using floor
     return {
-        x: Math.round(x / GRID_UNIT_WIDTH_PX) * GRID_UNIT_WIDTH_PX,
-        y: Math.round(y / GRID_UNIT_HEIGHT_PX) * GRID_UNIT_HEIGHT_PX
+        x: Math.floor(x / GRID_UNIT_WIDTH_PX) * GRID_UNIT_WIDTH_PX,
+        y: Math.floor(y / GRID_UNIT_HEIGHT_PX) * GRID_UNIT_HEIGHT_PX
     };
 }
 ```
