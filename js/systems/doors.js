@@ -294,8 +294,9 @@ function placeWestDoorsMultiple(roomId, roomPosition, roomDimensions, connectedR
 /**
  * Calculate all door positions for a room
  * This is the main entry point for door placement
+ * EXPORTED for use by collision.js to ensure wall removal matches door placement
  */
-function calculateDoorPositionsForRoom(roomId, roomPosition, roomDimensions, connections, allPositions, allDimensions, gameScenario) {
+export function calculateDoorPositionsForRoom(roomId, roomPosition, roomDimensions, connections, allPositions, allDimensions, gameScenario) {
     const doorPositions = [];
 
     ['north', 'south', 'east', 'west'].forEach(direction => {

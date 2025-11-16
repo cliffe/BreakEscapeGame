@@ -1,13 +1,13 @@
 /**
  * COLLISION MANAGEMENT SYSTEM
  * ===========================
- * 
+ *
  * Handles static collision geometry, tile-based collision, and wall management.
  * Separated from rooms.js for better modularity and maintainability.
  */
 
 import { TILE_SIZE } from '../utils/constants.js';
-import { getOppositeDirection } from './doors.js';
+import { getOppositeDirection, calculateDoorPositionsForRoom } from './doors.js';
 
 let gameRef = null;
 let rooms = null;
@@ -154,215 +154,131 @@ export function createWallCollisionBoxes(wallLayer, roomId, position) {
 export function removeTilesUnderDoor(wallLayer, roomId, position) {
     console.log(`Removing wall tiles under doors in room ${roomId}`);
 
-    // Remove wall tiles under doors using the same positioning logic as door sprites
     const gameScenario = window.gameScenario;
     const roomData = gameScenario.rooms[roomId];
     if (!roomData || !roomData.connections) {
         console.log(`No connections found for room ${roomId}, skipping wall tile removal`);
         return;
     }
-    
-    // Ensure we have a valid game reference
-    const game = gameRef || window.game;
-    if (!game) {
-        console.error('No game reference available, cannot remove tiles under door');
+
+    // Get room dimensions from global cache (set by calculateRoomPositions)
+    const roomDimensions = window.roomDimensions?.[roomId];
+    if (!roomDimensions) {
+        console.error(`Room dimensions not found for ${roomId}. Cannot remove wall tiles.`);
         return;
     }
-    
-    // Get room dimensions for door positioning (same as door sprite creation)
-    const map = game.cache.tilemap.get(roomData.type);
-    let roomWidth = 800, roomHeight = 600; // fallback
-    
-    if (map) {
-        if (map.json) {
-            roomWidth = map.json.width * TILE_SIZE;
-            roomHeight = map.json.height * TILE_SIZE;
-        } else if (map.data) {
-            roomWidth = map.data.width * TILE_SIZE;
-            roomHeight = map.data.height * TILE_SIZE;
+
+    // Get all positions and dimensions for door alignment
+    const allPositions = window.roomPositions || {};
+    const allDimensions = window.roomDimensions || {};
+
+    // Calculate door positions using the SAME function as door sprite creation
+    // This ensures perfect alignment between door sprites and removed wall tiles
+    const doorPositions = calculateDoorPositionsForRoom(
+        roomId,
+        position,
+        roomDimensions,
+        roomData.connections,
+        allPositions,
+        allDimensions,
+        gameScenario
+    );
+
+    console.log(`Removing wall tiles for ${doorPositions.length} doors in ${roomId}`);
+
+    // Remove wall tiles for each calculated door position
+    doorPositions.forEach(doorInfo => {
+        const { x: doorX, y: doorY, direction, connectedRoom } = doorInfo;
+
+        // Set door size based on direction
+        let doorWidth = TILE_SIZE;
+        let doorHeight = TILE_SIZE * 2;
+
+        if (direction === 'east' || direction === 'west') {
+            doorWidth = TILE_SIZE * 2;
+            doorHeight = TILE_SIZE;
         }
-    }
-    
-    const connections = roomData.connections;
-    
-    // Process each connection direction
-    Object.entries(connections).forEach(([direction, connectedRooms]) => {
-        const roomList = Array.isArray(connectedRooms) ? connectedRooms : [connectedRooms];
-        
-        roomList.forEach((connectedRoom, index) => {
-            // Calculate door position using the same logic as door sprite creation
-            let doorX, doorY;
-            let doorWidth = TILE_SIZE, doorHeight = TILE_SIZE * 2;
-            
-            switch (direction) {
-                case 'north':
-                    if (roomList.length === 1) {
-                        // Single connection - check the connecting room's connections to determine position
-                        const connectingRoom = roomList[0];
-                        const connectingRoomConnections = window.gameScenario.rooms[connectingRoom]?.connections?.south;
-                        
-                        if (Array.isArray(connectingRoomConnections) && connectingRoomConnections.length > 1) {
-                            // The connecting room has multiple south doors, find which one connects to this room
-                            const doorIndex = connectingRoomConnections.indexOf(roomId);
-                            if (doorIndex >= 0) {
-                                // When the connecting room has multiple doors, position this door to match
-                                // If this room is at index 0 (left), position door on the right (southeast)
-                                // If this room is at index 1 (right), position door on the left (southwest)
-                                if (doorIndex === 0) {
-                                    // This room is on the left, so door should be on the right
-                                    doorX = position.x + roomWidth - TILE_SIZE * 1.5;
-                                } else {
-                                    // This room is on the right, so door should be on the left
-                                    doorX = position.x + TILE_SIZE * 1.5;
-                                }
-                            } else {
-                                // Fallback to left positioning
-                                doorX = position.x + TILE_SIZE * 1.5;
-                            }
-                        } else {
-                            // Single door - use left positioning
-                            doorX = position.x + TILE_SIZE * 1.5;
-                        }
-                    } else {
-                        // Multiple connections - use 1.5 tile spacing from edges
-                        const availableWidth = roomWidth - (TILE_SIZE * 1.5 * 2); // Subtract edge spacing
-                        const doorSpacing = availableWidth / (roomList.length - 1); // Space between doors
-                        doorX = position.x + TILE_SIZE * 1.5 + (doorSpacing * index); // Start at 1.5 tiles from edge
-                    }
-                    doorY = position.y + TILE_SIZE;
-                    break;
-                case 'south':
-                    if (roomList.length === 1) {
-                        // Single connection - check if the connecting room has multiple doors
-                        const connectingRoom = roomList[0];
-                        const connectingRoomConnections = window.gameScenario.rooms[connectingRoom]?.connections?.north;
-                        if (Array.isArray(connectingRoomConnections) && connectingRoomConnections.length > 1) {
-                            // The connecting room has multiple north doors, find which one connects to this room
-                            const doorIndex = connectingRoomConnections.indexOf(roomId);
-                            if (doorIndex >= 0) {
-                                // When the connecting room has multiple doors, position this door to match
-                                // If this room is at index 0 (left), position door on the right (southeast)
-                                // If this room is at index 1 (right), position door on the left (southwest)
-                                if (doorIndex === 0) {
-                                    // This room is on the left, so door should be on the right
-                                    doorX = position.x + roomWidth - TILE_SIZE * 1.5;
-                                } else {
-                                    // This room is on the right, so door should be on the left
-                                    doorX = position.x + TILE_SIZE * 1.5;
-                                }
-                            } else {
-                                // Fallback to left positioning
-                                doorX = position.x + TILE_SIZE * 1.5;
-                            }
-                        } else {
-                            // Single door - use left positioning
-                            doorX = position.x + TILE_SIZE * 1.5;
-                        }
-                    } else {
-                        // Multiple connections - use 1.5 tile spacing from edges
-                        const availableWidth = roomWidth - (TILE_SIZE * 1.5 * 2); // Subtract edge spacing
-                        const doorSpacing = availableWidth / (roomList.length - 1); // Space between doors
-                        doorX = position.x + TILE_SIZE * 1.5 + (doorSpacing * index); // Start at 1.5 tiles from edge
-                    }
-                    doorY = position.y + roomHeight - TILE_SIZE;
-                    break;
-                case 'east':
-                    doorX = position.x + roomWidth - TILE_SIZE;
-                    doorY = position.y + roomHeight / 2;
-                    doorWidth = TILE_SIZE * 2;
-                    doorHeight = TILE_SIZE;
-                    break;
-                case 'west':
-                    doorX = position.x + TILE_SIZE;
-                    doorY = position.y + roomHeight / 2;
-                    doorWidth = TILE_SIZE * 2;
-                    doorHeight = TILE_SIZE;
-                    break;
-                default:
-                    return;
-            }
-            
-            // Use Phaser's getTilesWithin to get tiles that overlap with the door area
-            const doorBounds = {
-                x: doorX - (doorWidth / 2), // Door sprite origin is center, so adjust bounds
-                y: doorY - (doorHeight / 2),
-                width: doorWidth,
-                height: doorHeight
-            };
-            
-            // Convert door bounds to tilemap coordinates (relative to the layer)
-            const doorBoundsInTilemap = {
-                x: doorBounds.x - wallLayer.x,
-                y: doorBounds.y - wallLayer.y,
-                width: doorBounds.width,
-                height: doorBounds.height
-            };
-            
-            console.log(`Removing wall tiles for ${roomId} -> ${connectedRoom} (${direction}): door at (${doorX}, ${doorY}), world bounds:`, doorBounds, `tilemap bounds:`, doorBoundsInTilemap);
-            console.log(`Wall layer info: x=${wallLayer.x}, y=${wallLayer.y}, width=${wallLayer.width}, height=${wallLayer.height}`);
-            
-            // Try a different approach - convert to tile coordinates first
-            const doorTileX = Math.floor(doorBoundsInTilemap.x / TILE_SIZE);
-            const doorTileY = Math.floor(doorBoundsInTilemap.y / TILE_SIZE);
-            const doorTilesWide = Math.ceil(doorBoundsInTilemap.width / TILE_SIZE);
-            const doorTilesHigh = Math.ceil(doorBoundsInTilemap.height / TILE_SIZE);
-            
-            console.log(`Door tile coordinates: (${doorTileX}, ${doorTileY}) covering ${doorTilesWide}x${doorTilesHigh} tiles`);
-            
-            // Check what tiles exist in the door area manually
-            let foundTiles = [];
-            for (let x = 0; x < doorTilesWide; x++) {
-                for (let y = 0; y < doorTilesHigh; y++) {
-                    const tileX = doorTileX + x;
-                    const tileY = doorTileY + y;
-                    const tile = wallLayer.getTileAt(tileX, tileY);
-                    if (tile && tile.index !== -1) {
-                        foundTiles.push({x: tileX, y: tileY, tile: tile});
-                        console.log(`Found wall tile at (${tileX}, ${tileY}) with index ${tile.index}`);
-                    }
+
+        // Use Phaser's getTilesWithin to get tiles that overlap with the door area
+        const doorBounds = {
+            x: doorX - (doorWidth / 2), // Door sprite origin is center, so adjust bounds
+            y: doorY - (doorHeight / 2),
+            width: doorWidth,
+            height: doorHeight
+        };
+
+        // Convert door bounds to tilemap coordinates (relative to the layer)
+        const doorBoundsInTilemap = {
+            x: doorBounds.x - wallLayer.x,
+            y: doorBounds.y - wallLayer.y,
+            width: doorBounds.width,
+            height: doorBounds.height
+        };
+
+        console.log(`Removing wall tiles for ${roomId} -> ${connectedRoom} (${direction}): door at (${doorX}, ${doorY}), world bounds:`, doorBounds, `tilemap bounds:`, doorBoundsInTilemap);
+        console.log(`Wall layer info: x=${wallLayer.x}, y=${wallLayer.y}, width=${wallLayer.width}, height=${wallLayer.height}`);
+
+        // Try a different approach - convert to tile coordinates first
+        const doorTileX = Math.floor(doorBoundsInTilemap.x / TILE_SIZE);
+        const doorTileY = Math.floor(doorBoundsInTilemap.y / TILE_SIZE);
+        const doorTilesWide = Math.ceil(doorBoundsInTilemap.width / TILE_SIZE);
+        const doorTilesHigh = Math.ceil(doorBoundsInTilemap.height / TILE_SIZE);
+
+        console.log(`Door tile coordinates: (${doorTileX}, ${doorTileY}) covering ${doorTilesWide}x${doorTilesHigh} tiles`);
+
+        // Check what tiles exist in the door area manually
+        let foundTiles = [];
+        for (let x = 0; x < doorTilesWide; x++) {
+            for (let y = 0; y < doorTilesHigh; y++) {
+                const tileX = doorTileX + x;
+                const tileY = doorTileY + y;
+                const tile = wallLayer.getTileAt(tileX, tileY);
+                if (tile && tile.index !== -1) {
+                    foundTiles.push({x: tileX, y: tileY, tile: tile});
+                    console.log(`Found wall tile at (${tileX}, ${tileY}) with index ${tile.index}`);
                 }
             }
-            
-            console.log(`Manually found ${foundTiles.length} wall tiles in door area`);
-            
-            // Get all tiles within the door bounds (using tilemap coordinates)
-            const overlappingTiles = wallLayer.getTilesWithin(
-                doorBoundsInTilemap.x,
-                doorBoundsInTilemap.y,
-                doorBoundsInTilemap.width,
-                doorBoundsInTilemap.height
+        }
+
+        console.log(`Manually found ${foundTiles.length} wall tiles in door area`);
+
+        // Get all tiles within the door bounds (using tilemap coordinates)
+        const overlappingTiles = wallLayer.getTilesWithin(
+            doorBoundsInTilemap.x,
+            doorBoundsInTilemap.y,
+            doorBoundsInTilemap.width,
+            doorBoundsInTilemap.height
+        );
+
+        console.log(`getTilesWithin found ${overlappingTiles.length} tiles overlapping with door area`);
+
+        // Use the manually found tiles if getTilesWithin didn't work
+        const tilesToRemove = foundTiles.length > 0 ? foundTiles : overlappingTiles;
+
+        // Remove wall tiles that overlap with the door
+        tilesToRemove.forEach(tileData => {
+            const tileX = tileData.x;
+            const tileY = tileData.y;
+
+            // Remove the wall tile
+            const removedTile = wallLayer.tilemap.removeTileAt(
+                tileX,
+                tileY,
+                true,  // replaceWithNull
+                true,  // recalculateFaces
+                wallLayer  // layer
             );
-            
-            console.log(`getTilesWithin found ${overlappingTiles.length} tiles overlapping with door area`);
-            
-            // Use the manually found tiles if getTilesWithin didn't work
-            const tilesToRemove = foundTiles.length > 0 ? foundTiles : overlappingTiles;
-            
-            // Remove wall tiles that overlap with the door
-            tilesToRemove.forEach(tileData => {
-                const tileX = tileData.x;
-                const tileY = tileData.y;
-                
-                // Remove the wall tile
-                const removedTile = wallLayer.tilemap.removeTileAt(
-                    tileX,
-                    tileY,
-                    true,  // replaceWithNull
-                    true,  // recalculateFaces
-                    wallLayer  // layer
-                );
-                
-                if (removedTile) {
-                    console.log(`Removed wall tile at (${tileX}, ${tileY}) under door ${roomId} -> ${connectedRoom}`);
-                }
-            });
-            
-            // Recalculate collision after removing tiles
-            if (tilesToRemove.length > 0) {
-                console.log(`Recalculating collision for wall layer in ${roomId} after removing ${tilesToRemove.length} tiles`);
-                wallLayer.setCollisionByExclusion([-1]);
+
+            if (removedTile) {
+                console.log(`Removed wall tile at (${tileX}, ${tileY}) under door ${roomId} -> ${connectedRoom}`);
             }
         });
+
+        // Recalculate collision after removing tiles
+        if (tilesToRemove.length > 0) {
+            console.log(`Recalculating collision for wall layer in ${roomId} after removing ${tilesToRemove.length} tiles`);
+            wallLayer.setCollisionByExclusion([-1]);
+        }
     });
 }
 
