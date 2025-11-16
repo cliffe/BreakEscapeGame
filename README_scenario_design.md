@@ -11,51 +11,24 @@ There are several constraints and patterns for designing scenarios for BreakEsca
 - All scenarios must have a `rooms` object containing individual room definitions
 
 ### Room Connections
-- Rooms can connect in two directions: `north`, `south`
-- When a room connects to multiple rooms in the same direction, an array is used:
-  ```json
-  "connections": {
-    "north": ["office2", "office3"],
-    "south": "reception"
-  }
-  ```
-- The room layout algorithm positions rooms based on these connections, with specific alignment logic for multiple rooms
 
+Rooms can connect in **four directions**: `north`, `south`, `east`, `west`
 
+**Connection Syntax**:
+```json
+"connections": {
+  "north": "office1",           // Single connection
+  "south": ["reception", "hall"], // Multiple connections (array)
+  "east": "serverroom",
+  "west": ["closet1", "closet2"]
+}
+```
 
-
-#### Room Connection Constraints
-
-##### North vs South Connection Asymmetry
-
-The code reveals an important asymmetry in how rooms can be connected:
-
-- **North Connections**: A room can connect to up to two rooms in the north direction
-  ```json
-  "connections": {
-    "north": ["office2", "office3"],
-    "south": "reception"
-  }
-  ```
-
-- **South Connections**: A room can only connect to a single room in the south direction
-  ```json
-  "connections": {
-    "south": "office1"
-  }
-  ```
-
-This is confirmed in the `calculateRoomPositions()` function (lines 2036-2077), which has special handling for arrays of rooms in the north/south directions, but the code only positions multiple rooms when they are north of the current room. When rooms are south, the code expects a single room, not an array.
-
-##### Room Positioning Logic
-
-The code in `calculateRoomPositions()` reveals how rooms are positioned:
-
-1. The `startRoom` is positioned at coordinates (0,0) (line 2012)
-2. When a room connects to two rooms in the north direction:
-   - The first room is positioned with its right edge aligned with the current room's left edge (lines 2048-2051)
-   - The second room is positioned with its left edge aligned with the current room's right edge (lines 2054-2057)
-3. For single room connections, the connected room is centered relative to the current room (lines 2087-2093)
+**Key Points**:
+- All directions support both single connections (string) and multiple connections (array)
+- The room layout algorithm positions rooms using breadth-first traversal
+- Multiple rooms in the same direction are positioned side-by-side (N/S) or stacked (E/W)
+- All rooms align to grid boundaries for consistent door placement
 
 #### Door Validation and Locking
 
@@ -65,61 +38,79 @@ The code in `validateDoorsByRoomOverlap()` (lines 3236-3323) shows that:
 2. If a door connects to a locked room, the door inherits the lock properties (lines 3296-3303)
 3. Doors that don't connect exactly two rooms are removed (lines 3281-3291)
 
-#### Designing Solvable Scenarios
+#### Designing Solvable Scenarios with the Grid System
 
-Based on the updated understanding of the north/south connection asymmetry, here are guidelines for creating solvable scenarios:
+The grid-based room layout system provides significant flexibility for scenario design:
 
-1. **Tree-like Structure**: Design your scenario with a tree-like structure where:
-   - The starting room is at the "bottom" (south)
-   - The scenario branches out as you move north
-   - Each room can have at most one room to its south
+1. **Flexible Layout Patterns**: Design scenarios using any combination of directions:
+   - **Vertical**: Stack rooms north/south for traditional layouts
+   - **Horizontal**: Connect rooms east/west for wide facilities
+   - **Mixed**: Combine directions for complex, non-linear layouts
+   - **Branching**: All directions support multiple connections
 
-2. **Room Layout Planning**: When planning your scenario:
-   - Start with the reception/starting room
-   - Branch out with up to two rooms to the north
-   - Continue branching northward, but ensure each room connects to only one room to its south
+2. **Room Size Variety**: Mix different room sizes for visual interest and gameplay:
+   - Use **1×1 GU closets** for small storage rooms or utility spaces
+   - Use **2×2 GU standard rooms** for offices, reception areas
+   - Use **1×2 GU or 4×1 GU halls** to connect distant areas
+   - Ensure all room dimensions follow the valid size formula
 
-3. **Lock Progression**: Design a logical progression of locks:
-   - Place keys, codes, and other unlock items in accessible rooms
-   - Ensure the player can access all required items before encountering locked doors
-   - Consider the player's path through the branching structure
+3. **Lock Progression**: Design logical progression through the facility:
+   - Place keys, codes, and unlock items in accessible rooms first
+   - Create puzzles that require backtracking or exploring side rooms
+   - Use east/west connections for optional areas with bonus items
+   - Layer security with multiple lock types (key → PIN → biometric)
 
-4. **Avoid South Branching**: The code doesn't support multiple south connections, so:
-   - Don't create scenarios where a room needs to connect to multiple rooms to its south
-   - If you need complex layouts, use east/west connections to create alternative paths
+4. **Connection Planning**:
+   - Start by sketching your layout on grid paper (5-tile width increments)
+   - Ensure all rooms are reachable from the starting room
+   - Verify room dimensions before creating Tiled maps
+   - Test door alignment between connected rooms
 
-5. **Room Overlap Awareness**: Be aware that rooms are positioned based on their connections:
-   - Two rooms connected to the north will be positioned side by side
-   - This may create visual overlaps if rooms have unusual dimensions
-   - Test your scenario to ensure doors properly connect rooms
+5. **Avoid Common Pitfalls**:
+   - **Invalid heights**: Heights of 7, 8, 9, 11, 12, 13 will cause issues
+   - **Room overlaps**: System validates and warns, but plan carefully
+   - **Disconnected rooms**: Ensure all rooms connect to the starting room
+   - **Asymmetric connections**: When connecting single-door to multi-door rooms, the system handles alignment automatically
 
-6. **End Goal Placement**: Place your scenario's end goal (important items, final objective) in:
-   - Rooms that are furthest north in the layout
-   - Rooms that require the most complex unlocking sequence
+#### Example Layout Structures
 
-#### Example Layout Structure
-
+**Vertical Tower** (traditional):
 ```
-                 [Room D]   [Room E]
-                    ↑          ↑
-                    |          |
-                 [Room B]   [Room C]
-                    ↑          ↑
-                    |          |
-                    +--[Room A]--+
-                          ↑
-                          |
-                     [Reception]
+        [Server Room]
+             ↑
+        [CEO Office]
+             ↑
+    [Office1] [Office2]
+         ↑       ↑
+        [Reception]
 ```
 
-This layout follows the constraints:
-- Reception connects north to Room A
-- Room A connects north to both Room B and Room C
-- Room B connects north to Room D
-- Room C connects north to Room E
-- Each room connects south to exactly one room
+**Horizontal Facility** (wide):
+```
+[Closet1] ← [Office] → [Meeting] → [Server]
+                ↑
+           [Reception]
+```
 
-By understanding these constraints, you can design scenarios that work correctly with the game engine while providing engaging, solvable experiences for players.
+**Complex Multi-Direction**:
+```
+    [Storage]   [CEO]
+        ↑         ↑
+    [Closet] ← [Office] → [Server]
+                  ↑
+             [Reception]
+```
+
+**With Hallways**:
+```
+    [Office1]  [Office2]
+        ↑          ↑
+    [---- Hall ----]
+           ↑
+      [Reception]
+```
+
+These layouts demonstrate the flexibility of the new grid system for creating engaging, solvable scenarios.
 
 
 ### Room Properties
@@ -166,24 +157,73 @@ By understanding these constraints, you can design scenarios that work correctly
 - `lockpick`: For picking locks
 - Objects can have `hasFingerprint` with properties like `fingerprintOwner` and `fingerprintDifficulty`
 
-## Door and Room Positioning Logic
+## Room Layout System (Grid-Based)
 
-The code in index.html reveals how rooms are positioned:
+The game uses a **grid unit system** for room positioning that supports variable room sizes and four-direction connections.
 
-1. The `startRoom` is positioned at coordinates (0,0)
-2. Other rooms are positioned relative to their connections
-3. When a room connects to two rooms in the north/south direction:
-   - The first room is positioned with its right edge aligned with the current room's left edge
-   - The second room is positioned with its left edge aligned with the current room's right edge
-4. Doors are validated based on room overlaps - a door must connect exactly two rooms
-5. Doors inherit lock properties from the rooms they connect
+### Grid Unit System
+
+- **Base Grid Unit (GU)**: 5 tiles wide × 4 tiles tall (160px × 128px)
+- **Tile Size**: 32px × 32px
+- **Room Structure**:
+  - Top 2 rows: Visual wall (overlaps room to north)
+  - Middle rows: Stackable area (used for positioning calculations)
+  - All rooms must be multiples of grid units
+
+### Valid Room Sizes
+
+**Width**: Must be multiple of 5 tiles (5, 10, 15, 20, 25...)
+
+**Height**: Must follow formula `2 + (N × 4)` where N ≥ 1
+- **Valid heights**: 6, 10, 14, 18, 22, 26... (increments of 4 after initial 2)
+- **Invalid heights**: 7, 8, 9, 11, 12, 13...
+
+**Examples**:
+- **1×1 GU** (Closet): 5×6 tiles = 160×192px
+- **2×2 GU** (Standard): 10×10 tiles = 320×320px
+- **1×2 GU** (Hall): 5×10 tiles = 160×320px
+- **4×1 GU** (Wide Hall): 20×6 tiles = 640×192px
+
+### Room Positioning Algorithm
+
+1. The `startRoom` is positioned at grid coordinates (0,0)
+2. Rooms are positioned outward from the starting room using breadth-first traversal
+3. Rooms align to grid boundaries using `Math.floor()` for consistent rounding
+4. **North/South**: Rooms stack vertically, centered or side-by-side when multiple
+5. **East/West**: Rooms align horizontally, stacked vertically when multiple
+6. All positions are validated to detect overlaps
+
+### Door Placement Rules
+
+**North/South Doors**:
+- **Size**: 1 tile wide × 2 tiles tall
+- **Single door**: Placed in corner (NW or NE), determined by grid coordinates using `(gridX + gridY) % 2`
+- **Multiple doors**: Evenly spaced across room width with 1.5 tile inset from edges
+
+**East/West Doors**:
+- **Size**: 1 tile wide × 1 tile tall
+- **Single door**: North corner of edge, 2 tiles from top
+- **Multiple doors**: First at north corner, last 3 tiles up from south, others evenly spaced
+
+**Alignment**: Doors must align perfectly between connecting rooms. Special logic handles asymmetric connections (single door to multi-door room).
+
+### Four-Direction Connections
+
+Unlike the old system (north/south only), the new system supports:
+- **North**: Connects to rooms above
+- **South**: Connects to rooms below
+- **East**: Connects to rooms on the right
+- **West**: Connects to rooms on the left
+
+Each direction supports multiple connections (arrays).
 
 ## Designing Solvable Scenarios
 
-Based on the code analysis, here are guidelines for creating solvable scenarios:
+Based on the grid-based room layout system, here are comprehensive guidelines for creating solvable scenarios:
 
 1. **Clear Progression Path**: Design a logical sequence of rooms that can be unlocked in order
    - Ensure keys/codes for locked rooms are obtainable before they're needed
+   - Use the four-direction connection system to create interesting navigation puzzles
 
 2. **Tool Placement**: Place necessary tools early in the scenario
    - Critical tools like fingerprint kits, lockpicks, or bluetooth scanners should be available before they're needed
@@ -204,12 +244,20 @@ Based on the code analysis, here are guidelines for creating solvable scenarios:
    - Mark important items with `important: true`
    - Use `isEndGoal: true` for the final objective item
 
-7. **Room Layout**: Design a logical physical layout
-   - Remember that north/south connections can have at most two rooms
-   - Ensure all rooms are reachable through the connection graph
+7. **Room Layout with Grid System**: Design layouts using the grid unit system
+   - Use valid room sizes (widths: multiples of 5 tiles; heights: 2 + 4N where N ≥ 1)
+   - Mix room sizes for variety (1×1 GU closets, 2×2 GU standard rooms, hallways)
+   - Leverage all four directions (north, south, east, west) for complex layouts
+   - Ensure all rooms are reachable from the starting room
 
 8. **Fingerprint Mechanics**: When using biometric locks:
    - Ensure the required fingerprints can be collected from objects in accessible rooms
    - Set appropriate difficulty thresholds (higher = more difficult)
+
+9. **Testing Your Scenario**:
+   - Verify all room dimensions follow the valid size formula
+   - Check that all rooms connect properly (no isolated rooms)
+   - Ensure door alignment by testing connections between different-sized rooms
+   - Play through to verify the scenario is solvable
 
 By following these constraints and guidelines, you can create scenarios that are both technically valid for the game engine and provide an engaging, solvable experience for players.
