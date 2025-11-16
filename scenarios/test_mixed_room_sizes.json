@@ -1,9 +1,9 @@
 {
-  "scenario_brief": "Test Scenario: Mixed Room Sizes\n\nThis scenario demonstrates the grid system's ability to handle rooms of different sizes and properly align doors between them.\n\nRoom Sizes Used:\n- 1×1 GU (Closet): 5×6 tiles = 160×192px (small_room_1x1gu.json)\n- 2×1 GU (Hall): 10×6 tiles = 320×192px (hall_1x2gu.json)\n- 2×2 GU (Standard): 10×10 tiles = 320×320px (room_office2.json, room_ceo2.json)\n\nLayout:\n    [Closet-1×1] [CEO-2×2]\n           ↑        ↑\n      [Wide Hall-2×1]\n             ↑\n      [Reception-2×2]\n\nTests:\n- Different room sizes in same scenario\n- Door alignment between different-sized rooms\n- Centering of smaller rooms on larger rooms\n- Wide horizontal hallway (2×1 GU)\n- Grid-based positioning with varied dimensions",
+  "scenario_brief": "Test Scenario: Mixed Room Sizes\n\nThis scenario demonstrates the grid system's ability to handle rooms of different sizes and properly align doors between them.\n\nRoom Sizes Used:\n- 1×1 GU (Closet): 5×6 tiles = 160×192px (small_room_1x1gu)\n- 2×1 GU (Hall): 10×6 tiles = 320×192px (hall_1x2gu)\n- 2×2 GU (Standard): 10×10 tiles = 320×320px (room_reception, room_ceo)\n\nLayout:\n    [Closet-1×1] [CEO-2×2]\n           ↑        ↑\n      [Wide Hall-2×1]\n             ↑\n      [Reception-2×2]\n\nTests:\n- Different room sizes in same scenario\n- Door alignment between different-sized rooms\n- Centering of smaller rooms on larger rooms\n- Wide horizontal hallway (2×1 GU)\n- Grid-based positioning with varied dimensions",
   "startRoom": "reception",
   "rooms": {
     "reception": {
-      "type": "room_reception2",
+      "type": "room_reception",
       "connections": {
         "north": "hall"
       },
@@ -73,7 +73,7 @@
       ]
     },
     "ceo": {
-      "type": "room_ceo2",
+      "type": "room_ceo",
       "locked": true,
       "lockType": "key",
       "requires": "ceo_key",

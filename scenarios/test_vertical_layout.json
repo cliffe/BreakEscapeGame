@@ -3,7 +3,7 @@
   "startRoom": "reception",
   "rooms": {
     "reception": {
-      "type": "room_reception2",
+      "type": "room_reception",
       "connections": {
         "north": ["office1", "office2"]
       },
@@ -24,7 +24,7 @@
       ]
     },
     "office1": {
-      "type": "room_office2",
+      "type": "room_office",
       "locked": true,
       "lockType": "key",
       "requires": "office1_key",
@@ -42,7 +42,7 @@
       ]
     },
     "office2": {
-      "type": "room_office2",
+      "type": "room_office",
       "connections": {
         "south": "reception",
         "north": "ceo"
@@ -58,7 +58,7 @@
       ]
     },
     "ceo": {
-      "type": "room_ceo2",
+      "type": "room_ceo",
       "locked": true,
       "lockType": "key",
       "requires": "ceo_key",

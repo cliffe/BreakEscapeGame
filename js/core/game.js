@@ -35,6 +35,10 @@ export function preload() {
     this.load.tilemapTiledJSON('room_closet', 'assets/rooms/room_closet2.json');
     this.load.tilemapTiledJSON('room_servers', 'assets/rooms/room_servers2.json');
 
+    // Load new variable-sized rooms for grid system
+    this.load.tilemapTiledJSON('small_room_1x1gu', 'assets/rooms/small_room_1x1gu.json');
+    this.load.tilemapTiledJSON('hall_1x2gu', 'assets/rooms/hall_1x2gu.json');
+
     // Load room images (now using smaller 32px scale images)
     this.load.image('room_reception', 'assets/tiles/rooms/room1.png');
     this.load.image('room18', 'assets/tiles/rooms/room18.png');

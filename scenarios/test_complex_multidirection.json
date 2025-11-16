@@ -12,7 +12,7 @@
   ],
   "rooms": {
     "reception": {
-      "type": "room_reception2",
+      "type": "room_reception",
       "connections": {
         "north": "office2"
       },
@@ -26,7 +26,7 @@
       ]
     },
     "office2": {
-      "type": "room_office2",
+      "type": "room_office",
       "locked": true,
       "lockType": "key",
       "requires": "office2_key",
@@ -59,7 +59,7 @@
       ]
     },
     "office1": {
-      "type": "room_office2",
+      "type": "room_office",
       "locked": true,
       "lockType": "key",
       "requires": "office1_key",
@@ -84,7 +84,7 @@
       ]
     },
     "storage": {
-      "type": "room_office2",
+      "type": "room_office",
       "locked": true,
       "lockType": "key",
       "requires": "storage_key",
@@ -101,7 +101,7 @@
       ]
     },
     "servers": {
-      "type": "room_servers2",
+      "type": "room_servers",
       "locked": true,
       "lockType": "key",
       "requires": "server_key",
@@ -119,7 +119,7 @@
       ]
     },
     "ceo": {
-      "type": "room_ceo2",
+      "type": "room_ceo",
       "locked": true,
       "lockType": "key",
       "requires": "ceo_key",
