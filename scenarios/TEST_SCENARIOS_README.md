@@ -15,12 +15,11 @@ This directory contains test scenarios designed to validate and demonstrate the 
 
 | Type | Size (GU) | Tiles (W×H) | Pixels (W×H) | File |
 |------|-----------|-------------|--------------|------|
-| Closet | 1×1 | 5×6 | 160×192 | small_room_1x1gu.json* |
-| Hall (Vertical) | 1×2 | 5×10 | 160×320 | hall_1x2gu.json* |
-| Standard | 2×2 | 10×10 | 320×320 | room_office2.json, room_ceo2.json, etc. |
-| Wide Hall | 4×1 | 20×6 | 640×192 | (to be created) |
-
-*Note: These room files are referenced in test scenarios but need to be created in assets/rooms/
+| Closet | 1×1 | 5×6 | 160×192 | small_room_1x1gu.json ✓ |
+| Wide Hall | 2×1 | 10×6 | 320×192 | hall_1x2gu.json ✓ |
+| Standard | 2×2 | 10×10 | 320×320 | room_office2.json, room_ceo2.json, etc. ✓ |
+| Tall Hall | 1×2 | 5×10 | 160×320 | (to be created) |
+| Very Wide Hall | 4×1 | 20×6 | 640×192 | (to be created) |
 
 ## Test Scenarios
 
@@ -117,26 +116,29 @@ This directory contains test scenarios designed to validate and demonstrate the 
 ### 5. test_mixed_room_sizes.json
 **Purpose**: Test different room sizes and door alignment between them
 
-**Layout** (when smaller rooms are available):
+**Layout**:
 ```
   [Closet-1×1] [CEO-2×2]
          ↑        ↑
-    [Hall-1×2 GU]
+   [Wide Hall-2×1]
          ↑
   [Reception-2×2]
 ```
 
 **Tests**:
-- Different room sizes in same scenario
+- Different room sizes in same scenario (1×1, 2×1, 2×2 GU)
 - Door alignment between different-sized rooms
 - Centering of smaller rooms on larger rooms
+- Horizontal hallway connector (2×1 GU)
 - Grid-based positioning with varied dimensions
 
 **Rooms Used**:
-- Currently: All 2×2 GU placeholders
-- Future: small_room_1x1gu.json, hall_1x2gu.json, room_reception2.json, room_ceo2.json
+- small_room_1x1gu.json (1×1 GU closet - 5×6 tiles)
+- hall_1x2gu.json (2×1 GU wide hallway - 10×6 tiles)
+- room_reception2.json (2×2 GU)
+- room_ceo2.json (2×2 GU)
 
-**Note**: This scenario includes documentation about the proper room sizes and will demonstrate true size variety once the 1×1 GU and 1×2 GU room files are created.
+**Note**: This scenario now uses actual variable-sized rooms from the new grid system!
 
 ---
 

@@ -1,5 +1,5 @@
 {
-  "scenario_brief": "Test Scenario: Mixed Room Sizes\n\nThis scenario demonstrates the grid system's ability to handle rooms of different sizes and properly align doors between them.\n\nNOTE: This scenario is designed to use rooms of different sizes:\n- 1x1 GU rooms (5x6 tiles): small_room_1x1gu.json\n- 1x2 GU rooms (5x10 tiles): hall_1x2gu.json\n- 2x2 GU rooms (10x10 tiles): room_office2.json, room_ceo2.json, etc.\n\nCurrently using 2x2 GU placeholders until smaller rooms are created.\n\nLayout Concept:\n    [Closet-1x1] [CEO-2x2]\n           ↑        ↑\n      [Hall-1x2GU]\n           ↑\n    [Reception-2x2]\n\nTests:\n- Different room sizes in same scenario\n- Door alignment between different-sized rooms\n- Centering of smaller rooms on larger rooms\n- Grid-based positioning with varied dimensions",
+  "scenario_brief": "Test Scenario: Mixed Room Sizes\n\nThis scenario demonstrates the grid system's ability to handle rooms of different sizes and properly align doors between them.\n\nRoom Sizes Used:\n- 1×1 GU (Closet): 5×6 tiles = 160×192px (small_room_1x1gu.json)\n- 2×1 GU (Hall): 10×6 tiles = 320×192px (hall_1x2gu.json)\n- 2×2 GU (Standard): 10×10 tiles = 320×320px (room_office2.json, room_ceo2.json)\n\nLayout:\n    [Closet-1×1] [CEO-2×2]\n           ↑        ↑\n      [Wide Hall-2×1]\n             ↑\n      [Reception-2×2]\n\nTests:\n- Different room sizes in same scenario\n- Door alignment between different-sized rooms\n- Centering of smaller rooms on larger rooms\n- Wide horizontal hallway (2×1 GU)\n- Grid-based positioning with varied dimensions",
   "startRoom": "reception",
   "rooms": {
     "reception": {
@@ -24,7 +24,7 @@
       ]
     },
     "hall": {
-      "type": "room_office2",
+      "type": "hall_1x2gu",
       "locked": true,
       "lockType": "key",
       "requires": "hall_key",
@@ -38,7 +38,7 @@
           "name": "Hallway Note",
           "takeable": true,
           "readable": true,
-          "text": "NOTE: This room should be hall_1x2gu.json (1×2 GU)\n\nCurrently using room_office2.json as placeholder.\n\nThe hall connects to:\n- Closet (1×1 GU) to the northwest\n- CEO Office (2×2 GU) to the northeast\n\nDoors should align properly despite size differences."
+          "text": "Wide Hallway - 2×1 GU (10×6 tiles)\n\nThis is a horizontal hallway room demonstrating:\n- 2 grid units wide × 1 grid unit tall\n- 320×192 pixels (10×6 tiles at 32px/tile)\n- Connects to two different sized rooms to the north\n\nThe hall connects to:\n- Closet (1×1 GU) to the northwest\n- CEO Office (2×2 GU) to the northeast\n\nDoors should align properly despite size differences."
         },
         {
           "type": "key",
@@ -55,7 +55,7 @@
       ]
     },
     "closet": {
-      "type": "room_office2",
+      "type": "small_room_1x1gu",
       "locked": true,
       "lockType": "key",
       "requires": "closet_key",
@@ -68,7 +68,7 @@
           "name": "Closet Info",
           "takeable": true,
           "readable": true,
-          "text": "NOTE: This room should be small_room_1x1gu.json (1×1 GU)\n\nCurrently using room_office2.json as placeholder.\n\nA 1×1 GU room is the smallest valid size:\n- 5 tiles wide (1 GU)\n- 6 tiles tall (2 + 1×4)\n- 160×192 pixels\n\nPerfect for closets, small storage, or utility rooms."
+          "text": "Storage Closet - 1×1 GU (5×6 tiles)\n\nThis is the smallest valid room size:\n- 5 tiles wide (1 GU)\n- 6 tiles tall (2 + 1×4)\n- 160×192 pixels\n\nPerfect for closets, small storage, or utility rooms.\n\nThis demonstrates door alignment between a 1×1 GU room and the 2×1 GU hallway below."
         }
       ]
     },
@@ -86,7 +86,7 @@
           "name": "Success!",
           "takeable": true,
           "readable": true,
-          "text": "CEO Office - Mixed Sizes Test Complete!\n\nThis scenario demonstrates:\n- Multiple room sizes in one layout\n- Door alignment between different-sized rooms\n- Grid-based positioning system\n- Proper centering of smaller rooms\n\nWhen small_room_1x1gu.json and hall_1x2gu.json are created, this scenario will show true size variety!\n\nRoom Size Formula:\nWidth: Must be multiple of 5 tiles\nHeight: Must be 2 + (N × 4) where N ≥ 1\n\nExamples:\n- 5×6 (1×1 GU) ✓\n- 10×10 (2×2 GU) ✓\n- 20×6 (4×1 GU) ✓\n- 10×8 ✗ (8 is invalid: not 2+4N)\n- 7×6 ✗ (7 not multiple of 5)",
+          "text": "CEO Office - Mixed Sizes Test Complete!\n\nThis scenario successfully demonstrates:\n- Multiple room sizes in one layout:\n  • 1×1 GU closet (5×6 tiles)\n  • 2×1 GU wide hall (10×6 tiles)\n  • 2×2 GU standard rooms (10×10 tiles)\n- Door alignment between different-sized rooms\n- Grid-based positioning system\n- Proper centering of smaller rooms on larger rooms\n- Horizontal hallway connector\n\nRoom Size Formula:\nWidth: Must be multiple of 5 tiles\nHeight: Must be 2 + (N × 4) where N ≥ 1\n\nValidated Examples:\n- 5×6 (1×1 GU) ✓ Closet\n- 10×6 (2×1 GU) ✓ Wide Hall\n- 10×10 (2×2 GU) ✓ Standard\n- 10×8 ✗ (8 is invalid: not 2+4N)\n- 7×6 ✗ (7 not multiple of 5)",
           "important": true,
           "isEndGoal": true
         }
