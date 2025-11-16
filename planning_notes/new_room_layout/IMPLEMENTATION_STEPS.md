@@ -1,5 +1,65 @@
 # Implementation Steps
 
+## Phase 0: Setup and Feature Flags
+
+### Step 0.1: Add Feature Flags
+
+**File**: `js/utils/constants.js`
+
+Add feature flags for gradual migration:
+
+```javascript
+// Feature flags for room layout system migration
+export const USE_NEW_ROOM_LAYOUT = true;       // Master flag: enable new positioning system
+export const USE_NEW_DOOR_ALIGNMENT = true;    // Use array-index-based door alignment
+export const USE_GRID_UNITS = true;            // Use grid unit abstraction
+
+// Note: Set all to false to use legacy (current) implementation
+// Set individually to test each component separately
+```
+
+**Testing**:
+- Set all flags to `false` - verify game works with current implementation
+- Set `USE_NEW_ROOM_LAYOUT = true`, others `false` - verify graceful fallback
+- Toggle flags individually and test scenarios
+
+**Commit**: `feat: Add feature flags for room layout system migration`
+
+---
+
+### Step 0.2: Document Current Room Dimensions
+
+**File**: Create `planning_notes/current_room_audit.md` (documentation only)
+
+```markdown
+# Current Room Dimension Audit
+
+Located in `assets/rooms/`:
+
+| File | Width | Height | Notes |
+|------|-------|--------|-------|
+| room_office.json | ? | 5 | Non-standard height |
+| room_office2.json | ? | 10 | Standard height |
+| room_closet.json | 10 | 9 | Non-standard height |
+| room_closet2.json | ? | 10 | Standard height |
+| room_ceo.json | ? | 11 | Non-standard height |
+| room_ceo2.json | ? | 10 | Standard height |
+| room_reception.json | ? | 9 | Non-standard height |
+| room_reception2.json | ? | 10 | Standard height |
+| room_servers.json | ? | 9 | Non-standard height |
+| room_servers2.json | ? | 10 | Standard height |
+
+**Note**: All heights are valid with relaxed formula (totalHeight = 2 + stackingHeight, stackingHeight ≥ 4).
+Heights 6, 10, 14, 18... recommended for perfect grid alignment.
+Heights 5, 7, 8, 9, 11... work but create partial grid units (handled with Math.floor()).
+```
+
+**Action**: Fill in missing widths by checking each file
+
+**No commit needed** (documentation only)
+
+---
+
 ## Phase 1: Constants and Helper Functions
 
 ### Step 1.1: Add Grid Unit Constants

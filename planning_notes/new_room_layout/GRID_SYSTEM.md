@@ -60,11 +60,16 @@ All rooms must be exact multiples of grid units in both dimensions.
 
 ### Standard Sizes
 
-**IMPORTANT**: Total room height must equal: `2 + (gridHeight × 4)` tiles
-- 2 tiles for visual top wall
-- gridHeight × 4 tiles for stackable area
+**Height Formula**: `totalHeight = 2 + stackingHeight` tiles
+- 2 tiles for visual top wall (constant)
+- stackingHeight ≥ 4 tiles for stackable area (minimum)
 
-**Valid Heights**: 6, 10, 14, 18, 22, 26... (formula: 2 + 4N where N ≥ 1)
+**Valid Heights**: Any height ≥ 6 tiles
+- **Minimum**: 6 tiles (2 visual + 4 stacking)
+- **Recommended**: 6, 10, 14, 18, 22, 26... (formula: 2 + 4N, aligns with 4-tile grid)
+- **Also valid**: 7, 8, 9, 11, 12, 13... (works but partial grid units)
+
+**Note**: Heights following `2 + 4N` align perfectly with the 4-tile grid unit system. Other heights work correctly with Math.floor() rounding but may result in partial grid units.
 
 | Room Type | Tiles (W×H) | Grid Units | Pixels (W×H) | Formula Check |
 |-----------|-------------|------------|--------------|---------------|
@@ -78,10 +83,12 @@ All rooms must be exact multiples of grid units in both dimensions.
 ### Important Notes
 
 1. **Total Height Calculation**:
-   - Grid units count stackable area only (4 tiles per grid unit)
+   - Grid units count stackable area only (4 tiles per grid unit recommended)
    - Add 2 tiles for visual top wall
-   - **Formula**: totalHeight = 2 + (gridHeight × 4)
-   - **Valid heights ONLY**: 6, 10, 14, 18, 22, 26... (increments of 4 after initial 2)
+   - **Formula**: totalHeight = 2 + stackingHeight
+   - **Recommended heights**: 6, 10, 14, 18, 22, 26... (2 + 4N for perfect grid alignment)
+   - **Minimum height**: 6 tiles (2 visual + 4 stacking minimum)
+   - **Non-standard heights**: 7, 8, 9, 11, etc. are valid but create partial grid units
 
 2. **Minimum Floor Space**:
    - After removing walls (1 tile each side)
@@ -96,8 +103,8 @@ All rooms must be exact multiples of grid units in both dimensions.
 
 4. **Invalid Room Sizes**:
    - Width not multiple of 5: ❌ Invalid
-   - Height not matching formula: ❌ Invalid (e.g., 8, 9, 11, 12, 13 are all invalid)
-   - Height less than 6: ❌ Too small
+   - Height less than 6: ❌ Too small (minimum 2 visual + 4 stacking)
+   - **Note**: Heights like 7, 8, 9, 11, 12, 13 are valid but not optimal (partial grid units)
 
 ## Grid Coordinate System
 

@@ -86,22 +86,56 @@ Based on code reviews (review1 and review2), these issues MUST be addressed:
    - Log warnings for disconnected rooms
    - **Status**: Specified in VALIDATION.md
 
-7. **Room Dimension Audit** ⚠️ CRITICAL - ⚠️ ACTION REQUIRED
-   - Audit all room JSON files for valid dimensions
-   - Current rooms may be 10×8 (invalid - should be 10×10 or 10×6)
-   - Must be completed BEFORE implementation begins
-   - **Status**: Documented in review2, needs execution
+7. **Room Dimension Flexibility** ✅ RESOLVED
+   - Height formula relaxed to support existing room files
+   - Current rooms (heights 5-11) are all valid with relaxed formula
+   - Recommended heights (6, 10, 14, 18...) align with 4-tile grid
+   - Non-standard heights (5, 7, 8, 9, 11...) work but create partial grid units
+   - **Status**: No file updates required
+
+## Current Implementation Context
+
+### What Already Exists
+
+The current codebase (`js/core/rooms.js`, `js/systems/doors.js`, `js/systems/collision.js`) includes:
+
+**Already Working** ✅:
+- Breadth-first room positioning algorithm
+- Dimension extraction from tilemaps
+- Partial asymmetric door alignment (spatial position-based)
+- Visual overlap handling (OVERLAP = 64px constant)
+
+**Needs Improvement** ⚠️:
+- Only supports north/south multi-connections (not east/west)
+- No grid unit abstraction (direct pixel positioning)
+- Code duplication between doors.js and collision.js (55 lines)
+- Asymmetric logic uses spatial positioning (less robust than array-index-based)
+
+### Migration Benefits
+
+The new implementation will:
+- **Keep**: Breadth-first algorithm (proven approach)
+- **Keep**: Dimension extraction method (works well)
+- **Improve**: Asymmetric door alignment (array-index-based = more robust)
+- **Add**: East/west multi-connection support (new functionality)
+- **Add**: Grid unit system (better abstraction for variable room sizes)
+- **Remove**: Code duplication (shared door-positioning module)
+
+---
 
 ## Implementation Strategy
 
-### Recommended Approach: Incremental with Feature Flag
+### Recommended Approach: Incremental with Feature Flags
 
-**Phase 0**: Pre-Implementation Audit (2-4 hours) ⚠️ DO FIRST
-- Audit all room JSON files for valid dimensions
-- Update invalid room heights (8 → 10 or 8 → 6)
-- Add feature flag (`USE_NEW_ROOM_LAYOUT = true`)
-- Test feature flag toggle
-- Document room dimension changes
+**Phase 0**: Pre-Implementation Setup (1-2 hours) ⚠️ DO FIRST
+- Audit existing room JSON files for dimensions
+- Note: Relaxed height formula allows current room files (heights 5-11 all valid)
+- Add feature flags for gradual migration:
+  - `USE_NEW_ROOM_LAYOUT = true` (master flag)
+  - `USE_NEW_DOOR_ALIGNMENT = true` (door alignment approach)
+  - `USE_GRID_UNITS = true` (grid unit system)
+- Test feature flag toggles
+- Document current room dimensions for reference
 
 **Phase 1**: Foundation (2-3 hours)
 - Add constants and helper functions
