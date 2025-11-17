@@ -523,19 +523,27 @@ export async function create() {
     // Store player globally for access from other modules
     window.player = player;
     
-    // Create door opening animation
+    // Create door opening animation (for N/S doors)
     this.anims.create({
         key: 'door_open',
         frames: this.anims.generateFrameNumbers('door_sheet', { start: 0, end: 4 }),
         frameRate: 8,
         repeat: 0
     });
-    
+
     // Create door top animation (6th frame)
     this.anims.create({
         key: 'door_top',
         frames: [{ key: 'door_sheet', frame: 5 }],
         frameRate: 1,
+        repeat: 0
+    });
+
+    // Create side door opening animation (for E/W doors) - frames 2-5 (1-indexed) = frames 1-4 (0-indexed)
+    this.anims.create({
+        key: 'door_side_open',
+        frames: this.anims.generateFrameNumbers('door_side_sheet_32', { start: 1, end: 4 }),
+        frameRate: 8,
         repeat: 0
     });
     
