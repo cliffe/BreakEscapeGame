@@ -1049,35 +1049,45 @@ function validateMultipleConnections(direction, currentRoom, connectedRooms, cur
 
 /**
  * Position multiple rooms to the north of current room
+ * CRITICAL: Ensures all connected rooms have at least 1 GU overlap with current room's edge
  */
 function positionNorthMultiple(currentRoom, connectedRooms, currentPos, dimensions) {
     const currentDim = dimensions[currentRoom];
     const positions = {};
 
-    // CRITICAL: Position rooms based on where doors will be, not just centering widths
-    // This ensures doors align properly between different-sized rooms
+    // Calculate total width of all connected rooms
+    const totalWidth = connectedRooms.reduce((sum, roomId) => {
+        return sum + dimensions[roomId].widthPx;
+    }, 0);
 
-    // Calculate where doors will be placed on current room's north wall
-    // (uses same logic as placeNorthDoorsMultiple in doors.js)
-    const edgeInset = TILE_SIZE * 1.5; // 48px
-    const availableWidth = currentDim.widthPx - (edgeInset * 2);
-    const doorCount = connectedRooms.length;
-    const doorSpacing = availableWidth / (doorCount - 1);
+    // Calculate starting X position to center the group over current room
+    // This ensures connected rooms are distributed along current room's edge
+    const groupStartX = currentPos.x + (currentDim.widthPx - totalWidth) / 2;
 
-    connectedRooms.forEach((roomId, index) => {
+    // Align the starting position to grid
+    // All rooms will be placed from this aligned start without individual alignment
+    // since room widths are multiples of grid units
+    const alignedGroupStart = alignToGrid(groupStartX, 0);
+
+    // Position each room side-by-side starting from aligned position
+    // No individual alignment needed - rooms naturally align when placed from grid-aligned start
+    let currentX = alignedGroupStart.x;
+
+    connectedRooms.forEach(roomId => {
         const connectedDim = dimensions[roomId];
 
-        // Calculate where the door will be on current room's north wall
-        const doorX = currentPos.x + edgeInset + (doorSpacing * index);
+        // Calculate Y position based on room's stacking height
+        const roomY = currentPos.y - connectedDim.stackingHeightPx;
 
-        // Center the connected room on this door position
-        const x = doorX - (connectedDim.widthPx / 2);
+        // Align Y to grid
+        const alignedY = alignToGrid(0, roomY).y;
 
-        // Y position is based on stacking height
-        const y = currentPos.y - connectedDim.stackingHeightPx;
+        // X is already aligned via group start, just use currentX
+        positions[roomId] = { x: currentX, y: alignedY };
 
-        // Align to grid
-        positions[roomId] = alignToGrid(x, y);
+        // Move X position for next room (no individual alignment)
+        // Since room widths are multiples of grid units, this maintains alignment
+        currentX += connectedDim.widthPx;
     });
 
     return positions;
@@ -1100,35 +1110,40 @@ function positionSouthSingle(currentRoom, connectedRoom, currentPos, dimensions)
 
 /**
  * Position multiple rooms to the south of current room
+ * CRITICAL: Ensures all connected rooms have at least 1 GU overlap with current room's edge
  */
 function positionSouthMultiple(currentRoom, connectedRooms, currentPos, dimensions) {
     const currentDim = dimensions[currentRoom];
     const positions = {};
 
-    // CRITICAL: Position rooms based on where doors will be, not just centering widths
-    // This ensures doors align properly between different-sized rooms
+    // Calculate total width of all connected rooms
+    const totalWidth = connectedRooms.reduce((sum, roomId) => {
+        return sum + dimensions[roomId].widthPx;
+    }, 0);
 
-    // Calculate where doors will be placed on current room's south wall
-    // (uses same logic as placeSouthDoorsMultiple in doors.js)
-    const edgeInset = TILE_SIZE * 1.5; // 48px
-    const availableWidth = currentDim.widthPx - (edgeInset * 2);
-    const doorCount = connectedRooms.length;
-    const doorSpacing = availableWidth / (doorCount - 1);
+    // Calculate starting X position to center the group over current room
+    // This ensures connected rooms are distributed along current room's edge
+    const groupStartX = currentPos.x + (currentDim.widthPx - totalWidth) / 2;
 
-    connectedRooms.forEach((roomId, index) => {
+    // Align the starting position to grid
+    // All rooms will be placed from this aligned start without individual alignment
+    const alignedGroupStart = alignToGrid(groupStartX, 0);
+
+    // Position each room side-by-side starting from aligned position
+    let currentX = alignedGroupStart.x;
+    const y = currentPos.y + currentDim.stackingHeightPx;
+
+    // Align Y to grid
+    const alignedY = alignToGrid(0, y).y;
+
+    connectedRooms.forEach(roomId => {
         const connectedDim = dimensions[roomId];
 
-        // Calculate where the door will be on current room's south wall
-        const doorX = currentPos.x + edgeInset + (doorSpacing * index);
+        // X is already aligned via group start, Y is same for all rooms
+        positions[roomId] = { x: currentX, y: alignedY };
 
-        // Center the connected room on this door position
-        const x = doorX - (connectedDim.widthPx / 2);
-
-        // Y position below current room
-        const y = currentPos.y + currentDim.stackingHeightPx;
-
-        // Align to grid
-        positions[roomId] = alignToGrid(x, y);
+        // Move X position for next room (no individual alignment)
+        currentX += connectedDim.widthPx;
     });
 
     return positions;
@@ -1151,34 +1166,42 @@ function positionEastSingle(currentRoom, connectedRoom, currentPos, dimensions) 
 
 /**
  * Position multiple rooms to the east of current room
+ * CRITICAL: Ensures all connected rooms have at least 1 GU overlap with current room's edge
  */
 function positionEastMultiple(currentRoom, connectedRooms, currentPos, dimensions) {
     const currentDim = dimensions[currentRoom];
     const positions = {};
 
-    // CRITICAL: Position rooms based on where doors will be, not just stacking vertically
-    // This ensures doors align properly between different-sized rooms
+    // Calculate total height of all connected rooms (using stacking height)
+    const totalHeight = connectedRooms.reduce((sum, roomId) => {
+        return sum + dimensions[roomId].stackingHeightPx;
+    }, 0);
 
-    // Position to the right
+    // Calculate starting Y position to center the group along current room's edge
+    // This ensures connected rooms are distributed along current room's edge
+    const groupStartY = currentPos.y + (currentDim.stackingHeightPx - totalHeight) / 2;
+
+    // Align the starting position to grid
+    // All rooms will be placed from this aligned start without individual alignment
+    const alignedGroupStart = alignToGrid(0, groupStartY);
+
+    // Position each room stacked vertically starting from aligned position
     const x = currentPos.x + currentDim.widthPx;
 
-    // Calculate where doors will be placed on current room's east wall
-    // (uses same logic as placeEastDoorsMultiple in doors.js)
-    const topY = currentPos.y + (TILE_SIZE * 2);
-    const bottomY = currentPos.y + currentDim.heightPx - (TILE_SIZE * 3);
-    const doorSpacing = (bottomY - topY) / (connectedRooms.length - 1);
+    // Align X to grid
+    const alignedX = alignToGrid(x, 0).x;
 
-    connectedRooms.forEach((roomId, index) => {
+    let currentY = alignedGroupStart.y;
+
+    connectedRooms.forEach(roomId => {
         const connectedDim = dimensions[roomId];
 
-        // Calculate where the door will be on current room's east wall
-        const doorY = topY + (doorSpacing * index);
+        // Y is already aligned via group start, X is same for all rooms
+        positions[roomId] = { x: alignedX, y: currentY };
 
-        // Center the connected room on this door position vertically
-        const y = doorY - (TILE_SIZE * 2); // Align with door at 2 tiles from top
-
-        // Align to grid
-        positions[roomId] = alignToGrid(x, y);
+        // Move Y position for next room (no individual alignment)
+        // Since room heights are multiples of grid units, this maintains alignment
+        currentY += connectedDim.stackingHeightPx;
     });
 
     return positions;
@@ -1200,34 +1223,43 @@ function positionWestSingle(currentRoom, connectedRoom, currentPos, dimensions) 
 
 /**
  * Position multiple rooms to the west of current room
+ * CRITICAL: Ensures all connected rooms have at least 1 GU overlap with current room's edge
  */
 function positionWestMultiple(currentRoom, connectedRooms, currentPos, dimensions) {
     const currentDim = dimensions[currentRoom];
     const positions = {};
 
-    // CRITICAL: Position rooms based on where doors will be, not just stacking vertically
-    // This ensures doors align properly between different-sized rooms
+    // Calculate total height of all connected rooms (using stacking height)
+    const totalHeight = connectedRooms.reduce((sum, roomId) => {
+        return sum + dimensions[roomId].stackingHeightPx;
+    }, 0);
 
-    // Calculate where doors will be placed on current room's west wall
-    // (uses same logic as placeWestDoorsMultiple in doors.js)
-    const topY = currentPos.y + (TILE_SIZE * 2);
-    const bottomY = currentPos.y + currentDim.heightPx - (TILE_SIZE * 3);
-    const doorSpacing = (bottomY - topY) / (connectedRooms.length - 1);
+    // Calculate starting Y position to center the group along current room's edge
+    // This ensures connected rooms are distributed along current room's edge
+    const groupStartY = currentPos.y + (currentDim.stackingHeightPx - totalHeight) / 2;
 
-    connectedRooms.forEach((roomId, index) => {
+    // Align the starting position to grid
+    // All rooms will be placed from this aligned start without individual alignment
+    const alignedGroupStart = alignToGrid(0, groupStartY);
+
+    // Position each room stacked vertically starting from aligned position
+    let currentY = alignedGroupStart.y;
+
+    connectedRooms.forEach(roomId => {
         const connectedDim = dimensions[roomId];
 
         // Position to the left
         const x = currentPos.x - connectedDim.widthPx;
 
-        // Calculate where the door will be on current room's west wall
-        const doorY = topY + (doorSpacing * index);
+        // Align X to grid
+        const alignedX = alignToGrid(x, 0).x;
 
-        // Center the connected room on this door position vertically
-        const y = doorY - (TILE_SIZE * 2); // Align with door at 2 tiles from top
+        // Y is already aligned via group start
+        positions[roomId] = { x: alignedX, y: currentY };
 
-        // Align to grid
-        positions[roomId] = alignToGrid(x, y);
+        // Move Y position for next room (no individual alignment)
+        // Since room heights are multiples of grid units, this maintains alignment
+        currentY += connectedDim.stackingHeightPx;
     });
 
     return positions;
