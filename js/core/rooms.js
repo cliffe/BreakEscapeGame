@@ -485,31 +485,59 @@ function createSpriteFromMatch(tiledItem, scenarioObj, position, roomId, index, 
 /**
  * Helper: Create sprite at random position when no matching Tiled item found
  * Ensures position doesn't overlap with existing items
+ * Items are placed within room GU boundaries with proper padding:
+ * - 1 tile (32px) from left and right sides
+ * - 2 tiles (64px) from top and bottom
  */
-function createSpriteAtRandomPosition(scenarioObj, position, roomId, index) {
-    const roomWidth = 10 * TILE_SIZE;
-    const roomHeight = 9 * TILE_SIZE;
-    const padding = TILE_SIZE * 2;
-    
+function createSpriteAtRandomPosition(scenarioObj, position, roomId, index, map) {
+    // Get actual room dimensions from the tilemap
+    let roomWidth = 10 * TILE_SIZE;   // fallback
+    let roomHeight = 10 * TILE_SIZE;  // fallback
+
+    if (map) {
+        let width, height;
+        if (map.json) {
+            width = map.json.width;
+            height = map.json.height;
+        } else if (map.data) {
+            width = map.data.width;
+            height = map.data.height;
+        } else {
+            width = map.width;
+            height = map.height;
+        }
+
+        if (width && height) {
+            roomWidth = width * TILE_SIZE;
+            roomHeight = height * TILE_SIZE;
+        }
+    }
+
+    // Apply proper padding based on requirements:
+    // - 1 tile (32px) from left and right sides
+    // - 2 tiles (64px) from top and bottom
+    const paddingX = TILE_SIZE * 1;  // 32px from sides
+    const paddingY = TILE_SIZE * 2;  // 64px from top/bottom
+
     // Find a valid position that doesn't overlap with existing items
     let randomX, randomY;
     let attempts = 0;
     const maxAttempts = 50;
-    
+
     do {
-        randomX = position.x + padding + Math.random() * (roomWidth - padding * 2);
-        randomY = position.y + padding + Math.random() * (roomHeight - padding * 2);
+        randomX = position.x + paddingX + Math.random() * (roomWidth - paddingX * 2);
+        randomY = position.y + paddingY + Math.random() * (roomHeight - paddingY * 2);
         attempts++;
     } while (attempts < maxAttempts && isPositionOverlapping(randomX, randomY, roomId, TILE_SIZE));
-    
+
     const sprite = gameRef.add.sprite(Math.round(randomX), Math.round(randomY), scenarioObj.type);
-    
+
     console.log(`Created ${scenarioObj.type} at random position - no matching item found (attempts: ${attempts})`);
-    
+
     // Apply properties
     sprite.setOrigin(0, 0);
     applyScenarioProperties(sprite, scenarioObj, roomId, index);
-    
+
     return sprite;
 }
 
@@ -1834,8 +1862,8 @@ export function createRoom(roomId, roomData, position) {
                     
                 } else {
                     // No matching item found, create at random position (existing fallback behavior)
-                    sprite = createSpriteAtRandomPosition(scenarioObj, position, roomId, index);
-                    
+                    sprite = createSpriteAtRandomPosition(scenarioObj, position, roomId, index, map);
+
                     // Set depth and store
                     setDepthAndStore(sprite, position, roomId, false);
                 }
