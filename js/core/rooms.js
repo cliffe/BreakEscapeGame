@@ -1054,8 +1054,8 @@ function positionNorthMultiple(currentRoom, connectedRooms, currentPos, dimensio
     const currentDim = dimensions[currentRoom];
     const positions = {};
 
-    // CRITICAL: Position rooms based on where doors will be, not just centering widths
-    // This ensures doors align properly between different-sized rooms
+    // CRITICAL: Position rooms based on where doors will be, ensuring door alignment
+    // DO NOT use grid alignment here - it breaks door positioning
 
     // Calculate where doors will be placed on current room's north wall
     // (uses same logic as placeNorthDoorsMultiple in doors.js)
@@ -1070,14 +1070,17 @@ function positionNorthMultiple(currentRoom, connectedRooms, currentPos, dimensio
         // Calculate where the door will be on current room's north wall
         const doorX = currentPos.x + edgeInset + (doorSpacing * index);
 
-        // Center the connected room on this door position
-        const x = doorX - (connectedDim.widthPx / 2);
+        // Position the room such that its south door will align with this door
+        // The south door will be placed at edgeInset from the room's left edge
+        // (or aligned with parent if parent has multiple connections - handled by door placement)
+        // So: roomX + edgeInset = doorX, therefore roomX = doorX - edgeInset
+        const x = doorX - edgeInset;
 
         // Y position is based on stacking height
         const y = currentPos.y - connectedDim.stackingHeightPx;
 
-        // Align to grid
-        positions[roomId] = alignToGrid(x, y);
+        // DO NOT align to grid - use exact positioning for door alignment
+        positions[roomId] = { x, y };
     });
 
     return positions;
@@ -1105,8 +1108,8 @@ function positionSouthMultiple(currentRoom, connectedRooms, currentPos, dimensio
     const currentDim = dimensions[currentRoom];
     const positions = {};
 
-    // CRITICAL: Position rooms based on where doors will be, not just centering widths
-    // This ensures doors align properly between different-sized rooms
+    // CRITICAL: Position rooms based on where doors will be, ensuring door alignment
+    // DO NOT use grid alignment here - it breaks door positioning
 
     // Calculate where doors will be placed on current room's south wall
     // (uses same logic as placeSouthDoorsMultiple in doors.js)
@@ -1121,14 +1124,16 @@ function positionSouthMultiple(currentRoom, connectedRooms, currentPos, dimensio
         // Calculate where the door will be on current room's south wall
         const doorX = currentPos.x + edgeInset + (doorSpacing * index);
 
-        // Center the connected room on this door position
-        const x = doorX - (connectedDim.widthPx / 2);
+        // Position the room such that its north door will align with this door
+        // The north door will be placed at edgeInset from the room's left edge
+        // So: roomX + edgeInset = doorX, therefore roomX = doorX - edgeInset
+        const x = doorX - edgeInset;
 
         // Y position below current room
         const y = currentPos.y + currentDim.stackingHeightPx;
 
-        // Align to grid
-        positions[roomId] = alignToGrid(x, y);
+        // DO NOT align to grid - use exact positioning for door alignment
+        positions[roomId] = { x, y };
     });
 
     return positions;
@@ -1156,8 +1161,8 @@ function positionEastMultiple(currentRoom, connectedRooms, currentPos, dimension
     const currentDim = dimensions[currentRoom];
     const positions = {};
 
-    // CRITICAL: Position rooms based on where doors will be, not just stacking vertically
-    // This ensures doors align properly between different-sized rooms
+    // CRITICAL: Position rooms based on where doors will be, ensuring door alignment
+    // DO NOT use grid alignment here - it breaks door positioning
 
     // Position to the right
     const x = currentPos.x + currentDim.widthPx;
@@ -1174,11 +1179,13 @@ function positionEastMultiple(currentRoom, connectedRooms, currentPos, dimension
         // Calculate where the door will be on current room's east wall
         const doorY = topY + (doorSpacing * index);
 
-        // Center the connected room on this door position vertically
-        const y = doorY - (TILE_SIZE * 2); // Align with door at 2 tiles from top
+        // Position the room such that its west door will align with this door
+        // The west door will be at roomY + (TILE_SIZE * 2)
+        // So: roomY + (TILE_SIZE * 2) = doorY, therefore roomY = doorY - (TILE_SIZE * 2)
+        const y = doorY - (TILE_SIZE * 2);
 
-        // Align to grid
-        positions[roomId] = alignToGrid(x, y);
+        // DO NOT align to grid - use exact positioning for door alignment
+        positions[roomId] = { x, y };
     });
 
     return positions;
@@ -1205,8 +1212,8 @@ function positionWestMultiple(currentRoom, connectedRooms, currentPos, dimension
     const currentDim = dimensions[currentRoom];
     const positions = {};
 
-    // CRITICAL: Position rooms based on where doors will be, not just stacking vertically
-    // This ensures doors align properly between different-sized rooms
+    // CRITICAL: Position rooms based on where doors will be, ensuring door alignment
+    // DO NOT use grid alignment here - it breaks door positioning
 
     // Calculate where doors will be placed on current room's west wall
     // (uses same logic as placeWestDoorsMultiple in doors.js)
@@ -1223,11 +1230,13 @@ function positionWestMultiple(currentRoom, connectedRooms, currentPos, dimension
         // Calculate where the door will be on current room's west wall
         const doorY = topY + (doorSpacing * index);
 
-        // Center the connected room on this door position vertically
-        const y = doorY - (TILE_SIZE * 2); // Align with door at 2 tiles from top
+        // Position the room such that its east door will align with this door
+        // The east door will be at roomY + (TILE_SIZE * 2)
+        // So: roomY + (TILE_SIZE * 2) = doorY, therefore roomY = doorY - (TILE_SIZE * 2)
+        const y = doorY - (TILE_SIZE * 2);
 
-        // Align to grid
-        positions[roomId] = alignToGrid(x, y);
+        // DO NOT align to grid - use exact positioning for door alignment
+        positions[roomId] = { x, y };
     });
 
     return positions;
