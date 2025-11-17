@@ -173,60 +173,25 @@ function placeSouthDoorSingle(roomId, roomPosition, roomDimensions, gridCoords,
 ### East Connections
 
 #### Single Door
-- **Position**: North corner of east edge
+- **Position**: Along the wall at east edge
 - **Inset**: 2 tiles from top (below visual wall)
 
 ```javascript
-function placeEastDoorSingle(roomId, roomPosition, roomDimensions,
-                             connectedRoom, gameScenario, allPositions, allDimensions) {
+function placeEastDoorSingle(roomId, roomPosition, roomDimensions, connectedRoom) {
     const roomWidthPx = roomDimensions.widthPx;
 
-    // CRITICAL: Check if connected room has multiple west connections
-    const connectedRoomData = gameScenario.rooms[connectedRoom];
-    const connectedWestConnections = connectedRoomData?.connections?.west;
-
-    if (Array.isArray(connectedWestConnections) && connectedWestConnections.length > 1) {
-        // Connected room has multiple west doors - align with the correct one
-        const indexInArray = connectedWestConnections.indexOf(roomId);
-
-        if (indexInArray >= 0) {
-            const connectedPos = allPositions[connectedRoom];
-            const connectedDim = allDimensions[connectedRoom];
-
-            // Calculate door Y based on connected room's multi-door spacing
-            const doorCount = connectedWestConnections.length;
-            let alignedDoorY;
-
-            if (doorCount === 1) {
-                alignedDoorY = connectedPos.y + (TILE_SIZE * 2);
-            } else if (indexInArray === 0) {
-                alignedDoorY = connectedPos.y + (TILE_SIZE * 2);
-            } else if (indexInArray === doorCount - 1) {
-                alignedDoorY = connectedPos.y + connectedDim.heightPx - (TILE_SIZE * 3);
-            } else {
-                const firstDoorY = connectedPos.y + (TILE_SIZE * 2);
-                const lastDoorY = connectedPos.y + connectedDim.heightPx - (TILE_SIZE * 3);
-                const spacing = (lastDoorY - firstDoorY) / (doorCount - 1);
-                alignedDoorY = firstDoorY + (spacing * indexInArray);
-            }
-
-            const doorX = roomPosition.x + roomWidthPx - TILE_SIZE;
-            return { x: doorX, y: alignedDoorY };
-        }
-    }
-
-    // Default: place at north corner of east edge
+    // Position along the wall at the east edge
     const doorX = roomPosition.x + roomWidthPx - TILE_SIZE;
-    const doorY = roomPosition.y + (TILE_SIZE * 2); // Below visual wall
+    const doorY = roomPosition.y + (TILE_SIZE * 2); // 2 tiles from top (along the wall)
 
-    return { x: doorX, y: doorY };
+    return { x: doorX, y: doorY, connectedRoom };
 }
 ```
 
 #### Multiple Doors
 - **First Door**: North corner (2 tiles from top)
-- **Second Door**: 3 tiles up from south edge (avoids overlap)
-- **More Doors**: Evenly spaced between first and second
+- **Last Door**: 3 tiles up from south edge (avoids overlap)
+- **More Doors**: Evenly spaced between first and last
 
 ```javascript
 function placeEastDoorsMultiple(roomId, roomPosition, roomDimensions, connectedRooms) {
@@ -274,47 +239,12 @@ function placeEastDoorsMultiple(roomId, roomPosition, roomDimensions, connectedR
 Mirror of East connections:
 
 ```javascript
-function placeWestDoorSingle(roomId, roomPosition, roomDimensions,
-                             connectedRoom, gameScenario, allPositions, allDimensions) {
-    // CRITICAL: Check if connected room has multiple east connections
-    const connectedRoomData = gameScenario.rooms[connectedRoom];
-    const connectedEastConnections = connectedRoomData?.connections?.east;
-
-    if (Array.isArray(connectedEastConnections) && connectedEastConnections.length > 1) {
-        // Connected room has multiple east doors - align with the correct one
-        const indexInArray = connectedEastConnections.indexOf(roomId);
-
-        if (indexInArray >= 0) {
-            const connectedPos = allPositions[connectedRoom];
-            const connectedDim = allDimensions[connectedRoom];
-
-            // Calculate door Y based on connected room's multi-door spacing
-            const doorCount = connectedEastConnections.length;
-            let alignedDoorY;
-
-            if (doorCount === 1) {
-                alignedDoorY = connectedPos.y + (TILE_SIZE * 2);
-            } else if (indexInArray === 0) {
-                alignedDoorY = connectedPos.y + (TILE_SIZE * 2);
-            } else if (indexInArray === doorCount - 1) {
-                alignedDoorY = connectedPos.y + connectedDim.heightPx - (TILE_SIZE * 3);
-            } else {
-                const firstDoorY = connectedPos.y + (TILE_SIZE * 2);
-                const lastDoorY = connectedPos.y + connectedDim.heightPx - (TILE_SIZE * 3);
-                const spacing = (lastDoorY - firstDoorY) / (doorCount - 1);
-                alignedDoorY = firstDoorY + (spacing * indexInArray);
-            }
-
-            const doorX = roomPosition.x + TILE_SIZE;
-            return { x: doorX, y: alignedDoorY };
-        }
-    }
-
-    // Default: place at north corner of west edge
+function placeWestDoorSingle(roomId, roomPosition, roomDimensions, connectedRoom) {
+    // Position along the wall at the west edge
     const doorX = roomPosition.x + TILE_SIZE;
-    const doorY = roomPosition.y + (TILE_SIZE * 2);
+    const doorY = roomPosition.y + (TILE_SIZE * 2); // 2 tiles from top (along the wall)
 
-    return { x: doorX, y: doorY };
+    return { x: doorX, y: doorY, connectedRoom };
 }
 ```
 

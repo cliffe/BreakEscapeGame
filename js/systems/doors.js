@@ -221,7 +221,7 @@ function placeEastDoorSingle(roomId, roomPosition, roomDimensions, connectedRoom
     const roomWidthPx = roomDimensions.widthPx;
 
     const doorX = roomPosition.x + roomWidthPx - TILE_SIZE;
-    const doorY = roomPosition.y + (TILE_SIZE * 3); // 3 tiles from top corner
+    const doorY = roomPosition.y + (TILE_SIZE * 2); // 2 tiles from top (along the wall)
 
     return { x: doorX, y: doorY, connectedRoom };
 }
@@ -237,11 +237,11 @@ function placeEastDoorsMultiple(roomId, roomPosition, roomDimensions, connectedR
     const doorX = roomPosition.x + roomWidthPx - TILE_SIZE;
 
     if (connectedRooms.length === 1) {
-        const doorY = roomPosition.y + (TILE_SIZE * 3);
+        const doorY = roomPosition.y + (TILE_SIZE * 2);
         doorPositions.push({ x: doorX, y: doorY, connectedRoom: connectedRooms[0] });
     } else {
         // Multiple doors - space vertically
-        const topY = roomPosition.y + (TILE_SIZE * 3);
+        const topY = roomPosition.y + (TILE_SIZE * 2);
         const bottomY = roomPosition.y + roomHeightPx - (TILE_SIZE * 3);
         const spacing = (bottomY - topY) / (connectedRooms.length - 1);
 
@@ -259,7 +259,7 @@ function placeEastDoorsMultiple(roomId, roomPosition, roomDimensions, connectedR
  */
 function placeWestDoorSingle(roomId, roomPosition, roomDimensions, connectedRoom) {
     const doorX = roomPosition.x + TILE_SIZE;
-    const doorY = roomPosition.y + (TILE_SIZE * 3); // 3 tiles from top corner
+    const doorY = roomPosition.y + (TILE_SIZE * 2); // 2 tiles from top (along the wall)
 
     return { x: doorX, y: doorY, connectedRoom };
 }
@@ -274,11 +274,11 @@ function placeWestDoorsMultiple(roomId, roomPosition, roomDimensions, connectedR
     const doorX = roomPosition.x + TILE_SIZE;
 
     if (connectedRooms.length === 1) {
-        const doorY = roomPosition.y + (TILE_SIZE * 3);
+        const doorY = roomPosition.y + (TILE_SIZE * 2);
         doorPositions.push({ x: doorX, y: doorY, connectedRoom: connectedRooms[0] });
     } else {
         // Multiple doors - space vertically
-        const topY = roomPosition.y + (TILE_SIZE * 3);
+        const topY = roomPosition.y + (TILE_SIZE * 2);
         const bottomY = roomPosition.y + roomHeightPx - (TILE_SIZE * 3);
         const spacing = (bottomY - topY) / (connectedRooms.length - 1);
 
