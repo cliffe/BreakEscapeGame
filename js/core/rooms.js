@@ -1061,32 +1061,51 @@ function positionNorthMultiple(currentRoom, connectedRooms, currentPos, dimensio
     }, 0);
 
     // Calculate starting X position to center the group over current room
-    // This ensures connected rooms are distributed along current room's edge
     const groupStartX = currentPos.x + (currentDim.widthPx - totalWidth) / 2;
 
     // Align the starting position to grid
-    // All rooms will be placed from this aligned start without individual alignment
-    // since room widths are multiples of grid units
-    const alignedGroupStart = alignToGrid(groupStartX, 0);
+    let alignedStartX = alignToGrid(groupStartX, 0).x;
 
-    // Position each room side-by-side starting from aligned position
-    // No individual alignment needed - rooms naturally align when placed from grid-aligned start
-    let currentX = alignedGroupStart.x;
+    // CRITICAL: Ensure each room has at least 1 GU overlap with parent room
+    // After grid alignment, check if all rooms will have minimum overlap
+    const minOverlap = GRID_UNIT_WIDTH_PX;
+
+    // Check first room overlap
+    const firstDim = dimensions[connectedRooms[0]];
+    const firstRoomEnd = alignedStartX + firstDim.widthPx;
+    const firstOverlap = Math.min(firstRoomEnd, currentPos.x + currentDim.widthPx) - Math.max(alignedStartX, currentPos.x);
+
+    if (firstOverlap < minOverlap) {
+        // First room doesn't have enough overlap, shift group to the right
+        alignedStartX = currentPos.x - firstDim.widthPx + minOverlap;
+        alignedStartX = alignToGrid(alignedStartX, 0).x;
+    }
+
+    // Check last room overlap (after potential adjustment for first room)
+    const lastRoomStartX = alignedStartX + totalWidth - dimensions[connectedRooms[connectedRooms.length - 1]].widthPx;
+    const lastRoomEndX = alignedStartX + totalWidth;
+    const lastOverlap = Math.min(lastRoomEndX, currentPos.x + currentDim.widthPx) - Math.max(lastRoomStartX, currentPos.x);
+
+    if (lastOverlap < minOverlap) {
+        // Last room doesn't have enough overlap, shift group to the left
+        const lastDim = dimensions[connectedRooms[connectedRooms.length - 1]];
+        alignedStartX = currentPos.x + currentDim.widthPx - totalWidth - lastDim.widthPx + minOverlap;
+        alignedStartX = alignToGrid(alignedStartX, 0).x;
+    }
+
+    // Position each room side-by-side starting from adjusted aligned position
+    let currentX = alignedStartX;
 
     connectedRooms.forEach(roomId => {
         const connectedDim = dimensions[roomId];
 
         // Calculate Y position based on room's stacking height
         const roomY = currentPos.y - connectedDim.stackingHeightPx;
-
-        // Align Y to grid
         const alignedY = alignToGrid(0, roomY).y;
 
-        // X is already aligned via group start, just use currentX
         positions[roomId] = { x: currentX, y: alignedY };
 
-        // Move X position for next room (no individual alignment)
-        // Since room widths are multiples of grid units, this maintains alignment
+        // Move X position for next room
         currentX += connectedDim.widthPx;
     });
 
@@ -1122,27 +1141,48 @@ function positionSouthMultiple(currentRoom, connectedRooms, currentPos, dimensio
     }, 0);
 
     // Calculate starting X position to center the group over current room
-    // This ensures connected rooms are distributed along current room's edge
     const groupStartX = currentPos.x + (currentDim.widthPx - totalWidth) / 2;
 
     // Align the starting position to grid
-    // All rooms will be placed from this aligned start without individual alignment
-    const alignedGroupStart = alignToGrid(groupStartX, 0);
+    let alignedStartX = alignToGrid(groupStartX, 0).x;
 
-    // Position each room side-by-side starting from aligned position
-    let currentX = alignedGroupStart.x;
+    // CRITICAL: Ensure each room has at least 1 GU overlap with parent room
+    const minOverlap = GRID_UNIT_WIDTH_PX;
+
+    // Check first room overlap
+    const firstDim = dimensions[connectedRooms[0]];
+    const firstRoomEnd = alignedStartX + firstDim.widthPx;
+    const firstOverlap = Math.min(firstRoomEnd, currentPos.x + currentDim.widthPx) - Math.max(alignedStartX, currentPos.x);
+
+    if (firstOverlap < minOverlap) {
+        // First room doesn't have enough overlap, shift group to the right
+        alignedStartX = currentPos.x - firstDim.widthPx + minOverlap;
+        alignedStartX = alignToGrid(alignedStartX, 0).x;
+    }
+
+    // Check last room overlap
+    const lastRoomStartX = alignedStartX + totalWidth - dimensions[connectedRooms[connectedRooms.length - 1]].widthPx;
+    const lastRoomEndX = alignedStartX + totalWidth;
+    const lastOverlap = Math.min(lastRoomEndX, currentPos.x + currentDim.widthPx) - Math.max(lastRoomStartX, currentPos.x);
+
+    if (lastOverlap < minOverlap) {
+        // Last room doesn't have enough overlap, shift group to the left
+        const lastDim = dimensions[connectedRooms[connectedRooms.length - 1]];
+        alignedStartX = currentPos.x + currentDim.widthPx - totalWidth - lastDim.widthPx + minOverlap;
+        alignedStartX = alignToGrid(alignedStartX, 0).x;
+    }
+
+    // Position each room side-by-side
+    let currentX = alignedStartX;
     const y = currentPos.y + currentDim.stackingHeightPx;
-
-    // Align Y to grid
     const alignedY = alignToGrid(0, y).y;
 
     connectedRooms.forEach(roomId => {
         const connectedDim = dimensions[roomId];
 
-        // X is already aligned via group start, Y is same for all rooms
         positions[roomId] = { x: currentX, y: alignedY };
 
-        // Move X position for next room (no individual alignment)
+        // Move X position for next room
         currentX += connectedDim.widthPx;
     });
 
@@ -1178,29 +1218,48 @@ function positionEastMultiple(currentRoom, connectedRooms, currentPos, dimension
     }, 0);
 
     // Calculate starting Y position to center the group along current room's edge
-    // This ensures connected rooms are distributed along current room's edge
     const groupStartY = currentPos.y + (currentDim.stackingHeightPx - totalHeight) / 2;
 
     // Align the starting position to grid
-    // All rooms will be placed from this aligned start without individual alignment
-    const alignedGroupStart = alignToGrid(0, groupStartY);
+    let alignedStartY = alignToGrid(0, groupStartY).y;
 
-    // Position each room stacked vertically starting from aligned position
+    // CRITICAL: Ensure each room has at least 1 GU overlap with parent room
+    const minOverlap = GRID_UNIT_HEIGHT_PX;
+
+    // Check first room overlap
+    const firstDim = dimensions[connectedRooms[0]];
+    const firstRoomEnd = alignedStartY + firstDim.stackingHeightPx;
+    const firstOverlap = Math.min(firstRoomEnd, currentPos.y + currentDim.stackingHeightPx) - Math.max(alignedStartY, currentPos.y);
+
+    if (firstOverlap < minOverlap) {
+        // First room doesn't have enough overlap, shift group down
+        alignedStartY = currentPos.y - firstDim.stackingHeightPx + minOverlap;
+        alignedStartY = alignToGrid(0, alignedStartY).y;
+    }
+
+    // Check last room overlap
+    const lastRoomStartY = alignedStartY + totalHeight - dimensions[connectedRooms[connectedRooms.length - 1]].stackingHeightPx;
+    const lastRoomEndY = alignedStartY + totalHeight;
+    const lastOverlap = Math.min(lastRoomEndY, currentPos.y + currentDim.stackingHeightPx) - Math.max(lastRoomStartY, currentPos.y);
+
+    if (lastOverlap < minOverlap) {
+        // Last room doesn't have enough overlap, shift group up
+        const lastDim = dimensions[connectedRooms[connectedRooms.length - 1]];
+        alignedStartY = currentPos.y + currentDim.stackingHeightPx - totalHeight - lastDim.stackingHeightPx + minOverlap;
+        alignedStartY = alignToGrid(0, alignedStartY).y;
+    }
+
+    // Position each room stacked vertically
     const x = currentPos.x + currentDim.widthPx;
-
-    // Align X to grid
     const alignedX = alignToGrid(x, 0).x;
-
-    let currentY = alignedGroupStart.y;
+    let currentY = alignedStartY;
 
     connectedRooms.forEach(roomId => {
         const connectedDim = dimensions[roomId];
 
-        // Y is already aligned via group start, X is same for all rooms
         positions[roomId] = { x: alignedX, y: currentY };
 
-        // Move Y position for next room (no individual alignment)
-        // Since room heights are multiples of grid units, this maintains alignment
+        // Move Y position for next room
         currentY += connectedDim.stackingHeightPx;
     });
 
@@ -1235,30 +1294,50 @@ function positionWestMultiple(currentRoom, connectedRooms, currentPos, dimension
     }, 0);
 
     // Calculate starting Y position to center the group along current room's edge
-    // This ensures connected rooms are distributed along current room's edge
     const groupStartY = currentPos.y + (currentDim.stackingHeightPx - totalHeight) / 2;
 
     // Align the starting position to grid
-    // All rooms will be placed from this aligned start without individual alignment
-    const alignedGroupStart = alignToGrid(0, groupStartY);
+    let alignedStartY = alignToGrid(0, groupStartY).y;
 
-    // Position each room stacked vertically starting from aligned position
-    let currentY = alignedGroupStart.y;
+    // CRITICAL: Ensure each room has at least 1 GU overlap with parent room
+    const minOverlap = GRID_UNIT_HEIGHT_PX;
+
+    // Check first room overlap
+    const firstDim = dimensions[connectedRooms[0]];
+    const firstRoomEnd = alignedStartY + firstDim.stackingHeightPx;
+    const firstOverlap = Math.min(firstRoomEnd, currentPos.y + currentDim.stackingHeightPx) - Math.max(alignedStartY, currentPos.y);
+
+    if (firstOverlap < minOverlap) {
+        // First room doesn't have enough overlap, shift group down
+        alignedStartY = currentPos.y - firstDim.stackingHeightPx + minOverlap;
+        alignedStartY = alignToGrid(0, alignedStartY).y;
+    }
+
+    // Check last room overlap
+    const lastRoomStartY = alignedStartY + totalHeight - dimensions[connectedRooms[connectedRooms.length - 1]].stackingHeightPx;
+    const lastRoomEndY = alignedStartY + totalHeight;
+    const lastOverlap = Math.min(lastRoomEndY, currentPos.y + currentDim.stackingHeightPx) - Math.max(lastRoomStartY, currentPos.y);
+
+    if (lastOverlap < minOverlap) {
+        // Last room doesn't have enough overlap, shift group up
+        const lastDim = dimensions[connectedRooms[connectedRooms.length - 1]];
+        alignedStartY = currentPos.y + currentDim.stackingHeightPx - totalHeight - lastDim.stackingHeightPx + minOverlap;
+        alignedStartY = alignToGrid(0, alignedStartY).y;
+    }
+
+    // Position each room stacked vertically
+    let currentY = alignedStartY;
 
     connectedRooms.forEach(roomId => {
         const connectedDim = dimensions[roomId];
 
         // Position to the left
         const x = currentPos.x - connectedDim.widthPx;
-
-        // Align X to grid
         const alignedX = alignToGrid(x, 0).x;
 
-        // Y is already aligned via group start
         positions[roomId] = { x: alignedX, y: currentY };
 
-        // Move Y position for next room (no individual alignment)
-        // Since room heights are multiples of grid units, this maintains alignment
+        // Move Y position for next room
         currentY += connectedDim.stackingHeightPx;
     });
 
