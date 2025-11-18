@@ -2,7 +2,7 @@
 
 **Purpose:** Reusable evidence templates for identifying NPCs as ENTROPY agents/assets
 **Location:** `story_design/lore_fragments/by_gameplay_function/evidence_prosecution/`
-**Template Count:** 5 comprehensive evidence types
+**Template Count:** 6 comprehensive evidence types
 **Substitution System:** [PLACEHOLDER] format for runtime NPC assignment
 
 ---
@@ -30,7 +30,7 @@ Each template is a **complete evidence fragment** with placeholder variables tha
 
 ---
 
-## The Five Evidence Templates
+## The Six Evidence Templates
 
 ### 1. TEMPLATE_AGENT_ID_001: Encrypted Communications
 
@@ -373,6 +373,177 @@ Subject is scared, remorseful, and wants out."
 
 ---
 
+### 6. TEMPLATE_AGENT_ID_006: Message Logs
+
+**File:** `TEMPLATE_AGENT_ID_006_message_logs.md`
+
+**Evidence Type:** Digital Communications - Encrypted Messaging App Logs (Signal/Wickr)
+
+**What It Provides:**
+- Complete Signal/Wickr message thread between handler and asset
+- Handler uses subject's REAL NAME **8 times** in operational communications
+- Direct confirmation of subject's identity as ENTROPY operative
+- Shows coercion and subject's desire to escape
+- Reveals handler contact information, cell structure, operations
+- Documents specific data theft admissions
+- Payment amount discussions corroborating financial evidence
+- Dead drop coordination matching surveillance evidence
+
+**Substitution Variables:**
+- [SUBJECT_NAME] - NPC's real name (used 8x by handler!)
+- [SUBJECT_CODENAME] - ENTROPY operational designation (e.g., "SPARROW", "ASSET_DELTA_04")
+- [HANDLER_CODENAME] - Handler's name (e.g., "Phoenix", "Cascade")
+- [CELL_DESIGNATION] - Cell affiliation (e.g., "CELL_DELTA", "CELL_BETA_03")
+- [OPERATION_NAME] - Specific operation (e.g., "Glass House", "Silent Echo")
+- [HANDLER_PHONE] - Handler's encrypted app ID (e.g., "+1-555-0847")
+- [SUBJECT_PHONE] - Subject's encrypted app ID
+- [TARGET_ORGANIZATION] - Where subject works
+- [DATA_TYPE] - Type of data being stolen
+- [SYSTEM_NAME] - Systems being accessed
+- [AMOUNT] - Payment amounts
+- [MEETING_LOCATION] - Dead drop location
+- [DEADLINE_DATE] - Operation deadline
+- [DATE_1] through [DATE_5] - Message dates
+- [TIME_1] through [TIME_5] - Message timestamps
+- [PRESSURE_DETAIL] - Coercion type (e.g., "debt situation", "legal exposure")
+- [SUBJECT_CONCERN] - Subject's worry (e.g., "security audit", "feeling watched")
+- [SECOND_ASSET_CODENAME] - Another asset at same organization
+- [CELL_LEADER_CODENAME] - Cell leadership designation
+
+**Message Threads Included:**
+1. **Thread 1: Initial Tasking** - Handler assigns data theft, subject nervous, real name used
+2. **Thread 2: Operational Concerns** - Subject worried about being watched, handler reassures
+3. **Thread 3: Coordination with Cell** - Payment confirmed, future tasking, another asset mentioned
+4. **Thread 4: Internal ENTROPY Comms** - Handler briefs cell leader, confirms subject's real name and recruitment method
+5. **Thread 5: Escalation and Pressure** - Subject wants out, handler threatens and coerces
+
+**Real Name Usage Pattern:**
+Handler uses [SUBJECT_NAME] **8 times** across 5 conversation threads:
+- During operational tasking (3 instances)
+- During pressure/coercion (2 instances)
+- During cell leadership briefing (2 instances)
+- During praise/reassurance (1 instance)
+
+**Conclusion:** Real name usage is consistent, intentional, and confirms [SUBJECT_NAME]'s identity as ENTROPY asset.
+
+**Red Flags Documented:**
+🚩 Subject's real name used repeatedly in ENTROPY operations
+🚩 Handler admits recruitment via financial pressure
+🚩 Subject admits data theft in own words
+🚩 Payment amounts discussed ($25K-$75K range)
+🚩 Dead drop coordination (matches surveillance timeline)
+🚩 Subject expresses wanting out (shows coercion)
+🚩 Handler threatens subject with exposure
+🚩 Multiple assets at same organization revealed
+🚩 Cell structure and operations documented
+
+**Evidence Strength:**
+- Alone: 75% confidence (very strong - subject's own admissions + real name confirmation)
+- + Financial records: 90% confidence (payments match message discussions)
+- + Access logs: 95% confidence (activity matches tasking timeline)
+- + Surveillance: 98% confidence (dead drops match message coordination)
+- + Handwritten notes: 99% confidence (emotional state corroborated)
+- + All evidence: 99.9% confidence (overwhelming, complete picture)
+
+**Best Used For:**
+- Confirming suspected asset's real identity (definitive proof)
+- Revealing handler-asset relationships
+- Documenting specific operations and data theft
+- Showing coercion and victimization (subject wants out)
+- Mapping cell structure (handler, cell leader, other assets)
+- Creating high-cooperation scenarios (85% base cooperation)
+- Handler identification and arrest opportunity
+
+**Gameplay Integration:**
+- **Discovery:** Rare, high-value - requires server compromise or handler device seizure
+- **Player Actions Enabled:**
+  - Confirm [SUBJECT_NAME] as ENTROPY asset (definitive)
+  - Issue arrest warrant (subject's own admissions)
+  - Trace [HANDLER_PHONE] for surveillance/arrest
+  - Identify [SECOND_ASSET_CODENAME] (second asset at organization)
+  - Map [CELL_DESIGNATION] structure
+  - Corroborate with financial records (payment amounts match)
+  - Coordinate simultaneous subject + handler arrests
+- **Interrogation Approaches:**
+  - Overwhelming Evidence: "Your handler used your real name. You admitted everything." (85% cooperation)
+  - Empathetic/Victim: "We saw you tried to quit. Your handler threatened you. You're a victim." (90% cooperation)
+  - Strategic Flip: "Your handler documented everything against you. Help us get THEM." (90% cooperation)
+  - Double Agent: "Keep talking to your handler. But now you work for us." (60% cooperation, risky)
+- **Intelligence Yield:**
+  - Complete cell operational details
+  - Handler identity and contact info
+  - Second asset at organization
+  - Operation phases and timeline
+  - Dead drop locations
+  - Payment methods
+  - ENTROPY communication infrastructure
+
+**Cooperation Likelihood:**
+- Base: 75% (subject already wanted out based on messages)
+- With empathetic approach: 85%
+- With protection offer: 90%
+- With family safety assurances: 95%
+
+**Why This Template Is Unique:**
+- **Only template** that directly confirms subject's real name via ENTROPY internal communications
+- Shows subject is KNOWN ENTITY within ENTROPY (not anonymous)
+- Reveals handler's operational security failure (using real names)
+- Demonstrates subject's victimization (wanted out, was coerced)
+- Provides actionable intelligence beyond subject (handler, cell, operations)
+- Highest cooperation potential due to documented coercion
+- Creates moral complexity (perpetrator who is also victim)
+
+**Forensic Analysis Included:**
+- Message metadata verification (Signal sealed sender protocol)
+- Phone number carrier verification
+- Device IMEI correlation to subject
+- Location data (device at organization, dead drop sites)
+- No evidence of tampering
+- Cryptographic authentication
+- Chain of custody documentation
+
+**Legal Assessment:**
+- Admissibility: VERY HIGH
+- Subject's own admissions to federal crimes
+- Real name confirmed (eliminates identity defense)
+- Specific systems, data, and dates documented
+- Payment trail corroboration available
+- Handler identity revealed (bonus intelligence)
+- **Consideration:** Subject shows coercion/victimization - recommend cooperation agreement
+
+**Educational Value (CyBOK):**
+- Encrypted messaging security (Signal protocol)
+- OPSEC failures (using real names in operational comms)
+- Mobile device forensics
+- Digital evidence authentication
+- Insider threat psychology (coercion tactics)
+- Counterintelligence (flipping assets)
+- Legal process (admissibility, cooperation agreements)
+
+**Cross-References:**
+- **TEMPLATE_002 (Financial):** Payment amounts should match message discussions
+- **TEMPLATE_003 (Access Logs):** Data extraction dates should align with tasking
+- **TEMPLATE_004 (Surveillance):** Dead drop timing/location should match messages
+- **TEMPLATE_005 (Handwritten Notes):** Emotional arc (trapped, wants out) corroborates
+- **RECRUITMENT_001:** Financial pressure methodology matches
+- **TACTICAL_001:** If operation mentioned is infrastructure attack
+- **LEVERAGE_001:** Subject's pressure detail could be leverage point
+
+**Recommended Rarity:** RARE (Very Hard Discovery)
+
+**Discovery Scenarios:**
+- SAFETYNET compromises ENTROPY communications server
+- Handler's device seized during arrest
+- Cryptographic breakthrough on intercepted Signal traffic
+- Different ENTROPY asset provides handler contact info
+
+**Discovery Timing:**
+- Early Game: Too powerful, skip
+- Mid Game: Possible reward for major operation success
+- Late Game: Appropriate for strategic Phase 3 intelligence
+
+---
+
 ## Evidence Combination Strategies
 
 ### Optimal Evidence Chain
@@ -389,8 +560,10 @@ SEQUENCE 1: Discovery Path
 │  └─ Proves what they did
 ├─ Surveillance Photos (Handler Identified)
 │  └─ Shows who they work for
-└─ Handwritten Notes (Confession)
-   └─ Subject's own words seal the case
+├─ Handwritten Notes (Confession)
+│  └─ Subject's own words, emotional state
+└─ Message Logs (Real Name Confirmation)
+   └─ Handler uses real name, definitive proof
 ```
 
 ### Confidence Thresholds
@@ -403,7 +576,8 @@ SEQUENCE 1: Discovery Path
 | 2 templates | 65-85% | Maybe (circumstantial) | 70% |
 | 3 templates | 85-95% | Yes (strong case) | 85% |
 | 4 templates | 95-98% | Yes (very strong) | 90% |
-| 5 templates | 99.9% | Yes (overwhelming) | 95% |
+| 5 templates | 99% | Yes (overwhelming) | 93% |
+| 6 templates | 99.9% | Yes (overwhelming) | 95% |
 
 ### Best Combinations by Scenario Type
 
@@ -430,6 +604,21 @@ SEQUENCE 1: Discovery Path
 2. Financial Records (money trail to cell)
 3. Encrypted Comms (coordination proof)
 - Confidence: 90%
+
+**Real Name Confirmation + High Cooperation:**
+1. Message Logs (real name used 8x, wants out)
+2. Handwritten Notes (emotional confession)
+3. Financial Records (payment corroboration)
+- Confidence: 99%
+- Cooperation: 95% (both show victimization)
+
+**Complete Cell Mapping:**
+1. Message Logs (handler contact, cell structure)
+2. Surveillance (handler photos, vehicle)
+3. Financial Records (payment network)
+4. Access Logs (what data compromised)
+- Confidence: 99.9%
+- Enables: Simultaneous handler + asset arrest, second asset identification
 
 ---
 
@@ -708,6 +897,12 @@ def get_interrogation_options(evidence_list):
 - Timing: Variable (lucky find or late-game search warrant)
 - Difficulty: Medium-Hard (requires physical access)
 
+**TEMPLATE_006 (Message Logs):**
+- Location: Compromised ENTROPY server, seized handler device
+- Timing: Late investigation (major breakthrough)
+- Difficulty: Very Hard (requires server compromise or handler arrest)
+- **HIGH VALUE:** Real name confirmation, handler intel, cell mapping
+
 ---
 
 ## Educational Value (CyBOK Alignment)
@@ -754,27 +949,27 @@ Players using these templates will learn:
 
 ### Additional Template Ideas
 
-**TEMPLATE_006: Phone Records**
+**TEMPLATE_007: Phone Records**
 - Call logs to burner phones
 - Timing correlation with operations
 - Location data (cell tower triangulation)
 
-**TEMPLATE_007: Social Media OSINT**
+**TEMPLATE_008: Social Media OSINT**
 - Lifestyle changes visible on social media
 - Travel patterns (meetings with handler)
 - Unusual purchases or activities
 
-**TEMPLATE_008: Witness Testimony**
+**TEMPLATE_009: Witness Testimony**
 - Coworker observations
 - "They've been acting strange lately"
 - Suspicious conversations overheard
 
-**TEMPLATE_009: Digital Forensics**
+**TEMPLATE_010: Digital Forensics**
 - Deleted file recovery
 - Browser history analysis
 - VPN usage and encrypted tools
 
-**TEMPLATE_010: Physical Surveillance (Extended)**
+**TEMPLATE_011: Physical Surveillance (Extended)**
 - Safe house identification
 - Handler's vehicle tracking
 - Dead drop location mapping
@@ -788,6 +983,13 @@ Players using these templates will learn:
 - Complete substitution system
 - Gameplay integration framework
 - Cross-reference structure
+
+**v2.0** - Message Logs template and documentation expansion
+- Added TEMPLATE_006: Message Logs (Signal/Wickr communications)
+- Added comprehensive README.md for template system
+- Enhanced documentation with complete substitution variable reference
+- Real name confirmation via handler communications
+- 6 total evidence templates with 99.9% confidence when combined
 
 ---
 
@@ -826,11 +1028,17 @@ TEMPLATE_005: Handwritten Notes
 → Alone: 80% | Best With: Everything
 → Use For: Confession, empathetic approach
 
-OPTIMAL COMBINATION: All 5 templates = 99.9% confidence
+TEMPLATE_006: Message Logs ⭐ NEW
+→ Alone: 75% | Best With: Notes + Financial
+→ Use For: Real name confirmation, handler intel, cell mapping
+→ RARE - Requires server compromise or handler device seizure
+
+OPTIMAL COMBINATION: All 6 templates = 99.9% confidence
 
 MINIMUM FOR ACTION: 3 templates = 85% confidence
 
 COOPERATION PROBABILITY:
+- Empathetic + Message Logs: 90%
 - Compassionate + Notes: 98%
 - Overwhelming + All Evidence: 95%
 - Standard + Some Evidence: 70%
