@@ -71,10 +71,13 @@ export default class PhoneChatConversation {
             
             // Note: We don't set npc_name variable here because it causes issues with state serialization.
             // The NPC display name is handled in the UI layer instead.
-            
+
             this.storyLoaded = true;
             this.storyEnded = false;
-            
+
+            // Set up external functions
+            this.setupExternalFunctions();
+
             // Sync NPC items to Ink variables
             this.syncItemsToInk();
             
@@ -98,6 +101,58 @@ export default class PhoneChatConversation {
         }
     }
     
+    /**
+     * Set up external functions for Ink story
+     * These allow Ink to call game functions and get dynamic values
+     */
+    setupExternalFunctions() {
+        if (!this.engine || !this.engine.story) return;
+
+        // Bind EXTERNAL functions that return values
+        // These are called from ink scripts with parentheses: {player_name()}
+
+        // Player name - return player's agent name or default
+        this.engine.bindExternalFunction('player_name', () => {
+            return window.gameState?.playerName || 'Agent';
+        });
+
+        // Current mission ID - return active mission identifier
+        this.engine.bindExternalFunction('current_mission_id', () => {
+            return window.gameState?.currentMissionId || 'mission_001';
+        });
+
+        // NPC location - where the conversation is happening
+        this.engine.bindExternalFunction('npc_location', () => {
+            const npc = this.npcManager.getNPC(this.npcId);
+            // Return location based on NPC or default
+            if (this.npcId === 'dr_chen' || npc?.id === 'dr_chen') {
+                return window.gameState?.npcLocation || 'lab';
+            } else if (this.npcId === 'director_netherton' || npc?.id === 'director_netherton') {
+                return window.gameState?.npcLocation || 'office';
+            } else if (this.npcId === 'haxolottle' || npc?.id === 'haxolottle') {
+                return window.gameState?.npcLocation || 'handler_station';
+            }
+            return window.gameState?.npcLocation || 'safehouse';
+        });
+
+        // Mission phase - what part of the mission we're in
+        this.engine.bindExternalFunction('mission_phase', () => {
+            return window.gameState?.missionPhase || 'downtime';
+        });
+
+        // Operational stress level - for handler conversations
+        this.engine.bindExternalFunction('operational_stress_level', () => {
+            return window.gameState?.operationalStressLevel || 'low';
+        });
+
+        // Equipment status - for Dr. Chen conversations
+        this.engine.bindExternalFunction('equipment_status', () => {
+            return window.gameState?.equipmentStatus || 'nominal';
+        });
+
+        console.log(`✅ External functions bound for ${this.npcId}`);
+    }
+
     /**
      * Navigate to a specific knot in the story
      * @param {string} knotName - Name of the knot to navigate to

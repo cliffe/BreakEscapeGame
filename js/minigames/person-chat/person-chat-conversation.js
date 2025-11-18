@@ -80,13 +80,7 @@ export default class PersonChatConversation {
      */
     setupExternalFunctions() {
         if (!this.inkEngine) return;
-        
-        // Example: Allow Ink to call game functions
-        // this.inkEngine.bindFunction('unlock_door', (doorId) => {
-        //     console.log(`🔓 Unlocking door: ${doorId}`);
-        //     // Handle door unlock
-        // });
-        
+
         // Store NPC metadata in global game state
         if (!window.gameState) {
             window.gameState = {};
@@ -94,14 +88,54 @@ export default class PersonChatConversation {
         if (!window.gameState.npcInteractions) {
             window.gameState.npcInteractions = {};
         }
-        
+
+        // Bind EXTERNAL functions that return values
+        // These are called from ink scripts with parentheses: {player_name()}
+
+        // Player name - return player's agent name or default
+        this.inkEngine.bindExternalFunction('player_name', () => {
+            return window.gameState?.playerName || 'Agent';
+        });
+
+        // Current mission ID - return active mission identifier
+        this.inkEngine.bindExternalFunction('current_mission_id', () => {
+            return window.gameState?.currentMissionId || 'mission_001';
+        });
+
+        // NPC location - where the conversation is happening
+        this.inkEngine.bindExternalFunction('npc_location', () => {
+            // Return location based on NPC or default
+            if (this.npc.id === 'dr_chen') {
+                return window.gameState?.npcLocation || 'lab';
+            } else if (this.npc.id === 'director_netherton') {
+                return window.gameState?.npcLocation || 'office';
+            } else if (this.npc.id === 'haxolottle') {
+                return window.gameState?.npcLocation || 'handler_station';
+            }
+            return window.gameState?.npcLocation || 'safehouse';
+        });
+
+        // Mission phase - what part of the mission we're in
+        this.inkEngine.bindExternalFunction('mission_phase', () => {
+            return window.gameState?.missionPhase || 'downtime';
+        });
+
+        // Operational stress level - for handler conversations
+        this.inkEngine.bindExternalFunction('operational_stress_level', () => {
+            return window.gameState?.operationalStressLevel || 'low';
+        });
+
+        // Equipment status - for Dr. Chen conversations
+        this.inkEngine.bindExternalFunction('equipment_status', () => {
+            return window.gameState?.equipmentStatus || 'nominal';
+        });
+
         // Set variables in the Ink engine using setVariable instead of bindVariable
         this.inkEngine.setVariable('last_interaction_type', 'person');
-        this.inkEngine.setVariable('player_name', 'Player');
-        
+
         // Sync NPC items to Ink variables
         this.syncItemsToInk();
-        
+
         // Set up event listener for item changes
         if (window.eventDispatcher) {
             this._itemsChangedListener = (data) => {

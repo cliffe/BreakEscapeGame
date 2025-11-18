@@ -116,13 +116,25 @@ export default class InkEngine {
 
   setVariable(name, value) {
         if (!this.story) throw new Error('Story not loaded');
-        
+
         // Let Ink handle the value type conversion through the indexer
         // which properly wraps values in Runtime.Value objects
         try {
             this.story.variablesState[name] = value;
         } catch (err) {
             console.warn(`⚠️ Failed to set variable ${name}:`, err.message);
+        }
+  }
+
+  // Bind an external function that Ink can call
+  bindExternalFunction(name, func) {
+        if (!this.story) throw new Error('Story not loaded');
+
+        try {
+            this.story.BindExternalFunction(name, func);
+            console.log(`✅ Bound external function: ${name}`);
+        } catch (err) {
+            console.warn(`⚠️ Failed to bind external function ${name}:`, err.message);
         }
   }
 }
