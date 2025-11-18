@@ -40,26 +40,27 @@ Every NPC hub file uses a standardized `mission_hub` knot that serves as the cen
 - Mission topics return to `mission_hub` after completion
 - Player sees continuous conversation, game manages routing
 
-### How #exit_conversation Works
+### How #end_conversation Works
 
-When personal conversations end, they use `#exit_conversation` tag to trigger navigation:
+When personal conversations end, they use `#end_conversation` tag and return to mission_hub:
 
 ```ink
 === conversation_end ===
 Dr. Chen: Great talking with you!
-#exit_conversation
--> END
+#end_conversation
+-> mission_hub
 ```
 
-The game code detects this tag and automatically calls:
-```javascript
-inkEngine.goToKnot('mission_hub');
-```
+**What happens:**
+1. Ink script diverts to `mission_hub` - **preserving conversation state**
+2. Game code detects `#end_conversation` tag and closes the UI
+3. Next time player talks to this NPC, conversation resumes from `mission_hub`
+4. NPC remembers where they left off, can offer new mission/personal topics
 
-This returns the player to the NPC's hub menu where they can choose to:
-- Continue with another personal topic
-- Discuss mission-related matters
-- End the conversation
+**Why this matters:**
+- ✅ **State preservation** - Conversation picks up where it left off
+- ✅ **Flexible re-entry** - Player can talk to NPC multiple times in a session
+- ✅ **Context awareness** - Hub can show different options based on what was discussed
 
 ---
 
@@ -322,7 +323,7 @@ Route to appropriate phase based on mission progress:
 
 ### Conversation End Pattern
 
-Always end personal conversations with the exit tag:
+Always end personal conversations by returning to mission_hub:
 
 ```ink
 === conversation_end ===
@@ -335,9 +336,11 @@ Always end personal conversations with the exit tag:
         Dr. Chen: Talk later.
 }
 
-#exit_conversation
--> END
+#end_conversation
+-> mission_hub
 ```
+
+**Important:** The divert to `mission_hub` preserves state. The `#end_conversation` tag signals the UI to close. Next interaction resumes from the hub with full context.
 
 ### Conditional Relationship Responses
 
@@ -406,7 +409,7 @@ Netherton: Do you think the ends justify the means?
 
 - [ ] Declare all EXTERNAL functions at top of hub file
 - [ ] Use `mission_hub` knot as central routing point
-- [ ] End personal conversations with `#exit_conversation`
+- [ ] End personal conversations with `#end_conversation` and `-> mission_hub`
 - [ ] Add influence tags after every relationship variable change
 - [ ] Use `has_available_personal_topics()` function
 - [ ] Implement phase-based content routing
@@ -422,6 +425,8 @@ Netherton: Do you think the ends justify the means?
 {player_name}           // Missing parentheses
 ~ npc_chen_rapport += 5 // No visual feedback tag
 -> chen_hub             // Non-standard hub name
+#exit_conversation      // Old tag name
+-> END                  // Doesn't preserve state
 ```
 
 ✅ **Correct:**
@@ -430,6 +435,8 @@ Netherton: Do you think the ends justify the means?
 ~ npc_chen_rapport += 5 // Variable change
 #rapport_gained:5       // Visual feedback tag
 -> mission_hub          // Standard hub knot name
+#end_conversation       // Correct tag to close UI
+-> mission_hub          // Preserves state for next interaction
 ```
 
 ---
@@ -472,7 +479,7 @@ When creating a new NPC:
    - [ ] Phase hubs (phase_1_hub through phase_4_hub)
    - [ ] `has_available_personal_topics()` function
    - [ ] `jump_to_personal_conversations` knot
-   - [ ] `conversation_end` knot with `#exit_conversation`
+   - [ ] `conversation_end` knot with `#end_conversation` and `-> mission_hub`
    - [ ] Influence tags on all relationship changes
 
 3. **Mission-Specific Files** (optional, `npc_mission_*.ink`)

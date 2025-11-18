@@ -428,8 +428,8 @@ export default class PersonChatConversation {
                     this.handlePersonalSpace(params[0]);
                     break;
 
-                case 'exit_conversation':
-                    this.handleExitConversation();
+                case 'end_conversation':
+                    this.handleEndConversation();
                     break;
 
                 default:
@@ -667,26 +667,25 @@ export default class PersonChatConversation {
     }
 
     /**
-     * Handle exit_conversation tag - navigate back to NPC's mission hub
-     * Tag: #exit_conversation
-     * This returns the player to the mission hub after personal conversations
+     * Handle end_conversation tag - signal conversation should close
+     * Tag: #end_conversation
+     * The ink script has already diverted to mission_hub, preserving state.
+     * This signals the UI layer to close the conversation window.
+     * Next time player talks to this NPC, it will resume from mission_hub.
      */
-    handleExitConversation() {
-        console.log(`🔙 Exit conversation - navigating back to mission_hub for ${this.npc.id}`);
+    handleEndConversation() {
+        console.log(`👋 End conversation for ${this.npc.id} - conversation state preserved at mission_hub`);
 
-        // Navigate back to the mission_hub knot in this NPC's hub file
-        if (this.inkEngine) {
-            try {
-                this.inkEngine.goToKnot('mission_hub');
-
-                // Advance to get the new content at mission_hub
-                this.advance();
-
-                console.log(`✅ Returned to mission_hub for ${this.npc.id}`);
-            } catch (error) {
-                console.error(`❌ Error navigating to mission_hub:`, error);
+        // Dispatch event for UI layer to close the conversation window
+        const event = new CustomEvent('npc-conversation-ended', {
+            detail: {
+                npcId: this.npc.id,
+                preservedAtHub: true
             }
-        }
+        });
+        window.dispatchEvent(event);
+
+        console.log(`✅ Conversation ended, will resume from mission_hub on next interaction`);
     }
 
     /**

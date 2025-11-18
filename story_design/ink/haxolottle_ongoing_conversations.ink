@@ -1053,8 +1053,8 @@ Haxolottle: But it's worth checking in with yourself. "Is this useful vigilance 
         Haxolottle: And hey... you're becoming a real friend. Within the constraints of Protocol 47-Alpha, but a friend nonetheless.
 }
 
-#exit_conversation
--> END
+#end_conversation
+-> mission_hub
 
 // ===========================================
 // STUB KNOTS - To be implemented in separate file

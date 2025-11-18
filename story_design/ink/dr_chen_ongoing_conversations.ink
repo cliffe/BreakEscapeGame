@@ -1940,8 +1940,8 @@ Dr. Chen: Peaceful. After years of fighting cyber threats. Just... peace.
         Dr. Chen: Take care. Let me know if you need anything.
 }
 
-#exit_conversation
--> END
+#end_conversation
+-> mission_hub
 
 === conversation_end_phase4 ===
 
@@ -1954,8 +1954,8 @@ Dr. Chen: Peaceful. After years of fighting cyber threats. Just... peace.
         Dr. Chen: Good talking. Be safe.
 }
 
-#exit_conversation
--> END
+#end_conversation
+-> mission_hub
 
 
 === conversation_end_phase1 ===
@@ -1969,8 +1969,8 @@ Dr. Chen: Peaceful. After years of fighting cyber threats. Just... peace.
         Dr. Chen: Alright. Good luck out there.
 }
 
-#exit_conversation
--> END
+#end_conversation
+-> mission_hub
 
 === conversation_end_phase2 ===
 
@@ -1983,5 +1983,5 @@ Dr. Chen: Peaceful. After years of fighting cyber threats. Just... peace.
         Dr. Chen: Talk later. Good luck.
 }
 
-#exit_conversation
--> END
+#end_conversation
+-> mission_hub

@@ -1743,8 +1743,8 @@ Netherton: The fact that you understand that—that protocols are tools, not rep
         Netherton: Dismissed.
 }
 
-#exit_conversation
--> END
+#end_conversation
+-> mission_hub
 
 === conversation_end_phase2 ===
 
@@ -1757,8 +1757,8 @@ Netherton: The fact that you understand that—that protocols are tools, not rep
         Netherton: That will be all.
 }
 
-#exit_conversation
--> END
+#end_conversation
+-> mission_hub
 
 === conversation_end_phase3 ===
 
@@ -1771,8 +1771,8 @@ Netherton: The fact that you understand that—that protocols are tools, not rep
         Netherton: Dismissed, Agent.
 }
 
-#exit_conversation
--> END
+#end_conversation
+-> mission_hub
 
 === conversation_end_phase4 ===
 
@@ -1785,5 +1785,5 @@ Netherton: The fact that you understand that—that protocols are tools, not rep
         Netherton: That will be all.
 }
 
-#exit_conversation
--> END
+#end_conversation
+-> mission_hub

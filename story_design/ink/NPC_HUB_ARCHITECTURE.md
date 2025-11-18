@@ -437,23 +437,24 @@ All NPC hub files now use a standardized `mission_hub` knot that serves as the c
 2. **Greeting**: Context-aware greeting based on location/phase
 3. **Hub**: Automatically diverts to `mission_hub`
 4. **Routing**: Player chooses personal or mission topics
-5. **Return**: Personal conversations end with `#exit_conversation` tag
-6. **Navigation**: Game code detects tag and calls `inkEngine.goToKnot('mission_hub')`
-7. **Loop**: Player can discuss more topics or end conversation
+5. **Return**: Personal conversations end with `#end_conversation` and `-> mission_hub`
+6. **Close UI**: Game code detects `#end_conversation` tag and closes conversation window
+7. **State Preserved**: Next interaction resumes from `mission_hub` with full context
 
 ### Benefits
 
 - **Seamless Flow**: Player experiences continuous conversation
 - **Clear Separation**: Personal vs mission content isolated in separate files
-- **Easy Return**: `#exit_conversation` tag provides consistent return mechanism
+- **State Preservation**: Conversation state maintained between interactions
 - **Standard Pattern**: All NPCs use same `mission_hub` knot name
 
 ### Implementation Notes
 
 - All hub files renamed from `npcname_main_hub` to `mission_hub`
-- Personal conversation files always return via `#exit_conversation` tag
-- Game code handles automatic navigation back to hub
-- Mission-specific content can also return to `mission_hub`
+- Personal conversation files always return to `mission_hub` with `#end_conversation` tag
+- Game code detects `#end_conversation` and closes UI (doesn't navigate)
+- Ink script handles navigation back to hub (preserves state)
+- Next player interaction resumes from `mission_hub` seamlessly
 
 For detailed implementation examples, see **INK_BEST_PRACTICES.md**.
 
