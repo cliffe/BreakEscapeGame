@@ -82,12 +82,13 @@ EXTERNAL current_mission_id()           // LOCAL - Current mission identifier
 
 === phase_1_hub ===
 
-{total_missions_completed == 1:
-    Netherton: Agent {player_name}. I have a few minutes available. Is there something you wish to discuss?
-- npc_npc_netherton_respect >= 60:
-    Netherton: Agent. Your performance has been noted. What can I address for you today?
-- else:
-    Netherton: Agent {player_name}. You have questions?
+{
+    - total_missions_completed == 1:
+        Netherton: Agent {player_name}. I have a few minutes available. Is there something you wish to discuss?
+    - npc_netherton_respect >= 60:
+        Netherton: Agent. Your performance has been noted. What can I address for you today?
+    - else:
+        Netherton: Agent {player_name}. You have questions?
 }
 
 + {not npc_netherton_discussed_handbook} [Ask about the Field Operations Handbook]
@@ -381,12 +382,13 @@ Netherton: Specific areas for development will be addressed in formal performanc
 
 === phase_2_hub ===
 
-{npc_netherton_respect >= 70:
-    Netherton: Agent {player_name}. Your continued excellent performance has been noted. What do you wish to discuss?
-- npc_netherton_respect >= 60:
-    Netherton: Agent. I have time for a brief discussion.
-- else:
-    Netherton: Agent {player_name}. What requires attention?
+{
+    - npc_netherton_respect >= 70:
+        Netherton: Agent {player_name}. Your continued excellent performance has been noted. What do you wish to discuss?
+    - npc_netherton_respect >= 60:
+        Netherton: Agent. I have time for a brief discussion.
+    - else:
+        Netherton: Agent {player_name}. What requires attention?
 }
 
 + {not npc_netherton_discussed_difficult_decisions} [Ask about making difficult command decisions]
@@ -765,12 +767,13 @@ Netherton: But that's the price of command. Acceptable trade for the impact I ca
 
 === phase_3_hub ===
 
-{npc_netherton_respect >= 80:
-    Netherton: Agent {player_name}. *almost warmth* Your continued excellence is appreciated. What's on your mind?
-- npc_netherton_respect >= 70:
-    Netherton: Agent. I have time for a substantive discussion.
-- else:
-    Netherton: Agent {player_name}. What do you need?
+{
+    - npc_netherton_respect >= 80:
+        Netherton: Agent {player_name}. *almost warmth* Your continued excellence is appreciated. What's on your mind?
+    - npc_netherton_respect >= 70:
+        Netherton: Agent. I have time for a substantive discussion.
+    - else:
+        Netherton: Agent {player_name}. What do you need?
 }
 
 + {not npc_netherton_discussed_weight_of_command and npc_netherton_respect >= 75} [Ask about the weight of command]
@@ -1205,12 +1208,13 @@ Netherton: Though I sometimes suspect I only believe that because accepting the 
 
 === phase_4_hub ===
 
-{npc_netherton_respect >= 90:
-    Netherton: {player_name}. *uses first name, extremely rare* We should talk.
-- npc_netherton_respect >= 80:
-    Netherton: Agent {player_name}. I value your perspective. What's on your mind?
-- else:
-    Netherton: Agent. I have time.
+{
+    - npc_netherton_respect >= 90:
+        Netherton: {player_name}. *uses first name, extremely rare* We should talk.
+    - npc_netherton_respect >= 80:
+        Netherton: Agent {player_name}. I value your perspective. What's on your mind?
+    - else:
+        Netherton: Agent. I have time.
 }
 
 + {not npc_netherton_discussed_legacy and npc_netherton_respect >= 85} [Ask about his legacy]

@@ -90,10 +90,11 @@ EXTERNAL current_mission_id()           // LOCAL - Current mission identifier
 
 === phase_1_hub ===
 
-{total_missions_completed == 1:
-    Haxolottle: So, we've got some downtime. Want to chat about non-work stuff? Per Regulation 847, personal conversation is encouraged for psychological wellbeing.
-- else:
-    Haxolottle: Got a moment? I could use a break from staring at security feeds.
+{
+    - total_missions_completed == 1:
+        Haxolottle: So, we've got some downtime. Want to chat about non-work stuff? Per Regulation 847, personal conversation is encouraged for psychological wellbeing.
+    - else:
+        Haxolottle: Got a moment? I could use a break from staring at security feeds.
 }
 
 + {not npc_haxolottle_talked_hobbies_general} [Ask what they do for fun]
@@ -543,10 +544,11 @@ Haxolottle: And... *slight smile* ...I have my ridiculous axolotl metaphors. Whe
 
 === phase_2_hub ===
 
-{missions_together == 6:
-    Haxolottle: We've been working together for a while now. Starting to feel like a real partnership. Got time to talk?
-- else:
-    Haxolottle: Hey, Agent. Want to chat for a bit? I could use a break from the technical stuff.
+{
+    - total_missions_completed == 6:
+        Haxolottle: We've been working together for a while now. Starting to feel like a real partnership. Got time to talk?
+    - else:
+        Haxolottle: Hey, Agent. Want to chat for a bit? I could use a break from the technical stuff.
 }
 
 + {not npc_haxolottle_talked_philosophy_change} [Ask how their philosophy has changed over the years]
