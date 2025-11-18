@@ -46,7 +46,6 @@ EXTERNAL mission_active
 
 === start_handler_lore ===
 ~ current_speaker = "handler"
-#speaker:agent_haxolottle
 
 {mission_active:
     Haxolottle: Got a quiet moment? Happy to answer questions while you're on downtime.
@@ -87,7 +86,6 @@ EXTERNAL mission_active
 // ===========================================
 
 === entropy_origins_handler ===
-#speaker:agent_haxolottle
 ~ discussed_entropy_origins = true
 ~ handler_influence += 5
 ~ conversation_depth += 1
@@ -115,8 +113,7 @@ Haxolottle: By 2025, it was clear: this was an organization. Decentralized, cell
     -> lore_hub_handler
 
 === entropy_origins_followup_concern ===
-#speaker:agent_haxolottle
-Haxolottle nods seriously.
+Haxolottle: Haxolottle nods seriously.
 
 Haxolottle: Yes and no. We understand their methods—we see them in action every day. We understand their capabilities—they're formidable but not unlimited.
 
@@ -126,8 +123,7 @@ Haxolottle: What we don't fully grasp is the "why" behind the "what." And that u
 -> lore_hub_handler
 
 === entropy_origins_followup_goals ===
-#speaker:agent_haxolottle
-Haxolottle leans back, considering.
+Haxolottle: Haxolottle leans back, considering.
 
 Haxolottle: That's where it gets interesting. Different ENTROPY cells seem to have different goals. Some are clearly financial—ransomware, data theft, extortion. Others appear ideological—accelerationism, techno-anarchism, chaos for its own sake.
 
@@ -145,7 +141,6 @@ Haxolottle: The unifying thread seems to be "entropy"—increasing chaos, destab
 // ===========================================
 
 === entropy_philosophy_handler ===
-#speaker:agent_haxolottle
 ~ discussed_entropy_philosophy = true
 ~ handler_influence += 5
 ~ conversation_depth += 1
@@ -173,8 +168,7 @@ Haxolottle: And some are just using the philosophy as cover for criminal enterpr
     -> lore_hub_handler
 
 === philosophy_danger_assessment ===
-#speaker:agent_haxolottle
-Haxolottle: The true believers, without question.
+Haxolottle: Haxolottle: The true believers, without question.
 
 Haxolottle: Criminals can be caught, assets seized, organizations dismantled. Nihilists burn out eventually—chaos for its own sake is exhausting.
 
@@ -186,8 +180,7 @@ Haxolottle: That makes them harder to predict, harder to deter, and much more da
 -> lore_hub_handler
 
 === philosophy_redemption_question ===
-#speaker:agent_haxolottle
-Haxolottle looks thoughtful.
+Haxolottle: Haxolottle looks thoughtful.
 
 Haxolottle: You're asking the right questions, Agent. That shows good judgment.
 
@@ -206,7 +199,6 @@ Haxolottle: Not everyone wearing an ENTROPY badge is beyond saving. Some are jus
 // ===========================================
 
 === entropy_cells_handler ===
-#speaker:agent_haxolottle
 ~ discussed_entropy_cells = true
 ~ handler_influence += 5
 ~ conversation_depth += 1
@@ -235,7 +227,6 @@ Haxolottle: **Ransomware Incorporated**—exactly what it sounds like. Criminal 
     -> lore_hub_handler
 
 === specific_cell_details ===
-#speaker:agent_haxolottle
 
 Haxolottle: Which one are you curious about?
 
@@ -251,7 +242,6 @@ Haxolottle: Which one are you curious about?
     -> lore_hub_handler
 
 === digital_vanguard_details ===
-#speaker:agent_haxolottle
 ~ handler_influence += 3
 
 Haxolottle: Digital Vanguard—the tech perfectionists of ENTROPY. They treat hacking like an art form.
@@ -265,7 +255,6 @@ Haxolottle: Their operations tend to be surgical—highly targeted, meticulously
 -> lore_hub_handler
 
 === critical_mass_details ===
-#speaker:agent_haxolottle
 ~ handler_influence += 3
 
 Haxolottle: Critical Mass—the infrastructure saboteurs. They're after the systems that keep society running.
@@ -279,7 +268,6 @@ Haxolottle: They've been linked to several near-miss incidents. We've stopped th
 -> lore_hub_handler
 
 === ghost_protocol_details ===
-#speaker:agent_haxolottle
 ~ handler_influence += 3
 
 Haxolottle: Ghost Protocol—the information brokers and surveillance specialists.
@@ -293,7 +281,6 @@ Haxolottle: Encountering Ghost Protocol is weird because they're often not hosti
 -> lore_hub_handler
 
 === ransomware_inc_details ===
-#speaker:agent_haxolottle
 ~ handler_influence += 3
 
 Haxolottle: Ransomware Incorporated—the criminal enterprise wing of ENTROPY.
@@ -307,7 +294,6 @@ Haxolottle: Don't underestimate them just because they're financially motivated.
 -> lore_hub_handler
 
 === cell_coordination_explanation ===
-#speaker:agent_haxolottle
 ~ handler_influence += 8
 
 Haxolottle: Good question. The answer is: we're not entirely certain.
@@ -327,7 +313,6 @@ Haxolottle: It's one of the biggest intelligence gaps we have. How do decentrali
 // ===========================================
 
 === safetynet_mission_handler ===
-#speaker:agent_haxolottle
 ~ discussed_safetynet_mission = true
 ~ handler_influence += 5
 ~ conversation_depth += 1
@@ -356,8 +341,7 @@ Haxolottle: The philosophy is "best defense is a preemptive offense." Don't wait
     -> lore_hub_handler
 
 === legal_authority_question ===
-#speaker:agent_haxolottle
-Haxolottle: Complicated question. Complicated answer.
+Haxolottle: Haxolottle: Complicated question. Complicated answer.
 
 Haxolottle: We operate under classified executive orders and emergency powers acts. Technically legal, practically untested in court, definitely not something the public knows about.
 
@@ -372,8 +356,7 @@ Haxolottle: If an operation goes wrong, SAFETYNET doesn't officially exist. You'
 -> lore_hub_handler
 
 === oversight_question ===
-#speaker:agent_haxolottle
-Haxolottle: Officially? Select committee members in certain governments. People with security clearances so high they probably don't exist on paper.
+Haxolottle: Haxolottle: Officially? Select committee members in certain governments. People with security clearances so high they probably don't exist on paper.
 
 Haxolottle: Practically? We're overseen by SAFETYNET Command Council—people like Director Netherton. They report to... someone. I'm not cleared to know the full chain of command, and honestly, I'm okay with that.
 
@@ -390,7 +373,6 @@ Haxolottle: We're given enormous power and minimal oversight. That makes our int
 // ===========================================
 
 === shadow_war_handler ===
-#speaker:agent_haxolottle
 ~ discussed_shadow_war = true
 ~ handler_influence += 8
 ~ conversation_depth += 1
@@ -420,8 +402,7 @@ Haxolottle: It's exhausting, honestly. A war where victories aren't celebrated a
     -> lore_hub_handler
 
 === shadow_war_appreciation ===
-#speaker:agent_haxolottle
-Haxolottle smiles, genuinely touched.
+Haxolottle: Haxolottle smiles, genuinely touched.
 
 Haxolottle: Thank you, Agent. That means more than you might think.
 
@@ -431,8 +412,7 @@ Haxolottle: We're in this together now. Every operation you run, every threat yo
 -> lore_hub_handler
 
 === shadow_war_psychological ===
-#speaker:agent_haxolottle
-Haxolottle takes a moment before responding.
+Haxolottle: Haxolottle takes a moment before responding.
 
 Haxolottle: Honestly? It's hard. Some days I wonder if we're making any difference. We stop one cell, two more spring up. We close one vulnerability, ENTROPY finds three others.
 
@@ -451,7 +431,6 @@ Haxolottle: You'll have hard days too, Agent. When that happens, remember you're
 // ===========================================
 
 === field_ops_advice_handler ===
-#speaker:agent_haxolottle
 ~ discussed_field_ops = true
 ~ handler_influence += 5
 ~ conversation_depth += 1
@@ -481,7 +460,6 @@ Haxolottle: **Fourth**: When in doubt, slow down. Rushing causes mistakes. Bette
     -> lore_hub_handler
 
 === complications_advice ===
-#speaker:agent_haxolottle
 ~ handler_influence += 8
 
 Haxolottle: When things go wrong—and they will—focus on what you can control.
@@ -504,7 +482,6 @@ Haxolottle: *laughs* You're catching on.
 -> lore_hub_handler
 
 === fear_management ===
-#speaker:agent_haxolottle
 ~ handler_influence += 12
 
 Haxolottle becomes more serious.
@@ -527,7 +504,6 @@ Haxolottle: I've been exactly where you'll be—heart pounding, hands shaking, w
 // ===========================================
 
 === cyber_physical_handler ===
-#speaker:agent_haxolottle
 ~ discussed_cyber_physical = true
 ~ handler_influence += 8
 ~ conversation_depth += 1
@@ -556,7 +532,6 @@ Haxolottle: Best CYBER-PHYSICAL operations use both in concert—a beautiful sym
     -> lore_hub_handler
 
 === cyber_physical_scenarios ===
-#speaker:agent_haxolottle
 ~ handler_influence += 5
 
 Haxolottle: Common scenarios? Let me walk you through the hits:
@@ -574,7 +549,6 @@ Haxolottle: You'll run all of these eventually. Each one teaches you something a
 -> lore_hub_handler
 
 === cyber_physical_challenges ===
-#speaker:agent_haxolottle
 ~ handler_influence += 8
 
 Haxolottle: The challenge is cognitive load. You're managing two completely different threat models simultaneously.
@@ -597,7 +571,6 @@ Haxolottle: But that's why you're here. You've got the foundations in both domai
 // ===========================================
 
 === handler_backstory ===
-#speaker:agent_haxolottle
 ~ knows_handler_backstory = true
 ~ handler_influence += 15
 ~ conversation_depth += 2
@@ -629,7 +602,6 @@ Haxolottle: During those three days, the only reading material I had was biology
     -> lore_hub_handler
 
 === why_handler_transition ===
-#speaker:agent_haxolottle
 ~ handler_influence += 10
 
 Haxolottle: Good question. Honestly? I was getting burned out.
@@ -648,7 +620,6 @@ Haxolottle: And I get to make all the axolotl metaphors I want without someone t
 -> lore_hub_handler
 
 === operation_regenerate_story ===
-#speaker:agent_haxolottle
 ~ handler_influence += 12
 
 Haxolottle: Operation Regenerate. That's a story.
@@ -673,7 +644,6 @@ Haxolottle: Got out with intelligence that led to dismantling three connected ce
 // ===========================================
 
 === berlin_crisis_story ===
-#speaker:agent_haxolottle
 ~ knows_berlin_crisis = true
 ~ handler_influence += 20
 ~ director_influence += 10
@@ -703,7 +673,6 @@ Haxolottle: And it's why I trust him completely. He'll protect you, Agent. Even 
 // ===========================================
 
 === end_handler_conversation ===
-#speaker:agent_haxolottle
 
 {conversation_depth >= 5:
     Haxolottle: You ask good questions, Agent {player_name}. Curiosity is a valuable trait in this work. Keep thinking deeply about what we do and why.
@@ -723,7 +692,6 @@ Haxolottle: And it's why I trust him completely. He'll protect you, Agent. Even 
 // Entry point for technical support NPC (like Dr. Chen)
 === start_tech_support_lore ===
 ~ current_speaker = "tech_support"
-#speaker:dr_chen
 
 Dr. Chen: Got questions? I can explain technical details about ENTROPY's methods or our countermeasures. Rapid-fire style, hope you can keep up.
 
@@ -742,7 +710,6 @@ Dr. Chen: Got questions? I can explain technical details about ENTROPY's methods
     -> END
 
 === entropy_tactics_tech ===
-#speaker:dr_chen
 ~ discussed_entropy_tactics = true
 ~ tech_influence += 8
 
@@ -760,7 +727,6 @@ We counter with our own technical capabilities, but it's an arms race. They deve
 -> lore_hub_tech_support
 
 === safetynet_tech_methods ===
-#speaker:dr_chen
 ~ discussed_safetynet_methods = true
 ~ tech_influence += 8
 
@@ -778,7 +744,6 @@ It's like running a security research lab combined with a mission support center
 -> lore_hub_tech_support
 
 === cutting_edge_research ===
-#speaker:dr_chen
 ~ tech_influence += 15
 
 Dr. Chen speaks even faster, excited about the topic.
@@ -798,7 +763,6 @@ It's fascinating and terrifying simultaneously. We're at the frontier of cyberse
 
 === start_director_lore ===
 ~ current_speaker = "director"
-#speaker:director_netherton
 
 Director Netherton: You have questions regarding operational context, Agent?
 
@@ -816,7 +780,6 @@ Director Netherton: You have questions regarding operational context, Agent?
     -> END
 
 === safetynet_mandate_director ===
-#speaker:director_netherton
 ~ discussed_safetynet_mission = true
 ~ director_influence += 8
 
@@ -833,7 +796,6 @@ We are not vigilantes. We are not above the law. We operate in the gray areas th
 -> lore_hub_director
 
 === rules_of_engagement_director ===
-#speaker:director_netherton
 ~ discussed_moral_complexity = true
 ~ director_influence += 10
 
@@ -851,7 +813,6 @@ The power we wield demands discipline. Without it, we become the threat we're su
 -> lore_hub_director
 
 === safetynet_future_director ===
-#speaker:director_netherton
 ~ director_influence += 20
 
 Netherton pauses, considering the question carefully.

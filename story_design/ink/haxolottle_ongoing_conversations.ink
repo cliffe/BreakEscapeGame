@@ -78,7 +78,6 @@ EXTERNAL current_mission_number
 // ===========================================
 
 === phase_1_hub ===
-#speaker:agent_haxolottle
 
 {missions_together == 1:
     Haxolottle: So, we've got some downtime. Want to chat about non-work stuff? Per Regulation 847, personal conversation is encouraged for psychological wellbeing.
@@ -104,7 +103,6 @@ EXTERNAL current_mission_number
 // ----------------
 
 === hobbies_general ===
-#speaker:agent_haxolottle
 ~ talked_hobbies_general = true
 ~ friendship_level += 5
 ~ conversations_had += 1
@@ -136,7 +134,6 @@ Haxolottle: And I tinker with old electronics. Pull apart vintage computers, rep
     -> hobbies_electronics_followup
 
 === hobbies_scifi_followup ===
-#speaker:agent_haxolottle
 ~ friendship_level += 5
 
 Haxolottle: Oh, you read sci-fi? Nice! I'm partial to the stuff that explores emergence and complexity—you know, how simple rules create complex systems.
@@ -166,7 +163,6 @@ Haxolottle: What about you? What kind of stories do you gravitate toward?
     -> phase_1_hub
 
 === hobbies_swimming_followup ===
-#speaker:agent_haxolottle
 
 Haxolottle: That's fair. Swimming isn't for everyone. The whole "put your face in water and breathe at specific intervals" thing is surprisingly hard.
 
@@ -180,7 +176,6 @@ Haxolottle: Plus, it's one of the few activities where I can guarantee I'm not c
 -> phase_1_hub
 
 === hobbies_electronics_followup ===
-#speaker:agent_haxolottle
 
 Haxolottle: You'd think it'd be busman's holiday—working with electronics all day, then doing it for fun. But there's a difference.
 
@@ -200,7 +195,6 @@ Haxolottle: Plus, there's satisfaction in making a thirty-year-old computer boot
 // ----------------
 
 === axolotl_deep_dive ===
-#speaker:agent_haxolottle
 ~ talked_axolotl_obsession = true
 ~ friendship_level += 8
 ~ conversations_had += 1
@@ -229,7 +223,6 @@ Haxolottle: Found this section on axolotls—*Ambystoma mexicanum*. These amazin
     -> axolotl_joke_response
 
 === axolotl_operation_connection ===
-#speaker:agent_haxolottle
 ~ friendship_level += 5
 
 Haxolottle: It gave me a framework. See, I'd lost my original cover story—that identity was "severed" when the real person appeared. Dead. Gone.
@@ -246,7 +239,6 @@ Haxolottle: The metaphor stuck. Now every operation that goes sideways, I think:
 -> phase_1_hub
 
 === axolotl_biology_detail ===
-#speaker:agent_haxolottle
 ~ friendship_level += 5
 
 Haxolottle: *lights up with enthusiasm*
@@ -267,7 +259,6 @@ Haxolottle: Sorry, I can talk about this for hours. The point is: regeneration, 
 -> phase_1_hub
 
 === axolotl_joke_response ===
-#speaker:agent_haxolottle
 ~ friendship_level += 8
 ~ humor_shared += 1
 
@@ -294,7 +285,6 @@ Haxolottle: You're laughing, but I'm serious. The metaphor has kept me sane for 
 // ----------------
 
 === music_discussion ===
-#speaker:agent_haxolottle
 ~ talked_music_taste = true
 ~ friendship_level += 5
 ~ conversations_had += 1
@@ -325,7 +315,6 @@ Haxolottle: And then sometimes... *looks slightly embarrassed* ...sometimes I li
     -> music_nature_tease
 
 === music_ambient_detail ===
-#speaker:agent_haxolottle
 ~ friendship_level += 5
 
 Haxolottle: Oh, good taste! For concentration, I keep coming back to Eno's *Music for Airports*. It's designed to be ignorable but interesting—perfect for background.
@@ -349,7 +338,6 @@ Haxolottle: What about you? Any favorites?
     -> phase_1_hub
 
 === music_silence_response ===
-#speaker:agent_haxolottle
 
 Haxolottle: That's valid. Some people work better in complete silence. Brain needs quiet to process.
 
@@ -361,7 +349,6 @@ Haxolottle: But everyone's different. That's why we have noise-cancelling headph
 -> phase_1_hub
 
 === music_nature_tease ===
-#speaker:agent_haxolottle
 ~ friendship_level += 8
 ~ humor_shared += 1
 
@@ -385,7 +372,6 @@ Haxolottle: You can judge me, but I won't stop. I have a whole collection. "Thun
 // ----------------
 
 === coffee_chat ===
-#speaker:agent_haxolottle
 ~ talked_coffee_preferences = true
 ~ friendship_level += 4
 ~ conversations_had += 1
@@ -415,7 +401,6 @@ Haxolottle: Dr. Chen thinks I'm weird for it. They survive on energy drinks and 
     -> coffee_mug_discussion
 
 === coffee_tea_solidarity ===
-#speaker:agent_haxolottle
 ~ friendship_level += 5
 
 Haxolottle: A fellow tea person! Excellent. We're a minority in SAFETYNET.
@@ -430,7 +415,6 @@ Haxolottle: Consider it insider knowledge. Handler privilege.
 -> phase_1_hub
 
 === coffee_defense ===
-#speaker:agent_haxolottle
 
 Haxolottle: Hey, no judgment! Coffee works for a lot of people. Dr. Chen would probably collapse without it.
 
@@ -442,7 +426,6 @@ Haxolottle: As long as you're alert and functional, I don't care if you're power
 -> phase_1_hub
 
 === coffee_mug_discussion ===
-#speaker:agent_haxolottle
 ~ friendship_level += 8
 ~ humor_shared += 1
 
@@ -464,7 +447,6 @@ Haxolottle: Director Netherton pretends not to notice it in briefings, but I've 
 // ----------------
 
 === stress_management ===
-#speaker:agent_haxolottle
 ~ talked_stress_management = true
 ~ friendship_level += 10
 ~ conversations_had += 1
@@ -497,7 +479,6 @@ Haxolottle: I've had agents get hurt. I've had operations go wrong despite every
     -> stress_coping_methods
 
 === stress_honest_response ===
-#speaker:agent_haxolottle
 ~ friendship_level += 10
 
 Haxolottle: Of course. We're in this together, Agent. I'm not just a voice on comms—I'm a person who cares about whether you come back safe.
@@ -511,7 +492,6 @@ Haxolottle: You're not just an asset to me. You're a colleague. Maybe even a fri
 -> phase_1_hub
 
 === stress_mutual_understanding ===
-#speaker:agent_haxolottle
 ~ friendship_level += 15
 ~ trust_moments += 2
 
@@ -532,7 +512,6 @@ Haxolottle: And we do it together. That makes it bearable.
 -> phase_1_hub
 
 === stress_coping_methods ===
-#speaker:agent_haxolottle
 ~ friendship_level += 10
 
 Haxolottle: Honestly? I remind myself why we do this. ENTROPY is real. The threats are real. The people we protect—even though they don't know we exist—they're real.
@@ -552,7 +531,6 @@ Haxolottle: And... *slight smile* ...I have my ridiculous axolotl metaphors. Whe
 // ===========================================
 
 === phase_2_hub ===
-#speaker:agent_haxolottle
 
 {missions_together == 6:
     Haxolottle: We've been working together for a while now. Starting to feel like a real partnership. Got time to talk?
@@ -580,7 +558,6 @@ Haxolottle: And... *slight smile* ...I have my ridiculous axolotl metaphors. Whe
 // ----------------
 
 === philosophy_evolution ===
-#speaker:agent_haxolottle
 ~ talked_philosophy_change = true
 ~ friendship_level += 10
 ~ conversations_had += 1
@@ -614,7 +591,6 @@ Haxolottle: The philosophy that's stuck is: Do the work as ethically as you can 
     -> philosophy_immediate_good
 
 === philosophy_gray_areas ===
-#speaker:agent_haxolottle
 ~ friendship_level += 15
 ~ trust_moments += 1
 
@@ -630,7 +606,6 @@ Haxolottle: The day we stop feeling uncomfortable with the gray areas is the day
 -> phase_2_hub
 
 === philosophy_haunting_decision ===
-#speaker:agent_haxolottle
 ~ friendship_level += 20
 ~ vulnerable_moments += 2
 ~ hax_shared_doubt = true
@@ -665,7 +640,6 @@ Haxolottle: And I don't know if I would. If I could do it again, with the same i
     -> philosophy_shared_burden
 
 === philosophy_comfort_response ===
-#speaker:agent_haxolottle
 ~ friendship_level += 15
 
 Haxolottle: *slight smile* Thank you. I know that, intellectually. Regulation 911—mission objectives sometimes outweigh agent safety when lives are at stake.
@@ -678,7 +652,6 @@ Haxolottle: You're a good person, Agent {player_name}. I'm glad we're working to
 -> phase_2_hub
 
 === philosophy_shared_burden ===
-#speaker:agent_haxolottle
 ~ friendship_level += 25
 ~ trust_moments += 3
 
@@ -696,7 +669,6 @@ Haxolottle: And what we have is this. Honest conversations within the boundaries
 -> phase_2_hub
 
 === philosophy_immediate_good ===
-#speaker:agent_haxolottle
 ~ friendship_level += 8
 
 Haxolottle: That's a healthy approach. Zoom in on what you can control, the immediate impact. Today's mission. This operation. This prevented attack.
@@ -713,7 +685,6 @@ Haxolottle: That's sustainable. I should probably do more of that myself.
 // ----------------
 
 === handler_reality ===
-#speaker:agent_haxolottle
 ~ talked_handler_life = true
 ~ friendship_level += 12
 ~ conversations_had += 1
@@ -743,7 +714,6 @@ Haxolottle: And when things go wrong, I can only watch. I can't run in and help.
     -> handler_stress_acknowledgment
 
 === handler_appreciation ===
-#speaker:agent_haxolottle
 ~ friendship_level += 20
 ~ trust_moments += 1
 
@@ -759,7 +729,6 @@ Haxolottle: We're a team. You're my eyes and hands in the field. I'm your strate
 -> phase_2_hub
 
 === handler_field_return_question ===
-#speaker:agent_haxolottle
 ~ friendship_level += 12
 
 Haxolottle: *considers carefully*
@@ -776,7 +745,6 @@ Haxolottle: Plus, I'm better at this. Supporting multiple agents, seeing the str
 -> phase_2_hub
 
 === handler_stress_acknowledgment ===
-#speaker:agent_haxolottle
 ~ friendship_level += 15
 
 Haxolottle: It really is. Different kind of exhaustion.
@@ -797,7 +765,6 @@ Haxolottle: Trade-offs. Everything in SAFETYNET is trade-offs.
 // ----------------
 
 === field_nostalgia ===
-#speaker:agent_haxolottle
 ~ talked_field_nostalgia = true
 ~ friendship_level += 15
 ~ conversations_had += 1
@@ -827,7 +794,6 @@ Haxolottle: And honestly? I miss the simplicity. One mission, one objective, han
     -> field_nostalgia_memorable_op
 
 === field_nostalgia_negative ===
-#speaker:agent_haxolottle
 ~ friendship_level += 15
 
 Haxolottle: *laughs* Oh, plenty. The fear, for one. That sustained low-level anxiety of maintaining cover, wondering if today's the day someone sees through it.
@@ -842,7 +808,6 @@ Haxolottle: Plus, I hated the paperwork. At least as a handler, I'm the one rece
 -> phase_2_hub
 
 === field_nostalgia_shared_joy ===
-#speaker:agent_haxolottle
 ~ friendship_level += 20
 ~ trust_moments += 1
 
@@ -858,7 +823,6 @@ Haxolottle: That's part of why I love this partnership. You're really good at wh
 -> phase_2_hub
 
 === field_nostalgia_memorable_op ===
-#speaker:agent_haxolottle
 ~ friendship_level += 15
 
 Haxolottle: Most memorable? Hard to pick one... but there was this operation in Prague. Corporate espionage case, ENTROPY front company.
@@ -881,7 +845,6 @@ Haxolottle: That was the operation that convinced me I'd found the right line of
 // ----------------
 
 === weird_habits_discussion ===
-#speaker:agent_haxolottle
 ~ talked_weird_habits = true
 ~ friendship_level += 10
 ~ conversations_had += 1
@@ -917,7 +880,6 @@ Haxolottle: SAFETYNET gets in your head. You start treating normal life like an 
     -> weird_habits_healthy_question
 
 === weird_habits_shared ===
-#speaker:agent_haxolottle
 ~ friendship_level += 20
 ~ humor_shared += 1
 
@@ -933,7 +895,6 @@ Haxolottle: But hey, if there ever IS an emergency at a grocery store, we'll be 
 -> phase_2_hub
 
 === weird_habits_player_share ===
-#speaker:agent_haxolottle
 ~ friendship_level += 20
 ~ trust_moments += 2
 
@@ -951,7 +912,6 @@ Haxolottle: Honestly, it helps to know we're all doing this. Makes it feel less 
 -> phase_2_hub
 
 === weird_habits_healthy_question ===
-#speaker:agent_haxolottle
 ~ friendship_level += 10
 
 Haxolottle: *considers* Probably somewhere in between healthy professional awareness and mild paranoia.
@@ -975,7 +935,6 @@ Haxolottle: But it's worth checking in with yourself. "Is this useful vigilance 
 // ===========================================
 
 === conversation_end ===
-#speaker:agent_haxolottle
 
 {conversations_had >= 5 and friendship_level >= 40:
     Haxolottle: I really appreciate these talks, Agent {player_name}. Makes the work feel less isolating.

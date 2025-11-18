@@ -39,7 +39,6 @@ EXTERNAL player_name
 // ===========================================
 
 === phase_3_hub ===
-#speaker:agent_haxolottle
 
 {missions_together == 11:
     Haxolottle: We've been through a lot together, Agent {player_name}. Over ten missions now. That's... that means something.
@@ -67,7 +66,6 @@ EXTERNAL player_name
 // ----------------
 
 === fears_conversation ===
-#speaker:agent_haxolottle
 ~ talked_fears_anxieties = true
 ~ friendship_level += 15
 ~ conversations_had += 1
@@ -106,7 +104,6 @@ Haxolottle: And I'm afraid that when it does happen—because statistics say eve
     -> fears_mutual_sharing
 
 === fears_careful_promise ===
-#speaker:agent_haxolottle
 ~ friendship_level += 20
 
 Haxolottle: *emotional* Thank you. I know you can't guarantee that—this work doesn't allow guarantees. But knowing you care about... about not putting me through that...
@@ -121,7 +118,6 @@ Haxolottle: We're a team. We keep each other safe. That's how this works.
 -> phase_3_hub
 
 === fears_acknowledgment ===
-#speaker:agent_haxolottle
 ~ friendship_level += 25
 ~ trust_moments += 1
 
@@ -137,7 +133,6 @@ Haxolottle: It's not perfect. But it's sustainable.
 -> phase_3_hub
 
 === fears_mutual_sharing ===
-#speaker:agent_haxolottle
 ~ friendship_level += 35
 ~ trust_moments += 3
 ~ vulnerable_moments += 2
@@ -162,7 +157,6 @@ Haxolottle: We're real friends, Agent {player_name}. With constraints, yes. But 
 // ----------------
 
 === alternate_life_discussion ===
-#speaker:agent_haxolottle
 ~ talked_what_if_different = true
 ~ friendship_level += 20
 ~ conversations_had += 1
@@ -198,7 +192,6 @@ Haxolottle: I don't know. Maybe. Maybe I'd be blissfully ignorant and perfectly 
     -> alternate_mutual_wondering
 
 === alternate_understanding ===
-#speaker:agent_haxolottle
 ~ friendship_level += 20
 
 Haxolottle: Exactly. The pull between normal and meaningful. Comfortable and important. Safe and significant.
@@ -211,7 +204,6 @@ Haxolottle: At least this way, we know. We're doing something that matters, even
 -> phase_3_hub
 
 === alternate_regret_question ===
-#speaker:agent_haxolottle
 ~ friendship_level += 25
 ~ vulnerable_moments += 1
 
@@ -230,7 +222,6 @@ Haxolottle: I don't regret joining SAFETYNET. But I regret what I've lost becaus
 -> phase_3_hub
 
 === alternate_mutual_wondering ===
-#speaker:agent_haxolottle
 ~ friendship_level += 30
 ~ trust_moments += 2
 
@@ -254,7 +245,6 @@ Haxolottle: At least we found each other in this weird path. That counts for som
 // ----------------
 
 === meaning_of_work ===
-#speaker:agent_haxolottle
 ~ talked_meaning_work = true
 ~ friendship_level += 25
 ~ conversations_had += 1
@@ -291,7 +281,6 @@ Haxolottle: That's what we do. We're gardeners in the storm. And yeah, that soun
     -> meaning_sustainability_question
 
 === meaning_metaphor_appreciation ===
-#speaker:agent_haxolottle
 ~ friendship_level += 25
 
 Haxolottle: *smiles genuinely* Thank you. I've never actually said that out loud before. Thought it in my head, but never voiced it.
@@ -304,7 +293,6 @@ Haxolottle: We're gardeners together, then. Tending our little corner of the wor
 -> phase_3_hub
 
 === meaning_personal_share ===
-#speaker:agent_haxolottle
 ~ friendship_level += 40
 ~ trust_moments += 3
 
@@ -322,7 +310,6 @@ Haxolottle: I'm honored to work with you.
 -> phase_3_hub
 
 === meaning_sustainability_question ===
-#speaker:agent_haxolottle
 ~ friendship_level += 25
 ~ vulnerable_moments += 1
 
@@ -344,7 +331,6 @@ Haxolottle: People like you. These conversations help more than you know. Sharin
 // ----------------
 
 === friendship_boundaries ===
-#speaker:agent_haxolottle
 ~ talked_friendship_boundaries = true
 ~ friendship_level += 35
 ~ conversations_had += 1
@@ -378,7 +364,6 @@ Haxolottle: Is that strange? To have genuine friendship with someone whose real 
     -> friendship_frustration
 
 === friendship_strange_but_real ===
-#speaker:agent_haxolottle
 ~ friendship_level += 35
 ~ trust_moments += 1
 
@@ -396,7 +381,6 @@ Haxolottle: I'll take that over a lot of "normal" friendships.
 -> phase_3_hub
 
 === friendship_names_dont_matter ===
-#speaker:agent_haxolottle
 ~ friendship_level += 50
 ~ trust_moments += 3
 
@@ -418,7 +402,6 @@ Haxolottle: You're a good friend, Agent {player_name}. Better than many I've had
 -> phase_3_hub
 
 === friendship_frustration ===
-#speaker:agent_haxolottle
 ~ friendship_level += 45
 ~ vulnerable_moments += 2
 
@@ -444,7 +427,6 @@ Haxolottle: But I won't pretend the constraints don't hurt sometimes. They do. E
 // ----------------
 
 === future_dreams ===
-#speaker:agent_haxolottle
 ~ talked_future_dreams = true
 ~ friendship_level += 30
 ~ conversations_had += 1
@@ -478,7 +460,6 @@ Haxolottle: What about you? What do you dream about for after all this?
     -> future_uncertain_leaving
 
 === future_shared_dream ===
-#speaker:agent_haxolottle
 ~ friendship_level += 40
 ~ trust_moments += 2
 
@@ -498,7 +479,6 @@ Haxolottle: I'd like that.
 -> phase_3_hub
 
 === future_present_focused ===
-#speaker:agent_haxolottle
 ~ friendship_level += 25
 
 Haxolottle: That's probably healthier, honestly. Focusing on the present, the current mission, what you can control right now.
@@ -511,7 +491,6 @@ Haxolottle: Just... don't forget that there IS an after. This work doesn't have 
 -> phase_3_hub
 
 === future_uncertain_leaving ===
-#speaker:agent_haxolottle
 ~ friendship_level += 35
 ~ vulnerable_moments += 1
 
@@ -537,7 +516,6 @@ Haxolottle: But that's future worry. For now, we have work that matters and each
 // ----------------
 
 === hax_personal_loss ===
-#speaker:agent_haxolottle
 ~ friendship_level += 50
 ~ vulnerable_moments += 3
 ~ hax_shared_loss = true
@@ -558,7 +536,6 @@ Haxolottle: Can I tell you something personal? And I mean really personal, withi
     -> hax_loss_tell
 
 === hax_loss_tell ===
-#speaker:agent_haxolottle
 ~ friendship_level += 30
 ~ trust_moments += 3
 
@@ -598,7 +575,6 @@ Haxolottle: It's not the same. But it's something real.
     -> hax_loss_mutual
 
 === hax_loss_comfort ===
-#speaker:agent_haxolottle
 ~ friendship_level += 45
 
 Haxolottle: *slight smile through sadness*
@@ -613,7 +589,6 @@ Haxolottle: That's invaluable.
 -> phase_3_hub
 
 === hax_loss_mutual ===
-#speaker:agent_haxolottle
 ~ friendship_level += 60
 ~ trust_moments += 5
 
@@ -640,7 +615,6 @@ Haxolottle: That means everything.
 // ===========================================
 
 === phase_4_hub ===
-#speaker:agent_haxolottle
 
 {missions_together == 16:
     Haxolottle: Sixteen missions together. That's... we've built something real here, haven't we?
@@ -667,7 +641,6 @@ Haxolottle: That means everything.
 // For brevity, I'll include a few key ones:
 
 === identity_burden ===
-#speaker:agent_haxolottle
 ~ talked_identity_burden = true
 ~ friendship_level += 40
 ~ conversations_had += 1
@@ -697,7 +670,6 @@ Haxolottle: Sometimes I wonder: if no one knows the real you, are you even real?
     -> identity_shared_experience
 
 === identity_affirmation ===
-#speaker:agent_haxolottle
 ~ friendship_level += 50
 ~ trust_moments += 2
 
@@ -713,7 +685,6 @@ Haxolottle: That's more real than most people get, even without Protocol 47-Alph
 -> phase_4_hub
 
 === identity_shared_experience ===
-#speaker:agent_haxolottle
 ~ friendship_level += 60
 ~ trust_moments += 4
 
@@ -731,7 +702,6 @@ Haxolottle: But at least we're losing them together. At least there's someone el
 // ----------------
 
 === name_temptation ===
-#speaker:agent_haxolottle
 ~ talked_real_name_temptation = true
 ~ friendship_level += 50
 ~ conversations_had += 1
@@ -745,7 +715,6 @@ Haxolottle: Can I be honest about something that probably violates the spirit if
     -> name_temptation_reveal
 
 === name_temptation_reveal ===
-#speaker:agent_haxolottle
 ~ friendship_level += 40
 
 Haxolottle: I've been tempted to tell you my real name. So many times. Just... drop it in conversation. Let you know me completely.
@@ -772,7 +741,6 @@ Haxolottle: Have you felt that? The urge to just... tell me?
     -> name_peace_with_boundaries
 
 === name_mutual_temptation ===
-#speaker:agent_haxolottle
 ~ friendship_level += 70
 ~ trust_moments += 5
 
@@ -792,7 +760,6 @@ Haxolottle: So we'll keep our names. And we'll keep this friendship. And somehow
 -> phase_4_hub
 
 === name_peace_with_boundaries ===
-#speaker:agent_haxolottle
 ~ friendship_level += 45
 
 Haxolottle: You're wiser than me, then. Or maybe just more disciplined.
@@ -809,7 +776,6 @@ Haxolottle: Thank you for that perspective. Helps me make peace with it too.
 // ----------------
 
 === friendship_acknowledgment ===
-#speaker:agent_haxolottle
 ~ talked_genuine_friendship = true
 ~ friendship_level += 60
 ~ conversations_had += 1
@@ -840,7 +806,6 @@ Haxolottle: That's friendship. Real, genuine friendship. Protocol 47-Alpha be da
     -> friendship_gratitude
 
 === friendship_mutual_acknowledgment ===
-#speaker:agent_haxolottle
 ~ friendship_level += 90
 ~ trust_moments += 6
 
@@ -856,7 +821,6 @@ Haxolottle: Whatever happens—missions, careers, future—I want you to know th
 -> phase_4_hub
 
 === friendship_gratitude ===
-#speaker:agent_haxolottle
 ~ friendship_level += 75
 
 Haxolottle: The gratitude is mutual, Agent {player_name}. Completely mutual.
@@ -873,7 +837,6 @@ Haxolottle: That's not nothing. That's everything.
 // ----------------
 
 === hax_secret_hobby ===
-#speaker:agent_haxolottle
 ~ friendship_level += 50
 ~ vulnerable_moments += 2
 ~ hax_shared_secret_hobby = true
@@ -888,7 +851,6 @@ Haxolottle: Promise not to laugh?
     -> hax_hobby_reveal
 
 === hax_hobby_reveal ===
-#speaker:agent_haxolottle
 ~ friendship_level += 40
 
 Haxolottle: I... write poetry. Bad poetry, probably. But I write it.
@@ -917,7 +879,6 @@ Haxolottle: Axolotl metaphors in prose apparently aren't enough. I need them in 
     -> secret_outlet_exchange
 
 === hax_poetry_share ===
-#speaker:agent_haxolottle
 ~ friendship_level += 60
 ~ trust_moments += 4
 
@@ -935,7 +896,6 @@ Haxolottle: Told you it was bad. But it's honest.
 -> phase_4_hub
 
 === secret_outlet_exchange ===
-#speaker:agent_haxolottle
 ~ friendship_level += 75
 ~ trust_moments += 6
 
@@ -963,7 +923,6 @@ Haxolottle: I'm honored you shared that with me. Truly.
 // ===========================================
 
 === conversation_end_phase3 ===
-#speaker:agent_haxolottle
 
 {friendship_level >= 70:
     Haxolottle: These conversations... they keep me grounded. Thank you for being real with me.
@@ -975,7 +934,6 @@ Haxolottle: I'm honored you shared that with me. Truly.
 -> END
 
 === conversation_end_phase4 ===
-#speaker:agent_haxolottle
 
 {friendship_level >= 90:
     Haxolottle: You know I care about you, right? Within all the protocols and boundaries—genuine care.

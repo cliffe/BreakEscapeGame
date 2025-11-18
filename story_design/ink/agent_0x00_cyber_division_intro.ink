@@ -27,8 +27,7 @@ EXTERNAL previous_missions_completed
 [Location: SAFETYNET Headquarters, Director's Office]
 [Time: 0900 hours]
 
-#speaker:narration
-The elevator doors open with a soft chime. You step into the corridor of SAFETYNET's executive level—a place you've only heard about in whispers. Sleek, minimalist, and impossibly secure.
+Narrator: The elevator doors open with a soft chime. You step into the corridor of SAFETYNET's executive level—a place you've only heard about in whispers. Sleek, minimalist, and impossibly secure.
 
 The walls are lined with framed commendations and photos of operations you'll probably never be cleared to know about. Each door bears only a number, no names.
 
@@ -60,20 +59,17 @@ No explanation. No context. Just the summons.
 // ===========================================
 
 === directors_office ===
-#speaker:narration
-You reach Office 7A. The door is already open.
+Narrator: You reach Office 7A. The door is already open.
 
 Director Magnus Netherton sits behind an immaculate desk, reviewing something on a tablet. He's exactly as described—impeccably dressed in a charcoal suit, gray at the temples, and radiating the kind of authority that comes from two decades of making life-or-death decisions.
 
 Without looking up:
 
-#speaker:director_netherton
-Agent {player_name}. You're three minutes early. Acceptable.
+Netherton: Agent {player_name}. You're three minutes early. Acceptable.
 
 He gestures to a chair.
 
-#speaker:director_netherton
-Please, sit.
+Netherton: Please, sit.
 
 * [Sit immediately]
     You take the offered seat, maintaining professional posture.
@@ -92,11 +88,9 @@ Please, sit.
     -> first_briefing
 
 === premature_question ===
-#speaker:director_netherton
-Netherton finally looks up, his expression unreadable.
+Netherton: Netherton finally looks up, his expression unreadable.
 
-#speaker:director_netherton
-You'll find out momentarily, Agent. Patience is a virtue outlined in handbook section 3.4—though I suspect you already know that.
+Netherton: You'll find out momentarily, Agent. Patience is a virtue outlined in handbook section 3.4—though I suspect you already know that.
 
 He returns his attention to the tablet for exactly five more seconds, then sets it down.
 
@@ -107,8 +101,7 @@ He returns his attention to the tablet for exactly five more seconds, then sets 
 // ===========================================
 
 === first_briefing ===
-#speaker:director_netherton
-Your performance over the past {previous_missions_completed > 0: {previous_missions_completed} operations | several months} has been noted.
+Netherton: Your performance over the past {previous_missions_completed > 0: {previous_missions_completed} operations | several months} has been noted.
 
 {player_attitude == "confident":
     Netherton: You carry yourself with confidence. Good. You'll need that.
@@ -120,18 +113,15 @@ Your performance over the past {previous_missions_completed > 0: {previous_missi
     Netherton: Your analytical approach to challenges has not gone unnoticed.
 }
 
-#speaker:director_netherton
-You've proven yourself capable in {previous_missions_completed > 0: fieldwork | your previous assignments}. However, SAFETYNET has a more... specialized need for your skills.
+Netherton: You've proven yourself capable in {previous_missions_completed > 0: fieldwork | your previous assignments}. However, SAFETYNET has a more... specialized need for your skills.
 
 He taps the tablet, and a holographic display materializes above his desk—organizational charts, mission statistics, threat assessments.
 
-#speaker:director_netherton
-The CYBER-PHYSICAL division. Our operatives who engage with threats that exist at the intersection of digital and physical security.
+Netherton: The CYBER-PHYSICAL division. Our operatives who engage with threats that exist at the intersection of digital and physical security.
 
 The display shifts to show images: server rooms, corporate facilities, critical infrastructure, research labs.
 
-#speaker:director_netherton
-ENTROPY doesn't simply hack systems from a distance, Agent. They infiltrate facilities. They compromise supply chains. They plant hardware backdoors. They manipulate both silicon and society.
+Netherton: ENTROPY doesn't simply hack systems from a distance, Agent. They infiltrate facilities. They compromise supply chains. They plant hardware backdoors. They manipulate both silicon and society.
 
 * [Express eagerness to join]
     ~ player_attitude = "eager"
@@ -152,49 +142,41 @@ ENTROPY doesn't simply hack systems from a distance, Agent. They infiltrate faci
     -> why_selected
 
 === eager_response ===
-#speaker:director_netherton
-Netherton's expression doesn't change, but there's something that might be approval in his eyes.
+Netherton: Netherton's expression doesn't change, but there's something that might be approval in his eyes.
 
-#speaker:director_netherton
-Enthusiasm is noted, Agent. However, there are protocols. Per handbook section 12.3, new division assignments require a comprehensive briefing and handler assignment.
+Netherton: Enthusiasm is noted, Agent. However, there are protocols. Per handbook section 12.3, new division assignments require a comprehensive briefing and handler assignment.
 
 -> division_details
 
 === division_details ===
-#speaker:director_netherton
-The CYBER-PHYSICAL division handles operations requiring both cyber security expertise and physical infiltration capability.
+Netherton: The CYBER-PHYSICAL division handles operations requiring both cyber security expertise and physical infiltration capability.
 
 He highlights several case files on the display:
 
-#speaker:director_netherton
-- Facility infiltration to access air-gapped systems
-- Physical implantation of monitoring devices
-- On-site network penetration and data exfiltration
-- Supply chain interdiction
-- Hardware security assessments of critical infrastructure
+Netherton: - Facility infiltration to access air-gapped systems
+Netherton: - Physical implantation of monitoring devices
+Netherton: - On-site network penetration and data exfiltration
+Netherton: - Supply chain interdiction
+Netherton: - Hardware security assessments of critical infrastructure
 
 {not knows_cyber_division:
     ~ knows_cyber_division = true
 }
 
-#speaker:director_netherton
-Unlike pure cyber operations conducted remotely, or pure physical security assessments, CYBER-PHYSICAL operatives must excel at both. The margin for error is... minimal.
+Netherton: Unlike pure cyber operations conducted remotely, or pure physical security assessments, CYBER-PHYSICAL operatives must excel at both. The margin for error is... minimal.
 
 -> handler_introduction_setup
 
 === why_selected ===
-#speaker:director_netherton
-A valid question.
+Netherton: A valid question.
 
 He pulls up what appears to be your personnel file.
 
-#speaker:director_netherton
-Your technical proficiency is well-documented. Your adaptability in the field has been demonstrated repeatedly. And perhaps most importantly...
+Netherton: Your technical proficiency is well-documented. Your adaptability in the field has been demonstrated repeatedly. And perhaps most importantly...
 
 He looks directly at you.
 
-#speaker:director_netherton
-You complete missions while adhering to operational protocols. A rarer combination than one might expect.
+Netherton: You complete missions while adhering to operational protocols. A rarer combination than one might expect.
 
 {player_attitude == "cautious":
     Netherton: Your cautious nature is an asset, not a liability. CYBER-PHYSICAL operations require agents who think before they act.
@@ -205,13 +187,11 @@ You complete missions while adhering to operational protocols. A rarer combinati
 -> division_details
 
 === handler_introduction_setup ===
-#speaker:director_netherton
-Per standard operating procedure outlined in handbook section 14.7, you will be assigned a dedicated handler for CYBER-PHYSICAL operations.
+Netherton: Per standard operating procedure outlined in handbook section 14.7, you will be assigned a dedicated handler for CYBER-PHYSICAL operations.
 
 He presses a button on his desk.
 
-#speaker:director_netherton
-Someone with extensive field experience who can provide real-time support during your operations.
+Netherton: Someone with extensive field experience who can provide real-time support during your operations.
 
 The office door opens.
 
@@ -223,16 +203,13 @@ The office door opens.
 // ===========================================
 
 === haxolottle_entrance ===
-#speaker:narration
-A figure enters—relaxed posture, tech-casual attire, holding what appears to be a coffee mug with an unusual design. They look comfortable in a way that suggests years of experience.
+Narrator: A figure enters—relaxed posture, tech-casual attire, holding what appears to be a coffee mug with an unusual design. They look comfortable in a way that suggests years of experience.
 
-#speaker:agent_haxolottle
-Agent {player_name}, I presume?
+Haxolottle: Agent {player_name}, I presume?
 
 They extend a hand for a handshake.
 
-#speaker:agent_haxolottle
-Agent 0x99. Callsign "Haxolottle." Yes, like the axolotl. Yes, I know it's unusual. And yes, there's a story behind it that I'll probably tell you over comms during a mission at exactly the wrong moment.
+Haxolottle: Agent 0x99. Callsign "Haxolottle." Yes, like the axolotl. Yes, I know it's unusual. And yes, there's a story behind it that I'll probably tell you over comms during a mission at exactly the wrong moment.
 
 * [Shake hands professionally]
     ~ haxolottle_trust += 5
@@ -255,65 +232,49 @@ Agent 0x99. Callsign "Haxolottle." Yes, like the axolotl. Yes, I know it's unusu
     -> axolotl_story_teaser
 
 === haxolottle_initial_banter ===
-#speaker:agent_haxolottle
-Haxolottle grins and glances at Director Netherton.
+Haxolottle: Haxolottle grins and glances at Director Netherton.
 
-#speaker:agent_haxolottle
-Still as warm and welcoming as ever, I see, Director.
+Haxolottle: Still as warm and welcoming as ever, I see, Director.
 
-#speaker:director_netherton
-Netherton doesn't look up from his tablet.
+Netherton: Netherton doesn't look up from his tablet.
 
-#speaker:director_netherton
-Agent 0x99, please maintain professional decorum per handbook section—
+Netherton: Agent 0x99, please maintain professional decorum per handbook section—
 
-#speaker:agent_haxolottle
-—Section 3.2.b, interpersonal conduct. I know, I know. Fifteen years and you're still citing the handbook at me.
+Haxolottle: —Section 3.2.b, interpersonal conduct. I know, I know. Fifteen years and you're still citing the handbook at me.
 
 Haxolottle turns back to you with a conspiratorial wink.
 
-#speaker:agent_haxolottle
-You'll get used to it. The Director's bark is worse than his bite. Actually, wait, that's not true. His bite is exactly as strict as his bark. But it comes from a good place.
+Haxolottle: You'll get used to it. The Director's bark is worse than his bite. Actually, wait, that's not true. His bite is exactly as strict as his bark. But it comes from a good place.
 
 -> handler_explanation
 
 === axolotl_story_teaser ===
-#speaker:agent_haxolottle
-Haxolottle's eyes light up.
+Haxolottle: Haxolottle's eyes light up.
 
-#speaker:agent_haxolottle
-Oh, you're going to fit in just fine. The short version: axolotls are masters of regeneration and adaptation. Lost a limb? Grow it back. Need to change your approach? Metamorphosis is an option.
+Haxolottle: Oh, you're going to fit in just fine. The short version: axolotls are masters of regeneration and adaptation. Lost a limb? Grow it back. Need to change your approach? Metamorphosis is an option.
 
-#speaker:director_netherton
-Director Netherton clears his throat.
+Netherton: Director Netherton clears his throat.
 
-#speaker:director_netherton
-Agent 0x99, perhaps we could save the amphibian biology lecture for after the formal briefing.
+Netherton: Agent 0x99, perhaps we could save the amphibian biology lecture for after the formal briefing.
 
-#speaker:agent_haxolottle
-Right, right. Professional decorum. Got it, Director.
+Haxolottle: Right, right. Professional decorum. Got it, Director.
 
 Haxolottle turns back to you with a smile.
 
-#speaker:agent_haxolottle
-Long version later. For now, just know: in this job, the ability to regenerate from setbacks and adapt to changing circumstances is everything. Hence, Haxolottle.
+Haxolottle: Long version later. For now, just know: in this job, the ability to regenerate from setbacks and adapt to changing circumstances is everything. Hence, Haxolottle.
 
 -> handler_explanation
 
 === handler_explanation ===
-#speaker:director_netherton
-Director Netherton stands, hands clasped behind his back.
+Netherton: Director Netherton stands, hands clasped behind his back.
 
-#speaker:director_netherton
-Agent 0x99 will serve as your handler for CYBER-PHYSICAL operations. They will provide mission briefings, real-time support during operations, and post-mission debriefing.
+Netherton: Agent 0x99 will serve as your handler for CYBER-PHYSICAL operations. They will provide mission briefings, real-time support during operations, and post-mission debriefing.
 
-#speaker:agent_haxolottle
-Translation: I'm the voice in your ear when you're standing in a server room you're not supposed to be in, trying to bypass security you definitely shouldn't be bypassing, while maintaining a cover story that seemed way more convincing during planning.
+Haxolottle: Translation: I'm the voice in your ear when you're standing in a server room you're not supposed to be in, trying to bypass security you definitely shouldn't be bypassing, while maintaining a cover story that seemed way more convincing during planning.
 
 ~ haxolottle_trust += 5
 
-#speaker:agent_haxolottle
-I've been doing this for fifteen years. Spent eight in the field before transitioning to handler work. Whatever you run into out there, I've probably seen it—or something close enough to help.
+Haxolottle: I've been doing this for fifteen years. Spent eight in the field before transitioning to handler work. Whatever you run into out there, I've probably seen it—or something close enough to help.
 
 * [Express confidence in the arrangement]
     ~ haxolottle_trust += 10
@@ -334,17 +295,13 @@ I've been doing this for fifteen years. Spent eight in the field before transiti
     -> disagreement_protocol
 
 === haxolottle_experience_brief ===
-#speaker:agent_haxolottle
-Haxolottle leans against the Director's desk casually—earning a slight frown from Netherton, which they ignore.
+Haxolottle: Haxolottle leans against the Director's desk casually—earning a slight frown from Netherton, which they ignore.
 
-#speaker:agent_haxolottle
-Infiltrated controlled corporations. Ran counter-intelligence on ENTROPY cells. Did some work that's still classified and will probably stay that way until we're both retired.
+Haxolottle: Infiltrated controlled corporations. Ran counter-intelligence on ENTROPY cells. Did some work that's still classified and will probably stay that way until we're both retired.
 
-#speaker:agent_haxolottle
-The operation that earned me the callsign involved being pinned in a compromised position for three days, surviving through adaptation and creative problem-solving. Turned a blown mission into our biggest intelligence coup that year.
+Haxolottle: The operation that earned me the callsign involved being pinned in a compromised position for three days, surviving through adaptation and creative problem-solving. Turned a blown mission into our biggest intelligence coup that year.
 
-#speaker:agent_haxolottle
-Point is: I know what you'll be dealing with. The fear. The adrenaline. The moment when everything goes sideways and you have to improvise. I've been there.
+Haxolottle: Point is: I know what you'll be dealing with. The fear. The adrenaline. The moment when everything goes sideways and you have to improvise. I've been there.
 
 ~ knows_handler_role = true
 ~ haxolottle_trust += 5
@@ -352,17 +309,13 @@ Point is: I know what you'll be dealing with. The fear. The adrenaline. The mome
 -> mission_philosophy_question
 
 === disagreement_protocol ===
-#speaker:director_netherton
-Netherton answers before Haxolottle can.
+Netherton: Netherton answers before Haxolottle can.
 
-#speaker:director_netherton
-An excellent question. Per handbook section 14.9, field agents have operational discretion when directly engaged. You are on-site. You have eyes on the situation. Your handler provides guidance, not commands.
+Netherton: An excellent question. Per handbook section 14.9, field agents have operational discretion when directly engaged. You are on-site. You have eyes on the situation. Your handler provides guidance, not commands.
 
-#speaker:agent_haxolottle
-What the Director's saying is: I'll give you my best assessment based on the big picture I can see. But you're the one in the room. If you've got a better read on the situation, I trust your judgment.
+Haxolottle: What the Director's saying is: I'll give you my best assessment based on the big picture I can see. But you're the one in the room. If you've got a better read on the situation, I trust your judgment.
 
-#speaker:agent_haxolottle
-That said, if I'm telling you something's dangerous, there's probably a very good reason. We're partners in this.
+Haxolottle: That said, if I'm telling you something's dangerous, there's probably a very good reason. We're partners in this.
 
 ~ netherton_respect += 10
 ~ haxolottle_trust += 10
@@ -370,17 +323,13 @@ That said, if I'm telling you something's dangerous, there's probably a very goo
 -> mission_philosophy_question
 
 === mission_philosophy_question ===
-#speaker:director_netherton
-Director Netherton pulls up a new display—threat assessments, ENTROPY cell activities, ongoing operations.
+Netherton: Director Netherton pulls up a new display—threat assessments, ENTROPY cell activities, ongoing operations.
 
-#speaker:director_netherton
-The CYBER-PHYSICAL division faces unique challenges. ENTROPY operates in the shadows between digital and physical security. They exploit the gaps where traditional defenses fail.
+Netherton: The CYBER-PHYSICAL division faces unique challenges. ENTROPY operates in the shadows between digital and physical security. They exploit the gaps where traditional defenses fail.
 
-#speaker:agent_haxolottle
-We're the ones who close those gaps. Sometimes with elegant technical solutions. Sometimes with a lockpick and a convincing cover story.
+Haxolottle: We're the ones who close those gaps. Sometimes with elegant technical solutions. Sometimes with a lockpick and a convincing cover story.
 
-#speaker:director_netherton
-Your approach to these operations will shape your effectiveness. I'm interested in understanding your operational philosophy, Agent {player_name}.
+Netherton: Your approach to these operations will shape your effectiveness. I'm interested in understanding your operational philosophy, Agent {player_name}.
 
 * [Prioritize thoroughness and caution]
     ~ player_attitude = "cautious"
@@ -405,72 +354,54 @@ Your approach to these operations will shape your effectiveness. I'm interested 
     -> adaptive_philosophy_response
 
 === cautious_philosophy_response ===
-#speaker:director_netherton
-Netherton nods approvingly.
+Netherton: Netherton nods approvingly.
 
-#speaker:director_netherton
-A methodical approach. This aligns well with handbook guidance on operational planning section 7.3. Measured execution reduces unnecessary exposure and maintains operational security.
+Netherton: A methodical approach. This aligns well with handbook guidance on operational planning section 7.3. Measured execution reduces unnecessary exposure and maintains operational security.
 
-#speaker:agent_haxolottle
-And when things inevitably go sideways—because they always do—that thorough planning gives you a foundation to build your improvisation on. Like an axolotl regenerating a limb: you need the core structure first.
+Haxolottle: And when things inevitably go sideways—because they always do—that thorough planning gives you a foundation to build your improvisation on. Like an axolotl regenerating a limb: you need the core structure first.
 
 There's that axolotl reference again.
 
 -> specialization_discussion
 
 === confident_philosophy_response ===
-#speaker:agent_haxolottle
-Haxolottle grins.
+Haxolottle: Haxolottle grins.
 
-#speaker:agent_haxolottle
-I like it. Decisiveness is underrated. Analysis paralysis has killed more operations than bold action, in my experience.
+Haxolottle: I like it. Decisiveness is underrated. Analysis paralysis has killed more operations than bold action, in my experience.
 
-#speaker:director_netherton
-Netherton looks less enthusiastic but not disapproving.
+Netherton: Netherton looks less enthusiastic but not disapproving.
 
-#speaker:director_netherton
-Confidence is valuable, Agent, provided it's paired with sound judgment. Per handbook section 8.5, field discretion requires balancing speed with caution.
+Netherton: Confidence is valuable, Agent, provided it's paired with sound judgment. Per handbook section 8.5, field discretion requires balancing speed with caution.
 
-#speaker:agent_haxolottle
-Translation: be bold, but don't be reckless. We're working on it together. If your instincts say "go," and I don't have a compelling reason to stop you, we go.
+Haxolottle: Translation: be bold, but don't be reckless. We're working on it together. If your instincts say "go," and I don't have a compelling reason to stop you, we go.
 
 -> specialization_discussion
 
 === adaptive_philosophy_response ===
-#speaker:agent_haxolottle
-Haxolottle actually looks impressed.
+Haxolottle: Haxolottle actually looks impressed.
 
-#speaker:agent_haxolottle
-Now that's the mindset. Adaptability. Flexibility. Like I said—axolotl thinking. The ability to regenerate your approach when the first one doesn't work.
+Haxolottle: Now that's the mindset. Adaptability. Flexibility. Like I said—axolotl thinking. The ability to regenerate your approach when the first one doesn't work.
 
-#speaker:director_netherton
-Director Netherton also appears satisfied.
+Netherton: Director Netherton also appears satisfied.
 
-#speaker:director_netherton
-A balanced perspective. The handbook acknowledges in section 14.2 that field conditions are inherently unpredictable. Agents who can adjust methodology while maintaining mission focus demonstrate advanced operational maturity.
+Netherton: A balanced perspective. The handbook acknowledges in section 14.2 that field conditions are inherently unpredictable. Agents who can adjust methodology while maintaining mission focus demonstrate advanced operational maturity.
 
-#speaker:agent_haxolottle
-In other words: you get it. Perfect. We're going to work well together.
+Haxolottle: In other words: you get it. Perfect. We're going to work well together.
 
 -> specialization_discussion
 
 === specialization_discussion ===
-#speaker:director_netherton
-Netherton dismisses the holographic display.
+Netherton: Netherton dismisses the holographic display.
 
-#speaker:director_netherton
-Agent 0x99 will handle your detailed orientation over the coming week. You'll receive technical briefings, facility access, and equipment assignments.
+Netherton: Agent 0x99 will handle your detailed orientation over the coming week. You'll receive technical briefings, facility access, and equipment assignments.
 
 He looks directly at you.
 
-#speaker:director_netherton
-The CYBER-PHYSICAL division handles the operations that are too complex for single-discipline approaches. You will encounter challenges that test both your technical capabilities and your field craft.
+Netherton: The CYBER-PHYSICAL division handles the operations that are too complex for single-discipline approaches. You will encounter challenges that test both your technical capabilities and your field craft.
 
-#speaker:agent_haxolottle
-What the Director's not saying is: you're going to be challenged. But you're also going to grow faster than you ever thought possible. We don't assign people to CYBER-PHYSICAL unless we believe they can handle it.
+Haxolottle: What the Director's not saying is: you're going to be challenged. But you're also going to grow faster than you ever thought possible. We don't assign people to CYBER-PHYSICAL unless we believe they can handle it.
 
-#speaker:director_netherton
-Quite. Do you have any questions before you begin orientation?
+Netherton: Quite. Do you have any questions before you begin orientation?
 
 * [Ask about first assignment]
     You: When will I receive my first CYBER-PHYSICAL operation?
@@ -485,30 +416,24 @@ Quite. Do you have any questions before you begin orientation?
     -> ready_to_begin
 
 === first_assignment_timing ===
-#speaker:director_netherton
-Netherton glances at his tablet.
+Netherton: Netherton glances at his tablet.
 
-#speaker:director_netherton
-Per protocol, new division assignments require a one-week orientation period. However, given current operational tempo and ENTROPY activity levels...
+Netherton: Per protocol, new division assignments require a one-week orientation period. However, given current operational tempo and ENTROPY activity levels...
 
 He looks at Haxolottle.
 
-#speaker:agent_haxolottle
-I've got a scenario developing that's perfect for a shakedown operation. Corporate facility, suspected ENTROPY infiltration, moderate complexity. Could be ready to brief in 72 hours.
+Haxolottle: I've got a scenario developing that's perfect for a shakedown operation. Corporate facility, suspected ENTROPY infiltration, moderate complexity. Could be ready to brief in 72 hours.
 
-#speaker:director_netherton
-Acceptable. Agent {player_name}, complete your orientation, review the required materials, and report to Agent 0x99 on Thursday at 0800 hours.
+Netherton: Acceptable. Agent {player_name}, complete your orientation, review the required materials, and report to Agent 0x99 on Thursday at 0800 hours.
 
 ~ netherton_respect += 5
 
 -> closing_briefing
 
 === training_guidance ===
-#speaker:agent_haxolottle
-Haxolottle answers first.
+Haxolottle: Haxolottle answers first.
 
-#speaker:agent_haxolottle
-Honestly? The best preparation is reviewing what you already know. You've got the fundamentals. Now it's about integrating them.
+Haxolottle: Honestly? The best preparation is reviewing what you already know. You've got the fundamentals. Now it's about integrating them.
 
 {specialization_interest == "cyber":
     Haxolottle: Your technical skills are solid. Brush up on physical infiltration basics—lockpicking, cover stories, reading floor plans. The cyber part, you've got.
@@ -520,8 +445,7 @@ Honestly? The best preparation is reviewing what you already know. You've got th
     Haxolottle: You've got a good foundation in both areas. Focus on integration—how to use physical access to enable cyber operations, and vice versa. That's where CYBER-PHYSICAL work gets interesting.
 }
 
-#speaker:director_netherton
-Additionally, review handbook sections 12 through 18. CYBER-PHYSICAL operations have specific protocols regarding evidence handling, data exfiltration, and operational security.
+Netherton: Additionally, review handbook sections 12 through 18. CYBER-PHYSICAL operations have specific protocols regarding evidence handling, data exfiltration, and operational security.
 
 ~ netherton_respect += 8
 ~ haxolottle_trust += 5
@@ -529,19 +453,15 @@ Additionally, review handbook sections 12 through 18. CYBER-PHYSICAL operations 
 -> closing_briefing
 
 === ready_to_begin ===
-#speaker:director_netherton
-Netherton almost smiles. Almost.
+Netherton: Netherton almost smiles. Almost.
 
-#speaker:director_netherton
-Confidence without arrogance. Acceptable. Agent 0x99, proceed with orientation protocol per handbook section 12.5.
+Netherton: Confidence without arrogance. Acceptable. Agent 0x99, proceed with orientation protocol per handbook section 12.5.
 
-#speaker:agent_haxolottle
-Copy that, Director.
+Haxolottle: Copy that, Director.
 
 Haxolottle gestures toward the door.
 
-#speaker:agent_haxolottle
-Come on, Agent {player_name}. Let me show you your new office space, introduce you to the team, and explain why the coffee on level 3 is better than level 5 despite what anyone tells you.
+Haxolottle: Come on, Agent {player_name}. Let me show you your new office space, introduce you to the team, and explain why the coffee on level 3 is better than level 5 despite what anyone tells you.
 
 ~ haxolottle_trust += 10
 ~ professional_impression = true
@@ -549,11 +469,9 @@ Come on, Agent {player_name}. Let me show you your new office space, introduce y
 -> closing_briefing
 
 === closing_briefing ===
-#speaker:director_netherton
-Director Netherton stands, signaling the meeting's conclusion.
+Netherton: Director Netherton stands, signaling the meeting's conclusion.
 
-#speaker:director_netherton
-Agent {player_name}, welcome to the CYBER-PHYSICAL division. Your performance will be evaluated continuously. I expect excellence.
+Netherton: Agent {player_name}, welcome to the CYBER-PHYSICAL division. Your performance will be evaluated continuously. I expect excellence.
 
 {netherton_respect >= 60:
     Netherton: Based on your record and this conversation, I believe you're capable of meeting that standard.
@@ -569,27 +487,21 @@ He extends his hand for a formal handshake.
     -> final_moment
 
 === final_moment ===
-#speaker:director_netherton
-Per handbook section 2.7, maintain operational security regarding your division assignment. Dismissed.
+Netherton: Per handbook section 2.7, maintain operational security regarding your division assignment. Dismissed.
 
 As you turn to leave with Haxolottle, the Director speaks once more:
 
-#speaker:director_netherton
-{netherton_respect >= 70: Agent {player_name}... good luck. | Agent... don't disappoint me.}
+Netherton: {netherton_respect >= 70: Agent {player_name}... good luck. | Agent... don't disappoint me.}
 
 The door closes behind you.
 
-#speaker:agent_haxolottle
-Haxolottle grins as you walk down the corridor.
+Haxolottle: Haxolottle grins as you walk down the corridor.
 
-#speaker:agent_haxolottle
-So! Welcome to CYBER-PHYSICAL. You survived a Netherton briefing without him citing the handbook more than... okay, he cited it a lot. But he likes you—I can tell.
+Haxolottle: So! Welcome to CYBER-PHYSICAL. You survived a Netherton briefing without him citing the handbook more than... okay, he cited it a lot. But he likes you—I can tell.
 
-#speaker:agent_haxolottle
-First rule of working with me: I will make axolotl metaphors. They're genuinely helpful about 60% of the time. Second rule: when I say "get out now," trust me and get out.
+Haxolottle: First rule of working with me: I will make axolotl metaphors. They're genuinely helpful about 60% of the time. Second rule: when I say "get out now," trust me and get out.
 
-#speaker:agent_haxolottle
-Everything else we'll figure out together. Ready to see your new workspace?
+Haxolottle: Everything else we'll figure out together. Ready to see your new workspace?
 
 * [Absolutely]
     ~ haxolottle_trust += 5
@@ -601,38 +513,30 @@ Everything else we'll figure out together. Ready to see your new workspace?
     -> team_tease
 
 === orientation_begins ===
-#speaker:agent_haxolottle
-Haxolottle leads you toward the elevators.
+Haxolottle: Haxolottle leads you toward the elevators.
 
-#speaker:agent_haxolottle
-One more thing—and this is important. We're partners in this work. I've got experience and perspective. You've got skills and fresh eyes. Best operations happen when we trust each other.
+Haxolottle: One more thing—and this is important. We're partners in this work. I've got experience and perspective. You've got skills and fresh eyes. Best operations happen when we trust each other.
 
 They press the elevator button.
 
-#speaker:agent_haxolottle
-So if you've got questions, ask. If something doesn't feel right, speak up. And if I tell you about axolotl regeneration during a critical moment... well, it'll probably be relevant. Probably.
+Haxolottle: So if you've got questions, ask. If something doesn't feel right, speak up. And if I tell you about axolotl regeneration during a critical moment... well, it'll probably be relevant. Probably.
 
 The elevator arrives.
 
-#speaker:agent_haxolottle
-Welcome to CYBER-PHYSICAL, Agent {player_name}. This is going to be interesting.
+Haxolottle: Welcome to CYBER-PHYSICAL, Agent {player_name}. This is going to be interesting.
 
 -> END
 
 === team_tease ===
-#speaker:agent_haxolottle
-Oh, you'll like them. We've got Dr. Chen in technical support—brilliant, talks incredibly fast, lives on energy drinks. There's a betting pool on whether they actually sleep.
+Haxolottle: Oh, you'll like them. We've got Dr. Chen in technical support—brilliant, talks incredibly fast, lives on energy drinks. There's a betting pool on whether they actually sleep.
 
-#speaker:agent_haxolottle
-Then there's Agent 0x42—you might not meet them directly. They're... mysterious. Legendary field operative. Appears cryptically, provides crucial information, vanishes. Very dramatic.
+Haxolottle: Then there's Agent 0x42—you might not meet them directly. They're... mysterious. Legendary field operative. Appears cryptically, provides crucial information, vanishes. Very dramatic.
 
-#speaker:agent_haxolottle
-And of course, there's the rest of the CYBER-PHYSICAL agents. Good people. We look out for each other out there.
+Haxolottle: And of course, there's the rest of the CYBER-PHYSICAL agents. Good people. We look out for each other out there.
 
 They press the elevator button.
 
-#speaker:agent_haxolottle
-You're joining a solid team, Agent. We've got your back.
+Haxolottle: You're joining a solid team, Agent. We've got your back.
 
 -> orientation_begins
 
