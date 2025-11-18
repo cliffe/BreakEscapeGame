@@ -1,10 +1,6 @@
-// ===========================================
-// CRYPTOGRAPHY LAB: ENCODING AND ENCRYPTION
-// Introduction to Cryptography
-// ===========================================
-// Game-Based Learning replacement for lab sheet
-// Original: cyber_security_landscape/4_encoding_encryption.md
-// ===========================================
+// Encoding and Encryption - Game Scenario Version
+// Based on HacktivityLabSheets: cyber_security_landscape/4_encoding_encryption.md
+// License: CC BY-SA 4.0
 
 // Global persistent state
 VAR haxolottle_rapport = 0
@@ -12,18 +8,12 @@ VAR haxolottle_rapport = 0
 // External variables
 EXTERNAL player_name
 
-// ===========================================
-// ENTRY POINT
-// ===========================================
-
 === start ===
-Haxolottle: Welcome to Cryptography Fundamentals, Agent {player_name}.
+Haxolottle: {player_name}, want to learn about encoding and encryption?
 
-Haxolottle: Today we're covering encoding and encryption - two concepts that sound similar but serve very different purposes.
+Haxolottle: These two concepts sound similar but serve very different purposes, little axolotl.
 
-Haxolottle: You'll learn about encoding schemes like Base64 and hexadecimal, symmetric encryption with AES and DES, and asymmetric cryptography with GPG.
-
-Haxolottle: These skills are essential for any security professional. Let's begin.
+Haxolottle: We'll cover encoding schemes like Base64 and hex, symmetric encryption with AES, and asymmetric cryptography with GPG.
 
 -> crypto_hub
 
@@ -50,9 +40,7 @@ Haxolottle: What would you like to explore?
     -> gpg_intro
 + [Show me the commands reference]
     -> commands_reference
-+ [I'm ready for the practical challenges]
-    -> ready_for_practice
-+ [That's all for now]
++ [I'm good for now]
     #exit_conversation
     -> END
 
@@ -380,38 +368,4 @@ Haxolottle: **Useful OpenSSL:**
 + [Back to main menu]
     -> crypto_hub
 
-// ===========================================
-// READY FOR PRACTICE
-// ===========================================
-
-=== ready_for_practice ===
-Haxolottle: Excellent. You've covered the fundamentals.
-
-Haxolottle: In your VM's home directory, you'll find CTF challenges testing these skills:
-- Decoding various encoded data
-- Decrypting symmetrically-encrypted files
-- Using GPG for secure communication
-- Breaking weak encryption
-
-Haxolottle: Practical tips:
-
-Haxolottle: **Recognize encoding schemes on sight**: Base64 ends in =, hex is 0-9 and a-f, binary is only 0 and 1.
-
-Haxolottle: **Try obvious passwords first**: "password", "admin", "123456". Weak keys are common.
-
-Haxolottle: **Check file headers**: `file` command identifies file types even if extension is wrong. Encoded/encrypted data looks like random bytes.
-
-Haxolottle: **Use CyberChef for quick analysis**: Web tool that chains encoding/decoding operations. Great for CTFs.
-
-Haxolottle: **Document what you try**: When attempting decryption, track what keys/methods you've tested. Easy to lose track.
-
-{haxolottle_rapport >= 50:
-    Haxolottle: You've asked excellent questions and engaged deeply with the material. You're well-prepared.
-}
-
-Haxolottle: Remember: encoding is reversible with no secret. Encryption requires keys. Symmetric uses same key for both. Asymmetric uses key pairs.
-
-Haxolottle: Now go break some crypto challenges. Good luck, Agent {player_name}.
-
-#exit_conversation
 -> END
