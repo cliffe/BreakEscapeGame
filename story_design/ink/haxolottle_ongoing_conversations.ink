@@ -659,7 +659,7 @@ Haxolottle: *slight smile* Thank you. I know that, intellectually. Regulation 91
 
 Haxolottle: Doesn't make it easier. But it helps to hear it from someone who understands. Someone who's been there.
 
-Haxolottle: You're a good person, Agent {player_name}. I'm glad we're working together.
+Haxolottle: You're a good person, Agent {player_name()}. I'm glad we're working together.
 
 ~ npc_haxolottle_friendship_level += 15
 -> phase_2_hub
@@ -951,7 +951,7 @@ Haxolottle: But it's worth checking in with yourself. "Is this useful vigilance 
 
 {
     - npc_haxolottle_conversations_had >= 5 and npc_haxolottle_friendship_level >= 40:
-        Haxolottle: I really appreciate these talks, Agent {player_name}. Makes the work feel less isolating.
+        Haxolottle: I really appreciate these talks, Agent {player_name()}. Makes the work feel less isolating.
     - else:
         Haxolottle: Alright. Back to the mission. Talk later.
 }

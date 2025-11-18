@@ -220,7 +220,7 @@ Netherton: Questions?
 
 + [I'm ready to proceed]
     Netherton: Excellent. *hands you mission packet* Review the details. Brief with Dr. Chen for equipment. Haxolottle will coordinate deployment.
-    Netherton: Agent {player_name}—*direct look*—execute this cleanly. We're counting on you.
+    Netherton: Agent {player_name()}—*direct look*—execute this cleanly. We're counting on you.
     #mission_briefing_complete
     -> netherton_main_hub
 
@@ -350,5 +350,3 @@ Netherton: Training opportunities. What areas interest you?
     Netherton: Dr. Chen runs technical workshops. I'll arrange access. They'll be pleased to have an agent interested in deep technical capability.
     ~ professional_reputation += 2
     -> netherton_main_hub
-
-=== END

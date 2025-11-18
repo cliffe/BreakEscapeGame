@@ -84,11 +84,11 @@ EXTERNAL current_mission_id()           // LOCAL - Current mission identifier
 
 {
     - total_missions_completed == 1:
-        Netherton: Agent {player_name}. I have a few minutes available. Is there something you wish to discuss?
+        Netherton: Agent {player_name()}. I have a few minutes available. Is there something you wish to discuss?
     - npc_netherton_respect >= 60:
         Netherton: Agent. Your performance has been noted. What can I address for you today?
     - else:
-        Netherton: Agent {player_name}. You have questions?
+        Netherton: Agent {player_name()}. You have questions?
 }
 
 + {not npc_netherton_discussed_handbook} [Ask about the Field Operations Handbook]
@@ -385,11 +385,11 @@ Netherton: Specific areas for development will be addressed in formal performanc
 
 {
     - npc_netherton_respect >= 70:
-        Netherton: Agent {player_name}. Your continued excellent performance has been noted. What do you wish to discuss?
+        Netherton: Agent {player_name()}. Your continued excellent performance has been noted. What do you wish to discuss?
     - npc_netherton_respect >= 60:
         Netherton: Agent. I have time for a brief discussion.
     - else:
-        Netherton: Agent {player_name}. What requires attention?
+        Netherton: Agent {player_name()}. What requires attention?
 }
 
 + {not npc_netherton_discussed_difficult_decisions} [Ask about making difficult command decisions]
@@ -771,11 +771,11 @@ Netherton: But that's the price of command. Acceptable trade for the impact I ca
 
 {
     - npc_netherton_respect >= 80:
-        Netherton: Agent {player_name}. *almost warmth* Your continued excellence is appreciated. What's on your mind?
+        Netherton: Agent {player_name()}. *almost warmth* Your continued excellence is appreciated. What's on your mind?
     - npc_netherton_respect >= 70:
         Netherton: Agent. I have time for a substantive discussion.
     - else:
-        Netherton: Agent {player_name}. What do you need?
+        Netherton: Agent {player_name()}. What do you need?
 }
 
 + {not npc_netherton_discussed_weight_of_command and npc_netherton_respect >= 75} [Ask about the weight of command]
@@ -1212,9 +1212,9 @@ Netherton: Though I sometimes suspect I only believe that because accepting the 
 
 {
     - npc_netherton_respect >= 90:
-        Netherton: {player_name}. *uses first name, extremely rare* We should talk.
+        Netherton: {player_name()}. *uses first name, extremely rare* We should talk.
     - npc_netherton_respect >= 80:
-        Netherton: Agent {player_name}. I value your perspective. What's on your mind?
+        Netherton: Agent {player_name()}. I value your perspective. What's on your mind?
     - else:
         Netherton: Agent. I have time.
 }
@@ -1592,7 +1592,7 @@ Netherton: The fact that you understand that—that protocols are tools, not rep
 
 {
     - npc_netherton_respect >= 70:
-        Netherton: Acceptable performance continues, Agent {player_name}. Dismissed.
+        Netherton: Acceptable performance continues, Agent {player_name()}. Dismissed.
     - npc_netherton_respect >= 55:
         Netherton: Carry on, Agent.
     - else:
@@ -1620,7 +1620,7 @@ Netherton: The fact that you understand that—that protocols are tools, not rep
 
 {
     - npc_netherton_respect >= 85:
-        Netherton: Agent {player_name}. *rare warmth* Your service is valued. Genuinely.
+        Netherton: Agent {player_name()}. *rare warmth* Your service is valued. Genuinely.
     - npc_netherton_respect >= 75:
         Netherton: Excellent work continues. Carry on, Agent.
     - else:
@@ -1634,7 +1634,7 @@ Netherton: The fact that you understand that—that protocols are tools, not rep
 
 {
     - npc_netherton_respect >= 95:
-        Netherton: {player_name}. *uses first name* It's been an honor working with you. Until next time.
+        Netherton: {player_name()}. *uses first name* It's been an honor working with you. Until next time.
     - npc_netherton_respect >= 85:
         Netherton: Thank you for your time, Agent. And for your service.
     - else:

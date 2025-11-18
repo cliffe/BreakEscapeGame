@@ -214,7 +214,7 @@ Haxolottle: Tell me the situation. What's the immediate threat?
 
 + [Equipment failure in critical situation]
     Haxolottle: *contacts Dr. Chen on second channel* Chen, I need you. Equipment failure, active operation.
-    Haxolottle: Agent {player_name}, Chen is on comms now. Walk them through the problem.
+    Haxolottle: Agent {player_name()}, Chen is on comms now. Walk them through the problem.
     -> equipment_crisis_support
 
 === crisis_solution_planning ===
@@ -265,7 +265,7 @@ Haxolottle: Route to waypoint Bravo: *provides detailed navigation*
 
 Haxolottle: I've got eyes on security feeds. I'll guide you around patrol patterns.
 
-Haxolottle: {player_name}—*firm but caring*—you've got this. I'm with you every step. Move now.
+Haxolottle: {player_name()}—*firm but caring*—you've got this. I'm with you every step. Move now.
 
 #emergency_extraction_active
 -> END
@@ -399,7 +399,7 @@ Haxolottle: *urgent typing* Okay. Either my feeds are compromised or ENTROPY cha
 Haxolottle: Recommend trusting your eyes over my monitors. Proceed with extreme caution. I'm investigating the discrepancy.
 
 {npc_haxolottle_friendship_level >= 50:
-    Haxolottle: *concerned* And {player_name}? Be careful. If my intel is wrong, you're more exposed than we thought.
+    Haxolottle: *concerned* And {player_name()}? Be careful. If my intel is wrong, you're more exposed than we thought.
     ~ npc_haxolottle_friendship_level += 5
 }
 
@@ -524,7 +524,7 @@ Haxolottle: Before we do the formal debrief—are you actually okay? Not the pro
     -> debrief_completion
 
 + [Downplay it professionally]
-    Haxolottle: *sees through it* Agent {player_name}. I watched that mission. It was rough. Don't minimize it.
+    Haxolottle: *sees through it* Agent {player_name()}. I watched that mission. It was rough. Don't minimize it.
     Haxolottle: Acknowledging difficulty isn't weakness. It's accurate assessment.
     -> rough_mission_debrief
 
@@ -546,7 +546,7 @@ Haxolottle: Debrief complete. After-action report will go to Netherton and opera
     ~ total_missions_completed += 1
 }
 
-Haxolottle: You did good work, {player_name}. Really.
+Haxolottle: You did good work, {player_name()}. Really.
 
 #debrief_complete
 -> haxolottle_main_hub
@@ -632,5 +632,3 @@ Haxolottle: And honestly? A lot of it is managing stress. Yours and ours. Keepin
     ~ npc_haxolottle_friendship_level += 10
     #handler_training_offered
     -> haxolottle_main_hub
-
-=== END
