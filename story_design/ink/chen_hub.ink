@@ -518,5 +518,3 @@ Dr. Chen: What interests you? Network security? Hardware hacking? Cryptography? 
     Dr. Chen: I'll mix practical skills with theoretical knowledge. Make you a more effective operator.
     ~ professional_reputation += 3
     -> chen_main_hub
-
-=== END

@@ -475,12 +475,13 @@ Dr. Chen: I might have a focus problem. But all of it's important! How do you pr
 
 === phase_2_hub ===
 
-{npc_chen_rapport >= 70:
-    Dr. Chen: {player_name}! Perfect timing. I just had a breakthrough on that encryption problem we discussed. Want to hear about it?
-- npc_chen_rapport >= 60:
-    Dr. Chen: Hey! Got some time? I could use a field agent's perspective on something.
-- else:
-    Dr. Chen: Agent {player_name}. What can I help with today?
+{
+    - npc_chen_rapport >= 70:
+        Dr. Chen: {player_name}! Perfect timing. I just had a breakthrough on that encryption problem we discussed. Want to hear about it?
+    - npc_chen_rapport >= 60:
+        Dr. Chen: Hey! Got some time? I could use a field agent's perspective on something.
+    - else:
+        Dr. Chen: Agent {player_name}. What can I help with today?
 }
 
 + {not npc_chen_discussed_experimental_tech} [Ask about experimental technology]
