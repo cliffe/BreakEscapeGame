@@ -965,6 +965,43 @@ Haxolottle: But it's worth checking in with yourself. "Is this useful vigilance 
 -> END
 
 // ===========================================
+// STUB KNOTS - To be implemented in separate file
+// ===========================================
+
+=== phase_3_hub ===
+// TODO: Implement phase 3 conversations (missions 11-15)
+Haxolottle: *checking in* How's it going, {player_name()}?
++ [That's all for now]
+    -> conversation_end
+
+=== phase_4_hub ===
+// TODO: Implement phase 4 conversations (missions 16+)
+Haxolottle: *checking in* How's it going, {player_name()}?
++ [That's all for now]
+    -> conversation_end
+
+=== favorite_operations ===
+Haxolottle: Favorite operations? That's tough. Every successful op is satisfying in its own way.
+Haxolottle: But yeah, there are some that stand out. The ones where everything clicks between handler and agent.
+~ npc_haxolottle_friendship_level += 5
+~ npc_haxolottle_talked_favorite_operations = true
+-> phase_2_hub
+
+=== hax_difficult_day ===
+Haxolottle: *pause* Yeah. Today's... harder than usual.
+Haxolottle: Lost an agent six months ago. Today would have been their birthday.
+Haxolottle: Sorry. Shouldn't burden you with that.
++ [I'm sorry for your loss]
+    Haxolottle: *appreciates it* Thanks. It's part of the job, but it never gets easier.
+    ~ npc_haxolottle_friendship_level += 10
+    ~ npc_haxolottle_shared_loss = true
++ [You can talk about it if you need to]
+    Haxolottle: Maybe another time. Right now I just need to keep working. Helping you helps.
+    ~ npc_haxolottle_friendship_level += 8
+    ~ npc_haxolottle_shared_loss = true
+-> phase_2_hub
+
+// ===========================================
 // PHASE 3 & 4 WILL BE IN SEPARATE FILE
 // (Missions 11+ with deeper conversations)
 // ===========================================
