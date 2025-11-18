@@ -3,7 +3,7 @@
 **Classification:** ENTROPY INTERNAL - HANDLER LEVEL AND ABOVE
 **Document ID:** TRAIN-OPSEC-001
 **Version:** 2.8 (Updated August 2024)
-**Author:** CELL_ALPHA_PRIME (Reviewed by The Architect)
+**Author:** Anonymous Handler (Reviewed by The Architect)
 **Distribution:** All Handlers, Cell Leaders
 
 ---
@@ -462,7 +462,7 @@ The work is difficult, but it matters.
 **Document Control:**
 - Revision History: v1.0 (Mar 2023), v2.0 (Dec 2023), v2.8 (Aug 2024)
 - Next Review: February 2025
-- Approval: CELL_ALPHA_PRIME, The Architect (Authenticated: PGP Signature 7A9B4C...)
+- Approval: The Architect (Authenticated: PGP Signature 7A9B4C...)
 
 **DESTROY AFTER MEMORIZATION**
 

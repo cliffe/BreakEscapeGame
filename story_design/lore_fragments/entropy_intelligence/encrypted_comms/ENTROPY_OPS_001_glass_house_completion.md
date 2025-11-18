@@ -18,9 +18,9 @@
          CELL-TO-CELL PROTOCOL
 ═══════════════════════════════════════════
 
-FROM: CELL_ALPHA_07
-TO: CELL_GAMMA_12
-ROUTE: DS-441 → DS-392 → DS-GAMMA12
+FROM: "Phantom" - Digital Vanguard Cell
+TO: "Recruiter-7" - Insider Threat Initiative Cell
+ROUTE: DS-441 → DS-392 → DS-ITI7
 TIMESTAMP: 2025-10-23T14:32:17Z
 ENCRYPTION: AES-256-CBC
 SIGNATURE: [VERIFIED]
@@ -41,7 +41,7 @@ Director Chen. Security risk assessed as HIGH.
 Recommend permanent solution per standard protocol
 Section 7.3: Loose End Mitigation.
 
-Cell ALPHA-07 proceeding to rotation protocol.
+Digital Vanguard operative proceeding to rotation protocol.
 Next contact in 30 days unless emergency activation.
 
 Phase 3 timeline unchanged. Architect confirms
@@ -65,7 +65,7 @@ Intercept Method: Dead drop server monitoring
 Threat Assessment: CRITICAL
 Action Required: Locate and protect Sarah Martinez
 Related Operations: Glass House, Phase 3 Planning
-Associated Cells: ALPHA_07, GAMMA_12
+Associated Cells: Digital Vanguard, Insider Threat Initiative
 ```
 
 ---
@@ -93,8 +93,8 @@ Associated Cells: ALPHA_07, GAMMA_12
 - IT Director Marcus Chen - see Character Backgrounds
 - Operation Glass House - see Location History (Vanguard Financial)
 - Phase 3 - referenced in multiple Architect fragments
-- Cell ALPHA_07 - appears in 8 additional fragments
-- Cell GAMMA_12 - recipient, appears in 5 fragments
+- Digital Vanguard operative "Phantom" - appears in 8 additional fragments
+- Insider Threat Initiative operative "Recruiter-7" - appears in 5 fragments
 - "Permanent solution" - ENTROPY euphemism for elimination
 
 **Player Discovery:**

@@ -4,7 +4,7 @@
 **Document ID:** TRAIN-RECRUIT-001
 **Version:** 3.2 (Updated June 2024)
 **Author:** The Architect
-**Distribution:** All Cell Leaders (ALPHA through EPSILON)
+**Distribution:** All ENTROPY Cell Leaders
 
 ---
 

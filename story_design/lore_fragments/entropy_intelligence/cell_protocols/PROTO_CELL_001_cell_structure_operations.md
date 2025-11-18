@@ -4,7 +4,7 @@
 **Document ID:** PROTO-CELL-001
 **Version:** 4.1 (Updated May 2024)
 **Author:** The Architect
-**Distribution:** All ENTROPY Cells (ALPHA through EPSILON)
+**Distribution:** All ENTROPY Cells
 
 ---
 
@@ -17,7 +17,7 @@ ENTROPY operates as a **distributed network of semi-autonomous cells**. This str
 ```
 THE ARCHITECT
     ↓
-CELL LEADERS (ALPHA_PRIME, BETA_PRIME, etc.)
+CELL LEADERS (e.g., "Blackout", "Morpheus", "Raven")
     ↓
 HANDLERS (Cell members managing assets)
     ↓

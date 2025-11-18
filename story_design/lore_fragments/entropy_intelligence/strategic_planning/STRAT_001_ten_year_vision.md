@@ -115,8 +115,8 @@ Not to destroy. Not to terrorize. To teach.
 - ✓ Toolset includes: Thermite.py (data exfil), Cascade.sh (privilege escalation), Equilibrium.dll (SCADA backdoor prototype)
 
 **Status (2023):** EXCEEDED
-- 5 cells established (ALPHA through EPSILON)
-- 60+ members, 120+ assets
+- Multiple cells established beyond original plan (see Postscript)
+- 80+ core members, 150+ assets
 - Zero arrests during Phase 1
 - Advanced tooling developed
 
@@ -127,16 +127,16 @@ Not to destroy. Not to terrorize. To teach.
 **Goal:** Scale operations, recruit assets in critical infrastructure, demonstrate capabilities
 
 **Objectives:**
-- Expand to 5 cells nationally distributed
-- Recruit 100+ assets in Tier 1 targets (infrastructure, finance, healthcare)
+- Expand to multiple specialized cells nationally distributed
+- Recruit 100+ assets in Tier 1 targets (infrastructure, finance, healthcare, government)
 - Execute 20-30 medium-scale operations
 - Develop Phase 3 infrastructure and tools
 - Refine tactics based on operational lessons
 
 **Success Metrics:**
-- ✓ 5 cells operational (ALPHA, BETA, GAMMA, DELTA, EPSILON)
-- ✓ 100+ assets recruited in: banks, hospitals, power companies, ISPs, airports
-- ✓ 25 successful operations including: data breaches, ransomware deployments, infrastructure access
+- ✓ Multiple specialized cells operational (evolved beyond original 5-cell plan)
+- ✓ 150+ assets recruited in: banks, hospitals, power companies, ISPs, airports, government
+- ✓ 35+ successful operations including: data breaches, ransomware deployments, infrastructure access
 - ✓ Equilibrium.dll deployed on 800+ SCADA systems (waiting dormant)
 - ✓ Phase 3 operational plan finalized
 
@@ -434,6 +434,39 @@ We are on schedule. We are on mission. Phase 3 is 2.5 years away.
 This document proves we are not reactionary. We are not impulsive. We are not terrorists.
 
 **We are executing a ten-year strategic plan with precision.**
+
+### On Organizational Evolution
+
+You'll notice the original 2015 plan outlined 5 cells organized by infrastructure sector. ENTROPY has evolved beyond this initial structure.
+
+**What changed:**
+
+Instead of 5 generalist cells (Finance, Healthcare, Telecom, Energy, Transportation), we now operate 11 specialized cells:
+
+1. **Digital Vanguard** - Corporate espionage and industrial sabotage
+2. **Critical Mass** - Critical infrastructure attacks (power, water, transportation)
+3. **Quantum Cabal** - Advanced technology and quantum computing research
+4. **Zero Day Syndicate** - Vulnerability trading and exploit development
+5. **Social Fabric** - Information operations and disinformation
+6. **Ghost Protocol** - Privacy destruction and surveillance
+7. **Ransomware Incorporated** - Ransomware and crypto-extortion
+8. **Supply Chain Saboteurs** - Supply chain attacks and backdoor insertion
+9. **Insider Threat Initiative** - Recruitment and infiltration
+10. **AI Singularity** - Weaponized AI and autonomous cyber attacks
+11. **Crypto Anarchists** - Cryptocurrency manipulation and blockchain exploitation
+
+**Why the change:**
+
+As we recruited specialized talent (AI researchers, quantum physicists, social engineers, etc.), it became clear that narrow specialization created better operational security and more effective operations. A cell that only focuses on ransomware develops deeper expertise than a generalist cell.
+
+**What stayed the same:**
+
+- The core mission (demonstrate centralization fragility)
+- Phase 3 timeline (July 15, 2025)
+- Ethical constraints (zero casualties, reversible damage)
+- The Architect's strategic vision
+
+The plan evolved, but the thesis remained constant.
 
 Stay disciplined. Trust the vision. July 2025 will vindicate a decade of work.
 

@@ -4,7 +4,7 @@
 
 This collection contains internal ENTROPY documents that reveal the organization's structure, operations, philosophy, and methods. Unlike evidence templates (which identify specific NPCs as agents), these fragments provide insight into how ENTROPY operates as an organization.
 
-**Total Fragments:** 7
+**Total Fragments:** 6
 **Categories:** 5
 
 ---
@@ -32,25 +32,7 @@ This collection contains internal ENTROPY documents that reveal the organization
 - Burnout recognition and exit procedures
 - **Player Value:** Shows handler tradecraft, vulnerabilities in their methods
 
-### 2. Operational Communications (1 fragment)
-
-**Purpose:** Actual communications between ENTROPY leadership
-
-**OPCOM_001: Phase 3 Cell Coordination**
-- The Architect's final coordination message to all 5 cell leaders
-- Complete Phase 3 target assignments by cell
-- Timeline: T-minus 17 days to July 15, 2025 activation
-- Cell-specific targets:
-  - ALPHA: Financial systems
-  - BETA: Healthcare systems
-  - GAMMA: Telecommunications
-  - DELTA: Energy grid (Equilibrium.dll deployment)
-  - EPSILON: Transportation/Logistics
-- Abort criteria and ethical constraints
-- Success definitions (40%/70%/100% thresholds)
-- **Player Value:** Complete Phase 3 operational plan, shows coordination between cells
-
-### 3. Cell Protocols (1 fragment)
+### 2. Cell Protocols (1 fragment)
 
 **Purpose:** How ENTROPY cells operate day-to-day
 
@@ -65,7 +47,7 @@ This collection contains internal ENTROPY documents that reveal the organization
 - Vetting new members (90-day probation)
 - **Player Value:** Shows cell structure, identifies roles players might encounter
 
-### 4. Strategic Planning (1 fragment)
+### 3. Strategic Planning (1 fragment)
 
 **Purpose:** Long-term vision and strategic direction
 
@@ -80,7 +62,7 @@ This collection contains internal ENTROPY documents that reveal the organization
 - Proves ENTROPY is strategic, not reactionary
 - **Player Value:** Shows 10-year plan was intentional, provides historical context
 
-### 5. Technical Documentation (1 fragment)
+### 4. Technical Documentation (1 fragment)
 
 **Purpose:** Documentation of ENTROPY's tools and malware
 
@@ -95,7 +77,7 @@ This collection contains internal ENTROPY documents that reveal the organization
 - Phase 3 activation sequence (July 15, 2025, 06:00 EST)
 - **Player Value:** Shows specific malware capabilities, ethical constraints, how to detect/counter
 
-### 6. Ideology (1 fragment)
+### 5. Ideology (1 fragment)
 
 **Purpose:** Philosophical foundation of ENTROPY
 
@@ -121,11 +103,6 @@ This collection contains internal ENTROPY documents that reveal the organization
 - Seized from captured ENTROPY member's laptop
 - Dead drop intercept (USB drive with training manuals)
 - Asset defector provides documentation
-
-**Operational Communications:**
-- Compromised ENTROPY server
-- Intercepted encrypted communications (decrypted)
-- Cell leader's device forensics
 
 **Cell Protocols:**
 - Safe house raid documentation
@@ -161,7 +138,7 @@ This collection contains internal ENTROPY documents that reveal the organization
 
 **Mission Design:**
 - Phase 3 activation provides deadline (July 15, 2025)
-- Cell target assignments enable focused counter-operations
+- Strategic planning docs reveal multi-cell coordination
 - Technical docs show how to detect Equilibrium.dll
 
 **Moral Complexity:**
@@ -178,12 +155,12 @@ This collection contains internal ENTROPY documents that reveal the organization
 
 **Fragments reference each other:**
 - TRAIN_RECRUIT_001 case study "NIGHTINGALE" = Sarah Martinez (already in existing fragments)
-- OPCOM_001 mentions Equilibrium.dll = TECH_TOOL_001
-- STRAT_001 ten-year plan = phases mentioned in OPCOM_001
+- TECH_TOOL_001 Equilibrium.dll = developed by Critical Mass cell
+- STRAT_001 ten-year plan = explains evolution from 5 to 11 cells
 - PROTO_CELL_001 burn protocols = referenced in TRAIN_OPSEC_001
 
 **Consistency maintained across fragments:**
-- Cell names: ALPHA, BETA, GAMMA, DELTA, EPSILON
+- Cell names: Digital Vanguard, Critical Mass, Quantum Cabal, Zero Day Syndicate, Social Fabric, Ghost Protocol, Ransomware Incorporated, Supply Chain Saboteurs, Insider Threat Initiative, AI Singularity, Crypto Anarchists
 - The Architect: Central figure, consistent philosophy
 - Phase 3 date: July 15, 2025 (consistent)
 - Asset payment ranges: $25K-$75K (consistent)
@@ -192,9 +169,9 @@ This collection contains internal ENTROPY documents that reveal the organization
 ### External Connections
 
 **Links to existing LORE fragments:**
-- ENTROPY_OPS_001 (Glass House operation) = Sarah Martinez recruitment
-- ARCHITECT_STRATEGIC_001 (Phase 3 directive) = more detail in OPCOM_001
-- ENTROPY_PERSONNEL_001 (Cascade profile) = handler mentioned in training docs
+- ENTROPY_OPS_001 (Glass House operation) = Sarah Martinez recruitment, Digital Vanguard operation
+- ENTROPY_PERSONNEL_001 (Cascade profile) = Critical Mass member, cascading failure specialist
+- ENTROPY_HISTORY_001 (founding) = explains evolution to 11-cell structure
 - RECRUITMENT_001 (financial exploitation) = same methods as TRAIN_RECRUIT_001
 
 **Links to evidence templates:**
@@ -246,12 +223,11 @@ This collection contains internal ENTROPY documents that reveal the organization
 
 ## Fragment Statistics
 
-**Total Word Count:** ~50,000 words
-**Total Fragments:** 7
+**Total Word Count:** ~45,000 words
+**Total Fragments:** 6
 
 **By Category:**
 - Training Materials: 2 fragments (~12,000 words)
-- Operational Communications: 1 fragment (~4,500 words)
 - Cell Protocols: 1 fragment (~8,000 words)
 - Strategic Planning: 1 fragment (~7,500 words)
 - Technical Documentation: 1 fragment (~9,000 words)
@@ -260,7 +236,7 @@ This collection contains internal ENTROPY documents that reveal the organization
 **Discovery Rarity:**
 - Common: TECH_TOOL_001 (found during malware analysis)
 - Uncommon: TRAIN_OPSEC_001, PROTO_CELL_001 (handler/member devices)
-- Rare: TRAIN_RECRUIT_001, OPCOM_001 (cell leader level)
+- Rare: TRAIN_RECRUIT_001 (cell leader level)
 - Very Rare: STRAT_001, IDEOLOGY_001 (Architect level)
 
 ---
@@ -302,7 +278,7 @@ This collection contains internal ENTROPY documents that reveal the organization
 **Progressive Revelation:**
 - Don't give all fragments at once
 - Early game: Training materials, cell protocols (understand structure)
-- Mid game: Operational communications, technical docs (understand capabilities)
+- Mid game: Technical docs, personnel profiles (understand capabilities)
 - Late game: Strategic planning, ideology (understand philosophy)
 
 **Moral Complexity:**
@@ -312,7 +288,7 @@ This collection contains internal ENTROPY documents that reveal the organization
 
 **Mission Integration:**
 - Phase 3 timeline creates urgency (July 15, 2025 deadline)
-- Cell targets enable focused counter-operations (stop DELTA's grid attack, etc.)
+- Cell specializations enable focused counter-operations (stop Critical Mass grid attack, Digital Vanguard corporate espionage, etc.)
 - Technical docs provide defensive intel (how to detect Equilibrium.dll)
 
 **Player Choice:**
@@ -349,21 +325,19 @@ This collection contains internal ENTROPY documents that reveal the organization
 - Specific threat to counter
 - Technical depth, shows sophistication
 - Direct mission tie-in (find and remove malware)
+- Shows Critical Mass cell capabilities
 
-**5. OPCOM_001** (Phase 3 Coordination)
-- Major revelation (coordinated multi-sector attack)
-- Creates urgency (timeline provided)
-- Shows scope of threat
-
-**6. STRAT_001** (Ten-Year Vision)
-- Historical context (this was planned for decade)
+**5. STRAT_001** (Ten-Year Vision)
+- Major revelation (decade-long strategic planning)
+- Explains evolution from early structure to 11 specialized cells
 - Shows patience and strategic thinking
 - Reframes earlier fragments (part of larger plan)
 
-**7. IDEOLOGY_001** (Manifesto)
+**6. IDEOLOGY_001** (Manifesto)
 - Culmination of understanding
 - Humanizes The Architect
 - Forces moral reckoning (are they entirely wrong?)
+- Philosophical foundation for entire organization
 
 ---
 

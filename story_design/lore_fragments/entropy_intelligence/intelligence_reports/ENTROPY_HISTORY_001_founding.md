@@ -74,11 +74,15 @@ Classic compartmentalized network designed for
 resilience against infiltration and disruption.
 
 First mention of cell designations:
-- CELL_ALPHA_01 through ALPHA_05
-- CELL_BETA_01 through BETA_03
-- CELL_GAMMA_01 through GAMMA_02
+- Multiple cells with alphanumeric designations
+- Estimated 3-4 cells active in 2016
+- Cell structure suggests compartmentalization model
 
 Estimated total membership: 30-50 skilled operatives.
+
+Note: Early cell designation system has since evolved into
+specialized cells (Digital Vanguard, Critical Mass, etc.)
+as organization matured and recruited specialists.
 
 2017: THE ARCHITECT EMERGES
 March 2017: First intercepted reference to "The Architect"
@@ -129,7 +133,7 @@ library used by millions of applications worldwide.
 
 Result: FAILURE
 - Agent 0x42 discovered backdoor during code review
-- ENTROPY operative (CELL_GAMMA contributor) identified
+- ENTROPY operative (Supply Chain Saboteurs member) identified
 - Backdoor removed before deployment
 - Global catastrophe prevented
 
@@ -314,7 +318,7 @@ Distribution: ALL PERSONNEL - MANDATORY READING
 - Agent 0x42 - hero of Operation Keystone
 - Director Netherton - current leader and report commenter
 - Phase 1, 2, 3 - referenced extensively across fragments
-- Multiple cells mentioned (ALPHA, BETA, GAMMA)
+- Multiple cells mentioned (Digital Vanguard, Critical Mass, Insider Threat Initiative, etc.)
 - Thermite.py and tools - timeline of creation
 - Cell structure - explanation of organization
 - "Entropy as inevitable force" - ideology introduction

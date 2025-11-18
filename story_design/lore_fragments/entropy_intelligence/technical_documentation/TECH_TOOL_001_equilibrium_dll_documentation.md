@@ -3,7 +3,7 @@
 **Classification:** ENTROPY INTERNAL - TECHNICAL SPECIALISTS ONLY
 **Document ID:** TECH-TOOL-001
 **Version:** 3.4 (Updated April 2024)
-**Authors:** The Architect (original design), DELTA_TECH_02 (implementation)
+**Authors:** The Architect (original design), "SCADA Queen" - Critical Mass cell (implementation)
 **Tool Name:** Equilibrium.dll
 **Purpose:** SCADA system persistence and load manipulation backdoor
 
@@ -553,7 +553,7 @@ TBD
 
 **Equilibrium.dll represents:**
 - 5 years of development (2019-2024)
-- Collaboration between The Architect (design) and DELTA cell (implementation)
+- Collaboration between The Architect (design) and Critical Mass cell (implementation)
 - Significant technical sophistication
 - Careful ethical constraints
 - High-risk, high-impact operation
@@ -571,7 +571,7 @@ July 15, 2025, we will know if 5 years of work achieved its purpose.
 ---
 
 The Architect
-DELTA_TECH_02
+"SCADA Queen" (Critical Mass)
 
 ---
 
@@ -584,7 +584,7 @@ DELTA_TECH_02
 **Document Control:**
 - Revision History: v1.0 (Sep 2019), v2.0 (Mar 2022), v3.4 (Apr 2024)
 - Next Review: Post-Phase 3 (August 2025)
-- Approval: The Architect, DELTA_PRIME (Authenticated: PGP Signature 7A9B4C...)
+- Approval: The Architect, "Blackout" - Critical Mass Leader (Authenticated: PGP Signature 7A9B4C...)
 
 **DESTROY AFTER PHASE 3 COMPLETION**
 
