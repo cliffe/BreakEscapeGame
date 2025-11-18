@@ -6,10 +6,12 @@ This catalog tracks all LORE fragments organized by their **gameplay purpose** -
 
 ## Overview Statistics
 
-**Total Gameplay-Focused Fragments Created:** 7
+**Total Gameplay-Focused Fragments Created:** 13
+  - Unique Fragments: 8
+  - Evidence Templates: 5 (reusable with NPC substitution)
 
 **By Gameplay Function:**
-- Evidence for Prosecution: 1
+- Evidence for Prosecution: 6 (1 unique + 5 templates)
 - Tactical Intelligence: 1
 - Financial Forensics: 1
 - Recruitment Vectors: 1
@@ -22,7 +24,13 @@ This catalog tracks all LORE fragments organized by their **gameplay purpose** -
 - Mission-critical objectives: 5 fragments
 - Optional depth/context: 2 fragments
 - Branching choice enablers: 6 fragments
-- Success metric modifiers: 7 fragments
+- Success metric modifiers: 13 fragments (templates multiply impact)
+
+**Template System:**
+- 5 evidence templates with [PLACEHOLDER] substitution
+- Infinite NPC agent identification capability
+- Evidence chain methodology (combine for 99.9% confidence)
+- See TEMPLATE_CATALOG.md for complete template documentation
 
 ---
 
@@ -53,6 +61,347 @@ This catalog tracks all LORE fragments organized by their **gameplay purpose** -
 - Vanguard Financial (location)
 - $50K payment (financial trail)
 - "Permanent solution" (leverage for Sarah: "they marked you for death")
+
+---
+
+### 📋 EVIDENCE_PROSECUTION - Evidence Templates (Reusable)
+
+**TEMPLATE SYSTEM OVERVIEW**
+
+The Evidence Template System provides 5 reusable evidence fragments for identifying ENTROPY agents/assets in any scenario. Each template uses [PLACEHOLDER] format for runtime NPC substitution.
+
+**Complete Template Documentation:** See `TEMPLATE_CATALOG.md` in this directory
+
+**Template Integration Philosophy:**
+- **Single evidence piece:** 40-80% confidence (suspicion only)
+- **2-3 evidence pieces:** 65-95% confidence (strong case)
+- **4-5 evidence pieces:** 95-99.9% confidence (overwhelming)
+- **All 5 templates:** Complete evidence chain, maximum cooperation likelihood (95%)
+
+**Evidence Chain Methodology:**
+```
+Encrypted Comms → Initial suspicion flag
+     ↓
+Financial Records → Payment proof (motive)
+     ↓
+Access Logs → Activity confirmation (what they did)
+     ↓
+Surveillance Photos → Handler identification (who they work for)
+     ↓
+Handwritten Notes → Self-incrimination (confession)
+     ↓
+= Overwhelming evidence, 99.9% confidence
+```
+
+---
+
+**TEMPLATE_AGENT_ID_001 - Encrypted Communications**
+
+**File:** `TEMPLATE_AGENT_ID_001_encrypted_comms.md`
+
+- **What It Is:** Intercepted PGP-encrypted email from corporate account to ProtonMail
+- **What Player Can DO:**
+  - Flag NPC as Person of Interest
+  - Unlock surveillance mission
+  - Trigger financial investigation
+  - Require corroboration for action
+- **Evidence Type:** Digital communication
+- **Substitution Variables:** [SUBJECT_NAME], [ORGANIZATION], [POSITION], [CURRENT_DATE]
+- **Red Flags:**
+  - 🚩 PGP encryption from work email (policy violation)
+  - 🚩 ProtonMail recipient (anonymous service)
+  - 🚩 After-hours timing (23:47, secretive)
+  - 🚩 "Payment arrangement confirmed"
+  - 🚩 Security bypass offers
+  - 🚩 "Documentation transfer via agreed method"
+- **Evidence Strength:**
+  - Alone: 40% confidence (circumstantial)
+  - + Financial records: 75% confidence
+  - + Access logs: 65% confidence
+  - + All evidence: 90% confidence
+- **Best Used For:** Initial suspicion, corporate infiltration, data exfiltration
+- **Rarity:** Common (starting evidence)
+
+**Example Content:**
+```
+From: [SUBJECT_NAME]@[ORGANIZATION].com
+To: secure-contact-7749@protonmail.com
+Date: [DATE], 23:47
+
+...payment arrangement confirmed. Standard terms as before.
+The documentation you need will be transferred via the
+agreed method...
+
+...regarding the security audit team arriving Thursday -
+I can ensure they have the credentials and building access
+without additional verification...
+```
+
+---
+
+**TEMPLATE_AGENT_ID_002 - Financial Records**
+
+**File:** `TEMPLATE_AGENT_ID_002_financial_records.md`
+
+- **What It Is:** Forensic analysis of suspicious bank transactions and cryptocurrency activity
+- **What Player Can DO:**
+  - Prove quid pro quo (payment for services)
+  - Seize assets as proceeds of crime
+  - Trace payments to ENTROPY master wallet
+  - Identify financial recruitment vector
+  - Create leverage opportunity
+- **Evidence Type:** Financial forensics
+- **Substitution Variables:** [SUBJECT_NAME], [ORGANIZATION], [SALARY], [AMOUNT], [DATE]
+- **Red Flags:**
+  - 🚩 Unexplained cash deposits ($25K-$75K range)
+  - 🚩 Cryptocurrency to ENTROPY master wallet
+  - 🚩 Shell company payments
+  - 🚩 Offshore transfers
+  - 🚩 Timing correlation with breaches
+  - 🚩 Lifestyle inflation (debt payoff, new car)
+- **Evidence Strength:**
+  - Alone: 60% confidence (strong suspicion)
+  - + Encrypted comms: 75% confidence
+  - + Access logs: 95% confidence
+  - + All evidence: 98% confidence
+- **Best Used For:** Payment proof, money laundering, connecting to ENTROPY financial network
+- **Rarity:** Uncommon (requires warrant/subpoena)
+
+**Example Content:**
+```
+SUSPICIOUS DEPOSIT #1:
+Date: March 15, 2025
+Amount: $42,000 (CASH)
+Source: UNKNOWN
+Note: Amount matches ENTROPY payment patterns
+
+CRYPTOCURRENCY TRANSACTION:
+Date: March 18, 2025
+Destination: 1A9zW5...3kPm
+Amount: $15,000 equivalent
+NOTE: Wallet identified as ENTROPY master wallet!
+
+Salary: $85,000/year
+Total suspicious income (6 months): $127,000
+Percentage above salary: 149% unexplained
+```
+
+---
+
+**TEMPLATE_AGENT_ID_003 - Access Logs**
+
+**File:** `TEMPLATE_AGENT_ID_003_access_logs.md`
+
+- **What It Is:** IT audit showing unauthorized system access pattern
+- **What Player Can DO:**
+  - Prove data theft technically
+  - Show reconnaissance → exfiltration pattern
+  - Demonstrate privilege escalation
+  - Identify what data was compromised
+  - Enable immediate access suspension
+- **Evidence Type:** Technical forensics
+- **Substitution Variables:** [SUBJECT_NAME], [POSITION], [SYSTEM_NAME], [DATA_TYPE], [FILE_COUNT]
+- **Incidents Documented:**
+  1. Sensitive database access (after hours, no business need)
+  2. Network infrastructure mapping (weekend reconnaissance)
+  3. HR database access (500+ employee records, PII theft)
+  4. Executive email access (PowerShell exploitation)
+  5. USB device usage (1.2GB data exfiltration, 847 files)
+- **Evidence Strength:**
+  - Alone: 70% confidence (technical proof)
+  - + Financial records: 95% confidence
+  - + Encrypted comms: 85% confidence
+  - + All evidence: 98% confidence
+- **Best Used For:** Data breach proof, showing malicious pattern, technical espionage
+- **Rarity:** Common (IT audit logs)
+
+**Example Content:**
+```
+INCIDENT 5: USB DEVICE USAGE (DATA EXFILTRATION)
+Date: March 18, 2025, 22:37
+USB Device: SanDisk 64GB (Serial: 4C530001...)
+Files Copied: 847 files
+Total Size: 1.2GB
+File Types: .xlsx (customer data), .docx (proprietary)
+
+PATTERN ANALYSIS:
+Week 1: Reconnaissance (network mapping)
+Week 2: Access (privilege escalation)
+Week 3: Exfiltration (USB transfer)
+Week 4: Cover-up (deletion attempts)
+
+Classic espionage attack pattern.
+```
+
+---
+
+**TEMPLATE_AGENT_ID_004 - Surveillance Photos**
+
+**File:** `TEMPLATE_AGENT_ID_004_surveillance_photos.md`
+
+- **What It Is:** Complete 14-day surveillance operation with photos and handler profiling
+- **What Player Can DO:**
+  - Identify ENTROPY handler (facial recognition)
+  - Document in-person meetings
+  - Prove document/cash exchange
+  - Show dead drop usage
+  - Enable simultaneous handler/asset arrest
+  - Demonstrate countersurveillance behavior
+- **Evidence Type:** Photographic surveillance
+- **Substitution Variables:** [SUBJECT_NAME], [CONTACT_DESCRIPTION], [LOCATION], [VEHICLE_DESCRIPTION]
+- **7 Photo Scenarios:**
+  - Photo 1-3: Coffee shop meeting, document exchange, cash payment
+  - Photo 4-5: Dead drop (USB deposit, handler retrieval 2hrs later)
+  - Photo 6: Follow-up meeting, verbal comms
+  - Photo 7: Countersurveillance behavior (SDR route)
+- **Evidence Strength:**
+  - Alone: 50% confidence (suspicious but explainable)
+  - + Financial records: 80% confidence
+  - + Access logs: 85% confidence
+  - + All evidence: 95% confidence
+- **Best Used For:** Visual proof, handler identification, meeting patterns, tradecraft documentation
+- **Rarity:** Uncommon (expensive surveillance operation)
+
+**Example Content:**
+```
+[PHOTO 2: DOCUMENT EXCHANGE]
+Location: [LOCATION] Coffee Shop
+Date: [DATE], [TIME + 15 minutes]
+
+CAPTURED MOMENT:
+[SUBJECT_NAME] sliding manila envelope across table
+Unknown individual accepting envelope
+Envelope thickness: 20-30 pages estimated
+
+[PHOTO 3: CASH PAYMENT]
+Same meeting, +28 minutes
+Unknown individual handing envelope to [SUBJECT_NAME]
+Cash visible inside (appears to be $100 bills)
+Estimated amount: $2,000-$5,000
+[SUBJECT_NAME] shows relief in facial expression
+```
+
+---
+
+**TEMPLATE_AGENT_ID_005 - Handwritten Notes**
+
+**File:** `TEMPLATE_AGENT_ID_005_physical_evidence.md`
+
+- **What It Is:** 3-page handwritten notes showing emotional journey from willing participant to desperate victim
+- **What Player Can DO:**
+  - Devastating confrontation ("your own handwriting")
+  - Enable empathetic approach (subject wants help)
+  - Achieve 95-98% cooperation likelihood
+  - Self-incrimination in subject's own words
+  - Show coercion by ENTROPY (victim characteristics)
+- **Evidence Type:** Physical - handwritten confession
+- **Substitution Variables:** [SUBJECT_NAME], [HANDLER_CODENAME], [SYSTEM_NAME], [DEBT_AMOUNT]
+- **3-Page Emotional Progression:**
+  - **Page 1:** Nervous rationalization ("just competitive intelligence", "not hurting anyone... right?")
+  - **Page 2:** Feeling trapped ("they have me trapped", "if I refuse they expose me")
+  - **Page 3:** Desperate cry for help ("please help me", "what have I gotten into", security hotline written down)
+- **Evidence Strength:**
+  - Alone: 80% confidence (self-incrimination)
+  - + Financial records: 95% confidence
+  - + Access logs: 95% confidence
+  - + All evidence: 99.9% confidence (overwhelming)
+- **Cooperation Likelihood:**
+  - Show notes immediately: 95%
+  - Empathetic approach referencing cry for help: 98%
+  - Use as leverage after lies: 90%
+- **Best Used For:** High cooperation outcome, empathetic interrogation, showing subject as victim
+- **Rarity:** Uncommon-Rare (lucky find or search warrant)
+
+**Example Content:**
+```
+[PAGE 1 - TRANSCRIPTION]
+Meeting notes - [DATE]
+
+THINGS TO REMEMBER:
+- [HANDLER_CODENAME] wants access to [SYSTEM_NAME]
+- Payment: $[AMOUNT] on completion
+- Files to copy: Customer database, Network diagrams
+- "Delete these notes after memorizing!!!"
+
+Feeling sick about this. But what choice do I have?
+$[DEBT_AMOUNT] in debt. Can't keep living like this.
+[HANDLER] says it's just "competitive intelligence"
+Not really hurting anyone... right?
+
+[PAGE 3 - TRANSCRIPTION]
+THINGS GETTING WORSE
+
+[HANDLER] mentioned "permanent solutions for loose ends"
+AM I A LOOSE END??
+
+Overheard [HANDLER] on phone: "ENTROPY cell needs..."
+WHAT IS ENTROPY?? OH GOD WHAT HAVE I GOTTEN INTO
+
+If someone finds these notes: I'm sorry.
+If you're reading this, please help me.
+
+[ORGANIZATION] Security Hotline: [NUMBER]
+(Should I call? Too scared. But maybe...)
+
+"Please let this end somehow"
+```
+
+**Forensic Analysis Included:**
+- Handwriting verification: 99.7% match to subject
+- Pen pressure analysis (stress visible in writing)
+- Ink testing (same pen throughout)
+- Chain of custody documentation
+
+**Legal Assessment:**
+- Admissibility: VERY HIGH (spontaneous confession)
+- No Miranda issues (not custodial interrogation)
+- Shows consciousness of guilt
+- Demonstrates coercion by ENTROPY
+
+**Recommended Use:**
+"Use notes as leverage for cooperation, not prosecution. Subject is scared, remorseful, and wants out. Cooperation probability: 95%"
+
+---
+
+### Evidence Template Integration Strategy
+
+**Optimal Discovery Sequence:**
+1. **TEMPLATE_001 (Encrypted Comms)** → Triggers investigation
+2. **TEMPLATE_002 (Financial Records)** → Proves motive
+3. **TEMPLATE_003 (Access Logs)** → Confirms activity
+4. **TEMPLATE_004 (Surveillance)** → Identifies handler
+5. **TEMPLATE_005 (Handwritten Notes)** → Seals the case
+
+**Confidence Progression:**
+- 1 template: 40-80% (suspicion only, no action)
+- 2 templates: 65-85% (strong suspicion, investigation warranted)
+- 3 templates: 85-95% (probable cause, confrontation viable)
+- 4 templates: 95-98% (very strong case, multiple approaches)
+- 5 templates: 99.9% (overwhelming, maximum cooperation)
+
+**Interrogation Approach Unlocks:**
+- With TEMPLATE_002 (Financial): Offer financial help for cooperation
+- With TEMPLATE_005 (Notes): Empathetic approach ("we know you want out")
+- With TEMPLATE_004 (Surveillance): Visual confrontation ("we have photos")
+- With TEMPLATE_003 (Access Logs): Technical proof ("every keystroke logged")
+- With All 5: Overwhelming evidence ("no defense, but we can help")
+
+**Template Reusability:**
+Each template can be used infinite times across different NPCs by substituting:
+- [SUBJECT_NAME] → Actual NPC name
+- [ORGANIZATION] → Company name
+- [POSITION] → Job title
+- [HANDLER_CODENAME] → Handler designation
+- [AMOUNT] → Payment amounts
+- [DATE] → Appropriate timeline
+- etc.
+
+**See TEMPLATE_CATALOG.md for:**
+- Complete template documentation
+- Substitution best practices
+- Evidence combination strategies
+- Scenario-specific customization
+- Technical implementation guide
 
 ---
 
