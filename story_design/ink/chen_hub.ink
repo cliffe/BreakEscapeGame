@@ -50,14 +50,15 @@ EXTERNAL equipment_status()             // LOCAL - Status of player's equipment 
         Dr. Chen: Hey! What brings you by?
 }
 
--> chen_main_hub
+-> mission_hub
 
 // ===========================================
-// MAIN HUB - CONTEXT-AWARE CONVERSATION MENU
-// Dynamically shows personal + technical + mission topics
+// MISSION HUB - Central routing point
+// Routes to personal conversations or mission-related topics
+// Game returns here after #exit_conversation from personal talks
 // ===========================================
 
-=== chen_main_hub ===
+=== mission_hub ===
 
 // Show different options based on location, mission phase, and relationship level
 
@@ -213,19 +214,19 @@ Dr. Chen: This is fixable, but it'll take some time. What happened out there?
     Dr. Chen: Give me about two hours. I'll have this repaired and reinforced.
     ~ npc_chen_rapport += 5
     #equipment_repair_started
-    -> chen_main_hub
+    -> mission_hub
 
 + [Say it was your fault]
     Dr. Chen: Hey, no—don't beat yourself up. Field conditions are unpredictable. That's why we build redundancy.
     Dr. Chen: Let me fix this and add some additional protection. You're not the first agent to damage gear in the field.
     ~ npc_chen_rapport += 8
-    -> chen_main_hub
+    -> mission_hub
 
 + [Blame the equipment design]
     Dr. Chen: *slight frown* Okay... I mean, there's always room for improvement. But the equipment is rated for standard field conditions.
     Dr. Chen: I'll repair it. And I'll review the design specs. But be more careful with the gear, alright?
     ~ npc_chen_rapport -= 3
-    -> chen_main_hub
+    -> mission_hub
 
 === equipment_upgrade_menu ===
 Dr. Chen: *brings up equipment catalog on holographic display*
@@ -243,21 +244,21 @@ What interests you?
     Dr. Chen: I'll add it to your loadout. Don't lose this one—it's expensive!
     #equipment_upgraded_network
     ~ professional_reputation += 1
-    -> chen_main_hub
+    -> mission_hub
 
 + [Surveillance countermeasures]
     Dr. Chen: Smart. Staying undetected is half the job. *configures equipment*
     Dr. Chen: This should make you nearly invisible to standard monitoring systems. Field test it and let me know how it performs.
     #equipment_upgraded_surveillance
     ~ professional_reputation += 1
-    -> chen_main_hub
+    -> mission_hub
 
 + [Physical security tools]
     Dr. Chen: The classics, updated. *hands over toolkit*
     Dr. Chen: New biometric spoofer uses quantum randomization—way harder to detect than the old version.
     #equipment_upgraded_physical
     ~ professional_reputation += 1
-    -> chen_main_hub
+    -> mission_hub
 
 + [Ask what they recommend]
     Dr. Chen: *considers your mission profile*
@@ -296,13 +297,13 @@ Dr. Chen: Did that help? Are you good to continue?
 + [Yes, that fixed it. Thanks!]
     Dr. Chen: *relieved* Oh good! Okay, I'll keep monitoring. Call if anything else goes wrong.
     ~ npc_chen_rapport += 8
-    -> chen_main_hub
+    -> mission_hub
 
 + [Still having issues]
     Dr. Chen: *more concerned* Okay, this might be a hardware problem. Can you safely abort and extract?
     Dr. Chen: I don't want you stuck in there with malfunctioning equipment. Your safety is more important than the mission.
     ~ npc_chen_rapport += 10
-    -> chen_main_hub
+    -> mission_hub
 
 === mission_ghost_equipment_briefing ===
 Dr. Chen: *pulls up equipment display with visible excitement*
@@ -345,7 +346,7 @@ Dr. Chen: Any other questions about the gear? Or are you ready for me to configu
         ~ npc_chen_rapport += 5
     }
     #equipment_configured
-    -> chen_main_hub
+    -> mission_hub
 
 === mission_ghost_tech_debrief ===
 Dr. Chen: *eager for feedback* Okay, tell me everything! How did the equipment perform?
@@ -355,7 +356,7 @@ Dr. Chen: *eager for feedback* Okay, tell me everything! How did the equipment p
     Dr. Chen: This is great data. I can certify this tech for wider deployment now.
     ~ npc_chen_rapport += 10
     ~ npc_chen_tech_collaboration += 1
-    -> chen_main_hub
+    -> mission_hub
 
 + [Mostly good, but had some issues with X]
     Dr. Chen: *immediately taking notes* Okay, tell me specifics. What were the exact conditions when the issue occurred?
@@ -364,7 +365,7 @@ Dr. Chen: *eager for feedback* Okay, tell me everything! How did the equipment p
     Dr. Chen: Thank you for the thorough report. Seriously. This makes my job so much easier.
     ~ npc_chen_rapport += 15
     ~ npc_chen_tech_collaboration += 2
-    -> chen_main_hub
+    -> mission_hub
 
 + [Honestly, it saved my life]
     Dr. Chen: *becomes emotional* It... really? Tell me what happened.
@@ -373,7 +374,7 @@ Dr. Chen: *eager for feedback* Okay, tell me everything! How did the equipment p
     Dr. Chen: I'm really glad you're okay. And thank you for the feedback. I'll keep improving it.
     ~ npc_chen_rapport += 20
     ~ npc_chen_tech_collaboration += 2
-    -> chen_main_hub
+    -> mission_hub
 
 === mission_sanctuary_tech_overview ===
 Dr. Chen: *brings up Data Sanctuary schematics*
@@ -387,18 +388,18 @@ Dr. Chen: If ENTROPY tries to breach this, they'll need nation-state level capab
 + [Ask if the defenses are enough]
     Dr. Chen: *honest* Should be. But ENTROPY has surprised us before. That's why we're adding additional measures.
     Dr. Chen: And why agents like you are on standby. Tech is great, but humans adapt in ways systems can't.
-    -> chen_main_hub
+    -> mission_hub
 
 + [Ask what your role will be]
     Dr. Chen: You'll be part of the rapid response team. If ENTROPY attempts intrusion, you'll help counter them.
     Dr. Chen: I'm preparing specialized defensive equipment. Detection tools, countermeasure packages, emergency lockdown access.
-    -> chen_main_hub
+    -> mission_hub
 
 + [Express concern about ENTROPY's capabilities]
     Dr. Chen: *sighs* Yeah, me too. They're getting better. Faster. More sophisticated.
     Dr. Chen: That's why I work late. Every improvement I make might be the difference between holding the line and catastrophic breach.
     ~ npc_chen_rapport += 5
-    -> chen_main_hub
+    -> mission_hub
 
 === experimental_tech_discussion ===
 Dr. Chen: *absolute enthusiasm* Oh! Okay, so I'm working on some really exciting stuff right now!
@@ -423,7 +424,7 @@ Which interests you?
 + [All of it sounds amazing]
     Dr. Chen: *huge grin* Right?! This is why I love this job. Every project is pushing boundaries!
     ~ npc_chen_rapport += 10
-    -> chen_main_hub
+    -> mission_hub
 
 === experimental_mirage_details ===
 Dr. Chen: Mirage is about learning adaptation. Current camouflage is static—I configure it, you deploy it.
@@ -471,7 +472,7 @@ Dr. Chen: I promise to build in safety margins. Fallback systems. Kill switches.
     Dr. Chen: We're partners in this. Thank you.
     ~ npc_chen_rapport += 20
     ~ npc_chen_tech_collaboration += 3
-    -> chen_main_hub
+    -> mission_hub
 
 + [What would I be testing specifically?]
     Dr. Chen: Depends on your next mission profile. Probably the adaptive camouflage or improved detection tools.
@@ -480,7 +481,7 @@ Dr. Chen: I promise to build in safety margins. Fallback systems. Kill switches.
 
 + [Maybe next time]
     Dr. Chen: No pressure! Experimental testing should always be voluntary. But if you change your mind, let me know!
-    -> chen_main_hub
+    -> mission_hub
 
 === technical_training_discussion ===
 Dr. Chen: Technical training! I love teaching!
@@ -492,23 +493,23 @@ Dr. Chen: What interests you? Network security? Hardware hacking? Cryptography? 
     Dr. Chen: I can run you through penetration testing, protocol analysis, intrusion detection...
     ~ professional_reputation += 2
     #training_scheduled_network
-    -> chen_main_hub
+    -> mission_hub
 
 + [Hardware hacking]
     Dr. Chen: Oh, fun! Physical access to systems. Let me teach you about circuit analysis, firmware exploitation, hardware implants...
     ~ professional_reputation += 2
     #training_scheduled_hardware
-    -> chen_main_hub
+    -> mission_hub
 
 + [Cryptography]
     Dr. Chen: *very excited* My specialty! I can teach you encryption theory, code-breaking techniques, quantum cryptography basics...
     ~ professional_reputation += 2
     ~ npc_chen_rapport += 5
     #training_scheduled_crypto
-    -> chen_main_hub
+    -> mission_hub
 
 + [Just make me better at my job]
     Dr. Chen: *grins* I can do that. Let me design a custom training program based on your recent missions.
     Dr. Chen: I'll mix practical skills with theoretical knowledge. Make you a more effective operator.
     ~ professional_reputation += 3
-    -> chen_main_hub
+    -> mission_hub

@@ -51,14 +51,15 @@ EXTERNAL operational_stress_level()     // LOCAL - How stressed the current situ
         Haxolottle: {player_name()}! What brings you by?
 }
 
--> haxolottle_main_hub
+-> mission_hub
 
 // ===========================================
-// MAIN HUB - CONTEXT-AWARE CONVERSATION MENU
-// Dynamically shows personal + operational + mission topics
+// MISSION HUB - Central routing point
+// Routes to personal conversations or mission-related topics
+// Game returns here after #exit_conversation from personal talks
 // ===========================================
 
-=== haxolottle_main_hub ===
+=== mission_hub ===
 
 // Show different options based on location, mission phase, stress level, and friendship
 
@@ -233,19 +234,19 @@ Which approach do you want to take?
 + [Option Alpha]
     Haxolottle: Good call. I agree. Here's how we execute...
     #crisis_resolved_alpha
-    -> haxolottle_main_hub
+    -> mission_hub
 
 + [Option Bravo]
     Haxolottle: High risk, but yeah, the payoff justifies it. I'll support you. Let's do this carefully.
     #crisis_resolved_bravo
-    -> haxolottle_main_hub
+    -> mission_hub
 
 + [Option Charlie - extract]
     Haxolottle: Smart. Live to fight another day. Coordinates extraction...
     Haxolottle: You made the right call. Equipment and missions are replaceable. You're not.
     ~ npc_haxolottle_friendship_level += 10
     #crisis_extraction
-    -> haxolottle_main_hub
+    -> mission_hub
 
 + [Ask for their recommendation]
     Haxolottle: *appreciates being consulted*
@@ -279,7 +280,7 @@ Haxolottle: I'll coordinate while Chen troubleshoots the tech. Two-handler suppo
 [This would integrate with Chen's technical support systems]
 
 #multi_handler_crisis_support
--> haxolottle_main_hub
+-> mission_hub
 
 // ===========================================
 // ACTIVE MISSION SUPPORT
@@ -291,12 +292,12 @@ Haxolottle: *professional focus* What kind of support do you need?
 + [Intel refresh - what am I walking into?]
     Haxolottle: *pulls up real-time intel* Current situation: [describes updated tactical picture]
     Haxolottle: Changes from briefing: [notes differences]. Adapt accordingly.
-    -> haxolottle_main_hub
+    -> mission_hub
 
 + [Need security status update]
     Haxolottle: *checking feeds* Security status: [describes guard patterns, surveillance state]
     Haxolottle: Best infiltration window is in 12 minutes. That work for you?
-    -> haxolottle_main_hub
+    -> mission_hub
 
 + [Requesting abort confirmation]
     Haxolottle: *serious* You want to abort? Talk to me. What's the situation?
@@ -305,7 +306,7 @@ Haxolottle: *professional focus* What kind of support do you need?
 + [Just checking in]
     Haxolottle: *reassuring* All good. You're doing great. Operational tempo is solid. Keep it up.
     ~ npc_haxolottle_friendship_level += 3
-    -> haxolottle_main_hub
+    -> mission_hub
 
 === intel_update_active ===
 Haxolottle: *real-time analysis on monitors*
@@ -318,7 +319,7 @@ Haxolottle: Recommended approach: [tactical suggestion based on current intel]
 
 + [Acknowledge and proceed]
     Haxolottle: Roger. I'll keep monitoring. Call if situation changes.
-    -> haxolottle_main_hub
+    -> mission_hub
 
 + [Intel doesn't match what I'm seeing]
     Haxolottle: *immediately alert* Explain. What are you seeing that I'm not?
@@ -355,12 +356,12 @@ Haxolottle: This should account for the changes you're seeing. Thoughts?
 
 + [Sounds good. Proceeding with adapted plan.]
     Haxolottle: Excellent. Execute when ready. I'm monitoring your six.
-    -> haxolottle_main_hub
+    -> mission_hub
 
 + [Still risky. What if it doesn't work?]
     Haxolottle: Fair concern. Backup plan: [outlines contingency]
     Haxolottle: You'll have options. That's what matters.
-    -> haxolottle_main_hub
+    -> mission_hub
 
 + [Got a better idea]
     Haxolottle: *interested* I'm listening. What are you thinking?
@@ -376,18 +377,18 @@ Haxolottle: But help me understand—is this "mission parameters changed beyond 
     Haxolottle: Netherton might push back, but I'll support your call. You're the one taking the risk.
     ~ npc_haxolottle_friendship_level += 8
     #mission_aborted
-    -> haxolottle_main_hub
+    -> mission_hub
 
 + [Something feels wrong - can't explain it]
     Haxolottle: *trusts your instinct* That's valid. Field intuition saves lives. Abort authorized.
     Haxolottle: We can analyze what felt wrong afterwards. Right now, get clear.
     ~ npc_haxolottle_friendship_level += 10
     #mission_aborted_intuition
-    -> haxolottle_main_hub
+    -> mission_hub
 
 + [Actually, let me try one more thing first]
     Haxolottle: *supportive* Okay. But the abort option stays on the table. I've got your back either way.
-    -> haxolottle_main_hub
+    -> mission_hub
 
 === intel_discrepancy_resolution ===
 Haxolottle: *very focused* Intel discrepancy is serious. Describe exactly what you're seeing.
@@ -403,7 +404,7 @@ Haxolottle: Recommend trusting your eyes over my monitors. Proceed with extreme 
     ~ npc_haxolottle_friendship_level += 5
 }
 
--> haxolottle_main_hub
+-> mission_hub
 
 // ===========================================
 // MISSION-SPECIFIC HANDLER BRIEFINGS
@@ -434,7 +435,7 @@ Haxolottle: If compromised: Emergency extraction protocols ready. Three waypoint
     Haxolottle: *slight smile* Good. Because I've run hundreds of handler ops, and this is one of my better plans.
     Haxolottle: We've got this. Partnership.
     ~ npc_haxolottle_friendship_level += 5
-    -> haxolottle_main_hub
+    -> mission_hub
 
 === mission_sanctuary_handler_plan ===
 Haxolottle: Data Sanctuary defensive operation. Different from infiltration—we're protecting rather than penetrating.
@@ -449,7 +450,7 @@ Haxolottle: This requires trusting my tactical picture. I'll be seeing things yo
     Haxolottle: *appreciates that* Thank you. Command is easier when agents trust the handler.
     Haxolottle: I won't let you down.
     ~ npc_haxolottle_friendship_level += 8
-    -> haxolottle_main_hub
+    -> mission_hub
 
 + [What if I see something you don't?]
     Haxolottle: *good question* Always report anomalies immediately. You're my eyes on the ground.
@@ -473,18 +474,18 @@ Haxolottle: The axolotl principle—*smiles*—regeneration over rigidity. Plans
 + [Walk me through the contingencies for this mission]
     Haxolottle: *details specific contingencies based on current mission*
     ~ npc_haxolottle_friendship_level += 5
-    -> haxolottle_main_hub
+    -> mission_hub
 
 + [This seems paranoid]
     Haxolottle: *shrugs* I've had too many operations go sideways. Paranoid preparation saves lives.
     Haxolottle: When you're in the field and things go wrong, you'll be glad we planned for it.
-    -> haxolottle_main_hub
+    -> mission_hub
 
 + [I appreciate the thoroughness]
     Haxolottle: *genuine* That means a lot. Handlers live and die by preparation.
     Haxolottle: Knowing you value that preparation makes the late nights worth it.
     ~ npc_haxolottle_friendship_level += 8
-    -> haxolottle_main_hub
+    -> mission_hub
 
 // ===========================================
 // DEBRIEFING
@@ -549,7 +550,7 @@ Haxolottle: Debrief complete. After-action report will go to Netherton and opera
 Haxolottle: You did good work, {player_name()}. Really.
 
 #debrief_complete
--> haxolottle_main_hub
+-> mission_hub
 
 // ===========================================
 // GENERAL OPERATIONAL DISCUSSIONS
@@ -566,17 +567,17 @@ Haxolottle: We're adapting. Dr. Chen is developing new countermeasures. Netherto
 
 + [Ask about specific threats]
     Haxolottle: *provides detailed threat analysis*
-    -> haxolottle_main_hub
+    -> mission_hub
 
 + [Express concern about escalation]
     Haxolottle: *serious* Yeah, me too. The escalation pattern is concerning.
     Haxolottle: But that's why we're here. SAFETYNET exists to counter this. And we're getting better at it.
     ~ npc_haxolottle_friendship_level += 3
-    -> haxolottle_main_hub
+    -> mission_hub
 
 + [Thank them for the update]
     Haxolottle: *nods* Situational awareness matters. Stay informed, stay effective.
-    -> haxolottle_main_hub
+    -> mission_hub
 
 === operational_advice_from_handler ===
 Haxolottle: Handler perspective on operations. What do you want to know?
@@ -585,13 +586,13 @@ Haxolottle: Handler perspective on operations. What do you want to know?
     Haxolottle: From handler perspective? Communicate clearly. Trust your handler's intel but verify with your eyes. Adapt when plans fail.
     Haxolottle: Best agents treat handlers as partners, not support staff. We succeed together or fail together.
     ~ professional_reputation += 1
-    -> haxolottle_main_hub
+    -> mission_hub
 
 + [What mistakes do agents make?]
     Haxolottle: *thoughtful* Biggest mistake: not calling for help until it's too late. Pride gets people hurt.
     Haxolottle: Ask for support early. That's what handlers are for. We can't help if we don't know there's a problem.
     ~ professional_reputation += 1
-    -> haxolottle_main_hub
+    -> mission_hub
 
 + [How to work better with you specifically]
     Haxolottle: *appreciates the question* Honestly? You already work well with me.
@@ -600,7 +601,7 @@ Haxolottle: Handler perspective on operations. What do you want to know?
         Haxolottle: You're one of the best agents I've handled. And I've handled a lot.
         ~ npc_haxolottle_friendship_level += 8
     }
-    -> haxolottle_main_hub
+    -> mission_hub
 
 === handler_tradecraft_discussion ===
 Haxolottle: Handler tradecraft! The behind-the-scenes magic.
@@ -615,7 +616,7 @@ Haxolottle: And honestly? A lot of it is managing stress. Yours and ours. Keepin
     Haxolottle: It is. But it's also what I'm good at. Turns out eight years of field experience translates well to handler work.
     Haxolottle: I know what you're experiencing because I've experienced it. That empathy makes me better at support.
     ~ npc_haxolottle_friendship_level += 5
-    -> haxolottle_main_hub
+    -> mission_hub
 
 + [How do you manage your own stress?]
     Haxolottle: *honest* Varies. Swimming helps. Reading. Listening to rain sounds while pretending I'm not worried about agents in danger.
@@ -623,7 +624,7 @@ Haxolottle: And honestly? A lot of it is managing stress. Yours and ours. Keepin
         Haxolottle: Conversations like this help too. Knowing the agents I support see me as more than a voice on comms.
         ~ npc_haxolottle_friendship_level += 8
     }
-    -> haxolottle_main_hub
+    -> mission_hub
 
 + [Could you teach me handler skills?]
     Haxolottle: *interested* You want cross-training? Actually, that would make you a better field agent. Understanding both sides improves collaboration.
@@ -631,7 +632,7 @@ Haxolottle: And honestly? A lot of it is managing stress. Yours and ours. Keepin
     ~ professional_reputation += 2
     ~ npc_haxolottle_friendship_level += 10
     #handler_training_offered
-    -> haxolottle_main_hub
+    -> mission_hub
 
 // ===========================================
 // STUB KNOTS - To be implemented
@@ -640,29 +641,29 @@ Haxolottle: And honestly? A lot of it is managing stress. Yours and ours. Keepin
 === deep_intel_analysis ===
 Haxolottle: *analyzing data* I'm pulling deeper intelligence sources now. Give me a moment...
 Haxolottle: Alright, here's what I'm seeing from the extended analysis...
--> haxolottle_main_hub
+-> mission_hub
 
 === crisis_triage ===
 Haxolottle: *focused triage mode* Okay, let's prioritize. First, secure your immediate position. Second, we assess escape routes.
 Haxolottle: Talk to me. What's the most pressing threat right now?
--> haxolottle_main_hub
+-> mission_hub
 
 === abort_assessment ===
 Haxolottle: *methodical assessment* Let's walk through the abort decision together. What's driving this?
 Haxolottle: Sometimes abort is the right call. Sometimes we just need to adapt. Let's figure out which this is.
--> haxolottle_main_hub
+-> mission_hub
 
 === agent_alternative_plan ===
 Haxolottle: *collaborative planning* Okay, you have an alternative approach in mind. Walk me through it.
 Haxolottle: I'll assess feasibility from my end while you explain the concept.
--> haxolottle_main_hub
+-> mission_hub
 
 === detailed_debrief_questions ===
 Haxolottle: *detailed questioning* I need you to walk me through the timeline step by step.
 Haxolottle: What happened first? What was your decision-making process at each critical point?
--> haxolottle_main_hub
+-> mission_hub
 
 === handler_perspective_debrief ===
 Haxolottle: *handler analysis* From my monitoring position, here's what I observed during your operation...
 Haxolottle: There were moments where communication could have been clearer, but overall solid execution.
--> haxolottle_main_hub
+-> mission_hub

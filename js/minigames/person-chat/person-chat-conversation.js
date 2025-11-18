@@ -414,6 +414,10 @@ export default class PersonChatConversation {
                     this.handlePersonalSpace(params[0]);
                     break;
 
+                case 'exit_conversation':
+                    this.handleExitConversation();
+                    break;
+
                 default:
                     console.log(`⚠️ Unknown tag: ${action}`);
             }
@@ -558,6 +562,29 @@ export default class PersonChatConversation {
 
         window.npcGameBridge.setNPCPersonalSpace(this.npcId, distance);
         console.log(`↔️ Set NPC ${this.npcId} personal space: ${distance}px`);
+    }
+
+    /**
+     * Handle exit_conversation tag - navigate back to NPC's mission hub
+     * Tag: #exit_conversation
+     * This returns the player to the mission hub after personal conversations
+     */
+    handleExitConversation() {
+        console.log(`🔙 Exit conversation - navigating back to mission_hub for ${this.npc.id}`);
+
+        // Navigate back to the mission_hub knot in this NPC's hub file
+        if (this.inkEngine) {
+            try {
+                this.inkEngine.goToKnot('mission_hub');
+
+                // Advance to get the new content at mission_hub
+                this.advance();
+
+                console.log(`✅ Returned to mission_hub for ${this.npc.id}`);
+            } catch (error) {
+                console.error(`❌ Error navigating to mission_hub:`, error);
+            }
+        }
     }
 
     /**

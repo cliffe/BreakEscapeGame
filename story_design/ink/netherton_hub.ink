@@ -50,14 +50,15 @@ EXTERNAL mission_phase()                // LOCAL - Phase of current mission ("pr
         Netherton: Agent {player_name()}. What requires my attention?
 }
 
--> netherton_main_hub
+-> mission_hub
 
 // ===========================================
-// MAIN HUB - CONTEXT-AWARE CONVERSATION MENU
-// Dynamically shows personal + mission topics based on context
+// MISSION HUB - Central routing point
+// Routes to personal conversations or mission-related topics
+// Game returns here after #exit_conversation from personal talks
 // ===========================================
 
-=== netherton_main_hub ===
+=== mission_hub ===
 
 // Show different options based on location, mission phase, and relationship level
 
@@ -222,7 +223,7 @@ Netherton: Questions?
     Netherton: Excellent. *hands you mission packet* Review the details. Brief with Dr. Chen for equipment. Haxolottle will coordinate deployment.
     Netherton: Agent {player_name()}—*direct look*—execute this cleanly. We're counting on you.
     #mission_briefing_complete
-    -> netherton_main_hub
+    -> mission_hub
 
 === mission_ghost_tactical_support ===
 Netherton: *monitoring your position* I'm tracking your progress. What do you need?
@@ -232,18 +233,18 @@ Netherton: *monitoring your position* I'm tracking your progress. What do you ne
     // This would branch based on player's explanation
     Netherton: ... Acceptable. Use your judgment. I trust your field assessment.
     ~ npc_netherton_respect += 5
-    -> netherton_main_hub
+    -> mission_hub
 
 + [Request emergency extraction]
     Netherton: *immediately alert* Situation?
     // This would handle emergency extraction logic
     Netherton: Extraction authorized. Get to waypoint Charlie. Haxolottle is coordinating pickup.
     #emergency_extraction_authorized
-    -> netherton_main_hub
+    -> mission_hub
 
 + [Just checking in]
     Netherton: Acknowledged. You're performing well. Maintain operational tempo.
-    -> netherton_main_hub
+    -> mission_hub
 
 === mission_ghost_debrief ===
 Netherton: Your mission report indicates success. The backdoor has been neutralized. ENTROPY remains unaware of our intervention.
@@ -261,7 +262,7 @@ Netherton: Dr. Chen is analyzing the technical data you extracted. It may provid
 Netherton: Take forty-eight hours downtime. Then report for next assignment.
 
 #mission_complete
--> netherton_main_hub
+-> mission_hub
 
 === mission_sanctuary_discussion ===
 Netherton: The Data Sanctuary operation. We're protecting a secure storage facility that houses classified intelligence from multiple allied agencies.
@@ -272,7 +273,7 @@ Netherton: Your role will be defensive support. Not glamorous, but critical.
 
 + [Understood. What's my specific assignment?]
     Netherton: Details forthcoming. I wanted to brief you on strategic context first.
-    -> netherton_main_hub
+    -> mission_hub
 
 + [Ask why ENTROPY wants this data]
     Netherton: The sanctuary contains operation records, agent identities, tactical intelligence. A treasure trove for our adversaries.
@@ -281,7 +282,7 @@ Netherton: Your role will be defensive support. Not glamorous, but critical.
 
 + [This mission sounds important]
     Netherton: Every mission is important, Agent. But yes—this one has particularly high stakes.
-    -> netherton_main_hub
+    -> mission_hub
 
 === operational_advice_discussion ===
 Netherton: You want operational advice. *considers* On what specific matter?
@@ -291,14 +292,14 @@ Netherton: You want operational advice. *considers* On what specific matter?
     Netherton: When faced with ambiguous situation: Assess risk. Identify options. Select least-worst approach. Execute decisively.
     Netherton: Hesitation kills. Make the call and commit.
     ~ npc_netherton_respect += 5
-    -> netherton_main_hub
+    -> mission_hub
 
 + [How to improve mission planning]
     Netherton: Read after-action reports from successful operations. Study what worked. Identify patterns.
     Netherton: Anticipate failure modes. For each plan, ask: What could go wrong? How would I adapt?
     Netherton: The axolotl principle—Haxolottle's term. Plan for regeneration when the original approach fails.
     ~ npc_netherton_respect += 5
-    -> netherton_main_hub
+    -> mission_hub
 
 + [How to advance in SAFETYNET]
     Netherton: Consistent excellence. That's the path.
@@ -306,7 +307,7 @@ Netherton: You want operational advice. *considers* On what specific matter?
     Netherton: Most importantly: Maintain integrity. Technical skills can be trained. Character cannot.
     ~ npc_netherton_respect += 8
     ~ professional_reputation += 1
-    -> netherton_main_hub
+    -> mission_hub
 
 === safetynet_status_update ===
 Netherton: *brings up classified display*
@@ -319,17 +320,17 @@ Netherton: We're making progress. But ENTROPY adapts. The fight continues.
 
 + [Ask about specific threats]
     Netherton: Classified beyond your current access level. Your focus should remain on assigned missions.
-    -> netherton_main_hub
+    -> mission_hub
 
 + [Ask how the division is performing]
     Netherton: We meet operational objectives consistently. Success rate is {85 + (npc_netherton_respect / 10)} percent over the past quarter.
     Netherton: Acceptable, but there's room for improvement. Every failed operation represents unmitigated risk.
-    -> netherton_main_hub
+    -> mission_hub
 
 + [Thank them for the update]
     Netherton: *nods* Maintaining situational awareness is important. Don't become narrowly focused on individual missions.
     Netherton: Understand the larger context. Your work contributes to strategic objectives.
-    -> netherton_main_hub
+    -> mission_hub
 
 === training_discussion ===
 Netherton: Training opportunities. What areas interest you?
@@ -337,16 +338,16 @@ Netherton: Training opportunities. What areas interest you?
 + [Advanced infiltration techniques]
     Netherton: We run quarterly advanced tradecraft seminars. I'll add you to the roster. Expect rigorous training. High washout rate.
     ~ professional_reputation += 2
-    -> netherton_main_hub
+    -> mission_hub
 
 + [Leadership development]
     Netherton: *slight approval* Thinking about command responsibilities. Good.
     Netherton: There's a leadership program for senior agents. Application process is competitive. I can recommend you if your performance continues.
     ~ professional_reputation += 3
     ~ npc_netherton_respect += 10
-    -> netherton_main_hub
+    -> mission_hub
 
 + [Technical specialization]
     Netherton: Dr. Chen runs technical workshops. I'll arrange access. They'll be pleased to have an agent interested in deep technical capability.
     ~ professional_reputation += 2
-    -> netherton_main_hub
+    -> mission_hub

@@ -242,7 +242,12 @@ export default class PhoneChatConversation {
         
         try {
             const result = this.engine.continue();
-            
+
+            // Process tags for side effects (like #exit_conversation)
+            if (result.tags && result.tags.length > 0) {
+                this.processTags(result.tags);
+            }
+
             // Check if story has ended (no more content and no choices)
             if (!result.canContinue && (!result.choices || result.choices.length === 0)) {
                 this.storyEnded = true;
@@ -251,11 +256,58 @@ export default class PhoneChatConversation {
             } else {
                 result.hasEnded = false;
             }
-            
+
             return result;
         } catch (error) {
             console.error('❌ Error continuing story:', error);
             return { text: '', choices: [], tags: [], canContinue: false, hasEnded: true };
+        }
+    }
+
+    /**
+     * Process Ink tags for game actions
+     * @param {Array} tags - Tags from current line
+     */
+    processTags(tags) {
+        if (!tags || tags.length === 0) return;
+
+        tags.forEach(tag => {
+            console.log(`🏷️ Processing tag: ${tag}`);
+
+            // Tag format: "action:param1:param2"
+            const [action, ...params] = tag.split(':');
+
+            switch (action.trim().toLowerCase()) {
+                case 'exit_conversation':
+                    this.handleExitConversation();
+                    break;
+
+                default:
+                    // Unknown tags are okay - they might be processed by the UI layer
+                    console.log(`ℹ️ Unhandled tag: ${action}`);
+            }
+        });
+    }
+
+    /**
+     * Handle exit_conversation tag - navigate back to NPC's mission hub
+     * Tag: #exit_conversation
+     * This returns the player to the mission hub after personal conversations
+     */
+    handleExitConversation() {
+        console.log(`🔙 Exit conversation - navigating back to mission_hub for ${this.npcId}`);
+
+        // Navigate back to the mission_hub knot in this NPC's hub file
+        if (this.engine) {
+            try {
+                this.engine.goToKnot('mission_hub');
+
+                // Get the new content at mission_hub (but don't auto-continue)
+                // The UI will handle displaying it
+                console.log(`✅ Returned to mission_hub for ${this.npcId}`);
+            } catch (error) {
+                console.error(`❌ Error navigating to mission_hub:`, error);
+            }
         }
     }
     
