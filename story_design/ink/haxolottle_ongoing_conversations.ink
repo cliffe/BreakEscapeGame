@@ -13,34 +13,34 @@
 // Your game engine must persist these across ALL missions
 // ===========================================
 
-VAR npc_haxolottle_npc_haxolottle_friendship_level = 0         // PERSISTENT - Overall relationship depth (0-100)
-VAR npc_haxolottle_npc_haxolottle_conversations_had = 0        // PERSISTENT - Total personal conversations
-VAR npc_haxolottle_npc_haxolottle_trust_moments = 0            // PERSISTENT - Times player shared something personal
-VAR npc_haxolottle_npc_haxolottle_humor_shared = 0             // PERSISTENT - Funny moments experienced together
-VAR npc_haxolottle_npc_haxolottle_vulnerable_moments = 0       // PERSISTENT - Times either shared something difficult
-VAR npc_haxolottle_npc_haxolottle_player_shared_personal = 0   // PERSISTENT - Count of player vulnerable moments
+VAR npc_haxolottle_friendship_level = 0         // PERSISTENT - Overall relationship depth (0-100)
+VAR npc_haxolottle_conversations_had = 0        // PERSISTENT - Total personal conversations
+VAR npc_haxolottle_trust_moments = 0            // PERSISTENT - Times player shared something personal
+VAR npc_haxolottle_humor_shared = 0             // PERSISTENT - Funny moments experienced together
+VAR npc_haxolottle_vulnerable_moments = 0       // PERSISTENT - Times either shared something difficult
+VAR npc_haxolottle_player_shared_personal = 0   // PERSISTENT - Count of player vulnerable moments
 
 // Topic tracking - ALL PERSISTENT (never reset)
-VAR npc_haxolottle_npc_haxolottle_talked_hobbies_general = false           // PERSISTENT
-VAR npc_haxolottle_npc_haxolottle_talked_axolotl_obsession = false         // PERSISTENT
-VAR npc_haxolottle_npc_haxolottle_talked_music_taste = false               // PERSISTENT
-VAR npc_haxolottle_npc_haxolottle_talked_coffee_preferences = false        // PERSISTENT
-VAR npc_haxolottle_npc_haxolottle_talked_stress_management = false         // PERSISTENT
-VAR npc_haxolottle_npc_haxolottle_talked_philosophy_change = false         // PERSISTENT
-VAR npc_haxolottle_npc_haxolottle_talked_handler_life = false              // PERSISTENT
-VAR npc_haxolottle_npc_haxolottle_talked_field_nostalgia = false           // PERSISTENT
-VAR npc_haxolottle_npc_haxolottle_talked_weird_habits = false              // PERSISTENT
-VAR npc_haxolottle_npc_haxolottle_talked_favorite_operations = false       // PERSISTENT
-VAR npc_haxolottle_npc_haxolottle_talked_fears_anxieties = false           // PERSISTENT
-VAR npc_haxolottle_npc_haxolottle_talked_what_if_different = false         // PERSISTENT
-VAR npc_haxolottle_npc_haxolottle_talked_meaning_work = false              // PERSISTENT
-VAR npc_haxolottle_npc_haxolottle_talked_friendship_boundaries = false     // PERSISTENT
-VAR npc_haxolottle_npc_haxolottle_talked_future_dreams = false             // PERSISTENT
-VAR npc_haxolottle_npc_haxolottle_talked_identity_burden = false           // PERSISTENT
-VAR npc_haxolottle_npc_haxolottle_talked_loneliness_secrecy = false        // PERSISTENT
-VAR npc_haxolottle_npc_haxolottle_talked_real_name_temptation = false      // PERSISTENT
-VAR npc_haxolottle_npc_haxolottle_talked_after_safetynet = false           // PERSISTENT
-VAR npc_haxolottle_npc_haxolottle_talked_genuine_friendship = false        // PERSISTENT
+VAR npc_haxolottle_talked_hobbies_general = false           // PERSISTENT
+VAR npc_haxolottle_talked_axolotl_obsession = false         // PERSISTENT
+VAR npc_haxolottle_talked_music_taste = false               // PERSISTENT
+VAR npc_haxolottle_talked_coffee_preferences = false        // PERSISTENT
+VAR npc_haxolottle_talked_stress_management = false         // PERSISTENT
+VAR npc_haxolottle_talked_philosophy_change = false         // PERSISTENT
+VAR npc_haxolottle_talked_handler_life = false              // PERSISTENT
+VAR npc_haxolottle_talked_field_nostalgia = false           // PERSISTENT
+VAR npc_haxolottle_talked_weird_habits = false              // PERSISTENT
+VAR npc_haxolottle_talked_favorite_operations = false       // PERSISTENT
+VAR npc_haxolottle_talked_fears_anxieties = false           // PERSISTENT
+VAR npc_haxolottle_talked_what_if_different = false         // PERSISTENT
+VAR npc_haxolottle_talked_meaning_work = false              // PERSISTENT
+VAR npc_haxolottle_talked_friendship_boundaries = false     // PERSISTENT
+VAR npc_haxolottle_talked_future_dreams = false             // PERSISTENT
+VAR npc_haxolottle_talked_identity_burden = false           // PERSISTENT
+VAR npc_haxolottle_talked_loneliness_secrecy = false        // PERSISTENT
+VAR npc_haxolottle_talked_real_name_temptation = false      // PERSISTENT
+VAR npc_haxolottle_talked_after_safetynet = false           // PERSISTENT
+VAR npc_haxolottle_talked_genuine_friendship = false        // PERSISTENT
 
 // Deep personal reveals - PERSISTENT
 VAR npc_haxolottle_shared_loss = false           // PERSISTENT

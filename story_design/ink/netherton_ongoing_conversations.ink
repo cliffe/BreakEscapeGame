@@ -13,32 +13,32 @@
 // Your game engine must persist these across ALL missions
 // ===========================================
 
-VAR npc_npc_netherton_respect = 50              // PERSISTENT - Director's respect for agent (0-100)
-VAR npc_netherton_npc_netherton_serious_conversations = 0 // PERSISTENT - Formal discussions held
-VAR npc_netherton_npc_netherton_personal_moments = 0      // PERSISTENT - Rare vulnerable moments
+VAR npc_netherton_respect = 50              // PERSISTENT - Director's respect for agent (0-100)
+VAR npc_netherton_serious_conversations = 0 // PERSISTENT - Formal discussions held
+VAR npc_netherton_personal_moments = 0      // PERSISTENT - Rare vulnerable moments
 
 // Topic tracking - ALL PERSISTENT (never reset)
-VAR npc_netherton_npc_netherton_discussed_handbook = false                // PERSISTENT
-VAR npc_netherton_npc_netherton_discussed_leadership = false              // PERSISTENT
-VAR npc_netherton_npc_netherton_discussed_safetynet_history = false      // PERSISTENT
-VAR npc_netherton_npc_netherton_discussed_expectations = false            // PERSISTENT
-VAR npc_netherton_npc_netherton_discussed_difficult_decisions = false     // PERSISTENT
-VAR npc_netherton_npc_netherton_discussed_agent_development = false       // PERSISTENT
-VAR npc_netherton_npc_netherton_discussed_bureau_politics = false         // PERSISTENT
-VAR npc_netherton_npc_netherton_discussed_field_vs_command = false        // PERSISTENT
-VAR npc_netherton_npc_netherton_discussed_weight_of_command = false       // PERSISTENT
-VAR npc_netherton_npc_netherton_discussed_agent_losses = false            // PERSISTENT
-VAR npc_netherton_npc_netherton_discussed_ethical_boundaries = false      // PERSISTENT
-VAR npc_netherton_npc_netherton_discussed_personal_cost = false           // PERSISTENT
-VAR npc_netherton_npc_netherton_discussed_legacy = false                  // PERSISTENT
-VAR npc_netherton_npc_netherton_discussed_trust = false                   // PERSISTENT
-VAR npc_netherton_npc_netherton_discussed_rare_praise = false             // PERSISTENT
-VAR npc_netherton_npc_netherton_discussed_beyond_protocol = false         // PERSISTENT
+VAR npc_netherton_discussed_handbook = false                // PERSISTENT
+VAR npc_netherton_discussed_leadership = false              // PERSISTENT
+VAR npc_netherton_discussed_safetynet_history = false      // PERSISTENT
+VAR npc_netherton_discussed_expectations = false            // PERSISTENT
+VAR npc_netherton_discussed_difficult_decisions = false     // PERSISTENT
+VAR npc_netherton_discussed_agent_development = false       // PERSISTENT
+VAR npc_netherton_discussed_bureau_politics = false         // PERSISTENT
+VAR npc_netherton_discussed_field_vs_command = false        // PERSISTENT
+VAR npc_netherton_discussed_weight_of_command = false       // PERSISTENT
+VAR npc_netherton_discussed_agent_losses = false            // PERSISTENT
+VAR npc_netherton_discussed_ethical_boundaries = false      // PERSISTENT
+VAR npc_netherton_discussed_personal_cost = false           // PERSISTENT
+VAR npc_netherton_discussed_legacy = false                  // PERSISTENT
+VAR npc_netherton_discussed_trust = false                   // PERSISTENT
+VAR npc_netherton_discussed_rare_praise = false             // PERSISTENT
+VAR npc_netherton_discussed_beyond_protocol = false         // PERSISTENT
 
 // Achievement flags - PERSISTENT
-VAR npc_npc_netherton_shared_vulnerability = false  // PERSISTENT
-VAR npc_netherton_npc_netherton_earned_personal_trust = false // PERSISTENT
-VAR npc_netherton_npc_netherton_received_commendation = false // PERSISTENT
+VAR npc_netherton_shared_vulnerability = false  // PERSISTENT
+VAR npc_netherton_earned_personal_trust = false // PERSISTENT
+VAR npc_netherton_received_commendation = false // PERSISTENT
 
 // ===========================================
 // GLOBAL VARIABLES (session-only, span NPCs)

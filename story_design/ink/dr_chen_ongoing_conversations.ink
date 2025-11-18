@@ -13,33 +13,33 @@
 // Your game engine must persist these across ALL missions
 // ===========================================
 
-VAR npc_npc_chen_rapport = 50                      // PERSISTENT - Dr. Chen's rapport with agent (0-100)
-VAR npc_chen_npc_chen_tech_collaboration = 0            // PERSISTENT - Successful tech collaborations
-VAR npc_chen_npc_chen_shared_discoveries = 0            // PERSISTENT - Technical breakthroughs together
-VAR npc_chen_npc_chen_personal_conversations = 0        // PERSISTENT - Non-work discussions
+VAR npc_chen_rapport = 50                      // PERSISTENT - Dr. Chen's rapport with agent (0-100)
+VAR npc_chen_tech_collaboration = 0            // PERSISTENT - Successful tech collaborations
+VAR npc_chen_shared_discoveries = 0            // PERSISTENT - Technical breakthroughs together
+VAR npc_chen_personal_conversations = 0        // PERSISTENT - Non-work discussions
 
 // Topic tracking - ALL PERSISTENT (never reset)
-VAR npc_chen_npc_chen_discussed_tech_philosophy = false          // PERSISTENT
-VAR npc_chen_npc_chen_discussed_entropy_tech = false             // PERSISTENT
-VAR npc_chen_npc_chen_discussed_chen_background = false          // PERSISTENT
-VAR npc_chen_npc_chen_discussed_favorite_projects = false        // PERSISTENT
-VAR npc_chen_npc_chen_discussed_experimental_tech = false        // PERSISTENT
-VAR npc_chen_npc_chen_discussed_research_frustrations = false    // PERSISTENT
-VAR npc_chen_npc_chen_discussed_field_vs_lab = false             // PERSISTENT
-VAR npc_chen_npc_chen_discussed_ethical_tech = false             // PERSISTENT
-VAR npc_chen_npc_chen_discussed_dream_projects = false           // PERSISTENT
-VAR npc_chen_npc_chen_discussed_tech_risks = false               // PERSISTENT
-VAR npc_chen_npc_chen_discussed_work_life_balance = false        // PERSISTENT
-VAR npc_chen_npc_chen_discussed_mentorship = false               // PERSISTENT
-VAR npc_chen_npc_chen_discussed_future_vision = false            // PERSISTENT
-VAR npc_chen_npc_chen_discussed_friendship_value = false         // PERSISTENT
-VAR npc_chen_npc_chen_discussed_collaborative_legacy = false     // PERSISTENT
-VAR npc_chen_npc_chen_discussed_beyond_safetynet = false         // PERSISTENT
+VAR npc_chen_discussed_tech_philosophy = false          // PERSISTENT
+VAR npc_chen_discussed_entropy_tech = false             // PERSISTENT
+VAR npc_chen_discussed_chen_background = false          // PERSISTENT
+VAR npc_chen_discussed_favorite_projects = false        // PERSISTENT
+VAR npc_chen_discussed_experimental_tech = false        // PERSISTENT
+VAR npc_chen_discussed_research_frustrations = false    // PERSISTENT
+VAR npc_chen_discussed_field_vs_lab = false             // PERSISTENT
+VAR npc_chen_discussed_ethical_tech = false             // PERSISTENT
+VAR npc_chen_discussed_dream_projects = false           // PERSISTENT
+VAR npc_chen_discussed_tech_risks = false               // PERSISTENT
+VAR npc_chen_discussed_work_life_balance = false        // PERSISTENT
+VAR npc_chen_discussed_mentorship = false               // PERSISTENT
+VAR npc_chen_discussed_future_vision = false            // PERSISTENT
+VAR npc_chen_discussed_friendship_value = false         // PERSISTENT
+VAR npc_chen_discussed_collaborative_legacy = false     // PERSISTENT
+VAR npc_chen_discussed_beyond_safetynet = false         // PERSISTENT
 
 // Special moments - PERSISTENT
-VAR npc_npc_chen_shared_personal_story = false       // PERSISTENT
-VAR npc_chen_npc_chen_breakthrough_together = false       // PERSISTENT
-VAR npc_chen_npc_chen_earned_research_partner_status = false  // PERSISTENT
+VAR npc_chen_shared_personal_story = false       // PERSISTENT
+VAR npc_chen_breakthrough_together = false       // PERSISTENT
+VAR npc_chen_earned_research_partner_status = false  // PERSISTENT
 
 // ===========================================
 // GLOBAL VARIABLES (session-only, span NPCs)
