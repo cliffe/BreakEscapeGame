@@ -180,13 +180,13 @@ EXTERNAL mission_phase()                // LOCAL - Phase of current mission ("pr
 // Jump to appropriate phase hub based on progression
 {
     - total_missions_completed <= 5:
-        -> netherton_ongoing_conversations.phase_1_hub
+        -> phase_1_hub
     - total_missions_completed <= 10:
-        -> netherton_ongoing_conversations.phase_2_hub
+        -> phase_2_hub
     - total_missions_completed <= 15:
-        -> netherton_ongoing_conversations.phase_3_hub
+        -> phase_3_hub
     - total_missions_completed > 15:
-        -> netherton_ongoing_conversations.phase_4_hub
+        -> phase_4_hub
 }
 
 // ===========================================

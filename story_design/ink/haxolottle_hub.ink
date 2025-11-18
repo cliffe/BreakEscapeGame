@@ -188,9 +188,9 @@ EXTERNAL operational_stress_level()     // LOCAL - How stressed the current situ
 // Jump to appropriate phase hub based on progression
 {
     - total_missions_completed <= 5:
-        -> haxolottle_ongoing_conversations.phase_1_hub
+        -> phase_1_hub
     - total_missions_completed <= 10:
-        -> haxolottle_ongoing_conversations.phase_2_hub
+        -> phase_2_hub
 }
 
 // ===========================================
