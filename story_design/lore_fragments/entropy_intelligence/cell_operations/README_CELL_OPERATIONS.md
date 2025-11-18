@@ -4,8 +4,8 @@
 
 This collection contains internal operational reports from individual ENTROPY cells. Unlike the organizational LORE fragments (which describe ENTROPY as a whole), these fragments reveal how specific cells conduct their specialized operations.
 
-**Current Fragments:** 3
-**Cells Represented:** 3 of 11
+**Current Fragments:** 6
+**Cells Represented:** 6 of 11
 
 ---
 
@@ -43,6 +43,40 @@ This collection contains internal operational reports from individual ENTROPY ce
 - Reveals how ideological true believers defeat polygraphs
 - Phase 3 role: Intelligence/counter-intelligence (NOT sabotage)
 - **Player Value:** Most sensitive ENTROPY operation, shows government infiltration scope, ethical dilemma of whistleblowing vs. espionage
+
+### Ransomware Incorporated (Ransomware Operations)
+
+**CELL_OP_RANSOMWARE_INC_001: Healthcare Operations Ethics Review**
+- Q3 2024 healthcare ransomware operations (8 deployments)
+- Detailed tier system (Tier 1: NEVER encrypt life-critical, Tier 2/3: recoverable)
+- Valley Memorial Hospital near-death incident (14-minute ICU monitoring gap)
+- Auto-decryption after 48 hours (no permanent damage)
+- Kill switch activation prevented patient death
+- Cipher King's moral crisis and ethical reflection
+- **Player Value:** Shows ransomware safeguards and their failure, ethical complexity of "constrained" attacks, measurable real-world impact ($47M security investment driven), profound moral struggle from cell leader
+
+### Zero Day Syndicate (Vulnerability Research)
+
+**CELL_OP_ZERO_DAY_001: Vulnerability Research and Trading Report**
+- Q3 2024: 12 vulnerabilities discovered (7 critical, 5 high)
+- Disclosure dilemma: Responsible disclosure vs. weaponization vs. dark web sale
+- Epic EHR vulnerability disclosed (protected 250M patient records)
+- SCADA vulnerabilities retained for Phase 3 (enabled Critical Mass operations)
+- $15M dark web value rejected (ideology over profit)
+- Prophet's moral ledger: Protected patients via disclosure, enabled Valley Memorial via weaponization
+- **Player Value:** Shows vulnerability research enabling all ENTROPY operations, financial sacrifice for ideology ($15M foregone), ethical complexity of "demonstration" vs. protection, researcher responsibility for downstream harm
+
+### Social Fabric (Information Operations)
+
+**CELL_OP_SOCIAL_FABRIC_001: Polarization Campaign Assessment**
+- Operation FRACTURED TRUST (April-September 2024)
+- 627 fake personas across platforms, 47M impressions, 12 narratives to mainstream media
+- Measurable polarization increase in test counties (trust ↓22%, polarization ↑38%)
+- Real harms: 2 candidates harassed off campaigns, communities damaged
+- Psychological toll on cell members (3 resignations, substance abuse, depression)
+- Dissonance's moral collapse: "We've become indistinguishable from the enemy"
+- Cell refuses Phase 3 participation, leader resigns
+- **Player Value:** Most psychologically damaging operation, shows information warfare techniques, measurable social harm, complete ethical collapse leading to cell dissolution, demonstrates some problems can't be "demonstrated" without becoming the problem
 
 ---
 
@@ -135,6 +169,26 @@ Unlike stereotypical villains, all three cell leaders express:
 - Assessment of investigation priorities
 - Target: Eyes inside government's response
 
+**Ransomware Incorporated:**
+- Healthcare system disruption (reversible, 48-hour auto-decrypt)
+- Demonstrates hospital cybersecurity gaps
+- Tier 1 systems NEVER encrypted (life-critical protection)
+- Kill switch ready for immediate decryption
+- Status: Uncertain participation (Valley Memorial incident creates doubt)
+
+**Zero Day Syndicate:**
+- Provides exploits to all cells (enabling operations)
+- 8 zero-days retained for Phase 3 (SCADA, enterprise, cloud)
+- Post-Phase 3: Immediate disclosure to vendors
+- Dead man's switch (auto-disclose if compromised)
+- Status: Will participate but immediate disclosure after regardless of outcome
+
+**Social Fabric:**
+- Originally: Disinformation campaigns to amplify Phase 3 chaos
+- Status: REFUSED to participate (cell vote 8-2 against)
+- Leader resigned, cell in ethical collapse
+- Alternative: Research and disclosure instead of manipulation
+
 ### Shared Constraints:
 
 - Zero casualties (absolute requirement)
@@ -218,13 +272,7 @@ Unlike stereotypical villains, all three cell leaders express:
 
 ## Future Cell Operations Fragments
 
-### Planned Additions:
-
-**Ransomware Incorporated:**
-- Healthcare ransomware operations
-- Ethical constraints (no patient care disruption)
-- Cryptocurrency payment mechanisms
-- Reversible encryption for Phase 3
+### Planned Additions (5 of 11 cells remaining):
 
 **Supply Chain Saboteurs:**
 - Software vendor backdoor insertion
@@ -237,18 +285,6 @@ Unlike stereotypical villains, all three cell leaders express:
 - Reality-bending experiments (Lovecraftian tone)
 - Academic infiltration
 - Advanced cryptanalysis
-
-**Zero Day Syndicate:**
-- Vulnerability research and exploit development
-- Dark web trading operations
-- Bug bounty program exploitation
-- Ethical line: Defensive disclosure vs. weaponization
-
-**Social Fabric:**
-- Disinformation campaign operations
-- Social media manipulation
-- Polarization acceleration
-- Trust erosion tactics
 
 **Ghost Protocol:**
 - Privacy destruction operations
@@ -274,20 +310,22 @@ Unlike stereotypical villains, all three cell leaders express:
 
 ### Progressive Discovery:
 
-**Early Game (1-3 cells):**
+**Early Game (1-2 cells):**
 - Introduce one cell deeply before moving to others
 - Use to establish ENTROPY's competence and ethical complexity
-- Critical Mass or Digital Vanguard recommended first
+- Digital Vanguard recommended first (easiest to understand, corporate espionage)
 
-**Mid Game (4-6 cells):**
-- Reveal cross-cell collaboration patterns
+**Mid Game (3-4 cells):**
+- Reveal cross-cell collaboration patterns (Digital Vanguard → others)
 - Show intelligence sharing and coordination
-- Introduce higher-risk operations (FBI, NSA infiltration)
+- Introduce technical operations (Critical Mass grid, Zero Day exploits)
+- Introduce higher-risk operations (Insider Threat Initiative government infiltration)
 
-**Late Game (7+ cells):**
-- Complete picture of ENTROPY's scope
-- Full understanding of Phase 3 coordination
-- Moral reckoning: Stop them entirely? Learn from them?
+**Late Game (5-6 cells):**
+- Reveal ethical crisis moments (Valley Memorial, Social Fabric collapse)
+- Show internal dissent (Ransomware Inc doubts Phase 3, Social Fabric refuses)
+- Complete picture of ENTROPY's scope and fractures
+- Moral reckoning: Stop them entirely? Learn from them? Are they falling apart?
 
 ### Moral Complexity Presentation:
 
@@ -301,9 +339,12 @@ Unlike stereotypical villains, all three cell leaders express:
 
 ## Recommended Reading Order
 
-1. **CELL_OP_DIGITAL_VANGUARD_001** - Easiest to understand, corporate espionage is familiar
-2. **CELL_OP_CRITICAL_MASS_001** - Shows technical sophistication, Phase 3 details
-3. **CELL_OP_INSIDER_THREAT_001** - Most sensitive, government infiltration shocking revelation
+1. **CELL_OP_DIGITAL_VANGUARD_001** - Easiest to understand, corporate espionage is familiar, establishes legitimate business fronts
+2. **CELL_OP_CRITICAL_MASS_001** - Shows technical sophistication (SCADA compromise), Phase 3 details, ethical constraints
+3. **CELL_OP_ZERO_DAY_001** - Reveals vulnerability research enabling other cells, disclosure dilemma, financial sacrifice for ideology
+4. **CELL_OP_INSIDER_THREAT_001** - Most sensitive operation (government infiltration), whistleblowing vs. espionage ethics
+5. **CELL_OP_RANSOMWARE_INC_001** - Ethical crisis (Valley Memorial near-death), shows safeguards can fail, Cipher King's moral struggle
+6. **CELL_OP_SOCIAL_FABRIC_001** - Complete ethical collapse, cell refuses Phase 3, leader resigns, "indistinguishable from the enemy"
 
 ---
 
