@@ -37,6 +37,22 @@ The Handbook contains thousands of regulations. Below are the ones most frequent
 
 **Section 12, Article 8**: "Agents must never lie to allied law enforcement agencies. Instead, use misdirection, selective truth, technical accuracy, semantic ambiguity, or simply not answering the question."
 
+### Agent Identity Protection and Interpersonal Relations
+
+**Protocol 47-Alpha**: "Agents shall not reveal their true identities to other agents, including real names, personal addresses, family details, or identifying biographical information. Operational security depends on compartmentalization."
+
+**Section 19, Clause 11**: "Professional relationships between agents are encouraged for operational effectiveness. Personal friendships between agents are inevitable and acceptable, provided they do not compromise identity security or operational discretion."
+
+**Regulation 847**: "Agents may discuss personal interests, hobbies, philosophies, and non-identifying life experiences with colleagues. Sharing is encouraged for psychological wellbeing, within the constraints of identity protection."
+
+**Protocol 62-B**: "Handlers and field agents will develop working relationships based on trust and communication. Personal details may be shared at the agent's discretion, subject to identity protection protocols. Handlers are not required to share personal information but may do so to build rapport."
+
+**Section 33, Article 14**: "In the event that an agent's true identity becomes compromised within SAFETYNET, immediate reassignment and identity protection protocols shall be initiated. Accidental disclosure between trusted colleagues may be overlooked if contained and reported."
+
+**Regulation 299**: "Agents are not required to maintain emotional distance from colleagues, only informational distance. Friendships, mentorships, and professional bonds are valuable for long-term operational effectiveness and retention."
+
+**Protocol 180**: "The following information may be shared between agents without identity compromise: operational preferences, training methodologies, field experiences (anonymized), personal philosophies, hobbies unconnected to identity, and general life advice. The following must not be shared: legal names, home addresses, family member names, unique identifying characteristics, previous employment (if identifying), educational institutions (if identifying)."
+
 ### System Access and Hacking
 
 **Protocol 404**: "If a security system cannot be found, it cannot be breached. Therefore, bypassing non-existent security is both prohibited and mandatory."
