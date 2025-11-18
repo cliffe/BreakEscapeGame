@@ -249,7 +249,7 @@ Which approach do you want to take?
 
 + [Ask for their recommendation]
     Haxolottle: *appreciates being consulted*
-    {operational_stress_level == "crisis":
+    {operational_stress_level() == "crisis":
         Haxolottle: Honest assessment? Extract. The mission isn't worth your life. But it's your call.
     - else:
         Haxolottle: I'd try Alpha. Calculated risk with decent probability. But you're the one in the field.
@@ -295,7 +295,7 @@ Haxolottle: *professional focus* What kind of support do you need?
 
 + [Need security status update]
     Haxolottle: *checking feeds* Security status: [describes guard patterns, surveillance state]
-    Haxolottle: Best infiltration window is in {twelve} minutes. That work for you?
+    Haxolottle: Best infiltration window is in 12 minutes. That work for you?
     -> haxolottle_main_hub
 
 + [Requesting abort confirmation]
@@ -310,7 +310,7 @@ Haxolottle: *professional focus* What kind of support do you need?
 === intel_update_active ===
 Haxolottle: *real-time analysis on monitors*
 
-Haxolottle: Current intel picture: ENTROPY activity level {moderate}. No indication they're aware of you.
+Haxolottle: Current intel picture: ENTROPY activity level moderate. No indication they're aware of you.
 
 Haxolottle: Target location status: [describes current state based on surveillance]
 
@@ -541,7 +541,7 @@ Haxolottle: *finalizes debrief documentation*
 
 Haxolottle: Debrief complete. After-action report will go to Netherton and operational archives.
 
-{mission_phase:
+{mission_phase():
     Haxolottle: Mission status: {total_missions_completed + 1} operations completed successfully.
     ~ total_missions_completed += 1
 }
@@ -632,3 +632,37 @@ Haxolottle: And honestly? A lot of it is managing stress. Yours and ours. Keepin
     ~ npc_haxolottle_friendship_level += 10
     #handler_training_offered
     -> haxolottle_main_hub
+
+// ===========================================
+// STUB KNOTS - To be implemented
+// ===========================================
+
+=== deep_intel_analysis ===
+Haxolottle: *analyzing data* I'm pulling deeper intelligence sources now. Give me a moment...
+Haxolottle: Alright, here's what I'm seeing from the extended analysis...
+-> haxolottle_main_hub
+
+=== crisis_triage ===
+Haxolottle: *focused triage mode* Okay, let's prioritize. First, secure your immediate position. Second, we assess escape routes.
+Haxolottle: Talk to me. What's the most pressing threat right now?
+-> haxolottle_main_hub
+
+=== abort_assessment ===
+Haxolottle: *methodical assessment* Let's walk through the abort decision together. What's driving this?
+Haxolottle: Sometimes abort is the right call. Sometimes we just need to adapt. Let's figure out which this is.
+-> haxolottle_main_hub
+
+=== agent_alternative_plan ===
+Haxolottle: *collaborative planning* Okay, you have an alternative approach in mind. Walk me through it.
+Haxolottle: I'll assess feasibility from my end while you explain the concept.
+-> haxolottle_main_hub
+
+=== detailed_debrief_questions ===
+Haxolottle: *detailed questioning* I need you to walk me through the timeline step by step.
+Haxolottle: What happened first? What was your decision-making process at each critical point?
+-> haxolottle_main_hub
+
+=== handler_perspective_debrief ===
+Haxolottle: *handler analysis* From my monitoring position, here's what I observed during your operation...
+Haxolottle: There were moments where communication could have been clearer, but overall solid execution.
+-> haxolottle_main_hub
