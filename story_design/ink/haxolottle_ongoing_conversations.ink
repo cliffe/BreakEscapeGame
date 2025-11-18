@@ -949,14 +949,16 @@ Haxolottle: But it's worth checking in with yourself. "Is this useful vigilance 
 
 === conversation_end ===
 
-{npc_haxolottle_conversations_had >= 5 and npc_haxolottle_friendship_level >= 40:
-    Haxolottle: I really appreciate these talks, Agent {player_name}. Makes the work feel less isolating.
-- else:
-    Haxolottle: Alright. Back to the mission. Talk later.
+{
+    - npc_haxolottle_conversations_had >= 5 and npc_haxolottle_friendship_level >= 40:
+        Haxolottle: I really appreciate these talks, Agent {player_name}. Makes the work feel less isolating.
+    - else:
+        Haxolottle: Alright. Back to the mission. Talk later.
 }
 
-{npc_haxolottle_friendship_level >= 60:
-    Haxolottle: And hey... you're becoming a real friend. Within the constraints of Protocol 47-Alpha, but a friend nonetheless.
+{
+    - npc_haxolottle_friendship_level >= 60:
+        Haxolottle: And hey... you're becoming a real friend. Within the constraints of Protocol 47-Alpha, but a friend nonetheless.
 }
 
 #exit_conversation

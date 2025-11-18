@@ -1771,12 +1771,13 @@ Dr. Chen: Peaceful. After years of fighting cyber threats. Just... peace.
 
 === conversation_end_phase3 ===
 
-{npc_chen_rapport >= 85:
-    Dr. Chen: Always energizing talking with you, {player_name}. Let's do this again soon!
-- npc_chen_rapport >= 75:
-    Dr. Chen: Great conversation. Stay safe out there, okay?
-- else:
-    Dr. Chen: Take care. Let me know if you need anything.
+{
+    - npc_chen_rapport >= 85:
+        Dr. Chen: Always energizing talking with you, {player_name}. Let's do this again soon!
+    - npc_chen_rapport >= 75:
+        Dr. Chen: Great conversation. Stay safe out there, okay?
+    - else:
+        Dr. Chen: Take care. Let me know if you need anything.
 }
 
 #exit_conversation
@@ -1784,12 +1785,13 @@ Dr. Chen: Peaceful. After years of fighting cyber threats. Just... peace.
 
 === conversation_end_phase4 ===
 
-{npc_chen_rapport >= 95:
-    Dr. Chen: *warm smile* Thanks for being such an incredible partner. And friend. Seriously.
-- npc_chen_rapport >= 85:
-    Dr. Chen: Until next time, partner. Keep making me proud out there.
-- else:
-    Dr. Chen: Good talking. Be safe.
+{
+    - npc_chen_rapport >= 95:
+        Dr. Chen: *warm smile* Thanks for being such an incredible partner. And friend. Seriously.
+    - npc_chen_rapport >= 85:
+        Dr. Chen: Until next time, partner. Keep making me proud out there.
+    - else:
+        Dr. Chen: Good talking. Be safe.
 }
 
 #exit_conversation
@@ -1798,12 +1800,13 @@ Dr. Chen: Peaceful. After years of fighting cyber threats. Just... peace.
 
 === conversation_end_phase1 ===
 
-{npc_chen_rapport >= 65:
-    Dr. Chen: Great talking! Let me know if you need anything. Seriously, anytime.
-- npc_chen_rapport >= 50:
-    Dr. Chen: Anytime you need tech support, you know where to find me.
-- else:
-    Dr. Chen: Alright. Good luck out there.
+{
+    - npc_chen_rapport >= 65:
+        Dr. Chen: Great talking! Let me know if you need anything. Seriously, anytime.
+    - npc_chen_rapport >= 50:
+        Dr. Chen: Anytime you need tech support, you know where to find me.
+    - else:
+        Dr. Chen: Alright. Good luck out there.
 }
 
 #exit_conversation
@@ -1811,12 +1814,13 @@ Dr. Chen: Peaceful. After years of fighting cyber threats. Just... peace.
 
 === conversation_end_phase2 ===
 
-{npc_chen_rapport >= 75:
-    Dr. Chen: Always a pleasure, {player_name}. Let's collaborate again soon!
-- npc_chen_rapport >= 60:
-    Dr. Chen: Thanks for the chat. Stay safe out there.
-- else:
-    Dr. Chen: Talk later. Good luck.
+{
+    - npc_chen_rapport >= 75:
+        Dr. Chen: Always a pleasure, {player_name}. Let's collaborate again soon!
+    - npc_chen_rapport >= 60:
+        Dr. Chen: Thanks for the chat. Stay safe out there.
+    - else:
+        Dr. Chen: Talk later. Good luck.
 }
 
 #exit_conversation

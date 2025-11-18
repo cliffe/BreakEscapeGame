@@ -362,12 +362,13 @@ Netherton: I expect to see continued progress. Maintain this trajectory.
 === expectations_current_assessment ===
 ~ npc_netherton_respect += 12
 
-{npc_netherton_respect >= 70:
-    Netherton: You are exceeding expectations for your experience level. Continue this performance.
-- npc_netherton_respect >= 55:
-    Netherton: You are meeting standards. There is room for improvement, but your trajectory is positive.
-- else:
-    Netherton: You are adequate. Adequate is insufficient for SAFETYNET's needs. Improvement is required.
+{
+    - npc_netherton_respect >= 70:
+        Netherton: You are exceeding expectations for your experience level. Continue this performance.
+    - npc_netherton_respect >= 55:
+        Netherton: You are meeting standards. There is room for improvement, but your trajectory is positive.
+    - else:
+        Netherton: You are adequate. Adequate is insufficient for SAFETYNET's needs. Improvement is required.
 }
 
 Netherton: Specific areas for development will be addressed in formal performance reviews. But overall... *brief pause* ...you show promise.
@@ -513,36 +514,37 @@ Netherton: Your development has been... *consults memory* ...notably consistent.
 === development_specific_feedback ===
 ~ npc_netherton_respect += 22
 
-{npc_netherton_respect >= 75:
-    Netherton: Your technical skills are excellent. Your judgment under pressure has improved significantly. Field craft is developing appropriately.
+{
+    - npc_netherton_respect >= 75:
+        Netherton: Your technical skills are excellent. Your judgment under pressure has improved significantly. Field craft is developing appropriately.
 
-    Netherton: Focus on strategic thinking. You excel at tactical execution. Now develop the capacity to see three moves ahead. Anticipate consequences beyond immediate objectives.
+        Netherton: Focus on strategic thinking. You excel at tactical execution. Now develop the capacity to see three moves ahead. Anticipate consequences beyond immediate objectives.
 
-    Netherton: Leadership potential is evident. Begin considering command responsibilities. How you would manage teams. How you would make resource allocation decisions.
+        Netherton: Leadership potential is evident. Begin considering command responsibilities. How you would manage teams. How you would make resource allocation decisions.
 
-    *rare warmth*
+        *rare warmth*
 
-    Netherton: You're on track to become one of SAFETYNET's premier agents. Maintain this trajectory.
+        Netherton: You're on track to become one of SAFETYNET's premier agents. Maintain this trajectory.
 
-    ~ npc_netherton_respect += 25
-    ~ professional_reputation += 3
-- npc_netherton_respect >= 60:
-    Netherton: Technical competence is solid. Decision-making is sound. Operational performance meets standards.
+        ~ npc_netherton_respect += 25
+        ~ professional_reputation += 3
+    - npc_netherton_respect >= 60:
+        Netherton: Technical competence is solid. Decision-making is sound. Operational performance meets standards.
 
-    Netherton: Develop deeper strategic awareness. Understand the broader context of operations. How your missions connect to organizational objectives.
+        Netherton: Develop deeper strategic awareness. Understand the broader context of operations. How your missions connect to organizational objectives.
 
-    Netherton: Increase your initiative. Don't wait for instructions when the correct action is clear. Trust your judgment more.
+        Netherton: Increase your initiative. Don't wait for instructions when the correct action is clear. Trust your judgment more.
 
-    ~ npc_netherton_respect += 15
-    ~ professional_reputation += 1
-- else:
-    Netherton: You meet minimum standards. That is insufficient for advancement.
+        ~ npc_netherton_respect += 15
+        ~ professional_reputation += 1
+    - else:
+        Netherton: You meet minimum standards. That is insufficient for advancement.
 
-    Netherton: Improve technical precision. Develop better situational awareness. Demonstrate more consistent judgment.
+        Netherton: Improve technical precision. Develop better situational awareness. Demonstrate more consistent judgment.
 
-    Netherton: Review handbook sections 8 through 12. Study after-action reports from successful operations. Learn from excellence.
+        Netherton: Review handbook sections 8 through 12. Study after-action reports from successful operations. Learn from excellence.
 
-    ~ npc_netherton_respect += 8
+        ~ npc_netherton_respect += 8
 }
 
 -> phase_2_hub
@@ -1420,46 +1422,47 @@ Netherton: You're becoming the kind of agent I hoped to develop. The kind SAFETY
 
 Netherton: My honest assessment. *sets aside work, gives full attention*
 
-{npc_netherton_respect >= 95:
-    Netherton: You are among the finest agents I've commanded in twenty-three years with SAFETYNET.
+{
+    - npc_netherton_respect >= 95:
+        Netherton: You are among the finest agents I've commanded in twenty-three years with SAFETYNET.
 
-    Netherton: Your technical skills are exceptional. Your judgment is sound. Your ethics are intact despite pressures that corrupt many agents.
+        Netherton: Your technical skills are exceptional. Your judgment is sound. Your ethics are intact despite pressures that corrupt many agents.
 
-    Netherton: You demonstrate leadership qualities that suggest you'll eventually command your own division. When that time comes, I'll recommend you without reservation.
+        Netherton: You demonstrate leadership qualities that suggest you'll eventually command your own division. When that time comes, I'll recommend you without reservation.
 
-    *rare genuine warmth*
+        *rare genuine warmth*
 
-    Netherton: More than that—you've reminded me why this work matters. Why developing agents is worthwhile. You represent what SAFETYNET should be.
+        Netherton: More than that—you've reminded me why this work matters. Why developing agents is worthwhile. You represent what SAFETYNET should be.
 
-    Netherton: I'm honored to have commanded you. Genuinely.
+        Netherton: I'm honored to have commanded you. Genuinely.
 
-    ~ npc_netherton_respect += 60
-    ~ professional_reputation += 5
-    ~ npc_netherton_received_commendation = true
+        ~ npc_netherton_respect += 60
+        ~ professional_reputation += 5
+        ~ npc_netherton_received_commendation = true
 
-- npc_netherton_respect >= 85:
-    Netherton: You are an excellent agent. Top tier performance across all metrics.
+    - npc_netherton_respect >= 85:
+        Netherton: You are an excellent agent. Top tier performance across all metrics.
 
-    Netherton: Your capabilities continue to develop. Your judgment improves with each operation. You're on track for significant advancement.
+        Netherton: Your capabilities continue to develop. Your judgment improves with each operation. You're on track for significant advancement.
 
-    Netherton: I have no substantial criticisms. Minor areas for growth, but overall—you exceed expectations consistently.
+        Netherton: I have no substantial criticisms. Minor areas for growth, but overall—you exceed expectations consistently.
 
-    *approving*
+        *approving*
 
-    Netherton: Continue this trajectory and you'll have a distinguished career. I'm confident in that assessment.
+        Netherton: Continue this trajectory and you'll have a distinguished career. I'm confident in that assessment.
 
-    ~ npc_netherton_respect += 45
-    ~ professional_reputation += 4
-    ~ npc_netherton_received_commendation = true
+        ~ npc_netherton_respect += 45
+        ~ professional_reputation += 4
+        ~ npc_netherton_received_commendation = true
 
-- else:
-    Netherton: You are a solid, reliable agent. You meet standards and occasionally exceed them.
+    - else:
+        Netherton: You are a solid, reliable agent. You meet standards and occasionally exceed them.
 
-    Netherton: There's room for growth. Areas to develop. But your foundation is strong.
+        Netherton: There's room for growth. Areas to develop. But your foundation is strong.
 
-    Netherton: I'm satisfied with your performance and optimistic about your continued development.
+        Netherton: I'm satisfied with your performance and optimistic about your continued development.
 
-    ~ npc_netherton_respect += 30
+        ~ npc_netherton_respect += 30
     ~ professional_reputation += 2
 }
 
@@ -1587,12 +1590,13 @@ Netherton: The fact that you understand that—that protocols are tools, not rep
 
 === conversation_end_phase1 ===
 
-{npc_netherton_respect >= 70:
-    Netherton: Acceptable performance continues, Agent {player_name}. Dismissed.
-- npc_netherton_respect >= 55:
-    Netherton: Carry on, Agent.
-- else:
-    Netherton: Dismissed.
+{
+    - npc_netherton_respect >= 70:
+        Netherton: Acceptable performance continues, Agent {player_name}. Dismissed.
+    - npc_netherton_respect >= 55:
+        Netherton: Carry on, Agent.
+    - else:
+        Netherton: Dismissed.
 }
 
 #exit_conversation
@@ -1600,12 +1604,13 @@ Netherton: The fact that you understand that—that protocols are tools, not rep
 
 === conversation_end_phase2 ===
 
-{npc_netherton_respect >= 75:
-    Netherton: You're developing well, Agent. Continue this trajectory.
-- npc_netherton_respect >= 60:
-    Netherton: Satisfactory. Dismissed.
-- else:
-    Netherton: That will be all.
+{
+    - npc_netherton_respect >= 75:
+        Netherton: You're developing well, Agent. Continue this trajectory.
+    - npc_netherton_respect >= 60:
+        Netherton: Satisfactory. Dismissed.
+    - else:
+        Netherton: That will be all.
 }
 
 #exit_conversation
@@ -1613,12 +1618,13 @@ Netherton: The fact that you understand that—that protocols are tools, not rep
 
 === conversation_end_phase3 ===
 
-{npc_netherton_respect >= 85:
-    Netherton: Agent {player_name}. *rare warmth* Your service is valued. Genuinely.
-- npc_netherton_respect >= 75:
-    Netherton: Excellent work continues. Carry on, Agent.
-- else:
-    Netherton: Dismissed, Agent.
+{
+    - npc_netherton_respect >= 85:
+        Netherton: Agent {player_name}. *rare warmth* Your service is valued. Genuinely.
+    - npc_netherton_respect >= 75:
+        Netherton: Excellent work continues. Carry on, Agent.
+    - else:
+        Netherton: Dismissed, Agent.
 }
 
 #exit_conversation
@@ -1626,12 +1632,13 @@ Netherton: The fact that you understand that—that protocols are tools, not rep
 
 === conversation_end_phase4 ===
 
-{npc_netherton_respect >= 95:
-    Netherton: {player_name}. *uses first name* It's been an honor working with you. Until next time.
-- npc_netherton_respect >= 85:
-    Netherton: Thank you for your time, Agent. And for your service.
-- else:
-    Netherton: That will be all.
+{
+    - npc_netherton_respect >= 95:
+        Netherton: {player_name}. *uses first name* It's been an honor working with you. Until next time.
+    - npc_netherton_respect >= 85:
+        Netherton: Thank you for your time, Agent. And for your service.
+    - else:
+        Netherton: That will be all.
 }
 
 #exit_conversation
