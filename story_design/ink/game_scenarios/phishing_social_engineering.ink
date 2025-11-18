@@ -32,7 +32,7 @@ VAR completed_spoofing = false
 VAR completed_attachment = false
 
 // Instructor relationship
-VAR instructor_rapport = 0
+VAR haxolottle_rapport = 0
 VAR ethical_awareness_shown = false
 
 // External variables
@@ -43,7 +43,7 @@ EXTERNAL player_name
 // ===========================================
 
 === start ===
-~ instructor_rapport = 0
+~ haxolottle_rapport = 0
 
 Social Engineering Specialist: Welcome, Agent {player_name}. I'm your instructor for human factors and social engineering.
 
@@ -55,12 +55,12 @@ Social Engineering Specialist: Clear on that? We're learning these techniques to
 
 * [Absolutely. I understand the ethical boundaries]
     ~ ethical_awareness_shown = true
-    ~ instructor_rapport += 15
+    ~ haxolottle_rapport += 15
     You: Understood completely. Authorized testing only, controlled environments, defensive purpose.
     Social Engineering Specialist: Perfect. That's exactly the mindset we need. Let's begin.
     -> social_engineering_hub
 * [Yes, I'm clear on the scope]
-    ~ instructor_rapport += 5
+    ~ haxolottle_rapport += 5
     You: Clear on the ethical constraints.
     Social Engineering Specialist: Good. Remember that throughout.
     -> social_engineering_hub
@@ -102,7 +102,7 @@ Social Engineering Specialist: What aspect of social engineering and phishing wo
 
 === human_factors_intro ===
 ~ intro_human_factors_discussed = true
-~ instructor_rapport += 5
+~ haxolottle_rapport += 5
 
 Social Engineering Specialist: Human factors. The foundation of social engineering attacks.
 
@@ -123,7 +123,7 @@ Social Engineering Specialist: The classic saying: "The user is the weakest link
     -> social_engineering_hub
 
 === human_vulnerabilities ===
-~ instructor_rapport += 10
+~ haxolottle_rapport += 10
 
 Social Engineering Specialist: Excellent question. Multiple factors make humans vulnerable:
 
@@ -137,11 +137,11 @@ Social Engineering Specialist: **Information asymmetry**: Attackers know tricks 
 
 Social Engineering Specialist: **Scale**: Attackers can send thousands of phishing emails. They only need one person to click. The defender has to get it right every time.
 
-~ instructor_rapport += 5
+~ haxolottle_rapport += 5
 -> social_engineering_hub
 
 === human_factors_defense ===
-~ instructor_rapport += 10
+~ haxolottle_rapport += 10
 
 Social Engineering Specialist: Good instinct. Defense requires layered approaches:
 
@@ -155,7 +155,7 @@ Social Engineering Specialist: **Culture**: Create organizational culture where 
 
 Social Engineering Specialist: **Regular testing**: Conduct simulated phishing campaigns to identify vulnerable users and improve training. What we're doing here—authorized, controlled testing.
 
-~ instructor_rapport += 10
+~ haxolottle_rapport += 10
 -> social_engineering_hub
 
 // ===========================================
@@ -164,7 +164,7 @@ Social Engineering Specialist: **Regular testing**: Conduct simulated phishing c
 
 === phishing_basics ===
 ~ phishing_basics_discussed = true
-~ instructor_rapport += 5
+~ haxolottle_rapport += 5
 
 Social Engineering Specialist: Phishing. One of the most effective attack vectors in cybersecurity.
 
@@ -191,7 +191,7 @@ Social Engineering Specialist: Once they open that attachment, the attacker gain
     -> social_engineering_hub
 
 === spear_phishing_explanation ===
-~ instructor_rapport += 10
+~ haxolottle_rapport += 10
 
 Social Engineering Specialist: Important distinction.
 
@@ -205,11 +205,11 @@ Social Engineering Specialist: This lab simulates spear phishing. You'll researc
 
 Social Engineering Specialist: In real-world APT (Advanced Persistent Threat) attacks, spear phishing is often the initial compromise. High-value targets get carefully researched, precisely targeted emails.
 
-~ instructor_rapport += 10
+~ haxolottle_rapport += 10
 -> social_engineering_hub
 
 === phishing_success_rates ===
-~ instructor_rapport += 8
+~ haxolottle_rapport += 8
 
 Social Engineering Specialist: Disturbingly successful.
 
@@ -226,11 +226,11 @@ Social Engineering Specialist: The economics favor attackers: sending 10,000 phi
 
 Social Engineering Specialist: And one successful compromise can be enough. One executive's email account, one developer's credentials, one system admin's access—that's your foothold.
 
-~ instructor_rapport += 8
+~ haxolottle_rapport += 8
 -> social_engineering_hub
 
 === convincing_phishing ===
-~ instructor_rapport += 10
+~ haxolottle_rapport += 10
 
 Social Engineering Specialist: The art of the convincing phish. Several key elements:
 
@@ -248,7 +248,7 @@ Social Engineering Specialist: **Psychological triggers**: Authority (from execu
 
 Social Engineering Specialist: Combine these elements, and you create emails that even security-aware users might trust.
 
-~ instructor_rapport += 10
+~ haxolottle_rapport += 10
 -> social_engineering_hub
 
 // ===========================================
@@ -257,7 +257,7 @@ Social Engineering Specialist: Combine these elements, and you create emails tha
 
 === reconnaissance_intro ===
 ~ reconnaissance_discussed = true
-~ instructor_rapport += 5
+~ haxolottle_rapport += 5
 
 Social Engineering Specialist: Reconnaissance. The foundation of targeted attacks.
 
@@ -284,7 +284,7 @@ Social Engineering Specialist: **Interest identification**: What are targets pas
     -> social_engineering_hub
 
 === recon_timeframes ===
-~ instructor_rapport += 8
+~ haxolottle_rapport += 8
 
 Social Engineering Specialist: Depends on the operation and target value.
 
@@ -298,12 +298,12 @@ Social Engineering Specialist: The more valuable the target, the more reconnaiss
 
 Social Engineering Specialist: For this lab, you'll spend 15-30 minutes on reconnaissance. Enough to understand the organization and personalize attacks, but compressed for training purposes.
 
-~ instructor_rapport += 5
+~ haxolottle_rapport += 5
 ~ completed_reconnaissance = true
 -> social_engineering_hub
 
 === osint_tools ===
-~ instructor_rapport += 10
+~ haxolottle_rapport += 10
 
 Social Engineering Specialist: Many tools assist OSINT:
 
@@ -323,7 +323,7 @@ Social Engineering Specialist: **Shodan**: Search engine for internet-connected 
 
 Social Engineering Specialist: For this exercise, you'll manually browse the target website. Simple, but effective for understanding the process.
 
-~ instructor_rapport += 10
+~ haxolottle_rapport += 10
 ~ completed_reconnaissance = true
 -> social_engineering_hub
 
@@ -333,7 +333,7 @@ Social Engineering Specialist: For this exercise, you'll manually browse the tar
 
 === email_spoofing_intro ===
 ~ email_spoofing_discussed = true
-~ instructor_rapport += 5
+~ haxolottle_rapport += 5
 
 Social Engineering Specialist: Email spoofing. Fundamental to convincing phishing.
 
@@ -359,7 +359,7 @@ Social Engineering Specialist: Modern defenses exist: SPF, DKIM, DMARC—technol
     -> social_engineering_hub
 
 === email_authentication ===
-~ instructor_rapport += 10
+~ haxolottle_rapport += 10
 
 Social Engineering Specialist: Good question. Email authentication mechanisms:
 
@@ -373,11 +373,11 @@ Social Engineering Specialist: When properly implemented, these make spoofing mu
 
 Social Engineering Specialist: Many organizations haven't configured DMARC. Many email servers don't strictly enforce these policies. Spoofing remains viable in many scenarios.
 
-~ instructor_rapport += 10
+~ haxolottle_rapport += 10
 -> social_engineering_hub
 
 === spoofing_technique ===
-~ instructor_rapport += 8
+~ haxolottle_rapport += 8
 
 Social Engineering Specialist: In this lab, spoofing is straightforward.
 
@@ -393,11 +393,11 @@ Social Engineering Specialist: Other spoofing approaches:
 Social Engineering Specialist: The simulation simplifies this to focus on social engineering tactics rather than technical bypasses.
 
 ~ completed_spoofing = true
-~ instructor_rapport += 5
+~ haxolottle_rapport += 5
 -> social_engineering_hub
 
 === email_design_problems ===
-~ instructor_rapport += 10
+~ haxolottle_rapport += 10
 
 Social Engineering Specialist: Excellent critical thinking.
 
@@ -415,7 +415,7 @@ Social Engineering Specialist: Classic security challenge: replacing widely-depl
 
 Social Engineering Specialist: Lesson: technical debt and legacy systems create enduring vulnerabilities. Design security in from the start, because retrofitting is painful.
 
-~ instructor_rapport += 15
+~ haxolottle_rapport += 15
 -> social_engineering_hub
 
 // ===========================================
@@ -424,7 +424,7 @@ Social Engineering Specialist: Lesson: technical debt and legacy systems create 
 
 === malicious_attachments_intro ===
 ~ malicious_attachments_discussed = true
-~ instructor_rapport += 5
+~ haxolottle_rapport += 5
 
 Social Engineering Specialist: Malicious attachments. The payload delivery mechanism.
 
@@ -451,7 +451,7 @@ Social Engineering Specialist: The choice depends on your target. Different role
     -> social_engineering_hub
 
 === attachment_targeting ===
-~ instructor_rapport += 10
+~ haxolottle_rapport += 10
 
 Social Engineering Specialist: Matching attachments to targets—critical for success.
 
@@ -467,13 +467,13 @@ Social Engineering Specialist: **General principle**: Send what the target expec
 
 Social Engineering Specialist: In this simulation, targets have preferences. Some will only open specific file types. Pay attention to their roles and feedback.
 
-~ instructor_rapport += 10
+~ haxolottle_rapport += 10
 ~ completed_attachment = true
 -> social_engineering_hub
 
 === macro_explanation ===
 ~ macros_discussed = true
-~ instructor_rapport += 5
+~ haxolottle_rapport += 5
 
 Social Engineering Specialist: Office macros. Powerful and frequently exploited.
 
@@ -500,7 +500,7 @@ Social Engineering Specialist: Social engineering comes into play: "This documen
     -> social_engineering_hub
 
 === macro_creation ===
-~ instructor_rapport += 10
+~ haxolottle_rapport += 10
 
 Social Engineering Specialist: Creating a malicious macro—walkthrough:
 
@@ -524,12 +524,12 @@ Social Engineering Specialist: **Step 6**: Save as .odt or .ods. Attach to phish
 
 Social Engineering Specialist: When victim opens document and enables macros (or if their security is set to low), your payload executes.
 
-~ instructor_rapport += 10
+~ haxolottle_rapport += 10
 ~ completed_attachment = true
 -> social_engineering_hub
 
 === macro_defenses ===
-~ instructor_rapport += 10
+~ haxolottle_rapport += 10
 
 Social Engineering Specialist: Macro defenses—layered approach:
 
@@ -553,11 +553,11 @@ Social Engineering Specialist: The challenge: many organizations legitimately us
 
 Social Engineering Specialist: Defense-in-depth: combine technical controls, user awareness, and policy. No single measure is perfect.
 
-~ instructor_rapport += 10
+~ haxolottle_rapport += 10
 -> social_engineering_hub
 
 === executable_payloads ===
-~ instructor_rapport += 5
+~ haxolottle_rapport += 5
 
 Social Engineering Specialist: Executable malware payloads. More direct than macros.
 
@@ -580,7 +580,7 @@ Social Engineering Specialist: Works better with technical targets who might exp
     -> social_engineering_hub
 
 === msfvenom_payloads ===
-~ instructor_rapport += 10
+~ haxolottle_rapport += 10
 
 Social Engineering Specialist: msfvenom. Metasploit Framework's payload generator.
 
@@ -604,12 +604,12 @@ Social Engineering Specialist: When victim runs the malware, it connects back to
 
 Social Engineering Specialist: msfvenom can generate payloads for any platform, architecture, and access method. Incredibly versatile tool.
 
-~ instructor_rapport += 10
+~ haxolottle_rapport += 10
 ~ completed_attachment = true
 -> social_engineering_hub
 
 === executable_disguises ===
-~ instructor_rapport += 8
+~ haxolottle_rapport += 8
 
 Social Engineering Specialist: Disguising executables—social engineering and technical tricks:
 
@@ -625,7 +625,7 @@ Social Engineering Specialist: **Pretext engineering**: Convince target they nee
 
 Social Engineering Specialist: In practice, getting users to run raw executables is harder than macro documents. But with right pretext and target, it works.
 
-~ instructor_rapport += 8
+~ haxolottle_rapport += 8
 -> social_engineering_hub
 
 // ===========================================
@@ -634,7 +634,7 @@ Social Engineering Specialist: In practice, getting users to run raw executables
 
 === reverse_shells_intro ===
 ~ reverse_shells_discussed = true
-~ instructor_rapport += 5
+~ haxolottle_rapport += 5
 
 Social Engineering Specialist: Reverse shells. The goal of attachment-based phishing.
 
@@ -659,7 +659,7 @@ Social Engineering Specialist: Why reverse? Several advantages:
     -> social_engineering_hub
 
 === reverse_shell_mechanics ===
-~ instructor_rapport += 10
+~ haxolottle_rapport += 10
 
 Social Engineering Specialist: Reverse shell mechanics—simple but elegant:
 
@@ -683,11 +683,11 @@ From network monitoring, looks like victim initiated connection to external IP. 
 
 Social Engineering Specialist: Tools like netcat, msfvenom payloads, custom scripts—all create reverse shell connections.
 
-~ instructor_rapport += 10
+~ haxolottle_rapport += 10
 -> social_engineering_hub
 
 === post_exploitation_basics ===
-~ instructor_rapport += 10
+~ haxolottle_rapport += 10
 
 Social Engineering Specialist: Post-exploitation. What you do after gaining access.
 
@@ -712,7 +712,7 @@ Basic netcat shells are fragile—no TTY, limited interaction, easily disconnect
 
 Social Engineering Specialist: For this lab, simple shell is sufficient to read flags and demonstrate access.
 
-~ instructor_rapport += 10
+~ haxolottle_rapport += 10
 -> social_engineering_hub
 
 // ===========================================
@@ -720,7 +720,7 @@ Social Engineering Specialist: For this lab, simple shell is sufficient to read 
 // ===========================================
 
 === attack_workflow ===
-~ instructor_rapport += 5
+~ haxolottle_rapport += 5
 
 Social Engineering Specialist: Complete attack workflow for this lab:
 
@@ -767,7 +767,7 @@ Social Engineering Specialist: **Phase 6 - Objective**:
 // ===========================================
 
 === challenge_tips ===
-~ instructor_rapport += 5
+~ haxolottle_rapport += 5
 
 Social Engineering Specialist: Practical tips for the simulation:
 
@@ -815,7 +815,7 @@ Social Engineering Specialist: **Troubleshooting**:
 
 === ethics_discussion ===
 ~ ethics_discussed = true
-~ instructor_rapport += 10
+~ haxolottle_rapport += 10
 
 Social Engineering Specialist: Critical topic. Ethical considerations.
 
@@ -844,11 +844,11 @@ Social Engineering Specialist: **Professional responsibility**: Security profess
     ~ ethical_awareness_shown = true
     You: Clear on the ethics. Authorized testing, defensive purpose, professional responsibility.
     Social Engineering Specialist: Excellent. Remember that throughout your career.
-    ~ instructor_rapport += 15
+    ~ haxolottle_rapport += 15
     -> social_engineering_hub
 
 === ethical_hacking_discussion ===
-~ instructor_rapport += 15
+~ haxolottle_rapport += 15
 
 Social Engineering Specialist: "Ethical hacking" without authorization is a contradiction.
 
@@ -866,11 +866,11 @@ Social Engineering Specialist: **Proper approach**: If you identify a vulnerabil
 
 Social Engineering Specialist: The distinction is consent. Authorized testing with consent is ethical. Unauthorized testing without consent is not—even with "good intentions."
 
-~ instructor_rapport += 20
+~ haxolottle_rapport += 20
 -> social_engineering_hub
 
 === pentest_process ===
-~ instructor_rapport += 15
+~ haxolottle_rapport += 15
 
 Social Engineering Specialist: Legitimate penetration testing process:
 
@@ -902,7 +902,7 @@ Social Engineering Specialist: **Reporting**:
 
 Social Engineering Specialist: This structured, authorized, documented process is what makes penetration testing ethical and legal. Everything else is unauthorized hacking.
 
-~ instructor_rapport += 15
+~ haxolottle_rapport += 15
 -> social_engineering_hub
 
 // ===========================================
@@ -939,7 +939,7 @@ Social Engineering Specialist: Remember: in the simulation, victims provide feed
 
 Social Engineering Specialist: This is iterative social engineering. First attempt might fail. Adjust and try again. That's realistic—real attackers iterate too.
 
-{instructor_rapport >= 60:
+{haxolottle_rapport >= 60:
     Social Engineering Specialist: You've demonstrated strong understanding and good ethical awareness. You're well-prepared for this exercise.
 }
 
