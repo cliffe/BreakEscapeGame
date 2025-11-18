@@ -7,61 +7,71 @@
 // Tracks progression from strict authority to earned mutual respect
 // ===========================================
 
-// Relationship tracking
-VAR netherton_respect = 50          // Director's respect for agent (0-100)
-VAR professional_reputation = 0     // Agent's standing in SAFETYNET
-VAR missions_with_netherton = 0     // Mission count
-VAR serious_conversations = 0       // Formal discussions held
-VAR personal_moments = 0            // Rare vulnerable moments
+// ===========================================
+// PERSISTENT VARIABLES
+// These MUST be saved/loaded between game sessions
+// Your game engine must persist these across ALL missions
+// ===========================================
 
-// Topic tracking - Phase 1 (Missions 1-5)
-VAR discussed_handbook = false
-VAR discussed_leadership = false
-VAR discussed_safetynet_history = false
-VAR discussed_expectations = false
+VAR npc_npc_netherton_respect = 50              // PERSISTENT - Director's respect for agent (0-100)
+VAR npc_netherton_npc_netherton_serious_conversations = 0 // PERSISTENT - Formal discussions held
+VAR npc_netherton_npc_netherton_personal_moments = 0      // PERSISTENT - Rare vulnerable moments
 
-// Topic tracking - Phase 2 (Missions 6-10)
-VAR discussed_difficult_decisions = false
-VAR discussed_agent_development = false
-VAR discussed_bureau_politics = false
-VAR discussed_field_vs_command = false
+// Topic tracking - ALL PERSISTENT (never reset)
+VAR npc_netherton_npc_netherton_discussed_handbook = false                // PERSISTENT
+VAR npc_netherton_npc_netherton_discussed_leadership = false              // PERSISTENT
+VAR npc_netherton_npc_netherton_discussed_safetynet_history = false      // PERSISTENT
+VAR npc_netherton_npc_netherton_discussed_expectations = false            // PERSISTENT
+VAR npc_netherton_npc_netherton_discussed_difficult_decisions = false     // PERSISTENT
+VAR npc_netherton_npc_netherton_discussed_agent_development = false       // PERSISTENT
+VAR npc_netherton_npc_netherton_discussed_bureau_politics = false         // PERSISTENT
+VAR npc_netherton_npc_netherton_discussed_field_vs_command = false        // PERSISTENT
+VAR npc_netherton_npc_netherton_discussed_weight_of_command = false       // PERSISTENT
+VAR npc_netherton_npc_netherton_discussed_agent_losses = false            // PERSISTENT
+VAR npc_netherton_npc_netherton_discussed_ethical_boundaries = false      // PERSISTENT
+VAR npc_netherton_npc_netherton_discussed_personal_cost = false           // PERSISTENT
+VAR npc_netherton_npc_netherton_discussed_legacy = false                  // PERSISTENT
+VAR npc_netherton_npc_netherton_discussed_trust = false                   // PERSISTENT
+VAR npc_netherton_npc_netherton_discussed_rare_praise = false             // PERSISTENT
+VAR npc_netherton_npc_netherton_discussed_beyond_protocol = false         // PERSISTENT
 
-// Topic tracking - Phase 3 (Missions 11-15)
-VAR discussed_weight_of_command = false
-VAR discussed_agent_losses = false
-VAR discussed_ethical_boundaries = false
-VAR discussed_personal_cost = false
+// Achievement flags - PERSISTENT
+VAR npc_npc_netherton_shared_vulnerability = false  // PERSISTENT
+VAR npc_netherton_npc_netherton_earned_personal_trust = false // PERSISTENT
+VAR npc_netherton_npc_netherton_received_commendation = false // PERSISTENT
 
-// Topic tracking - Phase 4 (Missions 16+)
-VAR discussed_legacy = false
-VAR discussed_trust = false
-VAR discussed_rare_praise = false
-VAR discussed_beyond_protocol = false
+// ===========================================
+// GLOBAL VARIABLES (session-only, span NPCs)
+// These exist for the current mission only
+// Reset when mission ends
+// ===========================================
 
-// Special moments
-VAR netherton_shared_vulnerability = false
-VAR earned_personal_trust = false
-VAR received_commendation = false
+VAR total_missions_completed = 0        // GLOBAL - Total missions done (affects all NPCs)
+VAR professional_reputation = 0         // GLOBAL - Agent standing (affects all NPCs)
 
-// External variables
-EXTERNAL player_name
-EXTERNAL current_mission_number
+// ===========================================
+// LOCAL VARIABLES (this conversation only)
+// These only exist during this specific interaction
+// Provided by game engine when conversation starts
+// ===========================================
+
+EXTERNAL player_name                    // LOCAL - Player's agent name
+EXTERNAL current_mission_id             // LOCAL - Current mission identifier
 
 // ===========================================
 // ENTRY POINT - Conversation Selector
 // ===========================================
 
 === start ===
-~ missions_with_netherton = current_mission_number
 
 {
-    - missions_with_netherton <= 5:
+    - total_missions_completed <= 5:
         -> phase_1_hub
-    - missions_with_netherton <= 10:
+    - total_missions_completed <= 10:
         -> phase_2_hub
-    - missions_with_netherton <= 15:
+    - total_missions_completed <= 15:
         -> phase_3_hub
-    - missions_with_netherton > 15:
+    - total_missions_completed > 15:
         -> phase_4_hub
 }
 
@@ -72,21 +82,21 @@ EXTERNAL current_mission_number
 
 === phase_1_hub ===
 
-{missions_with_netherton == 1:
+{total_missions_completed == 1:
     Netherton: Agent {player_name}. I have a few minutes available. Is there something you wish to discuss?
-- netherton_respect >= 60:
+- npc_npc_netherton_respect >= 60:
     Netherton: Agent. Your performance has been noted. What can I address for you today?
 - else:
     Netherton: Agent {player_name}. You have questions?
 }
 
-+ {not discussed_handbook} [Ask about the Field Operations Handbook]
++ {not npc_netherton_discussed_handbook} [Ask about the Field Operations Handbook]
     -> handbook_discussion
-+ {not discussed_leadership} [Ask about leadership principles]
++ {not npc_netherton_discussed_leadership} [Ask about leadership principles]
     -> leadership_discussion
-+ {not discussed_safetynet_history} [Ask about SAFETYNET's history]
++ {not npc_netherton_discussed_safetynet_history} [Ask about SAFETYNET's history]
     -> safetynet_history
-+ {not discussed_expectations and netherton_respect >= 55} [Ask what he expects from agents]
++ {not npc_netherton_discussed_expectations and npc_netherton_respect >= 55} [Ask what he expects from agents]
     -> expectations_discussion
 + [That will be all, Director]
     -> conversation_end_phase1
@@ -96,9 +106,9 @@ EXTERNAL current_mission_number
 // ----------------
 
 === handbook_discussion ===
-~ discussed_handbook = true
-~ netherton_respect += 5
-~ serious_conversations += 1
+~ npc_netherton_discussed_handbook = true
+~ npc_netherton_respect += 5
+~ npc_netherton_serious_conversations += 1
 
 Netherton: The Field Operations Handbook. *adjusts glasses slightly*
 
@@ -107,23 +117,23 @@ Netherton: I co-wrote the original edition twenty years ago. I've personally ove
 Netherton: Agents often mock the handbook. The contradictions, the excessive detail, the seemingly absurd specificity. But every regulation exists for a reason.
 
 * [Express genuine interest]
-    ~ netherton_respect += 10
+    ~ npc_netherton_respect += 10
     ~ professional_reputation += 1
     You: I've been studying it seriously. There's real wisdom in there.
     -> handbook_appreciation
 
 * [Ask about the contradictions]
-    ~ netherton_respect += 5
+    ~ npc_netherton_respect += 5
     You: Why are there so many contradictions in it?
     -> handbook_contradictions
 
 * [Admit you find it confusing]
-    ~ netherton_respect += 3
+    ~ npc_netherton_respect += 3
     You: I'll be honest, Director—it's overwhelming.
     -> handbook_honest_confusion
 
 === handbook_appreciation ===
-~ netherton_respect += 15
+~ npc_netherton_respect += 15
 
 Netherton: *brief pause, something that might be surprise*
 
@@ -133,11 +143,11 @@ Netherton: The fact that you're already engaging with it thoughtfully... that sp
 
 Netherton: Section 14.7 is particularly relevant to your current assignment level. I recommend thorough review.
 
-~ netherton_respect += 10
+~ npc_netherton_respect += 10
 -> phase_1_hub
 
 === handbook_contradictions ===
-~ netherton_respect += 8
+~ npc_netherton_respect += 8
 
 Netherton: An astute observation. The contradictions are not accidents.
 
@@ -147,11 +157,11 @@ Netherton: The handbook provides guidance for contradictory circumstances. Agent
 
 Netherton: It's not a rulebook. It's a framework for decision-making under impossible conditions.
 
-~ netherton_respect += 8
+~ npc_netherton_respect += 8
 -> phase_1_hub
 
 === handbook_honest_confusion ===
-~ netherton_respect += 5
+~ npc_netherton_respect += 5
 
 Netherton: Understandable. The handbook is not designed for easy consumption.
 
@@ -163,7 +173,7 @@ Netherton: Your handler will guide you on relevant sections for specific situati
 
 Netherton: Though I've come close. Not by choice.
 
-~ netherton_respect += 5
+~ npc_netherton_respect += 5
 -> phase_1_hub
 
 // ----------------
@@ -171,9 +181,9 @@ Netherton: Though I've come close. Not by choice.
 // ----------------
 
 === leadership_discussion ===
-~ discussed_leadership = true
-~ netherton_respect += 8
-~ serious_conversations += 1
+~ npc_netherton_discussed_leadership = true
+~ npc_netherton_respect += 8
+~ npc_netherton_serious_conversations += 1
 
 Netherton: Leadership principles. *straightens papers on desk*
 
@@ -182,13 +192,13 @@ Netherton: I've held command positions for over two decades. Military intelligen
 Netherton: The core principle remains constant: leadership is responsibility. You are accountable for every person under your command and every outcome of their actions.
 
 * [Ask how he handles that weight]
-    ~ netherton_respect += 12
+    ~ npc_netherton_respect += 12
     ~ professional_reputation += 1
     You: How do you handle that weight? That responsibility?
     -> leadership_weight
 
 * [Ask about his leadership style]
-    ~ netherton_respect += 5
+    ~ npc_netherton_respect += 5
     You: How would you describe your leadership style?
     -> leadership_style
 
@@ -197,7 +207,7 @@ Netherton: The core principle remains constant: leadership is responsibility. Yo
     -> phase_1_hub
 
 === leadership_weight ===
-~ netherton_respect += 15
+~ npc_netherton_respect += 15
 
 Netherton: *considers the question carefully*
 
@@ -211,12 +221,12 @@ Netherton: The weight never lessens. You simply become stronger at carrying it. 
 
 Netherton: That you're asking this question suggests you may be suited for leadership yourself. Eventually.
 
-~ netherton_respect += 20
+~ npc_netherton_respect += 20
 ~ professional_reputation += 2
 -> phase_1_hub
 
 === leadership_style ===
-~ netherton_respect += 8
+~ npc_netherton_respect += 8
 
 Netherton: Structured. Disciplined. By the handbook—because the handbook represents accumulated wisdom from thousands of operations.
 
@@ -228,7 +238,7 @@ Netherton: I demand excellence because the work demands it. Lives depend on our 
 
 Netherton: But I do not demand perfection. I demand learning. Mistakes are acceptable if they result in growth. Repeated mistakes indicate insufficient attention.
 
-~ netherton_respect += 8
+~ npc_netherton_respect += 8
 -> phase_1_hub
 
 // ----------------
@@ -236,9 +246,9 @@ Netherton: But I do not demand perfection. I demand learning. Mistakes are accep
 // ----------------
 
 === safetynet_history ===
-~ discussed_safetynet_history = true
-~ netherton_respect += 5
-~ serious_conversations += 1
+~ npc_netherton_discussed_safetynet_history = true
+~ npc_netherton_respect += 5
+~ npc_netherton_serious_conversations += 1
 
 Netherton: SAFETYNET's history. This is not widely documented for security reasons.
 
@@ -249,12 +259,12 @@ Netherton: I joined during the formative years. Helped write operational protoco
 Netherton: We've evolved from a small group of specialists to a global operation. But the mission remains: protect critical infrastructure from those who would weaponize technology.
 
 * [Ask about the early days]
-    ~ netherton_respect += 10
+    ~ npc_netherton_respect += 10
     You: What were the early days like?
     -> history_early_days
 
 * [Ask about ENTROPY's emergence]
-    ~ netherton_respect += 8
+    ~ npc_netherton_respect += 8
     You: When did ENTROPY become a major threat?
     -> history_entropy_emergence
 
@@ -263,7 +273,7 @@ Netherton: We've evolved from a small group of specialists to a global operation
     -> phase_1_hub
 
 === history_early_days ===
-~ netherton_respect += 12
+~ npc_netherton_respect += 12
 
 Netherton: Chaotic. Improvised. We were writing the procedures as we executed operations.
 
@@ -277,11 +287,11 @@ Netherton: But we were building something important. Creating capabilities that 
 
 Netherton: We still carry that founding mission. Even though the organization has grown, even though operations are more structured—the core purpose remains.
 
-~ netherton_respect += 15
+~ npc_netherton_respect += 15
 -> phase_1_hub
 
 === history_entropy_emergence ===
-~ netherton_respect += 10
+~ npc_netherton_respect += 10
 
 Netherton: ENTROPY as an organized network appeared approximately five years ago. Though precursor activities date back further.
 
@@ -293,7 +303,7 @@ Netherton: They adapt quickly. They learn from our countermeasures. They recruit
 
 Netherton: Which is why we require agents of your caliber.
 
-~ netherton_respect += 12
+~ npc_netherton_respect += 12
 -> phase_1_hub
 
 // ----------------
@@ -301,9 +311,9 @@ Netherton: Which is why we require agents of your caliber.
 // ----------------
 
 === expectations_discussion ===
-~ discussed_expectations = true
-~ netherton_respect += 10
-~ serious_conversations += 1
+~ npc_netherton_discussed_expectations = true
+~ npc_netherton_respect += 10
+~ npc_netherton_serious_conversations += 1
 
 Netherton: What I expect from agents. *interlaces fingers, formal posture*
 
@@ -316,23 +326,23 @@ Netherton: Third: Integrity. The power we wield is enormous. The oversight is mi
 Netherton: Fourth: Growth. Learn from every operation. Improve continuously. Stagnation is failure.
 
 * [Promise to meet those standards]
-    ~ netherton_respect += 15
+    ~ npc_netherton_respect += 15
     ~ professional_reputation += 2
     You: I will meet those standards, Director. You have my commitment.
     -> expectations_commitment
 
 * [Ask if you're currently meeting expectations]
-    ~ netherton_respect += 8
+    ~ npc_netherton_respect += 8
     You: Am I currently meeting your expectations?
     -> expectations_current_assessment
 
 * [Acknowledge the high bar]
-    ~ netherton_respect += 5
+    ~ npc_netherton_respect += 5
     You: Those are high standards. I'll work toward them.
     -> phase_1_hub
 
 === expectations_commitment ===
-~ netherton_respect += 20
+~ npc_netherton_respect += 20
 
 Netherton: *direct eye contact*
 
@@ -344,16 +354,16 @@ Netherton: Based on your record thus far, I believe you have the capacity to mee
 
 Netherton: I expect to see continued progress. Maintain this trajectory.
 
-~ netherton_respect += 15
+~ npc_netherton_respect += 15
 ~ professional_reputation += 2
 -> phase_1_hub
 
 === expectations_current_assessment ===
-~ netherton_respect += 12
+~ npc_netherton_respect += 12
 
-{netherton_respect >= 70:
+{npc_netherton_respect >= 70:
     Netherton: You are exceeding expectations for your experience level. Continue this performance.
-- netherton_respect >= 55:
+- npc_netherton_respect >= 55:
     Netherton: You are meeting standards. There is room for improvement, but your trajectory is positive.
 - else:
     Netherton: You are adequate. Adequate is insufficient for SAFETYNET's needs. Improvement is required.
@@ -361,7 +371,7 @@ Netherton: I expect to see continued progress. Maintain this trajectory.
 
 Netherton: Specific areas for development will be addressed in formal performance reviews. But overall... *brief pause* ...you show promise.
 
-~ netherton_respect += 12
+~ npc_netherton_respect += 12
 -> phase_1_hub
 
 // ===========================================
@@ -371,21 +381,21 @@ Netherton: Specific areas for development will be addressed in formal performanc
 
 === phase_2_hub ===
 
-{netherton_respect >= 70:
+{npc_netherton_respect >= 70:
     Netherton: Agent {player_name}. Your continued excellent performance has been noted. What do you wish to discuss?
-- netherton_respect >= 60:
+- npc_netherton_respect >= 60:
     Netherton: Agent. I have time for a brief discussion.
 - else:
     Netherton: Agent {player_name}. What requires attention?
 }
 
-+ {not discussed_difficult_decisions} [Ask about making difficult command decisions]
++ {not npc_netherton_discussed_difficult_decisions} [Ask about making difficult command decisions]
     -> difficult_decisions
-+ {not discussed_agent_development} [Ask about agent development]
++ {not npc_netherton_discussed_agent_development} [Ask about agent development]
     -> agent_development
-+ {not discussed_bureau_politics and netherton_respect >= 65} [Ask about SAFETYNET politics]
++ {not npc_netherton_discussed_bureau_politics and npc_netherton_respect >= 65} [Ask about SAFETYNET politics]
     -> bureau_politics
-+ {not discussed_field_vs_command and netherton_respect >= 60} [Ask if he misses field work]
++ {not npc_netherton_discussed_field_vs_command and npc_netherton_respect >= 60} [Ask if he misses field work]
     -> field_vs_command
 + [That will be all, Director]
     -> conversation_end_phase2
@@ -395,9 +405,9 @@ Netherton: Specific areas for development will be addressed in formal performanc
 // ----------------
 
 === difficult_decisions ===
-~ discussed_difficult_decisions = true
-~ netherton_respect += 15
-~ serious_conversations += 1
+~ npc_netherton_discussed_difficult_decisions = true
+~ npc_netherton_respect += 15
+~ npc_netherton_serious_conversations += 1
 
 Netherton: Difficult command decisions. *removes glasses, cleans them methodically*
 
@@ -412,24 +422,24 @@ Netherton: I authorized an extraction that cost us intelligence assets, burned o
 Netherton: But I brought our agent home alive. The mission failed. The agent lived. I chose the agent.
 
 * [Say you would have done the same]
-    ~ netherton_respect += 20
+    ~ npc_netherton_respect += 20
     ~ professional_reputation += 2
     You: I would have made the same choice, Director.
     -> difficult_agree
 
 * [Ask how he lives with such decisions]
-    ~ netherton_respect += 18
-    ~ personal_moments += 1
+    ~ npc_netherton_respect += 18
+    ~ npc_netherton_personal_moments += 1
     You: How do you live with decisions like that?
     -> difficult_living_with
 
 * [Thank him for the honesty]
-    ~ netherton_respect += 10
+    ~ npc_netherton_respect += 10
     You: Thank you for sharing that. It helps to know the weight you carry.
     -> phase_2_hub
 
 === difficult_agree ===
-~ netherton_respect += 25
+~ npc_netherton_respect += 25
 ~ professional_reputation += 3
 
 Netherton: *looks at you with something approaching approval*
@@ -442,12 +452,12 @@ Netherton: That you understand the value of that choice... that suggests you hav
 
 Netherton: Remember that conviction when you face similar decisions. Because you will. Leadership guarantees it.
 
-~ netherton_respect += 20
+~ npc_netherton_respect += 20
 -> phase_2_hub
 
 === difficult_living_with ===
-~ netherton_respect += 25
-~ personal_moments += 1
+~ npc_netherton_respect += 25
+~ npc_netherton_personal_moments += 1
 
 Netherton: You don't. Not comfortably.
 
@@ -463,8 +473,8 @@ Netherton: I keep that letter in my desk. Read it when I doubt whether the choic
 
 Netherton: That's how you live with difficult decisions. You remember why you made them.
 
-~ netherton_respect += 30
-~ netherton_shared_vulnerability = true
+~ npc_netherton_respect += 30
+~ npc_netherton_shared_vulnerability = true
 -> phase_2_hub
 
 // ----------------
@@ -472,9 +482,9 @@ Netherton: That's how you live with difficult decisions. You remember why you ma
 // ----------------
 
 === agent_development ===
-~ discussed_agent_development = true
-~ netherton_respect += 12
-~ serious_conversations += 1
+~ npc_netherton_discussed_agent_development = true
+~ npc_netherton_respect += 12
+~ npc_netherton_serious_conversations += 1
 
 Netherton: Agent development is central to SAFETYNET's effectiveness. You are all high-capability individuals. My role is to refine that capability into excellence.
 
@@ -483,25 +493,25 @@ Netherton: I review every agent's performance quarterly. Identify strengths to l
 Netherton: Your development has been... *consults memory* ...notably consistent. Steady improvement across technical and operational metrics.
 
 * [Ask for specific feedback]
-    ~ netherton_respect += 18
+    ~ npc_netherton_respect += 18
     ~ professional_reputation += 2
     You: What specific areas should I focus on improving?
     -> development_specific_feedback
 
 * [Ask about his training philosophy]
-    ~ netherton_respect += 10
+    ~ npc_netherton_respect += 10
     You: What's your philosophy on training agents?
     -> development_philosophy
 
 * [Express appreciation]
-    ~ netherton_respect += 5
+    ~ npc_netherton_respect += 5
     You: I appreciate you investing in our development.
     -> phase_2_hub
 
 === development_specific_feedback ===
-~ netherton_respect += 22
+~ npc_netherton_respect += 22
 
-{netherton_respect >= 75:
+{npc_netherton_respect >= 75:
     Netherton: Your technical skills are excellent. Your judgment under pressure has improved significantly. Field craft is developing appropriately.
 
     Netherton: Focus on strategic thinking. You excel at tactical execution. Now develop the capacity to see three moves ahead. Anticipate consequences beyond immediate objectives.
@@ -512,16 +522,16 @@ Netherton: Your development has been... *consults memory* ...notably consistent.
 
     Netherton: You're on track to become one of SAFETYNET's premier agents. Maintain this trajectory.
 
-    ~ netherton_respect += 25
+    ~ npc_netherton_respect += 25
     ~ professional_reputation += 3
-- netherton_respect >= 60:
+- npc_netherton_respect >= 60:
     Netherton: Technical competence is solid. Decision-making is sound. Operational performance meets standards.
 
     Netherton: Develop deeper strategic awareness. Understand the broader context of operations. How your missions connect to organizational objectives.
 
     Netherton: Increase your initiative. Don't wait for instructions when the correct action is clear. Trust your judgment more.
 
-    ~ netherton_respect += 15
+    ~ npc_netherton_respect += 15
     ~ professional_reputation += 1
 - else:
     Netherton: You meet minimum standards. That is insufficient for advancement.
@@ -530,13 +540,13 @@ Netherton: Your development has been... *consults memory* ...notably consistent.
 
     Netherton: Review handbook sections 8 through 12. Study after-action reports from successful operations. Learn from excellence.
 
-    ~ netherton_respect += 8
+    ~ npc_netherton_respect += 8
 }
 
 -> phase_2_hub
 
 === development_philosophy ===
-~ netherton_respect += 15
+~ npc_netherton_respect += 15
 
 Netherton: Train for the worst case. When operations go smoothly, any agent can succeed. Excellence is demonstrated when everything goes wrong.
 
@@ -550,7 +560,7 @@ Netherton: Some agents resent my methods. Call me harsh. But those agents are al
 
 Netherton: Your survival is worth more than your comfort.
 
-~ netherton_respect += 18
+~ npc_netherton_respect += 18
 -> phase_2_hub
 
 // ----------------
@@ -558,9 +568,9 @@ Netherton: Your survival is worth more than your comfort.
 // ----------------
 
 === bureau_politics ===
-~ discussed_bureau_politics = true
-~ netherton_respect += 12
-~ serious_conversations += 1
+~ npc_netherton_discussed_bureau_politics = true
+~ npc_netherton_respect += 12
+~ npc_netherton_serious_conversations += 1
 
 Netherton: *visible distaste*
 
@@ -571,24 +581,24 @@ Netherton: I despise organizational politics. But ignoring politics is professio
 Netherton: The CYBER-PHYSICAL division competes with INTELLIGENCE, ANALYSIS, and SPECIAL OPERATIONS for resources. We succeed because we deliver results.
 
 * [Ask about inter-division conflicts]
-    ~ netherton_respect += 15
+    ~ npc_netherton_respect += 15
     You: Are there serious conflicts between divisions?
     -> politics_conflicts
 
 * [Ask how to navigate politics as an agent]
-    ~ netherton_respect += 18
+    ~ npc_netherton_respect += 18
     ~ professional_reputation += 2
     You: How should agents like me navigate organizational politics?
     -> politics_agent_navigation
 
 * [Express sympathy for the burden]
-    ~ netherton_respect += 10
-    ~ personal_moments += 1
+    ~ npc_netherton_respect += 10
+    ~ npc_netherton_personal_moments += 1
     You: That must be exhausting on top of operational responsibilities.
     -> politics_burden
 
 === politics_conflicts ===
-~ netherton_respect += 18
+~ npc_netherton_respect += 18
 
 Netherton: Conflicts are constant. INTELLIGENCE believes their analysis should drive operations. SPECIAL OPS believes their combat capabilities are underutilized. ANALYSIS believes everyone ignores their risk assessments.
 
@@ -598,11 +608,11 @@ Netherton: Two months ago, SPECIAL OPS attempted to take over a cyber infiltrati
 
 Netherton: I shut it down. Made enemies. The operation succeeded. Results matter more than relationships.
 
-~ netherton_respect += 15
+~ npc_netherton_respect += 15
 -> phase_2_hub
 
 === politics_agent_navigation ===
-~ netherton_respect += 25
+~ npc_netherton_respect += 25
 ~ professional_reputation += 3
 
 Netherton: *approving look*
@@ -621,13 +631,13 @@ Netherton: Fourth: Understand that I handle divisional politics. Your role is ex
 
 Netherton: You show leadership potential. As you advance, politics becomes unavoidable. Learn the skills now. But never let politics compromise operational integrity.
 
-~ netherton_respect += 30
+~ npc_netherton_respect += 30
 ~ professional_reputation += 3
 -> phase_2_hub
 
 === politics_burden ===
-~ netherton_respect += 18
-~ personal_moments += 1
+~ npc_netherton_respect += 18
+~ npc_netherton_personal_moments += 1
 
 Netherton: *brief surprise at the empathy*
 
@@ -647,8 +657,8 @@ Netherton: So I attend the meetings. I play the political games. I do what's nec
 
 Netherton: Thank you for recognizing the burden. Few do.
 
-~ netherton_respect += 25
-~ personal_moments += 1
+~ npc_netherton_respect += 25
+~ npc_netherton_personal_moments += 1
 -> phase_2_hub
 
 // ----------------
@@ -656,9 +666,9 @@ Netherton: Thank you for recognizing the burden. Few do.
 // ----------------
 
 === field_vs_command ===
-~ discussed_field_vs_command = true
-~ netherton_respect += 15
-~ serious_conversations += 1
+~ npc_netherton_discussed_field_vs_command = true
+~ npc_netherton_respect += 15
+~ npc_netherton_serious_conversations += 1
 
 Netherton: *long pause, considering the question*
 
@@ -669,25 +679,25 @@ Netherton: Transitioned to command because SAFETYNET needed leadership. Because 
 Netherton: Do I miss field work? *removes glasses, sets them aside*
 
 * [Wait for him to continue]
-    ~ netherton_respect += 20
-    ~ personal_moments += 1
+    ~ npc_netherton_respect += 20
+    ~ npc_netherton_personal_moments += 1
     You: *remain silent, giving him space*
     -> field_nostalgia
 
 * [Say you'd miss it in his position]
-    ~ netherton_respect += 15
+    ~ npc_netherton_respect += 15
     You: I imagine I would miss it. The directness of field work.
     -> field_understanding
 
 * [Ask what he misses most]
-    ~ netherton_respect += 18
-    ~ personal_moments += 1
+    ~ npc_netherton_respect += 18
+    ~ npc_netherton_personal_moments += 1
     You: What do you miss most about field operations?
     -> field_what_he_misses
 
 === field_nostalgia ===
-~ netherton_respect += 25
-~ personal_moments += 1
+~ npc_netherton_respect += 25
+~ npc_netherton_personal_moments += 1
 
 Netherton: *appreciates the silence*
 
@@ -703,12 +713,12 @@ Netherton: But I'm better suited to command. I can build systems that enable doz
 
 Netherton: So I carry the weight. Because it's where I can do the most good.
 
-~ netherton_respect += 30
-~ netherton_shared_vulnerability = true
+~ npc_netherton_respect += 30
+~ npc_netherton_shared_vulnerability = true
 -> phase_2_hub
 
 === field_understanding ===
-~ netherton_respect += 22
+~ npc_netherton_respect += 22
 
 Netherton: Precisely. The directness. The unambiguous nature of field success or failure.
 
@@ -718,12 +728,12 @@ Netherton: Command success is measured over years. Did I develop the right agent
 
 Netherton: The uncertainty is... challenging.
 
-~ netherton_respect += 20
+~ npc_netherton_respect += 20
 -> phase_2_hub
 
 === field_what_he_misses ===
-~ netherton_respect += 25
-~ personal_moments += 1
+~ npc_netherton_respect += 25
+~ npc_netherton_personal_moments += 1
 
 Netherton: *considers carefully*
 
@@ -743,9 +753,9 @@ Netherton: I have subordinates. Colleagues. Not... friends. Not anymore.
 
 Netherton: But that's the price of command. Acceptable trade for the impact I can have at this level.
 
-~ netherton_respect += 35
-~ netherton_shared_vulnerability = true
-~ personal_moments += 2
+~ npc_netherton_respect += 35
+~ npc_netherton_shared_vulnerability = true
+~ npc_netherton_personal_moments += 2
 -> phase_2_hub
 
 // ===========================================
@@ -755,21 +765,21 @@ Netherton: But that's the price of command. Acceptable trade for the impact I ca
 
 === phase_3_hub ===
 
-{netherton_respect >= 80:
+{npc_netherton_respect >= 80:
     Netherton: Agent {player_name}. *almost warmth* Your continued excellence is appreciated. What's on your mind?
-- netherton_respect >= 70:
+- npc_netherton_respect >= 70:
     Netherton: Agent. I have time for a substantive discussion.
 - else:
     Netherton: Agent {player_name}. What do you need?
 }
 
-+ {not discussed_weight_of_command and netherton_respect >= 75} [Ask about the weight of command]
++ {not npc_netherton_discussed_weight_of_command and npc_netherton_respect >= 75} [Ask about the weight of command]
     -> weight_of_command
-+ {not discussed_agent_losses and netherton_respect >= 70} [Ask how he handles losing agents]
++ {not npc_netherton_discussed_agent_losses and npc_netherton_respect >= 70} [Ask how he handles losing agents]
     -> agent_losses
-+ {not discussed_ethical_boundaries and netherton_respect >= 70} [Ask about ethical boundaries]
++ {not npc_netherton_discussed_ethical_boundaries and npc_netherton_respect >= 70} [Ask about ethical boundaries]
     -> ethical_boundaries
-+ {not discussed_personal_cost and netherton_respect >= 75} [Ask about the personal cost of the work]
++ {not npc_netherton_discussed_personal_cost and npc_netherton_respect >= 75} [Ask about the personal cost of the work]
     -> personal_cost
 + [That will be all, Director]
     -> conversation_end_phase3
@@ -779,9 +789,9 @@ Netherton: But that's the price of command. Acceptable trade for the impact I ca
 // ----------------
 
 === weight_of_command ===
-~ discussed_weight_of_command = true
-~ netherton_respect += 20
-~ serious_conversations += 1
+~ npc_netherton_discussed_weight_of_command = true
+~ npc_netherton_respect += 20
+~ npc_netherton_serious_conversations += 1
 
 Netherton: The weight of command. *sets down whatever he was working on*
 
@@ -792,26 +802,26 @@ Netherton: Every mission I authorize might get someone killed. Every operational
 Netherton: I review casualty statistics. I write letters to families—classified letters that can't explain what their loved one was actually doing. I attend memorials for agents whose names can't be on the memorial.
 
 * [Ask how he carries that weight]
-    ~ netherton_respect += 25
-    ~ personal_moments += 1
+    ~ npc_netherton_respect += 25
+    ~ npc_netherton_personal_moments += 1
     You: How do you carry that weight without breaking?
     -> weight_carrying_it
 
 * [Say you're starting to understand]
-    ~ netherton_respect += 20
+    ~ npc_netherton_respect += 20
     ~ professional_reputation += 2
     You: I'm starting to understand what command would mean. The responsibility.
     -> weight_understanding
 
 * [Express respect for his strength]
-    ~ netherton_respect += 18
+    ~ npc_netherton_respect += 18
     You: The fact that you carry it shows remarkable strength.
     -> weight_respect
 
 === weight_carrying_it ===
-~ netherton_respect += 30
-~ personal_moments += 1
-~ netherton_shared_vulnerability = true
+~ npc_netherton_respect += 30
+~ npc_netherton_personal_moments += 1
+~ npc_netherton_shared_vulnerability = true
 
 Netherton: *long pause*
 
@@ -831,12 +841,12 @@ Netherton: You carry it by remembering it's not about you. It's about the missio
 
 Netherton: And some days that's enough. Other days you just carry it anyway.
 
-~ netherton_respect += 40
-~ personal_moments += 2
+~ npc_netherton_respect += 40
+~ npc_netherton_personal_moments += 2
 -> phase_3_hub
 
 === weight_understanding ===
-~ netherton_respect += 28
+~ npc_netherton_respect += 28
 ~ professional_reputation += 3
 
 Netherton: *approving look*
@@ -853,12 +863,12 @@ Netherton: When the time comes, if you choose command, I'll support your advance
 
 Netherton: But don't rush it. Develop your capabilities fully. Command will still be there when you're ready.
 
-~ netherton_respect += 35
+~ npc_netherton_respect += 35
 ~ professional_reputation += 4
 -> phase_3_hub
 
 === weight_respect ===
-~ netherton_respect += 25
+~ npc_netherton_respect += 25
 
 Netherton: *slight discomfort at the compliment*
 
@@ -866,8 +876,8 @@ Netherton: It's not strength. It's duty. The role requires it. So I do it.
 
 Netherton: But... thank you. Leadership can be isolating. Acknowledgment is... appreciated.
 
-~ netherton_respect += 20
-~ personal_moments += 1
+~ npc_netherton_respect += 20
+~ npc_netherton_personal_moments += 1
 -> phase_3_hub
 
 // ----------------
@@ -875,10 +885,10 @@ Netherton: But... thank you. Leadership can be isolating. Acknowledgment is... a
 // ----------------
 
 === agent_losses ===
-~ discussed_agent_losses = true
-~ netherton_respect += 25
-~ serious_conversations += 1
-~ personal_moments += 1
+~ npc_netherton_discussed_agent_losses = true
+~ npc_netherton_respect += 25
+~ npc_netherton_serious_conversations += 1
+~ npc_netherton_personal_moments += 1
 
 Netherton: *very long pause, considering whether to discuss this*
 
@@ -897,24 +907,24 @@ Netherton: Agent Wu. Deep cover in ENTROPY cell. Cover was compromised. We never
 Netherton: I remember all eleven names. All their final missions. All the choices I made that put them in those situations.
 
 * [Say they knew the risks]
-    ~ netherton_respect += 15
+    ~ npc_netherton_respect += 15
     You: They knew the risks when they took the assignment. They chose this.
     -> losses_they_chose
 
 * [Ask if he blames himself]
-    ~ netherton_respect += 30
-    ~ personal_moments += 2
+    ~ npc_netherton_respect += 30
+    ~ npc_netherton_personal_moments += 2
     You: Do you blame yourself?
     -> losses_blame
 
 * [Remain silent, let him continue]
-    ~ netherton_respect += 25
-    ~ personal_moments += 1
+    ~ npc_netherton_respect += 25
+    ~ npc_netherton_personal_moments += 1
     You: *silent respect*
     -> losses_silence
 
 === losses_they_chose ===
-~ netherton_respect += 20
+~ npc_netherton_respect += 20
 
 Netherton: They did. You're correct. Every agent volunteers. Every agent understands the stakes.
 
@@ -926,13 +936,13 @@ Netherton: Their choice to serve doesn't absolve my duty to bring them home. Whe
 
 Netherton: Yes. They chose this. But I chose to send them. Both things are true.
 
-~ netherton_respect += 18
+~ npc_netherton_respect += 18
 -> phase_3_hub
 
 === losses_blame ===
-~ netherton_respect += 40
-~ personal_moments += 2
-~ netherton_shared_vulnerability = true
+~ npc_netherton_respect += 40
+~ npc_netherton_personal_moments += 2
+~ npc_netherton_shared_vulnerability = true
 
 Netherton: *removes glasses, sets them aside carefully*
 
@@ -956,14 +966,14 @@ Netherton: So yes. I blame myself. Whether or not the blame is rational. It's mi
 
 Netherton: Thank you for asking directly. Few people do.
 
-~ netherton_respect += 50
-~ personal_moments += 3
-~ earned_personal_trust = true
+~ npc_netherton_respect += 50
+~ npc_netherton_personal_moments += 3
+~ npc_netherton_earned_personal_trust = true
 -> phase_3_hub
 
 === losses_silence ===
-~ netherton_respect += 35
-~ personal_moments += 2
+~ npc_netherton_respect += 35
+~ npc_netherton_personal_moments += 2
 
 Netherton: *appreciates the silence*
 
@@ -979,8 +989,8 @@ Netherton: I believe remembering is the minimum duty we owe them. They gave ever
 
 Netherton: And we try to ensure their sacrifice wasn't wasted. That SAFETYNET remains worth dying for.
 
-~ netherton_respect += 40
-~ personal_moments += 2
+~ npc_netherton_respect += 40
+~ npc_netherton_personal_moments += 2
 -> phase_3_hub
 
 // ----------------
@@ -988,9 +998,9 @@ Netherton: And we try to ensure their sacrifice wasn't wasted. That SAFETYNET re
 // ----------------
 
 === ethical_boundaries ===
-~ discussed_ethical_boundaries = true
-~ netherton_respect += 22
-~ serious_conversations += 1
+~ npc_netherton_discussed_ethical_boundaries = true
+~ npc_netherton_respect += 22
+~ npc_netherton_serious_conversations += 1
 
 Netherton: Ethical boundaries in our work. *steeples fingers*
 
@@ -1001,23 +1011,23 @@ Netherton: The handbook provides guidelines. But ultimately, individual agents m
 Netherton: I've made choices I regret. Authorized operations that were legally justified but morally questionable. Pursued outcomes that benefited the mission but harmed innocents.
 
 * [Ask where he draws the line]
-    ~ netherton_respect += 25
+    ~ npc_netherton_respect += 25
     You: Where do you draw the line? What's absolutely off limits?
     -> ethics_the_line
 
 * [Ask about moral compromise]
-    ~ netherton_respect += 22
+    ~ npc_netherton_respect += 22
     ~ professional_reputation += 2
     You: How do you handle moral compromises the work requires?
     -> ethics_compromise
 
 * [Say some things are worth the cost]
-    ~ netherton_respect += 15
+    ~ npc_netherton_respect += 15
     You: Some things are worth the moral cost. Protecting infrastructure saves lives.
     -> ethics_worth_it
 
 === ethics_the_line ===
-~ netherton_respect += 30
+~ npc_netherton_respect += 30
 
 Netherton: *considers very carefully*
 
@@ -1033,12 +1043,12 @@ Netherton: Personal gain. We serve the mission. Not ourselves. The moment we use
 
 Netherton: Those are my lines. I enforce them absolutely. Agents who cross those boundaries are removed. No exceptions. No second chances.
 
-~ netherton_respect += 35
+~ npc_netherton_respect += 35
 -> phase_3_hub
 
 === ethics_compromise ===
-~ netherton_respect += 30
-~ personal_moments += 1
+~ npc_netherton_respect += 30
+~ npc_netherton_personal_moments += 1
 
 Netherton: *long pause*
 
@@ -1060,13 +1070,13 @@ Netherton: Some days that feels like enough. Other days it feels like self-servi
 
 Netherton: The uncertainty is... probably healthy. The moment I become comfortable with moral compromise is the moment I should resign.
 
-~ netherton_respect += 40
-~ personal_moments += 2
-~ netherton_shared_vulnerability = true
+~ npc_netherton_respect += 40
+~ npc_netherton_personal_moments += 2
+~ npc_netherton_shared_vulnerability = true
 -> phase_3_hub
 
 === ethics_worth_it ===
-~ netherton_respect += 20
+~ npc_netherton_respect += 20
 
 Netherton: *slight frown*
 
@@ -1080,7 +1090,7 @@ Netherton: Stay vigilant about your ethical boundaries. Question your choices. A
 
 Netherton: The work is worth doing. That doesn't mean anything we do in service of it is justified.
 
-~ netherton_respect += 12
+~ npc_netherton_respect += 12
 -> phase_3_hub
 
 // ----------------
@@ -1088,10 +1098,10 @@ Netherton: The work is worth doing. That doesn't mean anything we do in service 
 // ----------------
 
 === personal_cost ===
-~ discussed_personal_cost = true
-~ netherton_respect += 28
-~ serious_conversations += 1
-~ personal_moments += 1
+~ npc_netherton_discussed_personal_cost = true
+~ npc_netherton_respect += 28
+~ npc_netherton_serious_conversations += 1
+~ npc_netherton_personal_moments += 1
 
 Netherton: The personal cost of this work. *looks out window*
 
@@ -1102,25 +1112,25 @@ Netherton: I have no family. Marriage failed within three years—couldn't talk 
 Netherton: Few friends outside the agency. Civilian friendships are... difficult. Can't discuss what occupies most of my waking thoughts. Can't explain the stress. Can't share the experiences that define me.
 
 * [Express sympathy]
-    ~ netherton_respect += 18
-    ~ personal_moments += 1
+    ~ npc_netherton_respect += 18
+    ~ npc_netherton_personal_moments += 1
     You: That's a heavy price to pay.
     -> cost_sympathy
 
 * [Ask if he regrets it]
-    ~ netherton_respect += 25
-    ~ personal_moments += 2
+    ~ npc_netherton_respect += 25
+    ~ npc_netherton_personal_moments += 2
     You: Do you regret it? The sacrifices?
     -> cost_regrets
 
 * [Ask if it was worth it]
-    ~ netherton_respect += 20
+    ~ npc_netherton_respect += 20
     You: Was it worth the cost?
     -> cost_worth_it
 
 === cost_sympathy ===
-~ netherton_respect += 25
-~ personal_moments += 1
+~ npc_netherton_respect += 25
+~ npc_netherton_personal_moments += 1
 
 Netherton: *slight acknowledgment*
 
@@ -1132,13 +1142,13 @@ Netherton: Some agents manage better balance. Families. Hobbies. Lives outside t
 
 Netherton: I never achieved that balance. Perhaps never tried hard enough. The work always came first.
 
-~ netherton_respect += 22
+~ npc_netherton_respect += 22
 -> phase_3_hub
 
 === cost_regrets ===
-~ netherton_respect += 35
-~ personal_moments += 2
-~ netherton_shared_vulnerability = true
+~ npc_netherton_respect += 35
+~ npc_netherton_personal_moments += 2
+~ npc_netherton_shared_vulnerability = true
 
 Netherton: *removes glasses, rare vulnerability*
 
@@ -1160,13 +1170,13 @@ Netherton: So... regrets? Yes. But I'd likely make the same choices again. The w
 
 Netherton: Feels like enough. Most days.
 
-~ netherton_respect += 50
-~ personal_moments += 3
-~ earned_personal_trust = true
+~ npc_netherton_respect += 50
+~ npc_netherton_personal_moments += 3
+~ npc_netherton_earned_personal_trust = true
 -> phase_3_hub
 
 === cost_worth_it ===
-~ netherton_respect += 28
+~ npc_netherton_respect += 28
 
 Netherton: *considers carefully*
 
@@ -1184,8 +1194,8 @@ Netherton: My personal happiness has... less clear value. The math suggests the 
 
 Netherton: Though I sometimes suspect I only believe that because accepting the alternative would be unbearable.
 
-~ netherton_respect += 32
-~ personal_moments += 1
+~ npc_netherton_respect += 32
+~ npc_netherton_personal_moments += 1
 -> phase_3_hub
 
 // ===========================================
@@ -1195,21 +1205,21 @@ Netherton: Though I sometimes suspect I only believe that because accepting the 
 
 === phase_4_hub ===
 
-{netherton_respect >= 90:
+{npc_netherton_respect >= 90:
     Netherton: {player_name}. *uses first name, extremely rare* We should talk.
-- netherton_respect >= 80:
+- npc_netherton_respect >= 80:
     Netherton: Agent {player_name}. I value your perspective. What's on your mind?
 - else:
     Netherton: Agent. I have time.
 }
 
-+ {not discussed_legacy and netherton_respect >= 85} [Ask about his legacy]
++ {not npc_netherton_discussed_legacy and npc_netherton_respect >= 85} [Ask about his legacy]
     -> legacy_discussion
-+ {not discussed_trust and netherton_respect >= 80} [Ask if he trusts you]
++ {not npc_netherton_discussed_trust and npc_netherton_respect >= 80} [Ask if he trusts you]
     -> trust_discussion
-+ {not discussed_rare_praise and netherton_respect >= 85} [Ask for his honest assessment of you]
++ {not npc_netherton_discussed_rare_praise and npc_netherton_respect >= 85} [Ask for his honest assessment of you]
     -> rare_praise
-+ {not discussed_beyond_protocol and netherton_respect >= 90} [Ask about life beyond protocols]
++ {not npc_netherton_discussed_beyond_protocol and npc_netherton_respect >= 90} [Ask about life beyond protocols]
     -> beyond_protocol
 + [That will be all, Director]
     -> conversation_end_phase4
@@ -1219,10 +1229,10 @@ Netherton: Though I sometimes suspect I only believe that because accepting the 
 // ----------------
 
 === legacy_discussion ===
-~ discussed_legacy = true
-~ netherton_respect += 30
-~ serious_conversations += 1
-~ personal_moments += 1
+~ npc_netherton_discussed_legacy = true
+~ npc_netherton_respect += 30
+~ npc_netherton_serious_conversations += 1
+~ npc_netherton_personal_moments += 1
 
 Netherton: My legacy. *slight surprise at the question*
 
@@ -1233,25 +1243,25 @@ Netherton: But operational systems aren't really legacy. They'll be revised. Rep
 Netherton: The agents I've developed—that's legacy. People like you. Capable operators who'll serve for decades after I retire.
 
 * [Say he's had profound impact]
-    ~ netherton_respect += 35
+    ~ npc_netherton_respect += 35
     ~ professional_reputation += 3
     You: You've had profound impact on everyone who's worked under your command. That's meaningful legacy.
     -> legacy_impact
 
 * [Ask what he wants his legacy to be]
-    ~ netherton_respect += 30
-    ~ personal_moments += 2
+    ~ npc_netherton_respect += 30
+    ~ npc_netherton_personal_moments += 2
     You: What do you want your legacy to be?
     -> legacy_wanted
 
 * [Ask if legacy matters to him]
-    ~ netherton_respect += 25
+    ~ npc_netherton_respect += 25
     You: Does legacy matter to you?
     -> legacy_matters
 
 === legacy_impact ===
-~ netherton_respect += 45
-~ personal_moments += 2
+~ npc_netherton_respect += 45
+~ npc_netherton_personal_moments += 2
 
 Netherton: *rare visible emotion*
 
@@ -1265,14 +1275,14 @@ Netherton: But agents I've developed have gone on to lead divisions. Run success
 
 Netherton: If that's my legacy, I can accept it. The work continues beyond me. Better because of the foundation we built.
 
-~ netherton_respect += 50
-~ personal_moments += 2
-~ earned_personal_trust = true
+~ npc_netherton_respect += 50
+~ npc_netherton_personal_moments += 2
+~ npc_netherton_earned_personal_trust = true
 -> phase_4_hub
 
 === legacy_wanted ===
-~ netherton_respect += 40
-~ personal_moments += 2
+~ npc_netherton_respect += 40
+~ npc_netherton_personal_moments += 2
 
 Netherton: *long pause, genuinely considering*
 
@@ -1286,13 +1296,13 @@ Netherton: And... *rare vulnerability* ...I want to have mattered. To have made 
 
 Netherton: Probably too much to hope for. But that's what I want.
 
-~ netherton_respect += 45
-~ personal_moments += 3
-~ netherton_shared_vulnerability = true
+~ npc_netherton_respect += 45
+~ npc_netherton_personal_moments += 3
+~ npc_netherton_shared_vulnerability = true
 -> phase_4_hub
 
 === legacy_matters ===
-~ netherton_respect += 35
+~ npc_netherton_respect += 35
 
 Netherton: *considers*
 
@@ -1302,7 +1312,7 @@ Netherton: But yes. It matters. I'm human enough to want my life's work to have 
 
 Netherton: Perhaps that's vanity. But it's honest vanity.
 
-~ netherton_respect += 30
+~ npc_netherton_respect += 30
 -> phase_4_hub
 
 // ----------------
@@ -1310,10 +1320,10 @@ Netherton: Perhaps that's vanity. But it's honest vanity.
 // ----------------
 
 === trust_discussion ===
-~ discussed_trust = true
-~ netherton_respect += 35
-~ serious_conversations += 1
-~ personal_moments += 2
+~ npc_netherton_discussed_trust = true
+~ npc_netherton_respect += 35
+~ npc_netherton_serious_conversations += 1
+~ npc_netherton_personal_moments += 2
 
 Netherton: *direct look, evaluating*
 
@@ -1328,24 +1338,24 @@ Netherton: I trust you to execute operations I authorize. To make sound decision
 Netherton: And... *rare admission* ...I trust you with information I don't share with most agents. You've earned that.
 
 * [Ask what earned that trust]
-    ~ netherton_respect += 40
+    ~ npc_netherton_respect += 40
     ~ professional_reputation += 4
     You: What earned that trust?
     -> trust_what_earned
 
 * [Say you trust him too]
-    ~ netherton_respect += 45
-    ~ personal_moments += 3
+    ~ npc_netherton_respect += 45
+    ~ npc_netherton_personal_moments += 3
     You: I trust you too, Director. Completely.
     -> trust_mutual
 
 * [Thank him for the trust]
-    ~ netherton_respect += 30
+    ~ npc_netherton_respect += 30
     You: That means a great deal. Thank you.
     -> phase_4_hub
 
 === trust_what_earned ===
-~ netherton_respect += 50
+~ npc_netherton_respect += 50
 ~ professional_reputation += 4
 
 Netherton: Consistent excellent performance. But more than that—consistent excellent judgment.
@@ -1362,15 +1372,15 @@ Netherton: And you've engaged with me as a person, not just as authority. Asked 
 
 Netherton: That combination—competence, ethics, thoughtfulness, humanity—that earns trust.
 
-~ netherton_respect += 60
+~ npc_netherton_respect += 60
 ~ professional_reputation += 5
-~ earned_personal_trust = true
+~ npc_netherton_earned_personal_trust = true
 -> phase_4_hub
 
 === trust_mutual ===
-~ netherton_respect += 55
-~ personal_moments += 4
-~ earned_personal_trust = true
+~ npc_netherton_respect += 55
+~ npc_netherton_personal_moments += 4
+~ npc_netherton_earned_personal_trust = true
 
 Netherton: *visible emotion, rare for him*
 
@@ -1390,9 +1400,9 @@ Netherton: I will continue to earn that trust. To make decisions worthy of it. T
 
 Netherton: You're becoming the kind of agent I hoped to develop. The kind SAFETYNET needs. I'm... proud. Of your development.
 
-~ netherton_respect += 70
-~ personal_moments += 5
-~ received_commendation = true
+~ npc_netherton_respect += 70
+~ npc_netherton_personal_moments += 5
+~ npc_netherton_received_commendation = true
 -> phase_4_hub
 
 // ----------------
@@ -1400,13 +1410,13 @@ Netherton: You're becoming the kind of agent I hoped to develop. The kind SAFETY
 // ----------------
 
 === rare_praise ===
-~ discussed_rare_praise = true
-~ netherton_respect += 40
-~ serious_conversations += 1
+~ npc_netherton_discussed_rare_praise = true
+~ npc_netherton_respect += 40
+~ npc_netherton_serious_conversations += 1
 
 Netherton: My honest assessment. *sets aside work, gives full attention*
 
-{netherton_respect >= 95:
+{npc_netherton_respect >= 95:
     Netherton: You are among the finest agents I've commanded in twenty-three years with SAFETYNET.
 
     Netherton: Your technical skills are exceptional. Your judgment is sound. Your ethics are intact despite pressures that corrupt many agents.
@@ -1419,11 +1429,11 @@ Netherton: My honest assessment. *sets aside work, gives full attention*
 
     Netherton: I'm honored to have commanded you. Genuinely.
 
-    ~ netherton_respect += 60
+    ~ npc_netherton_respect += 60
     ~ professional_reputation += 5
-    ~ received_commendation = true
+    ~ npc_netherton_received_commendation = true
 
-- netherton_respect >= 85:
+- npc_netherton_respect >= 85:
     Netherton: You are an excellent agent. Top tier performance across all metrics.
 
     Netherton: Your capabilities continue to develop. Your judgment improves with each operation. You're on track for significant advancement.
@@ -1434,9 +1444,9 @@ Netherton: My honest assessment. *sets aside work, gives full attention*
 
     Netherton: Continue this trajectory and you'll have a distinguished career. I'm confident in that assessment.
 
-    ~ netherton_respect += 45
+    ~ npc_netherton_respect += 45
     ~ professional_reputation += 4
-    ~ received_commendation = true
+    ~ npc_netherton_received_commendation = true
 
 - else:
     Netherton: You are a solid, reliable agent. You meet standards and occasionally exceed them.
@@ -1445,18 +1455,18 @@ Netherton: My honest assessment. *sets aside work, gives full attention*
 
     Netherton: I'm satisfied with your performance and optimistic about your continued development.
 
-    ~ netherton_respect += 30
+    ~ npc_netherton_respect += 30
     ~ professional_reputation += 2
 }
 
 * [Express gratitude]
     You: Thank you, Director. That means everything coming from you.
-    ~ netherton_respect += 20
+    ~ npc_netherton_respect += 20
     -> phase_4_hub
 
 * [Promise to continue earning his confidence]
     You: I'll continue working to earn that assessment. You have my commitment.
-    ~ netherton_respect += 25
+    ~ npc_netherton_respect += 25
     ~ professional_reputation += 2
     -> phase_4_hub
 
@@ -1465,10 +1475,10 @@ Netherton: My honest assessment. *sets aside work, gives full attention*
 // ----------------
 
 === beyond_protocol ===
-~ discussed_beyond_protocol = true
-~ netherton_respect += 45
-~ serious_conversations += 1
-~ personal_moments += 3
+~ npc_netherton_discussed_beyond_protocol = true
+~ npc_netherton_respect += 45
+~ npc_netherton_serious_conversations += 1
+~ npc_netherton_personal_moments += 3
 
 Netherton: Life beyond protocols. *removes glasses, rare informal gesture*
 
@@ -1479,26 +1489,26 @@ Netherton: But protocols don't cover everything. The handbook doesn't address...
 Netherton: How to maintain humanity while executing inhumane operations. How to care for agents while sending them into danger. How to balance mission success against personal cost.
 
 * [Ask what he does beyond the handbook]
-    ~ netherton_respect += 50
-    ~ personal_moments += 4
+    ~ npc_netherton_respect += 50
+    ~ npc_netherton_personal_moments += 4
     You: What guides you when the handbook doesn't have answers?
     -> beyond_what_guides
 
 * [Ask if he has life outside SAFETYNET]
-    ~ netherton_respect += 40
-    ~ personal_moments += 3
+    ~ npc_netherton_respect += 40
+    ~ npc_netherton_personal_moments += 3
     You: Do you have life outside SAFETYNET? Beyond the work?
     -> beyond_outside_life
 
 * [Say some things can't be protocolized]
-    ~ netherton_respect += 35
+    ~ npc_netherton_respect += 35
     You: Some things can't be reduced to protocols. The human judgment is what matters.
     -> beyond_human_judgment
 
 === beyond_what_guides ===
-~ netherton_respect += 60
-~ personal_moments += 4
-~ netherton_shared_vulnerability = true
+~ npc_netherton_respect += 60
+~ npc_netherton_personal_moments += 4
+~ npc_netherton_shared_vulnerability = true
 
 Netherton: *long pause, genuine vulnerability*
 
@@ -1518,14 +1528,14 @@ Netherton: And sometimes... *rare admission* ...I ask myself what agents like yo
 
 Netherton: That's not in the handbook. But it's what guides me when protocols aren't enough.
 
-~ netherton_respect += 70
-~ personal_moments += 5
-~ earned_personal_trust = true
+~ npc_netherton_respect += 70
+~ npc_netherton_personal_moments += 5
+~ npc_netherton_earned_personal_trust = true
 -> phase_4_hub
 
 === beyond_outside_life ===
-~ netherton_respect += 50
-~ personal_moments += 4
+~ npc_netherton_respect += 50
+~ npc_netherton_personal_moments += 4
 
 Netherton: *slight bitter smile*
 
@@ -1547,12 +1557,12 @@ Netherton: Maintain balance better than I did. Have life outside the agency. Don
 
 Netherton: You're talented enough that the work will demand everything if you allow it. Don't. Preserve some part of yourself the agency doesn't own.
 
-~ netherton_respect += 55
-~ personal_moments += 4
+~ npc_netherton_respect += 55
+~ npc_netherton_personal_moments += 4
 -> phase_4_hub
 
 === beyond_human_judgment ===
-~ netherton_respect += 45
+~ npc_netherton_respect += 45
 
 Netherton: Precisely. *approving*
 
@@ -1564,7 +1574,7 @@ Netherton: That's why agent selection is critical. Why I invest so heavily in de
 
 Netherton: The fact that you understand that—that protocols are tools, not replacements for thinking—that's part of why you're effective.
 
-~ netherton_respect += 50
+~ npc_netherton_respect += 50
 -> phase_4_hub
 
 // ===========================================
@@ -1573,9 +1583,9 @@ Netherton: The fact that you understand that—that protocols are tools, not rep
 
 === conversation_end_phase1 ===
 
-{netherton_respect >= 70:
+{npc_netherton_respect >= 70:
     Netherton: Acceptable performance continues, Agent {player_name}. Dismissed.
-- netherton_respect >= 55:
+- npc_netherton_respect >= 55:
     Netherton: Carry on, Agent.
 - else:
     Netherton: Dismissed.
@@ -1586,9 +1596,9 @@ Netherton: The fact that you understand that—that protocols are tools, not rep
 
 === conversation_end_phase2 ===
 
-{netherton_respect >= 75:
+{npc_netherton_respect >= 75:
     Netherton: You're developing well, Agent. Continue this trajectory.
-- netherton_respect >= 60:
+- npc_netherton_respect >= 60:
     Netherton: Satisfactory. Dismissed.
 - else:
     Netherton: That will be all.
@@ -1599,9 +1609,9 @@ Netherton: The fact that you understand that—that protocols are tools, not rep
 
 === conversation_end_phase3 ===
 
-{netherton_respect >= 85:
+{npc_netherton_respect >= 85:
     Netherton: Agent {player_name}. *rare warmth* Your service is valued. Genuinely.
-- netherton_respect >= 75:
+- npc_netherton_respect >= 75:
     Netherton: Excellent work continues. Carry on, Agent.
 - else:
     Netherton: Dismissed, Agent.
@@ -1612,9 +1622,9 @@ Netherton: The fact that you understand that—that protocols are tools, not rep
 
 === conversation_end_phase4 ===
 
-{netherton_respect >= 95:
+{npc_netherton_respect >= 95:
     Netherton: {player_name}. *uses first name* It's been an honor working with you. Until next time.
-- netherton_respect >= 85:
+- npc_netherton_respect >= 85:
     Netherton: Thank you for your time, Agent. And for your service.
 - else:
     Netherton: That will be all.
