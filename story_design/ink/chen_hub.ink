@@ -17,20 +17,17 @@ INCLUDE dr_chen_ongoing_conversations.ink
 // ===========================================
 // EXTERNAL CONTEXT VARIABLES
 // These are provided by the game engine
+// Note: player_name() and current_mission_id() are already declared in dr_chen_ongoing_conversations.ink
 // ===========================================
 
-EXTERNAL player_name()                  // LOCAL - Player's agent name
-EXTERNAL current_mission_id()           // LOCAL - Current mission being discussed
 EXTERNAL npc_location()                 // LOCAL - Where conversation happens ("lab", "equipment_room", "briefing_room", "field_support")
 EXTERNAL mission_phase()                // LOCAL - Phase of current mission ("pre_briefing", "active", "debriefing", "downtime")
 EXTERNAL equipment_status()             // LOCAL - Status of player's equipment ("nominal", "damaged", "needs_upgrade")
 
 // ===========================================
 // GLOBAL VARIABLES (shared across all NPCs)
+// Note: total_missions_completed and professional_reputation are already declared in dr_chen_ongoing_conversations.ink
 // ===========================================
-
-VAR total_missions_completed = 0        // GLOBAL - Total missions done
-VAR professional_reputation = 0         // GLOBAL - Agent standing
 
 // ===========================================
 // MAIN ENTRY POINT
@@ -189,21 +186,17 @@ VAR professional_reputation = 0         // GLOBAL - Agent standing
 // ===========================================
 
 === jump_to_personal_conversations ===
-// Jump to appropriate phase hub based on progression, then return here
+// Jump to appropriate phase hub based on progression
 {
     - total_missions_completed <= 5:
-        -> dr_chen_ongoing_conversations.phase_1_hub_with_return ->
+        -> dr_chen_ongoing_conversations.phase_1_hub
     - total_missions_completed <= 10:
-        -> dr_chen_ongoing_conversations.phase_2_hub_with_return ->
+        -> dr_chen_ongoing_conversations.phase_2_hub
     - total_missions_completed <= 15:
-        -> dr_chen_ongoing_conversations.phase_3_hub_with_return ->
+        -> dr_chen_ongoing_conversations.phase_3_hub
     - total_missions_completed > 15:
-        -> dr_chen_ongoing_conversations.phase_4_hub_with_return ->
+        -> dr_chen_ongoing_conversations.phase_4_hub
 }
-
-// Return from personal conversations
-Dr. Chen: *switches back to tech mode* So, what else did you need?
--> chen_main_hub
 
 // ===========================================
 // EQUIPMENT AND TECHNICAL SUPPORT
@@ -268,10 +261,11 @@ What interests you?
 
 + [Ask what they recommend]
     Dr. Chen: *considers your mission profile*
-    {current_mission_id == "ghost_in_machine":
-        Dr. Chen: For Ghost Protocol? Definitely the network package. You'll be dealing with sophisticated digital security.
-    - else:
-        Dr. Chen: Based on your recent missions... I'd say surveillance countermeasures. You're running a lot of infiltration ops.
+    {
+        - current_mission_id() == "ghost_in_machine":
+            Dr. Chen: For Ghost Protocol? Definitely the network package. You'll be dealing with sophisticated digital security.
+        - else:
+            Dr. Chen: Based on your recent missions... I'd say surveillance countermeasures. You're running a lot of infiltration ops.
     }
     Dr. Chen: But it's your call. You know what you need in the field.
     -> equipment_upgrade_menu

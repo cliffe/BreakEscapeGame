@@ -477,11 +477,11 @@ Dr. Chen: I might have a focus problem. But all of it's important! How do you pr
 
 {
     - npc_chen_rapport >= 70:
-        Dr. Chen: {player_name}! Perfect timing. I just had a breakthrough on that encryption problem we discussed. Want to hear about it?
+        Dr. Chen: {player_name()}! Perfect timing. I just had a breakthrough on that encryption problem we discussed. Want to hear about it?
     - npc_chen_rapport >= 60:
         Dr. Chen: Hey! Got some time? I could use a field agent's perspective on something.
     - else:
-        Dr. Chen: Agent {player_name}. What can I help with today?
+        Dr. Chen: Agent {player_name()}. What can I help with today?
 }
 
 + {not npc_chen_discussed_experimental_tech} [Ask about experimental technology]
@@ -916,11 +916,11 @@ Dr. Chen: If you ever think I've built something that crosses ethical lines, tel
 
 {
     - npc_chen_rapport >= 85:
-        Dr. Chen: {player_name}! *genuine excitement* I've been waiting for you. Got something amazing to show you.
+        Dr. Chen: {player_name()}! *genuine excitement* I've been waiting for you. Got something amazing to show you.
     - npc_chen_rapport >= 75:
         Dr. Chen: Hey! Perfect timing. Want to brainstorm something together?
     - else:
-        Dr. Chen: Agent {player_name}. What brings you by?
+        Dr. Chen: Agent {player_name()}. What brings you by?
 }
 
 + {not npc_chen_discussed_dream_projects and npc_chen_rapport >= 80} [Ask about their dream projects]
@@ -1342,11 +1342,11 @@ Dr. Chen: Arrogance in security research gets people hurt. Stay humble. Stay tho
 
 {
     - npc_chen_rapport >= 95:
-        Dr. Chen: {player_name}! *lights up* I was just thinking about you. Want to see what we've accomplished together?
+        Dr. Chen: {player_name()}! *lights up* I was just thinking about you. Want to see what we've accomplished together?
     - npc_chen_rapport >= 85:
         Dr. Chen: Hey partner! Got time to collaborate on something?
     - else:
-        Dr. Chen: {player_name}. What's up?
+        Dr. Chen: {player_name()}. What's up?
 }
 
 + {not npc_chen_discussed_future_vision and npc_chen_rapport >= 90} [Ask about their vision for the future]
@@ -1773,7 +1773,7 @@ Dr. Chen: Peaceful. After years of fighting cyber threats. Just... peace.
 
 {
     - npc_chen_rapport >= 85:
-        Dr. Chen: Always energizing talking with you, {player_name}. Let's do this again soon!
+        Dr. Chen: Always energizing talking with you, {player_name()}. Let's do this again soon!
     - npc_chen_rapport >= 75:
         Dr. Chen: Great conversation. Stay safe out there, okay?
     - else:
@@ -1816,7 +1816,7 @@ Dr. Chen: Peaceful. After years of fighting cyber threats. Just... peace.
 
 {
     - npc_chen_rapport >= 75:
-        Dr. Chen: Always a pleasure, {player_name}. Let's collaborate again soon!
+        Dr. Chen: Always a pleasure, {player_name()}. Let's collaborate again soon!
     - npc_chen_rapport >= 60:
         Dr. Chen: Thanks for the chat. Stay safe out there.
     - else:

@@ -18,20 +18,17 @@ INCLUDE haxolottle_ongoing_conversations.ink
 // ===========================================
 // EXTERNAL CONTEXT VARIABLES
 // These are provided by the game engine
+// Note: player_name() and current_mission_id() are already declared in haxolottle_ongoing_conversations.ink
 // ===========================================
 
-EXTERNAL player_name()                  // LOCAL - Player's agent codename (not real name!)
-EXTERNAL current_mission_id()           // LOCAL - Current mission being discussed
 EXTERNAL npc_location()                 // LOCAL - Where conversation happens ("handler_station", "briefing_room", "comms_active", "safehouse")
 EXTERNAL mission_phase()                // LOCAL - Phase of current mission ("planning", "active", "debriefing", "downtime")
 EXTERNAL operational_stress_level()     // LOCAL - How stressed the current situation is ("low", "moderate", "high", "crisis")
 
 // ===========================================
 // GLOBAL VARIABLES (shared across all NPCs)
+// Note: total_missions_completed and professional_reputation are already declared in haxolottle_ongoing_conversations.ink
 // ===========================================
-
-VAR total_missions_completed = 0        // GLOBAL - Total missions done
-VAR professional_reputation = 0         // GLOBAL - Agent standing
 
 // ===========================================
 // MAIN ENTRY POINT
@@ -188,17 +185,13 @@ VAR professional_reputation = 0         // GLOBAL - Agent standing
 // ===========================================
 
 === jump_to_personal_conversations ===
-// Jump to appropriate phase hub based on progression, then return here
+// Jump to appropriate phase hub based on progression
 {
     - total_missions_completed <= 5:
-        -> haxolottle_ongoing_conversations.phase_1_hub_with_return ->
+        -> haxolottle_ongoing_conversations.phase_1_hub
     - total_missions_completed <= 10:
-        -> haxolottle_ongoing_conversations.phase_2_hub_with_return ->
+        -> haxolottle_ongoing_conversations.phase_2_hub
 }
-
-// Return from personal conversations
-Haxolottle: *shifts back to handler mode* So, anything else operational?
--> haxolottle_main_hub
 
 // ===========================================
 // CRISIS HANDLER SUPPORT

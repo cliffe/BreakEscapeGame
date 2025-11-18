@@ -18,19 +18,16 @@ INCLUDE netherton_ongoing_conversations.ink
 // ===========================================
 // EXTERNAL CONTEXT VARIABLES
 // These are provided by the game engine
+// Note: player_name() and current_mission_id() are already declared in netherton_ongoing_conversations.ink
 // ===========================================
 
-EXTERNAL player_name()                  // LOCAL - Player's agent name
-EXTERNAL current_mission_id()           // LOCAL - Current mission being discussed
 EXTERNAL npc_location()                 // LOCAL - Where conversation happens ("office", "safehouse", "field", "briefing_room")
 EXTERNAL mission_phase()                // LOCAL - Phase of current mission ("pre_briefing", "active", "debriefing", "downtime")
 
 // ===========================================
 // GLOBAL VARIABLES (shared across all NPCs)
+// Note: total_missions_completed and professional_reputation are already declared in netherton_ongoing_conversations.ink
 // ===========================================
-
-VAR total_missions_completed = 0        // GLOBAL - Total missions done
-VAR professional_reputation = 0         // GLOBAL - Agent standing
 
 // ===========================================
 // MAIN ENTRY POINT
@@ -180,21 +177,17 @@ VAR professional_reputation = 0         // GLOBAL - Agent standing
 // ===========================================
 
 === jump_to_personal_conversations ===
-// Jump to appropriate phase hub based on progression, then return here
+// Jump to appropriate phase hub based on progression
 {
     - total_missions_completed <= 5:
-        -> netherton_ongoing_conversations.phase_1_hub_with_return ->
+        -> netherton_ongoing_conversations.phase_1_hub
     - total_missions_completed <= 10:
-        -> netherton_ongoing_conversations.phase_2_hub_with_return ->
+        -> netherton_ongoing_conversations.phase_2_hub
     - total_missions_completed <= 15:
-        -> netherton_ongoing_conversations.phase_3_hub_with_return ->
+        -> netherton_ongoing_conversations.phase_3_hub
     - total_missions_completed > 15:
-        -> netherton_ongoing_conversations.phase_4_hub_with_return ->
+        -> netherton_ongoing_conversations.phase_4_hub
 }
-
-// Return from personal conversations
-Netherton: *returns to professional mode* Anything else you need to discuss?
--> netherton_main_hub
 
 // ===========================================
 // MISSION-SPECIFIC CONTENT STUBS
