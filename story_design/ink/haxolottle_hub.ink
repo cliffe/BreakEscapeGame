@@ -245,6 +245,7 @@ Which approach do you want to take?
     Haxolottle: Smart. Live to fight another day. Coordinates extraction...
     Haxolottle: You made the right call. Equipment and missions are replaceable. You're not.
     ~ npc_haxolottle_friendship_level += 10
+#friendship_gained:10
     #crisis_extraction
     -> mission_hub
 
@@ -306,6 +307,7 @@ Haxolottle: *professional focus* What kind of support do you need?
 + [Just checking in]
     Haxolottle: *reassuring* All good. You're doing great. Operational tempo is solid. Keep it up.
     ~ npc_haxolottle_friendship_level += 3
+#friendship_gained:3
     -> mission_hub
 
 === intel_update_active ===
@@ -339,6 +341,7 @@ Haxolottle: Talk me through the specific complication. What changed?
     Haxolottle: *processes* Alright. That's not ideal, but it's manageable. Here's how we adjust...
     Haxolottle: Remember the axolotl principle. Original approach failed. Time to regenerate a new one.
     ~ npc_haxolottle_friendship_level += 5
+#friendship_gained:5
     -> adaptation_planning
 
 + [Multiple things going wrong]
@@ -376,6 +379,7 @@ Haxolottle: But help me understand—is this "mission parameters changed beyond 
     Haxolottle: *nods* Operational assessment. Respected. I'll coordinate extraction.
     Haxolottle: Netherton might push back, but I'll support your call. You're the one taking the risk.
     ~ npc_haxolottle_friendship_level += 8
+#friendship_gained:8
     #mission_aborted
     -> mission_hub
 
@@ -383,6 +387,7 @@ Haxolottle: But help me understand—is this "mission parameters changed beyond 
     Haxolottle: *trusts your instinct* That's valid. Field intuition saves lives. Abort authorized.
     Haxolottle: We can analyze what felt wrong afterwards. Right now, get clear.
     ~ npc_haxolottle_friendship_level += 10
+#friendship_gained:10
     #mission_aborted_intuition
     -> mission_hub
 
@@ -402,6 +407,7 @@ Haxolottle: Recommend trusting your eyes over my monitors. Proceed with extreme 
 {npc_haxolottle_friendship_level >= 50:
     Haxolottle: *concerned* And {player_name()}? Be careful. If my intel is wrong, you're more exposed than we thought.
     ~ npc_haxolottle_friendship_level += 5
+#friendship_gained:5
 }
 
 -> mission_hub
@@ -435,6 +441,7 @@ Haxolottle: If compromised: Emergency extraction protocols ready. Three waypoint
     Haxolottle: *slight smile* Good. Because I've run hundreds of handler ops, and this is one of my better plans.
     Haxolottle: We've got this. Partnership.
     ~ npc_haxolottle_friendship_level += 5
+#friendship_gained:5
     -> mission_hub
 
 === mission_sanctuary_handler_plan ===
@@ -450,6 +457,7 @@ Haxolottle: This requires trusting my tactical picture. I'll be seeing things yo
     Haxolottle: *appreciates that* Thank you. Command is easier when agents trust the handler.
     Haxolottle: I won't let you down.
     ~ npc_haxolottle_friendship_level += 8
+#friendship_gained:8
     -> mission_hub
 
 + [What if I see something you don't?]
@@ -474,6 +482,7 @@ Haxolottle: The axolotl principle—*smiles*—regeneration over rigidity. Plans
 + [Walk me through the contingencies for this mission]
     Haxolottle: *details specific contingencies based on current mission*
     ~ npc_haxolottle_friendship_level += 5
+#friendship_gained:5
     -> mission_hub
 
 + [This seems paranoid]
@@ -485,6 +494,7 @@ Haxolottle: The axolotl principle—*smiles*—regeneration over rigidity. Plans
     Haxolottle: *genuine* That means a lot. Handlers live and die by preparation.
     Haxolottle: Knowing you value that preparation makes the late nights worth it.
     ~ npc_haxolottle_friendship_level += 8
+#friendship_gained:8
     -> mission_hub
 
 // ===========================================
@@ -500,6 +510,7 @@ Haxolottle: *opens debrief form* Standard post-operation debrief. Walk me throug
     {npc_haxolottle_friendship_level >= 40:
         Haxolottle: And more importantly—are you okay? Physically? Mentally?
         ~ npc_haxolottle_friendship_level += 3
+#friendship_gained:3
     }
     -> debrief_completion
 
@@ -521,6 +532,7 @@ Haxolottle: Before we do the formal debrief—are you actually okay? Not the pro
     Haxolottle: *empathetic* Thank you for being honest. That mission pushed limits. You handled it, but pushing limits has costs.
     Haxolottle: Take additional recovery time. I'll handle Netherton if they push back. Your wellbeing matters.
     ~ npc_haxolottle_friendship_level += 15
+#friendship_gained:15
     ~ npc_haxolottle_trust_moments += 1
     -> debrief_completion
 
@@ -534,6 +546,7 @@ Haxolottle: Before we do the formal debrief—are you actually okay? Not the pro
     {npc_haxolottle_friendship_level >= 50:
         Haxolottle: You're not just an asset to manage. You're... *hesitates* ...a colleague I value. A friend, within the constraints of Protocol 47-Alpha.
         ~ npc_haxolottle_friendship_level += 10
+#friendship_gained:10
     }
     -> debrief_completion
 
@@ -573,6 +586,7 @@ Haxolottle: We're adapting. Dr. Chen is developing new countermeasures. Netherto
     Haxolottle: *serious* Yeah, me too. The escalation pattern is concerning.
     Haxolottle: But that's why we're here. SAFETYNET exists to counter this. And we're getting better at it.
     ~ npc_haxolottle_friendship_level += 3
+#friendship_gained:3
     -> mission_hub
 
 + [Thank them for the update]
@@ -600,6 +614,7 @@ Haxolottle: Handler perspective on operations. What do you want to know?
     {npc_haxolottle_friendship_level >= 50:
         Haxolottle: You're one of the best agents I've handled. And I've handled a lot.
         ~ npc_haxolottle_friendship_level += 8
+#friendship_gained:8
     }
     -> mission_hub
 
@@ -616,6 +631,7 @@ Haxolottle: And honestly? A lot of it is managing stress. Yours and ours. Keepin
     Haxolottle: It is. But it's also what I'm good at. Turns out eight years of field experience translates well to handler work.
     Haxolottle: I know what you're experiencing because I've experienced it. That empathy makes me better at support.
     ~ npc_haxolottle_friendship_level += 5
+#friendship_gained:5
     -> mission_hub
 
 + [How do you manage your own stress?]
@@ -623,6 +639,7 @@ Haxolottle: And honestly? A lot of it is managing stress. Yours and ours. Keepin
     {npc_haxolottle_friendship_level >= 40:
         Haxolottle: Conversations like this help too. Knowing the agents I support see me as more than a voice on comms.
         ~ npc_haxolottle_friendship_level += 8
+#friendship_gained:8
     }
     -> mission_hub
 
@@ -631,6 +648,7 @@ Haxolottle: And honestly? A lot of it is managing stress. Yours and ours. Keepin
     Haxolottle: I can set up some handler shadowing. You observe while I run someone else's operation. Educational for both roles.
     ~ professional_reputation += 2
     ~ npc_haxolottle_friendship_level += 10
+#friendship_gained:10
     #handler_training_offered
     -> mission_hub
 

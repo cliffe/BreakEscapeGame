@@ -110,6 +110,7 @@ EXTERNAL current_mission_id()           // LOCAL - Current mission identifier
 === tech_philosophy ===
 ~ npc_chen_discussed_tech_philosophy = true
 ~ npc_chen_rapport += 8
+#rapport_gained:8
 ~ npc_chen_personal_conversations += 1
 
 Dr. Chen: My approach to tech? *eyes light up* Oh, you've activated lecture mode. Warning issued.
@@ -120,22 +121,26 @@ Dr. Chen: I don't believe in impossible. I believe in "we haven't figured it out
 
 * [Say you share that philosophy]
     ~ npc_chen_rapport += 15
+#rapport_gained:15
     ~ npc_chen_tech_collaboration += 1
     You: I approach field work the same way. No impossible, just unsolved.
     -> philosophy_shared_mindset
 
 * [Ask about their most impossible problem]
     ~ npc_chen_rapport += 12
+#rapport_gained:12
     You: What's the most "impossible" problem you've solved?
     -> philosophy_impossible_solved
 
 * [Ask if anything is actually impossible]
     ~ npc_chen_rapport += 8
+#rapport_gained:8
     You: Is anything actually impossible, or is that just giving up?
     -> philosophy_actual_limits
 
 === philosophy_shared_mindset ===
 ~ npc_chen_rapport += 20
+#rapport_gained:20
 ~ npc_chen_tech_collaboration += 1
 
 Dr. Chen: *excited* Exactly! Yes! That's exactly it!
@@ -151,11 +156,13 @@ Dr. Chen: That makes my job so much easier. And way more interesting. We're prob
 Dr. Chen: If you ever want to brainstorm field tech improvements, seriously, come find me. I love collaborative design.
 
 ~ npc_chen_rapport += 15
+#rapport_gained:15
 ~ npc_chen_tech_collaboration += 1
 -> phase_1_hub
 
 === philosophy_impossible_solved ===
 ~ npc_chen_rapport += 18
+#rapport_gained:18
 
 Dr. Chen: *grins* Oh man. Okay. So. Three years ago. ENTROPY cell using quantum-encrypted communications. Theoretically unbreakable. Everyone said impossible to intercept.
 
@@ -170,10 +177,12 @@ Dr. Chen: Didn't decrypt the messages. Mapped the network topology. Identified e
 Dr. Chen: Sometimes impossible just means you're asking the wrong question.
 
 ~ npc_chen_rapport += 20
+#rapport_gained:20
 -> phase_1_hub
 
 === philosophy_actual_limits ===
 ~ npc_chen_rapport += 12
+#rapport_gained:12
 
 Dr. Chen: *considers seriously*
 
@@ -186,6 +195,7 @@ Dr. Chen: Engineering limits can be overcome with better designs. Budget limits 
 Dr. Chen: So when someone says something's impossible, I ask: "Which kind of impossible?" Usually it's not the physics kind.
 
 ~ npc_chen_rapport += 15
+#rapport_gained:15
 -> phase_1_hub
 
 // ----------------
@@ -195,6 +205,7 @@ Dr. Chen: So when someone says something's impossible, I ask: "Which kind of imp
 === entropy_tech_analysis ===
 ~ npc_chen_discussed_entropy_tech = true
 ~ npc_chen_rapport += 10
+#rapport_gained:10
 ~ npc_chen_personal_conversations += 1
 
 Dr. Chen: ENTROPY's technology. *switches to serious mode, rare for them*
@@ -205,22 +216,26 @@ Dr. Chen: Custom malware that adapts in real-time. Exploit chains that target ze
 
 * [Ask how they stay ahead]
     ~ npc_chen_rapport += 15
+#rapport_gained:15
     ~ npc_chen_tech_collaboration += 1
     You: How do we stay ahead of them?
     -> entropy_staying_ahead
 
 * [Ask if ENTROPY has inside help]
     ~ npc_chen_rapport += 12
+#rapport_gained:12
     You: Do they have inside help? How else would they have this tech?
     -> entropy_inside_help
 
 * [Ask what worries them most]
     ~ npc_chen_rapport += 18
+#rapport_gained:18
     You: What worries you most about their capabilities?
     -> entropy_biggest_worry
 
 === entropy_staying_ahead ===
 ~ npc_chen_rapport += 20
+#rapport_gained:20
 ~ npc_chen_tech_collaboration += 1
 
 Dr. Chen: We don't stay ahead. Not consistently. That's the uncomfortable truth.
@@ -238,10 +253,12 @@ Dr. Chen: So we focus on resilience. Systems that fail gracefully. Redundant cou
 Dr. Chen: And we learn from every encounter. Every sample of ENTROPY malware teaches us something. Every compromised system reveals their methods.
 
 ~ npc_chen_rapport += 18
+#rapport_gained:18
 -> phase_1_hub
 
 === entropy_inside_help ===
 ~ npc_chen_rapport += 15
+#rapport_gained:15
 
 Dr. Chen: *uncomfortable*
 
@@ -258,11 +275,13 @@ Dr. Chen: Netherton's paranoid about information security for good reason. Every
 Dr. Chen: Sometimes I wonder if someone I trained ended up with ENTROPY. If something I taught them is being used against us. That's a disturbing thought.
 
 ~ npc_chen_rapport += 20
+#rapport_gained:20
 ~ npc_chen_shared_personal_story = true
 -> phase_1_hub
 
 === entropy_biggest_worry ===
 ~ npc_chen_rapport += 25
+#rapport_gained:25
 
 Dr. Chen: *very serious*
 
@@ -281,6 +300,7 @@ Dr. Chen: That's why I push so hard on experimental tech. Why I work late. Why I
 Dr. Chen: Your field work buys us time. Every ENTROPY operation you disrupt is time for me to develop better defenses. Partnership.
 
 ~ npc_chen_rapport += 30
+#rapport_gained:30
 ~ npc_chen_tech_collaboration += 2
 -> phase_1_hub
 
@@ -291,6 +311,7 @@ Dr. Chen: Your field work buys us time. Every ENTROPY operation you disrupt is t
 === chen_background ===
 ~ npc_chen_discussed_chen_background = true
 ~ npc_chen_rapport += 12
+#rapport_gained:12
 ~ npc_chen_personal_conversations += 1
 
 Dr. Chen: My background? *settles in*
@@ -303,21 +324,25 @@ Dr. Chen: Then SAFETYNET showed me what ENTROPY was doing. Real threats. Critica
 
 * [Ask why they left academia]
     ~ npc_chen_rapport += 18
+#rapport_gained:18
     You: What made you leave academia for field work?
     -> background_leaving_academia
 
 * [Ask if they miss research]
     ~ npc_chen_rapport += 12
+#rapport_gained:12
     You: Do you miss pure research?
     -> background_miss_research
 
 * [Ask about their specialty]
     ~ npc_chen_rapport += 10
+#rapport_gained:10
     You: What's your main specialty?
     -> background_specialty
 
 === background_leaving_academia ===
 ~ npc_chen_rapport += 25
+#rapport_gained:25
 
 Dr. Chen: Academia is beautiful. Pure research. Pursuing knowledge for its own sake. Publishing discoveries. Teaching students.
 
@@ -334,10 +359,12 @@ Dr. Chen: Plus I get to see my designs actually used. Field agents like you take
 Dr. Chen: Can't get that from academic publishing. This is applied research at the highest level.
 
 ~ npc_chen_rapport += 30
+#rapport_gained:30
 -> phase_1_hub
 
 === background_miss_research ===
 ~ npc_chen_rapport += 18
+#rapport_gained:18
 
 Dr. Chen: Sometimes. Yeah.
 
@@ -352,10 +379,12 @@ Dr. Chen: But I publish occasionally. Anonymized research. Can't reveal classifi
 Dr. Chen: And honestly? Solving real problems is deeply satisfying. Theory is beautiful. Application is meaningful.
 
 ~ npc_chen_rapport += 20
+#rapport_gained:20
 -> phase_1_hub
 
 === background_specialty ===
 ~ npc_chen_rapport += 15
+#rapport_gained:15
 
 Dr. Chen: Cryptography is my core specialty. Encryption, decryption, secure communications. Breaking codes, building unbreakable codes.
 
@@ -366,6 +395,7 @@ Dr. Chen: SAFETYNET doesn't let you stay narrow. ENTROPY uses every attack vecto
 Dr. Chen: So I learn constantly. New techniques. New technologies. New threats. It's intellectually exhausting and absolutely exhilarating.
 
 ~ npc_chen_rapport += 18
+#rapport_gained:18
 -> phase_1_hub
 
 // ----------------
@@ -375,6 +405,7 @@ Dr. Chen: So I learn constantly. New techniques. New technologies. New threats. 
 === favorite_projects ===
 ~ npc_chen_discussed_favorite_projects = true
 ~ npc_chen_rapport += 15
+#rapport_gained:15
 ~ npc_chen_personal_conversations += 1
 
 Dr. Chen: *lights up immediately*
@@ -387,22 +418,26 @@ Dr. Chen: Still experimental but showing incredible promise. Detected and blocke
 
 * [Express genuine interest]
     ~ npc_chen_rapport += 20
+#rapport_gained:20
     ~ npc_chen_tech_collaboration += 1
     You: That sounds fascinating. How does the learning system work?
     -> projects_deep_dive
 
 * [Ask about field applications]
     ~ npc_chen_rapport += 15
+#rapport_gained:15
     You: Could this be deployed for field operations?
     -> projects_field_application
 
 * [Ask what's next]
     ~ npc_chen_rapport += 12
+#rapport_gained:12
     You: What's your next project after this?
     -> projects_whats_next
 
 === projects_deep_dive ===
 ~ npc_chen_rapport += 30
+#rapport_gained:30
 ~ npc_chen_tech_collaboration += 2
 
 Dr. Chen: *rapid-fire explanation mode activated*
@@ -422,12 +457,14 @@ Dr. Chen: ENTROPY develops new malware? First system that encounters it learns. 
 Dr. Chen: I'm really proud of this one.
 
 ~ npc_chen_rapport += 35
+#rapport_gained:35
 ~ npc_chen_tech_collaboration += 2
 ~ npc_chen_shared_discoveries += 1
 -> phase_1_hub
 
 === projects_field_application ===
 ~ npc_chen_rapport += 22
+#rapport_gained:22
 ~ npc_chen_tech_collaboration += 1
 
 Dr. Chen: *considers*
@@ -445,11 +482,13 @@ Dr. Chen: Targeted protection. Smaller footprint. Optimized for the threats you 
 Dr. Chen: We could collaborate on requirements. Your field experience plus my technical design. Could be really effective.
 
 ~ npc_chen_rapport += 25
+#rapport_gained:25
 ~ npc_chen_tech_collaboration += 2
 -> phase_1_hub
 
 === projects_whats_next ===
 ~ npc_chen_rapport += 18
+#rapport_gained:18
 
 Dr. Chen: Next project? *grins*
 
@@ -466,6 +505,7 @@ Dr. Chen: Also working on improved sensor miniaturization. Better malware analys
 Dr. Chen: I might have a focus problem. But all of it's important! How do you prioritize when everything matters?
 
 ~ npc_chen_rapport += 20
+#rapport_gained:20
 -> phase_1_hub
 
 // ===========================================
@@ -502,6 +542,7 @@ Dr. Chen: I might have a focus problem. But all of it's important! How do you pr
 === experimental_tech ===
 ~ npc_chen_discussed_experimental_tech = true
 ~ npc_chen_rapport += 15
+#rapport_gained:15
 ~ npc_chen_personal_conversations += 1
 
 Dr. Chen: *eyes absolutely light up*
@@ -518,22 +559,26 @@ Dr. Chen: Still prototype stage. Works beautifully in lab conditions. Untested i
 
 * [Volunteer to field test it]
     ~ npc_chen_rapport += 30
+#rapport_gained:30
     ~ npc_chen_tech_collaboration += 3
     You: I'll test it. Next high-risk infiltration, let me take it.
     -> experimental_volunteer_testing
 
 * [Ask about the risks]
     ~ npc_chen_rapport += 18
+#rapport_gained:18
     You: What are the risks if it fails in the field?
     -> experimental_risks
 
 * [Ask how it works]
     ~ npc_chen_rapport += 20
+#rapport_gained:20
     You: How does the camouflage actually work?
     -> experimental_how_it_works
 
 === experimental_volunteer_testing ===
 ~ npc_chen_rapport += 40
+#rapport_gained:40
 ~ npc_chen_tech_collaboration += 3
 ~ npc_chen_breakthrough_together = true
 
@@ -558,12 +603,14 @@ Dr. Chen: And afterwards—detailed debrief. What worked, what didn't, what need
 Dr. Chen: Thank you. Seriously. This kind of collaboration is how we build better tools. Field experience plus technical development.
 
 ~ npc_chen_rapport += 50
+#rapport_gained:50
 ~ npc_chen_tech_collaboration += 4
 ~ npc_chen_earned_research_partner_status = true
 -> phase_2_hub
 
 === experimental_risks ===
 ~ npc_chen_rapport += 25
+#rapport_gained:25
 
 Dr. Chen: *appreciates the serious question*
 
@@ -582,10 +629,12 @@ Dr. Chen: I won't lie. There's risk. All field operations have risk. This adds a
 Dr. Chen: Your call. I don't pressure agents to test experimental tech. Has to be voluntary.
 
 ~ npc_chen_rapport += 28
+#rapport_gained:28
 -> phase_2_hub
 
 === experimental_how_it_works ===
 ~ npc_chen_rapport += 28
+#rapport_gained:28
 
 Dr. Chen: *launches into technical explanation*
 
@@ -608,6 +657,7 @@ Dr. Chen: Real-time adaptive disguise. Changes as you move through different net
 Dr. Chen: It's elegant. Really elegant. If it works operationally, it's revolutionary.
 
 ~ npc_chen_rapport += 32
+#rapport_gained:32
 -> phase_2_hub
 
 // ----------------
@@ -617,6 +667,7 @@ Dr. Chen: It's elegant. Really elegant. If it works operationally, it's revoluti
 === research_frustrations ===
 ~ npc_chen_discussed_research_frustrations = true
 ~ npc_chen_rapport += 20
+#rapport_gained:20
 ~ npc_chen_personal_conversations += 1
 
 Dr. Chen: *sigh*
@@ -631,22 +682,26 @@ Dr. Chen: Hard to get long-term research funded when threats are immediate.
 
 * [Empathize with the frustration]
     ~ npc_chen_rapport += 25
+#rapport_gained:25
     ~ npc_chen_personal_conversations += 1
     You: That sounds incredibly frustrating. Your work is important.
     -> frustrations_empathy
 
 * [Ask how they cope]
     ~ npc_chen_rapport += 20
+#rapport_gained:20
     You: How do you deal with that frustration?
     -> frustrations_coping
 
 * [Offer to advocate]
     ~ npc_chen_rapport += 28
+#rapport_gained:28
     You: I could mention your long-term work in mission reports. Show value.
     -> frustrations_advocacy
 
 === frustrations_empathy ===
 ~ npc_chen_rapport += 30
+#rapport_gained:30
 ~ npc_chen_personal_conversations += 1
 
 Dr. Chen: *appreciates being heard*
@@ -668,11 +723,13 @@ Dr. Chen: So I find ways. Justify long-term research as incremental improvements
 Dr. Chen: About thirty percent of my "equipment upgrades" are actually experimental research disguised as maintenance. Don't tell Netherton.
 
 ~ npc_chen_rapport += 35
+#rapport_gained:35
 ~ npc_chen_shared_personal_story = true
 -> phase_2_hub
 
 === frustrations_coping ===
 ~ npc_chen_rapport += 28
+#rapport_gained:28
 
 Dr. Chen: How do I cope? *thinks*
 
@@ -691,10 +748,12 @@ Dr. Chen: When I'm frustrated about project denial, I think about what agents li
 Dr. Chen: My frustration is "interesting research got rejected." Your frustration is "almost died in Moscow operation." Perspective helps.
 
 ~ npc_chen_rapport += 32
+#rapport_gained:32
 -> phase_2_hub
 
 === frustrations_advocacy ===
 ~ npc_chen_rapport += 40
+#rapport_gained:40
 ~ npc_chen_tech_collaboration += 2
 
 Dr. Chen: *genuinely touched*
@@ -712,6 +771,7 @@ Dr. Chen: I build tools for you. For all agents. Your experience drives my resea
 Dr. Chen: Thank you. Really. This is... this is what collaboration should be. Field and research working together.
 
 ~ npc_chen_rapport += 50
+#rapport_gained:50
 ~ npc_chen_tech_collaboration += 3
 -> phase_2_hub
 
@@ -722,6 +782,7 @@ Dr. Chen: Thank you. Really. This is... this is what collaboration should be. Fi
 === field_vs_lab ===
 ~ npc_chen_discussed_field_vs_lab = true
 ~ npc_chen_rapport += 18
+#rapport_gained:18
 ~ npc_chen_personal_conversations += 1
 
 Dr. Chen: Field work? Me? *laughs*
@@ -734,21 +795,25 @@ Dr. Chen: I respect the hell out of what you do. But I'd be terrible at it.
 
 * [Say everyone has their role]
     ~ npc_chen_rapport += 15
+#rapport_gained:15
     You: Everyone has their role. Yours is crucial.
     -> field_vs_roles
 
 * [Encourage them to try]
     ~ npc_chen_rapport += 20
+#rapport_gained:20
     You: You might surprise yourself. Want to shadow a low-risk operation?
     -> field_vs_encourage
 
 * [Ask if they've ever been in the field]
     ~ npc_chen_rapport += 18
+#rapport_gained:18
     You: Have you ever done field work?
     -> field_vs_experience
 
 === field_vs_roles ===
 ~ npc_chen_rapport += 20
+#rapport_gained:20
 
 Dr. Chen: *nods*
 
@@ -761,10 +826,12 @@ Dr. Chen: SAFETYNET needs both. Partnership. You bring field problems to me. I d
 Dr. Chen: Perfect division of labor.
 
 ~ npc_chen_rapport += 18
+#rapport_gained:18
 -> phase_2_hub
 
 === field_vs_encourage ===
 ~ npc_chen_rapport += 28
+#rapport_gained:28
 
 Dr. Chen: *surprised*
 
@@ -779,11 +846,13 @@ Dr. Chen: Low-risk operation, you said? Because I'm not ready for "infiltrate EN
 Dr. Chen: If you're serious, I'm interested. Could be educational. For both of us—you see technical perspective, I see operational reality.
 
 ~ npc_chen_rapport += 35
+#rapport_gained:35
 ~ npc_chen_tech_collaboration += 2
 -> phase_2_hub
 
 === field_vs_experience ===
 ~ npc_chen_rapport += 25
+#rapport_gained:25
 
 Dr. Chen: Once. *slightly traumatic memory*
 
@@ -800,6 +869,7 @@ Dr. Chen: Taught me enormous respect for what you do. And confirmed I belong in 
 Dr. Chen: But it was valuable. Understanding operational constraints. Seeing how tech performs under pressure. Better researcher for having experienced it.
 
 ~ npc_chen_rapport += 30
+#rapport_gained:30
 -> phase_2_hub
 
 // ----------------
@@ -809,6 +879,7 @@ Dr. Chen: But it was valuable. Understanding operational constraints. Seeing how
 === ethical_tech ===
 ~ npc_chen_discussed_ethical_tech = true
 ~ npc_chen_rapport += 22
+#rapport_gained:22
 ~ npc_chen_personal_conversations += 1
 
 Dr. Chen: *gets serious, rare for them*
@@ -821,22 +892,26 @@ Dr. Chen: Where's the line between defensive security and invasive surveillance?
 
 * [Ask where they draw the line]
     ~ npc_chen_rapport += 28
+#rapport_gained:28
     You: Where do you draw the line?
     -> ethical_the_line
 
 * [Say it's necessary for the mission]
     ~ npc_chen_rapport += 15
+#rapport_gained:15
     You: Sometimes we need powerful tools to counter powerful threats.
     -> ethical_necessary_evil
 
 * [Share your own concerns]
     ~ npc_chen_rapport += 32
+#rapport_gained:32
     ~ npc_chen_personal_conversations += 1
     You: I struggle with this too. The power we wield is concerning.
     -> ethical_shared_concern
 
 === ethical_the_line ===
 ~ npc_chen_rapport += 35
+#rapport_gained:35
 
 Dr. Chen: *thoughtful*
 
@@ -859,11 +934,13 @@ Dr. Chen: Technology is neutral. But design choices aren't. I try to build tools
 Dr. Chen: Don't always succeed. But I try.
 
 ~ npc_chen_rapport += 40
+#rapport_gained:40
 ~ npc_chen_shared_personal_story = true
 -> phase_2_hub
 
 === ethical_necessary_evil ===
 ~ npc_chen_rapport += 18
+#rapport_gained:18
 
 Dr. Chen: *slight discomfort*
 
@@ -880,10 +957,12 @@ Dr. Chen: Power without ethical constraints becomes abuse. I don't want to build
 Dr. Chen: So I design with safeguards. Limitations. Oversight requirements. Make the tools effective but not omnipotent.
 
 ~ npc_chen_rapport += 20
+#rapport_gained:20
 -> phase_2_hub
 
 === ethical_shared_concern ===
 ~ npc_chen_rapport += 45
+#rapport_gained:45
 ~ npc_chen_personal_conversations += 2
 
 Dr. Chen: *relieved*
@@ -903,6 +982,7 @@ Dr. Chen: Having field agents who think about ethics—that matters. You're the 
 Dr. Chen: If you ever think I've built something that crosses ethical lines, tell me. Seriously. I need that feedback.
 
 ~ npc_chen_rapport += 55
+#rapport_gained:55
 ~ npc_chen_shared_personal_story = true
 ~ npc_chen_personal_conversations += 2
 -> phase_2_hub
@@ -941,6 +1021,7 @@ Dr. Chen: If you ever think I've built something that crosses ethical lines, tel
 === dream_projects ===
 ~ npc_chen_discussed_dream_projects = true
 ~ npc_chen_rapport += 30
+#rapport_gained:30
 ~ npc_chen_personal_conversations += 1
 
 Dr. Chen: *eyes absolutely light up*
@@ -955,22 +1036,26 @@ Dr. Chen: Third: *voice gets dreamy* Neuromorphic computing for malware analysis
 
 * [Say you'd help make these real]
     ~ npc_chen_rapport += 40
+#rapport_gained:40
     ~ npc_chen_tech_collaboration += 3
     You: Let's make these real. What would you need to start?
     -> dreams_make_real
 
 * [Ask which they'd choose first]
     ~ npc_chen_rapport += 25
+#rapport_gained:25
     You: If you could only pick one, which would it be?
     -> dreams_pick_one
 
 * [Express awe at the vision]
     ~ npc_chen_rapport += 30
+#rapport_gained:30
     You: These are incredible. Your vision is inspiring.
     -> dreams_inspiring
 
 === dreams_make_real ===
 ~ npc_chen_rapport += 55
+#rapport_gained:55
 ~ npc_chen_tech_collaboration += 4
 ~ npc_chen_breakthrough_together = true
 
@@ -995,12 +1080,14 @@ Dr. Chen: This is—nobody's ever offered to help advocate for my dream projects
 Dr. Chen: Thank you. Genuinely. Let's actually do this. Partnership. Your operational advocacy plus my technical vision.
 
 ~ npc_chen_rapport += 70
+#rapport_gained:70
 ~ npc_chen_tech_collaboration += 5
 ~ npc_chen_earned_research_partner_status = true
 -> phase_3_hub
 
 === dreams_pick_one ===
 ~ npc_chen_rapport += 35
+#rapport_gained:35
 
 Dr. Chen: *thinks carefully*
 
@@ -1019,10 +1106,12 @@ Dr. Chen: Plus it's achievable. Not science fiction. The mathematics exist. The 
 Dr. Chen: If I could build one thing that protects SAFETYNET for the next fifty years, that's it.
 
 ~ npc_chen_rapport += 40
+#rapport_gained:40
 -> phase_3_hub
 
 === dreams_inspiring ===
 ~ npc_chen_rapport += 42
+#rapport_gained:42
 
 Dr. Chen: *embarrassed but pleased*
 
@@ -1037,6 +1126,7 @@ Dr. Chen: But I think big picture is important. Incremental improvements matter.
 Dr. Chen: Having someone who gets excited about the vision—that means a lot. Makes me feel less crazy for dreaming big.
 
 ~ npc_chen_rapport += 48
+#rapport_gained:48
 ~ npc_chen_personal_conversations += 1
 -> phase_3_hub
 
@@ -1047,6 +1137,7 @@ Dr. Chen: Having someone who gets excited about the vision—that means a lot. M
 === tech_risks ===
 ~ npc_chen_discussed_tech_risks = true
 ~ npc_chen_rapport += 28
+#rapport_gained:28
 ~ npc_chen_personal_conversations += 1
 
 Dr. Chen: *gets uncharacteristically serious*
@@ -1059,23 +1150,27 @@ Dr. Chen: Sounds like science fiction. But we're building increasingly sophistic
 
 * [Ask if they build safeguards]
     ~ npc_chen_rapport += 30
+#rapport_gained:30
     You: Do you build safeguards against that?
     -> risks_safeguards
 
 * [Ask if it keeps them up at night]
     ~ npc_chen_rapport += 35
+#rapport_gained:35
     ~ npc_chen_personal_conversations += 1
     You: Does this fear keep you up at night?
     -> risks_sleepless
 
 * [Share your own fears]
     ~ npc_chen_rapport += 40
+#rapport_gained:40
     ~ npc_chen_personal_conversations += 2
     You: I worry about that too. The tools we use becoming uncontrollable.
     -> risks_shared_fear
 
 === risks_safeguards ===
 ~ npc_chen_rapport += 40
+#rapport_gained:40
 
 Dr. Chen: Constantly. Obsessively.
 
@@ -1094,10 +1189,12 @@ Dr. Chen: So I build containment into everything. Sandboxes. Isolated test envir
 Dr. Chen: Not perfect. Nothing's perfect. But I try to make failure non-catastrophic.
 
 ~ npc_chen_rapport += 45
+#rapport_gained:45
 -> phase_3_hub
 
 === risks_sleepless ===
 ~ npc_chen_rapport += 48
+#rapport_gained:48
 ~ npc_chen_personal_conversations += 2
 ~ npc_chen_shared_personal_story = true
 
@@ -1122,11 +1219,13 @@ Dr. Chen: People think I work late because I'm passionate. Sometimes I work late
 Dr. Chen: Probably need therapy. But at least the tech is as safe as I can make it.
 
 ~ npc_chen_rapport += 60
+#rapport_gained:60
 ~ npc_chen_personal_conversations += 3
 -> phase_3_hub
 
 === risks_shared_fear ===
 ~ npc_chen_rapport += 55
+#rapport_gained:55
 ~ npc_chen_personal_conversations += 3
 
 Dr. Chen: *relieved to not be alone in this*
@@ -1144,6 +1243,7 @@ Dr. Chen: Having you acknowledge this fear—that helps. Reminds me I'm not para
 Dr. Chen: We're partners in this. You deploy carefully. I design carefully. Together we minimize risks.
 
 ~ npc_chen_rapport += 65
+#rapport_gained:65
 ~ npc_chen_personal_conversations += 3
 -> phase_3_hub
 
@@ -1154,6 +1254,7 @@ Dr. Chen: We're partners in this. You deploy carefully. I design carefully. Toge
 === work_life_balance ===
 ~ npc_chen_discussed_work_life_balance = true
 ~ npc_chen_rapport += 20
+#rapport_gained:20
 ~ npc_chen_personal_conversations += 1
 
 Dr. Chen: *laughs*
@@ -1166,22 +1267,26 @@ Dr. Chen: But is it work if you love it? This is what I'd be doing even if it wa
 
 * [Express concern]
     ~ npc_chen_rapport += 28
+#rapport_gained:28
     ~ npc_chen_personal_conversations += 1
     You: That sounds unsustainable. Do you ever take breaks?
     -> balance_concern
 
 * [Say you're the same way]
     ~ npc_chen_rapport += 25
+#rapport_gained:25
     You: I get it. The mission becomes your life.
     -> balance_same
 
 * [Encourage outside interests]
     ~ npc_chen_rapport += 30
+#rapport_gained:30
     You: What do you do that's not work-related?
     -> balance_outside
 
 === balance_concern ===
 ~ npc_chen_rapport += 38
+#rapport_gained:38
 ~ npc_chen_personal_conversations += 1
 
 Dr. Chen: *touched by the concern*
@@ -1201,11 +1306,13 @@ Dr. Chen: And when ENTROPY is actively threatening infrastructure, taking breaks
 Dr. Chen: But... it's nice that you care. Maybe I should try harder to disconnect sometimes.
 
 ~ npc_chen_rapport += 45
+#rapport_gained:45
 ~ npc_chen_personal_conversations += 2
 -> phase_3_hub
 
 === balance_same ===
 ~ npc_chen_rapport += 32
+#rapport_gained:32
 
 Dr. Chen: *nods*
 
@@ -1216,10 +1323,12 @@ Dr. Chen: People outside SAFETYNET don't understand. "Just don't think about wor
 Dr. Chen: At least here, everyone gets it. Shared understanding. We're all slightly obsessive about the work.
 
 ~ npc_chen_rapport += 30
+#rapport_gained:30
 -> phase_3_hub
 
 === balance_outside ===
 ~ npc_chen_rapport += 38
+#rapport_gained:38
 
 Dr. Chen: *thinks hard*
 
@@ -1238,6 +1347,7 @@ Dr. Chen: I should probably develop actual hobbies. Non-technical ones. Maybe ta
 Dr. Chen: What do you do outside work? Maybe I could learn from your example.
 
 ~ npc_chen_rapport += 42
+#rapport_gained:42
 ~ npc_chen_personal_conversations += 1
 -> phase_3_hub
 
@@ -1248,6 +1358,7 @@ Dr. Chen: What do you do outside work? Maybe I could learn from your example.
 === mentorship ===
 ~ npc_chen_discussed_mentorship = true
 ~ npc_chen_rapport += 25
+#rapport_gained:25
 ~ npc_chen_personal_conversations += 1
 
 Dr. Chen: Mentorship? *considers*
@@ -1260,21 +1371,25 @@ Dr. Chen: I try to be the mentor I wish I'd had. Encouraging. Patient. Letting t
 
 * [Say they'd be excellent mentor]
     ~ npc_chen_rapport += 30
+#rapport_gained:30
     You: You're clearly passionate about teaching. They're lucky to have you.
     -> mentorship_praise
 
 * [Ask about their mentor]
     ~ npc_chen_rapport += 25
+#rapport_gained:25
     You: Who mentored you?
     -> mentorship_their_mentor
 
 * [Ask what they teach]
     ~ npc_chen_rapport += 20
+#rapport_gained:20
     You: What's the most important thing you teach them?
     -> mentorship_what_taught
 
 === mentorship_praise ===
 ~ npc_chen_rapport += 42
+#rapport_gained:42
 
 Dr. Chen: *embarrassed but pleased*
 
@@ -1289,10 +1404,12 @@ Dr. Chen: But they're teaching me too. Fresh perspectives. Questions I hadn't co
 Dr. Chen: Best mentorship is mutual learning.
 
 ~ npc_chen_rapport += 38
+#rapport_gained:38
 -> phase_3_hub
 
 === mentorship_their_mentor ===
 ~ npc_chen_rapport += 35
+#rapport_gained:35
 ~ npc_chen_personal_conversations += 1
 
 Dr. Chen: *nostalgic*
@@ -1310,11 +1427,13 @@ Dr. Chen: She passed away three years ago. Cancer. I still find myself wondering
 Dr. Chen: Try to honor her legacy by mentoring the way she did. Rigorous but encouraging. High standards with genuine support.
 
 ~ npc_chen_rapport += 45
+#rapport_gained:45
 ~ npc_chen_shared_personal_story = true
 -> phase_3_hub
 
 === mentorship_what_taught ===
 ~ npc_chen_rapport += 32
+#rapport_gained:32
 
 Dr. Chen: *immediate answer*
 
@@ -1331,6 +1450,7 @@ Dr. Chen: And I teach humility. Technology fails. You will make mistakes. Design
 Dr. Chen: Arrogance in security research gets people hurt. Stay humble. Stay thorough. Never assume you're the smartest person in the room.
 
 ~ npc_chen_rapport += 38
+#rapport_gained:38
 -> phase_3_hub
 
 // ===========================================
@@ -1367,6 +1487,7 @@ Dr. Chen: Arrogance in security research gets people hurt. Stay humble. Stay tho
 === future_vision ===
 ~ npc_chen_discussed_future_vision = true
 ~ npc_chen_rapport += 35
+#rapport_gained:35
 ~ npc_chen_personal_conversations += 1
 
 Dr. Chen: *expansive thinking mode*
@@ -1379,23 +1500,27 @@ Dr. Chen: Not naive. Threats will always exist. But we can shift the balance. Ma
 
 * [Say you'll help build that future]
     ~ npc_chen_rapport += 50
+#rapport_gained:50
     ~ npc_chen_tech_collaboration += 5
     You: Let's build that future. Together. However long it takes.
     -> vision_partnership
 
 * [Ask if it's achievable]
     ~ npc_chen_rapport += 30
+#rapport_gained:30
     You: Is that actually achievable, or is it an ideal to work toward?
     -> vision_achievable
 
 * [Share your own vision]
     ~ npc_chen_rapport += 45
+#rapport_gained:45
     ~ npc_chen_personal_conversations += 2
     You: I envision a future where agents like me aren't needed. Where the work is done.
     -> vision_shared
 
 === vision_partnership ===
 ~ npc_chen_rapport += 70
+#rapport_gained:70
 ~ npc_chen_tech_collaboration += 6
 ~ npc_chen_breakthrough_together = true
 
@@ -1420,12 +1545,14 @@ Dr. Chen: I don't just respect you as an agent. I value you as a colleague. As a
 Dr. Chen: Let's keep changing the world. One breakthrough at a time.
 
 ~ npc_chen_rapport += 85
+#rapport_gained:85
 ~ npc_chen_tech_collaboration += 7
 ~ npc_chen_personal_conversations += 3
 -> phase_4_hub
 
 === vision_achievable ===
 ~ npc_chen_rapport += 40
+#rapport_gained:40
 
 Dr. Chen: *honest*
 
@@ -1442,10 +1569,12 @@ Dr. Chen: Twenty years from now? Even higher bar. ENTROPY will need nation-state
 Dr. Chen: Won't eliminate threats. But we can make them rare. Difficult. Costly. That's the achievable vision.
 
 ~ npc_chen_rapport += 48
+#rapport_gained:48
 -> phase_4_hub
 
 === vision_shared ===
 ~ npc_chen_rapport += 60
+#rapport_gained:60
 ~ npc_chen_personal_conversations += 3
 
 Dr. Chen: *quiet understanding*
@@ -1463,6 +1592,7 @@ Dr. Chen: I feel the same. I love this research. But I'd gladly have it become o
 Dr. Chen: We're building toward our own obsolescence. There's nobility in that.
 
 ~ npc_chen_rapport += 72
+#rapport_gained:72
 ~ npc_chen_personal_conversations += 3
 -> phase_4_hub
 
@@ -1473,6 +1603,7 @@ Dr. Chen: We're building toward our own obsolescence. There's nobility in that.
 === friendship_value ===
 ~ npc_chen_discussed_friendship_value = true
 ~ npc_chen_rapport += 40
+#rapport_gained:40
 ~ npc_chen_personal_conversations += 2
 
 Dr. Chen: *unexpectedly touched*
@@ -1487,22 +1618,26 @@ Dr. Chen: That's rare.
 
 * [Say they're important to you]
     ~ npc_chen_rapport += 55
+#rapport_gained:55
     ~ npc_chen_personal_conversations += 3
     You: You're genuinely important to me. Not just as tech support. As a person.
     -> friendship_important
 
 * [Say they deserve more credit]
     ~ npc_chen_rapport += 45
+#rapport_gained:45
     You: You deserve more recognition. Your work saves lives, including mine.
     -> friendship_recognition
 
 * [Express gratitude]
     ~ npc_chen_rapport += 50
+#rapport_gained:50
     You: Thank you. For everything you do. The tech, the collaboration, the friendship.
     -> friendship_gratitude
 
 === friendship_important ===
 ~ npc_chen_rapport += 75
+#rapport_gained:75
 ~ npc_chen_personal_conversations += 4
 
 Dr. Chen: *overwhelmed*
@@ -1524,11 +1659,13 @@ Dr. Chen: Our partnership has been... it's been one of the best parts of working
 Dr. Chen: Okay, getting too emotional. But. Thank you. For seeing me. For being a friend.
 
 ~ npc_chen_rapport += 90
+#rapport_gained:90
 ~ npc_chen_personal_conversations += 5
 -> phase_4_hub
 
 === friendship_recognition ===
 ~ npc_chen_rapport += 62
+#rapport_gained:62
 
 Dr. Chen: *embarrassed but pleased*
 
@@ -1543,10 +1680,12 @@ Dr. Chen: Every time you come back from a mission safely—part of that is my te
 Dr. Chen: Don't need formal recognition. But knowing you appreciate it? That matters more than awards.
 
 ~ npc_chen_rapport += 68
+#rapport_gained:68
 -> phase_4_hub
 
 === friendship_gratitude ===
 ~ npc_chen_rapport += 70
+#rapport_gained:70
 ~ npc_chen_personal_conversations += 3
 
 Dr. Chen: *quiet appreciation*
@@ -1564,6 +1703,7 @@ Dr. Chen: And the friendship has made SAFETYNET feel less lonely. Less like just
 Dr. Chen: So thank you too. For everything you bring to our partnership.
 
 ~ npc_chen_rapport += 78
+#rapport_gained:78
 -> phase_4_hub
 
 // ----------------
@@ -1573,6 +1713,7 @@ Dr. Chen: So thank you too. For everything you bring to our partnership.
 === collaborative_legacy ===
 ~ npc_chen_discussed_collaborative_legacy = true
 ~ npc_chen_rapport += 45
+#rapport_gained:45
 ~ npc_chen_personal_conversations += 2
 
 Dr. Chen: *pulls up holographic display*
@@ -1587,23 +1728,27 @@ Dr. Chen: We've built something real. Lasting. Technology that protects agents. 
 
 * [Say it's incredible legacy]
     ~ npc_chen_rapport += 50
+#rapport_gained:50
     ~ npc_chen_tech_collaboration += 5
     You: This is incredible. We've genuinely changed SAFETYNET's capabilities.
     -> legacy_incredible
 
 * [Credit their genius]
     ~ npc_chen_rapport += 40
+#rapport_gained:40
     You: This is your genius. I just provided field perspective.
     -> legacy_credit_chen
 
 * [Emphasize partnership]
     ~ npc_chen_rapport += 55
+#rapport_gained:55
     ~ npc_chen_tech_collaboration += 4
     You: This only worked because we truly collaborated. Equal partnership.
     -> legacy_partnership
 
 === legacy_incredible ===
 ~ npc_chen_rapport += 68
+#rapport_gained:68
 ~ npc_chen_tech_collaboration += 5
 
 Dr. Chen: *proud*
@@ -1621,10 +1766,12 @@ Dr. Chen: And we're not done. More projects in development. More improvements. M
 Dr. Chen: This legacy we're building—it'll protect agents for decades. Maybe long after we're gone.
 
 ~ npc_chen_rapport += 75
+#rapport_gained:75
 -> phase_4_hub
 
 === legacy_credit_chen ===
 ~ npc_chen_rapport += 52
+#rapport_gained:52
 
 Dr. Chen: *shakes head*
 
@@ -1641,10 +1788,12 @@ Dr. Chen: This is co-creation. You're not a consultant. You're a partner. Equal 
 Dr. Chen: Own this legacy. You earned it.
 
 ~ npc_chen_rapport += 60
+#rapport_gained:60
 -> phase_4_hub
 
 === legacy_partnership ===
 ~ npc_chen_rapport += 75
+#rapport_gained:75
 ~ npc_chen_tech_collaboration += 6
 
 Dr. Chen: *emotional*
@@ -1664,6 +1813,7 @@ Dr. Chen: This partnership is my proudest professional achievement. Not the tech
 Dr. Chen: We've proven field-research collaboration works. We're the model other teams should follow.
 
 ~ npc_chen_rapport += 88
+#rapport_gained:88
 ~ npc_chen_tech_collaboration += 7
 -> phase_4_hub
 
@@ -1674,6 +1824,7 @@ Dr. Chen: We've proven field-research collaboration works. We're the model other
 === beyond_safetynet ===
 ~ npc_chen_discussed_beyond_safetynet = true
 ~ npc_chen_rapport += 35
+#rapport_gained:35
 ~ npc_chen_personal_conversations += 2
 
 Dr. Chen: *contemplative*
@@ -1688,22 +1839,26 @@ Dr. Chen: But honestly? This work is what I'm meant to do. Protecting critical i
 
 * [Encourage them to have backup plan]
     ~ npc_chen_rapport += 30
+#rapport_gained:30
     You: Good to have a backup plan. This work is intense.
     -> beyond_backup_plan
 
 * [Say SAFETYNET is lucky to have them]
     ~ npc_chen_rapport += 45
+#rapport_gained:45
     You: SAFETYNET is incredibly lucky to have you. Don't lose yourself to it.
     -> beyond_lucky
 
 * [Ask about retirement plans]
     ~ npc_chen_rapport += 38
+#rapport_gained:38
     ~ npc_chen_personal_conversations += 1
     You: Do you think about retirement? Eventual life after this?
     -> beyond_retirement
 
 === beyond_backup_plan ===
 ~ npc_chen_rapport += 40
+#rapport_gained:40
 
 Dr. Chen: *nods*
 
@@ -1718,10 +1873,12 @@ Dr. Chen: Maybe teaching. University research. Mentoring next generation without
 Dr. Chen: But not yet. Still too much work to do. Too many threats to counter.
 
 ~ npc_chen_rapport += 42
+#rapport_gained:42
 -> phase_4_hub
 
 === beyond_lucky ===
 ~ npc_chen_rapport += 58
+#rapport_gained:58
 
 Dr. Chen: *touched*
 
@@ -1740,11 +1897,13 @@ Dr. Chen: Should probably take your advice. Develop outside interests. Maintain 
 Dr. Chen: Thank you for caring. Not just about my work. About me.
 
 ~ npc_chen_rapport += 65
+#rapport_gained:65
 ~ npc_chen_personal_conversations += 2
 -> phase_4_hub
 
 === beyond_retirement ===
 ~ npc_chen_rapport += 50
+#rapport_gained:50
 ~ npc_chen_personal_conversations += 2
 
 Dr. Chen: *distant consideration*
@@ -1762,6 +1921,7 @@ Dr. Chen: Garden maybe. Always wanted a garden. Completely non-technical. Just p
 Dr. Chen: Peaceful. After years of fighting cyber threats. Just... peace.
 
 ~ npc_chen_rapport += 58
+#rapport_gained:58
 ~ npc_chen_personal_conversations += 2
 -> phase_4_hub
 

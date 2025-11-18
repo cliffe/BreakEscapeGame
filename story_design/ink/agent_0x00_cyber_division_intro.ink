@@ -77,6 +77,7 @@ Netherton: Please, sit.
 
 * [Ask why you've been summoned]
     ~ netherton_respect -= 5
+#respect_lost:5
     ~ player_attitude = "eager"
     You: Director, may I ask why I've been called in?
     -> premature_question

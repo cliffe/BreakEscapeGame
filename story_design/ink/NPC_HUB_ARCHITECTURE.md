@@ -404,6 +404,119 @@ Show options in priority order:
 - Hub entry: `=== npcname_conversation_entry ===`
 - Main hub: `=== npcname_main_hub ===`
 
+## Mission Hub Pattern (Implemented)
+
+### Overview
+
+All NPC hub files now use a standardized `mission_hub` knot that serves as the central routing point. This is **internal architecture** - not visible to players - that enables seamless conversation flow.
+
+### Structure
+
+```ink
+=== npc_conversation_entry ===
+// Initial greeting based on context
+{
+    - npc_location() == "office":
+        Netherton: Agent. What do you need?
+    - else:
+        Netherton: Agent {player_name()}. Report.
+}
+-> mission_hub
+
+=== mission_hub ===
+// Central routing point
++ [Personal conversation] -> jump_to_personal_conversations
++ [Mission briefing] -> mission_briefing
++ [Status update] -> status_report
++ [End conversation] -> END
+```
+
+### How It Works
+
+1. **Entry**: Game calls `npc_conversation_entry`
+2. **Greeting**: Context-aware greeting based on location/phase
+3. **Hub**: Automatically diverts to `mission_hub`
+4. **Routing**: Player chooses personal or mission topics
+5. **Return**: Personal conversations end with `#exit_conversation` tag
+6. **Navigation**: Game code detects tag and calls `inkEngine.goToKnot('mission_hub')`
+7. **Loop**: Player can discuss more topics or end conversation
+
+### Benefits
+
+- **Seamless Flow**: Player experiences continuous conversation
+- **Clear Separation**: Personal vs mission content isolated in separate files
+- **Easy Return**: `#exit_conversation` tag provides consistent return mechanism
+- **Standard Pattern**: All NPCs use same `mission_hub` knot name
+
+### Implementation Notes
+
+- All hub files renamed from `npcname_main_hub` to `mission_hub`
+- Personal conversation files always return via `#exit_conversation` tag
+- Game code handles automatic navigation back to hub
+- Mission-specific content can also return to `mission_hub`
+
+For detailed implementation examples, see **INK_BEST_PRACTICES.md**.
+
+---
+
+## Influence Tags System (Implemented)
+
+### Visual Feedback for Relationship Changes
+
+Every relationship variable change now includes a corresponding tag for visual player feedback:
+
+```ink
+~ npc_chen_rapport += 5
+#rapport_gained:5
+
+~ npc_netherton_respect -= 3
+#respect_lost:3
+
+~ npc_haxolottle_friendship_level += 10
+#friendship_gained:10
+```
+
+### Tag Types
+
+**Positive Changes:**
+- `#rapport_gained:X` - Dr. Chen (technical specialist)
+- `#respect_gained:X` - Director Netherton (authority figure)
+- `#friendship_gained:X` - Haxolottle (handler/support)
+
+**Negative Changes:**
+- `#rapport_lost:X`
+- `#respect_lost:X`
+- `#friendship_lost:X`
+
+### Game Handler Integration
+
+The conversation classes process these tags and dispatch events:
+
+```javascript
+handleInfluenceGained(value, type) {
+    const event = new CustomEvent('npc-influence-change', {
+        detail: {
+            npcId: this.npc.id,
+            type: type.replace('_gained', ''),
+            change: amount,
+            direction: 'gained',
+            message: 'Dr. Chen appreciates that'
+        }
+    });
+    window.dispatchEvent(event);
+}
+```
+
+UI layers can listen for these events and display:
+- Toast notifications
+- Relationship meters
+- Character reactions
+- Status updates
+
+For complete tag documentation, see **INK_BEST_PRACTICES.md**.
+
+---
+
 ## Integration with Game Engine
 
 ### Required Engine Support
@@ -417,8 +530,14 @@ Show options in priority order:
    - Call appropriate hub entry point: `npcname_conversation_entry`
    - Set context variables before calling
    - Handle `#exit_conversation` tag
+   - Listen for `npc-influence-change` events
 
-3. **Context Tracking**
+3. **Navigation Support**
+   - Detect `#exit_conversation` tag in conversation flow
+   - Call `inkEngine.goToKnot('mission_hub')` to return
+   - Continue conversation from hub menu
+
+4. **Context Tracking**
    - Track current mission ID
    - Track mission phase (planning → active → debriefing → downtime)
    - Track NPC location

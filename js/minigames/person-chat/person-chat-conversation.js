@@ -406,6 +406,20 @@ export default class PersonChatConversation {
                     this.handleInfluence(params[0]);
                     break;
 
+                case 'influence_gained':
+                case 'rapport_gained':
+                case 'respect_gained':
+                case 'friendship_gained':
+                    this.handleInfluenceGained(params[0], action);
+                    break;
+
+                case 'influence_lost':
+                case 'rapport_lost':
+                case 'respect_lost':
+                case 'friendship_lost':
+                    this.handleInfluenceLost(params[0], action);
+                    break;
+
                 case 'patrol_mode':
                     this.handlePatrolMode(params[0]);
                     break;
@@ -530,6 +544,94 @@ export default class PersonChatConversation {
 
         window.npcGameBridge.setNPCInfluence(this.npcId, influence);
         console.log(`💯 Set NPC ${this.npcId} influence: ${influence}`);
+    }
+
+    /**
+     * Handle influence gained tag - show visual feedback for positive influence change
+     * Tags: #influence_gained:5, #rapport_gained:3, #respect_gained:10, #friendship_gained:8
+     * @param {string} value - Amount of influence gained
+     * @param {string} type - Type of influence (influence_gained, rapport_gained, etc.)
+     */
+    handleInfluenceGained(value, type) {
+        const amount = parseInt(value, 10);
+        if (isNaN(amount) || amount <= 0) {
+            console.warn(`⚠️ Invalid influence gained value: ${value}`);
+            return;
+        }
+
+        // Dispatch event for UI to show visual feedback
+        const event = new CustomEvent('npc-influence-change', {
+            detail: {
+                npcId: this.npc.id,
+                type: type.replace('_gained', ''),
+                change: amount,
+                direction: 'gained',
+                message: this.getInfluenceMessage(type, amount, 'gained')
+            }
+        });
+        window.dispatchEvent(event);
+
+        console.log(`📈 ${this.npc.id} ${type}: +${amount}`);
+    }
+
+    /**
+     * Handle influence lost tag - show visual feedback for negative influence change
+     * Tags: #influence_lost:5, #rapport_lost:3, #respect_lost:10, #friendship_lost:8
+     * @param {string} value - Amount of influence lost
+     * @param {string} type - Type of influence (influence_lost, rapport_lost, etc.)
+     */
+    handleInfluenceLost(value, type) {
+        const amount = parseInt(value, 10);
+        if (isNaN(amount) || amount <= 0) {
+            console.warn(`⚠️ Invalid influence lost value: ${value}`);
+            return;
+        }
+
+        // Dispatch event for UI to show visual feedback
+        const event = new CustomEvent('npc-influence-change', {
+            detail: {
+                npcId: this.npc.id,
+                type: type.replace('_lost', ''),
+                change: -amount,
+                direction: 'lost',
+                message: this.getInfluenceMessage(type, amount, 'lost')
+            }
+        });
+        window.dispatchEvent(event);
+
+        console.log(`📉 ${this.npc.id} ${type}: -${amount}`);
+    }
+
+    /**
+     * Get appropriate message for influence change
+     * @param {string} type - Type of influence change
+     * @param {number} amount - Amount changed
+     * @param {string} direction - 'gained' or 'lost'
+     * @returns {string} Message to display
+     */
+    getInfluenceMessage(type, amount, direction) {
+        const baseType = type.replace('_gained', '').replace('_lost', '');
+
+        const messages = {
+            influence: {
+                gained: amount >= 10 ? 'Influence significantly increased' : 'Influence increased',
+                lost: amount >= 10 ? 'Influence significantly decreased' : 'Influence decreased'
+            },
+            rapport: {
+                gained: amount >= 10 ? 'Dr. Chen likes that' : 'Dr. Chen appreciates that',
+                lost: amount >= 10 ? 'Dr. Chen is disappointed' : 'Dr. Chen is uncertain'
+            },
+            respect: {
+                gained: amount >= 10 ? 'Director Netherton is impressed' : 'Director Netherton approves',
+                lost: amount >= 10 ? 'Director Netherton is displeased' : 'Director Netherton notes this'
+            },
+            friendship: {
+                gained: amount >= 10 ? 'Haxolottle really appreciates that' : 'Haxolottle likes that',
+                lost: amount >= 10 ? 'Haxolottle is hurt' : 'Haxolottle seems disappointed'
+            }
+        };
+
+        return messages[baseType]?.[direction] || `${baseType} ${direction}`;
     }
 
     /**

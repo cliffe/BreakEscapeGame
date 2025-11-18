@@ -213,6 +213,7 @@ Dr. Chen: This is fixable, but it'll take some time. What happened out there?
     Dr. Chen: *nods* Okay, that's actually really useful feedback. I can improve the durability in the next version.
     Dr. Chen: Give me about two hours. I'll have this repaired and reinforced.
     ~ npc_chen_rapport += 5
+#rapport_gained:5
     #equipment_repair_started
     -> mission_hub
 
@@ -220,12 +221,14 @@ Dr. Chen: This is fixable, but it'll take some time. What happened out there?
     Dr. Chen: Hey, no—don't beat yourself up. Field conditions are unpredictable. That's why we build redundancy.
     Dr. Chen: Let me fix this and add some additional protection. You're not the first agent to damage gear in the field.
     ~ npc_chen_rapport += 8
+#rapport_gained:8
     -> mission_hub
 
 + [Blame the equipment design]
     Dr. Chen: *slight frown* Okay... I mean, there's always room for improvement. But the equipment is rated for standard field conditions.
     Dr. Chen: I'll repair it. And I'll review the design specs. But be more careful with the gear, alright?
     ~ npc_chen_rapport -= 3
+#rapport_lost:3
     -> mission_hub
 
 === equipment_upgrade_menu ===
@@ -283,6 +286,7 @@ Dr. Chen: *focused* Okay, I'm pulling up your equipment telemetry. What's the te
     Dr. Chen: Yeah, they upgraded their security. Um... *rapid thinking* ...okay, try the quantum bypass. It's experimental but it should work.
     Dr. Chen: Quantum menu, enable fast-mode. Warning: it generates a lot of heat. Don't run it for more than five minutes.
     ~ npc_chen_rapport += 5
+#rapport_gained:5
     -> field_support_followup
 
 + [Equipment is malfunctioning]
@@ -297,12 +301,14 @@ Dr. Chen: Did that help? Are you good to continue?
 + [Yes, that fixed it. Thanks!]
     Dr. Chen: *relieved* Oh good! Okay, I'll keep monitoring. Call if anything else goes wrong.
     ~ npc_chen_rapport += 8
+#rapport_gained:8
     -> mission_hub
 
 + [Still having issues]
     Dr. Chen: *more concerned* Okay, this might be a hardware problem. Can you safely abort and extract?
     Dr. Chen: I don't want you stuck in there with malfunctioning equipment. Your safety is more important than the mission.
     ~ npc_chen_rapport += 10
+#rapport_gained:10
     -> mission_hub
 
 === mission_ghost_equipment_briefing ===
@@ -324,11 +330,13 @@ Dr. Chen: Third—and this is experimental—quantum-encrypted comms. Even if th
     Dr. Chen: *appreciates the question* Good thinking. The quantum comms are 95% reliable in testing. If they fail, you default to standard encrypted comms.
     Dr. Chen: I've built in fallbacks. Worst case, you lose some capability but not all capability.
     ~ npc_chen_rapport += 5
+#rapport_gained:5
     -> ghost_equipment_details
 
 + [Express confidence in the tech]
     Dr. Chen: *grins* I'm glad you trust my work! I've tested this extensively. You'll be well-equipped.
     ~ npc_chen_rapport += 8
+#rapport_gained:8
     -> ghost_equipment_details
 
 === ghost_equipment_details ===
@@ -344,6 +352,7 @@ Dr. Chen: Any other questions about the gear? Or are you ready for me to configu
     {npc_chen_rapport >= 60:
         Dr. Chen: Come back safe. The tech works better when the operator survives.
         ~ npc_chen_rapport += 5
+#rapport_gained:5
     }
     #equipment_configured
     -> mission_hub
@@ -355,6 +364,7 @@ Dr. Chen: *eager for feedback* Okay, tell me everything! How did the equipment p
     Dr. Chen: *extremely pleased* Yes! That's what I want to hear! The camouflage held up? No detection issues?
     Dr. Chen: This is great data. I can certify this tech for wider deployment now.
     ~ npc_chen_rapport += 10
+#rapport_gained:10
     ~ npc_chen_tech_collaboration += 1
     -> mission_hub
 
@@ -364,6 +374,7 @@ Dr. Chen: *eager for feedback* Okay, tell me everything! How did the equipment p
     Dr. Chen: Perfect. This is exactly the field data I need. I can iterate on the design and fix that problem.
     Dr. Chen: Thank you for the thorough report. Seriously. This makes my job so much easier.
     ~ npc_chen_rapport += 15
+#rapport_gained:15
     ~ npc_chen_tech_collaboration += 2
     -> mission_hub
 
@@ -373,6 +384,7 @@ Dr. Chen: *eager for feedback* Okay, tell me everything! How did the equipment p
     Dr. Chen: *voice cracks slightly* That's... that's why I do this. Building tech that keeps agents safe.
     Dr. Chen: I'm really glad you're okay. And thank you for the feedback. I'll keep improving it.
     ~ npc_chen_rapport += 20
+#rapport_gained:20
     ~ npc_chen_tech_collaboration += 2
     -> mission_hub
 
@@ -399,6 +411,7 @@ Dr. Chen: If ENTROPY tries to breach this, they'll need nation-state level capab
     Dr. Chen: *sighs* Yeah, me too. They're getting better. Faster. More sophisticated.
     Dr. Chen: That's why I work late. Every improvement I make might be the difference between holding the line and catastrophic breach.
     ~ npc_chen_rapport += 5
+#rapport_gained:5
     -> mission_hub
 
 === experimental_tech_discussion ===
@@ -424,6 +437,7 @@ Which interests you?
 + [All of it sounds amazing]
     Dr. Chen: *huge grin* Right?! This is why I love this job. Every project is pushing boundaries!
     ~ npc_chen_rapport += 10
+#rapport_gained:10
     -> mission_hub
 
 === experimental_mirage_details ===
@@ -471,6 +485,7 @@ Dr. Chen: I promise to build in safety margins. Fallback systems. Kill switches.
     Dr. Chen: I'll prepare test equipment for your next mission. Thorough briefing beforehand. Real-time monitoring during deployment.
     Dr. Chen: We're partners in this. Thank you.
     ~ npc_chen_rapport += 20
+#rapport_gained:20
     ~ npc_chen_tech_collaboration += 3
     -> mission_hub
 
@@ -505,6 +520,7 @@ Dr. Chen: What interests you? Network security? Hardware hacking? Cryptography? 
     Dr. Chen: *very excited* My specialty! I can teach you encryption theory, code-breaking techniques, quantum cryptography basics...
     ~ professional_reputation += 2
     ~ npc_chen_rapport += 5
+#rapport_gained:5
     #training_scheduled_crypto
     -> mission_hub
 

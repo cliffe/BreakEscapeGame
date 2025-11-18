@@ -233,6 +233,7 @@ Netherton: *monitoring your position* I'm tracking your progress. What do you ne
     // This would branch based on player's explanation
     Netherton: ... Acceptable. Use your judgment. I trust your field assessment.
     ~ npc_netherton_respect += 5
+#respect_gained:5
     -> mission_hub
 
 + [Request emergency extraction]
@@ -252,9 +253,11 @@ Netherton: Your mission report indicates success. The backdoor has been neutrali
 {npc_netherton_respect >= 70:
     Netherton: Excellent work, Agent. Your execution was textbook. This is exactly the kind of operational performance SAFETYNET requires.
     ~ npc_netherton_respect += 10
+#respect_gained:10
 - else:
     Netherton: Adequate performance. Mission objectives achieved. Some aspects could be refined.
     ~ npc_netherton_respect += 5
+#respect_gained:5
 }
 
 Netherton: Dr. Chen is analyzing the technical data you extracted. It may provide intelligence on other ENTROPY operations.
@@ -292,6 +295,7 @@ Netherton: You want operational advice. *considers* On what specific matter?
     Netherton: When faced with ambiguous situation: Assess risk. Identify options. Select least-worst approach. Execute decisively.
     Netherton: Hesitation kills. Make the call and commit.
     ~ npc_netherton_respect += 5
+#respect_gained:5
     -> mission_hub
 
 + [How to improve mission planning]
@@ -299,6 +303,7 @@ Netherton: You want operational advice. *considers* On what specific matter?
     Netherton: Anticipate failure modes. For each plan, ask: What could go wrong? How would I adapt?
     Netherton: The axolotl principle—Haxolottle's term. Plan for regeneration when the original approach fails.
     ~ npc_netherton_respect += 5
+#respect_gained:5
     -> mission_hub
 
 + [How to advance in SAFETYNET]
@@ -306,6 +311,7 @@ Netherton: You want operational advice. *considers* On what specific matter?
     Netherton: Demonstrate competence. Show sound judgment. Develop specialized capabilities. Volunteer for challenging assignments.
     Netherton: Most importantly: Maintain integrity. Technical skills can be trained. Character cannot.
     ~ npc_netherton_respect += 8
+#respect_gained:8
     ~ professional_reputation += 1
     -> mission_hub
 
@@ -345,6 +351,7 @@ Netherton: Training opportunities. What areas interest you?
     Netherton: There's a leadership program for senior agents. Application process is competitive. I can recommend you if your performance continues.
     ~ professional_reputation += 3
     ~ npc_netherton_respect += 10
+#respect_gained:10
     -> mission_hub
 
 + [Technical specialization]
