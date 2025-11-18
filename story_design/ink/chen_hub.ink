@@ -19,11 +19,11 @@ INCLUDE dr_chen_ongoing_conversations.ink
 // These are provided by the game engine
 // ===========================================
 
-EXTERNAL player_name                    // LOCAL - Player's agent name
-EXTERNAL current_mission_id             // LOCAL - Current mission being discussed
-EXTERNAL npc_location                   // LOCAL - Where conversation happens ("lab", "equipment_room", "briefing_room", "field_support")
-EXTERNAL mission_phase                  // LOCAL - Phase of current mission ("pre_briefing", "active", "debriefing", "downtime")
-EXTERNAL equipment_status               // LOCAL - Status of player's equipment ("nominal", "damaged", "needs_upgrade")
+EXTERNAL player_name()                  // LOCAL - Player's agent name
+EXTERNAL current_mission_id()           // LOCAL - Current mission being discussed
+EXTERNAL npc_location()                 // LOCAL - Where conversation happens ("lab", "equipment_room", "briefing_room", "field_support")
+EXTERNAL mission_phase()                // LOCAL - Phase of current mission ("pre_briefing", "active", "debriefing", "downtime")
+EXTERNAL equipment_status()             // LOCAL - Status of player's equipment ("nominal", "damaged", "needs_upgrade")
 
 // ===========================================
 // GLOBAL VARIABLES (shared across all NPCs)
@@ -40,16 +40,17 @@ VAR professional_reputation = 0         // GLOBAL - Agent standing
 === chen_conversation_entry ===
 // This is the main entry point - game engine calls this
 
-{npc_location == "lab":
-    Dr. Chen: {player_name}! *looks up from workbench* Perfect timing. Come check this out!
-- npc_location == "equipment_room":
-    Dr. Chen: Oh hey! Here for gear? I just finished calibrating some new equipment.
-- npc_location == "briefing_room":
-    Dr. Chen: Agent {player_name}. *gestures to technical displays* Let's talk about the tech side of this operation.
-- npc_location == "field_support":
-    Dr. Chen: *over comms* Reading you loud and clear. What do you need?
-- else:
-    Dr. Chen: Hey! What brings you by?
+{
+    - npc_location() == "lab":
+        Dr. Chen: {player_name()}! *looks up from workbench* Perfect timing. Come check this out!
+    - npc_location() == "equipment_room":
+        Dr. Chen: Oh hey! Here for gear? I just finished calibrating some new equipment.
+    - npc_location() == "briefing_room":
+        Dr. Chen: Agent {player_name()}. *gestures to technical displays* Let's talk about the tech side of this operation.
+    - npc_location() == "field_support":
+        Dr. Chen: *over comms* Reading you loud and clear. What do you need?
+    - else:
+        Dr. Chen: Hey! What brings you by?
 }
 
 -> chen_main_hub
@@ -64,47 +65,48 @@ VAR professional_reputation = 0         // GLOBAL - Agent standing
 // Show different options based on location, mission phase, and relationship level
 
 // PERSONAL FRIENDSHIP OPTION (always available if topics exist)
-+ {has_available_personal_topics() and mission_phase != "active"} [How are you doing, Dr. Chen?]
++ {has_available_personal_topics() and mission_phase() != "active"} [How are you doing, Dr. Chen?]
     Dr. Chen: Oh! *surprised by personal question*
-    {npc_chen_rapport >= 70:
-        Dr. Chen: You know, I really appreciate when people ask that. Want to chat for a bit?
-    - else:
-        Dr. Chen: I'm good! Busy, but good. What's up?
+    {
+        - npc_chen_rapport >= 70:
+            Dr. Chen: You know, I really appreciate when people ask that. Want to chat for a bit?
+        - else:
+            Dr. Chen: I'm good! Busy, but good. What's up?
     }
     -> jump_to_personal_conversations
 
 // EQUIPMENT AND TECHNICAL SUPPORT (high priority when damaged or needs upgrade)
-+ {equipment_status == "damaged"} [My equipment took damage in the field]
++ {equipment_status() == "damaged"} [My equipment took damage in the field]
     Dr. Chen: *immediately concerned* Let me see it. What happened?
     -> equipment_repair_discussion
 
-+ {equipment_status == "needs_upgrade"} [Request equipment upgrades for upcoming mission]
++ {equipment_status() == "needs_upgrade"} [Request equipment upgrades for upcoming mission]
     Dr. Chen: Upgrades! Yes! I've been working on some new gear. Let me show you what's available.
     -> equipment_upgrade_menu
 
-+ {mission_phase == "active" and npc_location == "field_support"} [I need technical support in the field]
++ {mission_phase() == "active" and npc_location() == "field_support"} [I need technical support in the field]
     Dr. Chen: *alert* Okay, talk to me. What's the technical problem?
     -> field_technical_support
 
 // MISSION-SPECIFIC TECHNICAL DISCUSSIONS
-+ {current_mission_id == "ghost_in_machine" and mission_phase == "pre_briefing"} [What tech will I need for Ghost Protocol?]
++ {current_mission_id() == "ghost_in_machine" and mission_phase() == "pre_briefing"} [What tech will I need for Ghost Protocol?]
     Dr. Chen: Ghost Protocol! Okay, so I've prepared some specialized equipment for this one. Let me walk you through it.
     -> mission_ghost_equipment_briefing
 
-+ {current_mission_id == "ghost_in_machine" and mission_phase == "debriefing"} [Technical debrief for Ghost Protocol]
++ {current_mission_id() == "ghost_in_machine" and mission_phase() == "debriefing"} [Technical debrief for Ghost Protocol]
     Dr. Chen: How did the equipment perform? I need field data to improve the designs.
     -> mission_ghost_tech_debrief
 
-+ {current_mission_id == "data_sanctuary"} [What tech is protecting the Data Sanctuary?]
++ {current_mission_id() == "data_sanctuary"} [What tech is protecting the Data Sanctuary?]
     Dr. Chen: *pulls up schematics* The sanctuary has multi-layered security. Let me explain the architecture.
     -> mission_sanctuary_tech_overview
 
 // GENERAL TECHNICAL TOPICS
-+ {mission_phase == "downtime"} [Ask about experimental technology]
++ {mission_phase() == "downtime"} [Ask about experimental technology]
     Dr. Chen: *eyes light up* Oh! You want to hear about the experimental stuff? Because I have some REALLY cool projects going.
     -> experimental_tech_discussion
 
-+ {mission_phase == "downtime" and npc_chen_rapport >= 50} [Offer to help test experimental equipment]
++ {mission_phase() == "downtime" and npc_chen_rapport >= 50} [Offer to help test experimental equipment]
     Dr. Chen: *excited* You'd volunteer for field testing? That would be incredibly helpful!
     -> volunteer_field_testing
 
@@ -113,18 +115,19 @@ VAR professional_reputation = 0         // GLOBAL - Agent standing
     -> technical_training_discussion
 
 // EXIT OPTIONS
-+ {mission_phase == "active" and npc_location == "field_support"} [That's all I needed, thanks]
++ {mission_phase() == "active" and npc_location() == "field_support"} [That's all I needed, thanks]
     Dr. Chen: Roger that. I'll keep monitoring your situation. Call if you need anything!
     #exit_conversation
     -> END
 
 + [That's all for now, Chen]
-    {npc_chen_rapport >= 80:
-        Dr. Chen: Sounds good! *warm smile* Always great talking with you. Stay safe out there!
-    - npc_chen_rapport >= 50:
-        Dr. Chen: Alright! Let me know if you need anything. Seriously, anytime.
-    - else:
-        Dr. Chen: Okay. Good luck with the mission!
+    {
+        - npc_chen_rapport >= 80:
+            Dr. Chen: Sounds good! *warm smile* Always great talking with you. Stay safe out there!
+        - npc_chen_rapport >= 50:
+            Dr. Chen: Alright! Let me know if you need anything. Seriously, anytime.
+        - else:
+            Dr. Chen: Okay. Good luck with the mission!
     }
     #exit_conversation
     -> END

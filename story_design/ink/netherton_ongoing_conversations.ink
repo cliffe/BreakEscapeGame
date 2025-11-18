@@ -55,8 +55,8 @@ VAR professional_reputation = 0         // GLOBAL - Agent standing (affects all 
 // Provided by game engine when conversation starts
 // ===========================================
 
-EXTERNAL player_name                    // LOCAL - Player's agent name
-EXTERNAL current_mission_id             // LOCAL - Current mission identifier
+EXTERNAL player_name()                  // LOCAL - Player's agent name
+EXTERNAL current_mission_id()           // LOCAL - Current mission identifier
 
 // ===========================================
 // ENTRY POINT - Conversation Selector

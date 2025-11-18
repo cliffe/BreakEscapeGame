@@ -20,10 +20,10 @@ INCLUDE netherton_ongoing_conversations.ink
 // These are provided by the game engine
 // ===========================================
 
-EXTERNAL player_name                    // LOCAL - Player's agent name
-EXTERNAL current_mission_id             // LOCAL - Current mission being discussed
-EXTERNAL npc_location                   // LOCAL - Where conversation happens ("office", "safehouse", "field", "briefing_room")
-EXTERNAL mission_phase                  // LOCAL - Phase of current mission ("pre_briefing", "active", "debriefing", "downtime")
+EXTERNAL player_name()                  // LOCAL - Player's agent name
+EXTERNAL current_mission_id()           // LOCAL - Current mission being discussed
+EXTERNAL npc_location()                 // LOCAL - Where conversation happens ("office", "safehouse", "field", "briefing_room")
+EXTERNAL mission_phase()                // LOCAL - Phase of current mission ("pre_briefing", "active", "debriefing", "downtime")
 
 // ===========================================
 // GLOBAL VARIABLES (shared across all NPCs)
@@ -40,16 +40,17 @@ VAR professional_reputation = 0         // GLOBAL - Agent standing
 === netherton_conversation_entry ===
 // This is the main entry point - game engine calls this
 
-{npc_location == "office":
-    Netherton: Agent {player_name}. *gestures to chair* What do you need?
-- npc_location == "briefing_room":
-    Netherton: Agent. *stands at tactical display* We have matters to discuss.
-- npc_location == "field":
-    Netherton: *over secure comms* Agent. Report.
-- npc_location == "safehouse":
-    Netherton: *sits across from you in the secure room* We're clear to talk here. What's on your mind?
-- else:
-    Netherton: Agent {player_name}. What requires my attention?
+{
+    - npc_location() == "office":
+        Netherton: Agent {player_name()}. *gestures to chair* What do you need?
+    - npc_location() == "briefing_room":
+        Netherton: Agent. *stands at tactical display* We have matters to discuss.
+    - npc_location() == "field":
+        Netherton: *over secure comms* Agent. Report.
+    - npc_location() == "safehouse":
+        Netherton: *sits across from you in the secure room* We're clear to talk here. What's on your mind?
+    - else:
+        Netherton: Agent {player_name()}. What requires my attention?
 }
 
 -> netherton_main_hub
@@ -64,58 +65,60 @@ VAR professional_reputation = 0         // GLOBAL - Agent standing
 // Show different options based on location, mission phase, and relationship level
 
 // PERSONAL RELATIONSHIP OPTION (always available if topics exist)
-+ {has_available_personal_topics() and mission_phase != "active"} [How are you, Director?]
++ {has_available_personal_topics() and mission_phase() != "active"} [How are you, Director?]
     Netherton: *slight pause, as if surprised by personal question*
-    {npc_netherton_respect >= 70:
-        Netherton: That's... considerate of you to ask, Agent. I have a moment for personal discussion.
-    - else:
-        Netherton: An unusual question. But acceptable. What do you wish to discuss?
+    {
+        - npc_netherton_respect >= 70:
+            Netherton: That's... considerate of you to ask, Agent. I have a moment for personal discussion.
+        - else:
+            Netherton: An unusual question. But acceptable. What do you wish to discuss?
     }
     -> jump_to_personal_conversations
 
 // MISSION-SPECIFIC CONVERSATIONS (context-dependent)
-+ {current_mission_id == "ghost_in_machine" and mission_phase == "pre_briefing"} [Request briefing for Ghost Protocol operation]
++ {current_mission_id() == "ghost_in_machine" and mission_phase() == "pre_briefing"} [Request briefing for Ghost Protocol operation]
     Netherton: Very well. Let me bring you up to speed on Ghost Protocol.
     -> mission_ghost_briefing
 
-+ {current_mission_id == "ghost_in_machine" and mission_phase == "active"} [Request tactical guidance]
++ {current_mission_id() == "ghost_in_machine" and mission_phase() == "active"} [Request tactical guidance]
     Netherton: *reviews your position on tactical display* What do you need?
     -> mission_ghost_tactical_support
 
-+ {current_mission_id == "ghost_in_machine" and mission_phase == "debriefing"} [Debrief Ghost Protocol operation]
++ {current_mission_id() == "ghost_in_machine" and mission_phase() == "debriefing"} [Debrief Ghost Protocol operation]
     Netherton: Submit your report, Agent.
     -> mission_ghost_debrief
 
-+ {current_mission_id == "data_sanctuary"} [About the Data Sanctuary operation...]
++ {current_mission_id() == "data_sanctuary"} [About the Data Sanctuary operation...]
     Netherton: The Data Sanctuary. A delicate situation. What questions do you have?
     -> mission_sanctuary_discussion
 
-+ {mission_phase == "downtime" and npc_netherton_respect >= 60} [Ask for operational advice]
++ {mission_phase() == "downtime" and npc_netherton_respect >= 60} [Ask for operational advice]
     Netherton: You want my counsel? *slight approval* Very well.
     -> operational_advice_discussion
 
 // GENERAL PROFESSIONAL TOPICS (available when not in active mission)
-+ {mission_phase != "active"} [Ask about SAFETYNET operations status]
++ {mission_phase() != "active"} [Ask about SAFETYNET operations status]
     Netherton: *brings up secure display* Current operations status...
     -> safetynet_status_update
 
-+ {professional_reputation >= 50 and mission_phase == "downtime"} [Request additional training opportunities]
++ {professional_reputation >= 50 and mission_phase() == "downtime"} [Request additional training opportunities]
     Netherton: Initiative. Good. What areas do you wish to develop?
     -> training_discussion
 
 // EXIT OPTIONS
-+ {mission_phase == "active"} [That's all I needed, Director]
++ {mission_phase() == "active"} [That's all I needed, Director]
     Netherton: Understood. Execute the mission. Report any developments.
     #exit_conversation
     -> END
 
 + [That will be all, Director]
-    {npc_netherton_respect >= 80:
-        Netherton: Very well, Agent {player_name}. *almost warm* Continue your excellent work.
-    - npc_netherton_respect >= 60:
-        Netherton: Dismissed. Maintain your current performance level.
-    - else:
-        Netherton: Dismissed.
+    {
+        - npc_netherton_respect >= 80:
+            Netherton: Very well, Agent {player_name()}. *almost warm* Continue your excellent work.
+        - npc_netherton_respect >= 60:
+            Netherton: Dismissed. Maintain your current performance level.
+        - else:
+            Netherton: Dismissed.
     }
     #exit_conversation
     -> END

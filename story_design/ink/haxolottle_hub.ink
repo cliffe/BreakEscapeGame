@@ -20,11 +20,11 @@ INCLUDE haxolottle_ongoing_conversations.ink
 // These are provided by the game engine
 // ===========================================
 
-EXTERNAL player_name                    // LOCAL - Player's agent codename (not real name!)
-EXTERNAL current_mission_id             // LOCAL - Current mission being discussed
-EXTERNAL npc_location                   // LOCAL - Where conversation happens ("handler_station", "briefing_room", "comms_active", "safehouse")
-EXTERNAL mission_phase                  // LOCAL - Phase of current mission ("planning", "active", "debriefing", "downtime")
-EXTERNAL operational_stress_level       // LOCAL - How stressed the current situation is ("low", "moderate", "high", "crisis")
+EXTERNAL player_name()                  // LOCAL - Player's agent codename (not real name!)
+EXTERNAL current_mission_id()           // LOCAL - Current mission being discussed
+EXTERNAL npc_location()                 // LOCAL - Where conversation happens ("handler_station", "briefing_room", "comms_active", "safehouse")
+EXTERNAL mission_phase()                // LOCAL - Phase of current mission ("planning", "active", "debriefing", "downtime")
+EXTERNAL operational_stress_level()     // LOCAL - How stressed the current situation is ("low", "moderate", "high", "crisis")
 
 // ===========================================
 // GLOBAL VARIABLES (shared across all NPCs)
@@ -41,16 +41,17 @@ VAR professional_reputation = 0         // GLOBAL - Agent standing
 === haxolottle_conversation_entry ===
 // This is the main entry point - game engine calls this
 
-{npc_location == "handler_station":
-    Haxolottle: Agent {player_name}! *swivels chair around from monitors* Good to see you. What's up?
-- npc_location == "briefing_room":
-    Haxolottle: *sits across from you with tablet* Okay, let's review the handler support plan for this operation.
-- npc_location == "comms_active":
-    Haxolottle: *over secure comms, calm and focused* Reading you clearly, {player_name}. How can I help?
-- npc_location == "safehouse":
-    Haxolottle: *relaxed posture, coffee mug nearby* Hey. Safe to talk here. What do you need?
-- else:
-    Haxolottle: {player_name}! What brings you by?
+{
+    - npc_location() == "handler_station":
+        Haxolottle: Agent {player_name()}! *swivels chair around from monitors* Good to see you. What's up?
+    - npc_location() == "briefing_room":
+        Haxolottle: *sits across from you with tablet* Okay, let's review the handler support plan for this operation.
+    - npc_location() == "comms_active":
+        Haxolottle: *over secure comms, calm and focused* Reading you clearly, {player_name()}. How can I help?
+    - npc_location() == "safehouse":
+        Haxolottle: *relaxed posture, coffee mug nearby* Hey. Safe to talk here. What do you need?
+    - else:
+        Haxolottle: {player_name()}! What brings you by?
 }
 
 -> haxolottle_main_hub
@@ -65,82 +66,84 @@ VAR professional_reputation = 0         // GLOBAL - Agent standing
 // Show different options based on location, mission phase, stress level, and friendship
 
 // CRISIS HANDLING (takes priority during high-stress situations)
-+ {operational_stress_level == "crisis" and mission_phase == "active"} [I need immediate handler support!]
++ {operational_stress_level() == "crisis" and mission_phase() == "active"} [I need immediate handler support!]
     Haxolottle: *instantly alert* Talk to me. What's happening?
     -> crisis_handler_support
 
 // PERSONAL FRIENDSHIP OPTION (available during downtime if topics exist)
-+ {has_available_personal_topics() and mission_phase == "downtime"} [Want to chat? Non-work stuff?]
++ {has_available_personal_topics() and mission_phase() == "downtime"} [Want to chat? Non-work stuff?]
     Haxolottle: *grins* Personal conversation? According to Regulation 847, that's encouraged for psychological wellbeing.
-    {npc_haxolottle_friendship_level >= 60:
-        Haxolottle: And honestly, I could use a break from staring at monitors. What's on your mind?
-    - else:
-        Haxolottle: Sure, I've got time. What do you want to talk about?
+    {
+        - npc_haxolottle_friendship_level >= 60:
+            Haxolottle: And honestly, I could use a break from staring at monitors. What's on your mind?
+        - else:
+            Haxolottle: Sure, I've got time. What do you want to talk about?
     }
     -> jump_to_personal_conversations
 
 // ACTIVE MISSION HANDLER SUPPORT
-+ {mission_phase == "active" and operational_stress_level != "crisis"} [Request handler support]
++ {mission_phase() == "active" and operational_stress_level() != "crisis"} [Request handler support]
     Haxolottle: On it. What do you need?
     -> active_mission_handler_support
 
-+ {mission_phase == "active"} [Request intel update]
++ {mission_phase() == "active"} [Request intel update]
     Haxolottle: *pulls up intel feeds* Let me give you the current situation...
     -> intel_update_active
 
-+ {mission_phase == "active" and operational_stress_level == "high"} [Situation is getting complicated]
++ {mission_phase() == "active" and operational_stress_level() == "high"} [Situation is getting complicated]
     Haxolottle: *focused* Okay. Talk me through what's happening. We'll adapt.
     -> complicated_situation_support
 
 // MISSION PLANNING AND BRIEFING
-+ {current_mission_id == "ghost_in_machine" and mission_phase == "planning"} [Review handler plan for Ghost Protocol]
++ {current_mission_id() == "ghost_in_machine" and mission_phase() == "planning"} [Review handler plan for Ghost Protocol]
     Haxolottle: Ghost Protocol. Right. *pulls up mission docs* Let's go through the support plan.
     -> mission_ghost_handler_briefing
 
-+ {current_mission_id == "data_sanctuary" and mission_phase == "planning"} [Discuss Data Sanctuary handler support]
++ {current_mission_id() == "data_sanctuary" and mission_phase() == "planning"} [Discuss Data Sanctuary handler support]
     Haxolottle: Data Sanctuary defensive operation. I'll be coordinating multi-agent support. Here's how we'll handle it.
     -> mission_sanctuary_handler_plan
 
-+ {mission_phase == "planning"} [Ask about contingency planning]
++ {mission_phase() == "planning"} [Ask about contingency planning]
     Haxolottle: Contingencies! Yes. Let's talk about what happens when things go sideways.
     Haxolottle: Per the axolotl principle—*slight smile*—we plan for regeneration.
     -> contingency_planning_discussion
 
 // DEBRIEFING
-+ {mission_phase == "debriefing"} [Debrief the operation]
++ {mission_phase() == "debriefing"} [Debrief the operation]
     Haxolottle: *opens debrief form* Alright. Let's walk through what happened. Start from the beginning.
     -> operation_debrief
 
-+ {mission_phase == "debriefing" and operational_stress_level == "high"} [That mission was rough]
++ {mission_phase() == "debriefing" and operational_stress_level() == "high"} [That mission was rough]
     Haxolottle: *concerned* Yeah, I saw. Are you okay? Physically? Mentally?
     -> rough_mission_debrief
 
 // GENERAL HANDLER TOPICS (available during downtime)
-+ {mission_phase == "downtime"} [Ask about current threat landscape]
++ {mission_phase() == "downtime"} [Ask about current threat landscape]
     Haxolottle: *brings up threat analysis dashboard* So, here's what ENTROPY is up to lately...
     -> threat_landscape_update
 
-+ {mission_phase == "downtime" and npc_haxolottle_friendship_level >= 40} [Ask for operational advice]
++ {mission_phase() == "downtime" and npc_haxolottle_friendship_level >= 40} [Ask for operational advice]
     Haxolottle: You want my handler perspective? *settles in* Sure. What's the question?
     -> operational_advice_from_handler
 
-+ {npc_haxolottle_friendship_level >= 50 and mission_phase == "downtime"} [Ask about handler tradecraft]
++ {npc_haxolottle_friendship_level >= 50 and mission_phase() == "downtime"} [Ask about handler tradecraft]
     Haxolottle: Handler tradecraft! You're interested in the behind-the-scenes stuff?
     -> handler_tradecraft_discussion
 
 // EXIT OPTIONS
-+ {mission_phase == "active"} [That's all I needed. Thanks, Hax.]
++ {mission_phase() == "active"} [That's all I needed. Thanks, Hax.]
     Haxolottle: Roger. I'm monitoring your situation. Call if you need anything. Stay safe out there.
     #exit_conversation
     -> END
 
 + [That's all for now]
-    {npc_haxolottle_friendship_level >= 70:
-        Haxolottle: Alright, {player_name}. *genuine warmth* Always good talking with you. Take care of yourself.
-    - npc_haxolottle_friendship_level >= 40:
-        Haxolottle: Sounds good. Let me know if you need anything. Really, anytime.
-    - else:
-        Haxolottle: Okay. Talk later!
+    {
+        - npc_haxolottle_friendship_level >= 70:
+            Haxolottle: Alright, {player_name()}. *genuine warmth* Always good talking with you. Take care of yourself.
+        - npc_haxolottle_friendship_level >= 40:
+            Haxolottle: Sounds good. Let me know if you need anything. Really, anytime.
+        - else:
+            Haxolottle: Okay. Talk later!
     }
     #exit_conversation
     -> END

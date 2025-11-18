@@ -56,8 +56,8 @@ VAR professional_reputation = 0         // GLOBAL - Agent standing (affects all 
 // Provided by game engine when conversation starts
 // ===========================================
 
-EXTERNAL player_name                    // LOCAL - Player's agent name
-EXTERNAL current_mission_id             // LOCAL - Current mission identifier
+EXTERNAL player_name()                  // LOCAL - Player's agent name
+EXTERNAL current_mission_id()           // LOCAL - Current mission identifier
 
 // ===========================================
 // ENTRY POINT - Conversation Selector
@@ -83,12 +83,13 @@ EXTERNAL current_mission_id             // LOCAL - Current mission identifier
 
 === phase_1_hub ===
 
-{total_missions_completed == 1:
-    Dr. Chen: Agent {player_name}! Great timing. Just finished calibrating the new sensor array. What can I help you with today?
-- npc_npc_chen_rapport >= 60:
-    Dr. Chen: Oh hey! Got a minute? I've been dying to show someone this new encryption bypass I developed.
-- else:
-    Dr. Chen: Agent {player_name}. Need tech support? Equipment upgrades? I'm all ears.
+{
+    - total_missions_completed == 1:
+        Dr. Chen: Agent {player_name()}! Great timing. Just finished calibrating the new sensor array. What can I help you with today?
+    - npc_chen_rapport >= 60:
+        Dr. Chen: Oh hey! Got a minute? I've been dying to show someone this new encryption bypass I developed.
+    - else:
+        Dr. Chen: Agent {player_name()}. Need tech support? Equipment upgrades? I'm all ears.
 }
 
 + {not npc_chen_discussed_tech_philosophy} [Ask about their approach to technology]
