@@ -72,7 +72,7 @@ EXTERNAL operational_stress_level()     // LOCAL - How stressed the current situ
 + {has_available_personal_topics() and mission_phase() == "downtime"} [Want to chat? Non-work stuff?]
     Haxolottle: *grins* Personal conversation? According to Regulation 847, that's encouraged for psychological wellbeing.
     {
-        - npc_haxolottle_friendship_level >= 60:
+        - npc_haxolottle_influence >= 60:
             Haxolottle: And honestly, I could use a break from staring at monitors. What's on your mind?
         - else:
             Haxolottle: Sure, I've got time. What do you want to talk about?
@@ -120,11 +120,11 @@ EXTERNAL operational_stress_level()     // LOCAL - How stressed the current situ
     Haxolottle: *brings up threat analysis dashboard* So, here's what ENTROPY is up to lately...
     -> threat_landscape_update
 
-+ {mission_phase() == "downtime" and npc_haxolottle_friendship_level >= 40} [Ask for operational advice]
++ {mission_phase() == "downtime" and npc_haxolottle_influence >= 40} [Ask for operational advice]
     Haxolottle: You want my handler perspective? *settles in* Sure. What's the question?
     -> operational_advice_from_handler
 
-+ {npc_haxolottle_friendship_level >= 50 and mission_phase() == "downtime"} [Ask about handler tradecraft]
++ {npc_haxolottle_influence >= 50 and mission_phase() == "downtime"} [Ask about handler tradecraft]
     Haxolottle: Handler tradecraft! You're interested in the behind-the-scenes stuff?
     -> handler_tradecraft_discussion
 
@@ -136,9 +136,9 @@ EXTERNAL operational_stress_level()     // LOCAL - How stressed the current situ
 
 + [That's all for now]
     {
-        - npc_haxolottle_friendship_level >= 70:
+        - npc_haxolottle_influence >= 70:
             Haxolottle: Alright, {player_name()}. *genuine warmth* Always good talking with you. Take care of yourself.
-        - npc_haxolottle_friendship_level >= 40:
+        - npc_haxolottle_influence >= 40:
             Haxolottle: Sounds good. Let me know if you need anything. Really, anytime.
         - else:
             Haxolottle: Okay. Talk later!
@@ -160,7 +160,7 @@ EXTERNAL operational_stress_level()     // LOCAL - How stressed the current situ
             - not npc_haxolottle_talked_axolotl_obsession: ~ return true
             - not npc_haxolottle_talked_music_taste: ~ return true
             - not npc_haxolottle_talked_coffee_preferences and npc_haxolottle_talked_hobbies_general: ~ return true
-            - not npc_haxolottle_talked_stress_management and npc_haxolottle_friendship_level >= 15: ~ return true
+            - not npc_haxolottle_talked_stress_management and npc_haxolottle_influence >= 15: ~ return true
             - else: ~ return false
         }
 
@@ -169,9 +169,9 @@ EXTERNAL operational_stress_level()     // LOCAL - How stressed the current situ
         {
             - not npc_haxolottle_talked_philosophy_change: ~ return true
             - not npc_haxolottle_talked_handler_life: ~ return true
-            - not npc_haxolottle_talked_field_nostalgia and npc_haxolottle_friendship_level >= 30: ~ return true
+            - not npc_haxolottle_talked_field_nostalgia and npc_haxolottle_influence >= 30: ~ return true
             - not npc_haxolottle_talked_weird_habits: ~ return true
-            - not npc_haxolottle_talked_favorite_operations and npc_haxolottle_friendship_level >= 35: ~ return true
+            - not npc_haxolottle_talked_favorite_operations and npc_haxolottle_influence >= 35: ~ return true
             - else: ~ return false
         }
 
@@ -244,8 +244,8 @@ Which approach do you want to take?
 + [Option Charlie - extract]
     Haxolottle: Smart. Live to fight another day. Coordinates extraction...
     Haxolottle: You made the right call. Equipment and missions are replaceable. You're not.
-    ~ npc_haxolottle_friendship_level += 10
-#friendship_gained:10
+    ~ npc_haxolottle_influence += 10
+#influence_gained:10
     #crisis_extraction
     -> mission_hub
 
@@ -306,8 +306,8 @@ Haxolottle: *professional focus* What kind of support do you need?
 
 + [Just checking in]
     Haxolottle: *reassuring* All good. You're doing great. Operational tempo is solid. Keep it up.
-    ~ npc_haxolottle_friendship_level += 3
-#friendship_gained:3
+    ~ npc_haxolottle_influence += 3
+#influence_gained:3
     -> mission_hub
 
 === intel_update_active ===
@@ -340,8 +340,8 @@ Haxolottle: Talk me through the specific complication. What changed?
     You describe how the situation has become more complex.
     Haxolottle: *processes* Alright. That's not ideal, but it's manageable. Here's how we adjust...
     Haxolottle: Remember the axolotl principle. Original approach failed. Time to regenerate a new one.
-    ~ npc_haxolottle_friendship_level += 5
-#friendship_gained:5
+    ~ npc_haxolottle_influence += 5
+#influence_gained:5
     -> adaptation_planning
 
 + [Multiple things going wrong]
@@ -378,16 +378,16 @@ Haxolottle: But help me understand—is this "mission parameters changed beyond 
 + [Risk has exceeded acceptable parameters]
     Haxolottle: *nods* Operational assessment. Respected. I'll coordinate extraction.
     Haxolottle: Netherton might push back, but I'll support your call. You're the one taking the risk.
-    ~ npc_haxolottle_friendship_level += 8
-#friendship_gained:8
+    ~ npc_haxolottle_influence += 8
+#influence_gained:8
     #mission_aborted
     -> mission_hub
 
 + [Something feels wrong - can't explain it]
     Haxolottle: *trusts your instinct* That's valid. Field intuition saves lives. Abort authorized.
     Haxolottle: We can analyze what felt wrong afterwards. Right now, get clear.
-    ~ npc_haxolottle_friendship_level += 10
-#friendship_gained:10
+    ~ npc_haxolottle_influence += 10
+#influence_gained:10
     #mission_aborted_intuition
     -> mission_hub
 
@@ -404,10 +404,10 @@ Haxolottle: *urgent typing* Okay. Either my feeds are compromised or ENTROPY cha
 
 Haxolottle: Recommend trusting your eyes over my monitors. Proceed with extreme caution. I'm investigating the discrepancy.
 
-{npc_haxolottle_friendship_level >= 50:
+{npc_haxolottle_influence >= 50:
     Haxolottle: *concerned* And {player_name()}? Be careful. If my intel is wrong, you're more exposed than we thought.
-    ~ npc_haxolottle_friendship_level += 5
-#friendship_gained:5
+    ~ npc_haxolottle_influence += 5
+#influence_gained:5
 }
 
 -> mission_hub
@@ -440,8 +440,8 @@ Haxolottle: If compromised: Emergency extraction protocols ready. Three waypoint
 + [Sounds solid. I'm confident in this plan.]
     Haxolottle: *slight smile* Good. Because I've run hundreds of handler ops, and this is one of my better plans.
     Haxolottle: We've got this. Partnership.
-    ~ npc_haxolottle_friendship_level += 5
-#friendship_gained:5
+    ~ npc_haxolottle_influence += 5
+#influence_gained:5
     -> mission_hub
 
 === mission_sanctuary_handler_plan ===
@@ -456,8 +456,8 @@ Haxolottle: This requires trusting my tactical picture. I'll be seeing things yo
 + [I trust your tactical judgment]
     Haxolottle: *appreciates that* Thank you. Command is easier when agents trust the handler.
     Haxolottle: I won't let you down.
-    ~ npc_haxolottle_friendship_level += 8
-#friendship_gained:8
+    ~ npc_haxolottle_influence += 8
+#influence_gained:8
     -> mission_hub
 
 + [What if I see something you don't?]
@@ -481,8 +481,8 @@ Haxolottle: The axolotl principle—*smiles*—regeneration over rigidity. Plans
 
 + [Walk me through the contingencies for this mission]
     Haxolottle: *details specific contingencies based on current mission*
-    ~ npc_haxolottle_friendship_level += 5
-#friendship_gained:5
+    ~ npc_haxolottle_influence += 5
+#influence_gained:5
     -> mission_hub
 
 + [This seems paranoid]
@@ -493,8 +493,8 @@ Haxolottle: The axolotl principle—*smiles*—regeneration over rigidity. Plans
 + [I appreciate the thoroughness]
     Haxolottle: *genuine* That means a lot. Handlers live and die by preparation.
     Haxolottle: Knowing you value that preparation makes the late nights worth it.
-    ~ npc_haxolottle_friendship_level += 8
-#friendship_gained:8
+    ~ npc_haxolottle_influence += 8
+#influence_gained:8
     -> mission_hub
 
 // ===========================================
@@ -507,10 +507,10 @@ Haxolottle: *opens debrief form* Standard post-operation debrief. Walk me throug
 + [Provide thorough debrief]
     You provide a detailed account of the operation.
     Haxolottle: *taking notes* Good detail. This is exactly what I need for the after-action report.
-    {npc_haxolottle_friendship_level >= 40:
+    {npc_haxolottle_influence >= 40:
         Haxolottle: And more importantly—are you okay? Physically? Mentally?
-        ~ npc_haxolottle_friendship_level += 3
-#friendship_gained:3
+        ~ npc_haxolottle_influence += 3
+#influence_gained:3
     }
     -> debrief_completion
 
@@ -531,8 +531,8 @@ Haxolottle: Before we do the formal debrief—are you actually okay? Not the pro
     You admit the mission was harder than expected and took a toll.
     Haxolottle: *empathetic* Thank you for being honest. That mission pushed limits. You handled it, but pushing limits has costs.
     Haxolottle: Take additional recovery time. I'll handle Netherton if they push back. Your wellbeing matters.
-    ~ npc_haxolottle_friendship_level += 15
-#friendship_gained:15
+    ~ npc_haxolottle_influence += 15
+#influence_gained:15
     ~ npc_haxolottle_trust_moments += 1
     -> debrief_completion
 
@@ -543,10 +543,10 @@ Haxolottle: Before we do the formal debrief—are you actually okay? Not the pro
 
 + [Thank them for asking]
     Haxolottle: *genuine* Of course I ask. I watched you face that. I care about more than mission success—I care about you.
-    {npc_haxolottle_friendship_level >= 50:
+    {npc_haxolottle_influence >= 50:
         Haxolottle: You're not just an asset to manage. You're... *hesitates* ...a colleague I value. A friend, within the constraints of Protocol 47-Alpha.
-        ~ npc_haxolottle_friendship_level += 10
-#friendship_gained:10
+        ~ npc_haxolottle_influence += 10
+#influence_gained:10
     }
     -> debrief_completion
 
@@ -585,8 +585,8 @@ Haxolottle: We're adapting. Dr. Chen is developing new countermeasures. Netherto
 + [Express concern about escalation]
     Haxolottle: *serious* Yeah, me too. The escalation pattern is concerning.
     Haxolottle: But that's why we're here. SAFETYNET exists to counter this. And we're getting better at it.
-    ~ npc_haxolottle_friendship_level += 3
-#friendship_gained:3
+    ~ npc_haxolottle_influence += 3
+#influence_gained:3
     -> mission_hub
 
 + [Thank them for the update]
@@ -611,10 +611,10 @@ Haxolottle: Handler perspective on operations. What do you want to know?
 + [How to work better with you specifically]
     Haxolottle: *appreciates the question* Honestly? You already work well with me.
     Haxolottle: You communicate clearly. You trust my intel while using your judgment. You understand the partnership.
-    {npc_haxolottle_friendship_level >= 50:
+    {npc_haxolottle_influence >= 50:
         Haxolottle: You're one of the best agents I've handled. And I've handled a lot.
-        ~ npc_haxolottle_friendship_level += 8
-#friendship_gained:8
+        ~ npc_haxolottle_influence += 8
+#influence_gained:8
     }
     -> mission_hub
 
@@ -630,16 +630,16 @@ Haxolottle: And honestly? A lot of it is managing stress. Yours and ours. Keepin
 + [That sounds incredibly complex]
     Haxolottle: It is. But it's also what I'm good at. Turns out eight years of field experience translates well to handler work.
     Haxolottle: I know what you're experiencing because I've experienced it. That empathy makes me better at support.
-    ~ npc_haxolottle_friendship_level += 5
-#friendship_gained:5
+    ~ npc_haxolottle_influence += 5
+#influence_gained:5
     -> mission_hub
 
 + [How do you manage your own stress?]
     Haxolottle: *honest* Varies. Swimming helps. Reading. Listening to rain sounds while pretending I'm not worried about agents in danger.
-    {npc_haxolottle_friendship_level >= 40:
+    {npc_haxolottle_influence >= 40:
         Haxolottle: Conversations like this help too. Knowing the agents I support see me as more than a voice on comms.
-        ~ npc_haxolottle_friendship_level += 8
-#friendship_gained:8
+        ~ npc_haxolottle_influence += 8
+#influence_gained:8
     }
     -> mission_hub
 
@@ -647,8 +647,8 @@ Haxolottle: And honestly? A lot of it is managing stress. Yours and ours. Keepin
     Haxolottle: *interested* You want cross-training? Actually, that would make you a better field agent. Understanding both sides improves collaboration.
     Haxolottle: I can set up some handler shadowing. You observe while I run someone else's operation. Educational for both roles.
     ~ professional_reputation += 2
-    ~ npc_haxolottle_friendship_level += 10
-#friendship_gained:10
+    ~ npc_haxolottle_influence += 10
+#influence_gained:10
     #handler_training_offered
     -> mission_hub
 

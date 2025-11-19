@@ -68,31 +68,32 @@ Dr. Chen: Great talking with you!
 
 ### Visual Feedback for Relationship Changes
 
-Every time an NPC's influence/rapport/respect/friendship changes, add a tag for visual feedback to the player.
+Every time an NPC's influence changes, add a tag for visual feedback to the player.
+
+**All NPCs now use unified `influence` scoring** for consistency and simplicity.
 
 ### Tag Format
 
 ```ink
 // Variable change
-~ npc_chen_rapport += 5
+~ npc_chen_influence += 5
 
 // Visual feedback tag (on next line)
-#rapport_gained:5
+#influence_gained:5
 ```
 
 ### Available Tags
 
 **Positive Changes:**
-- `#rapport_gained:X` - Dr. Chen likes this (+X rapport)
-- `#respect_gained:X` - Director Netherton approves (+X respect)
-- `#friendship_gained:X` - Haxolottle appreciates this (+X friendship)
-- `#influence_gained:X` - Generic influence increase
+- `#influence_gained:X` - NPC appreciates this (+X influence)
 
 **Negative Changes:**
-- `#rapport_lost:X` - Dr. Chen is disappointed (-X rapport)
-- `#respect_lost:X` - Director Netherton disapproves (-X respect)
-- `#friendship_lost:X` - Haxolottle is hurt (-X friendship)
-- `#influence_lost:X` - Generic influence decrease
+- `#influence_lost:X` - NPC is disappointed (-X influence)
+
+**Note:** The game automatically customizes the message based on which NPC it is:
+- Dr. Chen: "Dr. Chen appreciates that" / "Dr. Chen is disappointed"
+- Director Netherton: "Director Netherton approves" / "Director Netherton is displeased"
+- Haxolottle: "Haxolottle likes that" / "Haxolottle seems disappointed"
 
 ### Complete Example
 
@@ -101,39 +102,36 @@ Every time an NPC's influence/rapport/respect/friendship changes, add a tag for 
 You: I want to understand the tech better.
 Dr. Chen: That's great! Let me explain...
 
-// Small rapport gain for showing interest
-~ npc_chen_rapport += 3
-#rapport_gained:3
+// Small influence gain for showing interest
+~ npc_chen_influence += 3
+#influence_gained:3
 
 + [Ask follow-up questions]
     You: Can you tell me more?
     Dr. Chen: Of course! *enthusiastically explains*
 
-    // Larger rapport gain for deeper engagement
-    ~ npc_chen_rapport += 8
-    #rapport_gained:8
+    // Larger influence gain for deeper engagement
+    ~ npc_chen_influence += 8
+#influence_gained:8
 
 + [Dismiss the explanation]
     You: Never mind, not important.
     Dr. Chen: Oh... okay. *slightly hurt*
 
-    // Lose rapport for being dismissive
-    ~ npc_chen_rapport -= 5
-    #rapport_lost:5
+    // Lose influence for being dismissive
+    ~ npc_chen_influence -= 5
+    #influence_lost:5
 ```
 
 ### Visual Feedback Messages
 
-The game displays context-appropriate messages based on the tag:
+The game displays context-appropriate messages based on the NPC and amount:
 
-| Tag | Small Change (<10) | Large Change (≥10) |
-|-----|-------------------|-------------------|
-| `#rapport_gained` | "Dr. Chen appreciates that" | "Dr. Chen likes that" |
-| `#rapport_lost` | "Dr. Chen is uncertain" | "Dr. Chen is disappointed" |
-| `#respect_gained` | "Director Netherton approves" | "Director Netherton is impressed" |
-| `#respect_lost` | "Director Netherton notes this" | "Director Netherton is displeased" |
-| `#friendship_gained` | "Haxolottle likes that" | "Haxolottle really appreciates that" |
-| `#friendship_lost` | "Haxolottle seems disappointed" | "Haxolottle is hurt" |
+| NPC | Small Gain (<10) | Large Gain (≥10) | Small Loss (<10) | Large Loss (≥10) |
+|-----|------------------|------------------|------------------|------------------|
+| **Dr. Chen** | "Dr. Chen appreciates that" | "Dr. Chen really likes that" | "Dr. Chen seems uncertain" | "Dr. Chen is disappointed" |
+| **Director Netherton** | "Director Netherton approves" | "Director Netherton is impressed" | "Director Netherton notes this" | "Director Netherton is displeased" |
+| **Haxolottle** | "Haxolottle likes that" | "Haxolottle really appreciates that" | "Haxolottle seems disappointed" | "Haxolottle is hurt" |
 
 ### When to Use Influence Tags
 
@@ -159,22 +157,22 @@ Haxolottle: I lost an agent six months ago. Still think about them.
 + [Express sympathy]
     You: I'm so sorry. That must be really hard.
     Haxolottle: Thanks. It helps to talk about it.
-    ~ npc_haxolottle_friendship_level += 10
-    #friendship_gained:10
+    ~ npc_haxolottle_influence += 10
+    #influence_gained:10
     -> conversation_continues
 
 + [Ask tactical questions only]
     You: What was the mission profile?
     Haxolottle: *pause* ...Let's focus on your current operation.
-    ~ npc_haxolottle_friendship_level -= 3
-    #friendship_lost:3
+    ~ npc_haxolottle_influence -= 3
+    #influence_lost:3
     -> conversation_continues
 
 + [Share your own loss]
     You: I understand. I've lost people too.
     Haxolottle: *eyes soften* Yeah. You get it.
-    ~ npc_haxolottle_friendship_level += 15
-    #friendship_gained:15
+    ~ npc_haxolottle_influence += 15
+    #influence_gained:15
     ~ npc_haxolottle_shared_loss = true
     -> deeper_connection
 ```
@@ -254,10 +252,10 @@ EXTERNAL mission_phase()
 ### Naming Conventions
 
 ```ink
-// Persistent relationship variables
-VAR PERSISTENT npc_chen_rapport = 0              // Dr. Chen's relationship
-VAR PERSISTENT npc_netherton_respect = 0          // Netherton's respect
-VAR PERSISTENT npc_haxolottle_friendship_level = 0 // Haxolottle's friendship
+// Persistent relationship variables - ALL NPCs use "influence"
+VAR PERSISTENT npc_chen_influence = 0              // Dr. Chen's influence
+VAR PERSISTENT npc_netherton_influence = 0         // Netherton's influence
+VAR PERSISTENT npc_haxolottle_influence = 0        // Haxolottle's influence
 
 // Conversation flags (has this topic been discussed?)
 VAR PERSISTENT npc_chen_talked_childhood = false
@@ -328,9 +326,9 @@ Always end personal conversations by returning to mission_hub:
 ```ink
 === conversation_end ===
 {
-    - npc_chen_rapport >= 70:
+    - npc_chen_influence >= 70:
         Dr. Chen: Always a pleasure, {player_name()}!
-    - npc_chen_rapport >= 50:
+    - npc_chen_influence >= 50:
         Dr. Chen: Thanks for the chat.
     - else:
         Dr. Chen: Talk later.
@@ -349,11 +347,11 @@ Vary NPC responses based on relationship level:
 ```ink
 === greeting ===
 {
-    - npc_haxolottle_friendship_level >= 70:
+    - npc_haxolottle_influence >= 70:
         Haxolottle: {player_name()}! *genuine smile* Always good to see you.
-    - npc_haxolottle_friendship_level >= 40:
+    - npc_haxolottle_influence >= 40:
         Haxolottle: Hey {player_name()}. What's up?
-    - npc_haxolottle_friendship_level >= 20:
+    - npc_haxolottle_influence >= 20:
         Haxolottle: Agent {player_name()}. Need something?
     - else:
         Haxolottle: Agent. What do you need?
@@ -365,11 +363,11 @@ Vary NPC responses based on relationship level:
 Lock topics behind relationship thresholds:
 
 ```ink
-+ {npc_netherton_respect >= 60 and not npc_netherton_shared_past}
++ {npc_netherton_influence >= 60 and not npc_netherton_shared_past}
     [Ask about Netherton's field days]
     -> netherton_field_stories
 
-+ {npc_chen_rapport >= 80 and not npc_chen_shared_doubts}
++ {npc_chen_influence >= 80 and not npc_chen_shared_doubts}
     [Notice Dr. Chen seems troubled]
     -> chen_vulnerability_moment
 ```
@@ -385,20 +383,20 @@ Netherton: Do you think the ends justify the means?
 + [Agree completely]
     You: Always. Results matter more than methods.
     Netherton: *approving nod* Practical thinking.
-    ~ npc_netherton_respect += 10
-    #respect_gained:10
+    ~ npc_netherton_influence += 10
+    #influence_gained:10
 
 + [Disagree completely]
     You: No. How we achieve our goals defines who we are.
     Netherton: *slight frown* Idealistic. But noted.
-    ~ npc_netherton_respect -= 5
-    #respect_lost:5
+    ~ npc_netherton_influence -= 5
+    #influence_lost:5
 
 + [It's complicated]
     You: It depends on the situation and the stakes.
     Netherton: *considering* Nuanced. Good.
-    ~ npc_netherton_respect += 5
-    #respect_gained:5
+    ~ npc_netherton_influence += 5
+    #influence_gained:5
 ```
 
 ---
@@ -423,7 +421,7 @@ Netherton: Do you think the ends justify the means?
 ❌ **Wrong:**
 ```ink
 {player_name}           // Missing parentheses
-~ npc_chen_rapport += 5 // No visual feedback tag
+~ npc_chen_rapport += 5 // Old variable name (use influence)
 -> chen_hub             // Non-standard hub name
 #exit_conversation      // Old tag name
 -> END                  // Doesn't preserve state
@@ -432,8 +430,8 @@ Netherton: Do you think the ends justify the means?
 ✅ **Correct:**
 ```ink
 {player_name()}         // External function with parentheses
-~ npc_chen_rapport += 5 // Variable change
-#rapport_gained:5       // Visual feedback tag
+~ npc_chen_influence += 5 // Unified influence variable
+#influence_gained:5     // Visual feedback tag
 -> mission_hub          // Standard hub knot name
 #end_conversation       // Correct tag to close UI
 -> mission_hub          // Preserves state for next interaction
@@ -444,22 +442,25 @@ Netherton: Do you think the ends justify the means?
 ## Examples by NPC Type
 
 ### Dr. Chen (Technical Specialist)
-- **Rapport** variable for relationship
+- **Influence** variable: `npc_chen_influence`
 - **Equipment-focused** mission content
-- **Enthusiasm** in dialogue for high rapport
+- **Enthusiasm** in dialogue for high influence
 - **Collaborative** personal conversations
+- Messages: "Dr. Chen appreciates that" / "Dr. Chen is disappointed"
 
 ### Director Netherton (Authority Figure)
-- **Respect** variable for relationship
+- **Influence** variable: `npc_netherton_influence`
 - **Strategic** mission content
 - **Professional distance** that slowly softens
-- **Rare vulnerability** at high respect levels
+- **Rare vulnerability** at high influence levels
+- Messages: "Director Netherton approves" / "Director Netherton is displeased"
 
 ### Haxolottle (Handler/Support)
-- **Friendship** variable for relationship
+- **Influence** variable: `npc_haxolottle_influence`
 - **Real-time support** during missions
 - **Humor and references** (axolotls, regeneration metaphors)
 - **Trust built through** shared operational stress
+- Messages: "Haxolottle likes that" / "Haxolottle seems disappointed"
 
 ---
 

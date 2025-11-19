@@ -66,7 +66,7 @@ EXTERNAL equipment_status()             // LOCAL - Status of player's equipment 
 + {has_available_personal_topics() and mission_phase() != "active"} [How are you doing, Dr. Chen?]
     Dr. Chen: Oh! *surprised by personal question*
     {
-        - npc_chen_rapport >= 70:
+        - npc_chen_influence >= 70:
             Dr. Chen: You know, I really appreciate when people ask that. Want to chat for a bit?
         - else:
             Dr. Chen: I'm good! Busy, but good. What's up?
@@ -104,11 +104,11 @@ EXTERNAL equipment_status()             // LOCAL - Status of player's equipment 
     Dr. Chen: *eyes light up* Oh! You want to hear about the experimental stuff? Because I have some REALLY cool projects going.
     -> experimental_tech_discussion
 
-+ {mission_phase() == "downtime" and npc_chen_rapport >= 50} [Offer to help test experimental equipment]
++ {mission_phase() == "downtime" and npc_chen_influence >= 50} [Offer to help test experimental equipment]
     Dr. Chen: *excited* You'd volunteer for field testing? That would be incredibly helpful!
     -> volunteer_field_testing
 
-+ {npc_chen_rapport >= 60} [Ask for technical training]
++ {npc_chen_influence >= 60} [Ask for technical training]
     Dr. Chen: You want technical training? I love teaching! What area interests you?
     -> technical_training_discussion
 
@@ -120,9 +120,9 @@ EXTERNAL equipment_status()             // LOCAL - Status of player's equipment 
 
 + [That's all for now, Chen]
     {
-        - npc_chen_rapport >= 80:
+        - npc_chen_influence >= 80:
             Dr. Chen: Sounds good! *warm smile* Always great talking with you. Stay safe out there!
-        - npc_chen_rapport >= 50:
+        - npc_chen_influence >= 50:
             Dr. Chen: Alright! Let me know if you need anything. Seriously, anytime.
         - else:
             Dr. Chen: Okay. Good luck with the mission!
@@ -143,7 +143,7 @@ EXTERNAL equipment_status()             // LOCAL - Status of player's equipment 
             - not npc_chen_discussed_tech_philosophy: ~ return true
             - not npc_chen_discussed_entropy_tech: ~ return true
             - not npc_chen_discussed_chen_background: ~ return true
-            - not npc_chen_discussed_favorite_projects and npc_chen_rapport >= 55: ~ return true
+            - not npc_chen_discussed_favorite_projects and npc_chen_influence >= 55: ~ return true
             - else: ~ return false
         }
 
@@ -151,29 +151,29 @@ EXTERNAL equipment_status()             // LOCAL - Status of player's equipment 
     - total_missions_completed <= 10:
         {
             - not npc_chen_discussed_experimental_tech: ~ return true
-            - not npc_chen_discussed_research_frustrations and npc_chen_rapport >= 65: ~ return true
+            - not npc_chen_discussed_research_frustrations and npc_chen_influence >= 65: ~ return true
             - not npc_chen_discussed_field_vs_lab: ~ return true
-            - not npc_chen_discussed_ethical_tech and npc_chen_rapport >= 70: ~ return true
+            - not npc_chen_discussed_ethical_tech and npc_chen_influence >= 70: ~ return true
             - else: ~ return false
         }
 
     // Phase 3 topics (missions 11-15)
     - total_missions_completed <= 15:
         {
-            - not npc_chen_discussed_dream_projects and npc_chen_rapport >= 80: ~ return true
-            - not npc_chen_discussed_tech_risks and npc_chen_rapport >= 75: ~ return true
+            - not npc_chen_discussed_dream_projects and npc_chen_influence >= 80: ~ return true
+            - not npc_chen_discussed_tech_risks and npc_chen_influence >= 75: ~ return true
             - not npc_chen_discussed_work_life_balance: ~ return true
-            - not npc_chen_discussed_mentorship and npc_chen_rapport >= 80: ~ return true
+            - not npc_chen_discussed_mentorship and npc_chen_influence >= 80: ~ return true
             - else: ~ return false
         }
 
     // Phase 4 topics (missions 16+)
     - total_missions_completed > 15:
         {
-            - not npc_chen_discussed_future_vision and npc_chen_rapport >= 90: ~ return true
-            - not npc_chen_discussed_friendship_value and npc_chen_rapport >= 85: ~ return true
-            - not npc_chen_discussed_collaborative_legacy and npc_chen_rapport >= 90: ~ return true
-            - not npc_chen_discussed_beyond_safetynet and npc_chen_rapport >= 88: ~ return true
+            - not npc_chen_discussed_future_vision and npc_chen_influence >= 90: ~ return true
+            - not npc_chen_discussed_friendship_value and npc_chen_influence >= 85: ~ return true
+            - not npc_chen_discussed_collaborative_legacy and npc_chen_influence >= 90: ~ return true
+            - not npc_chen_discussed_beyond_safetynet and npc_chen_influence >= 88: ~ return true
             - else: ~ return false
         }
 
@@ -212,23 +212,23 @@ Dr. Chen: This is fixable, but it'll take some time. What happened out there?
     You explain how the equipment was damaged during the operation.
     Dr. Chen: *nods* Okay, that's actually really useful feedback. I can improve the durability in the next version.
     Dr. Chen: Give me about two hours. I'll have this repaired and reinforced.
-    ~ npc_chen_rapport += 5
-#rapport_gained:5
+    ~ npc_chen_influence += 5
+#influence_gained:5
     #equipment_repair_started
     -> mission_hub
 
 + [Say it was your fault]
     Dr. Chen: Hey, no—don't beat yourself up. Field conditions are unpredictable. That's why we build redundancy.
     Dr. Chen: Let me fix this and add some additional protection. You're not the first agent to damage gear in the field.
-    ~ npc_chen_rapport += 8
-#rapport_gained:8
+    ~ npc_chen_influence += 8
+#influence_gained:8
     -> mission_hub
 
 + [Blame the equipment design]
     Dr. Chen: *slight frown* Okay... I mean, there's always room for improvement. But the equipment is rated for standard field conditions.
     Dr. Chen: I'll repair it. And I'll review the design specs. But be more careful with the gear, alright?
-    ~ npc_chen_rapport -= 3
-#rapport_lost:3
+    ~ npc_chen_influence -= 3
+#influence_lost:3
     -> mission_hub
 
 === equipment_upgrade_menu ===
@@ -285,8 +285,8 @@ Dr. Chen: *focused* Okay, I'm pulling up your equipment telemetry. What's the te
 + [Encryption is taking too long]
     Dr. Chen: Yeah, they upgraded their security. Um... *rapid thinking* ...okay, try the quantum bypass. It's experimental but it should work.
     Dr. Chen: Quantum menu, enable fast-mode. Warning: it generates a lot of heat. Don't run it for more than five minutes.
-    ~ npc_chen_rapport += 5
-#rapport_gained:5
+    ~ npc_chen_influence += 5
+#influence_gained:5
     -> field_support_followup
 
 + [Equipment is malfunctioning]
@@ -300,15 +300,15 @@ Dr. Chen: Did that help? Are you good to continue?
 
 + [Yes, that fixed it. Thanks!]
     Dr. Chen: *relieved* Oh good! Okay, I'll keep monitoring. Call if anything else goes wrong.
-    ~ npc_chen_rapport += 8
-#rapport_gained:8
+    ~ npc_chen_influence += 8
+#influence_gained:8
     -> mission_hub
 
 + [Still having issues]
     Dr. Chen: *more concerned* Okay, this might be a hardware problem. Can you safely abort and extract?
     Dr. Chen: I don't want you stuck in there with malfunctioning equipment. Your safety is more important than the mission.
-    ~ npc_chen_rapport += 10
-#rapport_gained:10
+    ~ npc_chen_influence += 10
+#influence_gained:10
     -> mission_hub
 
 === mission_ghost_equipment_briefing ===
@@ -329,14 +329,14 @@ Dr. Chen: Third—and this is experimental—quantum-encrypted comms. Even if th
 + [Ask about the risks of experimental tech]
     Dr. Chen: *appreciates the question* Good thinking. The quantum comms are 95% reliable in testing. If they fail, you default to standard encrypted comms.
     Dr. Chen: I've built in fallbacks. Worst case, you lose some capability but not all capability.
-    ~ npc_chen_rapport += 5
-#rapport_gained:5
+    ~ npc_chen_influence += 5
+#influence_gained:5
     -> ghost_equipment_details
 
 + [Express confidence in the tech]
     Dr. Chen: *grins* I'm glad you trust my work! I've tested this extensively. You'll be well-equipped.
-    ~ npc_chen_rapport += 8
-#rapport_gained:8
+    ~ npc_chen_influence += 8
+#influence_gained:8
     -> ghost_equipment_details
 
 === ghost_equipment_details ===
@@ -349,10 +349,10 @@ Dr. Chen: Any other questions about the gear? Or are you ready for me to configu
 + [I'm ready. Configure my loadout.]
     Dr. Chen: Perfect! Give me twenty minutes. I'll have everything calibrated to your biometrics.
     Dr. Chen: *genuine* And hey... be careful out there, okay? I built good equipment, but you're the one taking the risks.
-    {npc_chen_rapport >= 60:
+    {npc_chen_influence >= 60:
         Dr. Chen: Come back safe. The tech works better when the operator survives.
-        ~ npc_chen_rapport += 5
-#rapport_gained:5
+        ~ npc_chen_influence += 5
+#influence_gained:5
     }
     #equipment_configured
     -> mission_hub
@@ -363,8 +363,8 @@ Dr. Chen: *eager for feedback* Okay, tell me everything! How did the equipment p
 + [Everything worked perfectly]
     Dr. Chen: *extremely pleased* Yes! That's what I want to hear! The camouflage held up? No detection issues?
     Dr. Chen: This is great data. I can certify this tech for wider deployment now.
-    ~ npc_chen_rapport += 10
-#rapport_gained:10
+    ~ npc_chen_influence += 10
+#influence_gained:10
     ~ npc_chen_tech_collaboration += 1
     -> mission_hub
 
@@ -373,8 +373,8 @@ Dr. Chen: *eager for feedback* Okay, tell me everything! How did the equipment p
     You provide detailed feedback.
     Dr. Chen: Perfect. This is exactly the field data I need. I can iterate on the design and fix that problem.
     Dr. Chen: Thank you for the thorough report. Seriously. This makes my job so much easier.
-    ~ npc_chen_rapport += 15
-#rapport_gained:15
+    ~ npc_chen_influence += 15
+#influence_gained:15
     ~ npc_chen_tech_collaboration += 2
     -> mission_hub
 
@@ -383,8 +383,8 @@ Dr. Chen: *eager for feedback* Okay, tell me everything! How did the equipment p
     You explain how the equipment got you out of a dangerous situation.
     Dr. Chen: *voice cracks slightly* That's... that's why I do this. Building tech that keeps agents safe.
     Dr. Chen: I'm really glad you're okay. And thank you for the feedback. I'll keep improving it.
-    ~ npc_chen_rapport += 20
-#rapport_gained:20
+    ~ npc_chen_influence += 20
+#influence_gained:20
     ~ npc_chen_tech_collaboration += 2
     -> mission_hub
 
@@ -410,8 +410,8 @@ Dr. Chen: If ENTROPY tries to breach this, they'll need nation-state level capab
 + [Express concern about ENTROPY's capabilities]
     Dr. Chen: *sighs* Yeah, me too. They're getting better. Faster. More sophisticated.
     Dr. Chen: That's why I work late. Every improvement I make might be the difference between holding the line and catastrophic breach.
-    ~ npc_chen_rapport += 5
-#rapport_gained:5
+    ~ npc_chen_influence += 5
+#influence_gained:5
     -> mission_hub
 
 === experimental_tech_discussion ===
@@ -436,8 +436,8 @@ Which interests you?
 
 + [All of it sounds amazing]
     Dr. Chen: *huge grin* Right?! This is why I love this job. Every project is pushing boundaries!
-    ~ npc_chen_rapport += 10
-#rapport_gained:10
+    ~ npc_chen_influence += 10
+#influence_gained:10
     -> mission_hub
 
 === experimental_mirage_details ===
@@ -484,8 +484,8 @@ Dr. Chen: I promise to build in safety margins. Fallback systems. Kill switches.
     Dr. Chen: *emotional* That trust means everything. Seriously.
     Dr. Chen: I'll prepare test equipment for your next mission. Thorough briefing beforehand. Real-time monitoring during deployment.
     Dr. Chen: We're partners in this. Thank you.
-    ~ npc_chen_rapport += 20
-#rapport_gained:20
+    ~ npc_chen_influence += 20
+#influence_gained:20
     ~ npc_chen_tech_collaboration += 3
     -> mission_hub
 
@@ -519,8 +519,8 @@ Dr. Chen: What interests you? Network security? Hardware hacking? Cryptography? 
 + [Cryptography]
     Dr. Chen: *very excited* My specialty! I can teach you encryption theory, code-breaking techniques, quantum cryptography basics...
     ~ professional_reputation += 2
-    ~ npc_chen_rapport += 5
-#rapport_gained:5
+    ~ npc_chen_influence += 5
+#influence_gained:5
     #training_scheduled_crypto
     -> mission_hub
 

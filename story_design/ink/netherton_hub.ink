@@ -66,7 +66,7 @@ EXTERNAL mission_phase()                // LOCAL - Phase of current mission ("pr
 + {has_available_personal_topics() and mission_phase() != "active"} [How are you, Director?]
     Netherton: *slight pause, as if surprised by personal question*
     {
-        - npc_netherton_respect >= 70:
+        - npc_netherton_influence >= 70:
             Netherton: That's... considerate of you to ask, Agent. I have a moment for personal discussion.
         - else:
             Netherton: An unusual question. But acceptable. What do you wish to discuss?
@@ -90,7 +90,7 @@ EXTERNAL mission_phase()                // LOCAL - Phase of current mission ("pr
     Netherton: The Data Sanctuary. A delicate situation. What questions do you have?
     -> mission_sanctuary_discussion
 
-+ {mission_phase() == "downtime" and npc_netherton_respect >= 60} [Ask for operational advice]
++ {mission_phase() == "downtime" and npc_netherton_influence >= 60} [Ask for operational advice]
     Netherton: You want my counsel? *slight approval* Very well.
     -> operational_advice_discussion
 
@@ -111,9 +111,9 @@ EXTERNAL mission_phase()                // LOCAL - Phase of current mission ("pr
 
 + [That will be all, Director]
     {
-        - npc_netherton_respect >= 80:
+        - npc_netherton_influence >= 80:
             Netherton: Very well, Agent {player_name()}. *almost warm* Continue your excellent work.
-        - npc_netherton_respect >= 60:
+        - npc_netherton_influence >= 60:
             Netherton: Dismissed. Maintain your current performance level.
         - else:
             Netherton: Dismissed.
@@ -134,7 +134,7 @@ EXTERNAL mission_phase()                // LOCAL - Phase of current mission ("pr
             - not npc_netherton_discussed_handbook: ~ return true
             - not npc_netherton_discussed_leadership: ~ return true
             - not npc_netherton_discussed_safetynet_history: ~ return true
-            - not npc_netherton_discussed_expectations and npc_netherton_respect >= 55: ~ return true
+            - not npc_netherton_discussed_expectations and npc_netherton_influence >= 55: ~ return true
             - else: ~ return false
         }
 
@@ -143,28 +143,28 @@ EXTERNAL mission_phase()                // LOCAL - Phase of current mission ("pr
         {
             - not npc_netherton_discussed_difficult_decisions: ~ return true
             - not npc_netherton_discussed_agent_development: ~ return true
-            - not npc_netherton_discussed_bureau_politics and npc_netherton_respect >= 65: ~ return true
-            - not npc_netherton_discussed_field_vs_command and npc_netherton_respect >= 60: ~ return true
+            - not npc_netherton_discussed_bureau_politics and npc_netherton_influence >= 65: ~ return true
+            - not npc_netherton_discussed_field_vs_command and npc_netherton_influence >= 60: ~ return true
             - else: ~ return false
         }
 
     // Phase 3 topics (missions 11-15)
     - total_missions_completed <= 15:
         {
-            - not npc_netherton_discussed_weight_of_command and npc_netherton_respect >= 75: ~ return true
-            - not npc_netherton_discussed_agent_losses and npc_netherton_respect >= 70: ~ return true
-            - not npc_netherton_discussed_ethical_boundaries and npc_netherton_respect >= 70: ~ return true
-            - not npc_netherton_discussed_personal_cost and npc_netherton_respect >= 75: ~ return true
+            - not npc_netherton_discussed_weight_of_command and npc_netherton_influence >= 75: ~ return true
+            - not npc_netherton_discussed_agent_losses and npc_netherton_influence >= 70: ~ return true
+            - not npc_netherton_discussed_ethical_boundaries and npc_netherton_influence >= 70: ~ return true
+            - not npc_netherton_discussed_personal_cost and npc_netherton_influence >= 75: ~ return true
             - else: ~ return false
         }
 
     // Phase 4 topics (missions 16+)
     - total_missions_completed > 15:
         {
-            - not npc_netherton_discussed_legacy and npc_netherton_respect >= 85: ~ return true
-            - not npc_netherton_discussed_trust and npc_netherton_respect >= 80: ~ return true
-            - not npc_netherton_discussed_rare_praise and npc_netherton_respect >= 85: ~ return true
-            - not npc_netherton_discussed_beyond_protocol and npc_netherton_respect >= 90: ~ return true
+            - not npc_netherton_discussed_legacy and npc_netherton_influence >= 85: ~ return true
+            - not npc_netherton_discussed_trust and npc_netherton_influence >= 80: ~ return true
+            - not npc_netherton_discussed_rare_praise and npc_netherton_influence >= 85: ~ return true
+            - not npc_netherton_discussed_beyond_protocol and npc_netherton_influence >= 90: ~ return true
             - else: ~ return false
         }
 
@@ -232,8 +232,8 @@ Netherton: *monitoring your position* I'm tracking your progress. What do you ne
     Netherton: Explain the deviation and justification.
     // This would branch based on player's explanation
     Netherton: ... Acceptable. Use your judgment. I trust your field assessment.
-    ~ npc_netherton_respect += 5
-#respect_gained:5
+    ~ npc_netherton_influence += 5
+#influence_gained:5
     -> mission_hub
 
 + [Request emergency extraction]
@@ -250,14 +250,14 @@ Netherton: *monitoring your position* I'm tracking your progress. What do you ne
 === mission_ghost_debrief ===
 Netherton: Your mission report indicates success. The backdoor has been neutralized. ENTROPY remains unaware of our intervention.
 
-{npc_netherton_respect >= 70:
+{npc_netherton_influence >= 70:
     Netherton: Excellent work, Agent. Your execution was textbook. This is exactly the kind of operational performance SAFETYNET requires.
-    ~ npc_netherton_respect += 10
-#respect_gained:10
+    ~ npc_netherton_influence += 10
+#influence_gained:10
 - else:
     Netherton: Adequate performance. Mission objectives achieved. Some aspects could be refined.
-    ~ npc_netherton_respect += 5
-#respect_gained:5
+    ~ npc_netherton_influence += 5
+#influence_gained:5
 }
 
 Netherton: Dr. Chen is analyzing the technical data you extracted. It may provide intelligence on other ENTROPY operations.
@@ -294,24 +294,24 @@ Netherton: You want operational advice. *considers* On what specific matter?
     Netherton: Ambiguity is constant in our work. The handbook provides framework, but you must exercise judgment.
     Netherton: When faced with ambiguous situation: Assess risk. Identify options. Select least-worst approach. Execute decisively.
     Netherton: Hesitation kills. Make the call and commit.
-    ~ npc_netherton_respect += 5
-#respect_gained:5
+    ~ npc_netherton_influence += 5
+#influence_gained:5
     -> mission_hub
 
 + [How to improve mission planning]
     Netherton: Read after-action reports from successful operations. Study what worked. Identify patterns.
     Netherton: Anticipate failure modes. For each plan, ask: What could go wrong? How would I adapt?
     Netherton: The axolotl principle—Haxolottle's term. Plan for regeneration when the original approach fails.
-    ~ npc_netherton_respect += 5
-#respect_gained:5
+    ~ npc_netherton_influence += 5
+#influence_gained:5
     -> mission_hub
 
 + [How to advance in SAFETYNET]
     Netherton: Consistent excellence. That's the path.
     Netherton: Demonstrate competence. Show sound judgment. Develop specialized capabilities. Volunteer for challenging assignments.
     Netherton: Most importantly: Maintain integrity. Technical skills can be trained. Character cannot.
-    ~ npc_netherton_respect += 8
-#respect_gained:8
+    ~ npc_netherton_influence += 8
+#influence_gained:8
     ~ professional_reputation += 1
     -> mission_hub
 
@@ -329,7 +329,7 @@ Netherton: We're making progress. But ENTROPY adapts. The fight continues.
     -> mission_hub
 
 + [Ask how the division is performing]
-    Netherton: We meet operational objectives consistently. Success rate is {85 + (npc_netherton_respect / 10)} percent over the past quarter.
+    Netherton: We meet operational objectives consistently. Success rate is {85 + (npc_netherton_influence / 10)} percent over the past quarter.
     Netherton: Acceptable, but there's room for improvement. Every failed operation represents unmitigated risk.
     -> mission_hub
 
@@ -350,8 +350,8 @@ Netherton: Training opportunities. What areas interest you?
     Netherton: *slight approval* Thinking about command responsibilities. Good.
     Netherton: There's a leadership program for senior agents. Application process is competitive. I can recommend you if your performance continues.
     ~ professional_reputation += 3
-    ~ npc_netherton_respect += 10
-#respect_gained:10
+    ~ npc_netherton_influence += 10
+#influence_gained:10
     -> mission_hub
 
 + [Technical specialization]

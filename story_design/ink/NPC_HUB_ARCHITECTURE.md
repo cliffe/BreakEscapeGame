@@ -464,30 +464,28 @@ For detailed implementation examples, see **INK_BEST_PRACTICES.md**.
 
 ### Visual Feedback for Relationship Changes
 
-Every relationship variable change now includes a corresponding tag for visual player feedback:
+Every relationship variable change now includes a corresponding tag for visual player feedback.
+
+**All NPCs use unified `influence` scoring** for consistency:
 
 ```ink
-~ npc_chen_rapport += 5
-#rapport_gained:5
+~ npc_chen_influence += 5
+#influence_gained:5
 
-~ npc_netherton_respect -= 3
-#respect_lost:3
+~ npc_netherton_influence -= 3
+#influence_lost:3
 
-~ npc_haxolottle_friendship_level += 10
-#friendship_gained:10
+~ npc_haxolottle_influence += 10
+#influence_gained:10
 ```
 
 ### Tag Types
 
 **Positive Changes:**
-- `#rapport_gained:X` - Dr. Chen (technical specialist)
-- `#respect_gained:X` - Director Netherton (authority figure)
-- `#friendship_gained:X` - Haxolottle (handler/support)
+- `#influence_gained:X` - NPC appreciates this (+X influence)
 
 **Negative Changes:**
-- `#rapport_lost:X`
-- `#respect_lost:X`
-- `#friendship_lost:X`
+- `#influence_lost:X` - NPC is disappointed (-X influence)
 
 ### Game Handler Integration
 

@@ -13,7 +13,7 @@
 // Your game engine must persist these across ALL missions
 // ===========================================
 
-VAR npc_haxolottle_friendship_level = 0         // PERSISTENT - Overall relationship depth (0-100)
+VAR npc_haxolottle_influence = 0         // PERSISTENT - Overall relationship depth (0-100)
 VAR npc_haxolottle_conversations_had = 0        // PERSISTENT - Total personal conversations
 VAR npc_haxolottle_trust_moments = 0            // PERSISTENT - Times player shared something personal
 VAR npc_haxolottle_humor_shared = 0             // PERSISTENT - Funny moments experienced together
@@ -105,7 +105,7 @@ EXTERNAL current_mission_id()           // LOCAL - Current mission identifier
     -> music_discussion
 + {not npc_haxolottle_talked_coffee_preferences and npc_haxolottle_talked_hobbies_general} [Talk about coffee/tea preferences]
     -> coffee_chat
-+ {not npc_haxolottle_talked_stress_management and npc_haxolottle_friendship_level >= 15} [Ask how they handle stress]
++ {not npc_haxolottle_talked_stress_management and npc_haxolottle_influence >= 15} [Ask how they handle stress]
     -> stress_management
 + [That's all for now]
     -> conversation_end
@@ -116,8 +116,8 @@ EXTERNAL current_mission_id()           // LOCAL - Current mission identifier
 
 === hobbies_general ===
 ~ npc_haxolottle_talked_hobbies_general = true
-~ npc_haxolottle_friendship_level += 5
-#friendship_gained:5
+~ npc_haxolottle_influence += 5
+#influence_gained:5
 ~ npc_haxolottle_conversations_had += 1
 
 Haxolottle: What do I do for fun? Good question. Let's see...
@@ -131,27 +131,27 @@ Haxolottle: I also swim. Not competitively or anything, just... swimming. There'
 Haxolottle: And I tinker with old electronics. Pull apart vintage computers, repair them, sometimes just see how they work. It's methodical. Soothing. Unlike field operations where everything is chaos and improvisation.
 
 * [Share that you also read]
-    ~ npc_haxolottle_friendship_level += 5
-#friendship_gained:5
+    ~ npc_haxolottle_influence += 5
+#influence_gained:5
     ~ npc_haxolottle_player_shared_personal += 1
     You: I'm a reader too. What kind of sci-fi?
     -> hobbies_scifi_followup
 
 * [Mention you've never been good at swimming]
-    ~ npc_haxolottle_friendship_level += 3
-#friendship_gained:3
+    ~ npc_haxolottle_influence += 3
+#influence_gained:3
     You: I've never been much of a swimmer. More of a land-based person.
     -> hobbies_swimming_followup
 
 * [Ask about the electronics tinkering]
-    ~ npc_haxolottle_friendship_level += 3
-#friendship_gained:3
+    ~ npc_haxolottle_influence += 3
+#influence_gained:3
     You: Electronics tinkering? That's an interesting hobby for someone in our line of work.
     -> hobbies_electronics_followup
 
 === hobbies_scifi_followup ===
-~ npc_haxolottle_friendship_level += 5
-#friendship_gained:5
+~ npc_haxolottle_influence += 5
+#influence_gained:5
 
 Haxolottle: Oh, you read sci-fi? Nice! I'm partial to the stuff that explores emergence and complexity—you know, how simple rules create complex systems.
 
@@ -164,22 +164,22 @@ Haxolottle: What about you? What kind of stories do you gravitate toward?
 * [Mention you like cyberpunk]
     You: Cyberpunk, mostly. The whole corporate dystopia thing feels... relevant.
     Haxolottle: *laughs* Yeah, we're kind of living it. Except the corporations aren't our enemy—ENTROPY is. Different dystopia, same aesthetic.
-    ~ npc_haxolottle_friendship_level += 5
-#friendship_gained:5
+    ~ npc_haxolottle_influence += 5
+#influence_gained:5
     -> phase_1_hub
 
 * [Say you prefer non-fiction]
     You: Actually, I'm more of a non-fiction person. Technical books, security research.
     Haxolottle: Ah, the pragmatist. Fair enough. Though I'd argue our job is weird enough to count as science fiction.
-    ~ npc_haxolottle_friendship_level += 3
-#friendship_gained:3
+    ~ npc_haxolottle_influence += 3
+#influence_gained:3
     -> phase_1_hub
 
 * [Keep it vague to protect identity]
     You: Different things, depending on mood.
     Haxolottle: Keeping it mysterious. I respect that. Protocol 47-Alpha and all.
-    ~ npc_haxolottle_friendship_level += 2
-#friendship_gained:2
+    ~ npc_haxolottle_influence += 2
+#influence_gained:2
     -> phase_1_hub
 
 === hobbies_swimming_followup ===
@@ -192,8 +192,8 @@ Haxolottle: I didn't learn until I was an adult, actually. Taught myself after j
 
 Haxolottle: Plus, it's one of the few activities where I can guarantee I'm not carrying surveillance devices. Hard to bug a swimsuit.
 
-~ npc_haxolottle_friendship_level += 3
-#friendship_gained:3
+~ npc_haxolottle_influence += 3
+#influence_gained:3
 -> phase_1_hub
 
 === hobbies_electronics_followup ===
@@ -208,8 +208,8 @@ Haxolottle: At home? I'm fixing things. Bringing dead hardware back to life. It'
 
 Haxolottle: Plus, there's satisfaction in making a thirty-year-old computer boot up again. Persistence over entropy. Both kinds of entropy.
 
-~ npc_haxolottle_friendship_level += 5
-#friendship_gained:5
+~ npc_haxolottle_influence += 5
+#influence_gained:5
 -> phase_1_hub
 
 // ----------------
@@ -218,8 +218,8 @@ Haxolottle: Plus, there's satisfaction in making a thirty-year-old computer boot
 
 === axolotl_deep_dive ===
 ~ npc_haxolottle_talked_axolotl_obsession = true
-~ npc_haxolottle_friendship_level += 8
-#friendship_gained:8
+~ npc_haxolottle_influence += 8
+#influence_gained:8
 ~ npc_haxolottle_conversations_had += 1
 
 Haxolottle: Ah, you want the full story behind the axolotl obsession?
@@ -235,21 +235,21 @@ Haxolottle: Found this section on axolotls—*Ambystoma mexicanum*. These amazin
     -> axolotl_operation_connection
 
 * [Ask about the biology]
-    ~ npc_haxolottle_friendship_level += 3
-#friendship_gained:3
+    ~ npc_haxolottle_influence += 3
+#influence_gained:3
     You: That's incredible. How do they do that?
     -> axolotl_biology_detail
 
 * [Make a joke]
-    ~ npc_haxolottle_friendship_level += 5
-#friendship_gained:5
+    ~ npc_haxolottle_influence += 5
+#influence_gained:5
     ~ npc_haxolottle_humor_shared += 1
     You: So you're saying you identified with a salamander?
     -> axolotl_joke_response
 
 === axolotl_operation_connection ===
-~ npc_haxolottle_friendship_level += 5
-#friendship_gained:5
+~ npc_haxolottle_influence += 5
+#influence_gained:5
 
 Haxolottle: It gave me a framework. See, I'd lost my original cover story—that identity was "severed" when the real person appeared. Dead. Gone.
 
@@ -261,13 +261,13 @@ Haxolottle: In that moment, I stopped being the person I was impersonating and b
 
 Haxolottle: The metaphor stuck. Now every operation that goes sideways, I think: What would an axolotl do? And the answer is always: regenerate, adapt, survive.
 
-~ npc_haxolottle_friendship_level += 8
-#friendship_gained:8
+~ npc_haxolottle_influence += 8
+#influence_gained:8
 -> phase_1_hub
 
 === axolotl_biology_detail ===
-~ npc_haxolottle_friendship_level += 5
-#friendship_gained:5
+~ npc_haxolottle_influence += 5
+#influence_gained:5
 
 Haxolottle: *lights up with enthusiasm*
 
@@ -283,13 +283,13 @@ Haxolottle: It's like... they have options. Paths. They're not locked into one f
 
 Haxolottle: Sorry, I can talk about this for hours. The point is: regeneration, adaptation, flexibility. That's what got me through that operation and a lot of others.
 
-~ npc_haxolottle_friendship_level += 8
-#friendship_gained:8
+~ npc_haxolottle_influence += 8
+#influence_gained:8
 -> phase_1_hub
 
 === axolotl_joke_response ===
-~ npc_haxolottle_friendship_level += 8
-#friendship_gained:8
+~ npc_haxolottle_influence += 8
+#influence_gained:8
 ~ npc_haxolottle_humor_shared += 1
 
 Haxolottle: *laughs*
@@ -306,8 +306,8 @@ Haxolottle: Plus, they smile. Permanently. Look up pictures—axolotls have thes
 
 Haxolottle: You're laughing, but I'm serious. The metaphor has kept me sane for years. Sometimes you need something absurd to hold onto in this work.
 
-~ npc_haxolottle_friendship_level += 10
-#friendship_gained:10
+~ npc_haxolottle_influence += 10
+#influence_gained:10
 ~ npc_haxolottle_trust_moments += 1
 -> phase_1_hub
 
@@ -317,8 +317,8 @@ Haxolottle: You're laughing, but I'm serious. The metaphor has kept me sane for 
 
 === music_discussion ===
 ~ npc_haxolottle_talked_music_taste = true
-~ npc_haxolottle_friendship_level += 5
-#friendship_gained:5
+~ npc_haxolottle_influence += 5
+#influence_gained:5
 ~ npc_haxolottle_conversations_had += 1
 
 Haxolottle: Music? Oh, I have eclectic taste. Probably too eclectic.
@@ -330,28 +330,28 @@ Haxolottle: For workouts or when I need energy, I go full electronic. Techno, dr
 Haxolottle: And then sometimes... *looks slightly embarrassed* ...sometimes I listen to nature sounds. Ocean waves. Rain. Thunderstorms.
 
 * [Say you also like ambient music]
-    ~ npc_haxolottle_friendship_level += 5
-#friendship_gained:5
+    ~ npc_haxolottle_influence += 5
+#influence_gained:5
     ~ npc_haxolottle_player_shared_personal += 1
     You: Ambient music is great for concentration. What's your favorite?
     -> music_ambient_detail
 
 * [Admit you prefer silence while working]
-    ~ npc_haxolottle_friendship_level += 3
-#friendship_gained:3
+    ~ npc_haxolottle_influence += 3
+#influence_gained:3
     You: I actually prefer silence when I'm concentrating.
     -> music_silence_response
 
 * [Tease them about nature sounds]
-    ~ npc_haxolottle_friendship_level += 5
-#friendship_gained:5
+    ~ npc_haxolottle_influence += 5
+#influence_gained:5
     ~ npc_haxolottle_humor_shared += 1
     You: Nature sounds? That's adorably wholesome for a spy.
     -> music_nature_tease
 
 === music_ambient_detail ===
-~ npc_haxolottle_friendship_level += 5
-#friendship_gained:5
+~ npc_haxolottle_influence += 5
+#influence_gained:5
 
 Haxolottle: Oh, good taste! For concentration, I keep coming back to Eno's *Music for Airports*. It's designed to be ignorable but interesting—perfect for background.
 
@@ -364,15 +364,15 @@ Haxolottle: What about you? Any favorites?
 * [Mention specific artists (safe to share)]
     You: I'm into [vague genre description]. Keeps me focused.
     Haxolottle: Nice. I might check that out during my next long monitoring session.
-    ~ npc_haxolottle_friendship_level += 3
-#friendship_gained:3
+    ~ npc_haxolottle_influence += 3
+#influence_gained:3
     -> phase_1_hub
 
 * [Keep it vague]
     You: Different things depending on the task.
     Haxolottle: Adaptive playlist for adaptive operations. I like it.
-    ~ npc_haxolottle_friendship_level += 2
-#friendship_gained:2
+    ~ npc_haxolottle_influence += 2
+#influence_gained:2
     -> phase_1_hub
 
 === music_silence_response ===
@@ -383,13 +383,13 @@ Haxolottle: I can't do it, personally. Total silence makes me too aware of my ow
 
 Haxolottle: But everyone's different. That's why we have noise-cancelling headphones in the equipment list—Section 8, Article 4.
 
-~ npc_haxolottle_friendship_level += 3
-#friendship_gained:3
+~ npc_haxolottle_influence += 3
+#influence_gained:3
 -> phase_1_hub
 
 === music_nature_tease ===
-~ npc_haxolottle_friendship_level += 8
-#friendship_gained:8
+~ npc_haxolottle_influence += 8
+#influence_gained:8
 ~ npc_haxolottle_humor_shared += 1
 
 Haxolottle: *laughs* Okay, yes, I know how it sounds. "Elite SAFETYNET handler unwinds with gentle rain sounds."
@@ -404,8 +404,8 @@ Haxolottle: Plus, there's something soothing about storms specifically. All that
 
 Haxolottle: You can judge me, but I won't stop. I have a whole collection. "Thunderstorm in Forest," "Ocean Waves at Night," "Heavy Rain on Tent." It's a whole genre.
 
-~ npc_haxolottle_friendship_level += 8
-#friendship_gained:8
+~ npc_haxolottle_influence += 8
+#influence_gained:8
 -> phase_1_hub
 
 // ----------------
@@ -414,8 +414,8 @@ Haxolottle: You can judge me, but I won't stop. I have a whole collection. "Thun
 
 === coffee_chat ===
 ~ npc_haxolottle_talked_coffee_preferences = true
-~ npc_haxolottle_friendship_level += 4
-#friendship_gained:4
+~ npc_haxolottle_influence += 4
+#influence_gained:4
 ~ npc_haxolottle_conversations_had += 1
 
 Haxolottle: Coffee preferences? Oh, we're getting into the important questions now.
@@ -427,27 +427,27 @@ Haxolottle: Specifically, I drink green tea. Jasmine green tea when I can get it
 Haxolottle: Dr. Chen thinks I'm weird for it. They survive on energy drinks and what I'm pretty sure is just pure espresso.
 
 * [Say you're also a tea drinker]
-    ~ npc_haxolottle_friendship_level += 5
-#friendship_gained:5
+    ~ npc_haxolottle_influence += 5
+#influence_gained:5
     ~ npc_haxolottle_player_shared_personal += 1
     You: Tea for me too. Coffee's too harsh.
     -> coffee_tea_solidarity
 
 * [Defend coffee]
-    ~ npc_haxolottle_friendship_level += 3
-#friendship_gained:3
+    ~ npc_haxolottle_influence += 3
+#influence_gained:3
     You: Coffee is essential. I don't trust tea to keep me functional.
     -> coffee_defense
 
 * [Ask about the axolotl mug]
-    ~ npc_haxolottle_friendship_level += 5
-#friendship_gained:5
+    ~ npc_haxolottle_influence += 5
+#influence_gained:5
     You: Is that axolotl mug I keep seeing in video calls yours?
     -> coffee_mug_discussion
 
 === coffee_tea_solidarity ===
-~ npc_haxolottle_friendship_level += 5
-#friendship_gained:5
+~ npc_haxolottle_influence += 5
+#influence_gained:5
 
 Haxolottle: A fellow tea person! Excellent. We're a minority in SAFETYNET.
 
@@ -457,8 +457,8 @@ Haxolottle: If you ever need to decompress after a mission, find that break room
 
 Haxolottle: Consider it insider knowledge. Handler privilege.
 
-~ npc_haxolottle_friendship_level += 8
-#friendship_gained:8
+~ npc_haxolottle_influence += 8
+#influence_gained:8
 -> phase_1_hub
 
 === coffee_defense ===
@@ -469,13 +469,13 @@ Haxolottle: Different metabolisms, different needs. That's the thing about SAFET
 
 Haxolottle: As long as you're alert and functional, I don't care if you're powered by coffee, tea, energy drinks, or pure spite.
 
-~ npc_haxolottle_friendship_level += 3
-#friendship_gained:3
+~ npc_haxolottle_influence += 3
+#influence_gained:3
 -> phase_1_hub
 
 === coffee_mug_discussion ===
-~ npc_haxolottle_friendship_level += 8
-#friendship_gained:8
+~ npc_haxolottle_influence += 8
+#influence_gained:8
 ~ npc_haxolottle_humor_shared += 1
 
 Haxolottle: *laughs* You noticed! Yes, that's mine. Got it custom-made.
@@ -488,8 +488,8 @@ Haxolottle: I have three of them, actually. One for the office, one for home, on
 
 Haxolottle: Director Netherton pretends not to notice it in briefings, but I've caught him almost smiling at it once. Progress.
 
-~ npc_haxolottle_friendship_level += 8
-#friendship_gained:8
+~ npc_haxolottle_influence += 8
+#influence_gained:8
 -> phase_1_hub
 
 // ----------------
@@ -498,8 +498,8 @@ Haxolottle: Director Netherton pretends not to notice it in briefings, but I've 
 
 === stress_management ===
 ~ npc_haxolottle_talked_stress_management = true
-~ npc_haxolottle_friendship_level += 10
-#friendship_gained:10
+~ npc_haxolottle_influence += 10
+#influence_gained:10
 ~ npc_haxolottle_conversations_had += 1
 ~ npc_haxolottle_vulnerable_moments += 1
 
@@ -512,29 +512,29 @@ Haxolottle: But honestly? The hardest part is when agents are in danger and I ca
 Haxolottle: I've had agents get hurt. I've had operations go wrong despite everything we planned. That weight... it doesn't go away.
 
 * [Thank them for being honest]
-    ~ npc_haxolottle_friendship_level += 10
-#friendship_gained:10
+    ~ npc_haxolottle_influence += 10
+#influence_gained:10
     ~ npc_haxolottle_player_shared_personal += 1
     You: Thank you for trusting me with that. It helps to know you feel it too.
     -> stress_honest_response
 
 * [Share your own stress management]
-    ~ npc_haxolottle_friendship_level += 12
-#friendship_gained:12
+    ~ npc_haxolottle_influence += 12
+#influence_gained:12
     ~ npc_haxolottle_player_shared_personal += 2
     ~ npc_haxolottle_trust_moments += 1
     You: I feel that pressure too. From a different angle, but still there.
     -> stress_mutual_understanding
 
 * [Ask how they cope with the weight]
-    ~ npc_haxolottle_friendship_level += 8
-#friendship_gained:8
+    ~ npc_haxolottle_influence += 8
+#influence_gained:8
     You: How do you keep going when it feels like too much?
     -> stress_coping_methods
 
 === stress_honest_response ===
-~ npc_haxolottle_friendship_level += 10
-#friendship_gained:10
+~ npc_haxolottle_influence += 10
+#influence_gained:10
 
 Haxolottle: Of course. We're in this together, Agent. I'm not just a voice on comms—I'm a person who cares about whether you come back safe.
 
@@ -542,14 +542,14 @@ Haxolottle: The handbook talks about professional distance, but Regulation 299 s
 
 Haxolottle: You're not just an asset to me. You're a colleague. Maybe even a friend. And I want you to succeed and be okay.
 
-~ npc_haxolottle_friendship_level += 15
-#friendship_gained:15
+~ npc_haxolottle_influence += 15
+#influence_gained:15
 ~ npc_haxolottle_trust_moments += 1
 -> phase_1_hub
 
 === stress_mutual_understanding ===
-~ npc_haxolottle_friendship_level += 15
-#friendship_gained:15
+~ npc_haxolottle_influence += 15
+#influence_gained:15
 ~ npc_haxolottle_trust_moments += 2
 
 Haxolottle: Yeah. Different angles, same weight. You're worried about getting caught, about the mission failing, about making the wrong call in the moment.
@@ -564,14 +564,14 @@ Haxolottle: That's why the axolotl thing matters, I think. Regeneration isn't ju
 
 Haxolottle: And we do it together. That makes it bearable.
 
-~ npc_haxolottle_friendship_level += 20
-#friendship_gained:20
+~ npc_haxolottle_influence += 20
+#influence_gained:20
 ~ npc_haxolottle_vulnerable_moments += 1
 -> phase_1_hub
 
 === stress_coping_methods ===
-~ npc_haxolottle_friendship_level += 10
-#friendship_gained:10
+~ npc_haxolottle_influence += 10
+#influence_gained:10
 
 Haxolottle: Honestly? I remind myself why we do this. ENTROPY is real. The threats are real. The people we protect—even though they don't know we exist—they're real.
 
@@ -581,8 +581,8 @@ Haxolottle: The weight is heavy because the work matters. If it was easy, if it 
 
 Haxolottle: And... *slight smile* ...I have my ridiculous axolotl metaphors. When things get dark, I think about something absurd and resilient, and it helps.
 
-~ npc_haxolottle_friendship_level += 12
-#friendship_gained:12
+~ npc_haxolottle_influence += 12
+#influence_gained:12
 -> phase_1_hub
 
 // ===========================================
@@ -603,13 +603,13 @@ Haxolottle: And... *slight smile* ...I have my ridiculous axolotl metaphors. Whe
     -> philosophy_evolution
 + {not npc_haxolottle_talked_handler_life} [Ask what handler life is really like]
     -> handler_reality
-+ {not npc_haxolottle_talked_field_nostalgia and npc_haxolottle_friendship_level >= 30} [Ask if they miss field work]
++ {not npc_haxolottle_talked_field_nostalgia and npc_haxolottle_influence >= 30} [Ask if they miss field work]
     -> field_nostalgia
 + {not npc_haxolottle_talked_weird_habits} [Talk about weird habits you've developed]
     -> weird_habits_discussion
-+ {not npc_haxolottle_talked_favorite_operations and npc_haxolottle_friendship_level >= 35} [Ask about their favorite operations]
++ {not npc_haxolottle_talked_favorite_operations and npc_haxolottle_influence >= 35} [Ask about their favorite operations]
     -> favorite_operations
-+ {npc_haxolottle_friendship_level >= 40 and not npc_haxolottle_shared_loss} [Notice they seem different today]
++ {npc_haxolottle_influence >= 40 and not npc_haxolottle_shared_loss} [Notice they seem different today]
     -> hax_difficult_day
 + [That's all for now]
     -> conversation_end
@@ -620,8 +620,8 @@ Haxolottle: And... *slight smile* ...I have my ridiculous axolotl metaphors. Whe
 
 === philosophy_evolution ===
 ~ npc_haxolottle_talked_philosophy_change = true
-~ npc_haxolottle_friendship_level += 10
-#friendship_gained:10
+~ npc_haxolottle_influence += 10
+#influence_gained:10
 ~ npc_haxolottle_conversations_had += 1
 
 Haxolottle: How has my philosophy changed? *laughs softly* That's a heavier question than you might think.
@@ -637,15 +637,15 @@ Haxolottle: I've seen good people do questionable things for good reasons. I've 
 Haxolottle: The philosophy that's stuck is: Do the work as ethically as you can within impossible constraints. Protect people. Try not to become the thing you're fighting.
 
 * [Express agreement]
-    ~ npc_haxolottle_friendship_level += 10
-#friendship_gained:10
+    ~ npc_haxolottle_influence += 10
+#influence_gained:10
     ~ npc_haxolottle_player_shared_personal += 1
     You: I've been thinking about that too. The gray areas are... uncomfortable.
     -> philosophy_gray_areas
 
 * [Ask what call haunts them most]
-    ~ npc_haxolottle_friendship_level += 15
-#friendship_gained:15
+    ~ npc_haxolottle_influence += 15
+#influence_gained:15
     ~ npc_haxolottle_vulnerable_moments += 1
     You: Is there one decision that still bothers you?
     -> philosophy_haunting_decision
@@ -655,8 +655,8 @@ Haxolottle: The philosophy that's stuck is: Do the work as ethically as you can 
     -> philosophy_immediate_good
 
 === philosophy_gray_areas ===
-~ npc_haxolottle_friendship_level += 15
-#friendship_gained:15
+~ npc_haxolottle_influence += 15
+#influence_gained:15
 ~ npc_haxolottle_trust_moments += 1
 
 Haxolottle: Yeah. Uncomfortable is the word. We're essentially breaking laws under authorization that's classified, targeting people who might be criminals or might be victims.
@@ -667,13 +667,13 @@ Haxolottle: But you know what? The fact that you're thinking about it, questioni
 
 Haxolottle: The day we stop feeling uncomfortable with the gray areas is the day we've gone too far.
 
-~ npc_haxolottle_friendship_level += 15
-#friendship_gained:15
+~ npc_haxolottle_influence += 15
+#influence_gained:15
 -> phase_2_hub
 
 === philosophy_haunting_decision ===
-~ npc_haxolottle_friendship_level += 20
-#friendship_gained:20
+~ npc_haxolottle_influence += 20
+#influence_gained:20
 ~ npc_haxolottle_vulnerable_moments += 2
 ~ npc_haxolottle_shared_doubt = true
 
@@ -694,23 +694,23 @@ Haxolottle: They recovered. They're still with SAFETYNET. But I dream about maki
 Haxolottle: And I don't know if I would. If I could do it again, with the same information... I might make the same call. That's what haunts me.
 
 * [Offer comfort]
-    ~ npc_haxolottle_friendship_level += 20
-#friendship_gained:20
+    ~ npc_haxolottle_influence += 20
+#influence_gained:20
     ~ npc_haxolottle_trust_moments += 2
     You: You made the best call you could with what you knew. That agent knew the risks.
     -> philosophy_comfort_response
 
 * [Share something personal]
-    ~ npc_haxolottle_friendship_level += 25
-#friendship_gained:25
+    ~ npc_haxolottle_influence += 25
+#influence_gained:25
     ~ npc_haxolottle_player_shared_personal += 3
     ~ npc_haxolottle_trust_moments += 2
     You: I carry similar weight. We all do. It doesn't make it easier, but you're not alone in it.
     -> philosophy_shared_burden
 
 === philosophy_comfort_response ===
-~ npc_haxolottle_friendship_level += 15
-#friendship_gained:15
+~ npc_haxolottle_influence += 15
+#influence_gained:15
 
 Haxolottle: *slight smile* Thank you. I know that, intellectually. Regulation 911—mission objectives sometimes outweigh agent safety when lives are at stake.
 
@@ -718,13 +718,13 @@ Haxolottle: Doesn't make it easier. But it helps to hear it from someone who und
 
 Haxolottle: You're a good person, Agent {player_name()}. I'm glad we're working together.
 
-~ npc_haxolottle_friendship_level += 15
-#friendship_gained:15
+~ npc_haxolottle_influence += 15
+#influence_gained:15
 -> phase_2_hub
 
 === philosophy_shared_burden ===
-~ npc_haxolottle_friendship_level += 25
-#friendship_gained:25
+~ npc_haxolottle_influence += 25
+#influence_gained:25
 ~ npc_haxolottle_trust_moments += 3
 
 Haxolottle: *looks genuinely touched*
@@ -737,13 +737,13 @@ Haxolottle: I wish we could grab coffee like normal colleagues. Talk about this 
 
 Haxolottle: And what we have is this. Honest conversations within the boundaries we're given. That's real friendship, I think. Even with the constraints.
 
-~ npc_haxolottle_friendship_level += 30
-#friendship_gained:30
+~ npc_haxolottle_influence += 30
+#influence_gained:30
 -> phase_2_hub
 
 === philosophy_immediate_good ===
-~ npc_haxolottle_friendship_level += 8
-#friendship_gained:8
+~ npc_haxolottle_influence += 8
+#influence_gained:8
 
 Haxolottle: That's a healthy approach. Zoom in on what you can control, the immediate impact. Today's mission. This operation. This prevented attack.
 
@@ -751,8 +751,8 @@ Haxolottle: The big picture can overwhelm you if you let it. Better to focus on 
 
 Haxolottle: That's sustainable. I should probably do more of that myself.
 
-~ npc_haxolottle_friendship_level += 8
-#friendship_gained:8
+~ npc_haxolottle_influence += 8
+#influence_gained:8
 -> phase_2_hub
 
 // ----------------
@@ -761,8 +761,8 @@ Haxolottle: That's sustainable. I should probably do more of that myself.
 
 === handler_reality ===
 ~ npc_haxolottle_talked_handler_life = true
-~ npc_haxolottle_friendship_level += 12
-#friendship_gained:12
+~ npc_haxolottle_influence += 12
+#influence_gained:12
 ~ npc_haxolottle_conversations_had += 1
 
 Haxolottle: Handler life? It's weird. I sit in a comfortable office with good tea and multiple monitors, while you're crawling through server rooms and dodging security.
@@ -774,27 +774,27 @@ Haxolottle: From the inside? I'm watching you take risks I used to take. Providi
 Haxolottle: And when things go wrong, I can only watch. I can't run in and help. Can't pull you out physically. Just... talk. Provide information. Hope it's enough.
 
 * [Say you appreciate having them there]
-    ~ npc_haxolottle_friendship_level += 15
-#friendship_gained:15
+    ~ npc_haxolottle_influence += 15
+#influence_gained:15
     ~ npc_haxolottle_player_shared_personal += 1
     You: Your voice on comms makes a huge difference. I'm never alone out there.
     -> handler_appreciation
 
 * [Ask if they'd go back to field work]
-    ~ npc_haxolottle_friendship_level += 10
-#friendship_gained:10
+    ~ npc_haxolottle_influence += 10
+#influence_gained:10
     You: Would you ever go back to field operations?
     -> handler_field_return_question
 
 * [Acknowledge the invisible stress]
-    ~ npc_haxolottle_friendship_level += 12
-#friendship_gained:12
+    ~ npc_haxolottle_influence += 12
+#influence_gained:12
     You: That sounds exhausting in a completely different way than field work.
     -> handler_stress_acknowledgment
 
 === handler_appreciation ===
-~ npc_haxolottle_friendship_level += 20
-#friendship_gained:20
+~ npc_haxolottle_influence += 20
+#influence_gained:20
 ~ npc_haxolottle_trust_moments += 1
 
 Haxolottle: *clearly moved*
@@ -805,13 +805,13 @@ Haxolottle: Knowing it makes a difference—that you feel less alone—that's wh
 
 Haxolottle: We're a team. You're my eyes and hands in the field. I'm your strategic perspective and support system. Neither of us succeeds without the other.
 
-~ npc_haxolottle_friendship_level += 20
-#friendship_gained:20
+~ npc_haxolottle_influence += 20
+#influence_gained:20
 -> phase_2_hub
 
 === handler_field_return_question ===
-~ npc_haxolottle_friendship_level += 12
-#friendship_gained:12
+~ npc_haxolottle_influence += 12
+#influence_gained:12
 
 Haxolottle: *considers carefully*
 
@@ -823,13 +823,13 @@ Haxolottle: Transitioning to handler was regeneration. Different work, same miss
 
 Haxolottle: Plus, I'm better at this. Supporting multiple agents, seeing the strategic picture, staying calm under pressure. My field skills were good. My handler skills are better.
 
-~ npc_haxolottle_friendship_level += 12
-#friendship_gained:12
+~ npc_haxolottle_influence += 12
+#influence_gained:12
 -> phase_2_hub
 
 === handler_stress_acknowledgment ===
-~ npc_haxolottle_friendship_level += 15
-#friendship_gained:15
+~ npc_haxolottle_influence += 15
+#influence_gained:15
 
 Haxolottle: It really is. Different kind of exhaustion.
 
@@ -841,8 +841,8 @@ Haxolottle: I end the day mentally drained in a way field work never did. But al
 
 Haxolottle: Trade-offs. Everything in SAFETYNET is trade-offs.
 
-~ npc_haxolottle_friendship_level += 15
-#friendship_gained:15
+~ npc_haxolottle_influence += 15
+#influence_gained:15
 -> phase_2_hub
 
 // ----------------
@@ -851,8 +851,8 @@ Haxolottle: Trade-offs. Everything in SAFETYNET is trade-offs.
 
 === field_nostalgia ===
 ~ npc_haxolottle_talked_field_nostalgia = true
-~ npc_haxolottle_friendship_level += 15
-#friendship_gained:15
+~ npc_haxolottle_influence += 15
+#influence_gained:15
 ~ npc_haxolottle_conversations_had += 1
 
 Haxolottle: Do I miss field work? Sometimes. Mostly small moments, not the overall experience.
@@ -864,27 +864,27 @@ Haxolottle: I miss the problem-solving in real-time. When you're in the field, e
 Haxolottle: And honestly? I miss the simplicity. One mission, one objective, handle it and move on. As a handler, I'm juggling multiple agents, operations, responsibilities. It's more complex.
 
 * [Ask what they don't miss]
-    ~ npc_haxolottle_friendship_level += 10
-#friendship_gained:10
+    ~ npc_haxolottle_influence += 10
+#influence_gained:10
     You: What don't you miss about it?
     -> field_nostalgia_negative
 
 * [Share what you love about field work]
-    ~ npc_haxolottle_friendship_level += 15
-#friendship_gained:15
+    ~ npc_haxolottle_influence += 15
+#influence_gained:15
     ~ npc_haxolottle_player_shared_personal += 1
     You: I feel that rush too. That moment when everything clicks.
     -> field_nostalgia_shared_joy
 
 * [Ask about their most memorable infiltration]
-    ~ npc_haxolottle_friendship_level += 12
-#friendship_gained:12
+    ~ npc_haxolottle_influence += 12
+#influence_gained:12
     You: What's your most memorable field operation?
     -> field_nostalgia_memorable_op
 
 === field_nostalgia_negative ===
-~ npc_haxolottle_friendship_level += 15
-#friendship_gained:15
+~ npc_haxolottle_influence += 15
+#influence_gained:15
 
 Haxolottle: *laughs* Oh, plenty. The fear, for one. That sustained low-level anxiety of maintaining cover, wondering if today's the day someone sees through it.
 
@@ -894,13 +894,13 @@ Haxolottle: And the physical toll. I'm not young anymore. Eight years of irregul
 
 Haxolottle: Plus, I hated the paperwork. At least as a handler, I'm the one receiving the reports instead of writing them.
 
-~ npc_haxolottle_friendship_level += 15
-#friendship_gained:15
+~ npc_haxolottle_influence += 15
+#influence_gained:15
 -> phase_2_hub
 
 === field_nostalgia_shared_joy ===
-~ npc_haxolottle_friendship_level += 20
-#friendship_gained:20
+~ npc_haxolottle_influence += 20
+#influence_gained:20
 ~ npc_haxolottle_trust_moments += 1
 
 Haxolottle: Yes! Exactly! That rush when everything aligns—the timing, the technique, the execution. It's beautiful when it works.
@@ -911,13 +911,13 @@ Haxolottle: Different from doing it myself, but still genuine. Like watching a m
 
 Haxolottle: That's part of why I love this partnership. You're really good at what you do. Makes my job easier and more satisfying.
 
-~ npc_haxolottle_friendship_level += 20
-#friendship_gained:20
+~ npc_haxolottle_influence += 20
+#influence_gained:20
 -> phase_2_hub
 
 === field_nostalgia_memorable_op ===
-~ npc_haxolottle_friendship_level += 15
-#friendship_gained:15
+~ npc_haxolottle_influence += 15
+#influence_gained:15
 
 Haxolottle: Most memorable? Hard to pick one... but there was this operation in Prague. Corporate espionage case, ENTROPY front company.
 
@@ -931,8 +931,8 @@ Haxolottle: Completed the mission with zero suspicion. They thought I was just a
 
 Haxolottle: That was the operation that convinced me I'd found the right line of work. Chaos, adaptation, success. Everything I'm good at.
 
-~ npc_haxolottle_friendship_level += 15
-#friendship_gained:15
+~ npc_haxolottle_influence += 15
+#influence_gained:15
 -> phase_2_hub
 
 // ----------------
@@ -941,8 +941,8 @@ Haxolottle: That was the operation that convinced me I'd found the right line of
 
 === weird_habits_discussion ===
 ~ npc_haxolottle_talked_weird_habits = true
-~ npc_haxolottle_friendship_level += 10
-#friendship_gained:10
+~ npc_haxolottle_influence += 10
+#influence_gained:10
 ~ npc_haxolottle_conversations_had += 1
 ~ npc_haxolottle_humor_shared += 1
 
@@ -957,30 +957,30 @@ Haxolottle: And I keep three versions of my origin story ready depending on who 
 Haxolottle: SAFETYNET gets in your head. You start treating normal life like an operation.
 
 * [Admit you do the same]
-    ~ npc_haxolottle_friendship_level += 15
-#friendship_gained:15
+    ~ npc_haxolottle_influence += 15
+#influence_gained:15
     ~ npc_haxolottle_player_shared_personal += 1
     ~ npc_haxolottle_humor_shared += 1
     You: I map exits too! And I check reflections for surveillance.
     -> weird_habits_shared
 
 * [Share a different weird habit]
-    ~ npc_haxolottle_friendship_level += 15
-#friendship_gained:15
+    ~ npc_haxolottle_influence += 15
+#influence_gained:15
     ~ npc_haxolottle_player_shared_personal += 2
     ~ npc_haxolottle_trust_moments += 1
     You: I've developed some similar habits...
     -> weird_habits_player_share
 
 * [Ask if they think it's unhealthy]
-    ~ npc_haxolottle_friendship_level += 8
-#friendship_gained:8
+    ~ npc_haxolottle_influence += 8
+#influence_gained:8
     You: Is that unhealthy? Should we be concerned?
     -> weird_habits_healthy_question
 
 === weird_habits_shared ===
-~ npc_haxolottle_friendship_level += 20
-#friendship_gained:20
+~ npc_haxolottle_influence += 20
+#influence_gained:20
 ~ npc_haxolottle_humor_shared += 1
 
 Haxolottle: *laughs* Right? It's impossible to turn off! I went to a casual dinner with—well, with someone in my life—and spent the first ten minutes analyzing sight lines and potential surveillance.
@@ -991,13 +991,13 @@ Haxolottle: We're professionally paranoid. It's both a survival skill and a mino
 
 Haxolottle: But hey, if there ever IS an emergency at a grocery store, we'll be the most prepared people there. Silver lining.
 
-~ npc_haxolottle_friendship_level += 20
-#friendship_gained:20
+~ npc_haxolottle_influence += 20
+#influence_gained:20
 -> phase_2_hub
 
 === weird_habits_player_share ===
-~ npc_haxolottle_friendship_level += 20
-#friendship_gained:20
+~ npc_haxolottle_influence += 20
+#influence_gained:20
 ~ npc_haxolottle_trust_moments += 2
 
 Haxolottle: Oh, tell me yours. I love hearing what habits other agents develop. It's like a support group for occupational paranoia.
@@ -1010,13 +1010,13 @@ Haxolottle: We should start a handbook addendum: "Common Psychological Adaptatio
 
 Haxolottle: Honestly, it helps to know we're all doing this. Makes it feel less like slowly losing our minds and more like... adaptive behavior in a weird profession.
 
-~ npc_haxolottle_friendship_level += 25
-#friendship_gained:25
+~ npc_haxolottle_influence += 25
+#influence_gained:25
 -> phase_2_hub
 
 === weird_habits_healthy_question ===
-~ npc_haxolottle_friendship_level += 10
-#friendship_gained:10
+~ npc_haxolottle_influence += 10
+#influence_gained:10
 
 Haxolottle: *considers* Probably somewhere in between healthy professional awareness and mild paranoia.
 
@@ -1026,8 +1026,8 @@ Haxolottle: I think as long as the habits aren't interfering with normal life, t
 
 Haxolottle: But it's worth checking in with yourself. "Is this useful vigilance or is it anxiety?" That line can blur.
 
-~ npc_haxolottle_friendship_level += 10
-#friendship_gained:10
+~ npc_haxolottle_influence += 10
+#influence_gained:10
 -> phase_2_hub
 
 // Continue with Phase 3 and 4 hubs (later missions)...
@@ -1042,14 +1042,14 @@ Haxolottle: But it's worth checking in with yourself. "Is this useful vigilance 
 === conversation_end ===
 
 {
-    - npc_haxolottle_conversations_had >= 5 and npc_haxolottle_friendship_level >= 40:
+    - npc_haxolottle_conversations_had >= 5 and npc_haxolottle_influence >= 40:
         Haxolottle: I really appreciate these talks, Agent {player_name()}. Makes the work feel less isolating.
     - else:
         Haxolottle: Alright. Back to the mission. Talk later.
 }
 
 {
-    - npc_haxolottle_friendship_level >= 60:
+    - npc_haxolottle_influence >= 60:
         Haxolottle: And hey... you're becoming a real friend. Within the constraints of Protocol 47-Alpha, but a friend nonetheless.
 }
 
@@ -1075,8 +1075,8 @@ Haxolottle: *checking in* How's it going, {player_name()}?
 === favorite_operations ===
 Haxolottle: Favorite operations? That's tough. Every successful op is satisfying in its own way.
 Haxolottle: But yeah, there are some that stand out. The ones where everything clicks between handler and agent.
-~ npc_haxolottle_friendship_level += 5
-#friendship_gained:5
+~ npc_haxolottle_influence += 5
+#influence_gained:5
 ~ npc_haxolottle_talked_favorite_operations = true
 -> phase_2_hub
 
@@ -1086,13 +1086,13 @@ Haxolottle: Lost an agent six months ago. Today would have been their birthday.
 Haxolottle: Sorry. Shouldn't burden you with that.
 + [I'm sorry for your loss]
     Haxolottle: *appreciates it* Thanks. It's part of the job, but it never gets easier.
-    ~ npc_haxolottle_friendship_level += 10
-#friendship_gained:10
+    ~ npc_haxolottle_influence += 10
+#influence_gained:10
     ~ npc_haxolottle_shared_loss = true
 + [You can talk about it if you need to]
     Haxolottle: Maybe another time. Right now I just need to keep working. Helping you helps.
-    ~ npc_haxolottle_friendship_level += 8
-#friendship_gained:8
+    ~ npc_haxolottle_influence += 8
+#influence_gained:8
     ~ npc_haxolottle_shared_loss = true
 -> phase_2_hub
 
