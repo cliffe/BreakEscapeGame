@@ -116,7 +116,7 @@ EXTERNAL equipment_status()             // LOCAL - Status of player's equipment 
 + {mission_phase() == "active" and npc_location() == "field_support"} [That's all I needed, thanks]
     Dr. Chen: Roger that. I'll keep monitoring your situation. Call if you need anything!
     #end_conversation
-    -> DONE
+    -> mission_hub
 
 + [That's all for now, Chen]
     {
@@ -128,7 +128,7 @@ EXTERNAL equipment_status()             // LOCAL - Status of player's equipment 
             Dr. Chen: Okay. Good luck with the mission!
     }
     #end_conversation
-    -> DONE
+    -> mission_hub
 
 // ===========================================
 // HELPER FUNCTION - Check for available personal topics
@@ -529,3 +529,4 @@ Dr. Chen: What interests you? Network security? Hardware hacking? Cryptography? 
     Dr. Chen: I'll mix practical skills with theoretical knowledge. Make you a more effective operator.
     ~ professional_reputation += 3
     -> mission_hub
+
