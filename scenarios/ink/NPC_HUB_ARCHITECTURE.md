@@ -437,23 +437,27 @@ All NPC hub files now use a standardized `mission_hub` knot that serves as the c
 2. **Greeting**: Context-aware greeting based on location/phase
 3. **Hub**: Automatically diverts to `mission_hub`
 4. **Routing**: Player chooses personal or mission topics
-5. **Return**: Personal conversations end with `#end_conversation` and `-> mission_hub`
-6. **Close UI**: Game code detects `#end_conversation` tag and closes conversation window
-7. **State Preserved**: Next interaction resumes from `mission_hub` with full context
+5. **Personal Chat**: Personal conversations end with `-> mission_hub` (NO tag)
+6. **Return to Hub**: Player sees hub menu again with all options
+7. **Exit Option**: Player chooses exit option (e.g., "That's all for now")
+8. **Close UI**: Exit option uses `#end_conversation -> mission_hub` to close and preserve state
+9. **Next Time**: Next interaction resumes from `mission_hub` with full context
 
 ### Benefits
 
-- **Seamless Flow**: Player experiences continuous conversation
+- **Seamless Flow**: Personal conversations return to hub menu without closing
+- **Player Control**: Player decides when conversation is done
 - **Clear Separation**: Personal vs mission content isolated in separate files
-- **State Preservation**: Conversation state maintained between interactions
+- **State Preservation**: Conversation state saved at mission_hub for next interaction
 - **Standard Pattern**: All NPCs use same `mission_hub` knot name
 
 ### Implementation Notes
 
-- All hub files renamed from `npcname_main_hub` to `mission_hub`
-- Personal conversation files always return to `mission_hub` with `#end_conversation` tag
-- Game code detects `#end_conversation` and closes UI (doesn't navigate)
-- Ink script handles navigation back to hub (preserves state)
+- All hub files use `mission_hub` as the central routing knot
+- **Personal conversations**: Return to `mission_hub` WITHOUT `#end_conversation` tag
+- **Exit options**: In mission_hub, use `#end_conversation -> mission_hub` pattern
+- Game code detects `#end_conversation` tag and closes the conversation UI
+- Ink script preserves state at `mission_hub` (not DONE)
 - Next player interaction resumes from `mission_hub` seamlessly
 
 For detailed implementation examples, see **INK_BEST_PRACTICES.md**.
@@ -528,13 +532,14 @@ For complete tag documentation, see **INK_BEST_PRACTICES.md**.
 2. **Conversation Triggering**
    - Call appropriate hub entry point: `npcname_conversation_entry`
    - Set context variables before calling
-   - Handle `#exit_conversation` tag
+   - Handle `#end_conversation` tag (closes UI, preserves state at mission_hub)
    - Listen for `npc-influence-change` events
 
 3. **Navigation Support**
-   - Detect `#exit_conversation` tag in conversation flow
-   - Call `inkEngine.goToKnot('mission_hub')` to return
-   - Continue conversation from hub menu
+   - Detect `#end_conversation` tag in conversation flow
+   - Close conversation UI when tag is detected
+   - Save story state at `mission_hub` for next interaction
+   - Next conversation resumes from hub menu automatically
 
 4. **Context Tracking**
    - Track current mission ID
