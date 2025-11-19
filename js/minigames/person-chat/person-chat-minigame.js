@@ -192,7 +192,7 @@ export class PersonChatMinigame extends MinigameScene {
                 this.handleChoice(choiceIndex);
             }
         });
-        
+
         // Continue button click handler
         if (this.ui.elements.continueButton) {
             this.addEventListener(this.ui.elements.continueButton, 'click', (e) => {
@@ -201,6 +201,26 @@ export class PersonChatMinigame extends MinigameScene {
                 this.handleContinueButtonClick();
             });
         }
+
+        // Listen for conversation end event from the conversation handler
+        this.addEventListener(window, 'npc-conversation-ended', (e) => {
+            console.log(`👋 Received npc-conversation-ended event for ${e.detail.npcId}`);
+
+            // Verify this event is for our current conversation
+            if (e.detail.npcId === this.npcId) {
+                console.log(`✅ Ending minigame - conversation state preserved at mission_hub`);
+
+                // Save state before exiting
+                if (this.inkEngine && this.inkEngine.story) {
+                    npcConversationStateManager.saveNPCState(this.npcId, this.inkEngine.story);
+                }
+
+                // End the minigame and return to game
+                if (window.MinigameFramework) {
+                    window.MinigameFramework.endMinigame(true, { conversationEnded: true });
+                }
+            }
+        });
     }
     
     /**
@@ -368,17 +388,28 @@ export class PersonChatMinigame extends MinigameScene {
      */
     showCurrentDialogue() {
         if (!this.conversation) return;
-        
+
         try {
             // Get current content without advancing
             const result = this.conversation.continue();
-            
+
             // Store result for later use
             this.lastResult = result;
-            
+
             // Check if story has ended
             if (result.hasEnded) {
-                // Story reached an END - save state and show message
+                // Check if this is a graceful conversation end (with #end_conversation tag)
+                const hasEndConversationTag = result.tags?.some(tag =>
+                    tag.trim().toLowerCase() === 'end_conversation'
+                );
+
+                if (hasEndConversationTag) {
+                    // Graceful end - the npc-conversation-ended event will handle closing
+                    console.log('👋 Graceful conversation end detected - waiting for event handler');
+                    return;
+                }
+
+                // Otherwise, it's an unexpected END - save state and show manual exit message
                 // Player should press ESC to exit and return to hub
                 if (this.inkEngine && this.inkEngine.story) {
                     npcConversationStateManager.saveNPCState(this.npcId, this.inkEngine.story);
