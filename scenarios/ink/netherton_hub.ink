@@ -107,7 +107,7 @@ EXTERNAL mission_phase()                // LOCAL - Phase of current mission ("pr
 + {mission_phase() == "active"} [That's all I needed, Director]
     Netherton: Understood. Execute the mission. Report any developments.
     #end_conversation
-    -> DONE
+    -> mission_hub
 
 + [That will be all, Director]
     {
@@ -119,7 +119,7 @@ EXTERNAL mission_phase()                // LOCAL - Phase of current mission ("pr
             Netherton: Dismissed.
     }
     #end_conversation
-    -> DONE
+    -> mission_hub
 
 // ===========================================
 // HELPER FUNCTION - Check for available personal topics

@@ -132,7 +132,7 @@ EXTERNAL operational_stress_level()     // LOCAL - How stressed the current situ
 + {mission_phase() == "active"} [That's all I needed. Thanks, Hax.]
     Haxolottle: Roger. I'm monitoring your situation. Call if you need anything. Stay safe out there.
     #end_conversation
-    -> DONE
+    -> mission_hub
 
 + [That's all for now]
     {
@@ -144,7 +144,7 @@ EXTERNAL operational_stress_level()     // LOCAL - How stressed the current situ
             Haxolottle: Okay. Talk later!
     }
     #end_conversation
-    -> DONE
+    -> mission_hub
 
 // ===========================================
 // HELPER FUNCTION - Check for available personal topics
