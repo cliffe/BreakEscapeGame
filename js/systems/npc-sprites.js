@@ -54,8 +54,8 @@ export function createNPCSprite(scene, npc, roomData) {
         
         // Add friction to prevent NPCs from sliding far when pushed
         // High drag causes velocity to quickly decay (good for stationary NPCs)
-        // High linear damping provides additional deceleration (complements drag)
-        sprite.body.setDrag(0.95); // Drag: 0.95 = lose 95% of velocity per second
+        // Drag value: Higher = more resistance to movement when pushed
+        sprite.body.setDrag(8); // Strong drag to prevent NPCs from sliding when nudged
         
         // Set up animations
         setupNPCAnimations(scene, sprite, spriteSheet, config, npc.id);

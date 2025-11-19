@@ -515,14 +515,30 @@ class NPCBehavior {
 
         switch (state) {
             case 'idle':
-                this.sprite.body.setVelocity(0, 0);
+                // Actively dampen any residual velocity from collisions
+                const currentVelX = this.sprite.body.velocity.x;
+                const currentVelY = this.sprite.body.velocity.y;
+                if (Math.abs(currentVelX) > 0.1 || Math.abs(currentVelY) > 0.1) {
+                    // Apply strong dampening to quickly settle
+                    this.sprite.body.setVelocity(currentVelX * 0.5, currentVelY * 0.5);
+                } else {
+                    this.sprite.body.setVelocity(0, 0);
+                }
                 this.playAnimation('idle', this.direction);
                 this.isMoving = false;
                 break;
 
             case 'face_player':
                 this.facePlayer(playerPos);
-                this.sprite.body.setVelocity(0, 0);
+                // Actively dampen any residual velocity from collisions
+                const faceVelX = this.sprite.body.velocity.x;
+                const faceVelY = this.sprite.body.velocity.y;
+                if (Math.abs(faceVelX) > 0.1 || Math.abs(faceVelY) > 0.1) {
+                    // Apply strong dampening to quickly settle
+                    this.sprite.body.setVelocity(faceVelX * 0.5, faceVelY * 0.5);
+                } else {
+                    this.sprite.body.setVelocity(0, 0);
+                }
                 this.isMoving = false;
                 break;
 
@@ -607,7 +623,17 @@ class NPCBehavior {
             // Check if dwell time expired
             const dwellElapsed = time - this.patrolReachedTime;
             if (dwellElapsed < this.patrolTarget.dwellTime) {
-                // Still dwelling - face player if configured and in range
+                // Still dwelling - actively dampen any residual velocity to prevent sliding
+                const dwellVelX = this.sprite.body.velocity.x;
+                const dwellVelY = this.sprite.body.velocity.y;
+                if (Math.abs(dwellVelX) > 0.1 || Math.abs(dwellVelY) > 0.1) {
+                    // Apply strong dampening to quickly settle
+                    this.sprite.body.setVelocity(dwellVelX * 0.5, dwellVelY * 0.5);
+                } else {
+                    this.sprite.body.setVelocity(0, 0);
+                }
+
+                // Face player if configured and in range
                 const playerPos = window.player?.sprite ? { x: window.player.sprite.x, y: window.player.sprite.y } : null;
                 if (playerPos) {
                     const distSq = (this.sprite.x - playerPos.x) ** 2 + (this.sprite.y - playerPos.y) ** 2;
