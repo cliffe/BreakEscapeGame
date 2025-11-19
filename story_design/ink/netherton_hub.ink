@@ -55,7 +55,7 @@ EXTERNAL mission_phase()                // LOCAL - Phase of current mission ("pr
 // ===========================================
 // MISSION HUB - Central routing point
 // Routes to personal conversations or mission-related topics
-// Game returns here after #exit_conversation from personal talks
+// Game returns here after #end_conversation from personal talks
 // ===========================================
 
 === mission_hub ===
@@ -106,8 +106,8 @@ EXTERNAL mission_phase()                // LOCAL - Phase of current mission ("pr
 // EXIT OPTIONS
 + {mission_phase() == "active"} [That's all I needed, Director]
     Netherton: Understood. Execute the mission. Report any developments.
-    #exit_conversation
-    -> END
+    #end_conversation
+    -> DONE
 
 + [That will be all, Director]
     {
@@ -118,8 +118,8 @@ EXTERNAL mission_phase()                // LOCAL - Phase of current mission ("pr
         - else:
             Netherton: Dismissed.
     }
-    #exit_conversation
-    -> END
+    #end_conversation
+    -> DONE
 
 // ===========================================
 // HELPER FUNCTION - Check for available personal topics

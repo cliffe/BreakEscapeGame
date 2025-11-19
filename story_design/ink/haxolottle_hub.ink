@@ -56,7 +56,7 @@ EXTERNAL operational_stress_level()     // LOCAL - How stressed the current situ
 // ===========================================
 // MISSION HUB - Central routing point
 // Routes to personal conversations or mission-related topics
-// Game returns here after #exit_conversation from personal talks
+// Game returns here after #end_conversation from personal talks
 // ===========================================
 
 === mission_hub ===
@@ -131,8 +131,8 @@ EXTERNAL operational_stress_level()     // LOCAL - How stressed the current situ
 // EXIT OPTIONS
 + {mission_phase() == "active"} [That's all I needed. Thanks, Hax.]
     Haxolottle: Roger. I'm monitoring your situation. Call if you need anything. Stay safe out there.
-    #exit_conversation
-    -> END
+    #end_conversation
+    -> DONE
 
 + [That's all for now]
     {
@@ -143,8 +143,8 @@ EXTERNAL operational_stress_level()     // LOCAL - How stressed the current situ
         - else:
             Haxolottle: Okay. Talk later!
     }
-    #exit_conversation
-    -> END
+    #end_conversation
+    -> DONE
 
 // ===========================================
 // HELPER FUNCTION - Check for available personal topics
@@ -270,7 +270,7 @@ Haxolottle: I've got eyes on security feeds. I'll guide you around patrol patter
 Haxolottle: {player_name()}—*firm but caring*—you've got this. I'm with you every step. Move now.
 
 #emergency_extraction_active
--> END
+-> DONE
 
 === equipment_crisis_support ===
 // Dr. Chen joins the comms channel

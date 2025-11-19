@@ -55,7 +55,7 @@ EXTERNAL equipment_status()             // LOCAL - Status of player's equipment 
 // ===========================================
 // MISSION HUB - Central routing point
 // Routes to personal conversations or mission-related topics
-// Game returns here after #exit_conversation from personal talks
+// Game returns here after #end_conversation from personal talks
 // ===========================================
 
 === mission_hub ===
@@ -115,8 +115,8 @@ EXTERNAL equipment_status()             // LOCAL - Status of player's equipment 
 // EXIT OPTIONS
 + {mission_phase() == "active" and npc_location() == "field_support"} [That's all I needed, thanks]
     Dr. Chen: Roger that. I'll keep monitoring your situation. Call if you need anything!
-    #exit_conversation
-    -> END
+    #end_conversation
+    -> DONE
 
 + [That's all for now, Chen]
     {
@@ -127,8 +127,8 @@ EXTERNAL equipment_status()             // LOCAL - Status of player's equipment 
         - else:
             Dr. Chen: Okay. Good luck with the mission!
     }
-    #exit_conversation
-    -> END
+    #end_conversation
+    -> DONE
 
 // ===========================================
 // HELPER FUNCTION - Check for available personal topics
