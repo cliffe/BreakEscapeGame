@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title><%= @mission.display_name %> - BreakEscape</title>
+  <%= csrf_meta_tags %>
+  <%= csp_meta_tag %>
+
+  <%# Load game CSS %>
+  <%= stylesheet_link_tag '/break_escape/css/styles.css' %>
+</head>
+<body>
+  <%# Game container - Phaser will render here %>
+  <div id="break-escape-game"></div>
+
+  <%# Loading indicator %>
+  <div id="loading" style="position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); color: #00ff00; font-size: 24px; display: block;">
+    Loading game...
+  </div>
+
+  <%# Bootstrap configuration for client %>
+  <script nonce="<%= content_security_policy_nonce %>">
+    window.breakEscapeConfig = {
+      gameId: <%= @game.id %>,
+      apiBasePath: '<%= game_path(@game) %>',
+      assetsPath: '/break_escape/assets',
+      csrfToken: '<%= form_authenticity_token %>'
+    };
+  </script>
+
+  <%# Load game JavaScript (ES6 module) %>
+  <%= javascript_include_tag '/break_escape/js/main.js', type: 'module', nonce: content_security_policy_nonce %>
+</body>
+</html>
