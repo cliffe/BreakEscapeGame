@@ -78,10 +78,10 @@ module BreakEscape
       def inventory
         authorize @game if defined?(Pundit)
 
-        action = params[:action]
+        action_type = params[:action_type] || params[:actionType]
         item = params[:item]
 
-        case action
+        case action_type
         when 'add'
           @game.add_inventory_item!(item.to_unsafe_h)
           render json: { success: true, inventory: @game.player_state['inventory'] }
