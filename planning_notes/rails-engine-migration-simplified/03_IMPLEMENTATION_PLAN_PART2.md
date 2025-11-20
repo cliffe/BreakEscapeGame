@@ -562,7 +562,243 @@ window.ApiClient = ApiClient;
 
 **Save and close**
 
-### 9.3 Update Main Game File
+### 9.3 Setup CSRF Token Injection (Critical for Security)
+
+**CRITICAL:** Rails requires CSRF tokens for all POST/PUT/DELETE requests. The token must be injected from the server-rendered view into JavaScript.
+
+#### 9.3.1 Update Game Show View
+
+**Edit the view that renders the game:**
+
+```bash
+vim app/views/break_escape/games/show.html.erb
+```
+
+**Add JavaScript configuration block with CSRF token:**
+
+```erb
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Break Escape - <%= @game.mission.display_name %></title>
+  <%= csrf_meta_tags %>
+  <%= csp_meta_tag %>
+
+  <!-- Game CSS -->
+  <%= stylesheet_link_tag '/break_escape/css/game.css' %>
+
+  <!-- CRITICAL: Inject configuration before loading game -->
+  <%= javascript_tag nonce: true do %>
+    // BreakEscape Configuration
+    window.breakEscapeConfig = {
+      gameId: <%= @game.id %>,
+      apiBasePath: '<%= break_escape_path %>/games/<%= @game.id %>',
+      assetsPath: '/break_escape/assets',
+      csrfToken: '<%= form_authenticity_token %>',
+      missionName: '<%= j @game.mission.display_name %>',
+      startRoom: '<%= j @game.scenario_data["startRoom"] %>',
+      debug: <%= Rails.env.development? %>
+    };
+
+    console.log('✓ BreakEscape config loaded:', window.breakEscapeConfig);
+  <% end %>
+</head>
+<body>
+  <div id="game-container"></div>
+
+  <!-- Load Phaser -->
+  <script src="/break_escape/js/phaser.min.js"></script>
+
+  <!-- Load game (as ES6 module) -->
+  <script type="module" src="/break_escape/js/main.js"></script>
+</body>
+</html>
+```
+
+**Key points:**
+- `<%= csrf_meta_tags %>` - Required by Rails, adds meta tags
+- `<%= form_authenticity_token %>` - Generates CSRF token for this session
+- `nonce: true` - Required if using Content Security Policy
+- Configuration loaded BEFORE game scripts
+- Token stored in `window.breakEscapeConfig.csrfToken`
+
+**Save and close**
+
+#### 9.3.2 Verify CSRF Token in Browser
+
+**After implementing, test in browser console:**
+
+```javascript
+// Check if config loaded
+console.log(window.breakEscapeConfig);
+
+// Should show:
+// {
+//   gameId: 123,
+//   apiBasePath: "/break_escape/games/123",
+//   assetsPath: "/break_escape/assets",
+//   csrfToken: "AaBbCc123...long token...",
+//   missionName: "CEO Exfiltration",
+//   startRoom: "reception",
+//   debug: true
+// }
+
+// Check CSRF token
+console.log('CSRF Token:', window.breakEscapeConfig.csrfToken);
+// Should be a long base64 string
+
+// Check meta tag (alternative source)
+console.log('Meta tag:', document.querySelector('meta[name="csrf-token"]')?.content);
+```
+
+#### 9.3.3 Handle Missing CSRF Token
+
+**Add error handling in config.js:**
+
+```bash
+vim public/break_escape/js/config.js
+```
+
+**Update to validate CSRF token:**
+
+```javascript
+// API configuration from server
+export const GAME_ID = window.breakEscapeConfig?.gameId;
+export const API_BASE = window.breakEscapeConfig?.apiBasePath || '';
+export const ASSETS_PATH = window.breakEscapeConfig?.assetsPath || '/break_escape/assets';
+export const CSRF_TOKEN = window.breakEscapeConfig?.csrfToken;
+
+// Verify critical config loaded
+if (!GAME_ID) {
+  console.error('❌ CRITICAL: Game ID not configured! Check window.breakEscapeConfig');
+  console.error('Expected window.breakEscapeConfig.gameId to be set by server');
+}
+
+if (!CSRF_TOKEN) {
+  console.error('❌ CRITICAL: CSRF token not configured!');
+  console.error('This will cause all POST/PUT requests to fail with 422 status');
+  console.error('Check that <%= form_authenticity_token %> is in the view');
+}
+
+// Log config for debugging
+if (window.breakEscapeConfig?.debug) {
+  console.log('✓ BreakEscape config validated:', {
+    gameId: GAME_ID,
+    apiBasePath: API_BASE,
+    assetsPath: ASSETS_PATH,
+    csrfToken: CSRF_TOKEN ? `${CSRF_TOKEN.substring(0, 10)}...` : 'MISSING',
+    debug: true
+  });
+}
+```
+
+**Save and close**
+
+#### 9.3.4 Test CSRF Protection
+
+**Create a test endpoint call to verify CSRF works:**
+
+```bash
+# Start Rails server
+rails server
+
+# Open browser to game
+# http://localhost:3000/break_escape/games/1
+
+# Open console and test
+```
+
+**In browser console:**
+
+```javascript
+// Test GET request (no CSRF needed)
+fetch('/break_escape/games/1/bootstrap', {
+  credentials: 'same-origin',
+  headers: { 'Accept': 'application/json' }
+})
+  .then(r => r.json())
+  .then(d => console.log('✓ GET works:', d));
+
+// Test POST without CSRF (should fail with 422)
+fetch('/break_escape/games/1/unlock', {
+  method: 'POST',
+  credentials: 'same-origin',
+  headers: { 'Content-Type': 'application/json' },
+  body: JSON.stringify({ targetType: 'door', targetId: 'test' })
+})
+  .then(r => console.log('Status:', r.status)) // Should be 422
+  .then(() => console.log('❌ POST without CSRF failed (expected)'));
+
+// Test POST with CSRF (should work)
+const csrfToken = window.breakEscapeConfig.csrfToken;
+fetch('/break_escape/games/1/unlock', {
+  method: 'POST',
+  credentials: 'same-origin',
+  headers: {
+    'Content-Type': 'application/json',
+    'X-CSRF-Token': csrfToken
+  },
+  body: JSON.stringify({
+    targetType: 'door',
+    targetId: 'test_room',
+    attempt: 'test',
+    method: 'password'
+  })
+})
+  .then(r => r.json())
+  .then(d => console.log('✓ POST with CSRF works:', d));
+```
+
+**Expected results:**
+- GET request: ✓ Works (no CSRF needed)
+- POST without CSRF: ❌ Returns 422 (CSRF verification failed)
+- POST with CSRF: ✓ Works (may fail validation but gets past CSRF)
+
+#### 9.3.5 Common CSRF Issues and Solutions
+
+**Issue 1: "Can't verify CSRF token authenticity"**
+```
+ActionController::InvalidAuthenticityToken
+```
+
+**Solution:**
+- Check `<%= csrf_meta_tags %>` is in view
+- Check `window.breakEscapeConfig.csrfToken` is set
+- Check API client includes `'X-CSRF-Token'` header
+- Verify `credentials: 'same-origin'` is set
+
+**Issue 2: CSRF token is null/undefined**
+
+**Solution:**
+```javascript
+// In config.js, add fallback to meta tag
+export const CSRF_TOKEN = window.breakEscapeConfig?.csrfToken
+  || document.querySelector('meta[name="csrf-token"]')?.content;
+
+if (!CSRF_TOKEN) {
+  throw new Error('CSRF token not found! Check view template.');
+}
+```
+
+**Issue 3: Token changes between requests**
+
+**Solution:**
+- Rails regenerates tokens periodically (security feature)
+- Always use the current token from `window.breakEscapeConfig`
+- Don't cache token in localStorage (security risk)
+
+**Issue 4: Development vs Production**
+
+**Solution:**
+```ruby
+# In config/environments/development.rb (for testing only!)
+# DO NOT do this in production!
+# config.action_controller.allow_forgery_protection = false
+```
+
+Don't disable CSRF in production! Fix the token injection instead.
+
+### 9.4 Update Main Game File
 
 ```bash
 vim public/break_escape/js/main.js
@@ -608,33 +844,485 @@ import { ApiClient } from '../api-client.js';
 const inkScript = await ApiClient.getNPCScript(npc.id);
 ```
 
-### 9.5 Update Unlock Validation
+### 9.5 Update Unlock Validation with Loading UI
 
-**Find where unlocks are validated** (likely in `js/systems/interactions.js` or similar)
+**CRITICAL:** This section handles the conversion from client-side to server-side unlock validation. The unlock system is in `js/systems/unlock-system.js` and is called after minigames succeed.
+
+#### 9.5.1 Create Unlock Loading UI Helper
+
+**Create a new file for visual feedback during async unlock validation:**
+
+```bash
+vim public/break_escape/js/utils/unlock-loading-ui.js
+```
+
+**Add:**
+
+```javascript
+/**
+ * UNLOCK LOADING UI
+ * =================
+ *
+ * Provides visual feedback during async server unlock validation.
+ * Shows a throbbing tint effect on doors/objects being unlocked.
+ */
+
+/**
+ * Apply throbbing tint effect to a Phaser sprite
+ * @param {Phaser.GameObjects.Sprite} sprite - The door or object sprite
+ * @param {number} duration - How long to show the effect (ms)
+ * @returns {Promise} Resolves when animation completes
+ */
+export function showUnlockLoading(sprite) {
+  if (!sprite || !sprite.scene) {
+    console.warn('showUnlockLoading: Invalid sprite');
+    return Promise.resolve();
+  }
+
+  // Store original tint
+  const originalTint = sprite.tint || 0xffffff;
+
+  // Create throbbing animation (blue tint pulsing)
+  const scene = sprite.scene;
+
+  // Add blue tint and start pulsing
+  sprite.setTint(0x4da6ff); // Light blue
+
+  // Create timeline for throbbing effect
+  const timeline = scene.tweens.createTimeline();
+
+  // Pulse darker blue
+  timeline.add({
+    targets: sprite,
+    alpha: { from: 1.0, to: 0.7 },
+    duration: 300,
+    ease: 'Sine.easeInOut'
+  });
+
+  // Pulse back to lighter
+  timeline.add({
+    targets: sprite,
+    alpha: { from: 0.7, to: 1.0 },
+    duration: 300,
+    ease: 'Sine.easeInOut'
+  });
+
+  // Loop the pulse
+  timeline.loop = -1; // Infinite loop
+  timeline.play();
+
+  // Store timeline reference on sprite for cleanup
+  sprite._unlockLoadingTimeline = timeline;
+
+  return timeline;
+}
+
+/**
+ * Clear unlock loading effect
+ * @param {Phaser.GameObjects.Sprite} sprite - The door or object sprite
+ * @param {boolean} success - Whether unlock succeeded
+ */
+export function clearUnlockLoading(sprite, success = true) {
+  if (!sprite || !sprite.scene) {
+    return;
+  }
+
+  // Stop and remove timeline
+  if (sprite._unlockLoadingTimeline) {
+    sprite._unlockLoadingTimeline.stop();
+    sprite._unlockLoadingTimeline.remove();
+    sprite._unlockLoadingTimeline = null;
+  }
+
+  // Remove tint with quick flash
+  const scene = sprite.scene;
+
+  if (success) {
+    // Success: Quick green flash then clear
+    sprite.setTint(0x00ff00); // Green
+    scene.tweens.add({
+      targets: sprite,
+      alpha: { from: 1.0, to: 1.0 },
+      duration: 200,
+      onComplete: () => {
+        sprite.clearTint();
+        sprite.setAlpha(1.0);
+      }
+    });
+  } else {
+    // Failure: Quick red flash then clear
+    sprite.setTint(0xff0000); // Red
+    scene.tweens.add({
+      targets: sprite,
+      alpha: { from: 1.0, to: 1.0 },
+      duration: 200,
+      onComplete: () => {
+        sprite.clearTint();
+        sprite.setAlpha(1.0);
+      }
+    });
+  }
+}
+
+/**
+ * Show loading spinner near sprite (alternative visual)
+ * @param {Phaser.GameObjects.Sprite} sprite - The door or object sprite
+ */
+export function showLoadingSpinner(sprite) {
+  if (!sprite || !sprite.scene) {
+    return null;
+  }
+
+  const scene = sprite.scene;
+
+  // Create simple rotating circle as spinner
+  const spinner = scene.add.graphics();
+  spinner.lineStyle(3, 0x4da6ff, 1);
+  spinner.arc(sprite.x, sprite.y - 30, 10, 0, Math.PI * 1.5);
+  spinner.setDepth(1000); // Always on top
+
+  // Rotate continuously
+  scene.tweens.add({
+    targets: spinner,
+    angle: 360,
+    duration: 1000,
+    repeat: -1
+  });
+
+  sprite._unlockLoadingSpinner = spinner;
+
+  return spinner;
+}
+
+/**
+ * Clear loading spinner
+ * @param {Phaser.GameObjects.Sprite} sprite - The door or object sprite
+ */
+export function clearLoadingSpinner(sprite) {
+  if (sprite && sprite._unlockLoadingSpinner) {
+    sprite._unlockLoadingSpinner.destroy();
+    sprite._unlockLoadingSpinner = null;
+  }
+}
+```
+
+**Save and close**
+
+#### 9.5.2 Update unlock-system.js for Server Validation
+
+**Now update the actual unlock system to use server validation:**
+
+```bash
+vim public/break_escape/js/systems/unlock-system.js
+```
+
+**At the top, add imports:**
+
+```javascript
+import { ApiClient } from '../api-client.js';
+import { showUnlockLoading, clearUnlockLoading } from '../utils/unlock-loading-ui.js';
+```
+
+**Find the `unlockTarget` function (around line 468) and wrap it with server validation:**
+
+**Before (current code):**
+```javascript
+export function unlockTarget(lockable, type, layer) {
+    console.log('🔓 unlockTarget called:', { type, lockable });
+
+    if (type === 'door') {
+        unlockDoor(lockable);
+        // ... rest of door unlock logic
+    } else {
+        // ... item unlock logic
+    }
+}
+```
+
+**After (with server validation):**
+```javascript
+/**
+ * Unlock a target (door or item) with server validation
+ * @param {Object} lockable - The door or item sprite
+ * @param {string} type - 'door' or 'item'
+ * @param {Object} layer - The Phaser layer
+ * @param {string} attempt - The password/pin/key used
+ * @param {string} method - 'password', 'pin', 'key', 'lockpick', etc.
+ */
+export async function unlockTarget(lockable, type, layer, attempt = null, method = null) {
+    console.log('🔓 unlockTarget called:', { type, lockable, attempt, method });
+
+    // Show loading UI
+    showUnlockLoading(lockable);
+
+    try {
+        // Get target ID
+        const targetId = type === 'door'
+            ? lockable.doorProperties?.connectedRoom || lockable.doorProperties?.roomId
+            : lockable.scenarioData?.id || lockable.objectId;
+
+        // Validate with server
+        console.log('🔓 Validating unlock with server...', { targetId, type, method });
+        const result = await ApiClient.unlock(type, targetId, attempt, method);
+
+        // Clear loading UI (success)
+        clearUnlockLoading(lockable, true);
+
+        if (result.success) {
+            console.log('✅ Server validated unlock');
+
+            // Perform client-side unlock
+            if (type === 'door') {
+                unlockDoor(lockable);
+
+                // Emit door unlocked event
+                if (window.eventDispatcher) {
+                    const doorProps = lockable.doorProperties || {};
+                    window.eventDispatcher.emit('door_unlocked', {
+                        roomId: doorProps.roomId,
+                        connectedRoom: doorProps.connectedRoom,
+                        direction: doorProps.direction,
+                        lockType: doorProps.lockType
+                    });
+                }
+
+                // Update room data if server provided it
+                if (result.roomData) {
+                    // Merge server room data with client state
+                    console.log('🔓 Received room data from server:', result.roomData);
+                }
+            } else {
+                // Handle item unlocking
+                if (lockable.scenarioData) {
+                    lockable.scenarioData.locked = false;
+
+                    if (lockable.scenarioData.contents) {
+                        lockable.scenarioData.isUnlockedButNotCollected = true;
+
+                        // Emit item unlocked event
+                        if (window.eventDispatcher) {
+                            window.eventDispatcher.emit('item_unlocked', {
+                                itemType: lockable.scenarioData.type,
+                                itemName: lockable.scenarioData.name,
+                                lockType: lockable.scenarioData.lockType
+                            });
+                        }
+
+                        // Auto-launch container minigame
+                        setTimeout(() => {
+                            if (window.handleContainerInteraction) {
+                                console.log('Auto-launching container minigame after unlock');
+                                window.handleContainerInteraction(lockable);
+                            }
+                        }, 500);
+
+                        return;
+                    }
+                } else {
+                    lockable.locked = false;
+                    if (lockable.contents) {
+                        lockable.isUnlockedButNotCollected = true;
+                        return;
+                    }
+                }
+
+                // For items without containers, collect them
+                if (lockable.layer) {
+                    lockable.layer.remove(lockable);
+                }
+
+                console.log('Collected item:', lockable.scenarioData);
+                window.gameAlert(`Collected ${lockable.scenarioData?.name || 'item'}`,
+                    'success', 'Item Collected', 3000);
+            }
+        } else {
+            // Server rejected unlock
+            console.error('❌ Server rejected unlock:', result.message);
+            window.gameAlert(result.message || 'Unlock failed', 'error', 'Unlock Failed', 3000);
+        }
+    } catch (error) {
+        // Clear loading UI (failure)
+        clearUnlockLoading(lockable, false);
+
+        console.error('❌ Unlock validation failed:', error);
+        window.gameAlert('Failed to validate unlock with server', 'error', 'Network Error', 4000);
+    }
+}
+
+// Keep original unlockTarget for testing without server (fallback)
+export function unlockTargetClientSide(lockable, type, layer) {
+    console.log('🔓 unlockTargetClientSide (fallback without server validation)');
+    // ... original implementation for testing
+}
+```
+
+**Save and close**
+
+#### 9.5.3 Update Minigame Callbacks
+
+**The unlock system is triggered AFTER minigames succeed. Update minigame callbacks to pass attempt and method:**
+
+**Find these sections in `unlock-system.js` and update the callbacks:**
+
+**For PIN minigame (around line 175):**
 
 **Before:**
 ```javascript
-// Client-side validation (insecure!)
-if (password === requiredPassword) {
-  unlockRoom();
+startPinMinigame(lockable, type, lockRequirements.requires, (success) => {
+    if (success) {
+        unlockTarget(lockable, type, lockable.layer);
+    }
+});
+```
+
+**After:**
+```javascript
+startPinMinigame(lockable, type, lockRequirements.requires, (success, enteredPin) => {
+    if (success) {
+        unlockTarget(lockable, type, lockable.layer, enteredPin, 'pin');
+    }
+});
+```
+
+**For Password minigame (around line 195):**
+
+**Before:**
+```javascript
+startPasswordMinigame(lockable, type, lockRequirements.requires, (success) => {
+    if (success) {
+        unlockTarget(lockable, type, lockable.layer);
+    }
+}, passwordOptions);
+```
+
+**After:**
+```javascript
+startPasswordMinigame(lockable, type, lockRequirements.requires, (success, enteredPassword) => {
+    if (success) {
+        unlockTarget(lockable, type, lockable.layer, enteredPassword, 'password');
+    }
+}, passwordOptions);
+```
+
+**For Key minigame (around line 107):**
+
+**Before:**
+```javascript
+startKeySelectionMinigame(lockable, type, playerKeys, requiredKey, unlockTarget);
+```
+
+**After:**
+```javascript
+startKeySelectionMinigame(lockable, type, playerKeys, requiredKey, (lockable, type, layer, keyId) => {
+    unlockTarget(lockable, type, layer, keyId, 'key');
+});
+```
+
+**For Lockpick minigame (around line 157):**
+
+**Before:**
+```javascript
+startLockpickingMinigame(lockable, window.game, difficulty, (success) => {
+    if (success) {
+        setTimeout(() => {
+            unlockTarget(lockable, type, lockable.layer);
+        }, 100);
+    }
+});
+```
+
+**After:**
+```javascript
+startLockpickingMinigame(lockable, window.game, difficulty, (success) => {
+    if (success) {
+        setTimeout(() => {
+            unlockTarget(lockable, type, lockable.layer, 'lockpick', 'lockpick');
+        }, 100);
+    }
+});
+```
+
+**For Biometric (around line 237):**
+
+**Before:**
+```javascript
+if (fingerprintQuality >= requiredThreshold) {
+    unlockTarget(lockable, type, lockable.layer);
 }
 ```
 
 **After:**
 ```javascript
-import { ApiClient } from '../api-client.js';
-
-// Server-side validation
-try {
-  const result = await ApiClient.unlock('door', roomId, password, 'password');
-  if (result.success) {
-    unlockRoom(result.roomData);
-  } else {
-    showError('Invalid password');
-  }
-} catch (error) {
-  showError('Unlock failed');
+if (fingerprintQuality >= requiredThreshold) {
+    unlockTarget(lockable, type, lockable.layer, requiredFingerprint, 'biometric');
 }
+```
+
+**For Bluetooth (around line 287):**
+
+**Before:**
+```javascript
+if (requiredDeviceData.signalStrength >= minSignalStrength) {
+    unlockTarget(lockable, type, lockable.layer);
+}
+```
+
+**After:**
+```javascript
+if (requiredDeviceData.signalStrength >= minSignalStrength) {
+    unlockTarget(lockable, type, lockable.layer, requiredDevice, 'bluetooth');
+}
+```
+
+**For RFID (around line 363):**
+
+**Before:**
+```javascript
+onComplete: (success) => {
+    if (success) {
+        setTimeout(() => {
+            unlockTarget(lockable, type, lockable.layer);
+        }, 100);
+    }
+}
+```
+
+**After:**
+```javascript
+onComplete: (success, cardId) => {
+    if (success) {
+        setTimeout(() => {
+            unlockTarget(lockable, type, lockable.layer, cardId, 'rfid');
+        }, 100);
+    }
+}
+```
+
+**Save and close**
+
+#### 9.5.4 Handle Testing Mode
+
+**Add ability to bypass server validation during development:**
+
+```javascript
+// At top of unlock-system.js after imports
+const USE_SERVER_VALIDATION = !window.DISABLE_SERVER_VALIDATION;
+
+// In unlockTarget function, add fallback:
+export async function unlockTarget(lockable, type, layer, attempt = null, method = null) {
+    // Check if server validation is disabled for testing
+    if (!USE_SERVER_VALIDATION || window.DISABLE_SERVER_VALIDATION) {
+        console.log('⚠️ Server validation disabled - using client-side unlock');
+        return unlockTargetClientSide(lockable, type, layer);
+    }
+
+    // ... rest of server validation code
+}
+```
+
+**This allows testing without server by setting:**
+```javascript
+window.DISABLE_SERVER_VALIDATION = true;
 ```
 
 ### 9.6 Add State Sync

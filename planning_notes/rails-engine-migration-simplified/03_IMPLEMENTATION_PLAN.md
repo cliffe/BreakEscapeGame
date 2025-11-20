@@ -398,24 +398,134 @@ vim "app/assets/scenarios/${SCENARIO}/scenario.json.erb"
 
 #### Repeat for All Scenarios
 
+**Complete conversion script for all main scenarios:**
+
 ```bash
-# List all scenario JSON files
-for file in scenarios/*.json; do
-  base=$(basename "$file" .json)
-  echo "Processing: $base"
+#!/bin/bash
+# Convert all scenario JSON files to ERB structure
 
-  # Create directory
-  mkdir -p "app/assets/scenarios/${base}"
+echo "Converting scenario files to ERB templates..."
 
-  # Move file
-  mv "$file" "app/assets/scenarios/${base}/scenario.json.erb"
+# Main game scenarios (these are the production scenarios)
+MAIN_SCENARIOS=(
+  "ceo_exfil"
+  "cybok_heist"
+  "biometric_breach"
+)
 
-  echo "  ✓ Moved to app/assets/scenarios/${base}/scenario.json.erb"
-  echo "  → Remember to edit for randomization"
+# Test/demo scenarios (keep for testing)
+TEST_SCENARIOS=(
+  "scenario1"
+  "scenario2"
+  "scenario3"
+  "scenario4"
+  "npc-hub-demo-ghost-protocol"
+  "npc-patrol-lockpick"
+  "npc-sprite-test2"
+  "test-multiroom-npc"
+  "test-npc-face-player"
+  "test-npc-patrol"
+  "test-npc-personal-space"
+  "test-npc-waypoints"
+  "test-rfid-multiprotocol"
+  "test-rfid"
+  "test_complex_multidirection"
+  "test_horizontal_layout"
+  "test_mixed_room_sizes"
+  "test_multiple_connections"
+  "test_vertical_layout"
+  "timed_messages_example"
+  "title-screen-demo"
+)
+
+# Process main scenarios
+echo ""
+echo "=== Processing Main Scenarios ==="
+for scenario in "${MAIN_SCENARIOS[@]}"; do
+  if [ -f "scenarios/${scenario}.json" ]; then
+    echo "Processing: $scenario"
+
+    # Create directory
+    mkdir -p "app/assets/scenarios/${scenario}"
+
+    # Move and rename (just rename to .erb, don't modify content yet)
+    mv "scenarios/${scenario}.json" "app/assets/scenarios/${scenario}/scenario.json.erb"
+
+    echo "  ✓ Moved to app/assets/scenarios/${scenario}/scenario.json.erb"
+    echo "  → Edit later to add <%= random_password %>, <%= random_pin %>, etc."
+  else
+    echo "  ⚠ File not found: scenarios/${scenario}.json (skipping)"
+  fi
 done
+
+# Process test scenarios
+echo ""
+echo "=== Processing Test Scenarios ==="
+for scenario in "${TEST_SCENARIOS[@]}"; do
+  if [ -f "scenarios/${scenario}.json" ]; then
+    echo "Processing: $scenario"
+
+    # Create directory
+    mkdir -p "app/assets/scenarios/${scenario}"
+
+    # Move and rename
+    mv "scenarios/${scenario}.json" "app/assets/scenarios/${scenario}/scenario.json.erb"
+
+    echo "  ✓ Moved to app/assets/scenarios/${scenario}/scenario.json.erb"
+  else
+    echo "  ⚠ File not found: scenarios/${scenario}.json (skipping)"
+  fi
+done
+
+echo ""
+echo "=== Summary ==="
+echo "Converted files:"
+find app/assets/scenarios -name "scenario.json.erb" | wc -l
+echo ""
+echo "Directory structure:"
+ls -d app/assets/scenarios/*/
+echo ""
+echo "✓ Conversion complete!"
+echo ""
+echo "IMPORTANT:"
+echo "- Files have been renamed to .erb but content is still JSON"
+echo "- ERB randomization (random_password, etc.) will be added in Phase 4"
+echo "- For now, scenarios work as-is with static passwords"
 ```
 
-**Note:** You'll need to manually edit each .erb file to add randomization
+**Save this script** as `scripts/convert-scenarios.sh` and run:
+
+```bash
+chmod +x scripts/convert-scenarios.sh
+./scripts/convert-scenarios.sh
+```
+
+**Alternative: Manual conversion for main scenarios only:**
+
+```bash
+# If you only want to convert the 3 main scenarios manually:
+
+# CEO Exfiltration
+mkdir -p app/assets/scenarios/ceo_exfil
+mv scenarios/ceo_exfil.json app/assets/scenarios/ceo_exfil/scenario.json.erb
+
+# CybOK Heist
+mkdir -p app/assets/scenarios/cybok_heist
+mv scenarios/cybok_heist.json app/assets/scenarios/cybok_heist/scenario.json.erb
+
+# Biometric Breach
+mkdir -p app/assets/scenarios/biometric_breach
+mv scenarios/biometric_breach.json app/assets/scenarios/biometric_breach/scenario.json.erb
+
+# Verify
+ls -la app/assets/scenarios/*/scenario.json.erb
+```
+
+**Note:**
+- Files are renamed to `.erb` extension but content remains valid JSON
+- ERB randomization code (`<%= random_password %>`) will be added later in Phase 4
+- This preserves git history and allows immediate testing
+- Test scenarios are useful for development but don't need randomization
 
 ### 3.3 Handle Ink Files
 
