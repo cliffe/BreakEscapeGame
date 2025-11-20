@@ -526,17 +526,20 @@ export function setupNPCTableCollisions(scene, npcSprite, roomId) {
     
     // Collision with all table objects in the room
     Object.values(room.objects).forEach(obj => {
-        // Tables are identified by their object name or by checking if they're static bodies
-        // Look for objects that came from the 'table' type in processObject
-        if (obj && obj.body && obj.body.static) {
-            // Check if this looks like a table (has scenarioData.type === 'table' or name includes 'desk')
-            const isTable = (obj.scenarioData && obj.scenarioData.type === 'table') || 
-                           (obj.name && obj.name.toLowerCase().includes('desk'));
-            
-            if (isTable) {
-                game.physics.add.collider(npcSprite, obj);
-                tablesAdded++;
-            }
+        // Tables are identified primarily by scenarioData.type === 'table'
+        // Also check for objects with 'desk' or 'table' in their name as fallback
+        if (!obj || !obj.body) {
+            return; // Skip objects without physics bodies
+        }
+
+        const isTable = (obj.scenarioData && obj.scenarioData.type === 'table') ||
+                       (obj.name && (obj.name.toLowerCase().includes('desk') ||
+                                    obj.name.toLowerCase().includes('table')));
+
+        if (isTable) {
+            game.physics.add.collider(npcSprite, obj);
+            tablesAdded++;
+            console.log(`  Added table collision: ${npcSprite.npcId} <-> ${obj.name || 'table'}`);
         }
     });
     

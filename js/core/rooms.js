@@ -2671,9 +2671,15 @@ function createNPCSpritesForRoom(roomId, roomData) {
                     if (window.player) {
                         NPCSpriteManager.createNPCCollision(gameRef, sprite, window.player);
                     }
-                    
-                    // Set up wall and chair collisions (same as player gets)
-                    NPCSpriteManager.setupNPCEnvironmentCollisions(gameRef, sprite, roomId);
+
+                    // Set up environment collisions (walls, tables, chairs) after a delay
+                    // This ensures table/chair physics bodies are fully initialized first
+                    // (tables use delayedCall for physics body creation)
+                    gameRef.time.delayedCall(10, () => {
+                        if (sprite && sprite.body && !sprite.destroyed) {
+                            NPCSpriteManager.setupNPCEnvironmentCollisions(gameRef, sprite, roomId);
+                        }
+                    });
 
                     // Set up NPC-to-NPC collisions with all other NPCs in this room
                     NPCSpriteManager.setupNPCToNPCCollisions(gameRef, sprite, roomId, roomData.npcSprites);
