@@ -1,0 +1,13 @@
+ceo_exfil:
+  name: ceo_exfil
+  display_name: CEO Exfiltration
+  description: Test scenario
+  published: true
+  difficulty_level: 3
+
+unpublished:
+  name: test_unpublished
+  display_name: Unpublished Test
+  description: Not visible
+  published: false
+  difficulty_level: 1

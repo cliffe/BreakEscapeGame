@@ -1,0 +1,7 @@
+active_game:
+  player: test_user (BreakEscape::DemoUser)
+  mission: ceo_exfil
+  scenario_data: { "startRoom": "reception", "rooms": {} }
+  player_state: { "currentRoom": "reception", "unlockedRooms": ["reception"] }
+  status: in_progress
+  score: 0
