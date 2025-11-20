@@ -936,9 +936,9 @@ const inkScript = await ApiClient.getNPCScript(npc.id);
 
 **CRITICAL:** This section handles the conversion from client-side to server-side unlock validation. The unlock system is in `js/systems/unlock-system.js` and is called after minigames succeed.
 
-#### 9.5.1 Create Unlock Loading UI Helper
+#### 9.5.1 Create Simple Unlock Loading Helper
 
-**Create a new file for visual feedback during async unlock validation:**
+**Create a minimal helper for throbbing effect during server validation:**
 
 ```bash
 vim public/break_escape/js/utils/unlock-loading-ui.js
@@ -950,149 +950,52 @@ vim public/break_escape/js/utils/unlock-loading-ui.js
 /**
  * UNLOCK LOADING UI
  * =================
- *
- * Provides visual feedback during async server unlock validation.
- * Shows a throbbing tint effect on doors/objects being unlocked.
+ * Simple throbbing effect for doors/objects during server unlock validation.
  */
 
 /**
- * Apply throbbing tint effect to a Phaser sprite
+ * Start throbbing effect on sprite
  * @param {Phaser.GameObjects.Sprite} sprite - The door or object sprite
- * @param {number} duration - How long to show the effect (ms)
- * @returns {Promise} Resolves when animation completes
  */
-export function showUnlockLoading(sprite) {
-  if (!sprite || !sprite.scene) {
-    console.warn('showUnlockLoading: Invalid sprite');
-    return Promise.resolve();
-  }
+export function startThrob(sprite) {
+  if (!sprite || !sprite.scene) return;
 
-  // Store original tint
-  const originalTint = sprite.tint || 0xffffff;
+  // Blue tint + pulsing alpha
+  sprite.setTint(0x4da6ff);
 
-  // Create throbbing animation (blue tint pulsing)
-  const scene = sprite.scene;
-
-  // Add blue tint and start pulsing
-  sprite.setTint(0x4da6ff); // Light blue
-
-  // Create timeline for throbbing effect
-  const timeline = scene.tweens.createTimeline();
-
-  // Pulse darker blue
-  timeline.add({
+  sprite.scene.tweens.add({
     targets: sprite,
     alpha: { from: 1.0, to: 0.7 },
     duration: 300,
-    ease: 'Sine.easeInOut'
+    ease: 'Sine.easeInOut',
+    yoyo: true,
+    repeat: -1  // Loop forever
   });
-
-  // Pulse back to lighter
-  timeline.add({
-    targets: sprite,
-    alpha: { from: 0.7, to: 1.0 },
-    duration: 300,
-    ease: 'Sine.easeInOut'
-  });
-
-  // Loop the pulse
-  timeline.loop = -1; // Infinite loop
-  timeline.play();
-
-  // Store timeline reference on sprite for cleanup
-  sprite._unlockLoadingTimeline = timeline;
-
-  return timeline;
 }
 
 /**
- * Clear unlock loading effect
- * @param {Phaser.GameObjects.Sprite} sprite - The door or object sprite
- * @param {boolean} success - Whether unlock succeeded
- */
-export function clearUnlockLoading(sprite, success = true) {
-  if (!sprite || !sprite.scene) {
-    return;
-  }
-
-  // Stop and remove timeline
-  if (sprite._unlockLoadingTimeline) {
-    sprite._unlockLoadingTimeline.stop();
-    sprite._unlockLoadingTimeline.remove();
-    sprite._unlockLoadingTimeline = null;
-  }
-
-  // Remove tint with quick flash
-  const scene = sprite.scene;
-
-  if (success) {
-    // Success: Quick green flash then clear
-    sprite.setTint(0x00ff00); // Green
-    scene.tweens.add({
-      targets: sprite,
-      alpha: { from: 1.0, to: 1.0 },
-      duration: 200,
-      onComplete: () => {
-        sprite.clearTint();
-        sprite.setAlpha(1.0);
-      }
-    });
-  } else {
-    // Failure: Quick red flash then clear
-    sprite.setTint(0xff0000); // Red
-    scene.tweens.add({
-      targets: sprite,
-      alpha: { from: 1.0, to: 1.0 },
-      duration: 200,
-      onComplete: () => {
-        sprite.clearTint();
-        sprite.setAlpha(1.0);
-      }
-    });
-  }
-}
-
-/**
- * Show loading spinner near sprite (alternative visual)
+ * Stop throbbing effect
  * @param {Phaser.GameObjects.Sprite} sprite - The door or object sprite
  */
-export function showLoadingSpinner(sprite) {
-  if (!sprite || !sprite.scene) {
-    return null;
-  }
+export function stopThrob(sprite) {
+  if (!sprite || !sprite.scene) return;
 
-  const scene = sprite.scene;
+  // Kill all tweens on this sprite
+  sprite.scene.tweens.killTweensOf(sprite);
 
-  // Create simple rotating circle as spinner
-  const spinner = scene.add.graphics();
-  spinner.lineStyle(3, 0x4da6ff, 1);
-  spinner.arc(sprite.x, sprite.y - 30, 10, 0, Math.PI * 1.5);
-  spinner.setDepth(1000); // Always on top
-
-  // Rotate continuously
-  scene.tweens.add({
-    targets: spinner,
-    angle: 360,
-    duration: 1000,
-    repeat: -1
-  });
-
-  sprite._unlockLoadingSpinner = spinner;
-
-  return spinner;
-}
-
-/**
- * Clear loading spinner
- * @param {Phaser.GameObjects.Sprite} sprite - The door or object sprite
- */
-export function clearLoadingSpinner(sprite) {
-  if (sprite && sprite._unlockLoadingSpinner) {
-    sprite._unlockLoadingSpinner.destroy();
-    sprite._unlockLoadingSpinner = null;
-  }
+  // Reset appearance
+  sprite.clearTint();
+  sprite.setAlpha(1.0);
 }
 ```
+
+**That's it! No complex timeline management, no success/failure flashes, no stored references.**
+
+**Why this is simpler:**
+- Door sprite gets removed anyway when it opens
+- Container items automatically transition to next state
+- Game already shows success/error alerts
+- Just need visual feedback during the ~100-300ms API call
 
 **Save and close**
 
@@ -1108,7 +1011,7 @@ vim public/break_escape/js/systems/unlock-system.js
 
 ```javascript
 import { ApiClient } from '../api-client.js';
-import { showUnlockLoading, clearUnlockLoading } from '../utils/unlock-loading-ui.js';
+import { startThrob, stopThrob } from '../utils/unlock-loading-ui.js';
 ```
 
 **Find the `unlockTarget` function (around line 468) and wrap it with server validation:**
@@ -1140,8 +1043,8 @@ export function unlockTarget(lockable, type, layer) {
 export async function unlockTarget(lockable, type, layer, attempt = null, method = null) {
     console.log('🔓 unlockTarget called:', { type, lockable, attempt, method });
 
-    // Show loading UI
-    showUnlockLoading(lockable);
+    // Start throbbing
+    startThrob(lockable);
 
     try {
         // Get target ID
@@ -1153,8 +1056,8 @@ export async function unlockTarget(lockable, type, layer, attempt = null, method
         console.log('🔓 Validating unlock with server...', { targetId, type, method });
         const result = await ApiClient.unlock(type, targetId, attempt, method);
 
-        // Clear loading UI (success)
-        clearUnlockLoading(lockable, true);
+        // Stop throbbing (whether success or failure)
+        stopThrob(lockable);
 
         if (result.success) {
             console.log('✅ Server validated unlock');
@@ -1173,12 +1076,6 @@ export async function unlockTarget(lockable, type, layer, attempt = null, method
                         lockType: doorProps.lockType
                     });
                 }
-
-                // Update room data if server provided it
-                if (result.roomData) {
-                    // Merge server room data with client state
-                    console.log('🔓 Received room data from server:', result.roomData);
-                }
             } else {
                 // Handle item unlocking
                 if (lockable.scenarioData) {
@@ -1196,10 +1093,9 @@ export async function unlockTarget(lockable, type, layer, attempt = null, method
                             });
                         }
 
-                        // Auto-launch container minigame
+                        // Auto-launch container minigame (throb already stopped)
                         setTimeout(() => {
                             if (window.handleContainerInteraction) {
-                                console.log('Auto-launching container minigame after unlock');
                                 window.handleContainerInteraction(lockable);
                             }
                         }, 500);
@@ -1219,7 +1115,6 @@ export async function unlockTarget(lockable, type, layer, attempt = null, method
                     lockable.layer.remove(lockable);
                 }
 
-                console.log('Collected item:', lockable.scenarioData);
                 window.gameAlert(`Collected ${lockable.scenarioData?.name || 'item'}`,
                     'success', 'Item Collected', 3000);
             }
@@ -1229,8 +1124,8 @@ export async function unlockTarget(lockable, type, layer, attempt = null, method
             window.gameAlert(result.message || 'Unlock failed', 'error', 'Unlock Failed', 3000);
         }
     } catch (error) {
-        // Clear loading UI (failure)
-        clearUnlockLoading(lockable, false);
+        // Stop throbbing on error
+        stopThrob(lockable);
 
         console.error('❌ Unlock validation failed:', error);
         window.gameAlert('Failed to validate unlock with server', 'error', 'Network Error', 4000);
@@ -1243,6 +1138,12 @@ export function unlockTargetClientSide(lockable, type, layer) {
     // ... original implementation for testing
 }
 ```
+
+**Key simplifications:**
+- Just `startThrob()` at the beginning
+- Just `stopThrob()` when done (success, failure, or error)
+- No need to track success/failure differently - the game alerts handle that
+- Door/container transitions handle removing the sprite
 
 **Save and close**
 
