@@ -6,7 +6,7 @@
   <%= csp_meta_tag %>
 
   <%# Load game CSS %>
-  <%= stylesheet_link_tag '/break_escape/css/styles.css' %>
+  <link rel="stylesheet" href="/break_escape/css/main.css">
 </head>
 <body>
   <%# Game container - Phaser will render here %>
@@ -28,6 +28,6 @@
   </script>
 
   <%# Load game JavaScript (ES6 module) %>
-  <%= javascript_include_tag '/break_escape/js/main.js', type: 'module', nonce: content_security_policy_nonce %>
+  <script type="module" src="/break_escape/js/main.js" nonce="<%= content_security_policy_nonce %>"></script>
 </body>
 </html>
