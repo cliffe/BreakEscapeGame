@@ -1,0 +1,37 @@
+# Bundle
+vendor/bundle/
+.bundle/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Rails
+/log/*
+/tmp/*
+!/log/.keep
+!/tmp/.keep
+test/dummy/log/*
+test/dummy/tmp/*
+test/dummy/storage/*
+.env.local
+.env.*.local
+
+# Database
+*.sqlite3
+*.sqlite3-*
+/db/*.sqlite3
+
+# Logs
+*.log
+
+# Temporary files
+.byebug_history
+.spring.pid
