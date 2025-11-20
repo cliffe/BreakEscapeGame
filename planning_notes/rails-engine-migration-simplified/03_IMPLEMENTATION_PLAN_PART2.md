@@ -564,63 +564,122 @@ window.ApiClient = ApiClient;
 
 ### 9.3 Setup CSRF Token Injection (Critical for Security)
 
-**CRITICAL:** Rails requires CSRF tokens for all POST/PUT/DELETE requests. The token must be injected from the server-rendered view into JavaScript.
+**CRITICAL:** Rails requires CSRF tokens for all POST/PUT/DELETE requests. The token must be accessible to JavaScript for API calls.
 
-#### 9.3.1 Update Game Show View
+**IMPORTANT:** If using Hacktivity's application layout, `<%= csrf_meta_tags %>` is already present! You only need to read the existing token.
 
-**Edit the view that renders the game:**
+#### 9.3.1 Determine Your Layout Strategy
 
-```bash
-vim app/views/break_escape/games/show.html.erb
-```
+**Option A: Using Hacktivity's Application Layout (Recommended)**
 
-**Add JavaScript configuration block with CSRF token:**
+If your view uses Hacktivity's layout:
 
 ```erb
+<!-- app/views/break_escape/games/show.html.erb -->
+<!-- Hacktivity's layout already includes <%= csrf_meta_tags %> -->
+
+<div id="game-container"></div>
+
+<!-- CRITICAL: Inject configuration before loading game -->
+<%= javascript_tag nonce: true do %>
+  // BreakEscape Configuration
+  window.breakEscapeConfig = {
+    gameId: <%= @game.id %>,
+    apiBasePath: '<%= break_escape_path %>/games/<%= @game.id %>',
+    assetsPath: '/break_escape/assets',
+    // Read CSRF token from meta tag (already in layout)
+    csrfToken: document.querySelector('meta[name="csrf-token"]')?.content,
+    missionName: '<%= j @game.mission.display_name %>',
+    startRoom: '<%= j @game.scenario_data["startRoom"] %>',
+    debug: <%= Rails.env.development? %>
+  };
+
+  console.log('✓ BreakEscape config loaded:', window.breakEscapeConfig);
+<% end %>
+
+<!-- Load Phaser -->
+<script src="/break_escape/js/phaser.min.js"></script>
+
+<!-- Load game (as ES6 module) -->
+<script type="module" src="/break_escape/js/main.js"></script>
+```
+
+**Advantages:**
+- ✅ Uses Hacktivity's existing CSRF setup
+- ✅ Consistent with other Hacktivity pages
+- ✅ Automatic CSRF token rotation handled by Hacktivity
+- ✅ No duplicate meta tags
+
+**Option B: Standalone Layout for Engine**
+
+If you create a standalone layout for the engine:
+
+```erb
+<!-- app/views/layouts/break_escape/application.html.erb -->
 <!DOCTYPE html>
 <html>
 <head>
-  <title>Break Escape - <%= @game.mission.display_name %></title>
-  <%= csrf_meta_tags %>
+  <title>Break Escape - <%= yield :title %></title>
+  <%= csrf_meta_tags %>  <!-- REQUIRED: Add this -->
   <%= csp_meta_tag %>
 
   <!-- Game CSS -->
   <%= stylesheet_link_tag '/break_escape/css/game.css' %>
-
-  <!-- CRITICAL: Inject configuration before loading game -->
-  <%= javascript_tag nonce: true do %>
-    // BreakEscape Configuration
-    window.breakEscapeConfig = {
-      gameId: <%= @game.id %>,
-      apiBasePath: '<%= break_escape_path %>/games/<%= @game.id %>',
-      assetsPath: '/break_escape/assets',
-      csrfToken: '<%= form_authenticity_token %>',
-      missionName: '<%= j @game.mission.display_name %>',
-      startRoom: '<%= j @game.scenario_data["startRoom"] %>',
-      debug: <%= Rails.env.development? %>
-    };
-
-    console.log('✓ BreakEscape config loaded:', window.breakEscapeConfig);
-  <% end %>
 </head>
 <body>
-  <div id="game-container"></div>
-
-  <!-- Load Phaser -->
-  <script src="/break_escape/js/phaser.min.js"></script>
-
-  <!-- Load game (as ES6 module) -->
-  <script type="module" src="/break_escape/js/main.js"></script>
+  <%= yield %>
 </body>
 </html>
 ```
 
-**Key points:**
-- `<%= csrf_meta_tags %>` - Required by Rails, adds meta tags
-- `<%= form_authenticity_token %>` - Generates CSRF token for this session
-- `nonce: true` - Required if using Content Security Policy
-- Configuration loaded BEFORE game scripts
-- Token stored in `window.breakEscapeConfig.csrfToken`
+```erb
+<!-- app/views/break_escape/games/show.html.erb -->
+<% content_for :title, @game.mission.display_name %>
+
+<div id="game-container"></div>
+
+<%= javascript_tag nonce: true do %>
+  window.breakEscapeConfig = {
+    gameId: <%= @game.id %>,
+    apiBasePath: '<%= break_escape_path %>/games/<%= @game.id %>',
+    assetsPath: '/break_escape/assets',
+    csrfToken: '<%= form_authenticity_token %>',  // Generate fresh token
+    missionName: '<%= j @game.mission.display_name %>',
+    startRoom: '<%= j @game.scenario_data["startRoom"] %>',
+    debug: <%= Rails.env.development? %>
+  };
+<% end %>
+
+<script src="/break_escape/js/phaser.min.js"></script>
+<script type="module" src="/break_escape/js/main.js"></script>
+```
+
+**When to use:**
+- ✅ Engine needs different layout than Hacktivity
+- ✅ Full-screen game experience
+- ✅ Standalone mode (engine runs independently)
+
+#### 9.3.1a Verify CSRF Meta Tag Exists
+
+**Check that the meta tag is in the rendered HTML:**
+
+```bash
+# Start Rails server
+rails server
+
+# Visit game page
+# View page source (Ctrl+U or Cmd+Option+U)
+```
+
+**Look for this in <head>:**
+```html
+<meta name="csrf-token" content="AaBbCc123...long base64 string..." />
+```
+
+**If missing:**
+- Check if using Hacktivity's layout
+- If standalone layout, add `<%= csrf_meta_tags %>`
+- Check `config/application.rb` - forgery protection should be enabled
 
 **Save and close**
 
@@ -651,22 +710,26 @@ console.log('CSRF Token:', window.breakEscapeConfig.csrfToken);
 console.log('Meta tag:', document.querySelector('meta[name="csrf-token"]')?.content);
 ```
 
-#### 9.3.3 Handle Missing CSRF Token
+#### 9.3.3 Configure Client-Side Token Reading
 
-**Add error handling in config.js:**
+**Update config.js to read CSRF token with fallback:**
 
 ```bash
 vim public/break_escape/js/config.js
 ```
 
-**Update to validate CSRF token:**
+**Replace with CSRF token reading logic:**
 
 ```javascript
 // API configuration from server
 export const GAME_ID = window.breakEscapeConfig?.gameId;
 export const API_BASE = window.breakEscapeConfig?.apiBasePath || '';
 export const ASSETS_PATH = window.breakEscapeConfig?.assetsPath || '/break_escape/assets';
-export const CSRF_TOKEN = window.breakEscapeConfig?.csrfToken;
+
+// CSRF Token - Try multiple sources (in order of preference)
+export const CSRF_TOKEN =
+  window.breakEscapeConfig?.csrfToken ||  // From config object (if set in view)
+  document.querySelector('meta[name="csrf-token"]')?.content;  // From meta tag (Hacktivity layout)
 
 // Verify critical config loaded
 if (!GAME_ID) {
@@ -675,22 +738,37 @@ if (!GAME_ID) {
 }
 
 if (!CSRF_TOKEN) {
-  console.error('❌ CRITICAL: CSRF token not configured!');
+  console.error('❌ CRITICAL: CSRF token not found!');
   console.error('This will cause all POST/PUT requests to fail with 422 status');
-  console.error('Check that <%= form_authenticity_token %> is in the view');
+  console.error('Checked:');
+  console.error('  1. window.breakEscapeConfig.csrfToken');
+  console.error('  2. meta[name="csrf-token"] tag');
+  console.error('');
+  console.error('Solutions:');
+  console.error('  - If using Hacktivity layout: Ensure layout has <%= csrf_meta_tags %>');
+  console.error('  - If standalone: Add <%= csrf_meta_tags %> to layout OR');
+  console.error('  - Set window.breakEscapeConfig.csrfToken in view');
 }
 
 // Log config for debugging
-if (window.breakEscapeConfig?.debug) {
+if (window.breakEscapeConfig?.debug || !CSRF_TOKEN) {
   console.log('✓ BreakEscape config validated:', {
     gameId: GAME_ID,
     apiBasePath: API_BASE,
     assetsPath: ASSETS_PATH,
-    csrfToken: CSRF_TOKEN ? `${CSRF_TOKEN.substring(0, 10)}...` : 'MISSING',
-    debug: true
+    csrfToken: CSRF_TOKEN ? `${CSRF_TOKEN.substring(0, 10)}...` : '❌ MISSING',
+    csrfTokenSource: window.breakEscapeConfig?.csrfToken ? 'config object' :
+                     (document.querySelector('meta[name="csrf-token"]') ? 'meta tag' : 'NOT FOUND'),
+    debug: window.breakEscapeConfig?.debug || false
   });
 }
 ```
+
+**Key Features:**
+- ✅ Tries `window.breakEscapeConfig.csrfToken` first (if explicitly set)
+- ✅ Falls back to meta tag (Hacktivity layout)
+- ✅ Detailed error messages showing what was checked
+- ✅ Logs token source for debugging
 
 **Save and close**
 
@@ -769,15 +847,25 @@ ActionController::InvalidAuthenticityToken
 
 **Issue 2: CSRF token is null/undefined**
 
-**Solution:**
+**Solution:** The config.js already implements fallback (see 9.3.3 above):
 ```javascript
-// In config.js, add fallback to meta tag
-export const CSRF_TOKEN = window.breakEscapeConfig?.csrfToken
-  || document.querySelector('meta[name="csrf-token"]')?.content;
+export const CSRF_TOKEN =
+  window.breakEscapeConfig?.csrfToken ||  // Try config first
+  document.querySelector('meta[name="csrf-token"]')?.content;  // Fall back to meta tag
+```
 
-if (!CSRF_TOKEN) {
-  throw new Error('CSRF token not found! Check view template.');
-}
+**Additional debugging:**
+```javascript
+// In browser console
+console.log('Config token:', window.breakEscapeConfig?.csrfToken);
+console.log('Meta tag token:', document.querySelector('meta[name="csrf-token"]')?.content);
+console.log('Using token:', window.CSRF_TOKEN || 'NONE');
+
+// Check if Hacktivity layout is being used
+console.log('All meta tags:', Array.from(document.querySelectorAll('meta')).map(m => ({
+  name: m.getAttribute('name'),
+  content: m.getAttribute('content')?.substring(0, 20) + '...'
+})));
 ```
 
 **Issue 3: Token changes between requests**
