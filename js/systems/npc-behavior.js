@@ -515,6 +515,9 @@ class NPCBehavior {
 
         switch (state) {
             case 'idle':
+                // Make NPC immovable so they can't be pushed by the player
+                this.sprite.body.setImmovable(true);
+
                 // Actively dampen any residual velocity from collisions
                 const currentVelX = this.sprite.body.velocity.x;
                 const currentVelY = this.sprite.body.velocity.y;
@@ -529,6 +532,9 @@ class NPCBehavior {
                 break;
 
             case 'face_player':
+                // Make NPC immovable so they can't be pushed by the player
+                this.sprite.body.setImmovable(true);
+
                 this.facePlayer(playerPos);
                 // Actively dampen any residual velocity from collisions
                 const faceVelX = this.sprite.body.velocity.x;
@@ -623,6 +629,9 @@ class NPCBehavior {
             // Check if dwell time expired
             const dwellElapsed = time - this.patrolReachedTime;
             if (dwellElapsed < this.patrolTarget.dwellTime) {
+                // Make NPC immovable while dwelling so they can't be pushed
+                this.sprite.body.setImmovable(true);
+
                 // Still dwelling - actively dampen any residual velocity to prevent sliding
                 const dwellVelX = this.sprite.body.velocity.x;
                 const dwellVelY = this.sprite.body.velocity.y;
@@ -677,6 +686,9 @@ class NPCBehavior {
                 }
                 return; // Let next frame handle the new waypoint
             }
+
+            // Make NPC movable while patrolling
+            this.sprite.body.setImmovable(false);
 
             // Move toward current waypoint
             const velocityX = (dx / distance) * this.config.patrol.speed;
@@ -971,12 +983,17 @@ class NPCBehavior {
 
         if (distance === 0) return false; // Avoid division by zero
 
+        // Make NPC movable while backing away from player
+        if (this.sprite.body) {
+            this.sprite.body.setImmovable(false);
+        }
+
         // Back away using velocity (physics-safe movement)
         // Normalize direction and apply velocity push
         const backAwaySpeed = this.config.personalSpace.backAwaySpeed || 30;
         const velocityX = (dx / distance) * backAwaySpeed;
         const velocityY = (dy / distance) * backAwaySpeed;
-        
+
         if (this.sprite.body) {
             this.sprite.body.setVelocity(velocityX, velocityY);
         }
@@ -1005,6 +1022,9 @@ class NPCBehavior {
 
         // If in attack range, try to attack
         if (distance <= attackRange) {
+            // Make NPC immovable while attacking (stationary)
+            this.sprite.body.setImmovable(true);
+
             // Stop moving
             this.sprite.body.setVelocity(0, 0);
             this.isMoving = false;
@@ -1020,6 +1040,9 @@ class NPCBehavior {
 
             return true;
         }
+
+        // Make NPC movable while chasing
+        this.sprite.body.setImmovable(false);
 
         // Chase player - move towards them
         const chaseSpeed = this.config.hostile.chaseSpeed || 120;
