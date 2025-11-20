@@ -10,26 +10,26 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2025_11_20_160000) do
+ActiveRecord::Schema[7.2].define(version: 2025_11_20_160000) do
   create_table "break_escape_demo_users", force: :cascade do |t|
-    t.datetime "created_at", null: false
     t.string "handle", null: false
     t.string "role", default: "user", null: false
+    t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["handle"], name: "index_break_escape_demo_users_on_handle", unique: true
   end
 
   create_table "break_escape_games", force: :cascade do |t|
-    t.datetime "completed_at"
-    t.datetime "created_at", null: false
-    t.integer "mission_id", null: false
-    t.integer "player_id", null: false
-    t.json "player_state", default: "{\"currentRoom\":null,\"unlockedRooms\":[],\"unlockedObjects\":[],\"inventory\":[],\"encounteredNPCs\":[],\"globalVariables\":{},\"biometricSamples\":[],\"biometricUnlocks\":[],\"bluetoothDevices\":[],\"notes\":[],\"health\":100}", null: false
     t.string "player_type", null: false
+    t.integer "player_id", null: false
+    t.integer "mission_id", null: false
     t.json "scenario_data", null: false
-    t.integer "score", default: 0, null: false
-    t.datetime "started_at"
+    t.json "player_state", default: "{\"currentRoom\":null,\"unlockedRooms\":[],\"unlockedObjects\":[],\"inventory\":[],\"encounteredNPCs\":[],\"globalVariables\":{},\"biometricSamples\":[],\"biometricUnlocks\":[],\"bluetoothDevices\":[],\"notes\":[],\"health\":100}", null: false
     t.string "status", default: "in_progress", null: false
+    t.datetime "started_at"
+    t.datetime "completed_at"
+    t.integer "score", default: 0, null: false
+    t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["mission_id"], name: "index_break_escape_games_on_mission_id"
     t.index ["player_type", "player_id", "mission_id"], name: "index_games_on_player_and_mission", unique: true
@@ -38,12 +38,12 @@ ActiveRecord::Schema[8.1].define(version: 2025_11_20_160000) do
   end
 
   create_table "break_escape_missions", force: :cascade do |t|
-    t.datetime "created_at", null: false
-    t.text "description"
-    t.integer "difficulty_level", default: 1, null: false
-    t.string "display_name", null: false
     t.string "name", null: false
+    t.string "display_name", null: false
+    t.text "description"
     t.boolean "published", default: false, null: false
+    t.integer "difficulty_level", default: 1, null: false
+    t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["name"], name: "index_break_escape_missions_on_name", unique: true
     t.index ["published"], name: "index_break_escape_missions_on_published"

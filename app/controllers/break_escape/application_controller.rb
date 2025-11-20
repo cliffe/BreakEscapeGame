@@ -7,8 +7,8 @@ module BreakEscape
 
     # Helper method to get current player (polymorphic)
     def current_player
-      if BreakEscape.standalone_mode?
-        # Standalone mode - get/create demo user
+      if BreakEscape.standalone_mode? || !respond_to?(:current_user, true)
+        # Standalone mode or no current_user available - get/create demo user
         @current_player ||= DemoUser.first_or_create!(handle: 'demo_player')
       else
         # Mounted mode - use Hacktivity's current_user
