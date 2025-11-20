@@ -12,7 +12,7 @@ module BreakEscape
 
     # Path to scenario directory
     def scenario_path
-      Rails.root.join('app', 'assets', 'scenarios', name)
+      BreakEscape::Engine.root.join('scenarios', name)
     end
 
     # Generate scenario data via ERB

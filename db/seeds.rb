@@ -1,7 +1,7 @@
 puts "Creating BreakEscape missions..."
 
 # List all scenario directories
-scenario_dirs = Dir.glob(Rails.root.join('app/assets/scenarios/*')).select { |f| File.directory?(f) }
+scenario_dirs = Dir.glob(BreakEscape::Engine.root.join('scenarios/*')).select { |f| File.directory?(f) }
 
 scenario_dirs.each do |dir|
   scenario_name = File.basename(dir)

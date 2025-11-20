@@ -21,7 +21,7 @@ module BreakEscape
 
     test "scenario_path returns correct path" do
       mission = break_escape_missions(:ceo_exfil)
-      expected = Rails.root.join('app', 'assets', 'scenarios', 'ceo_exfil')
+      expected = BreakEscape::Engine.root.join('scenarios', 'ceo_exfil')
       assert_equal expected, mission.scenario_path
     end
   end
