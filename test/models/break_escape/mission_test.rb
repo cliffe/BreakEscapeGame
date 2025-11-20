@@ -15,12 +15,12 @@ module BreakEscape
     end
 
     test "published scope returns only published missions" do
-      assert_includes Mission.published, missions(:ceo_exfil)
-      assert_not_includes Mission.published, missions(:unpublished)
+      assert_includes Mission.published, break_escape_missions(:ceo_exfil)
+      assert_not_includes Mission.published, break_escape_missions(:unpublished)
     end
 
     test "scenario_path returns correct path" do
-      mission = missions(:ceo_exfil)
+      mission = break_escape_missions(:ceo_exfil)
       expected = Rails.root.join('app', 'assets', 'scenarios', 'ceo_exfil')
       assert_equal expected, mission.scenario_path
     end

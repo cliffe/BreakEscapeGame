@@ -3,7 +3,26 @@ require 'test_helper'
 module BreakEscape
   class GameTest < ActiveSupport::TestCase
     setup do
-      @game = games(:active_game)
+      @mission = break_escape_missions(:ceo_exfil)
+      @player = break_escape_demo_users(:test_user)
+      @game = Game.create!(
+        mission: @mission,
+        player: @player,
+        scenario_data: { "startRoom" => "reception", "rooms" => {} },
+        player_state: {
+          "currentRoom" => "reception",
+          "unlockedRooms" => ["reception"],
+          "unlockedObjects" => [],
+          "inventory" => [],
+          "encounteredNPCs" => [],
+          "globalVariables" => {},
+          "biometricSamples" => [],
+          "biometricUnlocks" => [],
+          "bluetoothDevices" => [],
+          "notes" => [],
+          "health" => 100
+        }
+      )
     end
 
     test "should belong to player and mission" do

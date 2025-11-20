@@ -1,0 +1,1303 @@
+Generating image variants require the image_processing gem. Please add `gem "image_processing", "~> 1.2"` to your Gemfile or set `config.active_storage.variant_processor = :disabled`.
+  [1m[35m (3.4ms)[0m  [1m[35mCREATE TABLE "schema_migrations" ("version" varchar NOT NULL PRIMARY KEY)[0m
+  [1m[35m (0.2ms)[0m  [1m[35mCREATE TABLE "ar_internal_metadata" ("key" varchar NOT NULL PRIMARY KEY, "value" varchar, "created_at" datetime(6) NOT NULL, "updated_at" datetime(6) NOT NULL)[0m
+  [1m[36mActiveRecord::SchemaMigration Load (0.3ms)[0m  [1m[34mSELECT "schema_migrations"."version" FROM "schema_migrations" ORDER BY "schema_migrations"."version" ASC[0m
+Generating image variants require the image_processing gem. Please add `gem "image_processing", "~> 1.2"` to your Gemfile or set `config.active_storage.variant_processor = :disabled`.
+  [1m[36mActiveRecord::InternalMetadata Load (0.6ms)[0m  [1m[34mSELECT * FROM "ar_internal_metadata" WHERE "ar_internal_metadata"."key" = ? ORDER BY "ar_internal_metadata"."key" ASC LIMIT 1[0m  [[nil, "environment"]]
+  [1m[36mActiveRecord::InternalMetadata Create (5.2ms)[0m  [1m[32mINSERT INTO "ar_internal_metadata" ("key", "value", "created_at", "updated_at") VALUES ('environment', 'test', '2025-11-20 17:13:54.117520', '2025-11-20 17:13:54.117523') RETURNING "key"[0m
+  [1m[36mActiveRecord::SchemaMigration Load (0.2ms)[0m  [1m[34mSELECT "schema_migrations"."version" FROM "schema_migrations" ORDER BY "schema_migrations"."version" ASC[0m
+Migrating to CreateBreakEscapeMissions (20251120155357)
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[36mBEGIN immediate TRANSACTION[0m
+  [1m[35m (0.6ms)[0m  [1m[35mCREATE TABLE "break_escape_missions" ("id" integer PRIMARY KEY AUTOINCREMENT NOT NULL, "name" varchar NOT NULL, "display_name" varchar NOT NULL, "description" text, "published" boolean DEFAULT FALSE NOT NULL, "difficulty_level" integer DEFAULT 1 NOT NULL, "created_at" datetime(6) NOT NULL, "updated_at" datetime(6) NOT NULL)[0m
+  [1m[35m (0.1ms)[0m  [1m[35mCREATE UNIQUE INDEX "index_break_escape_missions_on_name" ON "break_escape_missions" ("name")[0m
+  [1m[35m (0.1ms)[0m  [1m[35mCREATE INDEX "index_break_escape_missions_on_published" ON "break_escape_missions" ("published")[0m
+  [1m[36mActiveRecord::SchemaMigration Create (0.1ms)[0m  [1m[32mINSERT INTO "schema_migrations" ("version") VALUES ('20251120155357') RETURNING "version"[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[36mCOMMIT TRANSACTION[0m
+Migrating to CreateBreakEscapeGames (20251120155358)
+Generating image variants require the image_processing gem. Please add `gem "image_processing", "~> 1.2"` to your Gemfile or set `config.active_storage.variant_processor = :disabled`.
+  [1m[36mActiveRecord::SchemaMigration Load (0.4ms)[0m  [1m[34mSELECT "schema_migrations"."version" FROM "schema_migrations" ORDER BY "schema_migrations"."version" ASC[0m
+  [1m[36mActiveRecord::InternalMetadata Load (0.2ms)[0m  [1m[34mSELECT * FROM "ar_internal_metadata" WHERE "ar_internal_metadata"."key" = ? ORDER BY "ar_internal_metadata"."key" ASC LIMIT 1[0m  [[nil, "environment"]]
+  [1m[36mActiveRecord::SchemaMigration Load (0.0ms)[0m  [1m[34mSELECT "schema_migrations"."version" FROM "schema_migrations" ORDER BY "schema_migrations"."version" ASC[0m
+  [1m[36mActiveRecord::InternalMetadata Load (0.1ms)[0m  [1m[34mSELECT * FROM "ar_internal_metadata" WHERE "ar_internal_metadata"."key" = ? ORDER BY "ar_internal_metadata"."key" ASC LIMIT 1[0m  [[nil, "environment"]]
+  [1m[36mActiveRecord::SchemaMigration Load (0.1ms)[0m  [1m[34mSELECT "schema_migrations"."version" FROM "schema_migrations" ORDER BY "schema_migrations"."version" ASC[0m
+  [1m[36mActiveRecord::InternalMetadata Load (0.1ms)[0m  [1m[34mSELECT * FROM "ar_internal_metadata" WHERE "ar_internal_metadata"."key" = ? ORDER BY "ar_internal_metadata"."key" ASC LIMIT 1[0m  [[nil, "environment"]]
+  [1m[36mActiveRecord::InternalMetadata Load (0.1ms)[0m  [1m[34mSELECT * FROM "ar_internal_metadata" WHERE "ar_internal_metadata"."key" = ? ORDER BY "ar_internal_metadata"."key" ASC LIMIT 1[0m  [[nil, "environment"]]
+  [1m[36mActiveRecord::SchemaMigration Load (0.0ms)[0m  [1m[34mSELECT "schema_migrations"."version" FROM "schema_migrations" ORDER BY "schema_migrations"."version" ASC[0m
+Migrating to CreateBreakEscapeGames (20251120155358)
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[36mBEGIN immediate TRANSACTION[0m
+  [1m[35m (0.4ms)[0m  [1m[35mCREATE TABLE "break_escape_games" ("id" integer PRIMARY KEY AUTOINCREMENT NOT NULL, "player_type" varchar NOT NULL, "player_id" integer NOT NULL, "mission_id" integer NOT NULL, "scenario_data" json NOT NULL, "player_state" json DEFAULT '"{\"currentRoom\":null,\"unlockedRooms\":[],\"unlockedObjects\":[],\"inventory\":[],\"encounteredNPCs\":[],\"globalVariables\":{},\"biometricSamples\":[],\"biometricUnlocks\":[],\"bluetoothDevices\":[],\"notes\":[],\"health\":100}"' NOT NULL, "status" varchar DEFAULT 'in_progress' NOT NULL, "started_at" datetime(6), "completed_at" datetime(6), "score" integer DEFAULT 0 NOT NULL, "created_at" datetime(6) NOT NULL, "updated_at" datetime(6) NOT NULL, CONSTRAINT "fk_rails_ce758a8dd4"
+FOREIGN KEY ("mission_id")
+  REFERENCES "break_escape_missions" ("id")
+)[0m
+  [1m[35m (0.1ms)[0m  [1m[35mCREATE INDEX "index_break_escape_games_on_player" ON "break_escape_games" ("player_type", "player_id")[0m
+  [1m[35m (0.1ms)[0m  [1m[35mCREATE INDEX "index_break_escape_games_on_mission_id" ON "break_escape_games" ("mission_id")[0m
+  [1m[35m (0.1ms)[0m  [1m[35mCREATE UNIQUE INDEX "index_games_on_player_and_mission" ON "break_escape_games" ("player_type", "player_id", "mission_id")[0m
+  [1m[35m (0.1ms)[0m  [1m[35mCREATE INDEX "index_break_escape_games_on_status" ON "break_escape_games" ("status")[0m
+  [1m[36mActiveRecord::SchemaMigration Create (0.1ms)[0m  [1m[32mINSERT INTO "schema_migrations" ("version") VALUES ('20251120155358') RETURNING "version"[0m
+  [1m[36mTRANSACTION (5.3ms)[0m  [1m[36mCOMMIT TRANSACTION[0m
+Migrating to CreateBreakEscapeDemoUsers (20251120160000)
+  [1m[36mTRANSACTION (0.0ms)[0m  [1m[36mBEGIN immediate TRANSACTION[0m
+  [1m[35m (0.3ms)[0m  [1m[35mCREATE TABLE "break_escape_demo_users" ("id" integer PRIMARY KEY AUTOINCREMENT NOT NULL, "handle" varchar NOT NULL, "role" varchar DEFAULT 'user' NOT NULL, "created_at" datetime(6) NOT NULL, "updated_at" datetime(6) NOT NULL)[0m
+  [1m[35m (0.2ms)[0m  [1m[35mCREATE UNIQUE INDEX "index_break_escape_demo_users_on_handle" ON "break_escape_demo_users" ("handle")[0m
+  [1m[36mActiveRecord::SchemaMigration Create (0.1ms)[0m  [1m[32mINSERT INTO "schema_migrations" ("version") VALUES ('20251120160000') RETURNING "version"[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[36mCOMMIT TRANSACTION[0m
+  [1m[36mActiveRecord::SchemaMigration Load (0.1ms)[0m  [1m[34mSELECT "schema_migrations"."version" FROM "schema_migrations" ORDER BY "schema_migrations"."version" ASC[0m
+Generating image variants require the image_processing gem. Please add `gem "image_processing", "~> 1.2"` to your Gemfile or set `config.active_storage.variant_processor = :disabled`.
+Generating image variants require the image_processing gem. Please add `gem "image_processing", "~> 1.2"` to your Gemfile or set `config.active_storage.variant_processor = :disabled`.
+  [1m[35m (1.2ms)[0m  [1m[35mDROP TABLE IF EXISTS "break_escape_demo_users"[0m
+  [1m[35m (3.7ms)[0m  [1m[35mCREATE TABLE "break_escape_demo_users" ("id" integer PRIMARY KEY AUTOINCREMENT NOT NULL, "created_at" datetime(6) NOT NULL, "handle" varchar NOT NULL, "role" varchar DEFAULT 'user' NOT NULL, "updated_at" datetime(6) NOT NULL)[0m
+  [1m[35m (0.2ms)[0m  [1m[35mCREATE UNIQUE INDEX "index_break_escape_demo_users_on_handle" ON "break_escape_demo_users" ("handle")[0m
+  [1m[35m (0.1ms)[0m  [1m[35mDROP TABLE IF EXISTS "break_escape_games"[0m
+  [1m[35m (0.3ms)[0m  [1m[35mCREATE TABLE "break_escape_games" ("id" integer PRIMARY KEY AUTOINCREMENT NOT NULL, "completed_at" datetime(6), "created_at" datetime(6) NOT NULL, "mission_id" integer NOT NULL, "player_id" integer NOT NULL, "player_state" json DEFAULT '"{\"currentRoom\":null,\"unlockedRooms\":[],\"unlockedObjects\":[],\"inventory\":[],\"encounteredNPCs\":[],\"globalVariables\":{},\"biometricSamples\":[],\"biometricUnlocks\":[],\"bluetoothDevices\":[],\"notes\":[],\"health\":100}"' NOT NULL, "player_type" varchar NOT NULL, "scenario_data" json NOT NULL, "score" integer DEFAULT 0 NOT NULL, "started_at" datetime(6), "status" varchar DEFAULT 'in_progress' NOT NULL, "updated_at" datetime(6) NOT NULL)[0m
+  [1m[35m (0.2ms)[0m  [1m[35mCREATE INDEX "index_break_escape_games_on_mission_id" ON "break_escape_games" ("mission_id")[0m
+  [1m[35m (0.3ms)[0m  [1m[35mCREATE UNIQUE INDEX "index_games_on_player_and_mission" ON "break_escape_games" ("player_type", "player_id", "mission_id")[0m
+  [1m[35m (0.2ms)[0m  [1m[35mCREATE INDEX "index_break_escape_games_on_player" ON "break_escape_games" ("player_type", "player_id")[0m
+  [1m[35m (0.2ms)[0m  [1m[35mCREATE INDEX "index_break_escape_games_on_status" ON "break_escape_games" ("status")[0m
+  [1m[35m (0.1ms)[0m  [1m[35mDROP TABLE IF EXISTS "break_escape_missions"[0m
+  [1m[35m (0.3ms)[0m  [1m[35mCREATE TABLE "break_escape_missions" ("id" integer PRIMARY KEY AUTOINCREMENT NOT NULL, "created_at" datetime(6) NOT NULL, "description" text, "difficulty_level" integer DEFAULT 1 NOT NULL, "display_name" varchar NOT NULL, "name" varchar NOT NULL, "published" boolean DEFAULT FALSE NOT NULL, "updated_at" datetime(6) NOT NULL)[0m
+  [1m[35m (0.3ms)[0m  [1m[35mCREATE UNIQUE INDEX "index_break_escape_missions_on_name" ON "break_escape_missions" ("name")[0m
+  [1m[35m (0.2ms)[0m  [1m[35mCREATE INDEX "index_break_escape_missions_on_published" ON "break_escape_missions" ("published")[0m
+  [1m[35m (0.1ms)[0m  [1m[35mPRAGMA foreign_keys[0m
+  [1m[35m (0.0ms)[0m  [1m[35mPRAGMA defer_foreign_keys[0m
+  [1m[35m (0.0ms)[0m  [1m[35mPRAGMA defer_foreign_keys = ON[0m
+  [1m[35m (0.0ms)[0m  [1m[35mPRAGMA foreign_keys = OFF[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[36mBEGIN immediate TRANSACTION[0m
+  [1m[35m (0.2ms)[0m  [1m[35mCREATE TEMPORARY TABLE "abreak_escape_games" ("id" integer PRIMARY KEY AUTOINCREMENT NOT NULL, "completed_at" datetime(6), "created_at" datetime(6) NOT NULL, "mission_id" integer NOT NULL, "player_id" integer NOT NULL, "player_state" json DEFAULT '"{\"currentRoom\":null,\"unlockedRooms\":[],\"unlockedObjects\":[],\"inventory\":[],\"encounteredNPCs\":[],\"globalVariables\":{},\"biometricSamples\":[],\"biometricUnlocks\":[],\"bluetoothDevices\":[],\"notes\":[],\"health\":100}"' NOT NULL, "player_type" varchar NOT NULL, "scenario_data" json NOT NULL, "score" integer DEFAULT 0 NOT NULL, "started_at" datetime(6), "status" varchar DEFAULT 'in_progress' NOT NULL, "updated_at" datetime(6) NOT NULL)[0m
+  [1m[35m (0.1ms)[0m  [1m[35mCREATE INDEX "tindex_abreak_escape_games_on_status" ON "abreak_escape_games" ("status")[0m
+  [1m[35m (0.1ms)[0m  [1m[35mCREATE INDEX "tindex_abreak_escape_games_on_player" ON "abreak_escape_games" ("player_type", "player_id")[0m
+  [1m[35m (0.1ms)[0m  [1m[35mCREATE UNIQUE INDEX "tindex_games_on_player_and_mission" ON "abreak_escape_games" ("player_type", "player_id", "mission_id")[0m
+  [1m[35m (0.1ms)[0m  [1m[35mCREATE INDEX "tindex_abreak_escape_games_on_mission_id" ON "abreak_escape_games" ("mission_id")[0m
+  [1m[35mSQL (0.4ms)[0m  [1m[32mINSERT INTO "abreak_escape_games" ("id","completed_at","created_at","mission_id","player_id","player_state","player_type","scenario_data","score","started_at","status","updated_at")
+                     SELECT "id","completed_at","created_at","mission_id","player_id","player_state","player_type","scenario_data","score","started_at","status","updated_at" FROM "break_escape_games"[0m
+  [1m[35m (0.4ms)[0m  [1m[35mDROP TABLE "break_escape_games"[0m
+  [1m[35m (0.2ms)[0m  [1m[35mCREATE TABLE "break_escape_games" ("id" integer PRIMARY KEY AUTOINCREMENT NOT NULL, "completed_at" datetime(6), "created_at" datetime(6) NOT NULL, "mission_id" integer NOT NULL, "player_id" integer NOT NULL, "player_state" json DEFAULT '"{\"currentRoom\":null,\"unlockedRooms\":[],\"unlockedObjects\":[],\"inventory\":[],\"encounteredNPCs\":[],\"globalVariables\":{},\"biometricSamples\":[],\"biometricUnlocks\":[],\"bluetoothDevices\":[],\"notes\":[],\"health\":100}"' NOT NULL, "player_type" varchar NOT NULL, "scenario_data" json NOT NULL, "score" integer DEFAULT 0 NOT NULL, "started_at" datetime(6), "status" varchar DEFAULT 'in_progress' NOT NULL, "updated_at" datetime(6) NOT NULL, CONSTRAINT "fk_rails_ce758a8dd4"
+FOREIGN KEY ("mission_id")
+  REFERENCES "break_escape_missions" ("id")
+)[0m
+  [1m[35m (0.1ms)[0m  [1m[35mCREATE INDEX "index_break_escape_games_on_mission_id" ON "break_escape_games" ("mission_id")[0m
+  [1m[35m (0.1ms)[0m  [1m[35mCREATE UNIQUE INDEX "index_games_on_player_and_mission" ON "break_escape_games" ("player_type", "player_id", "mission_id")[0m
+  [1m[35m (0.1ms)[0m  [1m[35mCREATE INDEX "index_break_escape_games_on_player" ON "break_escape_games" ("player_type", "player_id")[0m
+  [1m[35m (0.1ms)[0m  [1m[35mCREATE INDEX "index_break_escape_games_on_status" ON "break_escape_games" ("status")[0m
+  [1m[35mSQL (0.1ms)[0m  [1m[32mINSERT INTO "break_escape_games" ("id","completed_at","created_at","mission_id","player_id","player_state","player_type","scenario_data","score","started_at","status","updated_at")
+                     SELECT "id","completed_at","created_at","mission_id","player_id","player_state","player_type","scenario_data","score","started_at","status","updated_at" FROM "abreak_escape_games"[0m
+  [1m[35m (0.2ms)[0m  [1m[35mDROP TABLE "abreak_escape_games"[0m
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[36mCOMMIT TRANSACTION[0m
+  [1m[35m (0.1ms)[0m  [1m[35mPRAGMA defer_foreign_keys = 0[0m
+  [1m[35m (0.0ms)[0m  [1m[35mPRAGMA foreign_keys = 1[0m
+  [1m[35m (0.2ms)[0m  [1m[35mCREATE TABLE "schema_migrations" ("version" varchar NOT NULL PRIMARY KEY)[0m
+  [1m[36mActiveRecord::SchemaMigration Load (0.2ms)[0m  [1m[34mSELECT "schema_migrations"."version" FROM "schema_migrations" ORDER BY "schema_migrations"."version" ASC[0m
+  [1m[35m (0.2ms)[0m  [1m[32mINSERT INTO "schema_migrations" (version) VALUES (20251120160000)[0m
+  [1m[35m (0.1ms)[0m  [1m[32mINSERT INTO "schema_migrations" (version) VALUES
+(20251120155358),
+(20251120155357);[0m
+  [1m[35m (0.3ms)[0m  [1m[35mCREATE TABLE "ar_internal_metadata" ("key" varchar NOT NULL PRIMARY KEY, "value" varchar, "created_at" datetime(6) NOT NULL, "updated_at" datetime(6) NOT NULL)[0m
+  [1m[36mActiveRecord::InternalMetadata Load (0.1ms)[0m  [1m[34mSELECT * FROM "ar_internal_metadata" WHERE "ar_internal_metadata"."key" = ? ORDER BY "ar_internal_metadata"."key" ASC LIMIT 1[0m  [[nil, "environment"]]
+  [1m[36mActiveRecord::InternalMetadata Create (0.3ms)[0m  [1m[32mINSERT INTO "ar_internal_metadata" ("key", "value", "created_at", "updated_at") VALUES ('environment', 'test', '2025-11-20 17:15:26.896212', '2025-11-20 17:15:26.896218') RETURNING "key"[0m
+  [1m[36mActiveRecord::InternalMetadata Load (0.1ms)[0m  [1m[34mSELECT * FROM "ar_internal_metadata" WHERE "ar_internal_metadata"."key" = ? ORDER BY "ar_internal_metadata"."key" ASC LIMIT 1[0m  [[nil, "environment"]]
+  [1m[36mActiveRecord::InternalMetadata Load (0.1ms)[0m  [1m[34mSELECT * FROM "ar_internal_metadata" WHERE "ar_internal_metadata"."key" = ? ORDER BY "ar_internal_metadata"."key" ASC LIMIT 1[0m  [[nil, "schema_sha1"]]
+  [1m[36mActiveRecord::InternalMetadata Create (0.3ms)[0m  [1m[32mINSERT INTO "ar_internal_metadata" ("key", "value", "created_at", "updated_at") VALUES ('schema_sha1', '33181f3d58f9bab484a9b348ce1e6b298e81ba9b', '2025-11-20 17:15:26.897909', '2025-11-20 17:15:26.897911') RETURNING "key"[0m
+  [1m[36mActiveRecord::SchemaMigration Load (0.6ms)[0m  [1m[34mSELECT "schema_migrations"."version" FROM "schema_migrations" ORDER BY "schema_migrations"."version" ASC[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[36mBEGIN immediate TRANSACTION[0m
+  [1m[35m (0.5ms)[0m  [1m[35mPRAGMA foreign_keys[0m
+  [1m[35m (0.0ms)[0m  [1m[35mPRAGMA defer_foreign_keys[0m
+  [1m[35m (0.0ms)[0m  [1m[35mPRAGMA defer_foreign_keys = ON[0m
+  [1m[35m (0.0ms)[0m  [1m[35mPRAGMA foreign_keys = OFF[0m
+  [1m[36mFixtures Load (0.4ms)[0m  [1m[31mDELETE FROM "break_escape_demo_users";
+DELETE FROM "break_escape_games";
+DELETE FROM "break_escape_missions";
+INSERT INTO "break_escape_demo_users" ("id", "created_at", "handle", "role", "updated_at") VALUES (149617800, '2025-11-20 17:15:27.433387', 'test_user', 'user', '2025-11-20 17:15:27.433387'), (618102942, '2025-11-20 17:15:27.433387', 'other_user', 'user', '2025-11-20 17:15:27.433387');
+INSERT INTO "break_escape_games" ("id", "completed_at", "created_at", "mission_id", "player_id", "player_state", "player_type", "scenario_data", "score", "started_at", "status", "updated_at") VALUES (223060831, NULL, '2025-11-20 17:15:27.438207', 418560898, 149617800, '{"currentRoom":"reception","unlockedRooms":["reception"]}', 'BreakEscape::DemoUser', '{"startRoom":"reception","rooms":{}}', 0, NULL, 'in_progress', '2025-11-20 17:15:27.438207');
+INSERT INTO "break_escape_missions" ("id", "created_at", "description", "difficulty_level", "display_name", "name", "published", "updated_at") VALUES (418560898, '2025-11-20 17:15:27.442020', 'Test scenario', 3, 'CEO Exfiltration', 'ceo_exfil', TRUE, '2025-11-20 17:15:27.442020'), (636030761, '2025-11-20 17:15:27.442020', 'Not visible', 1, 'Unpublished Test', 'test_unpublished', FALSE, '2025-11-20 17:15:27.442020')[0m
+  [1m[35m (0.1ms)[0m  [1m[35mPRAGMA defer_foreign_keys = 0[0m
+  [1m[35m (0.0ms)[0m  [1m[35mPRAGMA foreign_keys = 1[0m
+  [1m[36mTRANSACTION (4.9ms)[0m  [1m[36mCOMMIT TRANSACTION[0m
+  [1m[35m (0.1ms)[0m  [1m[35mPRAGMA foreign_key_check[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[36mBEGIN deferred TRANSACTION[0m
+---------------------------------------------------------------
+BreakEscape::MissionTest: test_should_validate_presence_of_name
+---------------------------------------------------------------
+  [1m[36mBreakEscape::Mission Exists? (0.3ms)[0m  [1m[34mSELECT 1 AS one FROM "break_escape_missions" WHERE "break_escape_missions"."name" IS NULL LIMIT ?[0m  [["LIMIT", 1]]
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[31mROLLBACK TRANSACTION[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[36mBEGIN deferred TRANSACTION[0m
+------------------------------------------------------------------------------
+BreakEscape::MissionTest: test_published_scope_returns_only_published_missions
+------------------------------------------------------------------------------
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[31mROLLBACK TRANSACTION[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[36mBEGIN deferred TRANSACTION[0m
+-----------------------------------------------------------------
+BreakEscape::MissionTest: test_scenario_path_returns_correct_path
+-----------------------------------------------------------------
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[31mROLLBACK TRANSACTION[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[36mBEGIN deferred TRANSACTION[0m
+-----------------------------------------------------------------
+BreakEscape::MissionTest: test_should_validate_uniqueness_of_name
+-----------------------------------------------------------------
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mSAVEPOINT active_record_1[0m
+  [1m[36mBreakEscape::Mission Exists? (0.4ms)[0m  [1m[34mSELECT 1 AS one FROM "break_escape_missions" WHERE "break_escape_missions"."name" = ? LIMIT ?[0m  [["name", "test"], ["LIMIT", 1]]
+  [1m[36mBreakEscape::Mission Create (0.4ms)[0m  [1m[32mINSERT INTO "break_escape_missions" ("created_at", "description", "difficulty_level", "display_name", "name", "published", "updated_at") VALUES (?, ?, ?, ?, ?, ?, ?) RETURNING "id"[0m  [["created_at", "2025-11-20 17:15:27.595654"], ["description", nil], ["difficulty_level", 1], ["display_name", "Test"], ["name", "test"], ["published", 0], ["updated_at", "2025-11-20 17:15:27.595654"]]
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mRELEASE SAVEPOINT active_record_1[0m
+  [1m[36mBreakEscape::Mission Exists? (1.8ms)[0m  [1m[34mSELECT 1 AS one FROM "break_escape_missions" WHERE "break_escape_missions"."name" = ? LIMIT ?[0m  [["name", "test"], ["LIMIT", 1]]
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[31mROLLBACK TRANSACTION[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[36mBEGIN deferred TRANSACTION[0m
+---------------------------------------------
+BreakEscapeTest: test_it_has_a_version_number
+---------------------------------------------
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[31mROLLBACK TRANSACTION[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[36mBEGIN deferred TRANSACTION[0m
+----------------------------------------------------------
+BreakEscape::MissionsControllerTest: test_should_get_index
+----------------------------------------------------------
+Started GET "/break_escape/missions" for 127.0.0.1 at 2025-11-20 17:15:27 +0000
+Processing by BreakEscape::MissionsController#index as HTML
+Completed 500 Internal Server Error in 7ms (ActiveRecord: 0.0ms (0 queries, 0 cached) | GC: 0.0ms)
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[31mROLLBACK TRANSACTION[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[36mBEGIN deferred TRANSACTION[0m
+-----------------------------------------------------------------------
+BreakEscape::MissionsControllerTest: test_should_show_published_mission
+-----------------------------------------------------------------------
+  [1m[36mBreakEscape::Mission Load (0.3ms)[0m  [1m[34mSELECT "break_escape_missions".* FROM "break_escape_missions" WHERE "break_escape_missions"."id" = ? LIMIT ?[0m  [["id", 418560898], ["LIMIT", 1]]
+Started GET "/break_escape/missions/418560898" for 127.0.0.1 at 2025-11-20 17:15:28 +0000
+Processing by BreakEscape::MissionsController#show as HTML
+  Parameters: {"id"=>"418560898"}
+  [1m[36mBreakEscape::Mission Load (0.2ms)[0m  [1m[34mSELECT "break_escape_missions".* FROM "break_escape_missions" WHERE "break_escape_missions"."id" = ? LIMIT ?[0m  [["id", 418560898], ["LIMIT", 1]]
+Completed 500 Internal Server Error in 14ms (ActiveRecord: 0.1ms (1 query, 0 cached) | GC: 10.0ms)
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[31mROLLBACK TRANSACTION[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[36mBEGIN deferred TRANSACTION[0m
+------------------------------------------------
+BreakEscape::GameTest: test_should_update_health
+------------------------------------------------
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[31mROLLBACK TRANSACTION[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[36mBEGIN deferred TRANSACTION[0m
+---------------------------------------------------------------
+BreakEscape::GameTest: test_should_belong_to_player_and_mission
+---------------------------------------------------------------
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[31mROLLBACK TRANSACTION[0m
+  [1m[36mTRANSACTION (0.0ms)[0m  [1m[36mBEGIN deferred TRANSACTION[0m
+--------------------------------------------------
+BreakEscape::GameTest: test_should_track_inventory
+--------------------------------------------------
+  [1m[36mTRANSACTION (0.0ms)[0m  [1m[31mROLLBACK TRANSACTION[0m
+  [1m[36mTRANSACTION (0.0ms)[0m  [1m[36mBEGIN deferred TRANSACTION[0m
+-----------------------------------------------------------------
+BreakEscape::GameTest: test_should_clamp_health_between_0_and_100
+-----------------------------------------------------------------
+  [1m[36mTRANSACTION (0.0ms)[0m  [1m[31mROLLBACK TRANSACTION[0m
+  [1m[36mTRANSACTION (0.0ms)[0m  [1m[36mBEGIN deferred TRANSACTION[0m
+----------------------------------------------
+BreakEscape::GameTest: test_should_unlock_room
+----------------------------------------------
+  [1m[36mTRANSACTION (0.0ms)[0m  [1m[31mROLLBACK TRANSACTION[0m
+Generating image variants require the image_processing gem. Please add `gem "image_processing", "~> 1.2"` to your Gemfile or set `config.active_storage.variant_processor = :disabled`.
+  [1m[36mActiveRecord::InternalMetadata Load (0.4ms)[0m  [1m[34mSELECT * FROM "ar_internal_metadata" WHERE "ar_internal_metadata"."key" = ? ORDER BY "ar_internal_metadata"."key" ASC LIMIT 1[0m  [[nil, "schema_sha1"]]
+  [1m[36mActiveRecord::SchemaMigration Load (0.2ms)[0m  [1m[34mSELECT "schema_migrations"."version" FROM "schema_migrations" ORDER BY "schema_migrations"."version" ASC[0m
+Generating image variants require the image_processing gem. Please add `gem "image_processing", "~> 1.2"` to your Gemfile or set `config.active_storage.variant_processor = :disabled`.
+  [1m[36mActiveRecord::InternalMetadata Load (0.6ms)[0m  [1m[34mSELECT * FROM "ar_internal_metadata" WHERE "ar_internal_metadata"."key" = ? ORDER BY "ar_internal_metadata"."key" ASC LIMIT 1[0m  [[nil, "schema_sha1"]]
+  [1m[36mActiveRecord::SchemaMigration Load (0.2ms)[0m  [1m[34mSELECT "schema_migrations"."version" FROM "schema_migrations" ORDER BY "schema_migrations"."version" ASC[0m
+Generating image variants require the image_processing gem. Please add `gem "image_processing", "~> 1.2"` to your Gemfile or set `config.active_storage.variant_processor = :disabled`.
+  [1m[36mActiveRecord::InternalMetadata Load (0.6ms)[0m  [1m[34mSELECT * FROM "ar_internal_metadata" WHERE "ar_internal_metadata"."key" = ? ORDER BY "ar_internal_metadata"."key" ASC LIMIT 1[0m  [[nil, "schema_sha1"]]
+  [1m[36mActiveRecord::SchemaMigration Load (0.2ms)[0m  [1m[34mSELECT "schema_migrations"."version" FROM "schema_migrations" ORDER BY "schema_migrations"."version" ASC[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[36mBEGIN immediate TRANSACTION[0m
+  [1m[35m (0.4ms)[0m  [1m[35mPRAGMA foreign_keys[0m
+  [1m[35m (0.0ms)[0m  [1m[35mPRAGMA defer_foreign_keys[0m
+  [1m[35m (0.1ms)[0m  [1m[35mPRAGMA defer_foreign_keys = ON[0m
+  [1m[35m (0.0ms)[0m  [1m[35mPRAGMA foreign_keys = OFF[0m
+  [1m[36mFixtures Load (0.3ms)[0m  [1m[31mDELETE FROM "break_escape_demo_users";
+DELETE FROM "break_escape_games";
+DELETE FROM "break_escape_missions";
+INSERT INTO "break_escape_demo_users" ("id", "created_at", "handle", "role", "updated_at") VALUES (NULL, NULL, 'test_user', 'user', NULL), (NULL, NULL, 'other_user', 'user', NULL);
+INSERT INTO "break_escape_games" ("id", "completed_at", "created_at", "mission_id", "player_id", "player_state", "player_type", "scenario_data", "score", "started_at", "status", "updated_at") VALUES (NULL, NULL, NULL, 418560898, 149617800, '"{\"currentRoom\": \"reception\", \"unlockedRooms\": [\"reception\"], \"unlockedObjects\": [], \"inventory\": [], \"encounteredNPCs\": [], \"globalVariables\": {}, \"biometricSamples\": [], \"biometricUnlocks\": [], \"bluetoothDevices\": [], \"notes\": [], \"health\": 100}"', 'BreakEscape::DemoUser', '"{\"startRoom\": \"reception\", \"rooms\": {}}"', 0, NULL, 'in_progress', NULL);
+INSERT INTO "break_escape_missions" ("id", "created_at", "description", "difficulty_level", "display_name", "name", "published", "updated_at") VALUES (NULL, NULL, 'Test scenario', 3, 'CEO Exfiltration', 'ceo_exfil', TRUE, NULL), (NULL, NULL, 'Not visible', 1, 'Unpublished Test', 'test_unpublished', FALSE, NULL)[0m
+  [1m[35m (0.0ms)[0m  [1m[35mPRAGMA defer_foreign_keys = 0[0m
+  [1m[35m (0.0ms)[0m  [1m[35mPRAGMA foreign_keys = 1[0m
+  [1m[36mTRANSACTION (0.0ms)[0m  [1m[31mROLLBACK TRANSACTION[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[36mBEGIN immediate TRANSACTION[0m
+  [1m[35m (0.5ms)[0m  [1m[35mPRAGMA foreign_keys[0m
+  [1m[35m (0.1ms)[0m  [1m[35mPRAGMA defer_foreign_keys[0m
+  [1m[35m (0.1ms)[0m  [1m[35mPRAGMA defer_foreign_keys = ON[0m
+  [1m[35m (0.0ms)[0m  [1m[35mPRAGMA foreign_keys = OFF[0m
+  [1m[36mFixtures Load (0.3ms)[0m  [1m[31mDELETE FROM "break_escape_demo_users";
+DELETE FROM "break_escape_games";
+DELETE FROM "break_escape_missions";
+INSERT INTO "break_escape_demo_users" ("id", "created_at", "handle", "role", "updated_at") VALUES (NULL, NULL, 'test_user', 'user', NULL), (NULL, NULL, 'other_user', 'user', NULL);
+INSERT INTO "break_escape_games" ("id", "completed_at", "created_at", "mission_id", "player_id", "player_state", "player_type", "scenario_data", "score", "started_at", "status", "updated_at") VALUES (NULL, NULL, NULL, 418560898, 149617800, '"{\"currentRoom\": \"reception\", \"unlockedRooms\": [\"reception\"], \"unlockedObjects\": [], \"inventory\": [], \"encounteredNPCs\": [], \"globalVariables\": {}, \"biometricSamples\": [], \"biometricUnlocks\": [], \"bluetoothDevices\": [], \"notes\": [], \"health\": 100}"', 'BreakEscape::DemoUser', '"{\"startRoom\": \"reception\", \"rooms\": {}}"', 0, NULL, 'in_progress', NULL);
+INSERT INTO "break_escape_missions" ("id", "created_at", "description", "difficulty_level", "display_name", "name", "published", "updated_at") VALUES (NULL, NULL, 'Test scenario', 3, 'CEO Exfiltration', 'ceo_exfil', TRUE, NULL), (NULL, NULL, 'Not visible', 1, 'Unpublished Test', 'test_unpublished', FALSE, NULL)[0m
+  [1m[35m (0.1ms)[0m  [1m[35mPRAGMA defer_foreign_keys = 0[0m
+  [1m[35m (0.0ms)[0m  [1m[35mPRAGMA foreign_keys = 1[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[31mROLLBACK TRANSACTION[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[36mBEGIN immediate TRANSACTION[0m
+  [1m[35m (0.5ms)[0m  [1m[35mPRAGMA foreign_keys[0m
+  [1m[35m (0.0ms)[0m  [1m[35mPRAGMA defer_foreign_keys[0m
+  [1m[35m (0.0ms)[0m  [1m[35mPRAGMA defer_foreign_keys = ON[0m
+  [1m[35m (0.0ms)[0m  [1m[35mPRAGMA foreign_keys = OFF[0m
+  [1m[36mFixtures Load (0.3ms)[0m  [1m[31mDELETE FROM "break_escape_demo_users";
+DELETE FROM "break_escape_games";
+DELETE FROM "break_escape_missions";
+INSERT INTO "break_escape_demo_users" ("id", "created_at", "handle", "role", "updated_at") VALUES (NULL, NULL, 'test_user', 'user', NULL), (NULL, NULL, 'other_user', 'user', NULL);
+INSERT INTO "break_escape_games" ("id", "completed_at", "created_at", "mission_id", "player_id", "player_state", "player_type", "scenario_data", "score", "started_at", "status", "updated_at") VALUES (NULL, NULL, NULL, 418560898, 149617800, '"{\"currentRoom\": \"reception\", \"unlockedRooms\": [\"reception\"], \"unlockedObjects\": [], \"inventory\": [], \"encounteredNPCs\": [], \"globalVariables\": {}, \"biometricSamples\": [], \"biometricUnlocks\": [], \"bluetoothDevices\": [], \"notes\": [], \"health\": 100}"', 'BreakEscape::DemoUser', '"{\"startRoom\": \"reception\", \"rooms\": {}}"', 0, NULL, 'in_progress', NULL);
+INSERT INTO "break_escape_missions" ("id", "created_at", "description", "difficulty_level", "display_name", "name", "published", "updated_at") VALUES (NULL, NULL, 'Test scenario', 3, 'CEO Exfiltration', 'ceo_exfil', TRUE, NULL), (NULL, NULL, 'Not visible', 1, 'Unpublished Test', 'test_unpublished', FALSE, NULL)[0m
+  [1m[35m (0.0ms)[0m  [1m[35mPRAGMA defer_foreign_keys = 0[0m
+  [1m[35m (0.0ms)[0m  [1m[35mPRAGMA foreign_keys = 1[0m
+  [1m[36mTRANSACTION (0.0ms)[0m  [1m[31mROLLBACK TRANSACTION[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[36mBEGIN immediate TRANSACTION[0m
+  [1m[35m (0.3ms)[0m  [1m[35mPRAGMA foreign_keys[0m
+  [1m[35m (0.0ms)[0m  [1m[35mPRAGMA defer_foreign_keys[0m
+  [1m[35m (0.0ms)[0m  [1m[35mPRAGMA defer_foreign_keys = ON[0m
+  [1m[35m (0.0ms)[0m  [1m[35mPRAGMA foreign_keys = OFF[0m
+  [1m[36mFixtures Load (0.2ms)[0m  [1m[31mDELETE FROM "break_escape_demo_users";
+DELETE FROM "break_escape_games";
+DELETE FROM "break_escape_missions";
+INSERT INTO "break_escape_demo_users" ("id", "created_at", "handle", "role", "updated_at") VALUES (NULL, NULL, 'test_user', 'user', NULL), (NULL, NULL, 'other_user', 'user', NULL);
+INSERT INTO "break_escape_games" ("id", "completed_at", "created_at", "mission_id", "player_id", "player_state", "player_type", "scenario_data", "score", "started_at", "status", "updated_at") VALUES (NULL, NULL, NULL, 418560898, 149617800, '"{\"currentRoom\": \"reception\", \"unlockedRooms\": [\"reception\"], \"unlockedObjects\": [], \"inventory\": [], \"encounteredNPCs\": [], \"globalVariables\": {}, \"biometricSamples\": [], \"biometricUnlocks\": [], \"bluetoothDevices\": [], \"notes\": [], \"health\": 100}"', 'BreakEscape::DemoUser', '"{\"startRoom\": \"reception\", \"rooms\": {}}"', 0, NULL, 'in_progress', NULL);
+INSERT INTO "break_escape_missions" ("id", "created_at", "description", "difficulty_level", "display_name", "name", "published", "updated_at") VALUES (NULL, NULL, 'Test scenario', 3, 'CEO Exfiltration', 'ceo_exfil', TRUE, NULL), (NULL, NULL, 'Not visible', 1, 'Unpublished Test', 'test_unpublished', FALSE, NULL)[0m
+  [1m[35m (0.1ms)[0m  [1m[35mPRAGMA defer_foreign_keys = 0[0m
+  [1m[35m (0.0ms)[0m  [1m[35mPRAGMA foreign_keys = 1[0m
+  [1m[36mTRANSACTION (0.0ms)[0m  [1m[31mROLLBACK TRANSACTION[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[36mBEGIN immediate TRANSACTION[0m
+  [1m[35m (0.3ms)[0m  [1m[35mPRAGMA foreign_keys[0m
+  [1m[35m (0.0ms)[0m  [1m[35mPRAGMA defer_foreign_keys[0m
+  [1m[35m (0.0ms)[0m  [1m[35mPRAGMA defer_foreign_keys = ON[0m
+  [1m[35m (0.0ms)[0m  [1m[35mPRAGMA foreign_keys = OFF[0m
+  [1m[36mFixtures Load (0.2ms)[0m  [1m[31mDELETE FROM "break_escape_demo_users";
+DELETE FROM "break_escape_games";
+DELETE FROM "break_escape_missions";
+INSERT INTO "break_escape_demo_users" ("id", "created_at", "handle", "role", "updated_at") VALUES (NULL, NULL, 'test_user', 'user', NULL), (NULL, NULL, 'other_user', 'user', NULL);
+INSERT INTO "break_escape_games" ("id", "completed_at", "created_at", "mission_id", "player_id", "player_state", "player_type", "scenario_data", "score", "started_at", "status", "updated_at") VALUES (NULL, NULL, NULL, 418560898, 149617800, '"{\"currentRoom\": \"reception\", \"unlockedRooms\": [\"reception\"], \"unlockedObjects\": [], \"inventory\": [], \"encounteredNPCs\": [], \"globalVariables\": {}, \"biometricSamples\": [], \"biometricUnlocks\": [], \"bluetoothDevices\": [], \"notes\": [], \"health\": 100}"', 'BreakEscape::DemoUser', '"{\"startRoom\": \"reception\", \"rooms\": {}}"', 0, NULL, 'in_progress', NULL);
+INSERT INTO "break_escape_missions" ("id", "created_at", "description", "difficulty_level", "display_name", "name", "published", "updated_at") VALUES (NULL, NULL, 'Test scenario', 3, 'CEO Exfiltration', 'ceo_exfil', TRUE, NULL), (NULL, NULL, 'Not visible', 1, 'Unpublished Test', 'test_unpublished', FALSE, NULL)[0m
+  [1m[35m (0.0ms)[0m  [1m[35mPRAGMA defer_foreign_keys = 0[0m
+  [1m[35m (0.0ms)[0m  [1m[35mPRAGMA foreign_keys = 1[0m
+  [1m[36mTRANSACTION (0.0ms)[0m  [1m[31mROLLBACK TRANSACTION[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[36mBEGIN immediate TRANSACTION[0m
+  [1m[35m (0.3ms)[0m  [1m[35mPRAGMA foreign_keys[0m
+  [1m[35m (0.0ms)[0m  [1m[35mPRAGMA defer_foreign_keys[0m
+  [1m[35m (0.0ms)[0m  [1m[35mPRAGMA defer_foreign_keys = ON[0m
+  [1m[35m (0.0ms)[0m  [1m[35mPRAGMA foreign_keys = OFF[0m
+  [1m[36mFixtures Load (0.3ms)[0m  [1m[31mDELETE FROM "break_escape_demo_users";
+DELETE FROM "break_escape_games";
+DELETE FROM "break_escape_missions";
+INSERT INTO "break_escape_demo_users" ("id", "created_at", "handle", "role", "updated_at") VALUES (NULL, NULL, 'test_user', 'user', NULL), (NULL, NULL, 'other_user', 'user', NULL);
+INSERT INTO "break_escape_games" ("id", "completed_at", "created_at", "mission_id", "player_id", "player_state", "player_type", "scenario_data", "score", "started_at", "status", "updated_at") VALUES (NULL, NULL, NULL, 418560898, 149617800, '"{\"currentRoom\": \"reception\", \"unlockedRooms\": [\"reception\"], \"unlockedObjects\": [], \"inventory\": [], \"encounteredNPCs\": [], \"globalVariables\": {}, \"biometricSamples\": [], \"biometricUnlocks\": [], \"bluetoothDevices\": [], \"notes\": [], \"health\": 100}"', 'BreakEscape::DemoUser', '"{\"startRoom\": \"reception\", \"rooms\": {}}"', 0, NULL, 'in_progress', NULL);
+INSERT INTO "break_escape_missions" ("id", "created_at", "description", "difficulty_level", "display_name", "name", "published", "updated_at") VALUES (NULL, NULL, 'Test scenario', 3, 'CEO Exfiltration', 'ceo_exfil', TRUE, NULL), (NULL, NULL, 'Not visible', 1, 'Unpublished Test', 'test_unpublished', FALSE, NULL)[0m
+  [1m[35m (0.0ms)[0m  [1m[35mPRAGMA defer_foreign_keys = 0[0m
+  [1m[35m (0.0ms)[0m  [1m[35mPRAGMA foreign_keys = 1[0m
+  [1m[36mTRANSACTION (0.0ms)[0m  [1m[31mROLLBACK TRANSACTION[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[36mBEGIN immediate TRANSACTION[0m
+  [1m[35m (0.2ms)[0m  [1m[35mPRAGMA foreign_keys[0m
+  [1m[35m (0.0ms)[0m  [1m[35mPRAGMA defer_foreign_keys[0m
+  [1m[35m (0.0ms)[0m  [1m[35mPRAGMA defer_foreign_keys = ON[0m
+  [1m[35m (0.0ms)[0m  [1m[35mPRAGMA foreign_keys = OFF[0m
+  [1m[36mFixtures Load (0.2ms)[0m  [1m[31mDELETE FROM "break_escape_demo_users";
+DELETE FROM "break_escape_games";
+DELETE FROM "break_escape_missions";
+INSERT INTO "break_escape_demo_users" ("id", "created_at", "handle", "role", "updated_at") VALUES (NULL, NULL, 'test_user', 'user', NULL), (NULL, NULL, 'other_user', 'user', NULL);
+INSERT INTO "break_escape_games" ("id", "completed_at", "created_at", "mission_id", "player_id", "player_state", "player_type", "scenario_data", "score", "started_at", "status", "updated_at") VALUES (NULL, NULL, NULL, 418560898, 149617800, '"{\"currentRoom\": \"reception\", \"unlockedRooms\": [\"reception\"], \"unlockedObjects\": [], \"inventory\": [], \"encounteredNPCs\": [], \"globalVariables\": {}, \"biometricSamples\": [], \"biometricUnlocks\": [], \"bluetoothDevices\": [], \"notes\": [], \"health\": 100}"', 'BreakEscape::DemoUser', '"{\"startRoom\": \"reception\", \"rooms\": {}}"', 0, NULL, 'in_progress', NULL);
+INSERT INTO "break_escape_missions" ("id", "created_at", "description", "difficulty_level", "display_name", "name", "published", "updated_at") VALUES (NULL, NULL, 'Test scenario', 3, 'CEO Exfiltration', 'ceo_exfil', TRUE, NULL), (NULL, NULL, 'Not visible', 1, 'Unpublished Test', 'test_unpublished', FALSE, NULL)[0m
+  [1m[35m (0.0ms)[0m  [1m[35mPRAGMA defer_foreign_keys = 0[0m
+  [1m[35m (0.0ms)[0m  [1m[35mPRAGMA foreign_keys = 1[0m
+  [1m[36mTRANSACTION (0.0ms)[0m  [1m[31mROLLBACK TRANSACTION[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[36mBEGIN immediate TRANSACTION[0m
+  [1m[35m (0.2ms)[0m  [1m[35mPRAGMA foreign_keys[0m
+  [1m[35m (0.0ms)[0m  [1m[35mPRAGMA defer_foreign_keys[0m
+  [1m[35m (0.0ms)[0m  [1m[35mPRAGMA defer_foreign_keys = ON[0m
+  [1m[35m (0.0ms)[0m  [1m[35mPRAGMA foreign_keys = OFF[0m
+  [1m[36mFixtures Load (0.2ms)[0m  [1m[31mDELETE FROM "break_escape_demo_users";
+DELETE FROM "break_escape_games";
+DELETE FROM "break_escape_missions";
+INSERT INTO "break_escape_demo_users" ("id", "created_at", "handle", "role", "updated_at") VALUES (NULL, NULL, 'test_user', 'user', NULL), (NULL, NULL, 'other_user', 'user', NULL);
+INSERT INTO "break_escape_games" ("id", "completed_at", "created_at", "mission_id", "player_id", "player_state", "player_type", "scenario_data", "score", "started_at", "status", "updated_at") VALUES (NULL, NULL, NULL, 418560898, 149617800, '"{\"currentRoom\": \"reception\", \"unlockedRooms\": [\"reception\"], \"unlockedObjects\": [], \"inventory\": [], \"encounteredNPCs\": [], \"globalVariables\": {}, \"biometricSamples\": [], \"biometricUnlocks\": [], \"bluetoothDevices\": [], \"notes\": [], \"health\": 100}"', 'BreakEscape::DemoUser', '"{\"startRoom\": \"reception\", \"rooms\": {}}"', 0, NULL, 'in_progress', NULL);
+INSERT INTO "break_escape_missions" ("id", "created_at", "description", "difficulty_level", "display_name", "name", "published", "updated_at") VALUES (NULL, NULL, 'Test scenario', 3, 'CEO Exfiltration', 'ceo_exfil', TRUE, NULL), (NULL, NULL, 'Not visible', 1, 'Unpublished Test', 'test_unpublished', FALSE, NULL)[0m
+  [1m[35m (0.1ms)[0m  [1m[35mPRAGMA defer_foreign_keys = 0[0m
+  [1m[35m (0.0ms)[0m  [1m[35mPRAGMA foreign_keys = 1[0m
+  [1m[36mTRANSACTION (0.0ms)[0m  [1m[31mROLLBACK TRANSACTION[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[36mBEGIN immediate TRANSACTION[0m
+  [1m[35m (0.3ms)[0m  [1m[35mPRAGMA foreign_keys[0m
+  [1m[35m (0.0ms)[0m  [1m[35mPRAGMA defer_foreign_keys[0m
+  [1m[35m (0.0ms)[0m  [1m[35mPRAGMA defer_foreign_keys = ON[0m
+  [1m[35m (0.0ms)[0m  [1m[35mPRAGMA foreign_keys = OFF[0m
+  [1m[36mFixtures Load (0.2ms)[0m  [1m[31mDELETE FROM "break_escape_demo_users";
+DELETE FROM "break_escape_games";
+DELETE FROM "break_escape_missions";
+INSERT INTO "break_escape_demo_users" ("id", "created_at", "handle", "role", "updated_at") VALUES (NULL, NULL, 'test_user', 'user', NULL), (NULL, NULL, 'other_user', 'user', NULL);
+INSERT INTO "break_escape_games" ("id", "completed_at", "created_at", "mission_id", "player_id", "player_state", "player_type", "scenario_data", "score", "started_at", "status", "updated_at") VALUES (NULL, NULL, NULL, 418560898, 149617800, '"{\"currentRoom\": \"reception\", \"unlockedRooms\": [\"reception\"], \"unlockedObjects\": [], \"inventory\": [], \"encounteredNPCs\": [], \"globalVariables\": {}, \"biometricSamples\": [], \"biometricUnlocks\": [], \"bluetoothDevices\": [], \"notes\": [], \"health\": 100}"', 'BreakEscape::DemoUser', '"{\"startRoom\": \"reception\", \"rooms\": {}}"', 0, NULL, 'in_progress', NULL);
+INSERT INTO "break_escape_missions" ("id", "created_at", "description", "difficulty_level", "display_name", "name", "published", "updated_at") VALUES (NULL, NULL, 'Test scenario', 3, 'CEO Exfiltration', 'ceo_exfil', TRUE, NULL), (NULL, NULL, 'Not visible', 1, 'Unpublished Test', 'test_unpublished', FALSE, NULL)[0m
+  [1m[35m (0.0ms)[0m  [1m[35mPRAGMA defer_foreign_keys = 0[0m
+  [1m[35m (0.0ms)[0m  [1m[35mPRAGMA foreign_keys = 1[0m
+  [1m[36mTRANSACTION (0.0ms)[0m  [1m[31mROLLBACK TRANSACTION[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[36mBEGIN immediate TRANSACTION[0m
+  [1m[35m (0.2ms)[0m  [1m[35mPRAGMA foreign_keys[0m
+  [1m[35m (0.0ms)[0m  [1m[35mPRAGMA defer_foreign_keys[0m
+  [1m[35m (0.0ms)[0m  [1m[35mPRAGMA defer_foreign_keys = ON[0m
+  [1m[35m (0.0ms)[0m  [1m[35mPRAGMA foreign_keys = OFF[0m
+  [1m[36mFixtures Load (0.2ms)[0m  [1m[31mDELETE FROM "break_escape_demo_users";
+DELETE FROM "break_escape_games";
+DELETE FROM "break_escape_missions";
+INSERT INTO "break_escape_demo_users" ("id", "created_at", "handle", "role", "updated_at") VALUES (NULL, NULL, 'test_user', 'user', NULL), (NULL, NULL, 'other_user', 'user', NULL);
+INSERT INTO "break_escape_games" ("id", "completed_at", "created_at", "mission_id", "player_id", "player_state", "player_type", "scenario_data", "score", "started_at", "status", "updated_at") VALUES (NULL, NULL, NULL, 418560898, 149617800, '"{\"currentRoom\": \"reception\", \"unlockedRooms\": [\"reception\"], \"unlockedObjects\": [], \"inventory\": [], \"encounteredNPCs\": [], \"globalVariables\": {}, \"biometricSamples\": [], \"biometricUnlocks\": [], \"bluetoothDevices\": [], \"notes\": [], \"health\": 100}"', 'BreakEscape::DemoUser', '"{\"startRoom\": \"reception\", \"rooms\": {}}"', 0, NULL, 'in_progress', NULL);
+INSERT INTO "break_escape_missions" ("id", "created_at", "description", "difficulty_level", "display_name", "name", "published", "updated_at") VALUES (NULL, NULL, 'Test scenario', 3, 'CEO Exfiltration', 'ceo_exfil', TRUE, NULL), (NULL, NULL, 'Not visible', 1, 'Unpublished Test', 'test_unpublished', FALSE, NULL)[0m
+  [1m[35m (0.0ms)[0m  [1m[35mPRAGMA defer_foreign_keys = 0[0m
+  [1m[35m (0.0ms)[0m  [1m[35mPRAGMA foreign_keys = 1[0m
+  [1m[36mTRANSACTION (0.0ms)[0m  [1m[31mROLLBACK TRANSACTION[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[36mBEGIN immediate TRANSACTION[0m
+  [1m[35m (0.3ms)[0m  [1m[35mPRAGMA foreign_keys[0m
+  [1m[35m (0.0ms)[0m  [1m[35mPRAGMA defer_foreign_keys[0m
+  [1m[35m (0.0ms)[0m  [1m[35mPRAGMA defer_foreign_keys = ON[0m
+  [1m[35m (0.0ms)[0m  [1m[35mPRAGMA foreign_keys = OFF[0m
+  [1m[36mFixtures Load (0.2ms)[0m  [1m[31mDELETE FROM "break_escape_demo_users";
+DELETE FROM "break_escape_games";
+DELETE FROM "break_escape_missions";
+INSERT INTO "break_escape_demo_users" ("id", "created_at", "handle", "role", "updated_at") VALUES (NULL, NULL, 'test_user', 'user', NULL), (NULL, NULL, 'other_user', 'user', NULL);
+INSERT INTO "break_escape_games" ("id", "completed_at", "created_at", "mission_id", "player_id", "player_state", "player_type", "scenario_data", "score", "started_at", "status", "updated_at") VALUES (NULL, NULL, NULL, 418560898, 149617800, '"{\"currentRoom\": \"reception\", \"unlockedRooms\": [\"reception\"], \"unlockedObjects\": [], \"inventory\": [], \"encounteredNPCs\": [], \"globalVariables\": {}, \"biometricSamples\": [], \"biometricUnlocks\": [], \"bluetoothDevices\": [], \"notes\": [], \"health\": 100}"', 'BreakEscape::DemoUser', '"{\"startRoom\": \"reception\", \"rooms\": {}}"', 0, NULL, 'in_progress', NULL);
+INSERT INTO "break_escape_missions" ("id", "created_at", "description", "difficulty_level", "display_name", "name", "published", "updated_at") VALUES (NULL, NULL, 'Test scenario', 3, 'CEO Exfiltration', 'ceo_exfil', TRUE, NULL), (NULL, NULL, 'Not visible', 1, 'Unpublished Test', 'test_unpublished', FALSE, NULL)[0m
+  [1m[35m (0.1ms)[0m  [1m[35mPRAGMA defer_foreign_keys = 0[0m
+  [1m[35m (0.0ms)[0m  [1m[35mPRAGMA foreign_keys = 1[0m
+  [1m[36mTRANSACTION (0.0ms)[0m  [1m[31mROLLBACK TRANSACTION[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[36mBEGIN immediate TRANSACTION[0m
+  [1m[35m (0.3ms)[0m  [1m[35mPRAGMA foreign_keys[0m
+  [1m[35m (0.0ms)[0m  [1m[35mPRAGMA defer_foreign_keys[0m
+  [1m[35m (0.0ms)[0m  [1m[35mPRAGMA defer_foreign_keys = ON[0m
+  [1m[35m (0.0ms)[0m  [1m[35mPRAGMA foreign_keys = OFF[0m
+  [1m[36mFixtures Load (0.2ms)[0m  [1m[31mDELETE FROM "break_escape_demo_users";
+DELETE FROM "break_escape_games";
+DELETE FROM "break_escape_missions";
+INSERT INTO "break_escape_demo_users" ("id", "created_at", "handle", "role", "updated_at") VALUES (NULL, NULL, 'test_user', 'user', NULL), (NULL, NULL, 'other_user', 'user', NULL);
+INSERT INTO "break_escape_games" ("id", "completed_at", "created_at", "mission_id", "player_id", "player_state", "player_type", "scenario_data", "score", "started_at", "status", "updated_at") VALUES (NULL, NULL, NULL, 418560898, 149617800, '"{\"currentRoom\": \"reception\", \"unlockedRooms\": [\"reception\"], \"unlockedObjects\": [], \"inventory\": [], \"encounteredNPCs\": [], \"globalVariables\": {}, \"biometricSamples\": [], \"biometricUnlocks\": [], \"bluetoothDevices\": [], \"notes\": [], \"health\": 100}"', 'BreakEscape::DemoUser', '"{\"startRoom\": \"reception\", \"rooms\": {}}"', 0, NULL, 'in_progress', NULL);
+INSERT INTO "break_escape_missions" ("id", "created_at", "description", "difficulty_level", "display_name", "name", "published", "updated_at") VALUES (NULL, NULL, 'Test scenario', 3, 'CEO Exfiltration', 'ceo_exfil', TRUE, NULL), (NULL, NULL, 'Not visible', 1, 'Unpublished Test', 'test_unpublished', FALSE, NULL)[0m
+  [1m[35m (0.0ms)[0m  [1m[35mPRAGMA defer_foreign_keys = 0[0m
+  [1m[35m (0.0ms)[0m  [1m[35mPRAGMA foreign_keys = 1[0m
+  [1m[36mTRANSACTION (0.0ms)[0m  [1m[31mROLLBACK TRANSACTION[0m
+Generating image variants require the image_processing gem. Please add `gem "image_processing", "~> 1.2"` to your Gemfile or set `config.active_storage.variant_processor = :disabled`.
+  [1m[36mActiveRecord::InternalMetadata Load (0.6ms)[0m  [1m[34mSELECT * FROM "ar_internal_metadata" WHERE "ar_internal_metadata"."key" = ? ORDER BY "ar_internal_metadata"."key" ASC LIMIT 1[0m  [[nil, "schema_sha1"]]
+  [1m[36mActiveRecord::SchemaMigration Load (0.3ms)[0m  [1m[34mSELECT "schema_migrations"."version" FROM "schema_migrations" ORDER BY "schema_migrations"."version" ASC[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[36mBEGIN immediate TRANSACTION[0m
+  [1m[35m (0.4ms)[0m  [1m[35mPRAGMA foreign_keys[0m
+  [1m[35m (0.0ms)[0m  [1m[35mPRAGMA defer_foreign_keys[0m
+  [1m[35m (0.0ms)[0m  [1m[35mPRAGMA defer_foreign_keys = ON[0m
+  [1m[35m (0.0ms)[0m  [1m[35mPRAGMA foreign_keys = OFF[0m
+  [1m[36mFixtures Load (0.2ms)[0m  [1m[31mDELETE FROM "break_escape_demo_users";
+DELETE FROM "break_escape_games";
+DELETE FROM "break_escape_missions";
+INSERT INTO "break_escape_demo_users" ("id", "created_at", "handle", "role", "updated_at") VALUES (NULL, '2025-11-20 17:20:11', 'test_user', 'user', '2025-11-20 17:20:11'), (NULL, '2025-11-20 17:20:11', 'other_user', 'user', '2025-11-20 17:20:11');
+INSERT INTO "break_escape_games" ("id", "completed_at", "created_at", "mission_id", "player_id", "player_state", "player_type", "scenario_data", "score", "started_at", "status", "updated_at") VALUES (NULL, NULL, '2025-11-20 17:20:11', 418560898, 149617800, '"{\"currentRoom\": \"reception\", \"unlockedRooms\": [\"reception\"], \"unlockedObjects\": [], \"inventory\": [], \"encounteredNPCs\": [], \"globalVariables\": {}, \"biometricSamples\": [], \"biometricUnlocks\": [], \"bluetoothDevices\": [], \"notes\": [], \"health\": 100}"', 'BreakEscape::DemoUser', '"{\"startRoom\": \"reception\", \"rooms\": {}}"', 0, '2025-11-20 17:20:11', 'in_progress', '2025-11-20 17:20:11');
+INSERT INTO "break_escape_missions" ("id", "created_at", "description", "difficulty_level", "display_name", "name", "published", "updated_at") VALUES (NULL, '2025-11-20 17:20:11', 'Test scenario', 3, 'CEO Exfiltration', 'ceo_exfil', TRUE, '2025-11-20 17:20:11'), (NULL, '2025-11-20 17:20:11', 'Not visible', 1, 'Unpublished Test', 'test_unpublished', FALSE, '2025-11-20 17:20:11')[0m
+  [1m[35m (0.0ms)[0m  [1m[35mPRAGMA defer_foreign_keys = 0[0m
+  [1m[35m (0.0ms)[0m  [1m[35mPRAGMA foreign_keys = 1[0m
+  [1m[36mTRANSACTION (5.2ms)[0m  [1m[36mCOMMIT TRANSACTION[0m
+  [1m[35m (0.1ms)[0m  [1m[35mPRAGMA foreign_key_check[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[36mBEGIN immediate TRANSACTION[0m
+  [1m[35m (0.4ms)[0m  [1m[35mPRAGMA foreign_keys[0m
+  [1m[35m (0.0ms)[0m  [1m[35mPRAGMA defer_foreign_keys[0m
+  [1m[35m (0.0ms)[0m  [1m[35mPRAGMA defer_foreign_keys = ON[0m
+  [1m[35m (0.1ms)[0m  [1m[35mPRAGMA foreign_keys = OFF[0m
+  [1m[36mFixtures Load (0.2ms)[0m  [1m[31mDELETE FROM "break_escape_demo_users";
+DELETE FROM "break_escape_games";
+DELETE FROM "break_escape_missions";
+INSERT INTO "break_escape_demo_users" ("id", "created_at", "handle", "role", "updated_at") VALUES (NULL, '2025-11-20 17:20:11', 'test_user', 'user', '2025-11-20 17:20:11'), (NULL, '2025-11-20 17:20:11', 'other_user', 'user', '2025-11-20 17:20:11');
+INSERT INTO "break_escape_games" ("id", "completed_at", "created_at", "mission_id", "player_id", "player_state", "player_type", "scenario_data", "score", "started_at", "status", "updated_at") VALUES (NULL, NULL, '2025-11-20 17:20:11', 418560898, 149617800, '"{\"currentRoom\": \"reception\", \"unlockedRooms\": [\"reception\"], \"unlockedObjects\": [], \"inventory\": [], \"encounteredNPCs\": [], \"globalVariables\": {}, \"biometricSamples\": [], \"biometricUnlocks\": [], \"bluetoothDevices\": [], \"notes\": [], \"health\": 100}"', 'BreakEscape::DemoUser', '"{\"startRoom\": \"reception\", \"rooms\": {}}"', 0, '2025-11-20 17:20:11', 'in_progress', '2025-11-20 17:20:11');
+INSERT INTO "break_escape_missions" ("id", "created_at", "description", "difficulty_level", "display_name", "name", "published", "updated_at") VALUES (NULL, '2025-11-20 17:20:11', 'Test scenario', 3, 'CEO Exfiltration', 'ceo_exfil', TRUE, '2025-11-20 17:20:11'), (NULL, '2025-11-20 17:20:11', 'Not visible', 1, 'Unpublished Test', 'test_unpublished', FALSE, '2025-11-20 17:20:11')[0m
+  [1m[35m (0.0ms)[0m  [1m[35mPRAGMA defer_foreign_keys = 0[0m
+  [1m[35m (0.0ms)[0m  [1m[35mPRAGMA foreign_keys = 1[0m
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[36mCOMMIT TRANSACTION[0m
+  [1m[35m (0.1ms)[0m  [1m[35mPRAGMA foreign_key_check[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[36mBEGIN immediate TRANSACTION[0m
+  [1m[35m (0.3ms)[0m  [1m[35mPRAGMA foreign_keys[0m
+  [1m[35m (0.0ms)[0m  [1m[35mPRAGMA defer_foreign_keys[0m
+  [1m[35m (0.0ms)[0m  [1m[35mPRAGMA defer_foreign_keys = ON[0m
+  [1m[35m (0.0ms)[0m  [1m[35mPRAGMA foreign_keys = OFF[0m
+  [1m[36mFixtures Load (0.2ms)[0m  [1m[31mDELETE FROM "break_escape_demo_users";
+DELETE FROM "break_escape_games";
+DELETE FROM "break_escape_missions";
+INSERT INTO "break_escape_demo_users" ("id", "created_at", "handle", "role", "updated_at") VALUES (NULL, '2025-11-20 17:20:11', 'test_user', 'user', '2025-11-20 17:20:11'), (NULL, '2025-11-20 17:20:11', 'other_user', 'user', '2025-11-20 17:20:11');
+INSERT INTO "break_escape_games" ("id", "completed_at", "created_at", "mission_id", "player_id", "player_state", "player_type", "scenario_data", "score", "started_at", "status", "updated_at") VALUES (NULL, NULL, '2025-11-20 17:20:11', 418560898, 149617800, '"{\"currentRoom\": \"reception\", \"unlockedRooms\": [\"reception\"], \"unlockedObjects\": [], \"inventory\": [], \"encounteredNPCs\": [], \"globalVariables\": {}, \"biometricSamples\": [], \"biometricUnlocks\": [], \"bluetoothDevices\": [], \"notes\": [], \"health\": 100}"', 'BreakEscape::DemoUser', '"{\"startRoom\": \"reception\", \"rooms\": {}}"', 0, '2025-11-20 17:20:11', 'in_progress', '2025-11-20 17:20:11');
+INSERT INTO "break_escape_missions" ("id", "created_at", "description", "difficulty_level", "display_name", "name", "published", "updated_at") VALUES (NULL, '2025-11-20 17:20:11', 'Test scenario', 3, 'CEO Exfiltration', 'ceo_exfil', TRUE, '2025-11-20 17:20:11'), (NULL, '2025-11-20 17:20:11', 'Not visible', 1, 'Unpublished Test', 'test_unpublished', FALSE, '2025-11-20 17:20:11')[0m
+  [1m[35m (0.0ms)[0m  [1m[35mPRAGMA defer_foreign_keys = 0[0m
+  [1m[35m (0.0ms)[0m  [1m[35mPRAGMA foreign_keys = 1[0m
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[36mCOMMIT TRANSACTION[0m
+  [1m[35m (0.1ms)[0m  [1m[35mPRAGMA foreign_key_check[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[36mBEGIN immediate TRANSACTION[0m
+  [1m[35m (0.4ms)[0m  [1m[35mPRAGMA foreign_keys[0m
+  [1m[35m (0.0ms)[0m  [1m[35mPRAGMA defer_foreign_keys[0m
+  [1m[35m (0.0ms)[0m  [1m[35mPRAGMA defer_foreign_keys = ON[0m
+  [1m[35m (0.0ms)[0m  [1m[35mPRAGMA foreign_keys = OFF[0m
+  [1m[36mFixtures Load (0.2ms)[0m  [1m[31mDELETE FROM "break_escape_demo_users";
+DELETE FROM "break_escape_games";
+DELETE FROM "break_escape_missions";
+INSERT INTO "break_escape_demo_users" ("id", "created_at", "handle", "role", "updated_at") VALUES (NULL, '2025-11-20 17:20:11', 'test_user', 'user', '2025-11-20 17:20:11'), (NULL, '2025-11-20 17:20:11', 'other_user', 'user', '2025-11-20 17:20:11');
+INSERT INTO "break_escape_games" ("id", "completed_at", "created_at", "mission_id", "player_id", "player_state", "player_type", "scenario_data", "score", "started_at", "status", "updated_at") VALUES (NULL, NULL, '2025-11-20 17:20:11', 418560898, 149617800, '"{\"currentRoom\": \"reception\", \"unlockedRooms\": [\"reception\"], \"unlockedObjects\": [], \"inventory\": [], \"encounteredNPCs\": [], \"globalVariables\": {}, \"biometricSamples\": [], \"biometricUnlocks\": [], \"bluetoothDevices\": [], \"notes\": [], \"health\": 100}"', 'BreakEscape::DemoUser', '"{\"startRoom\": \"reception\", \"rooms\": {}}"', 0, '2025-11-20 17:20:11', 'in_progress', '2025-11-20 17:20:11');
+INSERT INTO "break_escape_missions" ("id", "created_at", "description", "difficulty_level", "display_name", "name", "published", "updated_at") VALUES (NULL, '2025-11-20 17:20:11', 'Test scenario', 3, 'CEO Exfiltration', 'ceo_exfil', TRUE, '2025-11-20 17:20:11'), (NULL, '2025-11-20 17:20:11', 'Not visible', 1, 'Unpublished Test', 'test_unpublished', FALSE, '2025-11-20 17:20:11')[0m
+  [1m[35m (0.0ms)[0m  [1m[35mPRAGMA defer_foreign_keys = 0[0m
+  [1m[35m (0.0ms)[0m  [1m[35mPRAGMA foreign_keys = 1[0m
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[36mCOMMIT TRANSACTION[0m
+  [1m[35m (0.1ms)[0m  [1m[35mPRAGMA foreign_key_check[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[36mBEGIN immediate TRANSACTION[0m
+  [1m[35m (0.5ms)[0m  [1m[35mPRAGMA foreign_keys[0m
+  [1m[35m (0.1ms)[0m  [1m[35mPRAGMA defer_foreign_keys[0m
+  [1m[35m (0.1ms)[0m  [1m[35mPRAGMA defer_foreign_keys = ON[0m
+  [1m[35m (0.0ms)[0m  [1m[35mPRAGMA foreign_keys = OFF[0m
+  [1m[36mFixtures Load (0.2ms)[0m  [1m[31mDELETE FROM "break_escape_demo_users";
+DELETE FROM "break_escape_games";
+DELETE FROM "break_escape_missions";
+INSERT INTO "break_escape_demo_users" ("id", "created_at", "handle", "role", "updated_at") VALUES (NULL, '2025-11-20 17:20:11', 'test_user', 'user', '2025-11-20 17:20:11'), (NULL, '2025-11-20 17:20:11', 'other_user', 'user', '2025-11-20 17:20:11');
+INSERT INTO "break_escape_games" ("id", "completed_at", "created_at", "mission_id", "player_id", "player_state", "player_type", "scenario_data", "score", "started_at", "status", "updated_at") VALUES (NULL, NULL, '2025-11-20 17:20:11', 418560898, 149617800, '"{\"currentRoom\": \"reception\", \"unlockedRooms\": [\"reception\"], \"unlockedObjects\": [], \"inventory\": [], \"encounteredNPCs\": [], \"globalVariables\": {}, \"biometricSamples\": [], \"biometricUnlocks\": [], \"bluetoothDevices\": [], \"notes\": [], \"health\": 100}"', 'BreakEscape::DemoUser', '"{\"startRoom\": \"reception\", \"rooms\": {}}"', 0, '2025-11-20 17:20:11', 'in_progress', '2025-11-20 17:20:11');
+INSERT INTO "break_escape_missions" ("id", "created_at", "description", "difficulty_level", "display_name", "name", "published", "updated_at") VALUES (NULL, '2025-11-20 17:20:11', 'Test scenario', 3, 'CEO Exfiltration', 'ceo_exfil', TRUE, '2025-11-20 17:20:11'), (NULL, '2025-11-20 17:20:11', 'Not visible', 1, 'Unpublished Test', 'test_unpublished', FALSE, '2025-11-20 17:20:11')[0m
+  [1m[35m (0.0ms)[0m  [1m[35mPRAGMA defer_foreign_keys = 0[0m
+  [1m[35m (0.0ms)[0m  [1m[35mPRAGMA foreign_keys = 1[0m
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[36mCOMMIT TRANSACTION[0m
+  [1m[35m (0.1ms)[0m  [1m[35mPRAGMA foreign_key_check[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[36mBEGIN immediate TRANSACTION[0m
+  [1m[35m (0.4ms)[0m  [1m[35mPRAGMA foreign_keys[0m
+  [1m[35m (0.0ms)[0m  [1m[35mPRAGMA defer_foreign_keys[0m
+  [1m[35m (0.0ms)[0m  [1m[35mPRAGMA defer_foreign_keys = ON[0m
+  [1m[35m (0.0ms)[0m  [1m[35mPRAGMA foreign_keys = OFF[0m
+  [1m[36mFixtures Load (0.2ms)[0m  [1m[31mDELETE FROM "break_escape_demo_users";
+DELETE FROM "break_escape_games";
+DELETE FROM "break_escape_missions";
+INSERT INTO "break_escape_demo_users" ("id", "created_at", "handle", "role", "updated_at") VALUES (NULL, '2025-11-20 17:20:11', 'test_user', 'user', '2025-11-20 17:20:11'), (NULL, '2025-11-20 17:20:11', 'other_user', 'user', '2025-11-20 17:20:11');
+INSERT INTO "break_escape_games" ("id", "completed_at", "created_at", "mission_id", "player_id", "player_state", "player_type", "scenario_data", "score", "started_at", "status", "updated_at") VALUES (NULL, NULL, '2025-11-20 17:20:11', 418560898, 149617800, '"{\"currentRoom\": \"reception\", \"unlockedRooms\": [\"reception\"], \"unlockedObjects\": [], \"inventory\": [], \"encounteredNPCs\": [], \"globalVariables\": {}, \"biometricSamples\": [], \"biometricUnlocks\": [], \"bluetoothDevices\": [], \"notes\": [], \"health\": 100}"', 'BreakEscape::DemoUser', '"{\"startRoom\": \"reception\", \"rooms\": {}}"', 0, '2025-11-20 17:20:11', 'in_progress', '2025-11-20 17:20:11');
+INSERT INTO "break_escape_missions" ("id", "created_at", "description", "difficulty_level", "display_name", "name", "published", "updated_at") VALUES (NULL, '2025-11-20 17:20:11', 'Test scenario', 3, 'CEO Exfiltration', 'ceo_exfil', TRUE, '2025-11-20 17:20:11'), (NULL, '2025-11-20 17:20:11', 'Not visible', 1, 'Unpublished Test', 'test_unpublished', FALSE, '2025-11-20 17:20:11')[0m
+  [1m[35m (0.1ms)[0m  [1m[35mPRAGMA defer_foreign_keys = 0[0m
+  [1m[35m (0.0ms)[0m  [1m[35mPRAGMA foreign_keys = 1[0m
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[36mCOMMIT TRANSACTION[0m
+  [1m[35m (0.1ms)[0m  [1m[35mPRAGMA foreign_key_check[0m
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[36mBEGIN immediate TRANSACTION[0m
+  [1m[35m (0.5ms)[0m  [1m[35mPRAGMA foreign_keys[0m
+  [1m[35m (0.0ms)[0m  [1m[35mPRAGMA defer_foreign_keys[0m
+  [1m[35m (0.0ms)[0m  [1m[35mPRAGMA defer_foreign_keys = ON[0m
+  [1m[35m (0.0ms)[0m  [1m[35mPRAGMA foreign_keys = OFF[0m
+  [1m[36mFixtures Load (0.2ms)[0m  [1m[31mDELETE FROM "break_escape_demo_users";
+DELETE FROM "break_escape_games";
+DELETE FROM "break_escape_missions";
+INSERT INTO "break_escape_demo_users" ("id", "created_at", "handle", "role", "updated_at") VALUES (NULL, '2025-11-20 17:20:11', 'test_user', 'user', '2025-11-20 17:20:11'), (NULL, '2025-11-20 17:20:11', 'other_user', 'user', '2025-11-20 17:20:11');
+INSERT INTO "break_escape_games" ("id", "completed_at", "created_at", "mission_id", "player_id", "player_state", "player_type", "scenario_data", "score", "started_at", "status", "updated_at") VALUES (NULL, NULL, '2025-11-20 17:20:11', 418560898, 149617800, '"{\"currentRoom\": \"reception\", \"unlockedRooms\": [\"reception\"], \"unlockedObjects\": [], \"inventory\": [], \"encounteredNPCs\": [], \"globalVariables\": {}, \"biometricSamples\": [], \"biometricUnlocks\": [], \"bluetoothDevices\": [], \"notes\": [], \"health\": 100}"', 'BreakEscape::DemoUser', '"{\"startRoom\": \"reception\", \"rooms\": {}}"', 0, '2025-11-20 17:20:11', 'in_progress', '2025-11-20 17:20:11');
+INSERT INTO "break_escape_missions" ("id", "created_at", "description", "difficulty_level", "display_name", "name", "published", "updated_at") VALUES (NULL, '2025-11-20 17:20:11', 'Test scenario', 3, 'CEO Exfiltration', 'ceo_exfil', TRUE, '2025-11-20 17:20:11'), (NULL, '2025-11-20 17:20:11', 'Not visible', 1, 'Unpublished Test', 'test_unpublished', FALSE, '2025-11-20 17:20:11')[0m
+  [1m[35m (0.1ms)[0m  [1m[35mPRAGMA defer_foreign_keys = 0[0m
+  [1m[35m (0.0ms)[0m  [1m[35mPRAGMA foreign_keys = 1[0m
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[36mCOMMIT TRANSACTION[0m
+  [1m[35m (0.1ms)[0m  [1m[35mPRAGMA foreign_key_check[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[36mBEGIN immediate TRANSACTION[0m
+  [1m[35m (0.3ms)[0m  [1m[35mPRAGMA foreign_keys[0m
+  [1m[35m (0.0ms)[0m  [1m[35mPRAGMA defer_foreign_keys[0m
+  [1m[35m (0.0ms)[0m  [1m[35mPRAGMA defer_foreign_keys = ON[0m
+  [1m[35m (0.0ms)[0m  [1m[35mPRAGMA foreign_keys = OFF[0m
+  [1m[36mFixtures Load (0.2ms)[0m  [1m[31mDELETE FROM "break_escape_demo_users";
+DELETE FROM "break_escape_games";
+DELETE FROM "break_escape_missions";
+INSERT INTO "break_escape_demo_users" ("id", "created_at", "handle", "role", "updated_at") VALUES (NULL, '2025-11-20 17:20:11', 'test_user', 'user', '2025-11-20 17:20:11'), (NULL, '2025-11-20 17:20:11', 'other_user', 'user', '2025-11-20 17:20:11');
+INSERT INTO "break_escape_games" ("id", "completed_at", "created_at", "mission_id", "player_id", "player_state", "player_type", "scenario_data", "score", "started_at", "status", "updated_at") VALUES (NULL, NULL, '2025-11-20 17:20:11', 418560898, 149617800, '"{\"currentRoom\": \"reception\", \"unlockedRooms\": [\"reception\"], \"unlockedObjects\": [], \"inventory\": [], \"encounteredNPCs\": [], \"globalVariables\": {}, \"biometricSamples\": [], \"biometricUnlocks\": [], \"bluetoothDevices\": [], \"notes\": [], \"health\": 100}"', 'BreakEscape::DemoUser', '"{\"startRoom\": \"reception\", \"rooms\": {}}"', 0, '2025-11-20 17:20:11', 'in_progress', '2025-11-20 17:20:11');
+INSERT INTO "break_escape_missions" ("id", "created_at", "description", "difficulty_level", "display_name", "name", "published", "updated_at") VALUES (NULL, '2025-11-20 17:20:11', 'Test scenario', 3, 'CEO Exfiltration', 'ceo_exfil', TRUE, '2025-11-20 17:20:11'), (NULL, '2025-11-20 17:20:11', 'Not visible', 1, 'Unpublished Test', 'test_unpublished', FALSE, '2025-11-20 17:20:11')[0m
+  [1m[35m (0.0ms)[0m  [1m[35mPRAGMA defer_foreign_keys = 0[0m
+  [1m[35m (0.0ms)[0m  [1m[35mPRAGMA foreign_keys = 1[0m
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[36mCOMMIT TRANSACTION[0m
+  [1m[35m (0.1ms)[0m  [1m[35mPRAGMA foreign_key_check[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[36mBEGIN immediate TRANSACTION[0m
+  [1m[35m (0.3ms)[0m  [1m[35mPRAGMA foreign_keys[0m
+  [1m[35m (0.0ms)[0m  [1m[35mPRAGMA defer_foreign_keys[0m
+  [1m[35m (0.0ms)[0m  [1m[35mPRAGMA defer_foreign_keys = ON[0m
+  [1m[35m (0.0ms)[0m  [1m[35mPRAGMA foreign_keys = OFF[0m
+  [1m[36mFixtures Load (0.2ms)[0m  [1m[31mDELETE FROM "break_escape_demo_users";
+DELETE FROM "break_escape_games";
+DELETE FROM "break_escape_missions";
+INSERT INTO "break_escape_demo_users" ("id", "created_at", "handle", "role", "updated_at") VALUES (NULL, '2025-11-20 17:20:11', 'test_user', 'user', '2025-11-20 17:20:11'), (NULL, '2025-11-20 17:20:11', 'other_user', 'user', '2025-11-20 17:20:11');
+INSERT INTO "break_escape_games" ("id", "completed_at", "created_at", "mission_id", "player_id", "player_state", "player_type", "scenario_data", "score", "started_at", "status", "updated_at") VALUES (NULL, NULL, '2025-11-20 17:20:11', 418560898, 149617800, '"{\"currentRoom\": \"reception\", \"unlockedRooms\": [\"reception\"], \"unlockedObjects\": [], \"inventory\": [], \"encounteredNPCs\": [], \"globalVariables\": {}, \"biometricSamples\": [], \"biometricUnlocks\": [], \"bluetoothDevices\": [], \"notes\": [], \"health\": 100}"', 'BreakEscape::DemoUser', '"{\"startRoom\": \"reception\", \"rooms\": {}}"', 0, '2025-11-20 17:20:11', 'in_progress', '2025-11-20 17:20:11');
+INSERT INTO "break_escape_missions" ("id", "created_at", "description", "difficulty_level", "display_name", "name", "published", "updated_at") VALUES (NULL, '2025-11-20 17:20:11', 'Test scenario', 3, 'CEO Exfiltration', 'ceo_exfil', TRUE, '2025-11-20 17:20:11'), (NULL, '2025-11-20 17:20:11', 'Not visible', 1, 'Unpublished Test', 'test_unpublished', FALSE, '2025-11-20 17:20:11')[0m
+  [1m[35m (0.0ms)[0m  [1m[35mPRAGMA defer_foreign_keys = 0[0m
+  [1m[35m (0.0ms)[0m  [1m[35mPRAGMA foreign_keys = 1[0m
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[36mCOMMIT TRANSACTION[0m
+  [1m[35m (0.1ms)[0m  [1m[35mPRAGMA foreign_key_check[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[36mBEGIN immediate TRANSACTION[0m
+  [1m[35m (0.3ms)[0m  [1m[35mPRAGMA foreign_keys[0m
+  [1m[35m (0.0ms)[0m  [1m[35mPRAGMA defer_foreign_keys[0m
+  [1m[35m (0.0ms)[0m  [1m[35mPRAGMA defer_foreign_keys = ON[0m
+  [1m[35m (0.0ms)[0m  [1m[35mPRAGMA foreign_keys = OFF[0m
+  [1m[36mFixtures Load (0.4ms)[0m  [1m[31mDELETE FROM "break_escape_demo_users";
+DELETE FROM "break_escape_games";
+DELETE FROM "break_escape_missions";
+INSERT INTO "break_escape_demo_users" ("id", "created_at", "handle", "role", "updated_at") VALUES (NULL, '2025-11-20 17:20:11', 'test_user', 'user', '2025-11-20 17:20:11'), (NULL, '2025-11-20 17:20:11', 'other_user', 'user', '2025-11-20 17:20:11');
+INSERT INTO "break_escape_games" ("id", "completed_at", "created_at", "mission_id", "player_id", "player_state", "player_type", "scenario_data", "score", "started_at", "status", "updated_at") VALUES (NULL, NULL, '2025-11-20 17:20:11', 418560898, 149617800, '"{\"currentRoom\": \"reception\", \"unlockedRooms\": [\"reception\"], \"unlockedObjects\": [], \"inventory\": [], \"encounteredNPCs\": [], \"globalVariables\": {}, \"biometricSamples\": [], \"biometricUnlocks\": [], \"bluetoothDevices\": [], \"notes\": [], \"health\": 100}"', 'BreakEscape::DemoUser', '"{\"startRoom\": \"reception\", \"rooms\": {}}"', 0, '2025-11-20 17:20:11', 'in_progress', '2025-11-20 17:20:11');
+INSERT INTO "break_escape_missions" ("id", "created_at", "description", "difficulty_level", "display_name", "name", "published", "updated_at") VALUES (NULL, '2025-11-20 17:20:11', 'Test scenario', 3, 'CEO Exfiltration', 'ceo_exfil', TRUE, '2025-11-20 17:20:11'), (NULL, '2025-11-20 17:20:11', 'Not visible', 1, 'Unpublished Test', 'test_unpublished', FALSE, '2025-11-20 17:20:11')[0m
+  [1m[35m (0.1ms)[0m  [1m[35mPRAGMA defer_foreign_keys = 0[0m
+  [1m[35m (0.0ms)[0m  [1m[35mPRAGMA foreign_keys = 1[0m
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[36mCOMMIT TRANSACTION[0m
+  [1m[35m (0.1ms)[0m  [1m[35mPRAGMA foreign_key_check[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[36mBEGIN immediate TRANSACTION[0m
+  [1m[35m (0.3ms)[0m  [1m[35mPRAGMA foreign_keys[0m
+  [1m[35m (0.0ms)[0m  [1m[35mPRAGMA defer_foreign_keys[0m
+  [1m[35m (0.0ms)[0m  [1m[35mPRAGMA defer_foreign_keys = ON[0m
+  [1m[35m (0.0ms)[0m  [1m[35mPRAGMA foreign_keys = OFF[0m
+  [1m[36mFixtures Load (0.1ms)[0m  [1m[31mDELETE FROM "break_escape_demo_users";
+DELETE FROM "break_escape_games";
+DELETE FROM "break_escape_missions";
+INSERT INTO "break_escape_demo_users" ("id", "created_at", "handle", "role", "updated_at") VALUES (NULL, '2025-11-20 17:20:11', 'test_user', 'user', '2025-11-20 17:20:11'), (NULL, '2025-11-20 17:20:11', 'other_user', 'user', '2025-11-20 17:20:11');
+INSERT INTO "break_escape_games" ("id", "completed_at", "created_at", "mission_id", "player_id", "player_state", "player_type", "scenario_data", "score", "started_at", "status", "updated_at") VALUES (NULL, NULL, '2025-11-20 17:20:11', 418560898, 149617800, '"{\"currentRoom\": \"reception\", \"unlockedRooms\": [\"reception\"], \"unlockedObjects\": [], \"inventory\": [], \"encounteredNPCs\": [], \"globalVariables\": {}, \"biometricSamples\": [], \"biometricUnlocks\": [], \"bluetoothDevices\": [], \"notes\": [], \"health\": 100}"', 'BreakEscape::DemoUser', '"{\"startRoom\": \"reception\", \"rooms\": {}}"', 0, '2025-11-20 17:20:11', 'in_progress', '2025-11-20 17:20:11');
+INSERT INTO "break_escape_missions" ("id", "created_at", "description", "difficulty_level", "display_name", "name", "published", "updated_at") VALUES (NULL, '2025-11-20 17:20:11', 'Test scenario', 3, 'CEO Exfiltration', 'ceo_exfil', TRUE, '2025-11-20 17:20:11'), (NULL, '2025-11-20 17:20:11', 'Not visible', 1, 'Unpublished Test', 'test_unpublished', FALSE, '2025-11-20 17:20:11')[0m
+  [1m[35m (0.0ms)[0m  [1m[35mPRAGMA defer_foreign_keys = 0[0m
+  [1m[35m (0.0ms)[0m  [1m[35mPRAGMA foreign_keys = 1[0m
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[36mCOMMIT TRANSACTION[0m
+  [1m[35m (0.1ms)[0m  [1m[35mPRAGMA foreign_key_check[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[36mBEGIN immediate TRANSACTION[0m
+  [1m[35m (0.4ms)[0m  [1m[35mPRAGMA foreign_keys[0m
+  [1m[35m (0.0ms)[0m  [1m[35mPRAGMA defer_foreign_keys[0m
+  [1m[35m (0.0ms)[0m  [1m[35mPRAGMA defer_foreign_keys = ON[0m
+  [1m[35m (0.0ms)[0m  [1m[35mPRAGMA foreign_keys = OFF[0m
+  [1m[36mFixtures Load (0.2ms)[0m  [1m[31mDELETE FROM "break_escape_demo_users";
+DELETE FROM "break_escape_games";
+DELETE FROM "break_escape_missions";
+INSERT INTO "break_escape_demo_users" ("id", "created_at", "handle", "role", "updated_at") VALUES (NULL, '2025-11-20 17:20:11', 'test_user', 'user', '2025-11-20 17:20:11'), (NULL, '2025-11-20 17:20:11', 'other_user', 'user', '2025-11-20 17:20:11');
+INSERT INTO "break_escape_games" ("id", "completed_at", "created_at", "mission_id", "player_id", "player_state", "player_type", "scenario_data", "score", "started_at", "status", "updated_at") VALUES (NULL, NULL, '2025-11-20 17:20:11', 418560898, 149617800, '"{\"currentRoom\": \"reception\", \"unlockedRooms\": [\"reception\"], \"unlockedObjects\": [], \"inventory\": [], \"encounteredNPCs\": [], \"globalVariables\": {}, \"biometricSamples\": [], \"biometricUnlocks\": [], \"bluetoothDevices\": [], \"notes\": [], \"health\": 100}"', 'BreakEscape::DemoUser', '"{\"startRoom\": \"reception\", \"rooms\": {}}"', 0, '2025-11-20 17:20:11', 'in_progress', '2025-11-20 17:20:11');
+INSERT INTO "break_escape_missions" ("id", "created_at", "description", "difficulty_level", "display_name", "name", "published", "updated_at") VALUES (NULL, '2025-11-20 17:20:11', 'Test scenario', 3, 'CEO Exfiltration', 'ceo_exfil', TRUE, '2025-11-20 17:20:11'), (NULL, '2025-11-20 17:20:11', 'Not visible', 1, 'Unpublished Test', 'test_unpublished', FALSE, '2025-11-20 17:20:11')[0m
+  [1m[35m (0.0ms)[0m  [1m[35mPRAGMA defer_foreign_keys = 0[0m
+  [1m[35m (0.0ms)[0m  [1m[35mPRAGMA foreign_keys = 1[0m
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[36mCOMMIT TRANSACTION[0m
+  [1m[35m (0.1ms)[0m  [1m[35mPRAGMA foreign_key_check[0m
+Generating image variants require the image_processing gem. Please add `gem "image_processing", "~> 1.2"` to your Gemfile or set `config.active_storage.variant_processor = :disabled`.
+  [1m[36mActiveRecord::InternalMetadata Load (0.5ms)[0m  [1m[34mSELECT * FROM "ar_internal_metadata" WHERE "ar_internal_metadata"."key" = ? ORDER BY "ar_internal_metadata"."key" ASC LIMIT 1[0m  [[nil, "schema_sha1"]]
+  [1m[36mActiveRecord::SchemaMigration Load (0.3ms)[0m  [1m[34mSELECT "schema_migrations"."version" FROM "schema_migrations" ORDER BY "schema_migrations"."version" ASC[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[36mBEGIN immediate TRANSACTION[0m
+  [1m[35m (0.5ms)[0m  [1m[35mPRAGMA foreign_keys[0m
+  [1m[35m (0.0ms)[0m  [1m[35mPRAGMA defer_foreign_keys[0m
+  [1m[35m (0.1ms)[0m  [1m[35mPRAGMA defer_foreign_keys = ON[0m
+  [1m[35m (0.0ms)[0m  [1m[35mPRAGMA foreign_keys = OFF[0m
+  [1m[36mFixtures Load (0.2ms)[0m  [1m[31mDELETE FROM "break_escape_demo_users";
+DELETE FROM "break_escape_missions";
+INSERT INTO "break_escape_demo_users" ("id", "created_at", "handle", "role", "updated_at") VALUES (NULL, '2025-11-20 17:21:12', 'test_user', 'user', '2025-11-20 17:21:12'), (NULL, '2025-11-20 17:21:12', 'other_user', 'user', '2025-11-20 17:21:12');
+INSERT INTO "break_escape_missions" ("id", "created_at", "description", "difficulty_level", "display_name", "name", "published", "updated_at") VALUES (NULL, '2025-11-20 17:21:12', 'Test scenario', 3, 'CEO Exfiltration', 'ceo_exfil', TRUE, '2025-11-20 17:21:12'), (NULL, '2025-11-20 17:21:12', 'Not visible', 1, 'Unpublished Test', 'test_unpublished', FALSE, '2025-11-20 17:21:12')[0m
+  [1m[35m (0.0ms)[0m  [1m[35mPRAGMA defer_foreign_keys = 0[0m
+  [1m[35m (0.0ms)[0m  [1m[35mPRAGMA foreign_keys = 1[0m
+  [1m[36mTRANSACTION (5.0ms)[0m  [1m[36mCOMMIT TRANSACTION[0m
+  [1m[35m (0.1ms)[0m  [1m[35mPRAGMA foreign_key_check[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[36mBEGIN immediate TRANSACTION[0m
+  [1m[35m (0.4ms)[0m  [1m[35mPRAGMA foreign_keys[0m
+  [1m[35m (0.0ms)[0m  [1m[35mPRAGMA defer_foreign_keys[0m
+  [1m[35m (0.0ms)[0m  [1m[35mPRAGMA defer_foreign_keys = ON[0m
+  [1m[35m (0.0ms)[0m  [1m[35mPRAGMA foreign_keys = OFF[0m
+  [1m[36mFixtures Load (0.2ms)[0m  [1m[31mDELETE FROM "break_escape_demo_users";
+DELETE FROM "break_escape_missions";
+INSERT INTO "break_escape_demo_users" ("id", "created_at", "handle", "role", "updated_at") VALUES (NULL, '2025-11-20 17:21:13', 'test_user', 'user', '2025-11-20 17:21:13'), (NULL, '2025-11-20 17:21:13', 'other_user', 'user', '2025-11-20 17:21:13');
+INSERT INTO "break_escape_missions" ("id", "created_at", "description", "difficulty_level", "display_name", "name", "published", "updated_at") VALUES (NULL, '2025-11-20 17:21:13', 'Test scenario', 3, 'CEO Exfiltration', 'ceo_exfil', TRUE, '2025-11-20 17:21:13'), (NULL, '2025-11-20 17:21:13', 'Not visible', 1, 'Unpublished Test', 'test_unpublished', FALSE, '2025-11-20 17:21:13')[0m
+  [1m[35m (0.1ms)[0m  [1m[35mPRAGMA defer_foreign_keys = 0[0m
+  [1m[35m (0.0ms)[0m  [1m[35mPRAGMA foreign_keys = 1[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[36mCOMMIT TRANSACTION[0m
+  [1m[35m (0.1ms)[0m  [1m[35mPRAGMA foreign_key_check[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[36mBEGIN immediate TRANSACTION[0m
+  [1m[35m (0.4ms)[0m  [1m[35mPRAGMA foreign_keys[0m
+  [1m[35m (0.1ms)[0m  [1m[35mPRAGMA defer_foreign_keys[0m
+  [1m[35m (0.0ms)[0m  [1m[35mPRAGMA defer_foreign_keys = ON[0m
+  [1m[35m (0.0ms)[0m  [1m[35mPRAGMA foreign_keys = OFF[0m
+  [1m[36mFixtures Load (0.2ms)[0m  [1m[31mDELETE FROM "break_escape_demo_users";
+DELETE FROM "break_escape_missions";
+INSERT INTO "break_escape_demo_users" ("id", "created_at", "handle", "role", "updated_at") VALUES (NULL, '2025-11-20 17:21:13', 'test_user', 'user', '2025-11-20 17:21:13'), (NULL, '2025-11-20 17:21:13', 'other_user', 'user', '2025-11-20 17:21:13');
+INSERT INTO "break_escape_missions" ("id", "created_at", "description", "difficulty_level", "display_name", "name", "published", "updated_at") VALUES (NULL, '2025-11-20 17:21:13', 'Test scenario', 3, 'CEO Exfiltration', 'ceo_exfil', TRUE, '2025-11-20 17:21:13'), (NULL, '2025-11-20 17:21:13', 'Not visible', 1, 'Unpublished Test', 'test_unpublished', FALSE, '2025-11-20 17:21:13')[0m
+  [1m[35m (0.0ms)[0m  [1m[35mPRAGMA defer_foreign_keys = 0[0m
+  [1m[35m (0.0ms)[0m  [1m[35mPRAGMA foreign_keys = 1[0m
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[36mCOMMIT TRANSACTION[0m
+  [1m[35m (0.1ms)[0m  [1m[35mPRAGMA foreign_key_check[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[36mBEGIN immediate TRANSACTION[0m
+  [1m[35m (0.2ms)[0m  [1m[35mPRAGMA foreign_keys[0m
+  [1m[35m (0.0ms)[0m  [1m[35mPRAGMA defer_foreign_keys[0m
+  [1m[35m (0.0ms)[0m  [1m[35mPRAGMA defer_foreign_keys = ON[0m
+  [1m[35m (0.0ms)[0m  [1m[35mPRAGMA foreign_keys = OFF[0m
+  [1m[36mFixtures Load (0.2ms)[0m  [1m[31mDELETE FROM "break_escape_demo_users";
+DELETE FROM "break_escape_missions";
+INSERT INTO "break_escape_demo_users" ("id", "created_at", "handle", "role", "updated_at") VALUES (NULL, '2025-11-20 17:21:13', 'test_user', 'user', '2025-11-20 17:21:13'), (NULL, '2025-11-20 17:21:13', 'other_user', 'user', '2025-11-20 17:21:13');
+INSERT INTO "break_escape_missions" ("id", "created_at", "description", "difficulty_level", "display_name", "name", "published", "updated_at") VALUES (NULL, '2025-11-20 17:21:13', 'Test scenario', 3, 'CEO Exfiltration', 'ceo_exfil', TRUE, '2025-11-20 17:21:13'), (NULL, '2025-11-20 17:21:13', 'Not visible', 1, 'Unpublished Test', 'test_unpublished', FALSE, '2025-11-20 17:21:13')[0m
+  [1m[35m (0.0ms)[0m  [1m[35mPRAGMA defer_foreign_keys = 0[0m
+  [1m[35m (0.0ms)[0m  [1m[35mPRAGMA foreign_keys = 1[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[36mCOMMIT TRANSACTION[0m
+  [1m[35m (0.1ms)[0m  [1m[35mPRAGMA foreign_key_check[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[36mBEGIN immediate TRANSACTION[0m
+  [1m[35m (0.3ms)[0m  [1m[35mPRAGMA foreign_keys[0m
+  [1m[35m (0.0ms)[0m  [1m[35mPRAGMA defer_foreign_keys[0m
+  [1m[35m (0.0ms)[0m  [1m[35mPRAGMA defer_foreign_keys = ON[0m
+  [1m[35m (0.0ms)[0m  [1m[35mPRAGMA foreign_keys = OFF[0m
+  [1m[36mFixtures Load (0.3ms)[0m  [1m[31mDELETE FROM "break_escape_demo_users";
+DELETE FROM "break_escape_missions";
+INSERT INTO "break_escape_demo_users" ("id", "created_at", "handle", "role", "updated_at") VALUES (NULL, '2025-11-20 17:21:13', 'test_user', 'user', '2025-11-20 17:21:13'), (NULL, '2025-11-20 17:21:13', 'other_user', 'user', '2025-11-20 17:21:13');
+INSERT INTO "break_escape_missions" ("id", "created_at", "description", "difficulty_level", "display_name", "name", "published", "updated_at") VALUES (NULL, '2025-11-20 17:21:13', 'Test scenario', 3, 'CEO Exfiltration', 'ceo_exfil', TRUE, '2025-11-20 17:21:13'), (NULL, '2025-11-20 17:21:13', 'Not visible', 1, 'Unpublished Test', 'test_unpublished', FALSE, '2025-11-20 17:21:13')[0m
+  [1m[35m (0.0ms)[0m  [1m[35mPRAGMA defer_foreign_keys = 0[0m
+  [1m[35m (0.0ms)[0m  [1m[35mPRAGMA foreign_keys = 1[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[36mCOMMIT TRANSACTION[0m
+  [1m[35m (0.1ms)[0m  [1m[35mPRAGMA foreign_key_check[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[36mBEGIN immediate TRANSACTION[0m
+  [1m[35m (0.2ms)[0m  [1m[35mPRAGMA foreign_keys[0m
+  [1m[35m (0.0ms)[0m  [1m[35mPRAGMA defer_foreign_keys[0m
+  [1m[35m (0.0ms)[0m  [1m[35mPRAGMA defer_foreign_keys = ON[0m
+  [1m[35m (0.0ms)[0m  [1m[35mPRAGMA foreign_keys = OFF[0m
+  [1m[36mFixtures Load (0.2ms)[0m  [1m[31mDELETE FROM "break_escape_demo_users";
+DELETE FROM "break_escape_missions";
+INSERT INTO "break_escape_demo_users" ("id", "created_at", "handle", "role", "updated_at") VALUES (NULL, '2025-11-20 17:21:13', 'test_user', 'user', '2025-11-20 17:21:13'), (NULL, '2025-11-20 17:21:13', 'other_user', 'user', '2025-11-20 17:21:13');
+INSERT INTO "break_escape_missions" ("id", "created_at", "description", "difficulty_level", "display_name", "name", "published", "updated_at") VALUES (NULL, '2025-11-20 17:21:13', 'Test scenario', 3, 'CEO Exfiltration', 'ceo_exfil', TRUE, '2025-11-20 17:21:13'), (NULL, '2025-11-20 17:21:13', 'Not visible', 1, 'Unpublished Test', 'test_unpublished', FALSE, '2025-11-20 17:21:13')[0m
+  [1m[35m (0.1ms)[0m  [1m[35mPRAGMA defer_foreign_keys = 0[0m
+  [1m[35m (0.0ms)[0m  [1m[35mPRAGMA foreign_keys = 1[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[36mCOMMIT TRANSACTION[0m
+  [1m[35m (0.1ms)[0m  [1m[35mPRAGMA foreign_key_check[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[36mBEGIN immediate TRANSACTION[0m
+  [1m[35m (0.2ms)[0m  [1m[35mPRAGMA foreign_keys[0m
+  [1m[35m (0.0ms)[0m  [1m[35mPRAGMA defer_foreign_keys[0m
+  [1m[35m (0.0ms)[0m  [1m[35mPRAGMA defer_foreign_keys = ON[0m
+  [1m[35m (0.0ms)[0m  [1m[35mPRAGMA foreign_keys = OFF[0m
+  [1m[36mFixtures Load (0.3ms)[0m  [1m[31mDELETE FROM "break_escape_demo_users";
+DELETE FROM "break_escape_missions";
+INSERT INTO "break_escape_demo_users" ("id", "created_at", "handle", "role", "updated_at") VALUES (NULL, '2025-11-20 17:21:13', 'test_user', 'user', '2025-11-20 17:21:13'), (NULL, '2025-11-20 17:21:13', 'other_user', 'user', '2025-11-20 17:21:13');
+INSERT INTO "break_escape_missions" ("id", "created_at", "description", "difficulty_level", "display_name", "name", "published", "updated_at") VALUES (NULL, '2025-11-20 17:21:13', 'Test scenario', 3, 'CEO Exfiltration', 'ceo_exfil', TRUE, '2025-11-20 17:21:13'), (NULL, '2025-11-20 17:21:13', 'Not visible', 1, 'Unpublished Test', 'test_unpublished', FALSE, '2025-11-20 17:21:13')[0m
+  [1m[35m (0.0ms)[0m  [1m[35mPRAGMA defer_foreign_keys = 0[0m
+  [1m[35m (0.0ms)[0m  [1m[35mPRAGMA foreign_keys = 1[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[36mCOMMIT TRANSACTION[0m
+  [1m[35m (0.1ms)[0m  [1m[35mPRAGMA foreign_key_check[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[36mBEGIN immediate TRANSACTION[0m
+  [1m[35m (0.2ms)[0m  [1m[35mPRAGMA foreign_keys[0m
+  [1m[35m (0.0ms)[0m  [1m[35mPRAGMA defer_foreign_keys[0m
+  [1m[35m (0.0ms)[0m  [1m[35mPRAGMA defer_foreign_keys = ON[0m
+  [1m[35m (0.0ms)[0m  [1m[35mPRAGMA foreign_keys = OFF[0m
+  [1m[36mFixtures Load (0.1ms)[0m  [1m[31mDELETE FROM "break_escape_demo_users";
+DELETE FROM "break_escape_missions";
+INSERT INTO "break_escape_demo_users" ("id", "created_at", "handle", "role", "updated_at") VALUES (NULL, '2025-11-20 17:21:13', 'test_user', 'user', '2025-11-20 17:21:13'), (NULL, '2025-11-20 17:21:13', 'other_user', 'user', '2025-11-20 17:21:13');
+INSERT INTO "break_escape_missions" ("id", "created_at", "description", "difficulty_level", "display_name", "name", "published", "updated_at") VALUES (NULL, '2025-11-20 17:21:13', 'Test scenario', 3, 'CEO Exfiltration', 'ceo_exfil', TRUE, '2025-11-20 17:21:13'), (NULL, '2025-11-20 17:21:13', 'Not visible', 1, 'Unpublished Test', 'test_unpublished', FALSE, '2025-11-20 17:21:13')[0m
+  [1m[35m (0.0ms)[0m  [1m[35mPRAGMA defer_foreign_keys = 0[0m
+  [1m[35m (0.0ms)[0m  [1m[35mPRAGMA foreign_keys = 1[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[36mCOMMIT TRANSACTION[0m
+  [1m[35m (0.1ms)[0m  [1m[35mPRAGMA foreign_key_check[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[36mBEGIN immediate TRANSACTION[0m
+  [1m[35m (0.2ms)[0m  [1m[35mPRAGMA foreign_keys[0m
+  [1m[35m (0.0ms)[0m  [1m[35mPRAGMA defer_foreign_keys[0m
+  [1m[35m (0.0ms)[0m  [1m[35mPRAGMA defer_foreign_keys = ON[0m
+  [1m[35m (0.1ms)[0m  [1m[35mPRAGMA foreign_keys = OFF[0m
+  [1m[36mFixtures Load (0.1ms)[0m  [1m[31mDELETE FROM "break_escape_demo_users";
+DELETE FROM "break_escape_missions";
+INSERT INTO "break_escape_demo_users" ("id", "created_at", "handle", "role", "updated_at") VALUES (NULL, '2025-11-20 17:21:13', 'test_user', 'user', '2025-11-20 17:21:13'), (NULL, '2025-11-20 17:21:13', 'other_user', 'user', '2025-11-20 17:21:13');
+INSERT INTO "break_escape_missions" ("id", "created_at", "description", "difficulty_level", "display_name", "name", "published", "updated_at") VALUES (NULL, '2025-11-20 17:21:13', 'Test scenario', 3, 'CEO Exfiltration', 'ceo_exfil', TRUE, '2025-11-20 17:21:13'), (NULL, '2025-11-20 17:21:13', 'Not visible', 1, 'Unpublished Test', 'test_unpublished', FALSE, '2025-11-20 17:21:13')[0m
+  [1m[35m (0.0ms)[0m  [1m[35mPRAGMA defer_foreign_keys = 0[0m
+  [1m[35m (0.0ms)[0m  [1m[35mPRAGMA foreign_keys = 1[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[36mCOMMIT TRANSACTION[0m
+  [1m[35m (0.1ms)[0m  [1m[35mPRAGMA foreign_key_check[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[36mBEGIN immediate TRANSACTION[0m
+  [1m[35m (0.2ms)[0m  [1m[35mPRAGMA foreign_keys[0m
+  [1m[35m (0.0ms)[0m  [1m[35mPRAGMA defer_foreign_keys[0m
+  [1m[35m (0.0ms)[0m  [1m[35mPRAGMA defer_foreign_keys = ON[0m
+  [1m[35m (0.0ms)[0m  [1m[35mPRAGMA foreign_keys = OFF[0m
+  [1m[36mFixtures Load (0.1ms)[0m  [1m[31mDELETE FROM "break_escape_demo_users";
+DELETE FROM "break_escape_missions";
+INSERT INTO "break_escape_demo_users" ("id", "created_at", "handle", "role", "updated_at") VALUES (NULL, '2025-11-20 17:21:13', 'test_user', 'user', '2025-11-20 17:21:13'), (NULL, '2025-11-20 17:21:13', 'other_user', 'user', '2025-11-20 17:21:13');
+INSERT INTO "break_escape_missions" ("id", "created_at", "description", "difficulty_level", "display_name", "name", "published", "updated_at") VALUES (NULL, '2025-11-20 17:21:13', 'Test scenario', 3, 'CEO Exfiltration', 'ceo_exfil', TRUE, '2025-11-20 17:21:13'), (NULL, '2025-11-20 17:21:13', 'Not visible', 1, 'Unpublished Test', 'test_unpublished', FALSE, '2025-11-20 17:21:13')[0m
+  [1m[35m (0.0ms)[0m  [1m[35mPRAGMA defer_foreign_keys = 0[0m
+  [1m[35m (0.0ms)[0m  [1m[35mPRAGMA foreign_keys = 1[0m
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[36mCOMMIT TRANSACTION[0m
+  [1m[35m (0.1ms)[0m  [1m[35mPRAGMA foreign_key_check[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[36mBEGIN immediate TRANSACTION[0m
+  [1m[35m (0.2ms)[0m  [1m[35mPRAGMA foreign_keys[0m
+  [1m[35m (0.0ms)[0m  [1m[35mPRAGMA defer_foreign_keys[0m
+  [1m[35m (0.0ms)[0m  [1m[35mPRAGMA defer_foreign_keys = ON[0m
+  [1m[35m (0.0ms)[0m  [1m[35mPRAGMA foreign_keys = OFF[0m
+  [1m[36mFixtures Load (0.3ms)[0m  [1m[31mDELETE FROM "break_escape_demo_users";
+DELETE FROM "break_escape_missions";
+INSERT INTO "break_escape_demo_users" ("id", "created_at", "handle", "role", "updated_at") VALUES (NULL, '2025-11-20 17:21:13', 'test_user', 'user', '2025-11-20 17:21:13'), (NULL, '2025-11-20 17:21:13', 'other_user', 'user', '2025-11-20 17:21:13');
+INSERT INTO "break_escape_missions" ("id", "created_at", "description", "difficulty_level", "display_name", "name", "published", "updated_at") VALUES (NULL, '2025-11-20 17:21:13', 'Test scenario', 3, 'CEO Exfiltration', 'ceo_exfil', TRUE, '2025-11-20 17:21:13'), (NULL, '2025-11-20 17:21:13', 'Not visible', 1, 'Unpublished Test', 'test_unpublished', FALSE, '2025-11-20 17:21:13')[0m
+  [1m[35m (0.0ms)[0m  [1m[35mPRAGMA defer_foreign_keys = 0[0m
+  [1m[35m (0.0ms)[0m  [1m[35mPRAGMA foreign_keys = 1[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[36mCOMMIT TRANSACTION[0m
+  [1m[35m (0.1ms)[0m  [1m[35mPRAGMA foreign_key_check[0m
+  [1m[36mTRANSACTION (0.0ms)[0m  [1m[36mBEGIN immediate TRANSACTION[0m
+  [1m[35m (0.2ms)[0m  [1m[35mPRAGMA foreign_keys[0m
+  [1m[35m (0.0ms)[0m  [1m[35mPRAGMA defer_foreign_keys[0m
+  [1m[35m (0.0ms)[0m  [1m[35mPRAGMA defer_foreign_keys = ON[0m
+  [1m[35m (0.0ms)[0m  [1m[35mPRAGMA foreign_keys = OFF[0m
+  [1m[36mFixtures Load (0.1ms)[0m  [1m[31mDELETE FROM "break_escape_demo_users";
+DELETE FROM "break_escape_missions";
+INSERT INTO "break_escape_demo_users" ("id", "created_at", "handle", "role", "updated_at") VALUES (NULL, '2025-11-20 17:21:13', 'test_user', 'user', '2025-11-20 17:21:13'), (NULL, '2025-11-20 17:21:13', 'other_user', 'user', '2025-11-20 17:21:13');
+INSERT INTO "break_escape_missions" ("id", "created_at", "description", "difficulty_level", "display_name", "name", "published", "updated_at") VALUES (NULL, '2025-11-20 17:21:13', 'Test scenario', 3, 'CEO Exfiltration', 'ceo_exfil', TRUE, '2025-11-20 17:21:13'), (NULL, '2025-11-20 17:21:13', 'Not visible', 1, 'Unpublished Test', 'test_unpublished', FALSE, '2025-11-20 17:21:13')[0m
+  [1m[35m (0.0ms)[0m  [1m[35mPRAGMA defer_foreign_keys = 0[0m
+  [1m[35m (0.0ms)[0m  [1m[35mPRAGMA foreign_keys = 1[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[36mCOMMIT TRANSACTION[0m
+  [1m[35m (0.1ms)[0m  [1m[35mPRAGMA foreign_key_check[0m
+Generating image variants require the image_processing gem. Please add `gem "image_processing", "~> 1.2"` to your Gemfile or set `config.active_storage.variant_processor = :disabled`.
+  [1m[36mActiveRecord::InternalMetadata Load (0.6ms)[0m  [1m[34mSELECT * FROM "ar_internal_metadata" WHERE "ar_internal_metadata"."key" = ? ORDER BY "ar_internal_metadata"."key" ASC LIMIT 1[0m  [[nil, "schema_sha1"]]
+  [1m[36mActiveRecord::SchemaMigration Load (0.2ms)[0m  [1m[34mSELECT "schema_migrations"."version" FROM "schema_migrations" ORDER BY "schema_migrations"."version" ASC[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[36mBEGIN immediate TRANSACTION[0m
+  [1m[35m (0.3ms)[0m  [1m[35mPRAGMA foreign_keys[0m
+  [1m[35m (0.0ms)[0m  [1m[35mPRAGMA defer_foreign_keys[0m
+  [1m[35m (0.0ms)[0m  [1m[35mPRAGMA defer_foreign_keys = ON[0m
+  [1m[35m (0.0ms)[0m  [1m[35mPRAGMA foreign_keys = OFF[0m
+  [1m[36mFixtures Load (0.2ms)[0m  [1m[31mDELETE FROM "break_escape_demo_users";
+DELETE FROM "break_escape_missions";
+INSERT INTO "break_escape_demo_users" ("id", "created_at", "handle", "role", "updated_at") VALUES (NULL, '2025-11-20 17:22:17', 'test_user', 'user', '2025-11-20 17:22:17'), (NULL, '2025-11-20 17:22:17', 'other_user', 'user', '2025-11-20 17:22:17');
+INSERT INTO "break_escape_missions" ("id", "created_at", "description", "difficulty_level", "display_name", "name", "published", "updated_at") VALUES (NULL, '2025-11-20 17:22:17', 'Test scenario', 3, 'CEO Exfiltration', 'ceo_exfil', TRUE, '2025-11-20 17:22:17'), (NULL, '2025-11-20 17:22:17', 'Not visible', 1, 'Unpublished Test', 'test_unpublished', FALSE, '2025-11-20 17:22:17')[0m
+  [1m[35m (0.0ms)[0m  [1m[35mPRAGMA defer_foreign_keys = 0[0m
+  [1m[35m (0.0ms)[0m  [1m[35mPRAGMA foreign_keys = 1[0m
+  [1m[36mTRANSACTION (5.1ms)[0m  [1m[36mCOMMIT TRANSACTION[0m
+  [1m[35m (0.1ms)[0m  [1m[35mPRAGMA foreign_key_check[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[36mBEGIN immediate TRANSACTION[0m
+  [1m[35m (0.3ms)[0m  [1m[35mPRAGMA foreign_keys[0m
+  [1m[35m (0.0ms)[0m  [1m[35mPRAGMA defer_foreign_keys[0m
+  [1m[35m (0.0ms)[0m  [1m[35mPRAGMA defer_foreign_keys = ON[0m
+  [1m[35m (0.0ms)[0m  [1m[35mPRAGMA foreign_keys = OFF[0m
+  [1m[36mFixtures Load (0.2ms)[0m  [1m[31mDELETE FROM "break_escape_demo_users";
+DELETE FROM "break_escape_missions";
+INSERT INTO "break_escape_demo_users" ("id", "created_at", "handle", "role", "updated_at") VALUES (NULL, '2025-11-20 17:22:17', 'test_user', 'user', '2025-11-20 17:22:17'), (NULL, '2025-11-20 17:22:17', 'other_user', 'user', '2025-11-20 17:22:17');
+INSERT INTO "break_escape_missions" ("id", "created_at", "description", "difficulty_level", "display_name", "name", "published", "updated_at") VALUES (NULL, '2025-11-20 17:22:17', 'Test scenario', 3, 'CEO Exfiltration', 'ceo_exfil', TRUE, '2025-11-20 17:22:17'), (NULL, '2025-11-20 17:22:17', 'Not visible', 1, 'Unpublished Test', 'test_unpublished', FALSE, '2025-11-20 17:22:17')[0m
+  [1m[35m (0.0ms)[0m  [1m[35mPRAGMA defer_foreign_keys = 0[0m
+  [1m[35m (0.0ms)[0m  [1m[35mPRAGMA foreign_keys = 1[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[36mCOMMIT TRANSACTION[0m
+  [1m[35m (0.1ms)[0m  [1m[35mPRAGMA foreign_key_check[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[36mBEGIN immediate TRANSACTION[0m
+  [1m[35m (0.3ms)[0m  [1m[35mPRAGMA foreign_keys[0m
+  [1m[35m (0.1ms)[0m  [1m[35mPRAGMA defer_foreign_keys[0m
+  [1m[35m (0.0ms)[0m  [1m[35mPRAGMA defer_foreign_keys = ON[0m
+  [1m[35m (0.0ms)[0m  [1m[35mPRAGMA foreign_keys = OFF[0m
+  [1m[36mFixtures Load (0.1ms)[0m  [1m[31mDELETE FROM "break_escape_demo_users";
+DELETE FROM "break_escape_missions";
+INSERT INTO "break_escape_demo_users" ("id", "created_at", "handle", "role", "updated_at") VALUES (NULL, '2025-11-20 17:22:17', 'test_user', 'user', '2025-11-20 17:22:17'), (NULL, '2025-11-20 17:22:17', 'other_user', 'user', '2025-11-20 17:22:17');
+INSERT INTO "break_escape_missions" ("id", "created_at", "description", "difficulty_level", "display_name", "name", "published", "updated_at") VALUES (NULL, '2025-11-20 17:22:17', 'Test scenario', 3, 'CEO Exfiltration', 'ceo_exfil', TRUE, '2025-11-20 17:22:17'), (NULL, '2025-11-20 17:22:17', 'Not visible', 1, 'Unpublished Test', 'test_unpublished', FALSE, '2025-11-20 17:22:17')[0m
+  [1m[35m (0.0ms)[0m  [1m[35mPRAGMA defer_foreign_keys = 0[0m
+  [1m[35m (0.0ms)[0m  [1m[35mPRAGMA foreign_keys = 1[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[36mCOMMIT TRANSACTION[0m
+  [1m[35m (0.1ms)[0m  [1m[35mPRAGMA foreign_key_check[0m
+  [1m[36mTRANSACTION (0.0ms)[0m  [1m[36mBEGIN immediate TRANSACTION[0m
+  [1m[35m (0.2ms)[0m  [1m[35mPRAGMA foreign_keys[0m
+  [1m[35m (0.0ms)[0m  [1m[35mPRAGMA defer_foreign_keys[0m
+  [1m[35m (0.0ms)[0m  [1m[35mPRAGMA defer_foreign_keys = ON[0m
+  [1m[35m (0.0ms)[0m  [1m[35mPRAGMA foreign_keys = OFF[0m
+  [1m[36mFixtures Load (0.2ms)[0m  [1m[31mDELETE FROM "break_escape_demo_users";
+DELETE FROM "break_escape_missions";
+INSERT INTO "break_escape_demo_users" ("id", "created_at", "handle", "role", "updated_at") VALUES (NULL, '2025-11-20 17:22:17', 'test_user', 'user', '2025-11-20 17:22:17'), (NULL, '2025-11-20 17:22:17', 'other_user', 'user', '2025-11-20 17:22:17');
+INSERT INTO "break_escape_missions" ("id", "created_at", "description", "difficulty_level", "display_name", "name", "published", "updated_at") VALUES (NULL, '2025-11-20 17:22:17', 'Test scenario', 3, 'CEO Exfiltration', 'ceo_exfil', TRUE, '2025-11-20 17:22:17'), (NULL, '2025-11-20 17:22:17', 'Not visible', 1, 'Unpublished Test', 'test_unpublished', FALSE, '2025-11-20 17:22:17')[0m
+  [1m[35m (0.0ms)[0m  [1m[35mPRAGMA defer_foreign_keys = 0[0m
+  [1m[35m (0.0ms)[0m  [1m[35mPRAGMA foreign_keys = 1[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[36mCOMMIT TRANSACTION[0m
+  [1m[35m (0.1ms)[0m  [1m[35mPRAGMA foreign_key_check[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[36mBEGIN immediate TRANSACTION[0m
+  [1m[35m (0.4ms)[0m  [1m[35mPRAGMA foreign_keys[0m
+  [1m[35m (0.0ms)[0m  [1m[35mPRAGMA defer_foreign_keys[0m
+  [1m[35m (0.0ms)[0m  [1m[35mPRAGMA defer_foreign_keys = ON[0m
+  [1m[35m (0.0ms)[0m  [1m[35mPRAGMA foreign_keys = OFF[0m
+  [1m[36mFixtures Load (0.2ms)[0m  [1m[31mDELETE FROM "break_escape_demo_users";
+DELETE FROM "break_escape_missions";
+INSERT INTO "break_escape_demo_users" ("id", "created_at", "handle", "role", "updated_at") VALUES (NULL, '2025-11-20 17:22:17', 'test_user', 'user', '2025-11-20 17:22:17'), (NULL, '2025-11-20 17:22:17', 'other_user', 'user', '2025-11-20 17:22:17');
+INSERT INTO "break_escape_missions" ("id", "created_at", "description", "difficulty_level", "display_name", "name", "published", "updated_at") VALUES (NULL, '2025-11-20 17:22:17', 'Test scenario', 3, 'CEO Exfiltration', 'ceo_exfil', TRUE, '2025-11-20 17:22:17'), (NULL, '2025-11-20 17:22:17', 'Not visible', 1, 'Unpublished Test', 'test_unpublished', FALSE, '2025-11-20 17:22:17')[0m
+  [1m[35m (0.0ms)[0m  [1m[35mPRAGMA defer_foreign_keys = 0[0m
+  [1m[35m (0.1ms)[0m  [1m[35mPRAGMA foreign_keys = 1[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[36mCOMMIT TRANSACTION[0m
+  [1m[35m (0.1ms)[0m  [1m[35mPRAGMA foreign_key_check[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[36mBEGIN immediate TRANSACTION[0m
+  [1m[35m (0.4ms)[0m  [1m[35mPRAGMA foreign_keys[0m
+  [1m[35m (0.0ms)[0m  [1m[35mPRAGMA defer_foreign_keys[0m
+  [1m[35m (0.0ms)[0m  [1m[35mPRAGMA defer_foreign_keys = ON[0m
+  [1m[35m (0.1ms)[0m  [1m[35mPRAGMA foreign_keys = OFF[0m
+  [1m[36mFixtures Load (0.2ms)[0m  [1m[31mDELETE FROM "break_escape_demo_users";
+DELETE FROM "break_escape_missions";
+INSERT INTO "break_escape_demo_users" ("id", "created_at", "handle", "role", "updated_at") VALUES (NULL, '2025-11-20 17:22:18', 'test_user', 'user', '2025-11-20 17:22:18'), (NULL, '2025-11-20 17:22:18', 'other_user', 'user', '2025-11-20 17:22:18');
+INSERT INTO "break_escape_missions" ("id", "created_at", "description", "difficulty_level", "display_name", "name", "published", "updated_at") VALUES (NULL, '2025-11-20 17:22:18', 'Test scenario', 3, 'CEO Exfiltration', 'ceo_exfil', TRUE, '2025-11-20 17:22:18'), (NULL, '2025-11-20 17:22:18', 'Not visible', 1, 'Unpublished Test', 'test_unpublished', FALSE, '2025-11-20 17:22:18')[0m
+  [1m[35m (0.0ms)[0m  [1m[35mPRAGMA defer_foreign_keys = 0[0m
+  [1m[35m (0.1ms)[0m  [1m[35mPRAGMA foreign_keys = 1[0m
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[36mCOMMIT TRANSACTION[0m
+  [1m[35m (0.1ms)[0m  [1m[35mPRAGMA foreign_key_check[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[36mBEGIN immediate TRANSACTION[0m
+  [1m[35m (0.3ms)[0m  [1m[35mPRAGMA foreign_keys[0m
+  [1m[35m (0.0ms)[0m  [1m[35mPRAGMA defer_foreign_keys[0m
+  [1m[35m (0.0ms)[0m  [1m[35mPRAGMA defer_foreign_keys = ON[0m
+  [1m[35m (0.0ms)[0m  [1m[35mPRAGMA foreign_keys = OFF[0m
+  [1m[36mFixtures Load (0.2ms)[0m  [1m[31mDELETE FROM "break_escape_demo_users";
+DELETE FROM "break_escape_missions";
+INSERT INTO "break_escape_demo_users" ("id", "created_at", "handle", "role", "updated_at") VALUES (NULL, '2025-11-20 17:22:18', 'test_user', 'user', '2025-11-20 17:22:18'), (NULL, '2025-11-20 17:22:18', 'other_user', 'user', '2025-11-20 17:22:18');
+INSERT INTO "break_escape_missions" ("id", "created_at", "description", "difficulty_level", "display_name", "name", "published", "updated_at") VALUES (NULL, '2025-11-20 17:22:18', 'Test scenario', 3, 'CEO Exfiltration', 'ceo_exfil', TRUE, '2025-11-20 17:22:18'), (NULL, '2025-11-20 17:22:18', 'Not visible', 1, 'Unpublished Test', 'test_unpublished', FALSE, '2025-11-20 17:22:18')[0m
+  [1m[35m (0.0ms)[0m  [1m[35mPRAGMA defer_foreign_keys = 0[0m
+  [1m[35m (0.0ms)[0m  [1m[35mPRAGMA foreign_keys = 1[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[36mCOMMIT TRANSACTION[0m
+  [1m[35m (0.1ms)[0m  [1m[35mPRAGMA foreign_key_check[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[36mBEGIN immediate TRANSACTION[0m
+  [1m[35m (0.2ms)[0m  [1m[35mPRAGMA foreign_keys[0m
+  [1m[35m (0.0ms)[0m  [1m[35mPRAGMA defer_foreign_keys[0m
+  [1m[35m (0.0ms)[0m  [1m[35mPRAGMA defer_foreign_keys = ON[0m
+  [1m[35m (0.0ms)[0m  [1m[35mPRAGMA foreign_keys = OFF[0m
+  [1m[36mFixtures Load (0.4ms)[0m  [1m[31mDELETE FROM "break_escape_demo_users";
+DELETE FROM "break_escape_missions";
+INSERT INTO "break_escape_demo_users" ("id", "created_at", "handle", "role", "updated_at") VALUES (NULL, '2025-11-20 17:22:18', 'test_user', 'user', '2025-11-20 17:22:18'), (NULL, '2025-11-20 17:22:18', 'other_user', 'user', '2025-11-20 17:22:18');
+INSERT INTO "break_escape_missions" ("id", "created_at", "description", "difficulty_level", "display_name", "name", "published", "updated_at") VALUES (NULL, '2025-11-20 17:22:18', 'Test scenario', 3, 'CEO Exfiltration', 'ceo_exfil', TRUE, '2025-11-20 17:22:18'), (NULL, '2025-11-20 17:22:18', 'Not visible', 1, 'Unpublished Test', 'test_unpublished', FALSE, '2025-11-20 17:22:18')[0m
+  [1m[35m (0.0ms)[0m  [1m[35mPRAGMA defer_foreign_keys = 0[0m
+  [1m[35m (0.0ms)[0m  [1m[35mPRAGMA foreign_keys = 1[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[36mCOMMIT TRANSACTION[0m
+  [1m[35m (0.1ms)[0m  [1m[35mPRAGMA foreign_key_check[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[36mBEGIN immediate TRANSACTION[0m
+  [1m[35m (0.2ms)[0m  [1m[35mPRAGMA foreign_keys[0m
+  [1m[35m (0.0ms)[0m  [1m[35mPRAGMA defer_foreign_keys[0m
+  [1m[35m (0.0ms)[0m  [1m[35mPRAGMA defer_foreign_keys = ON[0m
+  [1m[35m (0.0ms)[0m  [1m[35mPRAGMA foreign_keys = OFF[0m
+  [1m[36mFixtures Load (0.1ms)[0m  [1m[31mDELETE FROM "break_escape_demo_users";
+DELETE FROM "break_escape_missions";
+INSERT INTO "break_escape_demo_users" ("id", "created_at", "handle", "role", "updated_at") VALUES (NULL, '2025-11-20 17:22:18', 'test_user', 'user', '2025-11-20 17:22:18'), (NULL, '2025-11-20 17:22:18', 'other_user', 'user', '2025-11-20 17:22:18');
+INSERT INTO "break_escape_missions" ("id", "created_at", "description", "difficulty_level", "display_name", "name", "published", "updated_at") VALUES (NULL, '2025-11-20 17:22:18', 'Test scenario', 3, 'CEO Exfiltration', 'ceo_exfil', TRUE, '2025-11-20 17:22:18'), (NULL, '2025-11-20 17:22:18', 'Not visible', 1, 'Unpublished Test', 'test_unpublished', FALSE, '2025-11-20 17:22:18')[0m
+  [1m[35m (0.0ms)[0m  [1m[35mPRAGMA defer_foreign_keys = 0[0m
+  [1m[35m (0.0ms)[0m  [1m[35mPRAGMA foreign_keys = 1[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[36mCOMMIT TRANSACTION[0m
+  [1m[35m (0.1ms)[0m  [1m[35mPRAGMA foreign_key_check[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[36mBEGIN immediate TRANSACTION[0m
+  [1m[35m (0.3ms)[0m  [1m[35mPRAGMA foreign_keys[0m
+  [1m[35m (0.0ms)[0m  [1m[35mPRAGMA defer_foreign_keys[0m
+  [1m[35m (0.0ms)[0m  [1m[35mPRAGMA defer_foreign_keys = ON[0m
+  [1m[35m (0.0ms)[0m  [1m[35mPRAGMA foreign_keys = OFF[0m
+  [1m[36mFixtures Load (0.1ms)[0m  [1m[31mDELETE FROM "break_escape_demo_users";
+DELETE FROM "break_escape_missions";
+INSERT INTO "break_escape_demo_users" ("id", "created_at", "handle", "role", "updated_at") VALUES (NULL, '2025-11-20 17:22:18', 'test_user', 'user', '2025-11-20 17:22:18'), (NULL, '2025-11-20 17:22:18', 'other_user', 'user', '2025-11-20 17:22:18');
+INSERT INTO "break_escape_missions" ("id", "created_at", "description", "difficulty_level", "display_name", "name", "published", "updated_at") VALUES (NULL, '2025-11-20 17:22:18', 'Test scenario', 3, 'CEO Exfiltration', 'ceo_exfil', TRUE, '2025-11-20 17:22:18'), (NULL, '2025-11-20 17:22:18', 'Not visible', 1, 'Unpublished Test', 'test_unpublished', FALSE, '2025-11-20 17:22:18')[0m
+  [1m[35m (0.1ms)[0m  [1m[35mPRAGMA defer_foreign_keys = 0[0m
+  [1m[35m (0.0ms)[0m  [1m[35mPRAGMA foreign_keys = 1[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[36mCOMMIT TRANSACTION[0m
+  [1m[35m (0.1ms)[0m  [1m[35mPRAGMA foreign_key_check[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[36mBEGIN immediate TRANSACTION[0m
+  [1m[35m (0.2ms)[0m  [1m[35mPRAGMA foreign_keys[0m
+  [1m[35m (0.0ms)[0m  [1m[35mPRAGMA defer_foreign_keys[0m
+  [1m[35m (0.0ms)[0m  [1m[35mPRAGMA defer_foreign_keys = ON[0m
+  [1m[35m (0.0ms)[0m  [1m[35mPRAGMA foreign_keys = OFF[0m
+  [1m[36mFixtures Load (0.1ms)[0m  [1m[31mDELETE FROM "break_escape_demo_users";
+DELETE FROM "break_escape_missions";
+INSERT INTO "break_escape_demo_users" ("id", "created_at", "handle", "role", "updated_at") VALUES (NULL, '2025-11-20 17:22:18', 'test_user', 'user', '2025-11-20 17:22:18'), (NULL, '2025-11-20 17:22:18', 'other_user', 'user', '2025-11-20 17:22:18');
+INSERT INTO "break_escape_missions" ("id", "created_at", "description", "difficulty_level", "display_name", "name", "published", "updated_at") VALUES (NULL, '2025-11-20 17:22:18', 'Test scenario', 3, 'CEO Exfiltration', 'ceo_exfil', TRUE, '2025-11-20 17:22:18'), (NULL, '2025-11-20 17:22:18', 'Not visible', 1, 'Unpublished Test', 'test_unpublished', FALSE, '2025-11-20 17:22:18')[0m
+  [1m[35m (0.0ms)[0m  [1m[35mPRAGMA defer_foreign_keys = 0[0m
+  [1m[35m (0.0ms)[0m  [1m[35mPRAGMA foreign_keys = 1[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[36mCOMMIT TRANSACTION[0m
+  [1m[35m (0.1ms)[0m  [1m[35mPRAGMA foreign_key_check[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[36mBEGIN immediate TRANSACTION[0m
+  [1m[35m (0.3ms)[0m  [1m[35mPRAGMA foreign_keys[0m
+  [1m[35m (0.0ms)[0m  [1m[35mPRAGMA defer_foreign_keys[0m
+  [1m[35m (0.0ms)[0m  [1m[35mPRAGMA defer_foreign_keys = ON[0m
+  [1m[35m (0.0ms)[0m  [1m[35mPRAGMA foreign_keys = OFF[0m
+  [1m[36mFixtures Load (0.1ms)[0m  [1m[31mDELETE FROM "break_escape_demo_users";
+DELETE FROM "break_escape_missions";
+INSERT INTO "break_escape_demo_users" ("id", "created_at", "handle", "role", "updated_at") VALUES (NULL, '2025-11-20 17:22:18', 'test_user', 'user', '2025-11-20 17:22:18'), (NULL, '2025-11-20 17:22:18', 'other_user', 'user', '2025-11-20 17:22:18');
+INSERT INTO "break_escape_missions" ("id", "created_at", "description", "difficulty_level", "display_name", "name", "published", "updated_at") VALUES (NULL, '2025-11-20 17:22:18', 'Test scenario', 3, 'CEO Exfiltration', 'ceo_exfil', TRUE, '2025-11-20 17:22:18'), (NULL, '2025-11-20 17:22:18', 'Not visible', 1, 'Unpublished Test', 'test_unpublished', FALSE, '2025-11-20 17:22:18')[0m
+  [1m[35m (0.0ms)[0m  [1m[35mPRAGMA defer_foreign_keys = 0[0m
+  [1m[35m (0.0ms)[0m  [1m[35mPRAGMA foreign_keys = 1[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[36mCOMMIT TRANSACTION[0m
+  [1m[35m (0.1ms)[0m  [1m[35mPRAGMA foreign_key_check[0m
+Generating image variants require the image_processing gem. Please add `gem "image_processing", "~> 1.2"` to your Gemfile or set `config.active_storage.variant_processor = :disabled`.
+  [1m[36mActiveRecord::SchemaMigration Load (0.5ms)[0m  [1m[34mSELECT "schema_migrations"."version" FROM "schema_migrations" ORDER BY "schema_migrations"."version" ASC[0m
+  [1m[36mActiveRecord::InternalMetadata Load (0.2ms)[0m  [1m[34mSELECT * FROM "ar_internal_metadata" WHERE "ar_internal_metadata"."key" = ? ORDER BY "ar_internal_metadata"."key" ASC LIMIT 1[0m  [[nil, "environment"]]
+  [1m[36mActiveRecord::SchemaMigration Load (0.1ms)[0m  [1m[34mSELECT "schema_migrations"."version" FROM "schema_migrations" ORDER BY "schema_migrations"."version" ASC[0m
+  [1m[36mActiveRecord::InternalMetadata Load (0.1ms)[0m  [1m[34mSELECT * FROM "ar_internal_metadata" WHERE "ar_internal_metadata"."key" = ? ORDER BY "ar_internal_metadata"."key" ASC LIMIT 1[0m  [[nil, "environment"]]
+  [1m[36mActiveRecord::SchemaMigration Load (0.1ms)[0m  [1m[34mSELECT "schema_migrations"."version" FROM "schema_migrations" ORDER BY "schema_migrations"."version" ASC[0m
+  [1m[36mActiveRecord::InternalMetadata Load (0.1ms)[0m  [1m[34mSELECT * FROM "ar_internal_metadata" WHERE "ar_internal_metadata"."key" = ? ORDER BY "ar_internal_metadata"."key" ASC LIMIT 1[0m  [[nil, "environment"]]
+  [1m[35m (4.9ms)[0m  [1m[35mDROP TABLE IF EXISTS "break_escape_demo_users"[0m
+  [1m[35m (0.2ms)[0m  [1m[35mCREATE TABLE "break_escape_demo_users" ("id" integer PRIMARY KEY AUTOINCREMENT NOT NULL, "created_at" datetime(6) NOT NULL, "handle" varchar NOT NULL, "role" varchar DEFAULT 'user' NOT NULL, "updated_at" datetime(6) NOT NULL)[0m
+  [1m[35m (0.2ms)[0m  [1m[35mCREATE UNIQUE INDEX "index_break_escape_demo_users_on_handle" ON "break_escape_demo_users" ("handle")[0m
+  [1m[35m (0.4ms)[0m  [1m[35mDROP TABLE IF EXISTS "break_escape_games"[0m
+  [1m[35m (0.2ms)[0m  [1m[35mCREATE TABLE "break_escape_games" ("id" integer PRIMARY KEY AUTOINCREMENT NOT NULL, "completed_at" datetime(6), "created_at" datetime(6) NOT NULL, "mission_id" integer NOT NULL, "player_id" integer NOT NULL, "player_state" json DEFAULT '"{\"currentRoom\":null,\"unlockedRooms\":[],\"unlockedObjects\":[],\"inventory\":[],\"encounteredNPCs\":[],\"globalVariables\":{},\"biometricSamples\":[],\"biometricUnlocks\":[],\"bluetoothDevices\":[],\"notes\":[],\"health\":100}"' NOT NULL, "player_type" varchar NOT NULL, "scenario_data" json NOT NULL, "score" integer DEFAULT 0 NOT NULL, "started_at" datetime(6), "status" varchar DEFAULT 'in_progress' NOT NULL, "updated_at" datetime(6) NOT NULL)[0m
+  [1m[35m (0.1ms)[0m  [1m[35mCREATE INDEX "index_break_escape_games_on_mission_id" ON "break_escape_games" ("mission_id")[0m
+  [1m[35m (0.1ms)[0m  [1m[35mCREATE UNIQUE INDEX "index_games_on_player_and_mission" ON "break_escape_games" ("player_type", "player_id", "mission_id")[0m
+  [1m[35m (0.1ms)[0m  [1m[35mCREATE INDEX "index_break_escape_games_on_player" ON "break_escape_games" ("player_type", "player_id")[0m
+  [1m[35m (0.1ms)[0m  [1m[35mCREATE INDEX "index_break_escape_games_on_status" ON "break_escape_games" ("status")[0m
+  [1m[35m (0.2ms)[0m  [1m[35mDROP TABLE IF EXISTS "break_escape_missions"[0m
+  [1m[35m (0.2ms)[0m  [1m[35mCREATE TABLE "break_escape_missions" ("id" integer PRIMARY KEY AUTOINCREMENT NOT NULL, "created_at" datetime(6) NOT NULL, "description" text, "difficulty_level" integer DEFAULT 1 NOT NULL, "display_name" varchar NOT NULL, "name" varchar NOT NULL, "published" boolean DEFAULT FALSE NOT NULL, "updated_at" datetime(6) NOT NULL)[0m
+  [1m[35m (0.1ms)[0m  [1m[35mCREATE UNIQUE INDEX "index_break_escape_missions_on_name" ON "break_escape_missions" ("name")[0m
+  [1m[35m (0.1ms)[0m  [1m[35mCREATE INDEX "index_break_escape_missions_on_published" ON "break_escape_missions" ("published")[0m
+  [1m[35m (0.1ms)[0m  [1m[35mPRAGMA foreign_keys[0m
+  [1m[35m (0.0ms)[0m  [1m[35mPRAGMA defer_foreign_keys[0m
+  [1m[35m (0.0ms)[0m  [1m[35mPRAGMA defer_foreign_keys = ON[0m
+  [1m[35m (0.0ms)[0m  [1m[35mPRAGMA foreign_keys = OFF[0m
+  [1m[36mTRANSACTION (0.0ms)[0m  [1m[36mBEGIN immediate TRANSACTION[0m
+  [1m[35m (0.2ms)[0m  [1m[35mCREATE TEMPORARY TABLE "abreak_escape_games" ("id" integer PRIMARY KEY AUTOINCREMENT NOT NULL, "completed_at" datetime(6), "created_at" datetime(6) NOT NULL, "mission_id" integer NOT NULL, "player_id" integer NOT NULL, "player_state" json DEFAULT '"{\"currentRoom\":null,\"unlockedRooms\":[],\"unlockedObjects\":[],\"inventory\":[],\"encounteredNPCs\":[],\"globalVariables\":{},\"biometricSamples\":[],\"biometricUnlocks\":[],\"bluetoothDevices\":[],\"notes\":[],\"health\":100}"' NOT NULL, "player_type" varchar NOT NULL, "scenario_data" json NOT NULL, "score" integer DEFAULT 0 NOT NULL, "started_at" datetime(6), "status" varchar DEFAULT 'in_progress' NOT NULL, "updated_at" datetime(6) NOT NULL)[0m
+  [1m[35m (0.1ms)[0m  [1m[35mCREATE INDEX "tindex_abreak_escape_games_on_status" ON "abreak_escape_games" ("status")[0m
+  [1m[35m (0.1ms)[0m  [1m[35mCREATE INDEX "tindex_abreak_escape_games_on_player" ON "abreak_escape_games" ("player_type", "player_id")[0m
+  [1m[35m (0.1ms)[0m  [1m[35mCREATE UNIQUE INDEX "tindex_games_on_player_and_mission" ON "abreak_escape_games" ("player_type", "player_id", "mission_id")[0m
+  [1m[35m (0.1ms)[0m  [1m[35mCREATE INDEX "tindex_abreak_escape_games_on_mission_id" ON "abreak_escape_games" ("mission_id")[0m
+  [1m[35mSQL (0.1ms)[0m  [1m[32mINSERT INTO "abreak_escape_games" ("id","completed_at","created_at","mission_id","player_id","player_state","player_type","scenario_data","score","started_at","status","updated_at")
+                     SELECT "id","completed_at","created_at","mission_id","player_id","player_state","player_type","scenario_data","score","started_at","status","updated_at" FROM "break_escape_games"[0m
+  [1m[35m (0.2ms)[0m  [1m[35mDROP TABLE "break_escape_games"[0m
+  [1m[35m (0.1ms)[0m  [1m[35mCREATE TABLE "break_escape_games" ("id" integer PRIMARY KEY AUTOINCREMENT NOT NULL, "completed_at" datetime(6), "created_at" datetime(6) NOT NULL, "mission_id" integer NOT NULL, "player_id" integer NOT NULL, "player_state" json DEFAULT '"{\"currentRoom\":null,\"unlockedRooms\":[],\"unlockedObjects\":[],\"inventory\":[],\"encounteredNPCs\":[],\"globalVariables\":{},\"biometricSamples\":[],\"biometricUnlocks\":[],\"bluetoothDevices\":[],\"notes\":[],\"health\":100}"' NOT NULL, "player_type" varchar NOT NULL, "scenario_data" json NOT NULL, "score" integer DEFAULT 0 NOT NULL, "started_at" datetime(6), "status" varchar DEFAULT 'in_progress' NOT NULL, "updated_at" datetime(6) NOT NULL, CONSTRAINT "fk_rails_ce758a8dd4"
+FOREIGN KEY ("mission_id")
+  REFERENCES "break_escape_missions" ("id")
+)[0m
+  [1m[35m (0.1ms)[0m  [1m[35mCREATE INDEX "index_break_escape_games_on_mission_id" ON "break_escape_games" ("mission_id")[0m
+  [1m[35m (0.1ms)[0m  [1m[35mCREATE UNIQUE INDEX "index_games_on_player_and_mission" ON "break_escape_games" ("player_type", "player_id", "mission_id")[0m
+  [1m[35m (0.1ms)[0m  [1m[35mCREATE INDEX "index_break_escape_games_on_player" ON "break_escape_games" ("player_type", "player_id")[0m
+  [1m[35m (0.1ms)[0m  [1m[35mCREATE INDEX "index_break_escape_games_on_status" ON "break_escape_games" ("status")[0m
+  [1m[35mSQL (0.1ms)[0m  [1m[32mINSERT INTO "break_escape_games" ("id","completed_at","created_at","mission_id","player_id","player_state","player_type","scenario_data","score","started_at","status","updated_at")
+                     SELECT "id","completed_at","created_at","mission_id","player_id","player_state","player_type","scenario_data","score","started_at","status","updated_at" FROM "abreak_escape_games"[0m
+  [1m[35m (0.1ms)[0m  [1m[35mDROP TABLE "abreak_escape_games"[0m
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[36mCOMMIT TRANSACTION[0m
+  [1m[35m (0.0ms)[0m  [1m[35mPRAGMA defer_foreign_keys = 0[0m
+  [1m[35m (0.0ms)[0m  [1m[35mPRAGMA foreign_keys = 1[0m
+  [1m[36mActiveRecord::SchemaMigration Load (0.1ms)[0m  [1m[34mSELECT "schema_migrations"."version" FROM "schema_migrations" ORDER BY "schema_migrations"."version" ASC[0m
+  [1m[36mActiveRecord::InternalMetadata Load (0.1ms)[0m  [1m[34mSELECT * FROM "ar_internal_metadata" WHERE "ar_internal_metadata"."key" = ? ORDER BY "ar_internal_metadata"."key" ASC LIMIT 1[0m  [[nil, "environment"]]
+  [1m[36mActiveRecord::InternalMetadata Load (0.1ms)[0m  [1m[34mSELECT * FROM "ar_internal_metadata" WHERE "ar_internal_metadata"."key" = ? ORDER BY "ar_internal_metadata"."key" ASC LIMIT 1[0m  [[nil, "environment"]]
+  [1m[36mActiveRecord::InternalMetadata Load (0.1ms)[0m  [1m[34mSELECT * FROM "ar_internal_metadata" WHERE "ar_internal_metadata"."key" = ? ORDER BY "ar_internal_metadata"."key" ASC LIMIT 1[0m  [[nil, "schema_sha1"]]
+  [1m[36mActiveRecord::SchemaMigration Load (0.0ms)[0m  [1m[34mSELECT "schema_migrations"."version" FROM "schema_migrations" ORDER BY "schema_migrations"."version" ASC[0m
+Generating image variants require the image_processing gem. Please add `gem "image_processing", "~> 1.2"` to your Gemfile or set `config.active_storage.variant_processor = :disabled`.
+Generating image variants require the image_processing gem. Please add `gem "image_processing", "~> 1.2"` to your Gemfile or set `config.active_storage.variant_processor = :disabled`.
+  [1m[35m (1.1ms)[0m  [1m[35mDROP TABLE IF EXISTS "break_escape_demo_users"[0m
+  [1m[35m (3.7ms)[0m  [1m[35mCREATE TABLE "break_escape_demo_users" ("id" integer PRIMARY KEY AUTOINCREMENT NOT NULL, "created_at" datetime(6) NOT NULL, "handle" varchar NOT NULL, "role" varchar DEFAULT 'user' NOT NULL, "updated_at" datetime(6) NOT NULL)[0m
+  [1m[35m (0.2ms)[0m  [1m[35mCREATE UNIQUE INDEX "index_break_escape_demo_users_on_handle" ON "break_escape_demo_users" ("handle")[0m
+  [1m[35m (0.1ms)[0m  [1m[35mDROP TABLE IF EXISTS "break_escape_games"[0m
+  [1m[35m (0.2ms)[0m  [1m[35mCREATE TABLE "break_escape_games" ("id" integer PRIMARY KEY AUTOINCREMENT NOT NULL, "completed_at" datetime(6), "created_at" datetime(6) NOT NULL, "mission_id" integer NOT NULL, "player_id" integer NOT NULL, "player_state" json DEFAULT '"{\"currentRoom\":null,\"unlockedRooms\":[],\"unlockedObjects\":[],\"inventory\":[],\"encounteredNPCs\":[],\"globalVariables\":{},\"biometricSamples\":[],\"biometricUnlocks\":[],\"bluetoothDevices\":[],\"notes\":[],\"health\":100}"' NOT NULL, "player_type" varchar NOT NULL, "scenario_data" json NOT NULL, "score" integer DEFAULT 0 NOT NULL, "started_at" datetime(6), "status" varchar DEFAULT 'in_progress' NOT NULL, "updated_at" datetime(6) NOT NULL)[0m
+  [1m[35m (0.1ms)[0m  [1m[35mCREATE INDEX "index_break_escape_games_on_mission_id" ON "break_escape_games" ("mission_id")[0m
+  [1m[35m (0.1ms)[0m  [1m[35mCREATE UNIQUE INDEX "index_games_on_player_and_mission" ON "break_escape_games" ("player_type", "player_id", "mission_id")[0m
+  [1m[35m (0.1ms)[0m  [1m[35mCREATE INDEX "index_break_escape_games_on_player" ON "break_escape_games" ("player_type", "player_id")[0m
+  [1m[35m (0.2ms)[0m  [1m[35mCREATE INDEX "index_break_escape_games_on_status" ON "break_escape_games" ("status")[0m
+  [1m[35m (0.1ms)[0m  [1m[35mDROP TABLE IF EXISTS "break_escape_missions"[0m
+  [1m[35m (0.2ms)[0m  [1m[35mCREATE TABLE "break_escape_missions" ("id" integer PRIMARY KEY AUTOINCREMENT NOT NULL, "created_at" datetime(6) NOT NULL, "description" text, "difficulty_level" integer DEFAULT 1 NOT NULL, "display_name" varchar NOT NULL, "name" varchar NOT NULL, "published" boolean DEFAULT FALSE NOT NULL, "updated_at" datetime(6) NOT NULL)[0m
+  [1m[35m (0.2ms)[0m  [1m[35mCREATE UNIQUE INDEX "index_break_escape_missions_on_name" ON "break_escape_missions" ("name")[0m
+  [1m[35m (0.2ms)[0m  [1m[35mCREATE INDEX "index_break_escape_missions_on_published" ON "break_escape_missions" ("published")[0m
+  [1m[35m (0.0ms)[0m  [1m[35mPRAGMA foreign_keys[0m
+  [1m[35m (0.0ms)[0m  [1m[35mPRAGMA defer_foreign_keys[0m
+  [1m[35m (0.0ms)[0m  [1m[35mPRAGMA defer_foreign_keys = ON[0m
+  [1m[35m (0.0ms)[0m  [1m[35mPRAGMA foreign_keys = OFF[0m
+  [1m[36mTRANSACTION (0.0ms)[0m  [1m[36mBEGIN immediate TRANSACTION[0m
+  [1m[35m (0.2ms)[0m  [1m[35mCREATE TEMPORARY TABLE "abreak_escape_games" ("id" integer PRIMARY KEY AUTOINCREMENT NOT NULL, "completed_at" datetime(6), "created_at" datetime(6) NOT NULL, "mission_id" integer NOT NULL, "player_id" integer NOT NULL, "player_state" json DEFAULT '"{\"currentRoom\":null,\"unlockedRooms\":[],\"unlockedObjects\":[],\"inventory\":[],\"encounteredNPCs\":[],\"globalVariables\":{},\"biometricSamples\":[],\"biometricUnlocks\":[],\"bluetoothDevices\":[],\"notes\":[],\"health\":100}"' NOT NULL, "player_type" varchar NOT NULL, "scenario_data" json NOT NULL, "score" integer DEFAULT 0 NOT NULL, "started_at" datetime(6), "status" varchar DEFAULT 'in_progress' NOT NULL, "updated_at" datetime(6) NOT NULL)[0m
+  [1m[35m (0.1ms)[0m  [1m[35mCREATE INDEX "tindex_abreak_escape_games_on_status" ON "abreak_escape_games" ("status")[0m
+  [1m[35m (0.1ms)[0m  [1m[35mCREATE INDEX "tindex_abreak_escape_games_on_player" ON "abreak_escape_games" ("player_type", "player_id")[0m
+  [1m[35m (0.2ms)[0m  [1m[35mCREATE UNIQUE INDEX "tindex_games_on_player_and_mission" ON "abreak_escape_games" ("player_type", "player_id", "mission_id")[0m
+  [1m[35m (0.1ms)[0m  [1m[35mCREATE INDEX "tindex_abreak_escape_games_on_mission_id" ON "abreak_escape_games" ("mission_id")[0m
+  [1m[35mSQL (0.2ms)[0m  [1m[32mINSERT INTO "abreak_escape_games" ("id","completed_at","created_at","mission_id","player_id","player_state","player_type","scenario_data","score","started_at","status","updated_at")
+                     SELECT "id","completed_at","created_at","mission_id","player_id","player_state","player_type","scenario_data","score","started_at","status","updated_at" FROM "break_escape_games"[0m
+  [1m[35m (0.4ms)[0m  [1m[35mDROP TABLE "break_escape_games"[0m
+  [1m[35m (0.2ms)[0m  [1m[35mCREATE TABLE "break_escape_games" ("id" integer PRIMARY KEY AUTOINCREMENT NOT NULL, "completed_at" datetime(6), "created_at" datetime(6) NOT NULL, "mission_id" integer NOT NULL, "player_id" integer NOT NULL, "player_state" json DEFAULT '"{\"currentRoom\":null,\"unlockedRooms\":[],\"unlockedObjects\":[],\"inventory\":[],\"encounteredNPCs\":[],\"globalVariables\":{},\"biometricSamples\":[],\"biometricUnlocks\":[],\"bluetoothDevices\":[],\"notes\":[],\"health\":100}"' NOT NULL, "player_type" varchar NOT NULL, "scenario_data" json NOT NULL, "score" integer DEFAULT 0 NOT NULL, "started_at" datetime(6), "status" varchar DEFAULT 'in_progress' NOT NULL, "updated_at" datetime(6) NOT NULL, CONSTRAINT "fk_rails_ce758a8dd4"
+FOREIGN KEY ("mission_id")
+  REFERENCES "break_escape_missions" ("id")
+)[0m
+  [1m[35m (0.1ms)[0m  [1m[35mCREATE INDEX "index_break_escape_games_on_mission_id" ON "break_escape_games" ("mission_id")[0m
+  [1m[35m (0.1ms)[0m  [1m[35mCREATE UNIQUE INDEX "index_games_on_player_and_mission" ON "break_escape_games" ("player_type", "player_id", "mission_id")[0m
+  [1m[35m (0.1ms)[0m  [1m[35mCREATE INDEX "index_break_escape_games_on_player" ON "break_escape_games" ("player_type", "player_id")[0m
+  [1m[35m (0.1ms)[0m  [1m[35mCREATE INDEX "index_break_escape_games_on_status" ON "break_escape_games" ("status")[0m
+  [1m[35mSQL (0.7ms)[0m  [1m[32mINSERT INTO "break_escape_games" ("id","completed_at","created_at","mission_id","player_id","player_state","player_type","scenario_data","score","started_at","status","updated_at")
+                     SELECT "id","completed_at","created_at","mission_id","player_id","player_state","player_type","scenario_data","score","started_at","status","updated_at" FROM "abreak_escape_games"[0m
+  [1m[35m (0.2ms)[0m  [1m[35mDROP TABLE "abreak_escape_games"[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[36mCOMMIT TRANSACTION[0m
+  [1m[35m (0.0ms)[0m  [1m[35mPRAGMA defer_foreign_keys = 0[0m
+  [1m[35m (0.0ms)[0m  [1m[35mPRAGMA foreign_keys = 1[0m
+  [1m[35m (0.2ms)[0m  [1m[35mCREATE TABLE "schema_migrations" ("version" varchar NOT NULL PRIMARY KEY)[0m
+  [1m[36mActiveRecord::SchemaMigration Load (0.2ms)[0m  [1m[34mSELECT "schema_migrations"."version" FROM "schema_migrations" ORDER BY "schema_migrations"."version" ASC[0m
+  [1m[35m (0.2ms)[0m  [1m[32mINSERT INTO "schema_migrations" (version) VALUES (20251120160000)[0m
+  [1m[35m (0.3ms)[0m  [1m[32mINSERT INTO "schema_migrations" (version) VALUES
+(20251120155358),
+(20251120155357);[0m
+  [1m[35m (0.3ms)[0m  [1m[35mCREATE TABLE "ar_internal_metadata" ("key" varchar NOT NULL PRIMARY KEY, "value" varchar, "created_at" datetime(6) NOT NULL, "updated_at" datetime(6) NOT NULL)[0m
+  [1m[36mActiveRecord::InternalMetadata Load (0.1ms)[0m  [1m[34mSELECT * FROM "ar_internal_metadata" WHERE "ar_internal_metadata"."key" = ? ORDER BY "ar_internal_metadata"."key" ASC LIMIT 1[0m  [[nil, "environment"]]
+  [1m[36mActiveRecord::InternalMetadata Create (0.2ms)[0m  [1m[32mINSERT INTO "ar_internal_metadata" ("key", "value", "created_at", "updated_at") VALUES ('environment', 'test', '2025-11-20 17:23:21.162347', '2025-11-20 17:23:21.162351') RETURNING "key"[0m
+  [1m[36mActiveRecord::InternalMetadata Load (0.1ms)[0m  [1m[34mSELECT * FROM "ar_internal_metadata" WHERE "ar_internal_metadata"."key" = ? ORDER BY "ar_internal_metadata"."key" ASC LIMIT 1[0m  [[nil, "environment"]]
+  [1m[36mActiveRecord::InternalMetadata Load (0.1ms)[0m  [1m[34mSELECT * FROM "ar_internal_metadata" WHERE "ar_internal_metadata"."key" = ? ORDER BY "ar_internal_metadata"."key" ASC LIMIT 1[0m  [[nil, "schema_sha1"]]
+  [1m[36mActiveRecord::InternalMetadata Create (0.1ms)[0m  [1m[32mINSERT INTO "ar_internal_metadata" ("key", "value", "created_at", "updated_at") VALUES ('schema_sha1', '33181f3d58f9bab484a9b348ce1e6b298e81ba9b', '2025-11-20 17:23:21.163822', '2025-11-20 17:23:21.163824') RETURNING "key"[0m
+  [1m[36mActiveRecord::SchemaMigration Load (0.6ms)[0m  [1m[34mSELECT "schema_migrations"."version" FROM "schema_migrations" ORDER BY "schema_migrations"."version" ASC[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[36mBEGIN immediate TRANSACTION[0m
+  [1m[35m (0.4ms)[0m  [1m[35mPRAGMA foreign_keys[0m
+  [1m[35m (0.0ms)[0m  [1m[35mPRAGMA defer_foreign_keys[0m
+  [1m[35m (0.0ms)[0m  [1m[35mPRAGMA defer_foreign_keys = ON[0m
+  [1m[35m (0.0ms)[0m  [1m[35mPRAGMA foreign_keys = OFF[0m
+  [1m[36mFixtures Load (0.3ms)[0m  [1m[31mDELETE FROM "break_escape_demo_users";
+DELETE FROM "break_escape_missions";
+INSERT INTO "break_escape_demo_users" ("id", "created_at", "handle", "role", "updated_at") VALUES (NULL, '2025-11-20 17:23:21', 'test_user', 'user', '2025-11-20 17:23:21'), (NULL, '2025-11-20 17:23:21', 'other_user', 'user', '2025-11-20 17:23:21');
+INSERT INTO "break_escape_missions" ("id", "created_at", "description", "difficulty_level", "display_name", "name", "published", "updated_at") VALUES (NULL, '2025-11-20 17:23:21', 'Test scenario', 3, 'CEO Exfiltration', 'ceo_exfil', TRUE, '2025-11-20 17:23:21'), (NULL, '2025-11-20 17:23:21', 'Not visible', 1, 'Unpublished Test', 'test_unpublished', FALSE, '2025-11-20 17:23:21')[0m
+  [1m[35m (0.1ms)[0m  [1m[35mPRAGMA defer_foreign_keys = 0[0m
+  [1m[35m (0.0ms)[0m  [1m[35mPRAGMA foreign_keys = 1[0m
+  [1m[36mTRANSACTION (3.5ms)[0m  [1m[36mCOMMIT TRANSACTION[0m
+  [1m[35m (0.1ms)[0m  [1m[35mPRAGMA foreign_key_check[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[36mBEGIN deferred TRANSACTION[0m
+----------------------------------------------------------
+BreakEscape::MissionsControllerTest: test_should_get_index
+----------------------------------------------------------
+Started GET "/break_escape/missions" for 127.0.0.1 at 2025-11-20 17:23:22 +0000
+Processing by BreakEscape::MissionsController#index as HTML
+Completed 500 Internal Server Error in 43ms (ActiveRecord: 0.0ms (0 queries, 0 cached) | GC: 0.0ms)
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[31mROLLBACK TRANSACTION[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[36mBEGIN deferred TRANSACTION[0m
+-----------------------------------------------------------------------
+BreakEscape::MissionsControllerTest: test_should_show_published_mission
+-----------------------------------------------------------------------
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[31mROLLBACK TRANSACTION[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[36mBEGIN deferred TRANSACTION[0m
+------------------------------------------------
+BreakEscape::GameTest: test_should_update_health
+------------------------------------------------
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[31mROLLBACK TRANSACTION[0m
+Generating image variants require the image_processing gem. Please add `gem "image_processing", "~> 1.2"` to your Gemfile or set `config.active_storage.variant_processor = :disabled`.
+  [1m[36mActiveRecord::InternalMetadata Load (0.5ms)[0m  [1m[34mSELECT * FROM "ar_internal_metadata" WHERE "ar_internal_metadata"."key" = ? ORDER BY "ar_internal_metadata"."key" ASC LIMIT 1[0m  [[nil, "schema_sha1"]]
+  [1m[36mActiveRecord::SchemaMigration Load (0.3ms)[0m  [1m[34mSELECT "schema_migrations"."version" FROM "schema_migrations" ORDER BY "schema_migrations"."version" ASC[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[36mBEGIN immediate TRANSACTION[0m
+  [1m[35m (0.3ms)[0m  [1m[35mPRAGMA foreign_keys[0m
+  [1m[35m (0.0ms)[0m  [1m[35mPRAGMA defer_foreign_keys[0m
+  [1m[35m (0.0ms)[0m  [1m[35mPRAGMA defer_foreign_keys = ON[0m
+  [1m[35m (0.0ms)[0m  [1m[35mPRAGMA foreign_keys = OFF[0m
+  [1m[36mFixtures Load (0.1ms)[0m  [1m[31mDELETE FROM "break_escape_demo_users";
+DELETE FROM "break_escape_missions";
+INSERT INTO "break_escape_demo_users" ("id", "created_at", "handle", "role", "updated_at") VALUES (NULL, '2025-11-20 17:24:03', 'test_user', 'user', '2025-11-20 17:24:03'), (NULL, '2025-11-20 17:24:03', 'other_user', 'user', '2025-11-20 17:24:03');
+INSERT INTO "break_escape_missions" ("id", "created_at", "description", "difficulty_level", "display_name", "name", "published", "updated_at") VALUES (NULL, '2025-11-20 17:24:03', 'Test scenario', 3, 'CEO Exfiltration', 'ceo_exfil', TRUE, '2025-11-20 17:24:03'), (NULL, '2025-11-20 17:24:03', 'Not visible', 1, 'Unpublished Test', 'test_unpublished', FALSE, '2025-11-20 17:24:03')[0m
+  [1m[35m (0.0ms)[0m  [1m[35mPRAGMA defer_foreign_keys = 0[0m
+  [1m[35m (0.0ms)[0m  [1m[35mPRAGMA foreign_keys = 1[0m
+  [1m[36mTRANSACTION (5.3ms)[0m  [1m[36mCOMMIT TRANSACTION[0m
+  [1m[35m (0.2ms)[0m  [1m[35mPRAGMA foreign_key_check[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[36mBEGIN deferred TRANSACTION[0m
+---------------------------------------------------------------
+BreakEscape::MissionTest: test_should_validate_presence_of_name
+---------------------------------------------------------------
+  [1m[36mBreakEscape::Mission Exists? (0.2ms)[0m  [1m[34mSELECT 1 AS one FROM "break_escape_missions" WHERE "break_escape_missions"."name" IS NULL LIMIT ?[0m  [["LIMIT", 1]]
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[31mROLLBACK TRANSACTION[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[36mBEGIN deferred TRANSACTION[0m
+-----------------------------------------------------------------
+BreakEscape::MissionTest: test_should_validate_uniqueness_of_name
+-----------------------------------------------------------------
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mSAVEPOINT active_record_1[0m
+  [1m[36mBreakEscape::Mission Exists? (0.3ms)[0m  [1m[34mSELECT 1 AS one FROM "break_escape_missions" WHERE "break_escape_missions"."name" = ? LIMIT ?[0m  [["name", "test"], ["LIMIT", 1]]
+  [1m[36mBreakEscape::Mission Create (0.2ms)[0m  [1m[32mINSERT INTO "break_escape_missions" ("created_at", "description", "difficulty_level", "display_name", "name", "published", "updated_at") VALUES (?, ?, ?, ?, ?, ?, ?) RETURNING "id"[0m  [["created_at", "2025-11-20 17:24:03.653615"], ["description", nil], ["difficulty_level", 1], ["display_name", "Test"], ["name", "test"], ["published", 0], ["updated_at", "2025-11-20 17:24:03.653615"]]
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mRELEASE SAVEPOINT active_record_1[0m
+  [1m[36mBreakEscape::Mission Exists? (0.1ms)[0m  [1m[34mSELECT 1 AS one FROM "break_escape_missions" WHERE "break_escape_missions"."name" = ? LIMIT ?[0m  [["name", "test"], ["LIMIT", 1]]
+  [1m[36mTRANSACTION (0.0ms)[0m  [1m[31mROLLBACK TRANSACTION[0m
+  [1m[36mTRANSACTION (0.0ms)[0m  [1m[36mBEGIN deferred TRANSACTION[0m
+------------------------------------------------------------------------------
+BreakEscape::MissionTest: test_published_scope_returns_only_published_missions
+------------------------------------------------------------------------------
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[31mROLLBACK TRANSACTION[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[36mBEGIN deferred TRANSACTION[0m
+-----------------------------------------------------------------
+BreakEscape::MissionTest: test_scenario_path_returns_correct_path
+-----------------------------------------------------------------
+  [1m[36mTRANSACTION (0.0ms)[0m  [1m[31mROLLBACK TRANSACTION[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[36mBEGIN deferred TRANSACTION[0m
+----------------------------------------------------------
+BreakEscape::MissionsControllerTest: test_should_get_index
+----------------------------------------------------------
+Started GET "/break_escape/missions" for 127.0.0.1 at 2025-11-20 17:24:04 +0000
+Processing by BreakEscape::MissionsController#index as HTML
+  [1m[36mBreakEscape::DemoUser Load (0.1ms)[0m  [1m[34mSELECT "break_escape_demo_users".* FROM "break_escape_demo_users" ORDER BY "break_escape_demo_users"."id" ASC LIMIT ?[0m  [["LIMIT", 1]]
+  Rendering layout /home/user/BreakEscape/app/views/layouts/break_escape/application.html.erb
+  Rendering /home/user/BreakEscape/app/views/break_escape/missions/index.html.erb within layouts/break_escape/application
+  [1m[36mBreakEscape::Mission Load (0.4ms)[0m  [1m[34mSELECT "break_escape_missions".* FROM "break_escape_missions" WHERE "break_escape_missions"."published" = ?[0m  [["published", 1]]
+  Rendered /home/user/BreakEscape/app/views/break_escape/missions/index.html.erb within layouts/break_escape/application (Duration: 2.9ms | GC: 0.0ms)
+  Rendered layout /home/user/BreakEscape/app/views/layouts/break_escape/application.html.erb (Duration: 3.8ms | GC: 0.0ms)
+Completed 200 OK in 62ms (Views: 19.1ms | ActiveRecord: 0.9ms (2 queries, 0 cached) | GC: 0.0ms)
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[31mROLLBACK TRANSACTION[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[36mBEGIN deferred TRANSACTION[0m
+-----------------------------------------------------------------------
+BreakEscape::MissionsControllerTest: test_should_show_published_mission
+-----------------------------------------------------------------------
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[31mROLLBACK TRANSACTION[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[36mBEGIN deferred TRANSACTION[0m
+---------------------------------------------
+BreakEscapeTest: test_it_has_a_version_number
+---------------------------------------------
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[31mROLLBACK TRANSACTION[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[36mBEGIN deferred TRANSACTION[0m
+--------------------------------------------------
+BreakEscape::GameTest: test_should_track_inventory
+--------------------------------------------------
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[31mROLLBACK TRANSACTION[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[36mBEGIN deferred TRANSACTION[0m
+----------------------------------------------
+BreakEscape::GameTest: test_should_unlock_room
+----------------------------------------------
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[31mROLLBACK TRANSACTION[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[36mBEGIN deferred TRANSACTION[0m
+------------------------------------------------
+BreakEscape::GameTest: test_should_update_health
+------------------------------------------------
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[31mROLLBACK TRANSACTION[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[36mBEGIN deferred TRANSACTION[0m
+---------------------------------------------------------------
+BreakEscape::GameTest: test_should_belong_to_player_and_mission
+---------------------------------------------------------------
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[31mROLLBACK TRANSACTION[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[36mBEGIN deferred TRANSACTION[0m
+-----------------------------------------------------------------
+BreakEscape::GameTest: test_should_clamp_health_between_0_and_100
+-----------------------------------------------------------------
+  [1m[36mTRANSACTION (0.0ms)[0m  [1m[31mROLLBACK TRANSACTION[0m
+Generating image variants require the image_processing gem. Please add `gem "image_processing", "~> 1.2"` to your Gemfile or set `config.active_storage.variant_processor = :disabled`.
+  [1m[36mActiveRecord::InternalMetadata Load (0.5ms)[0m  [1m[34mSELECT * FROM "ar_internal_metadata" WHERE "ar_internal_metadata"."key" = ? ORDER BY "ar_internal_metadata"."key" ASC LIMIT 1[0m  [[nil, "schema_sha1"]]
+  [1m[36mActiveRecord::SchemaMigration Load (0.2ms)[0m  [1m[34mSELECT "schema_migrations"."version" FROM "schema_migrations" ORDER BY "schema_migrations"."version" ASC[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[36mBEGIN immediate TRANSACTION[0m
+  [1m[35m (0.5ms)[0m  [1m[35mPRAGMA foreign_keys[0m
+  [1m[35m (0.1ms)[0m  [1m[35mPRAGMA defer_foreign_keys[0m
+  [1m[35m (0.0ms)[0m  [1m[35mPRAGMA defer_foreign_keys = ON[0m
+  [1m[35m (0.0ms)[0m  [1m[35mPRAGMA foreign_keys = OFF[0m
+  [1m[36mFixtures Load (0.1ms)[0m  [1m[31mDELETE FROM "break_escape_demo_users";
+DELETE FROM "break_escape_missions";
+INSERT INTO "break_escape_demo_users" ("id", "created_at", "handle", "role", "updated_at") VALUES (NULL, '2025-11-20 17:24:29', 'test_user', 'user', '2025-11-20 17:24:29'), (NULL, '2025-11-20 17:24:29', 'other_user', 'user', '2025-11-20 17:24:29');
+INSERT INTO "break_escape_missions" ("id", "created_at", "description", "difficulty_level", "display_name", "name", "published", "updated_at") VALUES (NULL, '2025-11-20 17:24:29', 'Test scenario', 3, 'CEO Exfiltration', 'ceo_exfil', TRUE, '2025-11-20 17:24:29'), (NULL, '2025-11-20 17:24:29', 'Not visible', 1, 'Unpublished Test', 'test_unpublished', FALSE, '2025-11-20 17:24:29')[0m
+  [1m[35m (0.1ms)[0m  [1m[35mPRAGMA defer_foreign_keys = 0[0m
+  [1m[35m (0.0ms)[0m  [1m[35mPRAGMA foreign_keys = 1[0m
+  [1m[36mTRANSACTION (4.6ms)[0m  [1m[36mCOMMIT TRANSACTION[0m
+  [1m[35m (0.1ms)[0m  [1m[35mPRAGMA foreign_key_check[0m
+  [1m[36mTRANSACTION (0.0ms)[0m  [1m[36mBEGIN deferred TRANSACTION[0m
+---------------------------------------------------------------
+BreakEscape::MissionTest: test_should_validate_presence_of_name
+---------------------------------------------------------------
+  [1m[36mBreakEscape::Mission Exists? (0.2ms)[0m  [1m[34mSELECT 1 AS one FROM "break_escape_missions" WHERE "break_escape_missions"."name" IS NULL LIMIT ?[0m  [["LIMIT", 1]]
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[31mROLLBACK TRANSACTION[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[36mBEGIN deferred TRANSACTION[0m
+-----------------------------------------------------------------
+BreakEscape::MissionTest: test_should_validate_uniqueness_of_name
+-----------------------------------------------------------------
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mSAVEPOINT active_record_1[0m
+  [1m[36mBreakEscape::Mission Exists? (0.3ms)[0m  [1m[34mSELECT 1 AS one FROM "break_escape_missions" WHERE "break_escape_missions"."name" = ? LIMIT ?[0m  [["name", "test"], ["LIMIT", 1]]
+  [1m[36mBreakEscape::Mission Create (0.3ms)[0m  [1m[32mINSERT INTO "break_escape_missions" ("created_at", "description", "difficulty_level", "display_name", "name", "published", "updated_at") VALUES (?, ?, ?, ?, ?, ?, ?) RETURNING "id"[0m  [["created_at", "2025-11-20 17:24:30.005081"], ["description", nil], ["difficulty_level", 1], ["display_name", "Test"], ["name", "test"], ["published", 0], ["updated_at", "2025-11-20 17:24:30.005081"]]
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mRELEASE SAVEPOINT active_record_1[0m
+  [1m[36mBreakEscape::Mission Exists? (0.1ms)[0m  [1m[34mSELECT 1 AS one FROM "break_escape_missions" WHERE "break_escape_missions"."name" = ? LIMIT ?[0m  [["name", "test"], ["LIMIT", 1]]
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[31mROLLBACK TRANSACTION[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[36mBEGIN deferred TRANSACTION[0m
+-----------------------------------------------------------------
+BreakEscape::MissionTest: test_scenario_path_returns_correct_path
+-----------------------------------------------------------------
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[31mROLLBACK TRANSACTION[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[36mBEGIN deferred TRANSACTION[0m
+------------------------------------------------------------------------------
+BreakEscape::MissionTest: test_published_scope_returns_only_published_missions
+------------------------------------------------------------------------------
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[31mROLLBACK TRANSACTION[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[36mBEGIN deferred TRANSACTION[0m
+---------------------------------------------
+BreakEscapeTest: test_it_has_a_version_number
+---------------------------------------------
+  [1m[36mTRANSACTION (0.0ms)[0m  [1m[31mROLLBACK TRANSACTION[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[36mBEGIN deferred TRANSACTION[0m
+-----------------------------------------------------------------------
+BreakEscape::MissionsControllerTest: test_should_show_published_mission
+-----------------------------------------------------------------------
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[31mROLLBACK TRANSACTION[0m
+  [1m[36mTRANSACTION (0.4ms)[0m  [1m[36mBEGIN deferred TRANSACTION[0m
+----------------------------------------------------------
+BreakEscape::MissionsControllerTest: test_should_get_index
+----------------------------------------------------------
+Started GET "/break_escape/missions" for 127.0.0.1 at 2025-11-20 17:24:30 +0000
+Processing by BreakEscape::MissionsController#index as HTML
+  [1m[36mBreakEscape::DemoUser Load (0.2ms)[0m  [1m[34mSELECT "break_escape_demo_users".* FROM "break_escape_demo_users" ORDER BY "break_escape_demo_users"."id" ASC LIMIT ?[0m  [["LIMIT", 1]]
+  Rendering layout /home/user/BreakEscape/app/views/layouts/break_escape/application.html.erb
+  Rendering /home/user/BreakEscape/app/views/break_escape/missions/index.html.erb within layouts/break_escape/application
+  [1m[36mBreakEscape::Mission Load (0.2ms)[0m  [1m[34mSELECT "break_escape_missions".* FROM "break_escape_missions" WHERE "break_escape_missions"."published" = ?[0m  [["published", 1]]
+  Rendered /home/user/BreakEscape/app/views/break_escape/missions/index.html.erb within layouts/break_escape/application (Duration: 2.2ms | GC: 0.0ms)
+  Rendered layout /home/user/BreakEscape/app/views/layouts/break_escape/application.html.erb (Duration: 3.2ms | GC: 0.0ms)
+Completed 200 OK in 57ms (Views: 17.5ms | ActiveRecord: 0.7ms (2 queries, 0 cached) | GC: 0.0ms)
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[31mROLLBACK TRANSACTION[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[36mBEGIN deferred TRANSACTION[0m
+----------------------------------------------
+BreakEscape::GameTest: test_should_unlock_room
+----------------------------------------------
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[31mROLLBACK TRANSACTION[0m
+  [1m[36mTRANSACTION (0.0ms)[0m  [1m[36mBEGIN deferred TRANSACTION[0m
+------------------------------------------------
+BreakEscape::GameTest: test_should_update_health
+------------------------------------------------
+  [1m[36mTRANSACTION (0.0ms)[0m  [1m[31mROLLBACK TRANSACTION[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[36mBEGIN deferred TRANSACTION[0m
+--------------------------------------------------
+BreakEscape::GameTest: test_should_track_inventory
+--------------------------------------------------
+  [1m[36mTRANSACTION (0.0ms)[0m  [1m[31mROLLBACK TRANSACTION[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[36mBEGIN deferred TRANSACTION[0m
+-----------------------------------------------------------------
+BreakEscape::GameTest: test_should_clamp_health_between_0_and_100
+-----------------------------------------------------------------
+  [1m[36mTRANSACTION (0.0ms)[0m  [1m[31mROLLBACK TRANSACTION[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[36mBEGIN deferred TRANSACTION[0m
+---------------------------------------------------------------
+BreakEscape::GameTest: test_should_belong_to_player_and_mission
+---------------------------------------------------------------
+  [1m[36mTRANSACTION (0.0ms)[0m  [1m[31mROLLBACK TRANSACTION[0m
+Generating image variants require the image_processing gem. Please add `gem "image_processing", "~> 1.2"` to your Gemfile or set `config.active_storage.variant_processor = :disabled`.
+  [1m[36mActiveRecord::InternalMetadata Load (0.6ms)[0m  [1m[34mSELECT * FROM "ar_internal_metadata" WHERE "ar_internal_metadata"."key" = ? ORDER BY "ar_internal_metadata"."key" ASC LIMIT 1[0m  [[nil, "schema_sha1"]]
+  [1m[36mActiveRecord::SchemaMigration Load (0.3ms)[0m  [1m[34mSELECT "schema_migrations"."version" FROM "schema_migrations" ORDER BY "schema_migrations"."version" ASC[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[36mBEGIN immediate TRANSACTION[0m
+  [1m[35m (0.4ms)[0m  [1m[35mPRAGMA foreign_keys[0m
+  [1m[35m (0.0ms)[0m  [1m[35mPRAGMA defer_foreign_keys[0m
+  [1m[35m (0.0ms)[0m  [1m[35mPRAGMA defer_foreign_keys = ON[0m
+  [1m[35m (0.0ms)[0m  [1m[35mPRAGMA foreign_keys = OFF[0m
+  [1m[36mFixtures Load (0.2ms)[0m  [1m[31mDELETE FROM "break_escape_demo_users";
+DELETE FROM "break_escape_missions";
+INSERT INTO "break_escape_demo_users" ("id", "created_at", "handle", "role", "updated_at") VALUES (149617800, '2025-11-20 17:25:07', 'test_user', 'user', '2025-11-20 17:25:07'), (618102942, '2025-11-20 17:25:07', 'other_user', 'user', '2025-11-20 17:25:07');
+INSERT INTO "break_escape_missions" ("id", "created_at", "description", "difficulty_level", "display_name", "name", "published", "updated_at") VALUES (418560898, '2025-11-20 17:25:07', 'Test scenario', 3, 'CEO Exfiltration', 'ceo_exfil', TRUE, '2025-11-20 17:25:07'), (636030761, '2025-11-20 17:25:07', 'Not visible', 1, 'Unpublished Test', 'test_unpublished', FALSE, '2025-11-20 17:25:07')[0m
+  [1m[35m (0.0ms)[0m  [1m[35mPRAGMA defer_foreign_keys = 0[0m
+  [1m[35m (0.0ms)[0m  [1m[35mPRAGMA foreign_keys = 1[0m
+  [1m[36mTRANSACTION (54.5ms)[0m  [1m[36mCOMMIT TRANSACTION[0m
+  [1m[35m (0.1ms)[0m  [1m[35mPRAGMA foreign_key_check[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[36mBEGIN deferred TRANSACTION[0m
+-----------------------------------------------------------------
+BreakEscape::MissionTest: test_scenario_path_returns_correct_path
+-----------------------------------------------------------------
+  [1m[36mBreakEscape::Mission Load (0.3ms)[0m  [1m[34mSELECT "break_escape_missions".* FROM "break_escape_missions" WHERE "break_escape_missions"."id" = ? LIMIT ?[0m  [["id", 418560898], ["LIMIT", 1]]
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[31mROLLBACK TRANSACTION[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[36mBEGIN deferred TRANSACTION[0m
+------------------------------------------------------------------------------
+BreakEscape::MissionTest: test_published_scope_returns_only_published_missions
+------------------------------------------------------------------------------
+  [1m[36mBreakEscape::Mission Load (0.2ms)[0m  [1m[34mSELECT "break_escape_missions".* FROM "break_escape_missions" WHERE "break_escape_missions"."id" = ? LIMIT ?[0m  [["id", 418560898], ["LIMIT", 1]]
+  [1m[36mBreakEscape::Mission Exists? (0.1ms)[0m  [1m[34mSELECT 1 AS one FROM "break_escape_missions" WHERE "break_escape_missions"."published" = ? AND "break_escape_missions"."id" = ? LIMIT ?[0m  [["published", 1], ["id", 418560898], ["LIMIT", 1]]
+  [1m[36mBreakEscape::Mission Load (0.1ms)[0m  [1m[34mSELECT "break_escape_missions".* FROM "break_escape_missions" WHERE "break_escape_missions"."id" = ? LIMIT ?[0m  [["id", 636030761], ["LIMIT", 1]]
+  [1m[36mBreakEscape::Mission Exists? (0.1ms)[0m  [1m[34mSELECT 1 AS one FROM "break_escape_missions" WHERE "break_escape_missions"."published" = ? AND "break_escape_missions"."id" = ? LIMIT ?[0m  [["published", 1], ["id", 636030761], ["LIMIT", 1]]
+  [1m[36mTRANSACTION (0.0ms)[0m  [1m[31mROLLBACK TRANSACTION[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[36mBEGIN deferred TRANSACTION[0m
+---------------------------------------------------------------
+BreakEscape::MissionTest: test_should_validate_presence_of_name
+---------------------------------------------------------------
+  [1m[36mBreakEscape::Mission Exists? (0.1ms)[0m  [1m[34mSELECT 1 AS one FROM "break_escape_missions" WHERE "break_escape_missions"."name" IS NULL LIMIT ?[0m  [["LIMIT", 1]]
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[31mROLLBACK TRANSACTION[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[36mBEGIN deferred TRANSACTION[0m
+-----------------------------------------------------------------
+BreakEscape::MissionTest: test_should_validate_uniqueness_of_name
+-----------------------------------------------------------------
+  [1m[36mTRANSACTION (0.0ms)[0m  [1m[35mSAVEPOINT active_record_1[0m
+  [1m[36mBreakEscape::Mission Exists? (0.3ms)[0m  [1m[34mSELECT 1 AS one FROM "break_escape_missions" WHERE "break_escape_missions"."name" = ? LIMIT ?[0m  [["name", "test"], ["LIMIT", 1]]
+  [1m[36mBreakEscape::Mission Create (0.2ms)[0m  [1m[32mINSERT INTO "break_escape_missions" ("created_at", "description", "difficulty_level", "display_name", "name", "published", "updated_at") VALUES (?, ?, ?, ?, ?, ?, ?) RETURNING "id"[0m  [["created_at", "2025-11-20 17:25:07.298681"], ["description", nil], ["difficulty_level", 1], ["display_name", "Test"], ["name", "test"], ["published", 0], ["updated_at", "2025-11-20 17:25:07.298681"]]
+  [1m[36mTRANSACTION (0.0ms)[0m  [1m[35mRELEASE SAVEPOINT active_record_1[0m
+  [1m[36mBreakEscape::Mission Exists? (0.1ms)[0m  [1m[34mSELECT 1 AS one FROM "break_escape_missions" WHERE "break_escape_missions"."name" = ? LIMIT ?[0m  [["name", "test"], ["LIMIT", 1]]
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[31mROLLBACK TRANSACTION[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[36mBEGIN deferred TRANSACTION[0m
+----------------------------------------------------------
+BreakEscape::MissionsControllerTest: test_should_get_index
+----------------------------------------------------------
+Started GET "/break_escape/missions" for 127.0.0.1 at 2025-11-20 17:25:07 +0000
+Processing by BreakEscape::MissionsController#index as HTML
+  [1m[36mBreakEscape::DemoUser Load (0.2ms)[0m  [1m[34mSELECT "break_escape_demo_users".* FROM "break_escape_demo_users" ORDER BY "break_escape_demo_users"."id" ASC LIMIT ?[0m  [["LIMIT", 1]]
+  Rendering layout /home/user/BreakEscape/app/views/layouts/break_escape/application.html.erb
+  Rendering /home/user/BreakEscape/app/views/break_escape/missions/index.html.erb within layouts/break_escape/application
+  [1m[36mBreakEscape::Mission Load (0.3ms)[0m  [1m[34mSELECT "break_escape_missions".* FROM "break_escape_missions" WHERE "break_escape_missions"."published" = ?[0m  [["published", 1]]
+  Rendered /home/user/BreakEscape/app/views/break_escape/missions/index.html.erb within layouts/break_escape/application (Duration: 2.4ms | GC: 0.0ms)
+  Rendered layout /home/user/BreakEscape/app/views/layouts/break_escape/application.html.erb (Duration: 3.3ms | GC: 0.0ms)
+Completed 200 OK in 56ms (Views: 17.6ms | ActiveRecord: 0.5ms (2 queries, 0 cached) | GC: 0.0ms)
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[31mROLLBACK TRANSACTION[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[36mBEGIN deferred TRANSACTION[0m
+-----------------------------------------------------------------------
+BreakEscape::MissionsControllerTest: test_should_show_published_mission
+-----------------------------------------------------------------------
+  [1m[36mBreakEscape::Mission Load (0.1ms)[0m  [1m[34mSELECT "break_escape_missions".* FROM "break_escape_missions" WHERE "break_escape_missions"."id" = ? LIMIT ?[0m  [["id", 418560898], ["LIMIT", 1]]
+Started GET "/break_escape/missions/418560898" for 127.0.0.1 at 2025-11-20 17:25:07 +0000
+Processing by BreakEscape::MissionsController#show as HTML
+  Parameters: {"id"=>"418560898"}
+  [1m[36mBreakEscape::Mission Load (0.1ms)[0m  [1m[34mSELECT "break_escape_missions".* FROM "break_escape_missions" WHERE "break_escape_missions"."id" = ? LIMIT ?[0m  [["id", 418560898], ["LIMIT", 1]]
+  [1m[36mBreakEscape::DemoUser Load (0.1ms)[0m  [1m[34mSELECT "break_escape_demo_users".* FROM "break_escape_demo_users" ORDER BY "break_escape_demo_users"."id" ASC LIMIT ?[0m  [["LIMIT", 1]]
+  [1m[36mBreakEscape::Game Load (0.2ms)[0m  [1m[34mSELECT "break_escape_games".* FROM "break_escape_games" WHERE "break_escape_games"."player_type" = ? AND "break_escape_games"."player_id" = ? AND "break_escape_games"."mission_id" = ? LIMIT ?[0m  [["player_type", "BreakEscape::DemoUser"], ["player_id", 149617800], ["mission_id", 418560898], ["LIMIT", 1]]
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mSAVEPOINT active_record_1[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[31mROLLBACK TO SAVEPOINT active_record_1[0m
+Completed 500 Internal Server Error in 56ms (ActiveRecord: 1.0ms (3 queries, 0 cached) | GC: 0.0ms)
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[31mROLLBACK TRANSACTION[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[36mBEGIN deferred TRANSACTION[0m
+-----------------------------------------------------------------
+BreakEscape::GameTest: test_should_clamp_health_between_0_and_100
+-----------------------------------------------------------------
+  [1m[36mBreakEscape::Mission Load (0.2ms)[0m  [1m[34mSELECT "break_escape_missions".* FROM "break_escape_missions" WHERE "break_escape_missions"."id" = ? LIMIT ?[0m  [["id", 418560898], ["LIMIT", 1]]
+  [1m[36mBreakEscape::DemoUser Load (0.1ms)[0m  [1m[34mSELECT "break_escape_demo_users".* FROM "break_escape_demo_users" WHERE "break_escape_demo_users"."id" = ? LIMIT ?[0m  [["id", 149617800], ["LIMIT", 1]]
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[31mROLLBACK TRANSACTION[0m
+  [1m[36mTRANSACTION (0.0ms)[0m  [1m[36mBEGIN deferred TRANSACTION[0m
+------------------------------------------------
+BreakEscape::GameTest: test_should_update_health
+------------------------------------------------
+  [1m[36mBreakEscape::Mission Load (0.1ms)[0m  [1m[34mSELECT "break_escape_missions".* FROM "break_escape_missions" WHERE "break_escape_missions"."id" = ? LIMIT ?[0m  [["id", 418560898], ["LIMIT", 1]]
+  [1m[36mBreakEscape::DemoUser Load (0.1ms)[0m  [1m[34mSELECT "break_escape_demo_users".* FROM "break_escape_demo_users" WHERE "break_escape_demo_users"."id" = ? LIMIT ?[0m  [["id", 149617800], ["LIMIT", 1]]
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[31mROLLBACK TRANSACTION[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[36mBEGIN deferred TRANSACTION[0m
+---------------------------------------------------------------
+BreakEscape::GameTest: test_should_belong_to_player_and_mission
+---------------------------------------------------------------
+  [1m[36mBreakEscape::Mission Load (0.1ms)[0m  [1m[34mSELECT "break_escape_missions".* FROM "break_escape_missions" WHERE "break_escape_missions"."id" = ? LIMIT ?[0m  [["id", 418560898], ["LIMIT", 1]]
+  [1m[36mBreakEscape::DemoUser Load (0.1ms)[0m  [1m[34mSELECT "break_escape_demo_users".* FROM "break_escape_demo_users" WHERE "break_escape_demo_users"."id" = ? LIMIT ?[0m  [["id", 149617800], ["LIMIT", 1]]
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[31mROLLBACK TRANSACTION[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[36mBEGIN deferred TRANSACTION[0m
+--------------------------------------------------
+BreakEscape::GameTest: test_should_track_inventory
+--------------------------------------------------
+  [1m[36mBreakEscape::Mission Load (0.2ms)[0m  [1m[34mSELECT "break_escape_missions".* FROM "break_escape_missions" WHERE "break_escape_missions"."id" = ? LIMIT ?[0m  [["id", 418560898], ["LIMIT", 1]]
+  [1m[36mBreakEscape::DemoUser Load (0.1ms)[0m  [1m[34mSELECT "break_escape_demo_users".* FROM "break_escape_demo_users" WHERE "break_escape_demo_users"."id" = ? LIMIT ?[0m  [["id", 149617800], ["LIMIT", 1]]
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[31mROLLBACK TRANSACTION[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[36mBEGIN deferred TRANSACTION[0m
+----------------------------------------------
+BreakEscape::GameTest: test_should_unlock_room
+----------------------------------------------
+  [1m[36mBreakEscape::Mission Load (0.1ms)[0m  [1m[34mSELECT "break_escape_missions".* FROM "break_escape_missions" WHERE "break_escape_missions"."id" = ? LIMIT ?[0m  [["id", 418560898], ["LIMIT", 1]]
+  [1m[36mBreakEscape::DemoUser Load (0.1ms)[0m  [1m[34mSELECT "break_escape_demo_users".* FROM "break_escape_demo_users" WHERE "break_escape_demo_users"."id" = ? LIMIT ?[0m  [["id", 149617800], ["LIMIT", 1]]
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[31mROLLBACK TRANSACTION[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[36mBEGIN deferred TRANSACTION[0m
+---------------------------------------------
+BreakEscapeTest: test_it_has_a_version_number
+---------------------------------------------
+  [1m[36mTRANSACTION (0.0ms)[0m  [1m[31mROLLBACK TRANSACTION[0m

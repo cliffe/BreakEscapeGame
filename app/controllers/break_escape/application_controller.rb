@@ -17,6 +17,11 @@ module BreakEscape
     end
     helper_method :current_player
 
+    # Tell Pundit to use current_player as the user for authorization
+    def pundit_user
+      current_player
+    end
+
     # Handle authorization errors
     rescue_from Pundit::NotAuthorizedError, with: :user_not_authorized
 

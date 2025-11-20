@@ -4,6 +4,8 @@ ceo_exfil:
   description: Test scenario
   published: true
   difficulty_level: 3
+  created_at: <%= Time.now %>
+  updated_at: <%= Time.now %>
 
 unpublished:
   name: test_unpublished
@@ -11,3 +13,5 @@ unpublished:
   description: Not visible
   published: false
   difficulty_level: 1
+  created_at: <%= Time.now %>
+  updated_at: <%= Time.now %>
