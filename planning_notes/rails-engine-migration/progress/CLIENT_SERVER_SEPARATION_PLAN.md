@@ -1,8 +1,15 @@
 # Client-Server Separation Plan for BreakEscape
+## Last Updated: 2025-11-20
 
 ## Executive Summary
 
 This document outlines the preparation needed to cleanly separate BreakEscape into client-side and server-side responsibilities. The goal is to identify what stays client-side (UI, rendering, minigames) vs what moves server-side (validation, content delivery, state management).
+
+**⚠️ NOTE:** This plan has been updated to reflect the current state of the codebase, including:
+- Fully implemented NPC system with conversation state
+- Comprehensive event system (80+ events)
+- Global game state management
+- Multiple scenarios (24 total)
 
 ---
 
@@ -419,14 +426,321 @@ async function takeItemFromContainer(container, item) {
 
 See detailed analysis in **NPC_MIGRATION_OPTIONS.md**.
 
+**⚠️ UPDATE:** NPC system is now fully implemented with:
+- NPCManager (event mappings, conversation history, timed messages)
+- Two NPC types: 'phone' and 'person' (sprite-based)
+- Line-of-sight system for NPCs
+- Conversation state persistence (NPCConversationStateManager)
+- NPC item giving system
+- Event-driven dialogue (20+ event patterns)
+
 **Summary:**
-- **Recommended:** Hybrid approach (scripts client-side, actions server-side)
-- **What's Client-Side:** Ink engine, dialogue rendering, conversation UI
-- **What's Server-Side:** Action validation, conversation history, unlock permissions
+- **Recommended:** Hybrid approach (scripts client-side, actions server-side) ✅ **CONFIRMED**
+- **What's Client-Side:** Ink engine, dialogue rendering, conversation UI, event listeners, timed messages
+- **What's Server-Side:** Action validation (give items, unlock doors), conversation state sync, trust level validation
+
+#### Current Implementation (Client-Side)
+
+```javascript
+// NPCManager handles full lifecycle
+class NPCManager {
+  registerNPC(id, opts) {
+    // opts: { displayName, storyPath, avatar, currentKnot, phoneId, npcType, eventMappings, timedMessages }
+    // Registers NPC with event listeners and timed message scheduling
+  }
+
+  // Conversation history tracked per NPC
+  conversationHistory = new Map(); // { npcId: [ {type, text, timestamp} ] }
+
+  // Conversation state persisted
+  saveNPCState(npcId, story) {
+    // Saves Ink story state and variables to NPCConversationStateManager
+  }
+
+  // Event-driven dialogue
+  _setupEventMappings(npcId, eventMappings) {
+    // Maps game events → Ink story knots
+    // Supports patterns like "item_picked_up:lockpick" → "on_lockpick_pickup"
+  }
+}
+```
+
+**What Needs Server Migration:**
+
+```javascript
+// js/systems/npc-game-bridge.js - NPC Actions
+async function handleNPCGiveItem(npcId, itemType, itemName) {
+  // CURRENT: Client-side only (insecure)
+  const item = { type: itemType, name: itemName };
+  addToInventory(createInventorySprite(item));
+
+  // NEEDED: Server validation
+  const response = await fetch(`/api/npcs/${npcId}/validate_action`, {
+    method: 'POST',
+    body: JSON.stringify({
+      action: 'give_item',
+      context: { itemType, itemName }
+    })
+  });
+
+  const result = await response.json();
+  if (result.allowed) {
+    addToInventory(createInventorySprite(item));
+  } else {
+    showError('NPC cannot give this item');
+  }
+}
+
+// Conversation state sync (async, non-blocking)
+async function syncConversationState(npcId) {
+  const state = window.npcConversationStateManager.getState(npcId);
+
+  // Fire and forget - don't block UI
+  fetch(`/api/npcs/${npcId}/sync_conversation`, {
+    method: 'POST',
+    body: JSON.stringify({
+      history: state.history,
+      variables: state.variables,
+      storyState: state.storyState,
+      currentKnot: state.currentKnot
+    })
+  }).catch(err => console.warn('Failed to sync conversation:', err));
+}
+```
+
+**Changes Needed:**
+- 🔄 Add server validation for NPC actions (give items, unlock doors)
+- 🔄 Add async conversation state sync
+- 🔄 Validate trust levels server-side
+- ⚠️ Keep Ink scripts client-side (instant dialogue)
+- ⚠️ Keep event listeners client-side (UI reactions)
 
 ---
 
-### System 6: Minigames
+### System 6: Event System (NEW)
+
+#### Current Implementation (Client-Side)
+
+**Status:** ✅ **FULLY IMPLEMENTED** - 80+ events across codebase
+
+```javascript
+// EventDispatcher emits events for:
+// - door_unlock_attempt
+// - door_unlocked
+// - item_picked_up
+// - item_used
+// - minigame_completed
+// - room_entered
+// - room_revealed
+// - container_opened
+// - lockpick_used_in_view
+// - health_changed
+// - player_detected
+// - npc_action_performed
+// ... and many more
+
+// Example usage:
+window.eventDispatcher.emit('door_unlocked', {
+  roomId: 'office',
+  connectedRoom: 'ceo_office',
+  direction: 'north'
+});
+
+// NPCs listen to events:
+npc.eventMappings = [
+  {
+    eventPattern: 'item_picked_up:lockpick',
+    targetKnot: 'on_lockpick_pickup',
+    onceOnly: true,
+    cooldown: 0
+  }
+];
+```
+
+**Issues:**
+- All events client-side only
+- No server visibility into player actions
+- Can't use for anti-cheat or analytics
+- Event history not persisted
+
+#### Future (Server-Client)
+
+**Strategy:** Selective server logging (not all events need server)
+
+```javascript
+// Client-side event system stays the same for UI
+window.eventDispatcher.emit('door_unlocked', eventData);
+
+// But critical events also logged server-side
+async function logCriticalEvent(eventType, eventData) {
+  // Only log events that matter for progression/anti-cheat
+  const criticalEvents = [
+    'door_unlocked',
+    'item_picked_up',
+    'minigame_completed',
+    'unlock_attempt',
+    'npc_action_performed',
+    'health_changed'
+  ];
+
+  if (!criticalEvents.includes(eventType)) return;
+
+  // Fire and forget - don't block gameplay
+  fetch('/api/events', {
+    method: 'POST',
+    body: JSON.stringify({ eventType, eventData, timestamp: Date.now() })
+  }).catch(err => console.warn('Failed to log event:', err));
+}
+
+// Hook into event dispatcher
+const originalEmit = window.eventDispatcher.emit.bind(window.eventDispatcher);
+window.eventDispatcher.emit = function(eventType, eventData) {
+  originalEmit(eventType, eventData);
+  logCriticalEvent(eventType, eventData); // Async log to server
+};
+```
+
+**What's Client-Side:**
+- Event dispatcher
+- Event listener registration
+- UI reactions to events
+- NPC event mappings
+- Timed message triggers
+- Bark system triggers
+
+**What's Server-Side:**
+- Event logging (for critical events)
+- Event validation (e.g., was door unlock legitimate?)
+- Event analytics
+- Anti-cheat metrics
+
+**Changes Needed:**
+- 🔄 Add server event logging endpoint
+- 🔄 Hook event dispatcher to log critical events
+- 🔄 Server validates event legitimacy (optional)
+- ⚠️ Keep event system 100% functional without server (offline mode)
+
+---
+
+### System 7: Global Game State (NEW)
+
+#### Current Implementation (Client-Side)
+
+**Status:** ✅ **FULLY IMPLEMENTED** - Comprehensive state management
+
+```javascript
+// Global variables shared across rooms/NPCs
+window.gameState = {
+  globalVariables: {
+    player_favor_with_security: 0,
+    player_trust_level: 1,
+    ceo_office_unlocked: false,
+    alarm_triggered: false,
+    // ... many more
+  }
+};
+
+// NPCs read/write global variables via Ink:
+VAR player_favor = 0
+VAR trust_level = 1
+
+// Game systems read global state:
+if (window.gameState.globalVariables.alarm_triggered) {
+  // Handle alarm state
+}
+```
+
+**Issues:**
+- All state client-side only
+- Players can manipulate in console: `window.gameState.globalVariables.trust_level = 999`
+- No persistence across sessions
+- No validation of state changes
+- No audit trail
+
+#### Future (Server-Client)
+
+**Strategy:** Server as source of truth, client caches for performance
+
+```javascript
+// Client maintains local copy for performance
+window.gameState = {
+  globalVariables: {}, // Cached from server
+  _dirty: new Set(),   // Track unsaved changes
+  _syncing: false
+};
+
+// Intercept writes to track changes
+function setGlobalVariable(key, value) {
+  // Optimistically update local state
+  window.gameState.globalVariables[key] = value;
+  window.gameState._dirty.add(key);
+
+  // Trigger sync (debounced)
+  scheduleGameStateSync();
+}
+
+// Sync to server (debounced to avoid too many requests)
+const scheduleGameStateSync = debounce(async () => {
+  if (window.gameState._syncing) return;
+  if (window.gameState._dirty.size === 0) return;
+
+  window.gameState._syncing = true;
+  const changes = {};
+  for (const key of window.gameState._dirty) {
+    changes[key] = window.gameState.globalVariables[key];
+  }
+
+  try {
+    const response = await fetch('/api/game_state/sync', {
+      method: 'PUT',
+      body: JSON.stringify({ globalVariables: changes })
+    });
+
+    if (response.ok) {
+      const serverState = await response.json();
+
+      // Server might reject some changes - reconcile
+      window.gameState.globalVariables = serverState.globalVariables;
+      window.gameState._dirty.clear();
+    } else {
+      // Server rejected - rollback?
+      console.warn('Server rejected state changes');
+    }
+  } finally {
+    window.gameState._syncing = false;
+  }
+}, 2000); // Sync every 2 seconds
+
+// On game start, load state from server
+async function loadGameState() {
+  const response = await fetch('/api/game_state');
+  const state = await response.json();
+  window.gameState.globalVariables = state.globalVariables;
+}
+```
+
+**What's Client-Side:**
+- Local cache of global variables (for performance)
+- Optimistic updates
+- UI that reads state
+
+**What's Server-Side:**
+- Source of truth for all global variables
+- Validation of state changes
+- State persistence
+- State reconciliation
+- Audit log of changes
+
+**Changes Needed:**
+- 🔄 Add server state management endpoints
+- 🔄 Intercept global variable writes
+- 🔄 Add debounced sync to server
+- 🔄 Add state reconciliation on load
+- ⚠️ Handle offline mode (queue changes)
+
+---
+
+### System 8: Minigames
 
 #### Current (Client-Side)
 
@@ -831,15 +1145,24 @@ describe('Room Loading', () => {
 
 ---
 
-## Migration Checklist
+## Migration Checklist (UPDATED)
 
 ### Preparation Phase (Week 1-2)
 
 - [ ] Audit all `window.gameScenario` access points
+- [ ] Audit all `window.gameState` access points ⚠️ **NEW**
+- [ ] Audit all `eventDispatcher.emit` calls ⚠️ **NEW**
 - [ ] Create `GameDataAccess` abstraction layer
-- [ ] Design database schema
-- [ ] Create Rails models (Scenario, Room, RoomObject, NPC)
-- [ ] Write import script for scenario JSON → database
+- [ ] Design database schema (updated for NPCs, events, state)
+- [ ] Create Rails models:
+  - [ ] Scenario, Room, RoomObject
+  - [ ] NPC, Conversation, ConversationState ⚠️ **NEW**
+  - [ ] GameEvent ⚠️ **NEW**
+  - [ ] PlayerGameState (for global variables) ⚠️ **NEW**
+  - [ ] NPCPermission ⚠️ **NEW**
+  - [ ] InventoryItem, PlayerState
+- [ ] Write import script for 24 scenarios → database ⚠️ **UPDATED** (was 1 scenario)
+- [ ] Import all NPC Ink scripts into database ⚠️ **NEW**
 - [ ] Setup test scenarios in database
 
 ### Phase 1: Room Loading (Week 3)
@@ -886,14 +1209,37 @@ describe('Room Loading', () => {
 - [ ] Test add/remove items
 - [ ] Test item use validation
 
-### Phase 5: NPC System (Week 8+)
+### Phase 5: NPC System (Week 8-10) ⚠️ **UPDATED**
 
 See **NPC_MIGRATION_OPTIONS.md** for detailed plan.
 
-- [ ] Choose NPC migration approach (hybrid recommended)
-- [ ] Implement action validation endpoints
-- [ ] Add conversation history sync
-- [ ] Test NPC actions (give items, unlock doors)
+✅ **Status:** NPC system fully implemented client-side, needs server integration only
+
+- [ ] Create `Api::NpcsController`
+- [ ] Add endpoints:
+  - [ ] `POST /api/npcs/:id/validate_action` - Validate NPC actions (give items, unlock doors)
+  - [ ] `POST /api/npcs/:id/sync_conversation` - Sync conversation state (async)
+  - [ ] `GET /api/npcs/:id/story` - Progressive loading (optional)
+- [ ] Create NPC permission system:
+  - [ ] `NPCPermission` model (which NPCs can do what)
+  - [ ] Server validates trust levels, prerequisites
+- [ ] Update NPC action handlers:
+  - [ ] `handleNPCGiveItem()` - Add server validation
+  - [ ] `handleNPCUnlockDoor()` - Add server validation
+- [ ] Add conversation state sync:
+  - [ ] Hook into NPCConversationStateManager
+  - [ ] Async sync after each conversation turn
+  - [ ] Restore state on game load
+- [ ] Test NPC actions thoroughly:
+  - [ ] Give items (authorized and unauthorized)
+  - [ ] Unlock doors (authorized and unauthorized)
+  - [ ] Trust level requirements
+  - [ ] Conversation state persistence
+- [ ] Import all Ink scripts into database
+- [ ] Test event-driven dialogue still works
+
+⚠️ **Keep client-side:** Ink engine, dialogue UI, event listeners, timed messages
+✅ **Add server-side:** Action validation, conversation state persistence
 
 ### Phase 6: Minigame Validation (Week 9)
 
@@ -905,7 +1251,73 @@ See **NPC_MIGRATION_OPTIONS.md** for detailed plan.
 - [ ] Add metrics collection for anti-cheat
 - [ ] Test each minigame validation
 
-### Phase 7: Polish & Deployment (Week 10+)
+### Phase 7: Event System Integration (Week 11-12) ⚠️ **NEW**
+
+✅ **Status:** Event system fully implemented client-side, needs server integration only
+
+- [ ] Create `Api::EventsController`
+- [ ] Add endpoint:
+  - [ ] `POST /api/events` - Log critical game events
+- [ ] Create `GameEvent` model
+- [ ] Identify critical events to log:
+  - [ ] door_unlocked
+  - [ ] item_picked_up
+  - [ ] minigame_completed
+  - [ ] unlock_attempt
+  - [ ] npc_action_performed
+  - [ ] health_changed
+- [ ] Hook event dispatcher:
+  - [ ] Intercept `eventDispatcher.emit()`
+  - [ ] Log critical events to server (async, non-blocking)
+  - [ ] Keep all events client-side for UI reactions
+- [ ] Add event analytics:
+  - [ ] Dashboard for viewing player progression
+  - [ ] Anti-cheat metrics
+  - [ ] Completion rates
+- [ ] Test event logging:
+  - [ ] Events logged correctly
+  - [ ] No impact on gameplay performance
+  - [ ] Works offline (queues events)
+
+⚠️ **Keep client-side:** All event listeners, UI reactions, NPC event mappings
+✅ **Add server-side:** Selective event logging for progression/analytics
+
+---
+
+### Phase 8: Global Game State Management (Week 13-14) ⚠️ **NEW**
+
+✅ **Status:** Global variables system fully implemented client-side, needs server integration
+
+- [ ] Create `Api::GameStateController`
+- [ ] Add endpoints:
+  - [ ] `GET /api/game_state` - Get current global state
+  - [ ] `PUT /api/game_state/sync` - Sync state changes
+  - [ ] `POST /api/game_state/reconcile` - Handle conflicts
+- [ ] Create `PlayerGameState` model
+- [ ] Intercept global variable writes:
+  - [ ] Hook `window.gameState.globalVariables` writes
+  - [ ] Track dirty changes
+  - [ ] Debounced sync to server (every 2s)
+- [ ] Add state reconciliation:
+  - [ ] Load state from server on game start
+  - [ ] Handle conflicts (server wins vs client wins)
+  - [ ] Merge offline changes on reconnect
+- [ ] Add offline support:
+  - [ ] Queue state changes when offline
+  - [ ] Sync when reconnected
+  - [ ] Conflict resolution strategy
+- [ ] Test state management:
+  - [ ] NPCs read/write global variables correctly
+  - [ ] State persists across sessions
+  - [ ] State syncs correctly
+  - [ ] Offline mode works
+
+⚠️ **Keep client-side:** Local cache for performance, optimistic updates
+✅ **Add server-side:** Source of truth, validation, persistence
+
+---
+
+### Phase 9: Polish & Deployment (Week 15-18+)
 
 - [ ] Add comprehensive error handling
 - [ ] Add offline mode support
@@ -1003,7 +1415,7 @@ See **NPC_MIGRATION_OPTIONS.md** for detailed plan.
 
 ---
 
-## Conclusion
+## Conclusion (UPDATED)
 
 **Key Principles:**
 1. **Gradual Migration:** Use abstraction layer for dual-mode operation
@@ -1011,13 +1423,32 @@ See **NPC_MIGRATION_OPTIONS.md** for detailed plan.
 3. **Client Responsiveness:** Keep UI instant with optimistic updates
 4. **Graceful Degradation:** Handle offline mode and errors elegantly
 5. **Security First:** Never trust client for solutions
+6. **Hybrid Approach:** Keep complex client systems (NPCs, dialogue) with server validation ⚠️ **NEW**
 
-**Critical Path:**
-Room Loading → Container System → Unlock System → Inventory System
+**Critical Path (UPDATED):**
+Room Loading → Unlock System → Inventory System → NPC Action Validation → Event Logging → Global State Sync
 
-**Timeline:** 10-12 weeks for complete migration
+**Timeline:** 18-22 weeks for complete migration ⚠️ **UPDATED** (was 10-12 weeks)
+- Added: NPC system integration (2 weeks)
+- Added: Event system integration (2 weeks)
+- Added: Global state management (2 weeks)
+- Added: Additional testing (2 weeks)
 
-**Confidence:** High - architecture already supports this model (see ARCHITECTURE_COMPARISON.md)
+**Confidence:** High - architecture already supports this model
+
+**Key Changes Since Original Plans:**
+- ✅ NPC system fully implemented (needs server validation only)
+- ✅ Event system fully implemented (needs server logging only)
+- ✅ Global game state fully implemented (needs server sync only)
+- ✅ 24 scenarios exist (vs 1 originally planned)
+- ⚠️ More complex state management than originally anticipated
+- ⚠️ Conversation state persistence adds complexity
+- ✅ But all systems are well-architected and ready for server integration
+
+**Risk Assessment:**
+- **Original Risk:** Medium-Low
+- **Updated Risk:** Medium (slightly higher due to NPC/event/state complexity)
+- **Mitigation:** Incremental rollout, extensive testing, hybrid approach keeps working systems intact
 
 
 
