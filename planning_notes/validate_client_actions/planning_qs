@@ -1,0 +1,100 @@
+Question 1: Data Filtering Strategy
+When should room/scenario data be filtered?
+
+B) At the controller level - Keep scenario_data as-is in the model, but filter in each endpoint response
+
+Question 2: What data should be hidden from the client?
+Which of these should the client NOT see?
+
+A) requires (unlock requirements like keys, PINs, passwords)
+C) contents (what's inside a locked container)
+
+A & C -- shouldn't see the contents, that should be loaded via an API request (we likely need similar to load room and load container)
+
+Question 3: Unlock Validation & Tracking
+How should we track unlock attempts?
+
+A) No tracking - Just validate and unlock, don't store attempts
+
+Question 4: Inventory Operations
+Should the server validate inventory operations?
+
+B) Validate items exist - Check that the item is actually in the room/scenario -- in the LOADED rooms
+
+Question 5: Unlock Method & Object Tracking
+How should we track which objects/doors are unlocked?
+
+A) Permissive - Once unlocked, always unlocked (current approach)
+
+Question 6: Starting Inventory
+Should starting inventory items be filtered out from room/scenario data?
+
+Don't make any changes related to starting inventory -- just add them to the player_state inventory.
+
+
+Simple room data filtering -- include all data EXCEPT do filter the requires field, which is used by the server to validate answers and required items. 
+ "requires": "password123",
+All other data can be included in the data sent when loading rooms.
+
+The scenario end point should return a more filtered down information about rooms and connections. Check the codebase to make sure we provide everything that's needed.
+
+
+Make a note of the data we plan to store in player_state:
+
+     if is_postgresql
+        t.jsonb :player_state, null: false, default: {
+          currentRoom: nil,
+          unlockedRooms: [],
+          unlockedObjects: [],
+          inventory: [],
+          encounteredNPCs: [],
+          globalVariables: {},
+          biometricSamples: [],
+          biometricUnlocks: [],
+          bluetoothDevices: [],
+          notes: [],
+          health: 100
+        }
+
+Start by adding the starting room and starting inventory to 
+unlockedRooms
+and 
+inventory
+
+When the player adds to inventory via client-side interaction, track what they've collected (and look at the unfiltered scenario data to check if the item exists in the scenario and is in a locked room or container object, if so, enforce that they can only collect those items that are defined in unlockedRooms)
+When they enter a room with NPCs (including phone NPCs) then add the NPCs (by id) to encounteredNPCs
+
+currentRoom - client reported
+
+
+Everytime the player unlocks something then store that in the player_state unlockedObjects / unlockedRooms
+
+Note that NPCs can define itemsHeld, and if so, and the NPC has been encountered, then allow those items to be added to inventory.
+
+Any further questions?
+
+
+Questions/Clarifications I Have:
+Items in locked containers: Should they be collectible ONLY after the container is unlocked? Or should we prevent them from appearing in room sprites until unlocked?
+
+Examples of locked containers are safes, locked briefcase, locked computer, etc,  the player doesn't see the contents until after it's unlocked. The best code to look at is the container minigame, which is also used when interacting with NPCs that are giving the player an item they hold.
+
+
+itemsHeld on NPCs: Should these items be added to the item pool when the NPC is encountered, or only become available after a specific conversation state?
+
+It's about how we enforce what's permitted, once the NPC has been encountered we accept that the client can claim to have the item they hold -- it's not as direct as that from a game play perspective, but just in terms of enforcing a minimum to prevent cheating, such as a client they just claims to have an item that is held by an NPC they haven't even met yet.
+
+
+Biometric/Bluetooth tracking: These are tracked separately in player_state - should collecting/scanning these items auto-populate those arrays, or is that a separate operation?
+
+For now, just accept these as reported by the client.
+
+Notes field in player_state: Is this for collecting "notes" type objects, or general game notes/hints the player discovers?
+
+This field can be ignored or removed.
+
+Do we need a /games/:id/container/:container_id endpoint to lazy-load locked container contents, or can we include that in room data?
+
+Yes please.
+
+Create a actionable and detailed implementation-focused plan, with TODO list. Save into: planning_notes/validate_client_actions
