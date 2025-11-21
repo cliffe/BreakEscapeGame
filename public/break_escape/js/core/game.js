@@ -19,6 +19,7 @@ import { NPCHealthBars } from '../ui/npc-health-bars.js';
 import { GameOverScreen } from '../ui/game-over-screen.js';
 import { PlayerCombat } from '../systems/player-combat.js';
 import { NPCCombat } from '../systems/npc-combat.js';
+import { ApiClient } from '../api-client.js'; // Import to ensure window.ApiClient is set
 
 // Global variables that will be set by main.js
 let gameScenario;

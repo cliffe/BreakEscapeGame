@@ -376,12 +376,13 @@ export class PasswordMinigame extends MinigameScene {
     }
     
     async submitPassword() {
+        const gameId = window.breakEscapeConfig?.gameId;
         console.log('submitPassword called', {
             isActive: this.gameState.isActive,
             correctPassword: this.correctPassword,
             hasApiClient: !!window.ApiClient,
             hasAPIClient: !!window.APIClient,
-            gameId: window.gameId
+            gameId: gameId
         });
 
         if (!this.gameState.isActive) return;
@@ -399,14 +400,14 @@ export class PasswordMinigame extends MinigameScene {
 
         // Check if we need server-side validation (correctPassword is null or empty string)
         const apiClient = window.ApiClient || window.APIClient;
-        if ((!this.correctPassword || this.correctPassword === '') && apiClient && window.gameId) {
+        if ((!this.correctPassword || this.correctPassword === '') && apiClient && gameId) {
             console.log('Using server-side validation');
             await this.validatePasswordWithServer(enteredPassword);
         } else {
             console.log('Using client-side validation', {
                 correctPassword: this.correctPassword,
                 hasApiClient: !!apiClient,
-                gameId: window.gameId
+                gameId: gameId
             });
             // Client-side validation (backwards compatibility)
             if (enteredPassword === this.correctPassword) {

@@ -250,7 +250,8 @@ export class PinMinigame extends MinigameScene {
         // Check if we need server-side validation (correctPin is null or empty)
         let isCorrect;
         const apiClient = window.ApiClient || window.APIClient;
-        if ((!this.correctPin || this.correctPin === '') && apiClient && window.gameId) {
+        const gameId = window.breakEscapeConfig?.gameId;
+        if ((!this.correctPin || this.correctPin === '') && apiClient && gameId) {
             console.log('Using server-side PIN validation');
             isCorrect = await this.validatePinWithServer(this.currentInput);
         } else {
