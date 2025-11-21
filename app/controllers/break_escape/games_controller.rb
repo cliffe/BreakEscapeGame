@@ -82,34 +82,45 @@ module BreakEscape
     def room
       authorize @game if defined?(Pundit)
 
-      room_id = params[:room_id]
-      return render_error('Missing room_id parameter', :bad_request) unless room_id.present?
+      begin
+        room_id = params[:room_id]
+        return render_error('Missing room_id parameter', :bad_request) unless room_id.present?
 
-      # Check if room is accessible (starting room OR in unlockedRooms)
-      is_start_room = @game.scenario_data['startRoom'] == room_id
-      is_unlocked = @game.player_state['unlockedRooms']&.include?(room_id)
+        # Check if scenario_data exists
+        unless @game.scenario_data.present?
+          Rails.logger.error "[BreakEscape] room: Game #{@game.id} has no scenario_data"
+          return render_error('Scenario data not available', :internal_server_error)
+        end
 
-      unless is_start_room || is_unlocked
-        return render_error("Room not accessible: #{room_id}", :forbidden)
+        # Check if room is accessible (starting room OR in unlockedRooms)
+        is_start_room = @game.scenario_data['startRoom'] == room_id
+        is_unlocked = @game.player_state['unlockedRooms']&.include?(room_id)
+
+        unless is_start_room || is_unlocked
+          return render_error("Room not accessible: #{room_id}", :forbidden)
+        end
+
+        # Auto-add start room if missing (defensive programming)
+        if is_start_room && !is_unlocked
+          @game.player_state['unlockedRooms'] ||= []
+          @game.player_state['unlockedRooms'] << room_id
+          @game.save!
+        end
+
+        # Get and filter room data
+        room_data = @game.filtered_room_data(room_id)
+        return render_error("Room not found: #{room_id}", :not_found) unless room_data
+
+        # Track NPC encounters BEFORE sending response
+        track_npc_encounters(room_id, room_data)
+
+        Rails.logger.debug "[BreakEscape] Serving room data for: #{room_id}"
+
+        render json: { room_id: room_id, room: room_data }
+      rescue => e
+        Rails.logger.error "[BreakEscape] room error: #{e.message}\n#{e.backtrace.first(10).join("\n")}"
+        render_error("Failed to load room: #{e.message}", :internal_server_error)
       end
-
-      # Auto-add start room if missing (defensive programming)
-      if is_start_room && !is_unlocked
-        @game.player_state['unlockedRooms'] ||= []
-        @game.player_state['unlockedRooms'] << room_id
-        @game.save!
-      end
-
-      # Get and filter room data
-      room_data = @game.filtered_room_data(room_id)
-      return render_error("Room not found: #{room_id}", :not_found) unless room_data
-
-      # Track NPC encounters BEFORE sending response
-      track_npc_encounters(room_id, room_data)
-
-      Rails.logger.debug "[BreakEscape] Serving room data for: #{room_id}"
-
-      render json: { room_id: room_id, room: room_data }
     end
 
     # GET /games/:id/container/:container_id
@@ -307,7 +318,14 @@ module BreakEscape
       return unless room_data['npcs'].present?
 
       npc_ids = room_data['npcs'].map { |npc| npc['id'] }
+
+      # Ensure encounteredNPCs is an array
       @game.player_state['encounteredNPCs'] ||= []
+
+      # Handle case where encounteredNPCs might be a string (legacy data)
+      unless @game.player_state['encounteredNPCs'].is_a?(Array)
+        @game.player_state['encounteredNPCs'] = []
+      end
 
       new_npcs = npc_ids - @game.player_state['encounteredNPCs']
       return if new_npcs.empty?
