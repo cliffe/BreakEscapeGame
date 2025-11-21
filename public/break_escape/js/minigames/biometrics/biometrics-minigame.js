@@ -66,7 +66,7 @@ export class BiometricsMinigame extends MinigameScene {
         scannerHeader.className = 'biometrics-scanner-header';
         scannerHeader.innerHTML = `
             <div class="biometrics-scanner-title">
-                <img src="assets/objects/fingerprint.png" alt="Biometric Samples" class="scanner-icon">
+                <img src="/break_escape/assets/objects/fingerprint.png" alt="Biometric Samples" class="scanner-icon">
                 <span>Biometric Samples</span>
                 <span class="samples-count-header">0 samples</span>
             </div>
@@ -81,7 +81,7 @@ export class BiometricsMinigame extends MinigameScene {
         searchRoomContainer.className = 'biometrics-search-room-container';
         searchRoomContainer.innerHTML = `
             <button id="search-room-btn" class="biometrics-action-btn">
-                <span class="btn-icon"><img src="assets/icons/search.png" alt="Search" class="icon"></span>
+                <span class="btn-icon"><img src="/break_escape/assets/icons/search.png" alt="Search" class="icon"></span>
                 <span class="btn-text">Search Room for Fingerprints</span>
             </button>
         `;

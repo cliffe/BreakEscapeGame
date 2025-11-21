@@ -3,7 +3,7 @@ import { MinigameScene } from '../framework/base-minigame.js';
 // Load title screen CSS
 const titleScreenCSS = document.createElement('link');
 titleScreenCSS.rel = 'stylesheet';
-titleScreenCSS.href = 'css/title-screen.css';
+titleScreenCSS.href = '/break_escape/css/title-screen.css';
 titleScreenCSS.id = 'title-screen-css';
 if (!document.getElementById('title-screen-css')) {
     document.head.appendChild(titleScreenCSS);
@@ -26,7 +26,7 @@ export class TitleScreenMinigame extends MinigameScene {
         
         this.container.innerHTML = `
             <div class="title-screen-container">
-                <img src="assets/logos/hacktivity-logo.svg" alt="Hacktivity Logo" class="title-screen-logo">
+                <img src="/break_escape/assets/logos/hacktivity-logo.svg" alt="Hacktivity Logo" class="title-screen-logo">
                 <div class="title-screen-title">BreakEscape</div>
             </div>
         `;

@@ -439,25 +439,33 @@ export function preload() {
     window.soundManagerPreload = new SoundManager(this);
     window.soundManagerPreload.preloadSounds();
 
-    // Get scenario from URL parameter or use default
-    const urlParams = new URLSearchParams(window.location.search);
-    let scenarioFile = urlParams.get('scenario') || 'scenarios/ceo_exfil.json';
-    
-    // Ensure scenario file has proper path prefix
-    if (!scenarioFile.startsWith('scenarios/')) {
-        scenarioFile = `scenarios/${scenarioFile}`;
+    // Load scenario from Rails API endpoint if available, otherwise try URL parameter
+    if (window.breakEscapeConfig?.apiBasePath) {
+        // Load scenario from Rails API endpoint
+        // Use absolute URL with origin to prevent Phaser baseURL from interfering
+        const scenarioUrl = `${window.location.origin}${window.breakEscapeConfig.apiBasePath}/scenario`;
+        this.load.json('gameScenarioJSON', scenarioUrl);
+    } else {
+        // Fallback to old behavior for standalone HTML files
+        const urlParams = new URLSearchParams(window.location.search);
+        let scenarioFile = urlParams.get('scenario') || 'scenarios/ceo_exfil.json';
+        
+        // Ensure scenario file has proper path prefix
+        if (!scenarioFile.startsWith('scenarios/')) {
+            scenarioFile = `scenarios/${scenarioFile}`;
+        }
+        
+        // Ensure .json extension
+        if (!scenarioFile.endsWith('.json')) {
+            scenarioFile = `${scenarioFile}.json`;
+        }
+        
+        // Add cache buster query parameter to prevent browser caching
+        scenarioFile = `${scenarioFile}${scenarioFile.includes('?') ? '&' : '?'}v=${Date.now()}`;
+        
+        // Load the specified scenario
+        this.load.json('gameScenarioJSON', scenarioFile);
     }
-    
-    // Ensure .json extension
-    if (!scenarioFile.endsWith('.json')) {
-        scenarioFile = `${scenarioFile}.json`;
-    }
-    
-    // Add cache buster query parameter to prevent browser caching
-    scenarioFile = `${scenarioFile}${scenarioFile.includes('?') ? '&' : '?'}v=${Date.now()}`;
-    
-    // Load the specified scenario
-    this.load.json('gameScenarioJSON', scenarioFile);
 }
 
 

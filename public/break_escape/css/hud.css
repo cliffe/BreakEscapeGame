@@ -42,14 +42,16 @@
 #inventory-container {
     position: fixed;
     bottom: 0;
-  left: 50%;
-  transform: translateX(-50%);
+    left: 50%;
+    transform: translateX(-50%);
     height: 80px;
     display: flex;
     align-items: center;
     padding: 0 20px;
     z-index: 1000;
     font-family: 'VT323';
+    overflow-x: auto;
+    overflow-y: hidden;
 }
 
 #inventory-container::-webkit-scrollbar {
@@ -74,7 +76,7 @@
     justify-content: center;
     align-items: center;
     position: relative;
-    background: rgb(149 157 216 / 80%);
+    background: transparent; /* keep slot outlines but no filled background per user request */
 }
 
 /* Pulse animation for newly added items */

@@ -172,7 +172,7 @@ export class GameOverScreen {
 
   mainMenu() {
     // Navigate to scenario select or main menu
-    window.location.href = 'scenario_select.html';
+    window.location.href = '/break_escape/missions';
   }
 
   destroy() {

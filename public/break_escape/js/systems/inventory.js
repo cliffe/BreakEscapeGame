@@ -242,7 +242,7 @@ export function addToInventory(sprite) {
         // Create inventory item
         const itemImg = document.createElement('img');
         itemImg.className = 'inventory-item';
-        itemImg.src = `assets/objects/${sprite.texture?.key || sprite.name || sprite.scenarioData?.type}.png`;
+        itemImg.src = `/break_escape/assets/objects/${sprite.texture?.key || sprite.name || sprite.scenarioData?.type}.png`;
         itemImg.alt = sprite.scenarioData.name;
         
         // Create tooltip
@@ -440,7 +440,7 @@ function updateKeyRingDisplay() {
     // Create key ring item
     const itemImg = document.createElement('img');
     itemImg.className = 'inventory-item';
-    itemImg.src = keyRing.keys.length === 1 ? `assets/objects/key.png` : `assets/objects/key-ring.png`;
+    itemImg.src = keyRing.keys.length === 1 ? `/break_escape/assets/objects/key.png` : `/break_escape/assets/objects/key-ring.png`;
     itemImg.alt = keyRing.keys.length === 1 ? keyRing.keys[0].scenarioData.name : 'Key Ring';
     
     // Add data attributes for styling

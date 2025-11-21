@@ -41,7 +41,7 @@ export class PasswordMinigame extends MinigameScene {
             const notebookBtn = document.createElement('button');
             notebookBtn.className = 'minigame-button';
             notebookBtn.id = 'minigame-notebook-postit';
-            notebookBtn.innerHTML = '<img src="assets/icons/notes-sm.png" alt="Notepad" class="icon-small"> Add to Notepad';
+            notebookBtn.innerHTML = '<img src="/break_escape/assets/icons/notes-sm.png" alt="Notepad" class="icon-small"> Add to Notepad';
             // Insert before the cancel button (first child in controls)
             this.controlsElement.insertBefore(notebookBtn, this.controlsElement.firstChild);
         }
@@ -80,7 +80,7 @@ export class PasswordMinigame extends MinigameScene {
             <div class="password-minigame-area">
                 ${imageData ? `
                     <div class="password-image-section">
-                        <img src="assets/objects/${imageData.imageFile}.png" 
+                        <img src="/break_escape/assets/objects/${imageData.imageFile}.png" 
                              alt="${imageData.deviceName}" 
                              class="password-image">
                         <div class="password-info">
@@ -100,7 +100,7 @@ export class PasswordMinigame extends MinigameScene {
                                        placeholder="Enter password..."
                                        maxlength="50">
                                 <button type="button" class="toggle-password-btn" id="toggle-password">
-                                    <img class="icon-small" src="${this.gameData.showPassword ? 'assets/icons/visible.png' : 'assets/icons/hidden.png'}" alt="Toggle password visibility">
+                                    <img class="icon-small" src="/break_escape/assets/icons/${this.gameData.showPassword ? 'visible.png' : 'hidden.png'}" alt="Toggle password visibility">
                                 </button>
                             </div>
                         </div>
@@ -128,7 +128,7 @@ export class PasswordMinigame extends MinigameScene {
                 <div class="password-controls">
                     ${this.gameData.showKeyboard ? `
                         <button type="button" class="keyboard-toggle-btn" id="keyboard-toggle">
-                            <img class="icon-keyboard" src="assets/objects/keyboard1.png" alt="Toggle keyboard">
+                            <img class="icon-keyboard" src="/break_escape/assets/objects/keyboard1.png" alt="Toggle keyboard">
                         </button>
                     ` : ''}
                 </div>

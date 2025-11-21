@@ -302,7 +302,7 @@ export class LockpickingMinigamePhaser extends MinigameScene {
             const switchModeBtn = document.createElement('button');
             switchModeBtn.className = 'minigame-button';
             switchModeBtn.id = 'lockpicking-switch-mode-btn';
-            switchModeBtn.innerHTML = '<img src="assets/objects/lockpick.png" alt="Lockpick" class="icon-large"> Switch to Lockpicking';
+            switchModeBtn.innerHTML = '<img src="/break_escape/assets/objects/lockpick.png" alt="Lockpick" class="icon-large"> Switch to Lockpicking';
             switchModeBtn.onclick = () => this.toolMgr.switchToPickMode();
             
             buttonContainer.appendChild(switchModeBtn);
@@ -320,7 +320,7 @@ export class LockpickingMinigamePhaser extends MinigameScene {
             const switchModeBtn = document.createElement('button');
             switchModeBtn.className = 'minigame-button';
             switchModeBtn.id = 'lockpicking-switch-to-keys-btn';
-            switchModeBtn.innerHTML = '<img src="assets/objects/key.png" alt="Key" class="icon-large"> Switch to Key Mode';
+            switchModeBtn.innerHTML = '<img src="/break_escape/assets/objects/key.png" alt="Key" class="icon-large"> Switch to Key Mode';
             switchModeBtn.onclick = () => this.toolMgr.switchToKeyMode();
             
             buttonContainer.appendChild(switchModeBtn);

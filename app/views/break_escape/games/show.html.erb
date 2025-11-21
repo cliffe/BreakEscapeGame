@@ -5,17 +5,109 @@
   <%= csrf_meta_tags %>
   <%= csp_meta_tag %>
 
-  <%# Load game CSS %>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes">
+
+  <%# Google Fonts - Press Start 2P, VT323, Pixelify Sans %>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=VT323&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Pixelify+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+  <%# Web Font Loader script to ensure fonts load properly %>
+  <script src="https://ajax.googleapis.com/ajax/libs/webfont/1.6.26/webfont.js"></script>
+  <script nonce="<%= content_security_policy_nonce %>">
+    WebFont.load({
+      google: {
+        families: ['Press Start 2P', 'VT323', 'Pixelify Sans']
+      },
+      active: function() {
+        console.log('Fonts loaded successfully');
+      }
+    });
+  </script>
+
+  <%# Load game CSS files %>
   <link rel="stylesheet" href="/break_escape/css/main.css">
+  <link rel="stylesheet" href="/break_escape/css/utilities.css">
+  <link rel="stylesheet" href="/break_escape/css/notifications.css">
+  <link rel="stylesheet" href="/break_escape/css/panels.css">
+  <link rel="stylesheet" href="/break_escape/css/hud.css">
+  <link rel="stylesheet" href="/break_escape/css/minigames-framework.css">
+  <link rel="stylesheet" href="/break_escape/css/dusting.css">
+  <link rel="stylesheet" href="/break_escape/css/lockpicking.css">
+  <link rel="stylesheet" href="/break_escape/css/modals.css">
+  <link rel="stylesheet" href="/break_escape/css/notes.css">
+  <link rel="stylesheet" href="/break_escape/css/bluetooth-scanner.css">
+  <link rel="stylesheet" href="/break_escape/css/biometrics-minigame.css">
+  <link rel="stylesheet" href="/break_escape/css/container-minigame.css">
+  <link rel="stylesheet" href="/break_escape/css/phone-chat-minigame.css">
+  <link rel="stylesheet" href="/break_escape/css/person-chat-minigame.css">
+  <link rel="stylesheet" href="/break_escape/css/rfid-minigame.css">
+  <link rel="stylesheet" href="/break_escape/css/npc-interactions.css">
+  <link rel="stylesheet" href="/break_escape/css/pin.css">
+  <link rel="stylesheet" href="/break_escape/css/password-minigame.css">
+  <link rel="stylesheet" href="/break_escape/css/text-file-minigame.css">
+  <link rel="stylesheet" href="/break_escape/css/npc-barks.css">
+  <link rel="stylesheet" href="/break_escape/css/title-screen.css">
+  <link rel="stylesheet" href="/break_escape/css/inventory.css">
 </head>
 <body>
   <%# Game container - Phaser will render here %>
-  <div id="break-escape-game"></div>
+  <div id="game-container"></div>
 
   <%# Loading indicator %>
   <div id="loading" style="position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); color: #00ff00; font-size: 24px; display: block;">
     Loading game...
   </div>
+
+  <%# Notification System %>
+  <div id="notification-container"></div>
+
+  <%# Toggle Buttons Container %>
+  <div id="toggle-buttons-container">
+    <!-- Biometrics is now handled as a minigame -->
+  </div>
+
+  <%# Inventory Container %>
+  <div id="inventory-container"></div>
+
+  <%# Laptop Popup %>
+  <div id="laptop-popup">
+    <div class="laptop-frame">
+      <div class="laptop-screen">
+        <div class="title-bar">
+          <span>Crypto Workstation</span>
+          <button class="minigame-close-button" onclick="closeLaptop()">×</button>
+        </div>
+        <div id="cyberchef-container">
+          <iframe id="cyberchef-frame" src=""></iframe>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <%# Password Modal %>
+  <div id="password-modal">
+    <div class="password-modal-content">
+      <div class="password-modal-title">
+        Enter Password
+      </div>
+      <input id="password-modal-input" type="password" autocomplete="off" autofocus>
+      <div class="password-modal-checkbox-container">
+        <input type="checkbox" id="password-modal-show">
+        <label for="password-modal-show" class="password-modal-checkbox-label">Show password</label>
+      </div>
+      <div class="password-modal-buttons">
+        <button id="password-modal-ok" class="password-modal-button">OK</button>
+        <button id="password-modal-cancel" class="password-modal-button">Cancel</button>
+      </div>
+    </div>
+  </div>
+
+  <%# Popup Overlay %>
+  <div class="popup-overlay"></div>
 
   <%# Bootstrap configuration for client %>
   <script nonce="<%= content_security_policy_nonce %>">
@@ -26,6 +118,11 @@
       csrfToken: '<%= form_authenticity_token %>'
     };
   </script>
+
+  <%# Load required libraries before the game module %>
+  <script src="https://cdn.jsdelivr.net/npm/phaser@3.60.0/dist/phaser.min.js" nonce="<%= content_security_policy_nonce %>"></script>
+  <script src="https://cdn.jsdelivr.net/npm/easystarjs@0.4.4/bin/easystar-0.4.4.js" nonce="<%= content_security_policy_nonce %>"></script>
+  <script src="/break_escape/assets/vendor/ink.js" nonce="<%= content_security_policy_nonce %>"></script>
 
   <%# Load game JavaScript (ES6 module) %>
   <script type="module" src="/break_escape/js/main.js" nonce="<%= content_security_policy_nonce %>"></script>

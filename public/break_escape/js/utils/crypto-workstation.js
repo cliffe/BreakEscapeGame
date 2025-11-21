@@ -16,7 +16,7 @@ export function openCryptoWorkstation() {
     const cyberchefFrame = document.getElementById('cyberchef-frame');
     
     // Set the iframe source to the CyberChef HTML file
-    cyberchefFrame.src = 'assets/cyberchef/CyberChef_v10.19.4.html';
+    cyberchefFrame.src = '/break_escape/assets/cyberchef/CyberChef_v10.19.4.html';
     
     // Show the laptop popup
     laptopPopup.style.display = 'block';

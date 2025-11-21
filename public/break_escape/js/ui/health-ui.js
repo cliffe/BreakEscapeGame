@@ -34,7 +34,7 @@ export class HealthUI {
     for (let i = 0; i < COMBAT_CONFIG.ui.maxHearts; i++) {
       const heart = document.createElement('img');
       heart.className = 'health-heart';
-      heart.src = 'assets/icons/heart.png';
+      heart.src = '/break_escape/assets/icons/heart.png';
       heart.alt = 'HP';
       heartsContainer.appendChild(heart);
       this.hearts.push(heart);
@@ -84,15 +84,15 @@ export class HealthUI {
     this.hearts.forEach((heart, index) => {
       if (index < fullHearts) {
         // Full heart
-        heart.src = 'assets/icons/heart.png';
+        heart.src = '/break_escape/assets/icons/heart.png';
         heart.style.opacity = '1';
       } else if (index === fullHearts && halfHeart) {
         // Half heart
-        heart.src = 'assets/icons/heart-half.png';
+        heart.src = '/break_escape/assets/icons/heart-half.png';
         heart.style.opacity = '1';
       } else {
         // Empty heart
-        heart.src = 'assets/icons/heart.png';
+        heart.src = '/break_escape/assets/icons/heart.png';
         heart.style.opacity = '0.2';
       }
     });

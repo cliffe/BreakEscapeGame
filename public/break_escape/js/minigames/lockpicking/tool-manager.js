@@ -238,7 +238,7 @@ export class ToolManager {
                 const switchModeBtn = document.createElement('button');
                 switchModeBtn.className = 'minigame-button';
                 switchModeBtn.id = 'lockpicking-switch-mode-btn';
-                switchModeBtn.innerHTML = '<img src="assets/objects/lockpick.png" alt="Lockpick" class="icon-large"> Switch to Lockpicking';
+                switchModeBtn.innerHTML = '<img src="/break_escape/assets/objects/lockpick.png" alt="Lockpick" class="icon-large"> Switch to Lockpicking';
                 switchModeBtn.onclick = () => this.switchToPickMode();
                 
                 buttonContainer.appendChild(switchModeBtn);

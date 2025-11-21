@@ -160,7 +160,7 @@ export class PinMinigame extends MinigameScene {
             
             // Add pin-cracker icon
             this.pinCrackerIconElement = document.createElement('img');
-            this.pinCrackerIconElement.src = 'assets/objects/pin-cracker.png';
+            this.pinCrackerIconElement.src = '/break_escape/assets/objects/pin-cracker.png';
             this.pinCrackerIconElement.alt = 'Pin Cracker';
             this.pinCrackerIconElement.className = 'pin-minigame-cracker-icon';
             this.pinCrackerIconElement.style.display = 'inline-block'; // Show by default when pin-cracker is available

@@ -3,7 +3,7 @@ import { MinigameScene } from '../framework/base-minigame.js';
 // Load dusting-specific CSS
 const dustingCSS = document.createElement('link');
 dustingCSS.rel = 'stylesheet';
-dustingCSS.href = 'css/dusting.css';
+dustingCSS.href = '/break_escape/css/dusting.css';
 dustingCSS.id = 'dusting-css';
 if (!document.getElementById('dusting-css')) {
     document.head.appendChild(dustingCSS);

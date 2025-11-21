@@ -54,7 +54,7 @@ export class ContainerMinigame extends MinigameScene {
             const notebookBtn = document.createElement('button');
             notebookBtn.className = 'minigame-button';
             notebookBtn.id = 'minigame-notebook-postit';
-            notebookBtn.innerHTML = '<img src="assets/icons/notes-sm.png" alt="Notepad" class="icon-small"> Add to Notepad';
+            notebookBtn.innerHTML = '<img src="/break_escape/assets/icons/notes-sm.png" alt="Notepad" class="icon-small"> Add to Notepad';
             // Insert before the cancel button (first child in controls)
             this.controlsElement.insertBefore(notebookBtn, this.controlsElement.firstChild);
         }
@@ -104,7 +104,7 @@ export class ContainerMinigame extends MinigameScene {
         this.gameContainer.innerHTML = `
             <div class="container-minigame">
                 <div class="container-image-section">
-                    <img src="assets/objects/${this.containerItem.texture.key}.png" 
+                    <img src="/break_escape/assets/objects/${this.containerItem.texture.key}.png" 
                          alt="${this.containerItem.scenarioData.name}" 
                          class="container-image">
                     <div class="container-info">
@@ -130,7 +130,7 @@ export class ContainerMinigame extends MinigameScene {
     createDesktopUI() {
         this.gameContainer.innerHTML = `
             <div class="container-image-section">
-                <img src="assets/objects/${this.containerItem.texture.key}.png" 
+                <img src="/break_escape/assets/objects/${this.containerItem.texture.key}.png" 
                         alt="${this.containerItem.scenarioData.name}" 
                         class="container-image">
                 <div class="container-info">
@@ -184,7 +184,7 @@ export class ContainerMinigame extends MinigameScene {
             
             const itemImg = document.createElement('img');
             itemImg.className = 'container-content-item';
-            itemImg.src = `assets/objects/${item.type}.png`;
+            itemImg.src = `/break_escape/assets/objects/${item.type}.png`;
             itemImg.alt = item.name;
             itemImg.title = item.name;
             
@@ -230,7 +230,7 @@ export class ContainerMinigame extends MinigameScene {
             
             const iconImg = document.createElement('img');
             iconImg.className = 'desktop-icon-image';
-            iconImg.src = `assets/objects/${item.type}.png`;
+            iconImg.src = `/break_escape/assets/objects/${item.type}.png`;
             iconImg.alt = item.name;
             
             const iconLabel = document.createElement('div');

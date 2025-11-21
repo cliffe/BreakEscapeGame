@@ -2,12 +2,10 @@
 body {
     margin: 0;
     padding: 0;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    min-height: 100vh;
+    display: block;
     background: #333;
     font-smooth: never;
+    overflow: hidden;
 }
 
 #game-container {

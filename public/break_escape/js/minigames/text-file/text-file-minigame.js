@@ -23,7 +23,7 @@ export class TextFileMinigame extends MinigameScene {
         
         // Customize the header
         this.headerElement.innerHTML = `
-            <h3><img src="assets/icons/text-file.png" alt="Document" class="icon"> ${this.textFileData.fileName}</h3>
+            <h3><img src="/break_escape/assets/icons/text-file.png" alt="Document" class="icon"> ${this.textFileData.fileName}</h3>
             <p>Viewing text file contents</p>
         `;
         
@@ -32,7 +32,7 @@ export class TextFileMinigame extends MinigameScene {
             const notebookBtn = document.createElement('button');
             notebookBtn.className = 'minigame-button';
             notebookBtn.id = 'minigame-notebook';
-            notebookBtn.innerHTML = '<img src="assets/icons/notes-sm.png" alt="Notepad" class="icon-small"> Add to Notepad';
+            notebookBtn.innerHTML = '<img src="/break_escape/assets/icons/notes-sm.png" alt="Notepad" class="icon-small"> Add to Notepad';
             this.controlsElement.appendChild(notebookBtn);
             
             // Change cancel button text to "Close"
@@ -64,7 +64,7 @@ export class TextFileMinigame extends MinigameScene {
                 </div>
                 
                 <div class="file-header">
-                    <div class="file-icon"><img src="assets/objects/text_file.png" alt="Document" class="icon-large"></div>
+                    <div class="file-icon"><img src="/break_escape/assets/objects/text_file.png" alt="Document" class="icon-large"></div>
                     <div class="file-info">
                         <div class="file-name">${this.textFileData.fileName}</div>
                         <div class="file-meta">
@@ -77,7 +77,7 @@ export class TextFileMinigame extends MinigameScene {
                 <div class="file-content-area">
                     <div class="content-header">
                         <div class="content-actions">
-                            <button class="action-btn" id="copy-btn" title="Copy to clipboard"><img src="assets/icons/copy-sm.png" alt="Clipboard" class="icon-small"> Copy</button>
+                            <button class="action-btn" id="copy-btn" title="Copy to clipboard"><img src="/break_escape/assets/icons/copy-sm.png" alt="Clipboard" class="icon-small"> Copy</button>
                             <button class="action-btn" id="select-all-btn" title="Select all text">Select All</button>
                         </div>
                     </div>
@@ -88,7 +88,7 @@ export class TextFileMinigame extends MinigameScene {
                 
                 ${this.textFileData.observations ? `
                 <div class="file-observations">
-                    <h4><img src="assets/icons/copy-sm.png" alt="Clipboard" class="icon-small"> Observations:</h4>
+                    <h4><img src="/break_escape/assets/icons/copy-sm.png" alt="Clipboard" class="icon-small"> Observations:</h4>
                     <p>${this.textFileData.observations}</p>
                 </div>
                 ` : ''}

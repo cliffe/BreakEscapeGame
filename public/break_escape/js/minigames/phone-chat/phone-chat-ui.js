@@ -268,11 +268,11 @@ export default class PhoneChatUI {
         
         if (playing) {
             // Show stop icon
-            playButton.innerHTML = '<img src="assets/icons/stop.png" alt="Stop" class="icon">';
+            playButton.innerHTML = '<img src="/break_escape/assets/icons/stop.png" alt="Stop" class="icon">';
             playButton.title = 'Stop';
         } else {
             // Show play icon
-            playButton.innerHTML = '<img src="assets/icons/play.png" alt="Play" class="icon">';
+            playButton.innerHTML = '<img src="/break_escape/assets/icons/play.png" alt="Play" class="icon">';
             playButton.title = 'Play';
         }
     }
@@ -489,13 +489,13 @@ export default class PhoneChatUI {
             const playButton = document.createElement('div');
             playButton.className = 'play-button';
             const playIcon = document.createElement('img');
-            playIcon.src = 'assets/icons/play.png';
+            playIcon.src = '/break_escape/assets/icons/play.png';
             playIcon.alt = 'Play';
             playIcon.className = 'icon';
             playButton.appendChild(playIcon);
             
             const audioSprite = document.createElement('img');
-            audioSprite.src = 'assets/mini-games/audio.png';
+            audioSprite.src = '/break_escape/assets/mini-games/audio.png';
             audioSprite.alt = 'Audio';
             audioSprite.className = 'audio-sprite';
             

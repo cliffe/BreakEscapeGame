@@ -63,7 +63,7 @@ export class BluetoothScannerMinigame extends MinigameScene {
         scannerHeader.className = 'bluetooth-scanner-header';
         scannerHeader.innerHTML = `
             <div class="bluetooth-scanner-title">
-                <img src="assets/objects/bluetooth_scanner.png" alt="Bluetooth Scanner" class="scanner-icon">
+                <img src="/break_escape/assets/objects/bluetooth_scanner.png" alt="Bluetooth Scanner" class="scanner-icon">
                 <span>Bluetooth Scanner</span>
             </div>
             <div class="bluetooth-scanner-status">
@@ -490,15 +490,15 @@ export class BluetoothScannerMinigame extends MinigameScene {
                     deviceContent += `</div></div>`;
                 } else if (device.nearby) {
                     // Fallback if signal strength not available
-                    deviceContent += `<span class="bluetooth-device-icon"><img src="assets/icons/signal.png" alt="Signal" class="icon"></span>`;
+                    deviceContent += `<span class="bluetooth-device-icon"><img src="/break_escape/assets/icons/signal.png" alt="Signal" class="icon"></span>`;
                 }
 
                 if (device.saved) {
-                    deviceContent += `<span class="bluetooth-device-icon"><img src="assets/icons/disk.png" alt="Disk" class="icon"></span>`;
+                    deviceContent += `<span class="bluetooth-device-icon"><img src="/break_escape/assets/icons/disk.png" alt="Disk" class="icon"></span>`;
                 }
                 
                 if (device.inInventory) {
-                    deviceContent += `<span class="bluetooth-device-icon"><img src="assets/icons/backpack.png" alt="Backpack" class="icon"></span>`;
+                    deviceContent += `<span class="bluetooth-device-icon"><img src="/break_escape/assets/icons/backpack.png" alt="Backpack" class="icon"></span>`;
                 }
 
                 deviceContent += `</div></div>`;

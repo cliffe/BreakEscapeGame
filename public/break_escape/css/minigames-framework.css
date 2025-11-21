@@ -7,7 +7,8 @@
     width: 100vw;
     height: 100vh;
     background: rgba(0, 0, 0, 0.95);
-    z-index: 2000;
+    /* Raised so minigames appear above other UI (inventory, NPC barks, HUD, etc.) */
+    z-index: 11000;
     display: flex;
     flex-direction: column;
     justify-content: center;

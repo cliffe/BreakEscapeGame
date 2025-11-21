@@ -48,6 +48,9 @@ export const GAME_CONFIG = typeof Phaser !== 'undefined' ? {
     height: 480, // Classic pixel art base resolution (scales cleanly: 1x=240, 2x=480, 3x=720, 4x=960)
     parent: 'game-container',
     pixelArt: true,
+    loader: {
+        baseURL: '/break_escape/'
+    },
     scale: {
         mode: Phaser.Scale.ENVELOP,  // Fill entire container while maintaining aspect ratio
         autoCenter: Phaser.Scale.CENTER_BOTH,

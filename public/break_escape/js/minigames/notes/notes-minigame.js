@@ -100,7 +100,7 @@ export class NotesMinigame extends MinigameScene {
         // Add star icon for important notes
         if (isImportant) {
             const starIcon = document.createElement('img');
-            starIcon.src = 'assets/icons/star.png';
+            starIcon.src = '/break_escape/assets/icons/star.png';
             starIcon.alt = 'Important';
             starIcon.className = 'notes-minigame-star';
             noteTitle.appendChild(starIcon);
@@ -135,7 +135,7 @@ export class NotesMinigame extends MinigameScene {
 
                     // Add pencil icon
                     const pencilIcon = document.createElement('img');
-                    pencilIcon.src = 'assets/icons/pencil.png';
+                    pencilIcon.src = '/break_escape/assets/icons/pencil.png';
                     pencilIcon.alt = 'Edit';
                     editBtn.appendChild(pencilIcon);
 
@@ -163,7 +163,7 @@ export class NotesMinigame extends MinigameScene {
 
                     // Add pencil icon
                     const pencilIcon = document.createElement('img');
-                    pencilIcon.src = 'assets/icons/pencil.png';
+                    pencilIcon.src = '/break_escape/assets/icons/pencil.png';
                     pencilIcon.alt = 'Edit';
                     editBtn.appendChild(pencilIcon);
 
@@ -322,7 +322,7 @@ export class NotesMinigame extends MinigameScene {
             // Add star icon for important notes
             if (isImportant) {
                 const starIcon = document.createElement('img');
-                starIcon.src = 'assets/icons/star.png';
+                starIcon.src = '/break_escape/assets/icons/star.png';
                 starIcon.alt = 'Important';
                 starIcon.className = 'notes-minigame-star';
                 noteTitle.appendChild(starIcon);

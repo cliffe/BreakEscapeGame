@@ -85,6 +85,12 @@ export const MinigameFramework = {
             document.body.appendChild(container);
         }
         
+        // Show the popup overlay to darken the background
+        const popupOverlay = document.querySelector('.popup-overlay');
+        if (popupOverlay) {
+            popupOverlay.classList.add('active');
+        }
+        
         // Create and start the minigame
         const MinigameClass = this.registeredScenes[sceneType];
         this.currentMinigame = new MinigameClass(container, params);
@@ -100,6 +106,12 @@ export const MinigameFramework = {
         if (this.currentMinigame) {
             console.log('Cleaning up current minigame');
             this.currentMinigame.cleanup();
+            
+            // Hide the popup overlay
+            const popupOverlay = document.querySelector('.popup-overlay');
+            if (popupOverlay) {
+                popupOverlay.classList.remove('active');
+            }
             
             // Remove minigame container only if it was auto-created
             const container = document.querySelector('.minigame-container');
