@@ -64,10 +64,10 @@ export function handleUnlock(lockable, type) {
     }
     
     // Get lock requirements based on type
-    const lockRequirements = type === 'door' 
+    const lockRequirements = type === 'door'
         ? getLockRequirementsForDoor(lockable)
         : getLockRequirementsForItem(lockable);
-    
+
     if (!lockRequirements) {
         console.log('NO LOCK REQUIREMENTS FOUND');
         return;
@@ -77,8 +77,20 @@ export function handleUnlock(lockable, type) {
     // Use 'locked' field instead of 'requires' (which is filtered server-side for security)
     const isLocked = lockRequirements.locked !== false;
 
+    // SECURITY: If client thinks door is unlocked, verify with server
     if (!isLocked) {
-        console.log('OBJECT NOT LOCKED');
+        console.log('CLIENT SEES UNLOCKED - VERIFYING WITH SERVER');
+        // Call server to verify and grant access
+        notifyServerUnlock(lockable, type, 'unlocked').then(serverResponse => {
+            if (serverResponse && serverResponse.success) {
+                unlockTarget(lockable, type, lockable.layer, serverResponse);
+            } else {
+                window.gameAlert('Access denied', 'error', 'Error', 3000);
+            }
+        }).catch(error => {
+            console.error('Server verification failed:', error);
+            window.gameAlert('Failed to verify access', 'error', 'Error', 3000);
+        });
         return;
     }
     

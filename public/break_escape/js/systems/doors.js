@@ -570,16 +570,11 @@ async function handleDoorInteraction(doorSprite) {
         return;
     }
 
-    if (props.locked) {
-        console.log(`Door is locked. Type: ${props.lockType}, Requires: ${props.requires}`);
-        // Use unified unlock system for consistent behavior with items
-        handleUnlock(doorSprite, 'door');
-    } else {
-        console.log('Door is unlocked, notifying server to grant access');
-        // Notify server to add room to unlockedRooms even for unlocked doors
-        const serverResponse = await notifyServerUnlock(doorSprite, 'door', 'unlocked');
-        openDoor(doorSprite);
-    }
+    // SECURITY: Always use server-side validation
+    // Client cannot be trusted to determine lock state
+    // The server will check its scenario data and validate accordingly
+    console.log('Checking door access with server...');
+    handleUnlock(doorSprite, 'door');
 }
 
 // Function to unlock a door (called after successful unlock)
