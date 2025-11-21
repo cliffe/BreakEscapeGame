@@ -445,6 +445,11 @@ export class PasswordMinigame extends MinigameScene {
             const response = await apiClient.unlock(targetType, targetId, enteredPassword, 'password');
 
             if (response.success) {
+                // If server returned container contents, populate the lockable object
+                if (response.hasContents && response.contents && lockable.scenarioData) {
+                    console.log('Server returned container contents:', response.contents);
+                    lockable.scenarioData.contents = response.contents;
+                }
                 this.passwordCorrect();
             } else {
                 this.passwordIncorrect();

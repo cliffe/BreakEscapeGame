@@ -253,10 +253,20 @@ module BreakEscape
           # Object/container unlock
           @game.unlock_object!(target_id)
 
-          render json: {
+          # Find the unlocked object and return its contents if it's a container
+          object_data = find_object_in_scenario(target_id)
+          response = {
             success: true,
             type: 'object'
           }
+
+          # If object has contents, include them in response
+          if object_data && object_data['contents'].present?
+            response[:hasContents] = true
+            response[:contents] = object_data['contents']
+          end
+
+          render json: response
         end
       end
     rescue ActiveRecord::RecordInvalid => e
@@ -379,6 +389,17 @@ module BreakEscape
         # Recursively search nested contents
         nested = find_container_recursive(obj['contents'], container_id)
         return nested if nested
+      end
+      nil
+    end
+
+    def find_object_in_scenario(object_id)
+      # Search all rooms for the object
+      @game.scenario_data['rooms'].each do |_room_id, room_data|
+        object = room_data['objects']&.find { |obj|
+          obj['id'] == object_id || obj['name'] == object_id
+        }
+        return object if object
       end
       nil
     end

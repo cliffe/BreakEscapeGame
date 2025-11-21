@@ -303,6 +303,12 @@ export class PinMinigame extends MinigameScene {
             const apiClient = window.ApiClient || window.APIClient;
             const response = await apiClient.unlock(targetType, targetId, enteredPin, 'pin');
 
+            // If server returned container contents, populate the lockable object
+            if (response.success && response.hasContents && response.contents && lockable.scenarioData) {
+                console.log('Server returned container contents:', response.contents);
+                lockable.scenarioData.contents = response.contents;
+            }
+
             return response.success;
         } catch (error) {
             console.error('Server validation error:', error);
