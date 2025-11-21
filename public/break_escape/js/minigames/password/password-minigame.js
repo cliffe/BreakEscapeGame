@@ -398,23 +398,15 @@ export class PasswordMinigame extends MinigameScene {
         this.gameData.attempts++;
         this.attemptsDisplay.textContent = this.gameData.attempts;
 
-        // Check if we need server-side validation (correctPassword is null or empty string)
+        // SECURITY: ALWAYS use server-side validation for password attempts
         const apiClient = window.ApiClient || window.APIClient;
-        if ((!this.correctPassword || this.correctPassword === '') && apiClient && gameId) {
-            console.log('Using server-side validation');
+        if (apiClient && gameId) {
+            console.log('Using server-side validation (security enforced)');
             await this.validatePasswordWithServer(enteredPassword);
         } else {
-            console.log('Using client-side validation', {
-                correctPassword: this.correctPassword,
-                hasApiClient: !!apiClient,
-                gameId: gameId
-            });
-            // Client-side validation (backwards compatibility)
-            if (enteredPassword === this.correctPassword) {
-                this.passwordCorrect();
-            } else {
-                this.passwordIncorrect();
-            }
+            console.error('SECURITY WARNING: API client not available, cannot validate password');
+            // Fail securely - reject the attempt if we can't validate with server
+            this.passwordIncorrect();
         }
     }
 

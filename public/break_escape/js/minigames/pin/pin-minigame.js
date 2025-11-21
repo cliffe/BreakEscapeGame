@@ -247,17 +247,18 @@ export class PinMinigame extends MinigameScene {
 
         this.attemptCount++;
 
-        // Check if we need server-side validation (correctPin is null or empty)
+        // SECURITY: ALWAYS use server-side validation for PIN attempts
         let isCorrect;
         const apiClient = window.ApiClient || window.APIClient;
         const gameId = window.breakEscapeConfig?.gameId;
-        if ((!this.correctPin || this.correctPin === '') && apiClient && gameId) {
-            console.log('Using server-side PIN validation');
+
+        if (apiClient && gameId) {
+            console.log('Using server-side PIN validation (security enforced)');
             isCorrect = await this.validatePinWithServer(this.currentInput);
         } else {
-            console.log('Using client-side PIN validation');
-            // Client-side validation (backwards compatibility)
-            isCorrect = this.currentInput === this.correctPin;
+            console.error('SECURITY WARNING: API client not available, cannot validate PIN');
+            // Fail securely - reject the attempt if we can't validate with server
+            isCorrect = false;
         }
 
         // Record attempt
