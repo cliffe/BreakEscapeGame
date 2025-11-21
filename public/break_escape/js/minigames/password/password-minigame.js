@@ -373,23 +373,68 @@ export class PasswordMinigame extends MinigameScene {
         }
     }
     
-    submitPassword() {
+    async submitPassword() {
         if (!this.gameState.isActive) return;
-        
+
         const enteredPassword = this.passwordField.value.trim();
-        
+
         if (!enteredPassword) {
             this.showFailure("Please enter a password", false, 2000);
             return;
         }
-        
+
         this.gameData.attempts++;
         this.attemptsDisplay.textContent = this.gameData.attempts;
-        
-        if (enteredPassword === this.correctPassword) {
-            this.passwordCorrect();
+
+        // Check if we need server-side validation (correctPassword is null)
+        if (this.correctPassword === null && window.APIClient && window.gameId) {
+            await this.validatePasswordWithServer(enteredPassword);
         } else {
-            this.passwordIncorrect();
+            // Client-side validation (backwards compatibility)
+            if (enteredPassword === this.correctPassword) {
+                this.passwordCorrect();
+            } else {
+                this.passwordIncorrect();
+            }
+        }
+    }
+
+    async validatePasswordWithServer(enteredPassword) {
+        try {
+            // Get lockable object and type from params
+            const lockable = this.params.lockable || this.params.sprite;
+            const targetType = this.params.type || 'object'; // 'door' or 'object'
+
+            // Get target ID from lockable
+            let targetId;
+            if (targetType === 'door') {
+                targetId = lockable.doorProperties?.connectedRoom || lockable.doorProperties?.roomId;
+            } else {
+                targetId = lockable.scenarioData?.id || lockable.scenarioData?.name || lockable.objectId;
+            }
+
+            if (!targetId) {
+                console.error('Could not determine targetId for unlock validation');
+                this.passwordIncorrect();
+                return;
+            }
+
+            console.log('Validating password with server:', { targetType, targetId, attempt: enteredPassword });
+
+            // Call server API for validation
+            const response = await window.APIClient.unlock(targetType, targetId, enteredPassword, 'password');
+
+            if (response.success) {
+                this.passwordCorrect();
+            } else {
+                this.passwordIncorrect();
+            }
+        } catch (error) {
+            console.error('Server validation error:', error);
+            this.showFailure("Network error. Please try again.", false, 3000);
+            // Decrease attempts counter since this wasn't a real attempt
+            this.gameData.attempts--;
+            this.attemptsDisplay.textContent = this.gameData.attempts;
         }
     }
     

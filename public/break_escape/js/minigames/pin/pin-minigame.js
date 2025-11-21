@@ -240,29 +240,71 @@ export class PinMinigame extends MinigameScene {
         this.updateDisplay();
     }
     
-    handleEnter() {
+    async handleEnter() {
         if (this.isLocked || this.currentInput.length !== this.pinLength) {
             return;
         }
-        
+
         this.attemptCount++;
-        const isCorrect = this.currentInput === this.correctPin;
-        
+
+        // Check if we need server-side validation (correctPin is null)
+        let isCorrect;
+        if (this.correctPin === null && window.APIClient && window.gameId) {
+            isCorrect = await this.validatePinWithServer(this.currentInput);
+        } else {
+            // Client-side validation (backwards compatibility)
+            isCorrect = this.currentInput === this.correctPin;
+        }
+
         // Record attempt
         const attempt = {
             input: this.currentInput,
             isCorrect: isCorrect,
             timestamp: new Date(),
-            feedback: (this.infoLeakToggleElement?.checked || this.infoLeakMode) ? this.calculateFeedback(this.currentInput) : null
+            feedback: (this.infoLeakToggleElement?.checked || this.infoLeakMode) && this.correctPin ? this.calculateFeedback(this.currentInput) : null
         };
-        
+
         this.attempts.push(attempt);
         this.updateAttemptsDisplay();
-        
+
         if (isCorrect) {
             this.handleSuccess();
         } else {
             this.handleFailure();
+        }
+    }
+
+    async validatePinWithServer(enteredPin) {
+        try {
+            // Get lockable object and type from params
+            const lockable = this.params.lockable || this.params.sprite;
+            const targetType = this.params.type || 'object'; // 'door' or 'object'
+
+            // Get target ID from lockable
+            let targetId;
+            if (targetType === 'door') {
+                targetId = lockable.doorProperties?.connectedRoom || lockable.doorProperties?.roomId;
+            } else {
+                targetId = lockable.scenarioData?.id || lockable.scenarioData?.name || lockable.objectId;
+            }
+
+            if (!targetId) {
+                console.error('Could not determine targetId for unlock validation');
+                return false;
+            }
+
+            console.log('Validating PIN with server:', { targetType, targetId, attempt: enteredPin });
+
+            // Call server API for validation
+            const response = await window.APIClient.unlock(targetType, targetId, enteredPin, 'pin');
+
+            return response.success;
+        } catch (error) {
+            console.error('Server validation error:', error);
+            this.showFailure("Network error. Please try again.", false, 3000);
+            // Decrease attempts counter since this wasn't a real attempt
+            this.attemptCount--;
+            return false;
         }
     }
     

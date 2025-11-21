@@ -526,9 +526,11 @@ export function startPinMinigame(lockable, type, correctPin, callback) {
         title: `Enter PIN for ${type}`,
         correctPin: correctPin,
         maxAttempts: 3,
-        pinLength: correctPin.length,
+        pinLength: correctPin ? correctPin.length : 4, // Default to 4 if null (server-side validation)
         hasPinCracker: hasPinCracker,
         allowBackspace: true,
+        lockable: lockable,
+        type: type, // Pass type for server validation
         onComplete: (success, result) => {
             if (success) {
                 console.log('PIN MINIGAME SUCCESS');
@@ -579,6 +581,7 @@ export function startPasswordMinigame(lockable, type, correctPassword, callback,
         postitNote: options.postitNote || '',
         showPostit: options.showPostit || false,
         lockable: lockable,
+        type: type, // Pass type for server validation
         requiresKeyboardInput: true, // Password minigame needs keyboard for text input
         onComplete: (success, result) => {
             if (success) {
