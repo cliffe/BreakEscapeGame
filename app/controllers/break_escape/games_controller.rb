@@ -317,23 +317,35 @@ module BreakEscape
     def track_npc_encounters(room_id, room_data)
       return unless room_data['npcs'].present?
 
-      npc_ids = room_data['npcs'].map { |npc| npc['id'] }
+      begin
+        npc_ids = room_data['npcs'].map { |npc| npc['id'] }
 
-      # Ensure encounteredNPCs is an array
-      @game.player_state['encounteredNPCs'] ||= []
+        # Ensure player_state is a hash
+        unless @game.player_state.is_a?(Hash)
+          Rails.logger.error "[BreakEscape] player_state is not a Hash: #{@game.player_state.class}"
+          @game.player_state = {}
+        end
 
-      # Handle case where encounteredNPCs might be a string (legacy data)
-      unless @game.player_state['encounteredNPCs'].is_a?(Array)
-        @game.player_state['encounteredNPCs'] = []
+        # Ensure encounteredNPCs is an array
+        @game.player_state['encounteredNPCs'] ||= []
+
+        # Handle case where encounteredNPCs might not be an array (legacy data)
+        unless @game.player_state['encounteredNPCs'].is_a?(Array)
+          Rails.logger.warn "[BreakEscape] encounteredNPCs is not an Array: #{@game.player_state['encounteredNPCs'].class}, resetting"
+          @game.player_state['encounteredNPCs'] = []
+        end
+
+        new_npcs = npc_ids - @game.player_state['encounteredNPCs']
+        return if new_npcs.empty?
+
+        @game.player_state['encounteredNPCs'] = (@game.player_state['encounteredNPCs'] + new_npcs).uniq
+        @game.save!
+
+        Rails.logger.debug "[BreakEscape] Tracked NPC encounters: #{new_npcs.join(', ')}"
+      rescue => e
+        Rails.logger.error "[BreakEscape] Error tracking NPC encounters: #{e.message}\n#{e.backtrace.first(5).join("\n")}"
+        # Continue without tracking to avoid breaking room loading
       end
-
-      new_npcs = npc_ids - @game.player_state['encounteredNPCs']
-      return if new_npcs.empty?
-
-      @game.player_state['encounteredNPCs'].concat(new_npcs)
-      @game.save!
-
-      Rails.logger.debug "[BreakEscape] Tracked NPC encounters: #{new_npcs.join(', ')}"
     end
 
     def find_container_in_scenario(container_id)
