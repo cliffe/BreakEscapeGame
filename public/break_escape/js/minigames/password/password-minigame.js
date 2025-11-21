@@ -105,12 +105,14 @@ export class PasswordMinigame extends MinigameScene {
                                 </button>
                             </div>
                         </div>
-                        
-                        ${this.gameData.showHint ? `
-                            <div class="hint-controls">
+
+                        <div class="hint-controls">
+                            ${this.gameData.showHint ? `
                                 <button type="button" class="hint-btn" id="show-hint">Show Hint</button>
-                                <button type="button" class="submit-btn" id="submit-password">Submit</button>
-                            </div>
+                            ` : ''}
+                            <button type="button" class="submit-btn" id="submit-password">Submit</button>
+                        </div>
+                        ${this.gameData.showHint ? `
                             <div class="password-hint-container">
                                 <div class="password-hint" id="password-hint" style="display: none;">
                                     <strong>Hint:</strong> ${this.gameData.passwordHint}
@@ -374,9 +376,17 @@ export class PasswordMinigame extends MinigameScene {
     }
     
     async submitPassword() {
+        console.log('submitPassword called', {
+            isActive: this.gameState.isActive,
+            correctPassword: this.correctPassword,
+            hasAPIClient: !!window.APIClient,
+            gameId: window.gameId
+        });
+
         if (!this.gameState.isActive) return;
 
         const enteredPassword = this.passwordField.value.trim();
+        console.log('Entered password:', enteredPassword);
 
         if (!enteredPassword) {
             this.showFailure("Please enter a password", false, 2000);
@@ -388,8 +398,10 @@ export class PasswordMinigame extends MinigameScene {
 
         // Check if we need server-side validation (correctPassword is null)
         if (this.correctPassword === null && window.APIClient && window.gameId) {
+            console.log('Using server-side validation');
             await this.validatePasswordWithServer(enteredPassword);
         } else {
+            console.log('Using client-side validation');
             // Client-side validation (backwards compatibility)
             if (enteredPassword === this.correctPassword) {
                 this.passwordCorrect();
