@@ -68,8 +68,19 @@ export function handleUnlock(lockable, type) {
         ? getLockRequirementsForDoor(lockable)
         : getLockRequirementsForItem(lockable);
 
+    // SECURITY: If no lock requirements found, item is unlocked - verify with server
     if (!lockRequirements) {
-        console.log('NO LOCK REQUIREMENTS FOUND');
+        console.log('NO LOCK REQUIREMENTS FOUND - ITEM IS UNLOCKED, VERIFYING WITH SERVER');
+        notifyServerUnlock(lockable, type, 'unlocked').then(serverResponse => {
+            if (serverResponse && serverResponse.success) {
+                unlockTarget(lockable, type, lockable.layer, serverResponse);
+            } else {
+                window.gameAlert('Access denied', 'error', 'Error', 3000);
+            }
+        }).catch(error => {
+            console.error('Server verification failed:', error);
+            window.gameAlert('Failed to verify access', 'error', 'Error', 3000);
+        });
         return;
     }
 
@@ -445,8 +456,10 @@ export function getLockRequirementsForDoor(doorSprite) {
     // First, check if the door sprite has lock properties directly
     if (doorSprite.doorProperties) {
         const props = doorSprite.doorProperties;
-        if (props.locked) {
+        // Return lock requirements if door has any lock data (locked or not)
+        if (props.locked !== undefined) {
             return {
+                locked: props.locked,
                 lockType: props.lockType,
                 requires: props.requires,
                 keyPins: props.keyPins,  // Include keyPins for scenario-based locks
@@ -507,6 +520,7 @@ export function getLockRequirementsForDoor(doorSprite) {
     if (lockedRooms.length > 0) {
         const targetRoom = lockedRooms[0];
         return {
+            locked: targetRoom.locked,
             lockType: targetRoom.lockType,
             requires: targetRoom.requires,
             keyPins: targetRoom.keyPins,  // Include keyPins from scenario
@@ -519,8 +533,9 @@ export function getLockRequirementsForDoor(doorSprite) {
 
 export function getLockRequirementsForItem(item) {
     if (!item.scenarioData) return null;
-    
+
     return {
+        locked: item.scenarioData.locked,
         lockType: item.scenarioData.lockType || 'key',
         requires: item.scenarioData.requires || '',
         keyPins: item.scenarioData.keyPins,  // Include keyPins for scenario-based locks
