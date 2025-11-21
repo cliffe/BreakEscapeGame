@@ -68,9 +68,14 @@ export class ApiClient {
     return response.json();
   }
 
-  // Get scenario JSON
+  // Get scenario JSON (full scenario data)
   static async getScenario() {
     return this.get('/scenario');
+  }
+
+  // Get scenario map (minimal layout metadata for navigation)
+  static async getScenarioMap() {
+    return this.get('/scenario_map');
   }
 
   // Get NPC script

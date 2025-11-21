@@ -15,9 +15,11 @@ BreakEscape::Engine.routes.draw do
   resources :games, only: [:show, :create] do
     member do
       # Scenario and NPC data
-      get 'scenario'  # Returns scenario_data JSON
-      get 'ink'       # Returns NPC script (JIT compiled)
-      get 'room/:room_id', to: 'games#room'  # Returns room data for lazy-loading
+      get 'scenario'          # Returns full scenario_data JSON (for compatibility)
+      get 'scenario_map'      # Returns minimal layout metadata for navigation
+      get 'ink'               # Returns NPC script (JIT compiled)
+      get 'room/:room_id', to: 'games#room'            # Returns room data for lazy-loading
+      get 'container/:container_id', to: 'games#container'  # Returns locked container contents
 
       # Game state and actions
       put 'sync_state'    # Periodic state sync

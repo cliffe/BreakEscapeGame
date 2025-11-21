@@ -24,23 +24,64 @@ export class ContainerMinigame extends MinigameScene {
         const containerName = this.containerItem?.scenarioData?.name?.toLowerCase() || '';
         const containerType = this.containerItem?.scenarioData?.type?.toLowerCase() || '';
         const containerImage = this.containerItem?.name?.toLowerCase() || '';
-        
+
         // Keywords that indicate desktop/computer devices
         const desktopKeywords = [
             'computer', 'pc', 'laptop', 'desktop', 'terminal', 'workstation',
             'tablet', 'ipad', 'surface', 'monitor', 'screen', 'display',
             'server', 'mainframe', 'console', 'kiosk', 'smartboard'
         ];
-        
+
         // Check if any keyword matches
         const allText = `${containerName} ${containerType} ${containerImage}`.toLowerCase();
         return desktopKeywords.some(keyword => allText.includes(keyword));
     }
-    
-    init() {
+
+    async loadContainerContents() {
+        const gameId = window.gameId;
+        const containerId = this.containerItem.scenarioData.id ||
+                           this.containerItem.scenarioData.name ||
+                           this.containerItem.objectId;
+
+        if (!gameId) {
+            console.error('No gameId available for container loading');
+            return [];
+        }
+
+        console.log(`Loading contents for container: ${containerId}`);
+
+        try {
+            const response = await fetch(`/break_escape/games/${gameId}/container/${containerId}`, {
+                headers: { 'Accept': 'application/json' }
+            });
+
+            if (!response.ok) {
+                if (response.status === 403) {
+                    if (window.gameAlert) {
+                        window.gameAlert('Container is locked', 'error', 'Locked', 2000);
+                    }
+                    this.complete(false);
+                    return [];
+                }
+                throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+            }
+
+            const data = await response.json();
+            console.log(`Loaded ${data.contents?.length || 0} items from container`);
+            return data.contents || [];
+        } catch (error) {
+            console.error('Failed to load container contents:', error);
+            if (window.gameAlert) {
+                window.gameAlert('Could not load container contents', 'error', 'Error', 3000);
+            }
+            return [];
+        }
+    }
+
+    async init() {
         // Call parent init first
         super.init();
-        
+
         // Update header with container name
         if (this.headerElement) {
             this.headerElement.innerHTML = `
@@ -48,7 +89,7 @@ export class ContainerMinigame extends MinigameScene {
                 <p>${this.containerItem.scenarioData.observations || ''}</p>
             `;
         }
-        
+
         // Add notebook button to minigame controls if postit note exists (before cancel button)
         if (this.controlsElement && this.containerItem.scenarioData.postitNote && this.containerItem.scenarioData.showPostit) {
             const notebookBtn = document.createElement('button');
@@ -58,7 +99,16 @@ export class ContainerMinigame extends MinigameScene {
             // Insert before the cancel button (first child in controls)
             this.controlsElement.insertBefore(notebookBtn, this.controlsElement.firstChild);
         }
-        
+
+        // Show loading state
+        this.gameContainer.innerHTML = '<div class="loading" style="text-align: center; padding: 20px;">Loading contents...</div>';
+
+        // Load contents from server (if gameId exists and container is not locked)
+        if (window.gameId && this.containerItem.scenarioData.locked === false) {
+            this.contents = await this.loadContainerContents();
+        }
+        // Otherwise use contents passed in (for unlocked containers or local game)
+
         // Create the container minigame UI
         this.createContainerUI();
     }

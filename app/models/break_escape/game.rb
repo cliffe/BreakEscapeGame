@@ -131,16 +131,9 @@ module BreakEscape
       room = room_data(room_id)&.deep_dup
       return nil unless room
 
-      # Remove solutions
-      room.delete('requires')
-      room.delete('lockType') if room['locked']
-
-      # Remove solutions from objects
-      room['objects']&.each do |obj|
-        obj.delete('requires')
-        obj.delete('lockType') if obj['locked']
-        obj.delete('contents') if obj['locked']
-      end
+      # Remove ONLY the 'requires' field (the solution) and locked 'contents'
+      # Keep lockType, locked, observations visible to client
+      filter_requires_and_contents_recursive(room)
 
       room
     end
@@ -182,6 +175,27 @@ module BreakEscape
 
     private
 
+    def filter_requires_and_contents_recursive(obj)
+      case obj
+      when Hash
+        # Remove 'requires' (the answer/solution)
+        obj.delete('requires')
+
+        # Remove 'contents' if locked (lazy-loaded via separate endpoint)
+        obj.delete('contents') if obj['locked']
+
+        # Keep lockType - client needs it to show correct UI
+        # Keep locked - client needs it to show lock status
+
+        # Recursively filter nested objects and NPCs
+        obj['objects']&.each { |o| filter_requires_and_contents_recursive(o) }
+        obj['npcs']&.each { |n| filter_requires_and_contents_recursive(n) }
+
+      when Array
+        obj.each { |item| filter_requires_and_contents_recursive(item) }
+      end
+    end
+
     def generate_scenario_data
       self.scenario_data = mission.generate_scenario_data
     end
@@ -192,6 +206,14 @@ module BreakEscape
       self.player_state['unlockedRooms'] ||= [scenario_data['startRoom']]
       self.player_state['unlockedObjects'] ||= []
       self.player_state['inventory'] ||= []
+
+      # Initialize starting items from scenario
+      if scenario_data['startItemsInInventory'].present?
+        scenario_data['startItemsInInventory'].each do |item|
+          self.player_state['inventory'] << item.deep_dup
+        end
+      end
+
       self.player_state['encounteredNPCs'] ||= []
       self.player_state['globalVariables'] ||= {}
       self.player_state['biometricSamples'] ||= []

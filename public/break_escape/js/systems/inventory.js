@@ -180,12 +180,12 @@ function createInventorySprite(itemData) {
     }
 }
 
-export function addToInventory(sprite) {
+export async function addToInventory(sprite) {
     if (!sprite || !sprite.scenarioData) {
         console.warn('Invalid sprite for inventory');
         return false;
     }
-    
+
     try {
         console.log("Adding to inventory:", {
             objectId: sprite.objectId,
@@ -193,18 +193,57 @@ export function addToInventory(sprite) {
             type: sprite.scenarioData?.type,
             currentRoom: window.currentPlayerRoom
         });
-        
-        // Check if the item is already in the inventory
+
+        // Check if the item is already in the inventory (local check first)
         const itemIdentifier = createItemIdentifier(sprite.scenarioData);
-        const isAlreadyInInventory = window.inventory.items.some(item => 
+        const isAlreadyInInventory = window.inventory.items.some(item =>
             item && createItemIdentifier(item.scenarioData) === itemIdentifier
         );
-        
+
         if (isAlreadyInInventory) {
             console.log(`Item ${itemIdentifier} is already in inventory`);
             return false;
         }
-        
+
+        // NEW: Validate with server before adding
+        const gameId = window.gameId;
+        if (gameId) {
+            try {
+                const response = await fetch(`/break_escape/games/${gameId}/inventory`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Accept': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        action_type: 'add',
+                        item: sprite.scenarioData
+                    })
+                });
+
+                const result = await response.json();
+
+                if (!result.success) {
+                    // Server rejected - show error to player
+                    console.warn('Server rejected inventory add:', result.message);
+                    if (window.gameAlert) {
+                        window.gameAlert(result.message || 'Cannot collect this item', 'error', 'Invalid Action', 3000);
+                    }
+                    return false;
+                }
+
+                // Server accepted - continue with local inventory update
+                console.log('Server validated item collection:', result);
+            } catch (error) {
+                console.error('Failed to validate inventory with server:', error);
+                // Fail closed - don't add if server can't validate
+                if (window.gameAlert) {
+                    window.gameAlert('Network error - please try again', 'error', 'Error', 3000);
+                }
+                return false;
+            }
+        }
+
         // Remove from room if it exists
         if (window.currentPlayerRoom && rooms[window.currentPlayerRoom] && rooms[window.currentPlayerRoom].objects) {
             if (rooms[window.currentPlayerRoom].objects[sprite.objectId]) {
