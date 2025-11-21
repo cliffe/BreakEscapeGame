@@ -21,24 +21,47 @@ module BreakEscape
     def scenario_map
       authorize @game if defined?(Pundit)
 
-      # Return minimal room/connection metadata without contents
-      layout = {}
-      @game.scenario_data['rooms'].each do |room_id, room_data|
-        layout[room_id] = {
-          type: room_data['type'],
-          connections: room_data['connections'] || {},
-          locked: room_data['locked'] || false,
-          lockType: room_data['lockType'],
-          hasNPCs: (room_data['npcs']&.length || 0) > 0,
-          accessible: @game.room_unlocked?(room_id)
-        }
-      end
+      begin
+        # Check if scenario_data exists
+        unless @game.scenario_data.present?
+          Rails.logger.error "[BreakEscape] scenario_map: Game #{@game.id} has no scenario_data"
+          return render_error('Scenario data not available', :internal_server_error)
+        end
 
-      render json: {
-        startRoom: @game.scenario_data['startRoom'],
-        currentRoom: @game.player_state['currentRoom'],
-        rooms: layout
-      }
+        # Return minimal room/connection metadata without contents
+        layout = {}
+        rooms = @game.scenario_data['rooms'] || {}
+
+        Rails.logger.debug "[BreakEscape] scenario_map: Processing #{rooms.keys.length rescue 0} rooms"
+
+        rooms.each do |room_id, room_data|
+          next unless room_data.is_a?(Hash)
+
+          begin
+            layout[room_id] = {
+              type: room_data['type'],
+              connections: room_data['connections'] || {},
+              locked: room_data['locked'] || false,
+              lockType: room_data['lockType'],
+              hasNPCs: (room_data['npcs']&.length || 0) > 0,
+              accessible: @game.room_unlocked?(room_id)
+            }
+          rescue => e
+            Rails.logger.error "[BreakEscape] Error processing room #{room_id}: #{e.message}"
+            # Skip this room and continue
+            next
+          end
+        end
+
+        render json: {
+          startRoom: @game.scenario_data['startRoom'],
+          currentRoom: @game.player_state['currentRoom'],
+          rooms: layout
+        }
+      rescue => e
+        Rails.logger.error "[BreakEscape] scenario_map error: #{e.message}\n#{e.backtrace.first(5).join("\n")}"
+        render_error("Failed to generate scenario map: #{e.message}", :internal_server_error)
+      end
     end
 
     # GET /games/:id/room/:room_id
