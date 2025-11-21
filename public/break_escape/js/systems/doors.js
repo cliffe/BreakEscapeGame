@@ -580,15 +580,21 @@ function handleDoorInteraction(doorSprite) {
 }
 
 // Function to unlock a door (called after successful unlock)
-function unlockDoor(doorSprite) {
+function unlockDoor(doorSprite, roomData) {
     const props = doorSprite.doorProperties;
     console.log(`Unlocking door: ${props.roomId} -> ${props.connectedRoom}`);
-    
+
     // Mark door as unlocked
     props.locked = false;
-    
+
+    // If roomData was provided from server unlock response, cache it
+    if (roomData && window.roomDataCache) {
+        console.log(`📦 Caching room data for ${props.connectedRoom} from unlock response`);
+        window.roomDataCache.set(props.connectedRoom, roomData);
+    }
+
     // TODO: Implement unlock animation/effect
-    
+
     // Open the door
     openDoor(doorSprite);
 }

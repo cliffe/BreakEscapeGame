@@ -309,6 +309,9 @@ export class PinMinigame extends MinigameScene {
                 lockable.scenarioData.contents = response.contents;
             }
 
+            // Store server response to pass through callback chain
+            this.serverResponse = response;
+
             return response.success;
         } catch (error) {
             console.error('Server validation error:', error);
@@ -444,15 +447,16 @@ export class PinMinigame extends MinigameScene {
         this.isLocked = true;
         this.displayElement.classList.add('success');
         this.displayElement.textContent = this.currentInput;
-        
+
         this.showSuccess('PIN Correct! Access Granted.', true, 2000);
-        
+
         // Set game result
         this.gameResult = {
             success: true,
             pin: this.currentInput,
             attempts: this.attemptCount,
-            timeToComplete: Date.now() - this.startTime
+            timeToComplete: Date.now() - this.startTime,
+            serverResponse: this.serverResponse // Include server response (roomData for doors, contents for containers)
         };
     }
     

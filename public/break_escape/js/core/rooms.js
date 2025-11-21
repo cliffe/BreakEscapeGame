@@ -111,6 +111,10 @@ function isPositionOverlapping(x, y, roomId, itemSize = TILE_SIZE) {
 window.discoveredRooms = discoveredRooms;
 let gameRef = null;
 
+// Room data cache - stores room data returned from unlock API to avoid duplicate fetches
+const roomDataCache = new Map();
+window.roomDataCache = roomDataCache; // Make available for unlock system
+
 // ===== ITEM POOL MANAGEMENT (PHASE 2 IMPROVEMENTS) =====
 // Moved to module level to avoid temporal dead zone errors
 // and improve performance (defined once, not on every room load)
@@ -555,59 +559,69 @@ const OBJECT_SCALES = {
 // Function to load a room lazily via API endpoint
 async function loadRoom(roomId) {
     const position = window.roomPositions[roomId];
-    
+
     if (!position) {
         console.error(`Cannot load room ${roomId}: missing position`);
         return;
     }
-    
-    console.log(`Lazy loading room from API: ${roomId}`);
-    
-    try {
-        // Fetch room data from server endpoint
-        const gameId = window.breakEscapeConfig?.gameId;
-        if (!gameId) {
-            console.error('Game ID not available in breakEscapeConfig');
-            return;
-        }
-        
-        const response = await fetch(`/break_escape/games/${gameId}/room/${roomId}`);
-        
-        if (!response.ok) {
-            console.error(`Failed to load room ${roomId}: ${response.status} ${response.statusText}`);
-            return;
-        }
-        
-        const data = await response.json();
-        const roomData = data.room;
-        
-        if (!roomData) {
-            console.error(`No room data returned for ${roomId}`);
-            return;
-        }
-        
-        console.log(`✅ Received room data from API for ${roomId}`);
-        
-        // Load NPCs BEFORE creating room visuals
-        // This ensures NPCs are registered before room objects/sprites are created
-        if (window.npcLazyLoader && roomData) {
-            try {
-                await window.npcLazyLoader.loadNPCsForRoom(roomId, roomData);
-            } catch (error) {
-                console.error(`Failed to load NPCs for room ${roomId}:`, error);
-                // Continue with room creation even if NPC loading fails
+
+    let roomData;
+
+    // Check if roomData is cached (from unlock API response)
+    if (roomDataCache.has(roomId)) {
+        console.log(`✅ Using cached room data for ${roomId} (from unlock response)`);
+        roomData = roomDataCache.get(roomId);
+        roomDataCache.delete(roomId); // Clear from cache after use
+    } else {
+        console.log(`Lazy loading room from API: ${roomId}`);
+
+        try {
+            // Fetch room data from server endpoint
+            const gameId = window.breakEscapeConfig?.gameId;
+            if (!gameId) {
+                console.error('Game ID not available in breakEscapeConfig');
+                return;
             }
+
+            const response = await fetch(`/break_escape/games/${gameId}/room/${roomId}`);
+
+            if (!response.ok) {
+                console.error(`Failed to load room ${roomId}: ${response.status} ${response.statusText}`);
+                return;
+            }
+
+            const data = await response.json();
+            roomData = data.room;
+
+            if (!roomData) {
+                console.error(`No room data returned for ${roomId}`);
+                return;
+            }
+
+            console.log(`✅ Received room data from API for ${roomId}`);
+        } catch (error) {
+            console.error(`Error loading room ${roomId}:`, error);
+            return;
         }
-        
-        createRoom(roomId, roomData, position);
-        
-        // Reveal (make visible) but do NOT mark as discovered
-        // The room will only be marked as "discovered" when the player
-        // actually enters it via door transition
-        revealRoom(roomId);
-    } catch (error) {
-        console.error(`Error loading room ${roomId}:`, error);
     }
+
+    // Load NPCs BEFORE creating room visuals
+    // This ensures NPCs are registered before room objects/sprites are created
+    if (window.npcLazyLoader && roomData) {
+        try {
+            await window.npcLazyLoader.loadNPCsForRoom(roomId, roomData);
+        } catch (error) {
+            console.error(`Failed to load NPCs for room ${roomId}:`, error);
+            // Continue with room creation even if NPC loading fails
+        }
+    }
+
+    createRoom(roomId, roomData, position);
+
+    // Reveal (make visible) but do NOT mark as discovered
+    // The room will only be marked as "discovered" when the player
+    // actually enters it via door transition
+    revealRoom(roomId);
 }
 
 export function initializeRooms(gameInstance) {

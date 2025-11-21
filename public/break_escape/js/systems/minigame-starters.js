@@ -535,11 +535,11 @@ export function startPinMinigame(lockable, type, correctPin, callback) {
             if (success) {
                 console.log('PIN MINIGAME SUCCESS');
                 window.gameAlert(`Correct PIN! The ${type} is now unlocked.`, 'success', 'PIN Accepted', 4000);
-                callback(true);
+                callback(true, result); // Pass result with serverResponse
             } else {
                 console.log('PIN MINIGAME FAILED');
                 window.gameAlert("Failed to enter correct PIN.", 'error', 'PIN Rejected', 3000);
-                callback(false);
+                callback(false, result);
             }
         }
     });
@@ -587,11 +587,11 @@ export function startPasswordMinigame(lockable, type, correctPassword, callback,
             if (success) {
                 console.log('PASSWORD MINIGAME SUCCESS');
                 window.gameAlert(`Correct password! The ${type} is now unlocked.`, 'success', 'Password Accepted', 4000);
-                callback(true);
+                callback(true, result); // Pass result with serverResponse
             } else {
                 console.log('PASSWORD MINIGAME FAILED');
                 window.gameAlert("Failed to enter correct password.", 'error', 'Password Rejected', 3000);
-                callback(false);
+                callback(false, result);
             }
         }
     });

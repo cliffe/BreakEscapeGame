@@ -450,6 +450,8 @@ export class PasswordMinigame extends MinigameScene {
                     console.log('Server returned container contents:', response.contents);
                     lockable.scenarioData.contents = response.contents;
                 }
+                // Store server response to pass through callback chain
+                this.serverResponse = response;
                 this.passwordCorrect();
             } else {
                 this.passwordIncorrect();
@@ -466,12 +468,13 @@ export class PasswordMinigame extends MinigameScene {
     passwordCorrect() {
         this.cleanup();
         this.showSuccess("Password accepted! Access granted.", true, 3000);
-        
+
         // Set game result for the callback
         this.gameResult = {
             success: true,
             password: this.gameData.password,
-            attempts: this.gameData.attempts
+            attempts: this.gameData.attempts,
+            serverResponse: this.serverResponse // Include server response (roomData for doors, contents for containers)
         };
     }
     

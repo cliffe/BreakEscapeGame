@@ -176,13 +176,13 @@ export function handleUnlock(lockable, type) {
         case 'pin':
             console.log('PIN CODE REQUESTED (server-side validation)');
             // Pass null for required code - will be validated server-side
-            startPinMinigame(lockable, type, null, (success) => {
+            startPinMinigame(lockable, type, null, (success, result) => {
                 if (success) {
-                    unlockTarget(lockable, type, lockable.layer);
+                    unlockTarget(lockable, type, lockable.layer, result?.serverResponse);
                 }
             });
             break;
-            
+
         case 'password':
             console.log('PASSWORD REQUESTED (server-side validation)');
 
@@ -197,9 +197,9 @@ export function handleUnlock(lockable, type) {
             };
 
             // Pass null for required password - will be validated server-side
-            startPasswordMinigame(lockable, type, null, (success) => {
+            startPasswordMinigame(lockable, type, null, (success, result) => {
                 if (success) {
-                    unlockTarget(lockable, type, lockable.layer);
+                    unlockTarget(lockable, type, lockable.layer, result?.serverResponse);
                 }
             }, passwordOptions);
             break;
@@ -470,13 +470,15 @@ export function getLockRequirementsForItem(item) {
     };
 }
 
-export function unlockTarget(lockable, type, layer) {
-    console.log('🔓 unlockTarget called:', { type, lockable });
-    
+export function unlockTarget(lockable, type, layer, serverResponse) {
+    console.log('🔓 unlockTarget called:', { type, lockable, serverResponse });
+
     if (type === 'door') {
         // After unlocking, use the proper door unlock function
-        unlockDoor(lockable);
-        
+        // Pass roomData from server if available (avoids separate room API call)
+        const roomData = serverResponse?.roomData;
+        unlockDoor(lockable, roomData);
+
         // Emit door unlocked event
         console.log('🔓 Checking for eventDispatcher:', !!window.eventDispatcher);
         if (window.eventDispatcher) {
