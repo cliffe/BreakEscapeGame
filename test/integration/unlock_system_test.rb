@@ -492,6 +492,82 @@ module BreakEscape
     end
 
     # =============================================================================
+    # SECURITY TESTS - CLIENT BYPASS ATTEMPTS
+    # =============================================================================
+
+    test "SECURITY: locked door cannot be bypassed with method='unlocked'" do
+      # This tests the critical vulnerability where client sends method='unlocked'
+      # for a LOCKED door to bypass validation
+      post unlock_game_url(@game), params: {
+        targetType: 'door',
+        targetId: 'office_pin',  # This door is LOCKED with PIN
+        attempt: nil,
+        method: 'unlocked'  # Client trying to bypass by claiming it's unlocked
+      }
+
+      assert_response :unprocessable_entity,
+        "SECURITY FAIL: Locked door was bypassed by sending method='unlocked'"
+      json = JSON.parse(@response.body)
+      assert_equal false, json['success'],
+        "Server must reject method='unlocked' for locked doors"
+
+      @game.reload
+      assert_not_includes @game.player_state['unlockedRooms'], 'office_pin',
+        "Locked door should NOT be added to unlockedRooms via bypass attempt"
+    end
+
+    test "SECURITY: locked container cannot be bypassed with method='unlocked'" do
+      # This tests the critical vulnerability where client sends method='unlocked'
+      # for a LOCKED container to bypass validation
+      post unlock_game_url(@game), params: {
+        targetType: 'object',
+        targetId: 'safe_pin',  # This container is LOCKED with PIN
+        attempt: nil,
+        method: 'unlocked'  # Client trying to bypass by claiming it's unlocked
+      }
+
+      assert_response :unprocessable_entity,
+        "SECURITY FAIL: Locked container was bypassed by sending method='unlocked'"
+      json = JSON.parse(@response.body)
+      assert_equal false, json['success'],
+        "Server must reject method='unlocked' for locked containers"
+
+      @game.reload
+      assert_not_includes @game.player_state['unlockedObjects'], 'safe_pin',
+        "Locked container should NOT be added to unlockedObjects via bypass attempt"
+    end
+
+    test "SECURITY: method='unlocked' only works for actually unlocked doors" do
+      # Verify that method='unlocked' DOES work for doors that are actually unlocked
+      post unlock_game_url(@game), params: {
+        targetType: 'door',
+        targetId: 'office_unlocked',  # This door is actually unlocked
+        attempt: nil,
+        method: 'unlocked'
+      }
+
+      assert_response :success,
+        "Unlocked doors should work with method='unlocked'"
+      json = JSON.parse(@response.body)
+      assert json['success']
+    end
+
+    test "SECURITY: method='unlocked' only works for actually unlocked containers" do
+      # Verify that method='unlocked' DOES work for containers that are actually unlocked
+      post unlock_game_url(@game), params: {
+        targetType: 'object',
+        targetId: 'chest_unlocked',  # This container is actually unlocked
+        attempt: nil,
+        method: 'unlocked'
+      }
+
+      assert_response :success,
+        "Unlocked containers should work with method='unlocked'"
+      json = JSON.parse(@response.body)
+      assert json['success']
+    end
+
+    # =============================================================================
     # SECURITY TESTS - ENSURE FILTERED DATA
     # =============================================================================
 

@@ -146,10 +146,17 @@ module BreakEscape
         room = room_data(target_id)
         return false unless room
 
-        # Handle unlocked doors - allow access without lock validation
-        if method == 'unlocked' || !room['locked']
-          Rails.logger.info "[BreakEscape] Door is unlocked, granting access"
+        # SECURITY: Only allow 'unlocked' method if door is ACTUALLY unlocked in server data
+        # Client cannot be trusted - must validate against server state
+        if method == 'unlocked' && !room['locked']
+          Rails.logger.info "[BreakEscape] Door is unlocked in server data, granting access"
           return true
+        end
+
+        # SECURITY: Reject 'unlocked' method for locked doors (client bypass attempt)
+        if method == 'unlocked' && room['locked']
+          Rails.logger.warn "[BreakEscape] SECURITY VIOLATION: Client sent method='unlocked' for LOCKED door #{target_id}"
+          return false
         end
 
         case method
@@ -173,10 +180,17 @@ module BreakEscape
           if object
             Rails.logger.info "[BreakEscape] Found object: id=#{object['id']}, name=#{object['name']}, locked=#{object['locked']}, requires=#{object['requires']}"
 
-            # Handle unlocked objects - allow access without lock validation
-            if method == 'unlocked' || !object['locked']
-              Rails.logger.info "[BreakEscape] Object is unlocked, granting access"
+            # SECURITY: Only allow 'unlocked' method if object is ACTUALLY unlocked in server data
+            # Client cannot be trusted - must validate against server state
+            if method == 'unlocked' && !object['locked']
+              Rails.logger.info "[BreakEscape] Object is unlocked in server data, granting access"
               return true
+            end
+
+            # SECURITY: Reject 'unlocked' method for locked objects (client bypass attempt)
+            if method == 'unlocked' && object['locked']
+              Rails.logger.warn "[BreakEscape] SECURITY VIOLATION: Client sent method='unlocked' for LOCKED object #{target_id}"
+              return false
             end
 
             case method
