@@ -552,36 +552,62 @@ const OBJECT_SCALES = {
     'bluetooth_scanner': 0.7
 };
 
-// Function to load a room lazily
+// Function to load a room lazily via API endpoint
 async function loadRoom(roomId) {
-    const gameScenario = window.gameScenario;
-    const roomData = gameScenario.rooms[roomId];
     const position = window.roomPositions[roomId];
     
-    if (!roomData || !position) {
-        console.error(`Cannot load room ${roomId}: missing data or position`);
+    if (!position) {
+        console.error(`Cannot load room ${roomId}: missing position`);
         return;
     }
     
-    console.log(`Lazy loading room: ${roomId}`);
+    console.log(`Lazy loading room from API: ${roomId}`);
     
-    // Load NPCs BEFORE creating room visuals
-    // This ensures NPCs are registered before room objects/sprites are created
-    if (window.npcLazyLoader && roomData) {
-        try {
-            await window.npcLazyLoader.loadNPCsForRoom(roomId, roomData);
-        } catch (error) {
-            console.error(`Failed to load NPCs for room ${roomId}:`, error);
-            // Continue with room creation even if NPC loading fails
+    try {
+        // Fetch room data from server endpoint
+        const gameId = window.breakEscapeConfig?.gameId;
+        if (!gameId) {
+            console.error('Game ID not available in breakEscapeConfig');
+            return;
         }
+        
+        const response = await fetch(`/break_escape/games/${gameId}/room/${roomId}`);
+        
+        if (!response.ok) {
+            console.error(`Failed to load room ${roomId}: ${response.status} ${response.statusText}`);
+            return;
+        }
+        
+        const data = await response.json();
+        const roomData = data.room;
+        
+        if (!roomData) {
+            console.error(`No room data returned for ${roomId}`);
+            return;
+        }
+        
+        console.log(`✅ Received room data from API for ${roomId}`);
+        
+        // Load NPCs BEFORE creating room visuals
+        // This ensures NPCs are registered before room objects/sprites are created
+        if (window.npcLazyLoader && roomData) {
+            try {
+                await window.npcLazyLoader.loadNPCsForRoom(roomId, roomData);
+            } catch (error) {
+                console.error(`Failed to load NPCs for room ${roomId}:`, error);
+                // Continue with room creation even if NPC loading fails
+            }
+        }
+        
+        createRoom(roomId, roomData, position);
+        
+        // Reveal (make visible) but do NOT mark as discovered
+        // The room will only be marked as "discovered" when the player
+        // actually enters it via door transition
+        revealRoom(roomId);
+    } catch (error) {
+        console.error(`Error loading room ${roomId}:`, error);
     }
-    
-    createRoom(roomId, roomData, position);
-    
-    // Reveal (make visible) but do NOT mark as discovered
-    // The room will only be marked as "discovered" when the player
-    // actually enters it via door transition
-    revealRoom(roomId);
 }
 
 export function initializeRooms(gameInstance) {
@@ -1736,7 +1762,7 @@ export function createRoom(roomId, roomData, position) {
         // with proper priority ordering (regular table items before conditional ones).
         
         // Process scenario objects with conditional item matching first
-        const usedItems = processScenarioObjectsWithConditionalMatching(roomId, position, objectsByLayer, map);
+        const usedItems = processScenarioObjectsWithConditionalMatching(roomId, roomData, position, objectsByLayer, map);
         
         // Process all non-conditional items (chairs, plants, lamps, PCs, etc.)
         // These should ALWAYS be visible (not conditional)
@@ -1776,9 +1802,8 @@ export function createRoom(roomId, roomData, position) {
         // ===== NEW: ITEM POOL MANAGEMENT (PHASE 2 IMPROVEMENTS) =====
         
         // Helper function to process scenario objects with conditional matching
-        function processScenarioObjectsWithConditionalMatching(roomId, position, objectsByLayer, map) {
-            const gameScenario = window.gameScenario;
-            if (!gameScenario.rooms[roomId].objects) {
+        function processScenarioObjectsWithConditionalMatching(roomId, roomData, position, objectsByLayer, map) {
+            if (!roomData.objects) {
                 return new Set();
             }
             
@@ -1786,10 +1811,10 @@ export function createRoom(roomId, roomData, position) {
             const itemPool = new TiledItemPool(objectsByLayer, map); // Pass map here
             const usedItems = new Set();
             
-            console.log(`Processing ${gameScenario.rooms[roomId].objects.length} scenario objects for room ${roomId}`);
+            console.log(`Processing ${roomData.objects.length} scenario objects for room ${roomId}`);
             
             // 2. Process each scenario object
-            gameScenario.rooms[roomId].objects.forEach((scenarioObj, index) => {
+            roomData.objects.forEach((scenarioObj, index) => {
                 const objType = scenarioObj.type;
             
                 let sprite = null;

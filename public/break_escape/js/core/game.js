@@ -630,31 +630,59 @@ export async function create() {
     initCombatDebug();
     console.log('✅ Combat systems ready');
 
-    // Create only the starting room initially
+    // Load starting room via API endpoint
     const roomPositions = calculateRoomPositions(this);
-    const startingRoomData = gameScenario.rooms[gameScenario.startRoom];
-    const startingRoomPosition = roomPositions[gameScenario.startRoom];
+    const startRoomId = gameScenario.startRoom;
+    const startingRoomPosition = roomPositions[startRoomId];
     
-    if (startingRoomData && startingRoomPosition) {
+    if (!startingRoomPosition) {
+        console.error('Failed to get starting room position');
+        return;
+    }
+    
+    try {
+        // Fetch starting room data from API endpoint
+        const gameId = window.breakEscapeConfig?.gameId;
+        if (!gameId) {
+            console.error('Game ID not available in breakEscapeConfig');
+            return;
+        }
+        
+        console.log(`Loading starting room ${startRoomId} from API...`);
+        const response = await fetch(`/break_escape/games/${gameId}/room/${startRoomId}`);
+        
+        if (!response.ok) {
+            console.error(`Failed to load starting room: ${response.status} ${response.statusText}`);
+            return;
+        }
+        
+        const data = await response.json();
+        const startingRoomData = data.room;
+        
+        if (!startingRoomData) {
+            console.error('No room data returned for starting room');
+            return;
+        }
+        
+        console.log(`✅ Received starting room data from API`);
+        
         // Load NPCs for starting room BEFORE creating room visuals
         // This ensures phone NPCs are registered before processInitialInventoryItems() is called
         if (window.npcLazyLoader && startingRoomData) {
             try {
-                await window.npcLazyLoader.loadNPCsForRoom(
-                    gameScenario.startRoom, 
-                    startingRoomData
-                );
-                console.log(`✅ Loaded NPCs for starting room: ${gameScenario.startRoom}`);
+                await window.npcLazyLoader.loadNPCsForRoom(startRoomId, startingRoomData);
+                console.log(`✅ Loaded NPCs for starting room: ${startRoomId}`);
             } catch (error) {
-                console.error(`Failed to load NPCs for starting room ${gameScenario.startRoom}:`, error);
+                console.error(`Failed to load NPCs for starting room ${startRoomId}:`, error);
                 // Continue with room creation even if NPC loading fails
             }
         }
         
-        createRoom(gameScenario.startRoom, startingRoomData, startingRoomPosition);
-        revealRoom(gameScenario.startRoom);
-    } else {
-        console.error('Failed to create starting room');
+        createRoom(startRoomId, startingRoomData, startingRoomPosition);
+        revealRoom(startRoomId);
+    } catch (error) {
+        console.error('Error loading starting room:', error);
+        return;
     }
     
     // Position player in the starting room
