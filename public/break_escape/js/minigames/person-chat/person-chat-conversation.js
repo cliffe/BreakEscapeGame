@@ -442,19 +442,58 @@ export default class PersonChatConversation {
      * Handle unlock_door tag
      * @param {string} doorId - Door to unlock
      */
-    handleUnlockDoor(doorId) {
+    async handleUnlockDoor(doorId) {
         if (!doorId) return;
-        
-        console.log(`🔓 Unlocking door: ${doorId}`);
-        
-        // Dispatch event for interactions system to handle
-        const event = new CustomEvent('ink-action', {
-            detail: {
-                action: 'unlock_door',
-                doorId: doorId
+
+        console.log(`🔓 NPC unlocking door: ${doorId}`);
+
+        // SECURITY: Call server API with NPC unlock method
+        // Server will validate NPC has been encountered and has permission
+        const apiClient = window.ApiClient || window.APIClient;
+        const gameId = window.breakEscapeConfig?.gameId;
+
+        if (!apiClient || !gameId) {
+            console.error('ApiClient or gameId not available for NPC unlock');
+            window.gameAlert('Failed to unlock door', 'error', 'Error', 3000);
+            return;
+        }
+
+        try {
+            const response = await apiClient.unlock('door', doorId, this.npc.id, 'npc');
+
+            if (response.success) {
+                console.log(`✅ NPC ${this.npc.id} successfully unlocked door ${doorId}`);
+                window.gameAlert(`Door unlocked!`, 'success', 'Access Granted', 3000);
+
+                // Trigger door unlock visual update if door sprite exists
+                const doorSprite = this.findDoorSprite(doorId);
+                if (doorSprite && window.unlockDoor) {
+                    window.unlockDoor(doorSprite, response.roomData);
+                }
+            } else {
+                console.error('NPC unlock failed:', response);
+                window.gameAlert('Failed to unlock door', 'error', 'Error', 3000);
             }
-        });
-        window.dispatchEvent(event);
+        } catch (error) {
+            console.error('NPC unlock error:', error);
+            window.gameAlert('Failed to unlock door', 'error', 'Error', 3000);
+        }
+    }
+
+    /**
+     * Find door sprite by room ID
+     * @param {string} roomId - Room ID to find door for
+     */
+    findDoorSprite(roomId) {
+        // Search through all door sprites in the game
+        if (!window.game || !window.game.children) return null;
+
+        const doors = window.game.children.list.filter(child =>
+            child.doorProperties &&
+            child.doorProperties.connectedRoom === roomId
+        );
+
+        return doors.length > 0 ? doors[0] : null;
     }
     
     /**

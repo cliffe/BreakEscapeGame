@@ -159,6 +159,12 @@ module BreakEscape
           return false
         end
 
+        # NPC unlock: Validate NPC has been encountered and has permission to unlock this door
+        if method == 'npc'
+          npc_id = attempt  # NPC id is passed as 'attempt'
+          return validate_npc_unlock(npc_id, target_id)
+        end
+
         case method
         when 'key', 'lockpick', 'biometric', 'bluetooth', 'rfid'
           # Client validated the unlock - trust it
@@ -193,6 +199,12 @@ module BreakEscape
               return false
             end
 
+            # NPC unlock: Validate NPC has been encountered and has permission to unlock this object
+            if method == 'npc'
+              npc_id = attempt  # NPC id is passed as 'attempt'
+              return validate_npc_unlock(npc_id, target_id)
+            end
+
             case method
             when 'key', 'lockpick', 'biometric', 'bluetooth', 'rfid'
               # Client validated the unlock - trust it
@@ -207,6 +219,44 @@ module BreakEscape
         Rails.logger.warn "[BreakEscape] Object not found: #{target_id}"
         false
       end
+    end
+
+    # Validate NPC unlock permission
+    def validate_npc_unlock(npc_id, target_id)
+      Rails.logger.info "[BreakEscape] Validating NPC unlock: npc=#{npc_id}, target=#{target_id}"
+
+      # Find NPC in scenario data
+      npc = find_npc_in_scenario(npc_id)
+      unless npc
+        Rails.logger.warn "[BreakEscape] NPC not found: #{npc_id}"
+        return false
+      end
+
+      # Check if player has encountered this NPC
+      unless player_state['encounteredNPCs']&.include?(npc_id)
+        Rails.logger.warn "[BreakEscape] Player has not encountered NPC: #{npc_id}"
+        return false
+      end
+
+      # Check if NPC has permission to unlock this target
+      unlockable = npc['unlockable']
+      unless unlockable.is_a?(Array) && unlockable.include?(target_id)
+        Rails.logger.warn "[BreakEscape] NPC #{npc_id} does not have permission to unlock #{target_id}"
+        return false
+      end
+
+      Rails.logger.info "[BreakEscape] NPC unlock validated: #{npc_id} can unlock #{target_id}"
+      true
+    end
+
+    # Find NPC in scenario data
+    def find_npc_in_scenario(npc_id)
+      scenario_data['rooms']&.each do |_room_id, room_data|
+        room_data['npcs']&.each do |npc|
+          return npc if npc['id'] == npc_id
+        end
+      end
+      nil
     end
 
     private

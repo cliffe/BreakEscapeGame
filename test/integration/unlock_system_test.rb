@@ -492,6 +492,164 @@ module BreakEscape
     end
 
     # =============================================================================
+    # NPC UNLOCK TESTS
+    # =============================================================================
+
+    test "NPC can unlock door if player has encountered them and NPC has permission" do
+      # Add NPC with unlock permission to scenario
+      @game.scenario_data['rooms']['lobby']['npcs'] = [
+        {
+          'id' => 'helper_npc',
+          'displayName' => 'Helpful Contact',
+          'unlockable' => ['office_pin', 'office_password']
+        }
+      ]
+      # Mark NPC as encountered
+      @game.player_state['encounteredNPCs'] = ['helper_npc']
+      @game.save!
+
+      post unlock_game_url(@game), params: {
+        targetType: 'door',
+        targetId: 'office_pin',
+        attempt: 'helper_npc',  # NPC id
+        method: 'npc'
+      }
+
+      assert_response :success
+      json = JSON.parse(@response.body)
+      assert json['success'], "NPC should be able to unlock door they have permission for"
+
+      @game.reload
+      assert_includes @game.player_state['unlockedRooms'], 'office_pin'
+    end
+
+    test "NPC can unlock container if player has encountered them and NPC has permission" do
+      # Add NPC with unlock permission to scenario
+      @game.scenario_data['rooms']['lobby']['npcs'] = [
+        {
+          'id' => 'helper_npc',
+          'displayName' => 'Helpful Contact',
+          'unlockable' => ['safe_pin', 'cabinet_password']
+        }
+      ]
+      # Mark NPC as encountered
+      @game.player_state['encounteredNPCs'] = ['helper_npc']
+      @game.save!
+
+      post unlock_game_url(@game), params: {
+        targetType: 'object',
+        targetId: 'safe_pin',
+        attempt: 'helper_npc',  # NPC id
+        method: 'npc'
+      }
+
+      assert_response :success
+      json = JSON.parse(@response.body)
+      assert json['success'], "NPC should be able to unlock container they have permission for"
+
+      @game.reload
+      assert_includes @game.player_state['unlockedObjects'], 'safe_pin'
+    end
+
+    test "SECURITY: NPC unlock fails if player has not encountered NPC" do
+      # Add NPC with unlock permission to scenario but DON'T mark as encountered
+      @game.scenario_data['rooms']['lobby']['npcs'] = [
+        {
+          'id' => 'helper_npc',
+          'displayName' => 'Helpful Contact',
+          'unlockable' => ['office_pin']
+        }
+      ]
+      @game.save!
+
+      post unlock_game_url(@game), params: {
+        targetType: 'door',
+        targetId: 'office_pin',
+        attempt: 'helper_npc',
+        method: 'npc'
+      }
+
+      assert_response :unprocessable_entity,
+        "SECURITY FAIL: Unlock succeeded without encountering NPC"
+      json = JSON.parse(@response.body)
+      assert_equal false, json['success']
+
+      @game.reload
+      assert_not_includes @game.player_state['unlockedRooms'], 'office_pin'
+    end
+
+    test "SECURITY: NPC unlock fails if NPC doesn't have permission for that door" do
+      # Add NPC but without permission for this specific door
+      @game.scenario_data['rooms']['lobby']['npcs'] = [
+        {
+          'id' => 'helper_npc',
+          'displayName' => 'Helpful Contact',
+          'unlockable' => ['office_password']  # Has permission for different door
+        }
+      ]
+      @game.player_state['encounteredNPCs'] = ['helper_npc']
+      @game.save!
+
+      post unlock_game_url(@game), params: {
+        targetType: 'door',
+        targetId: 'office_pin',  # Trying to unlock door not in NPC's unlockable list
+        attempt: 'helper_npc',
+        method: 'npc'
+      }
+
+      assert_response :unprocessable_entity,
+        "SECURITY FAIL: NPC unlocked door they don't have permission for"
+      json = JSON.parse(@response.body)
+      assert_equal false, json['success']
+
+      @game.reload
+      assert_not_includes @game.player_state['unlockedRooms'], 'office_pin'
+    end
+
+    test "SECURITY: NPC unlock fails for non-existent NPC" do
+      # Try to use non-existent NPC
+      @game.player_state['encounteredNPCs'] = ['helper_npc']
+      @game.save!
+
+      post unlock_game_url(@game), params: {
+        targetType: 'door',
+        targetId: 'office_pin',
+        attempt: 'fake_npc',  # Non-existent NPC
+        method: 'npc'
+      }
+
+      assert_response :unprocessable_entity,
+        "SECURITY FAIL: Unlock succeeded with non-existent NPC"
+      json = JSON.parse(@response.body)
+      assert_equal false, json['success']
+    end
+
+    test "SECURITY: NPC unlock fails if unlockable is not an array" do
+      # Malformed NPC data - unlockable is not an array
+      @game.scenario_data['rooms']['lobby']['npcs'] = [
+        {
+          'id' => 'helper_npc',
+          'displayName' => 'Helpful Contact',
+          'unlockable' => 'office_pin'  # String instead of array
+        }
+      ]
+      @game.player_state['encounteredNPCs'] = ['helper_npc']
+      @game.save!
+
+      post unlock_game_url(@game), params: {
+        targetType: 'door',
+        targetId: 'office_pin',
+        attempt: 'helper_npc',
+        method: 'npc'
+      }
+
+      assert_response :unprocessable_entity,
+        "SECURITY FAIL: Unlock succeeded with malformed unlockable data"
+      json = JSON.parse(@response.body)
+      assert_equal false, json['success']
+    end
+
+    # =============================================================================
     # SECURITY TESTS - CLIENT BYPASS ATTEMPTS
     # =============================================================================
 
