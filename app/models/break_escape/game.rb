@@ -147,12 +147,13 @@ module BreakEscape
         return false unless room && room['locked']
 
         case method
-        when 'key'
-          room['requires'] == attempt
+        when 'key', 'lockpick', 'biometric', 'bluetooth', 'rfid'
+          # Client validated the unlock - trust it
+          # (player had correct key, picked lock, had fingerprint, had bluetooth device, had RFID card)
+          true
         when 'pin', 'password'
+          # Server validates password/PIN attempts
           room['requires'].to_s == attempt.to_s
-        when 'lockpick'
-          true # Client minigame succeeded
         else
           false
         end
@@ -170,14 +171,13 @@ module BreakEscape
           next unless object && object['locked']
 
           case method
-          when 'key'
-            return object['requires'] == attempt
+          when 'key', 'lockpick', 'biometric', 'bluetooth', 'rfid'
+            # Client validated the unlock - trust it
+            return true
           when 'pin', 'password'
             result = object['requires'].to_s == attempt.to_s
             Rails.logger.info "[BreakEscape] Password validation: required='#{object['requires']}', attempt='#{attempt}', result=#{result}"
             return result
-          when 'lockpick'
-            return true
           end
         end
         Rails.logger.warn "[BreakEscape] Object not found or not locked: #{target_id}"
