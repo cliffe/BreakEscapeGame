@@ -18,9 +18,9 @@
   align-items: center;
   justify-content: center;
   padding: 12px 16px;
-  background: rgba(0, 0, 0, 0.8);
-  border: 2px solid #333;
-  box-shadow: 0 0 10px rgba(0, 0, 0, 0.9), inset 0 0 5px rgba(0, 0, 0, 0.5);
+  /* background: rgba(0, 0, 0, 0.5); */
+  /* border: 2px solid #333; */
+  /* box-shadow: 0 0 10px rgba(0, 0, 0, 0.9), inset 0 0 5px rgba(0, 0, 0, 0.5); */
 }
 
 .health-heart {
@@ -76,7 +76,7 @@
     justify-content: center;
     align-items: center;
     position: relative;
-    background: transparent; /* keep slot outlines but no filled background per user request */
+    background: rgb(149 157 216 / 80%);
 }
 
 /* Pulse animation for newly added items */

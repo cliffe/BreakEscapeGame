@@ -47,19 +47,14 @@
   <link rel="stylesheet" href="/break_escape/css/rfid-minigame.css">
   <link rel="stylesheet" href="/break_escape/css/npc-interactions.css">
   <link rel="stylesheet" href="/break_escape/css/pin.css">
+  <link rel="stylesheet" href="/break_escape/css/minigames-framework.css">
   <link rel="stylesheet" href="/break_escape/css/password-minigame.css">
   <link rel="stylesheet" href="/break_escape/css/text-file-minigame.css">
   <link rel="stylesheet" href="/break_escape/css/npc-barks.css">
-  <link rel="stylesheet" href="/break_escape/css/title-screen.css">
-  <link rel="stylesheet" href="/break_escape/css/inventory.css">
 </head>
 <body>
-  <%# Game container - Phaser will render here %>
-  <div id="game-container"></div>
-
-  <%# Loading indicator %>
-  <div id="loading" style="position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); color: #00ff00; font-size: 24px; display: block;">
-    Loading game...
+  <div id="game-container">
+    <div id="loading">Loading...</div>
   </div>
 
   <%# Notification System %>
@@ -126,5 +121,31 @@
 
   <%# Load game JavaScript (ES6 module) %>
   <script type="module" src="/break_escape/js/main.js" nonce="<%= content_security_policy_nonce %>"></script>
+
+  <%# Mobile touch handling %>
+  <script>
+    // Allow zooming on mobile devices
+    document.addEventListener('DOMContentLoaded', function() {
+      // Prevent Phaser from capturing touch events that should be used for zooming
+      const gameContainer = document.getElementById('game-container');
+
+      // Allow zooming on the document level
+      document.addEventListener('gesturestart', function(e) {
+        e.preventDefault();
+      });
+
+      document.addEventListener('gesturechange', function(e) {
+        e.preventDefault();
+      });
+
+      // Prevent default touch behavior only within the game container
+      gameContainer.addEventListener('touchmove', function(e) {
+        // Only prevent default if it's not a multi-touch gesture (like pinch-to-zoom)
+        if (e.touches.length <= 1) {
+          e.preventDefault();
+        }
+      }, { passive: false });
+    });
+  </script>
 </body>
 </html>
