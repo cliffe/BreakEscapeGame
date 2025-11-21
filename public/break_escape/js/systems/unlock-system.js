@@ -13,6 +13,37 @@ import { unlockDoor } from './doors.js';
 import { startLockpickingMinigame, startKeySelectionMinigame, startPinMinigame, startPasswordMinigame } from './minigame-starters.js';
 import { playUISound } from './ui-sounds.js?v=1';
 
+// Helper function to notify server of unlock and get room/container data
+async function notifyServerUnlock(lockable, type, method) {
+    let serverResponse;
+    const apiClient = window.ApiClient || window.APIClient;
+    const gameId = window.breakEscapeConfig?.gameId;
+
+    if (apiClient && gameId) {
+        try {
+            // Get target ID
+            let targetId;
+            if (type === 'door') {
+                targetId = lockable.doorProperties?.connectedRoom || lockable.doorProperties?.roomId;
+            } else {
+                targetId = lockable.scenarioData?.id || lockable.scenarioData?.name || lockable.objectId;
+            }
+
+            console.log(`Notifying server of ${method} unlock:`, { type, targetId });
+            serverResponse = await apiClient.unlock(type, targetId, null, method);
+
+            // Populate container contents if returned
+            if (serverResponse.hasContents && serverResponse.contents && lockable.scenarioData) {
+                lockable.scenarioData.contents = serverResponse.contents;
+            }
+        } catch (error) {
+            console.error(`Failed to notify server of ${method} unlock:`, error);
+        }
+    }
+
+    return serverResponse;
+}
+
 // Helper function to check if two rectangles overlap
 function boundsOverlap(rect1, rect2) {
     return rect1.x < rect2.x + rect2.width &&
@@ -107,7 +138,12 @@ export function handleUnlock(lockable, type) {
             if (playerKeys.length > 0) {
                 // Keys take priority - go straight to key selection
                 console.log('KEYS AVAILABLE - STARTING KEY SELECTION');
-                startKeySelectionMinigame(lockable, type, playerKeys, requiredKey, unlockTarget);
+                // Wrap unlockTarget to notify server first
+                const unlockWithServerNotification = async (lockable, type, layer) => {
+                    const serverResponse = await notifyServerUnlock(lockable, type, 'key');
+                    unlockTarget(lockable, type, layer, serverResponse);
+                };
+                startKeySelectionMinigame(lockable, type, playerKeys, requiredKey, unlockWithServerNotification);
             } else if (hasLockpick) {
                 // Only lockpick available - launch lockpicking minigame directly
                 console.log('LOCKPICK AVAILABLE - STARTING LOCKPICKING MINIGAME');
@@ -156,10 +192,12 @@ export function handleUnlock(lockable, type) {
                     finalDifficulty: difficulty
                 });
                 
-                startLockpickingMinigame(lockable, window.game, difficulty, (success) => {
+                startLockpickingMinigame(lockable, window.game, difficulty, async (success) => {
                     if (success) {
+                        // Notify server of successful lockpick to update player_state and get room/container data
+                        const serverResponse = await notifyServerUnlock(lockable, type, 'lockpick');
                         setTimeout(() => {
-                            unlockTarget(lockable, type, lockable.layer);
+                            unlockTarget(lockable, type, lockable.layer, serverResponse);
                             window.gameAlert(`Successfully picked the lock!`, 'success', 'Lock Picked', 4000);
                         }, 100);
                     } else {
@@ -240,8 +278,11 @@ export function handleUnlock(lockable, type) {
                 // Check if the fingerprint quality meets the threshold
                 if (fingerprintQuality >= requiredThreshold) {
                     console.log('BIOMETRIC UNLOCK SUCCESS');
-                    unlockTarget(lockable, type, lockable.layer);
-                    window.gameAlert(`You successfully unlocked the ${type} with ${requiredFingerprint}'s fingerprint.`, 
+                    // Notify server and get room/container data
+                    notifyServerUnlock(lockable, type, 'biometric').then(serverResponse => {
+                        unlockTarget(lockable, type, lockable.layer, serverResponse);
+                    });
+                    window.gameAlert(`You successfully unlocked the ${type} with ${requiredFingerprint}'s fingerprint.`,
                         'success', 'Biometric Unlock Successful', 5000);
                 } else {
                     console.log('BIOMETRIC QUALITY TOO LOW', 
@@ -290,8 +331,11 @@ export function handleUnlock(lockable, type) {
                 
                 if (requiredDeviceData.signalStrength >= minSignalStrength) {
                     console.log('BLUETOOTH UNLOCK SUCCESS');
-                    unlockTarget(lockable, type, lockable.layer);
-                    window.gameAlert(`Successfully connected to ${requiredDeviceData.name} and unlocked the ${type}.`, 
+                    // Notify server and get room/container data
+                    notifyServerUnlock(lockable, type, 'bluetooth').then(serverResponse => {
+                        unlockTarget(lockable, type, lockable.layer, serverResponse);
+                    });
+                    window.gameAlert(`Successfully connected to ${requiredDeviceData.name} and unlocked the ${type}.`,
                         'success', 'Bluetooth Unlock Successful', 5000);
                 } else {
                     console.log('BLUETOOTH SIGNAL TOO WEAK', 
@@ -362,10 +406,12 @@ export function handleUnlock(lockable, type) {
                     acceptsUIDOnly: acceptsUIDOnly,
                     availableCards: keycards,
                     hasCloner: hasCloner,
-                    onComplete: (success) => {
+                    onComplete: async (success) => {
                         if (success) {
+                            // Notify server and get room/container data
+                            const serverResponse = await notifyServerUnlock(lockable, type, 'rfid');
                             setTimeout(() => {
-                                unlockTarget(lockable, type, lockable.layer);
+                                unlockTarget(lockable, type, lockable.layer, serverResponse);
                                 window.gameAlert('RFID lock unlocked!', 'success', 'Access Granted', 3000);
                             }, 100);
                         }
