@@ -19,13 +19,10 @@ BreakEscape::Engine.routes.draw do
       get 'ink'       # Returns NPC script (JIT compiled)
       get 'room/:room_id', to: 'games#room'  # Returns room data for lazy-loading
 
-      # API endpoints
-      scope module: :api do
-        get 'bootstrap'     # Initial game data
-        put 'sync_state'    # Periodic state sync
-        post 'unlock'       # Validate unlock attempt
-        post 'inventory'    # Update inventory
-      end
+      # Game state and actions
+      put 'sync_state'    # Periodic state sync
+      post 'unlock'       # Validate unlock attempt
+      post 'inventory'    # Update inventory
     end
   end
 

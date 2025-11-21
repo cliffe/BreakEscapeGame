@@ -2,7 +2,7 @@ require 'open3'
 
 module BreakEscape
   class GamesController < ApplicationController
-    before_action :set_game, only: [:show, :scenario, :ink, :room]
+    before_action :set_game, only: [:show, :scenario, :ink, :room, :sync_state, :unlock, :inventory]
 
     def show
       authorize @game if defined?(Pundit)
@@ -11,10 +11,9 @@ module BreakEscape
 
     # GET /games/:id/scenario
     # Returns scenario JSON for this game instance
-    # Filtered for lazy-loading: only metadata and connections, no room contents
     def scenario
       authorize @game if defined?(Pundit)
-      render json: @game.filtered_scenario_for_bootstrap
+      render json: @game.scenario_data
     end
 
     # GET /games/:id/room/:room_id
@@ -70,6 +69,82 @@ module BreakEscape
       render json: JSON.parse(File.read(ink_json_path))
     rescue JSON::ParserError => e
       render_error("Invalid JSON in compiled ink: #{e.message}", :internal_server_error)
+    end
+
+    # PUT /games/:id/sync_state
+    # Periodic state sync from client
+    def sync_state
+      authorize @game if defined?(Pundit)
+
+      # Update allowed fields
+      if params[:currentRoom]
+        @game.player_state['currentRoom'] = params[:currentRoom]
+      end
+
+      if params[:globalVariables]
+        @game.update_global_variables!(params[:globalVariables].to_unsafe_h)
+      end
+
+      @game.save!
+
+      render json: { success: true }
+    end
+
+    # POST /games/:id/unlock
+    # Validate unlock attempt
+    def unlock
+      authorize @game if defined?(Pundit)
+
+      target_type = params[:targetType]
+      target_id = params[:targetId]
+      attempt = params[:attempt]
+      method = params[:method]
+
+      is_valid = @game.validate_unlock(target_type, target_id, attempt, method)
+
+      if is_valid
+        if target_type == 'door'
+          @game.unlock_room!(target_id)
+          room_data = @game.filtered_room_data(target_id)
+
+          render json: {
+            success: true,
+            type: 'door',
+            roomData: room_data
+          }
+        else
+          @game.unlock_object!(target_id)
+          render json: {
+            success: true,
+            type: 'object'
+          }
+        end
+      else
+        render json: {
+          success: false,
+          message: 'Invalid attempt'
+        }, status: :unprocessable_entity
+      end
+    end
+
+    # POST /games/:id/inventory
+    # Update inventory
+    def inventory
+      authorize @game if defined?(Pundit)
+
+      action_type = params[:action_type] || params[:actionType]
+      item = params[:item]
+
+      case action_type
+      when 'add'
+        @game.add_inventory_item!(item.to_unsafe_h)
+        render json: { success: true, inventory: @game.player_state['inventory'] }
+      when 'remove'
+        @game.remove_inventory_item!(item['id'])
+        render json: { success: true, inventory: @game.player_state['inventory'] }
+      else
+        render json: { success: false, message: 'Invalid action' }, status: :bad_request
+      end
     end
 
     private

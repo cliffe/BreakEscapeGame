@@ -68,11 +68,6 @@ export class ApiClient {
     return response.json();
   }
 
-  // Bootstrap - get initial game data
-  static async bootstrap() {
-    return this.get('/bootstrap');
-  }
-
   // Get scenario JSON
   static async getScenario() {
     return this.get('/scenario');
