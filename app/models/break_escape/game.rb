@@ -140,6 +140,8 @@ module BreakEscape
 
     # Unlock validation
     def validate_unlock(target_type, target_id, attempt, method)
+      Rails.logger.info "[BreakEscape] validate_unlock: type=#{target_type}, id=#{target_id}, attempt=#{attempt}, method=#{method}"
+
       if target_type == 'door'
         room = room_data(target_id)
         return false unless room && room['locked']
@@ -155,20 +157,30 @@ module BreakEscape
           false
         end
       else
-        # Find object in all rooms
+        # Find object in all rooms - check both id and name
         scenario_data['rooms'].each do |_room_id, room_data|
-          object = room_data['objects']&.find { |obj| obj['id'] == target_id }
+          object = room_data['objects']&.find { |obj|
+            obj['id'] == target_id || obj['name'] == target_id
+          }
+
+          if object
+            Rails.logger.info "[BreakEscape] Found object: id=#{object['id']}, name=#{object['name']}, locked=#{object['locked']}, requires=#{object['requires']}"
+          end
+
           next unless object && object['locked']
 
           case method
           when 'key'
             return object['requires'] == attempt
           when 'pin', 'password'
-            return object['requires'].to_s == attempt.to_s
+            result = object['requires'].to_s == attempt.to_s
+            Rails.logger.info "[BreakEscape] Password validation: required='#{object['requires']}', attempt='#{attempt}', result=#{result}"
+            return result
           when 'lockpick'
             return true
           end
         end
+        Rails.logger.warn "[BreakEscape] Object not found or not locked: #{target_id}"
         false
       end
     end
