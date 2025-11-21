@@ -20,6 +20,9 @@ module BreakEscape
                     engine_root.join('public', 'break_escape', 'assets', params[:path])
                   when %r{^/break_escape/stylesheets/}
                     engine_root.join('public', 'break_escape', 'css', params[:path])
+                  when %r{^/break_escape/.*\.html$}
+                    # HTML test files like /break_escape/test-assets.html
+                    engine_root.join('public', 'break_escape', "#{params[:filename]}.html")
                   else
                     # Fallback for any other pattern
                     engine_root.join('public', 'break_escape', params[:path])
@@ -47,6 +50,8 @@ module BreakEscape
 
     def determine_content_type(file_path)
       case File.extname(file_path).downcase
+      when '.html'
+        'text/html'
       when '.css'
         'text/css'
       when '.js'

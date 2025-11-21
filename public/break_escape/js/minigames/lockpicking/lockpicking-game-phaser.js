@@ -353,14 +353,14 @@ export class LockpickingMinigamePhaser extends MinigameScene {
             
             preload() {
                 // Load sound effects
-                this.load.audio('lockpick_binding', 'assets/sounds/lockpick_binding.mp3');
-                this.load.audio('lockpick_click', 'assets/sounds/lockpick_click.mp3');
-                this.load.audio('lockpick_overtension', 'assets/sounds/lockpick_overtension.mp3');
-                this.load.audio('lockpick_reset', 'assets/sounds/lockpick_reset.mp3');
-                this.load.audio('lockpick_set', 'assets/sounds/lockpick_set.mp3');
-                this.load.audio('lockpick_success', 'assets/sounds/lockpick_success.mp3');
-                this.load.audio('lockpick_tension', 'assets/sounds/lockpick_tension.mp3');
-                this.load.audio('lockpick_wrong', 'assets/sounds/lockpick_wrong.mp3');
+                this.load.audio('lockpick_binding', 'sounds/lockpick_binding.mp3');
+                this.load.audio('lockpick_click', 'sounds/lockpick_click.mp3');
+                this.load.audio('lockpick_overtension', 'sounds/lockpick_overtension.mp3');
+                this.load.audio('lockpick_reset', 'sounds/lockpick_reset.mp3');
+                this.load.audio('lockpick_set', 'sounds/lockpick_set.mp3');
+                this.load.audio('lockpick_success', 'sounds/lockpick_success.mp3');
+                this.load.audio('lockpick_tension', 'sounds/lockpick_tension.mp3');
+                this.load.audio('lockpick_wrong', 'sounds/lockpick_wrong.mp3');
             }
             
             create() {
@@ -420,7 +420,10 @@ export class LockpickingMinigamePhaser extends MinigameScene {
             width: 600,
             height: 400,
             backgroundColor: '#1a1a1a',
-            scene: LockpickingScene
+            scene: LockpickingScene,
+            loader: {
+                baseURL: (window.breakEscapeConfig?.assetsPath || '/break_escape/assets') + '/'
+            }
         };
         
         // Adjust canvas size for mobile to crop empty space

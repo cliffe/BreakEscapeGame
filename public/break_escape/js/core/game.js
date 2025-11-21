@@ -29,372 +29,372 @@ export function preload() {
     document.getElementById('loading').style.display = 'block';
 
     // Load tilemap files and regular tilesets first
-    this.load.tilemapTiledJSON('room_reception', 'assets/rooms/room_reception2.json');
-    this.load.tilemapTiledJSON('room_office', 'assets/rooms/room_office2.json');
-    this.load.tilemapTiledJSON('room_ceo', 'assets/rooms/room_ceo2.json');
-    this.load.tilemapTiledJSON('room_closet', 'assets/rooms/room_closet2.json');
-    this.load.tilemapTiledJSON('room_servers', 'assets/rooms/room_servers2.json');
+    this.load.tilemapTiledJSON('room_reception', 'rooms/room_reception2.json');
+    this.load.tilemapTiledJSON('room_office', 'rooms/room_office2.json');
+    this.load.tilemapTiledJSON('room_ceo', 'rooms/room_ceo2.json');
+    this.load.tilemapTiledJSON('room_closet', 'rooms/room_closet2.json');
+    this.load.tilemapTiledJSON('room_servers', 'rooms/room_servers2.json');
 
     // Load new variable-sized rooms for grid system
-    this.load.tilemapTiledJSON('small_room_1x1gu', 'assets/rooms/small_room_1x1gu.json');
-    this.load.tilemapTiledJSON('hall_1x2gu', 'assets/rooms/hall_1x2gu.json');
+    this.load.tilemapTiledJSON('small_room_1x1gu', 'rooms/small_room_1x1gu.json');
+    this.load.tilemapTiledJSON('hall_1x2gu', 'rooms/hall_1x2gu.json');
 
     // Load room images (now using smaller 32px scale images)
-    this.load.image('room_reception', 'assets/tiles/rooms/room1.png');
-    this.load.image('room18', 'assets/tiles/rooms/room18.png');
-    this.load.image('room6', 'assets/tiles/rooms/room6.png');
-    this.load.image('room14', 'assets/tiles/rooms/room14.png');
-    this.load.image('room19', 'assets/tiles/rooms/room19.png');
-    this.load.image('door_32', 'assets/tiles/door_32.png');
-    this.load.spritesheet('door_sheet', 'assets/tiles/door_sheet_32.png', {
+    this.load.image('room_reception', 'tiles/rooms/room1.png');
+    this.load.image('room18', 'tiles/rooms/room18.png');
+    this.load.image('room6', 'tiles/rooms/room6.png');
+    this.load.image('room14', 'tiles/rooms/room14.png');
+    this.load.image('room19', 'tiles/rooms/room19.png');
+    this.load.image('door_32', 'tiles/door_32.png');
+    this.load.spritesheet('door_sheet', 'tiles/door_sheet_32.png', {
         frameWidth: 32,
         frameHeight: 64
     });
 
     // Load tileset images referenced by the new Tiled map
-    this.load.image('office-updated', 'assets/tiles/rooms/room1.png');
-    this.load.image('door_sheet_32', 'assets/tiles/door_sheet_32.png');
+    this.load.image('office-updated', 'tiles/rooms/room1.png');
+    this.load.image('door_sheet_32', 'tiles/door_sheet_32.png');
 
     // Load side door spritesheet for east/west doors (6 frames: closed, opening, open, etc.)
-    this.load.spritesheet('door_side_sheet_32', 'assets/tiles/door_side_sheet_32.png', {
+    this.load.spritesheet('door_side_sheet_32', 'tiles/door_side_sheet_32.png', {
         frameWidth: 32,
         frameHeight: 32
     });
     
     // Load table tileset images
-    this.load.image('desk-ceo1', 'assets/tables/desk-ceo1.png');
-    this.load.image('desk-ceo2', 'assets/tables/desk-ceo2.png');
-    this.load.image('desk1', 'assets/tables/desk1.png');
-    this.load.image('smalldesk1', 'assets/tables/smalldesk1.png');
-    this.load.image('smalldesk2', 'assets/tables/smalldesk2.png');
-    this.load.image('reception_table1', 'assets/tables/reception_table1.png');
+    this.load.image('desk-ceo1', 'tables/desk-ceo1.png');
+    this.load.image('desk-ceo2', 'tables/desk-ceo2.png');
+    this.load.image('desk1', 'tables/desk1.png');
+    this.load.image('smalldesk1', 'tables/smalldesk1.png');
+    this.load.image('smalldesk2', 'tables/smalldesk2.png');
+    this.load.image('reception_table1', 'tables/reception_table1.png');
 
     // Load object sprites - keeping existing ones for backward compatibility
-    this.load.image('pc', 'assets/objects/pc1.png');
-    this.load.image('key', 'assets/objects/key.png');
-    this.load.image('notes', 'assets/objects/notes1.png');
-    this.load.image('phone', 'assets/objects/phone1.png');
-    this.load.image('suitcase', 'assets/objects/suitcase-1.png');
-    this.load.image('smartscreen', 'assets/objects/smartscreen.png');
-    this.load.image('photo', 'assets/objects/picture1.png');
-    this.load.image('safe', 'assets/objects/safe1.png');
-    this.load.image('book', 'assets/objects/book1.png');
-    this.load.image('workstation', 'assets/objects/workstation.png');
-    this.load.image('bluetooth_scanner', 'assets/objects/bluetooth_scanner.png');
-    this.load.image('bluetooth', 'assets/objects/bluetooth.png');
-    this.load.image('tablet', 'assets/objects/tablet.png');
-    this.load.image('fingerprint', 'assets/objects/fingerprint_small.png');
-    this.load.image('lockpick', 'assets/objects/lockpick.png');
-    this.load.image('spoofing_kit', 'assets/objects/office-misc-headphones.png');
-    this.load.image('keyway', 'assets/icons/keyway.png');
-    this.load.image('password', 'assets/icons/password.png');
-    this.load.image('pin', 'assets/icons/pin.png');
-    this.load.image('talk', 'assets/icons/talk.png');
+    this.load.image('pc', 'objects/pc1.png');
+    this.load.image('key', 'objects/key.png');
+    this.load.image('notes', 'objects/notes1.png');
+    this.load.image('phone', 'objects/phone1.png');
+    this.load.image('suitcase', 'objects/suitcase-1.png');
+    this.load.image('smartscreen', 'objects/smartscreen.png');
+    this.load.image('photo', 'objects/picture1.png');
+    this.load.image('safe', 'objects/safe1.png');
+    this.load.image('book', 'objects/book1.png');
+    this.load.image('workstation', 'objects/workstation.png');
+    this.load.image('bluetooth_scanner', 'objects/bluetooth_scanner.png');
+    this.load.image('bluetooth', 'objects/bluetooth.png');
+    this.load.image('tablet', 'objects/tablet.png');
+    this.load.image('fingerprint', 'objects/fingerprint_small.png');
+    this.load.image('lockpick', 'objects/lockpick.png');
+    this.load.image('spoofing_kit', 'objects/office-misc-headphones.png');
+    this.load.image('keyway', 'icons/keyway.png');
+    this.load.image('password', 'icons/password.png');
+    this.load.image('pin', 'icons/pin.png');
+    this.load.image('talk', 'icons/talk.png');
 
     // Load RFID keycard and cloner assets
-    this.load.image('keycard', 'assets/objects/keycard.png');
-    this.load.image('keycard-ceo', 'assets/objects/keycard-ceo.png');
-    this.load.image('keycard-security', 'assets/objects/keycard-security.png');
-    this.load.image('keycard-maintenance', 'assets/objects/keycard-maintenance.png');
-    this.load.image('rfid_cloner', 'assets/objects/rfid_cloner.png');
-    this.load.image('rfid-icon', 'assets/icons/rfid-icon.png');
-    this.load.image('nfc-waves', 'assets/icons/nfc-waves.png');
+    this.load.image('keycard', 'objects/keycard.png');
+    this.load.image('keycard-ceo', 'objects/keycard-ceo.png');
+    this.load.image('keycard-security', 'objects/keycard-security.png');
+    this.load.image('keycard-maintenance', 'objects/keycard-maintenance.png');
+    this.load.image('rfid_cloner', 'objects/rfid_cloner.png');
+    this.load.image('rfid-icon', 'icons/rfid-icon.png');
+    this.load.image('nfc-waves', 'icons/nfc-waves.png');
 
     // Load new object sprites from Tiled map tileset
     // These are the key objects that appear in the new room_reception2.json
-    this.load.image('fingerprint_kit', 'assets/objects/fingerprint_kit.png');
-    this.load.image('pin-cracker', 'assets/objects/pin-cracker.png');
-    this.load.image('bin11', 'assets/objects/bin11.png');
-    this.load.image('bin10', 'assets/objects/bin10.png');
-    this.load.image('bin9', 'assets/objects/bin9.png');
-    this.load.image('bin8', 'assets/objects/bin8.png');
-    this.load.image('bin7', 'assets/objects/bin7.png');
-    this.load.image('bin6', 'assets/objects/bin6.png');
-    this.load.image('bin5', 'assets/objects/bin5.png');
-    this.load.image('bin4', 'assets/objects/bin4.png');
-    this.load.image('bin3', 'assets/objects/bin3.png');
-    this.load.image('bin2', 'assets/objects/bin2.png');
-    this.load.image('bin1', 'assets/objects/bin1.png');
+    this.load.image('fingerprint_kit', 'objects/fingerprint_kit.png');
+    this.load.image('pin-cracker', 'objects/pin-cracker.png');
+    this.load.image('bin11', 'objects/bin11.png');
+    this.load.image('bin10', 'objects/bin10.png');
+    this.load.image('bin9', 'objects/bin9.png');
+    this.load.image('bin8', 'objects/bin8.png');
+    this.load.image('bin7', 'objects/bin7.png');
+    this.load.image('bin6', 'objects/bin6.png');
+    this.load.image('bin5', 'objects/bin5.png');
+    this.load.image('bin4', 'objects/bin4.png');
+    this.load.image('bin3', 'objects/bin3.png');
+    this.load.image('bin2', 'objects/bin2.png');
+    this.load.image('bin1', 'objects/bin1.png');
     
     // Suitcases
-    this.load.image('suitcase21', 'assets/objects/suitcase21.png');
-    this.load.image('suitcase20', 'assets/objects/suitcase20.png');
-    this.load.image('suitcase19', 'assets/objects/suitcase19.png');
-    this.load.image('suitcase18', 'assets/objects/suitcase18.png');
-    this.load.image('suitcase17', 'assets/objects/suitcase17.png');
-    this.load.image('suitcase16', 'assets/objects/suitcase16.png');
-    this.load.image('suitcase15', 'assets/objects/suitcase15.png');
-    this.load.image('suitcase14', 'assets/objects/suitcase14.png');
-    this.load.image('suitcase13', 'assets/objects/suitcase13.png');
-    this.load.image('suitcase12', 'assets/objects/suitcase12.png');
-    this.load.image('suitcase11', 'assets/objects/suitcase11.png');
-    this.load.image('suitcase10', 'assets/objects/suitcase10.png');
-    this.load.image('suitcase9', 'assets/objects/suitcase9.png');
-    this.load.image('suitcase8', 'assets/objects/suitcase8.png');
-    this.load.image('suitcase7', 'assets/objects/suitcase7.png');
-    this.load.image('suitcase6', 'assets/objects/suitcase6.png');
-    this.load.image('suitcase5', 'assets/objects/suitcase5.png');
-    this.load.image('suitcase4', 'assets/objects/suitcase4.png');
-    this.load.image('suitcase3', 'assets/objects/suitcase3.png');
-    this.load.image('suitcase2', 'assets/objects/suitcase2.png');
-    this.load.image('suitcase-1', 'assets/objects/suitcase-1.png');
+    this.load.image('suitcase21', 'objects/suitcase21.png');
+    this.load.image('suitcase20', 'objects/suitcase20.png');
+    this.load.image('suitcase19', 'objects/suitcase19.png');
+    this.load.image('suitcase18', 'objects/suitcase18.png');
+    this.load.image('suitcase17', 'objects/suitcase17.png');
+    this.load.image('suitcase16', 'objects/suitcase16.png');
+    this.load.image('suitcase15', 'objects/suitcase15.png');
+    this.load.image('suitcase14', 'objects/suitcase14.png');
+    this.load.image('suitcase13', 'objects/suitcase13.png');
+    this.load.image('suitcase12', 'objects/suitcase12.png');
+    this.load.image('suitcase11', 'objects/suitcase11.png');
+    this.load.image('suitcase10', 'objects/suitcase10.png');
+    this.load.image('suitcase9', 'objects/suitcase9.png');
+    this.load.image('suitcase8', 'objects/suitcase8.png');
+    this.load.image('suitcase7', 'objects/suitcase7.png');
+    this.load.image('suitcase6', 'objects/suitcase6.png');
+    this.load.image('suitcase5', 'objects/suitcase5.png');
+    this.load.image('suitcase4', 'objects/suitcase4.png');
+    this.load.image('suitcase3', 'objects/suitcase3.png');
+    this.load.image('suitcase2', 'objects/suitcase2.png');
+    this.load.image('suitcase-1', 'objects/suitcase-1.png');
     
     // Plants
-    this.load.image('plant-flat-pot7', 'assets/objects/plant-flat-pot7.png');
-    this.load.image('plant-flat-pot6', 'assets/objects/plant-flat-pot6.png');
-    this.load.image('plant-flat-pot5', 'assets/objects/plant-flat-pot5.png');
-    this.load.image('plant-flat-pot4', 'assets/objects/plant-flat-pot4.png');
-    this.load.image('plant-flat-pot3', 'assets/objects/plant-flat-pot3.png');
-    this.load.image('plant-flat-pot2', 'assets/objects/plant-flat-pot2.png');
-    this.load.image('plant-flat-pot1', 'assets/objects/plant-flat-pot1.png');
+    this.load.image('plant-flat-pot7', 'objects/plant-flat-pot7.png');
+    this.load.image('plant-flat-pot6', 'objects/plant-flat-pot6.png');
+    this.load.image('plant-flat-pot5', 'objects/plant-flat-pot5.png');
+    this.load.image('plant-flat-pot4', 'objects/plant-flat-pot4.png');
+    this.load.image('plant-flat-pot3', 'objects/plant-flat-pot3.png');
+    this.load.image('plant-flat-pot2', 'objects/plant-flat-pot2.png');
+    this.load.image('plant-flat-pot1', 'objects/plant-flat-pot1.png');
     
     // Office furniture
-    this.load.image('outdoor-lamp4', 'assets/objects/outdoor-lamp4.png');
-    this.load.image('outdoor-lamp3', 'assets/objects/outdoor-lamp3.png');
-    this.load.image('outdoor-lamp2', 'assets/objects/outdoor-lamp2.png');
-    this.load.image('outdoor-lamp1', 'assets/objects/outdoor-lamp1.png');
-    this.load.image('plant-large10', 'assets/objects/plant-large10.png');
-    this.load.image('lamp-stand5', 'assets/objects/lamp-stand5.png');
-    this.load.image('plant-large9', 'assets/objects/plant-large9.png');
-    this.load.image('plant-large8', 'assets/objects/plant-large8.png');
-    this.load.image('plant-large7', 'assets/objects/plant-large7.png');
-    this.load.image('plant-large6', 'assets/objects/plant-large6.png');
-    this.load.image('lamp-stand4', 'assets/objects/lamp-stand4.png');
-    this.load.image('plant-large5', 'assets/objects/plant-large5.png');
-    this.load.image('plant-large4', 'assets/objects/plant-large4.png');
-    this.load.image('plant-large3', 'assets/objects/plant-large3.png');
-    this.load.image('plant-large2', 'assets/objects/plant-large2.png');
-    this.load.image('lamp-stand3', 'assets/objects/lamp-stand3.png');
-    this.load.image('plant-large1', 'assets/objects/plant-large1.png');
-    this.load.image('lamp-stand2', 'assets/objects/lamp-stand2.png');
-    this.load.image('lamp-stand1', 'assets/objects/lamp-stand1.png');
+    this.load.image('outdoor-lamp4', 'objects/outdoor-lamp4.png');
+    this.load.image('outdoor-lamp3', 'objects/outdoor-lamp3.png');
+    this.load.image('outdoor-lamp2', 'objects/outdoor-lamp2.png');
+    this.load.image('outdoor-lamp1', 'objects/outdoor-lamp1.png');
+    this.load.image('plant-large10', 'objects/plant-large10.png');
+    this.load.image('lamp-stand5', 'objects/lamp-stand5.png');
+    this.load.image('plant-large9', 'objects/plant-large9.png');
+    this.load.image('plant-large8', 'objects/plant-large8.png');
+    this.load.image('plant-large7', 'objects/plant-large7.png');
+    this.load.image('plant-large6', 'objects/plant-large6.png');
+    this.load.image('lamp-stand4', 'objects/lamp-stand4.png');
+    this.load.image('plant-large5', 'objects/plant-large5.png');
+    this.load.image('plant-large4', 'objects/plant-large4.png');
+    this.load.image('plant-large3', 'objects/plant-large3.png');
+    this.load.image('plant-large2', 'objects/plant-large2.png');
+    this.load.image('lamp-stand3', 'objects/lamp-stand3.png');
+    this.load.image('plant-large1', 'objects/plant-large1.png');
+    this.load.image('lamp-stand2', 'objects/lamp-stand2.png');
+    this.load.image('lamp-stand1', 'objects/lamp-stand1.png');
     
     // Pictures
-    this.load.image('picture14', 'assets/objects/picture14.png');
-    this.load.image('picture13', 'assets/objects/picture13.png');
-    this.load.image('picture12', 'assets/objects/picture12.png');
-    this.load.image('picture11', 'assets/objects/picture11.png');
-    this.load.image('picture10', 'assets/objects/picture10.png');
-    this.load.image('picture9', 'assets/objects/picture9.png');
-    this.load.image('picture8', 'assets/objects/picture8.png');
-    this.load.image('picture7', 'assets/objects/picture7.png');
-    this.load.image('picture6', 'assets/objects/picture6.png');
-    this.load.image('picture5', 'assets/objects/picture5.png');
-    this.load.image('picture4', 'assets/objects/picture4.png');
-    this.load.image('picture3', 'assets/objects/picture3.png');
-    this.load.image('picture2', 'assets/objects/picture2.png');
-    this.load.image('picture1', 'assets/objects/picture1.png');
+    this.load.image('picture14', 'objects/picture14.png');
+    this.load.image('picture13', 'objects/picture13.png');
+    this.load.image('picture12', 'objects/picture12.png');
+    this.load.image('picture11', 'objects/picture11.png');
+    this.load.image('picture10', 'objects/picture10.png');
+    this.load.image('picture9', 'objects/picture9.png');
+    this.load.image('picture8', 'objects/picture8.png');
+    this.load.image('picture7', 'objects/picture7.png');
+    this.load.image('picture6', 'objects/picture6.png');
+    this.load.image('picture5', 'objects/picture5.png');
+    this.load.image('picture4', 'objects/picture4.png');
+    this.load.image('picture3', 'objects/picture3.png');
+    this.load.image('picture2', 'objects/picture2.png');
+    this.load.image('picture1', 'objects/picture1.png');
     
     // Office misc items
-    this.load.image('office-misc-smallplant2', 'assets/objects/office-misc-smallplant2.png');
-    this.load.image('office-misc-smallplant3', 'assets/objects/office-misc-smallplant3.png');
-    this.load.image('office-misc-smallplant4', 'assets/objects/office-misc-smallplant4.png');
-    this.load.image('office-misc-smallplant5', 'assets/objects/office-misc-smallplant5.png');
-    this.load.image('office-misc-box1', 'assets/objects/office-misc-box1.png');
-    this.load.image('office-misc-container', 'assets/objects/office-misc-container.png');
-    this.load.image('office-misc-lamp3', 'assets/objects/office-misc-lamp3.png');
-    this.load.image('office-misc-hdd6', 'assets/objects/office-misc-hdd6.png');
-    this.load.image('office-misc-speakers6', 'assets/objects/office-misc-speakers6.png');
-    this.load.image('office-misc-pencils6', 'assets/objects/office-misc-pencils6.png');
-    this.load.image('office-misc-fan2', 'assets/objects/office-misc-fan2.png');
-    this.load.image('office-misc-cup5', 'assets/objects/office-misc-cup5.png');
-    this.load.image('office-misc-hdd5', 'assets/objects/office-misc-hdd5.png');
-    this.load.image('office-misc-speakers5', 'assets/objects/office-misc-speakers5.png');
-    this.load.image('office-misc-cup4', 'assets/objects/office-misc-cup4.png');
-    this.load.image('office-misc-speakers4', 'assets/objects/office-misc-speakers4.png');
-    this.load.image('office-misc-pencils5', 'assets/objects/office-misc-pencils5.png');
+    this.load.image('office-misc-smallplant2', 'objects/office-misc-smallplant2.png');
+    this.load.image('office-misc-smallplant3', 'objects/office-misc-smallplant3.png');
+    this.load.image('office-misc-smallplant4', 'objects/office-misc-smallplant4.png');
+    this.load.image('office-misc-smallplant5', 'objects/office-misc-smallplant5.png');
+    this.load.image('office-misc-box1', 'objects/office-misc-box1.png');
+    this.load.image('office-misc-container', 'objects/office-misc-container.png');
+    this.load.image('office-misc-lamp3', 'objects/office-misc-lamp3.png');
+    this.load.image('office-misc-hdd6', 'objects/office-misc-hdd6.png');
+    this.load.image('office-misc-speakers6', 'objects/office-misc-speakers6.png');
+    this.load.image('office-misc-pencils6', 'objects/office-misc-pencils6.png');
+    this.load.image('office-misc-fan2', 'objects/office-misc-fan2.png');
+    this.load.image('office-misc-cup5', 'objects/office-misc-cup5.png');
+    this.load.image('office-misc-hdd5', 'objects/office-misc-hdd5.png');
+    this.load.image('office-misc-speakers5', 'objects/office-misc-speakers5.png');
+    this.load.image('office-misc-cup4', 'objects/office-misc-cup4.png');
+    this.load.image('office-misc-speakers4', 'objects/office-misc-speakers4.png');
+    this.load.image('office-misc-pencils5', 'objects/office-misc-pencils5.png');
 
-    this.load.image('office-misc-clock', 'assets/objects/office-misc-clock.png');
-    this.load.image('office-misc-fan', 'assets/objects/office-misc-fan.png');
-    this.load.image('office-misc-speakers3', 'assets/objects/office-misc-speakers3.png');
-    this.load.image('office-misc-camera', 'assets/objects/office-misc-camera.png');
-    this.load.image('office-misc-headphones', 'assets/objects/office-misc-headphones.png');
-    this.load.image('office-misc-hdd4', 'assets/objects/office-misc-hdd4.png');
-    this.load.image('office-misc-pencils4', 'assets/objects/office-misc-pencils4.png');
-    this.load.image('office-misc-cup3', 'assets/objects/office-misc-cup3.png');
-    this.load.image('office-misc-cup2', 'assets/objects/office-misc-cup2.png');
-    this.load.image('office-misc-speakers2', 'assets/objects/office-misc-speakers2.png');
-    this.load.image('office-misc-stapler', 'assets/objects/office-misc-stapler.png');
-    this.load.image('office-misc-hdd3', 'assets/objects/office-misc-hdd3.png');
-    this.load.image('office-misc-hdd2', 'assets/objects/office-misc-hdd2.png');
-    this.load.image('office-misc-pencils3', 'assets/objects/office-misc-pencils3.png');
-    this.load.image('office-misc-pencils2', 'assets/objects/office-misc-pencils2.png');
-    this.load.image('office-misc-pens', 'assets/objects/office-misc-pens.png');
-    this.load.image('office-misc-lamp2', 'assets/objects/office-misc-lamp2.png');
-    this.load.image('office-misc-hdd', 'assets/objects/office-misc-hdd.png');
-    this.load.image('office-misc-smallplant', 'assets/objects/office-misc-smallplant.png');
-    this.load.image('office-misc-pencils', 'assets/objects/office-misc-pencils.png');
-    this.load.image('office-misc-speakers', 'assets/objects/office-misc-speakers.png');
-    this.load.image('office-misc-cup', 'assets/objects/office-misc-cup.png');
-    this.load.image('office-misc-lamp', 'assets/objects/office-misc-lamp.png');
-    this.load.image('phone5', 'assets/objects/phone5.png');
-    this.load.image('phone4', 'assets/objects/phone4.png');
-    this.load.image('phone3', 'assets/objects/phone3.png');
-    this.load.image('phone2', 'assets/objects/phone2.png');
-    this.load.image('phone1', 'assets/objects/phone1.png');
+    this.load.image('office-misc-clock', 'objects/office-misc-clock.png');
+    this.load.image('office-misc-fan', 'objects/office-misc-fan.png');
+    this.load.image('office-misc-speakers3', 'objects/office-misc-speakers3.png');
+    this.load.image('office-misc-camera', 'objects/office-misc-camera.png');
+    this.load.image('office-misc-headphones', 'objects/office-misc-headphones.png');
+    this.load.image('office-misc-hdd4', 'objects/office-misc-hdd4.png');
+    this.load.image('office-misc-pencils4', 'objects/office-misc-pencils4.png');
+    this.load.image('office-misc-cup3', 'objects/office-misc-cup3.png');
+    this.load.image('office-misc-cup2', 'objects/office-misc-cup2.png');
+    this.load.image('office-misc-speakers2', 'objects/office-misc-speakers2.png');
+    this.load.image('office-misc-stapler', 'objects/office-misc-stapler.png');
+    this.load.image('office-misc-hdd3', 'objects/office-misc-hdd3.png');
+    this.load.image('office-misc-hdd2', 'objects/office-misc-hdd2.png');
+    this.load.image('office-misc-pencils3', 'objects/office-misc-pencils3.png');
+    this.load.image('office-misc-pencils2', 'objects/office-misc-pencils2.png');
+    this.load.image('office-misc-pens', 'objects/office-misc-pens.png');
+    this.load.image('office-misc-lamp2', 'objects/office-misc-lamp2.png');
+    this.load.image('office-misc-hdd', 'objects/office-misc-hdd.png');
+    this.load.image('office-misc-smallplant', 'objects/office-misc-smallplant.png');
+    this.load.image('office-misc-pencils', 'objects/office-misc-pencils.png');
+    this.load.image('office-misc-speakers', 'objects/office-misc-speakers.png');
+    this.load.image('office-misc-cup', 'objects/office-misc-cup.png');
+    this.load.image('office-misc-lamp', 'objects/office-misc-lamp.png');
+    this.load.image('phone5', 'objects/phone5.png');
+    this.load.image('phone4', 'objects/phone4.png');
+    this.load.image('phone3', 'objects/phone3.png');
+    this.load.image('phone2', 'objects/phone2.png');
+    this.load.image('phone1', 'objects/phone1.png');
     
     // Bags and briefcases
-    this.load.image('bag25', 'assets/objects/bag25.png');
-    this.load.image('bag24', 'assets/objects/bag24.png');
-    this.load.image('bag23', 'assets/objects/bag23.png');
-    this.load.image('bag22', 'assets/objects/bag22.png');
-    this.load.image('bag21', 'assets/objects/bag21.png');
-    this.load.image('bag20', 'assets/objects/bag20.png');
-    this.load.image('bag19', 'assets/objects/bag19.png');
-    this.load.image('bag18', 'assets/objects/bag18.png');
-    this.load.image('bag17', 'assets/objects/bag17.png');
-    this.load.image('bag16', 'assets/objects/bag16.png');
-    this.load.image('bag15', 'assets/objects/bag15.png');
-    this.load.image('bag14', 'assets/objects/bag14.png');
-    this.load.image('bag13', 'assets/objects/bag13.png');
-    this.load.image('bag12', 'assets/objects/bag12.png');
-    this.load.image('bag11', 'assets/objects/bag11.png');
-    this.load.image('bag10', 'assets/objects/bag10.png');
-    this.load.image('bag9', 'assets/objects/bag9.png');
-    this.load.image('bag8', 'assets/objects/bag8.png');
-    this.load.image('bag7', 'assets/objects/bag7.png');
-    this.load.image('bag6', 'assets/objects/bag6.png');
-    this.load.image('bag5', 'assets/objects/bag5.png');
-    this.load.image('bag4', 'assets/objects/bag4.png');
-    this.load.image('bag3', 'assets/objects/bag3.png');
-    this.load.image('bag2', 'assets/objects/bag2.png');
-    this.load.image('bag1', 'assets/objects/bag1.png');
+    this.load.image('bag25', 'objects/bag25.png');
+    this.load.image('bag24', 'objects/bag24.png');
+    this.load.image('bag23', 'objects/bag23.png');
+    this.load.image('bag22', 'objects/bag22.png');
+    this.load.image('bag21', 'objects/bag21.png');
+    this.load.image('bag20', 'objects/bag20.png');
+    this.load.image('bag19', 'objects/bag19.png');
+    this.load.image('bag18', 'objects/bag18.png');
+    this.load.image('bag17', 'objects/bag17.png');
+    this.load.image('bag16', 'objects/bag16.png');
+    this.load.image('bag15', 'objects/bag15.png');
+    this.load.image('bag14', 'objects/bag14.png');
+    this.load.image('bag13', 'objects/bag13.png');
+    this.load.image('bag12', 'objects/bag12.png');
+    this.load.image('bag11', 'objects/bag11.png');
+    this.load.image('bag10', 'objects/bag10.png');
+    this.load.image('bag9', 'objects/bag9.png');
+    this.load.image('bag8', 'objects/bag8.png');
+    this.load.image('bag7', 'objects/bag7.png');
+    this.load.image('bag6', 'objects/bag6.png');
+    this.load.image('bag5', 'objects/bag5.png');
+    this.load.image('bag4', 'objects/bag4.png');
+    this.load.image('bag3', 'objects/bag3.png');
+    this.load.image('bag2', 'objects/bag2.png');
+    this.load.image('bag1', 'objects/bag1.png');
     
     // Briefcases
-    this.load.image('briefcase-orange-1', 'assets/objects/briefcase-orange-1.png');
-    this.load.image('briefcase-yellow-1', 'assets/objects/briefcase-yellow-1.png');
-    this.load.image('briefcase13', 'assets/objects/briefcase13.png');
-    this.load.image('briefcase-purple-1', 'assets/objects/briefcase-purple-1.png');
-    this.load.image('briefcase-green-1', 'assets/objects/briefcase-green-1.png');
-    this.load.image('briefcase-blue-1', 'assets/objects/briefcase-blue-1.png');
-    this.load.image('briefcase-red-1', 'assets/objects/briefcase-red-1.png');
-    this.load.image('briefcase12', 'assets/objects/briefcase12.png');
-    this.load.image('briefcase11', 'assets/objects/briefcase11.png');
-    this.load.image('briefcase10', 'assets/objects/briefcase10.png');
-    this.load.image('briefcase9', 'assets/objects/briefcase9.png');
-    this.load.image('briefcase8', 'assets/objects/briefcase8.png');
-    this.load.image('briefcase7', 'assets/objects/briefcase7.png');
-    this.load.image('briefcase6', 'assets/objects/briefcase6.png');
-    this.load.image('briefcase5', 'assets/objects/briefcase5.png');
-    this.load.image('briefcase4', 'assets/objects/briefcase4.png');
-    this.load.image('briefcase3', 'assets/objects/briefcase3.png');
-    this.load.image('briefcase2', 'assets/objects/briefcase2.png');
-    this.load.image('briefcase1', 'assets/objects/briefcase1.png');
+    this.load.image('briefcase-orange-1', 'objects/briefcase-orange-1.png');
+    this.load.image('briefcase-yellow-1', 'objects/briefcase-yellow-1.png');
+    this.load.image('briefcase13', 'objects/briefcase13.png');
+    this.load.image('briefcase-purple-1', 'objects/briefcase-purple-1.png');
+    this.load.image('briefcase-green-1', 'objects/briefcase-green-1.png');
+    this.load.image('briefcase-blue-1', 'objects/briefcase-blue-1.png');
+    this.load.image('briefcase-red-1', 'objects/briefcase-red-1.png');
+    this.load.image('briefcase12', 'objects/briefcase12.png');
+    this.load.image('briefcase11', 'objects/briefcase11.png');
+    this.load.image('briefcase10', 'objects/briefcase10.png');
+    this.load.image('briefcase9', 'objects/briefcase9.png');
+    this.load.image('briefcase8', 'objects/briefcase8.png');
+    this.load.image('briefcase7', 'objects/briefcase7.png');
+    this.load.image('briefcase6', 'objects/briefcase6.png');
+    this.load.image('briefcase5', 'objects/briefcase5.png');
+    this.load.image('briefcase4', 'objects/briefcase4.png');
+    this.load.image('briefcase3', 'objects/briefcase3.png');
+    this.load.image('briefcase2', 'objects/briefcase2.png');
+    this.load.image('briefcase1', 'objects/briefcase1.png');
     
     // Chairs
-    this.load.image('chair-grey-4', 'assets/objects/chair-grey-4.png');
-    this.load.image('chair-grey-3', 'assets/objects/chair-grey-3.png');
-    this.load.image('chair-darkgreen-3', 'assets/objects/chair-darkgreen-3.png');
-    this.load.image('chair-grey-2', 'assets/objects/chair-grey-2.png');
-    this.load.image('chair-darkgray-1', 'assets/objects/chair-darkgray-1.png');
-    this.load.image('chair-darkgreen-2', 'assets/objects/chair-darkgreen-2.png');
-    this.load.image('chair-darkgreen-1', 'assets/objects/chair-darkgreen-1.png');
-    this.load.image('chair-grey-1', 'assets/objects/chair-grey-1.png');
-    this.load.image('chair-red-4', 'assets/objects/chair-red-4.png');
-    this.load.image('chair-red-3', 'assets/objects/chair-red-3.png');
-    this.load.image('chair-green-2', 'assets/objects/chair-green-2.png');
-    this.load.image('chair-green-1', 'assets/objects/chair-green-1.png');
-    this.load.image('chair-red-2', 'assets/objects/chair-red-2.png');
-    this.load.image('chair-red-1', 'assets/objects/chair-red-1.png');
-    this.load.image('chair-white-2', 'assets/objects/chair-white-2.png');
-    this.load.image('chair-white-1', 'assets/objects/chair-white-1.png');
+    this.load.image('chair-grey-4', 'objects/chair-grey-4.png');
+    this.load.image('chair-grey-3', 'objects/chair-grey-3.png');
+    this.load.image('chair-darkgreen-3', 'objects/chair-darkgreen-3.png');
+    this.load.image('chair-grey-2', 'objects/chair-grey-2.png');
+    this.load.image('chair-darkgray-1', 'objects/chair-darkgray-1.png');
+    this.load.image('chair-darkgreen-2', 'objects/chair-darkgreen-2.png');
+    this.load.image('chair-darkgreen-1', 'objects/chair-darkgreen-1.png');
+    this.load.image('chair-grey-1', 'objects/chair-grey-1.png');
+    this.load.image('chair-red-4', 'objects/chair-red-4.png');
+    this.load.image('chair-red-3', 'objects/chair-red-3.png');
+    this.load.image('chair-green-2', 'objects/chair-green-2.png');
+    this.load.image('chair-green-1', 'objects/chair-green-1.png');
+    this.load.image('chair-red-2', 'objects/chair-red-2.png');
+    this.load.image('chair-red-1', 'objects/chair-red-1.png');
+    this.load.image('chair-white-2', 'objects/chair-white-2.png');
+    this.load.image('chair-white-1', 'objects/chair-white-1.png');
     
     // Keyboards
-    this.load.image('keyboard8', 'assets/objects/keyboard8.png');
-    this.load.image('keyboard7', 'assets/objects/keyboard7.png');
-    this.load.image('keyboard6', 'assets/objects/keyboard6.png');
-    this.load.image('keyboard5', 'assets/objects/keyboard5.png');
-    this.load.image('keyboard4', 'assets/objects/keyboard4.png');
-    this.load.image('keyboard3', 'assets/objects/keyboard3.png');
-    this.load.image('keyboard2', 'assets/objects/keyboard2.png');
-    this.load.image('keyboard1', 'assets/objects/keyboard1.png');
+    this.load.image('keyboard8', 'objects/keyboard8.png');
+    this.load.image('keyboard7', 'objects/keyboard7.png');
+    this.load.image('keyboard6', 'objects/keyboard6.png');
+    this.load.image('keyboard5', 'objects/keyboard5.png');
+    this.load.image('keyboard4', 'objects/keyboard4.png');
+    this.load.image('keyboard3', 'objects/keyboard3.png');
+    this.load.image('keyboard2', 'objects/keyboard2.png');
+    this.load.image('keyboard1', 'objects/keyboard1.png');
     
     // Safes
-    this.load.image('safe5', 'assets/objects/safe5.png');
-    this.load.image('safe4', 'assets/objects/safe4.png');
-    this.load.image('safe3', 'assets/objects/safe3.png');
-    this.load.image('safe2', 'assets/objects/safe2.png');
-    this.load.image('safe1', 'assets/objects/safe1.png');
+    this.load.image('safe5', 'objects/safe5.png');
+    this.load.image('safe4', 'objects/safe4.png');
+    this.load.image('safe3', 'objects/safe3.png');
+    this.load.image('safe2', 'objects/safe2.png');
+    this.load.image('safe1', 'objects/safe1.png');
     
     // Notes
-    this.load.image('notes1', 'assets/objects/notes1.png');
-    this.load.image('notes2', 'assets/objects/notes2.png');
-    this.load.image('notes3', 'assets/objects/notes3.png');
-    this.load.image('notes4', 'assets/objects/notes4.png');
+    this.load.image('notes1', 'objects/notes1.png');
+    this.load.image('notes2', 'objects/notes2.png');
+    this.load.image('notes3', 'objects/notes3.png');
+    this.load.image('notes4', 'objects/notes4.png');
 
     
     // Servers and tech
-    this.load.image('servers', 'assets/objects/servers.png');
-    this.load.image('servers3', 'assets/objects/servers3.png');
-    this.load.image('servers2', 'assets/objects/servers2.png');
-    this.load.image('sofa1', 'assets/objects/sofa1.png');
-    this.load.image('plant-large13', 'assets/objects/plant-large13.png');
-    this.load.image('office-misc-lamp4', 'assets/objects/office-misc-lamp4.png');
-    this.load.image('chair-waiting-right-1', 'assets/objects/chair-waiting-right-1.png');
-    this.load.image('chair-waiting-left-1', 'assets/objects/chair-waiting-left-1.png');
-    this.load.image('plant-large12', 'assets/objects/plant-large12.png');
-    this.load.image('plant-large11', 'assets/objects/plant-large11.png');
+    this.load.image('servers', 'objects/servers.png');
+    this.load.image('servers3', 'objects/servers3.png');
+    this.load.image('servers2', 'objects/servers2.png');
+    this.load.image('sofa1', 'objects/sofa1.png');
+    this.load.image('plant-large13', 'objects/plant-large13.png');
+    this.load.image('office-misc-lamp4', 'objects/office-misc-lamp4.png');
+    this.load.image('chair-waiting-right-1', 'objects/chair-waiting-right-1.png');
+    this.load.image('chair-waiting-left-1', 'objects/chair-waiting-left-1.png');
+    this.load.image('plant-large12', 'objects/plant-large12.png');
+    this.load.image('plant-large11', 'objects/plant-large11.png');
     
     // Load animated plant frames
-    this.load.image('plant-large11-top-ani1', 'assets/objects/plant-large11-top-ani1.png');
-    this.load.image('plant-large11-top-ani2', 'assets/objects/plant-large11-top-ani2.png');
-    this.load.image('plant-large11-top-ani3', 'assets/objects/plant-large11-top-ani3.png');
-    this.load.image('plant-large11-top-ani4', 'assets/objects/plant-large11-top-ani4.png');
+    this.load.image('plant-large11-top-ani1', 'objects/plant-large11-top-ani1.png');
+    this.load.image('plant-large11-top-ani2', 'objects/plant-large11-top-ani2.png');
+    this.load.image('plant-large11-top-ani3', 'objects/plant-large11-top-ani3.png');
+    this.load.image('plant-large11-top-ani4', 'objects/plant-large11-top-ani4.png');
     
-    this.load.image('plant-large12-top-ani1', 'assets/objects/plant-large12-top-ani1.png');
-    this.load.image('plant-large12-top-ani2', 'assets/objects/plant-large12-top-ani2.png');
-    this.load.image('plant-large12-top-ani3', 'assets/objects/plant-large12-top-ani3.png');
-    this.load.image('plant-large12-top-ani4', 'assets/objects/plant-large12-top-ani4.png');
-    this.load.image('plant-large12-top-ani5', 'assets/objects/plant-large12-top-ani5.png');
+    this.load.image('plant-large12-top-ani1', 'objects/plant-large12-top-ani1.png');
+    this.load.image('plant-large12-top-ani2', 'objects/plant-large12-top-ani2.png');
+    this.load.image('plant-large12-top-ani3', 'objects/plant-large12-top-ani3.png');
+    this.load.image('plant-large12-top-ani4', 'objects/plant-large12-top-ani4.png');
+    this.load.image('plant-large12-top-ani5', 'objects/plant-large12-top-ani5.png');
     
-    this.load.image('plant-large13-top-ani1', 'assets/objects/plant-large13-top-ani1.png');
-    this.load.image('plant-large13-top-ani2', 'assets/objects/plant-large13-top-ani2.png');
-    this.load.image('plant-large13-top-ani3', 'assets/objects/plant-large13-top-ani3.png');
-    this.load.image('plant-large13-top-ani4', 'assets/objects/plant-large13-top-ani4.png');
-    this.load.image('pc1', 'assets/objects/pc1.png');
-    this.load.image('pc3', 'assets/objects/pc3.png');
-    this.load.image('pc4', 'assets/objects/pc4.png');
-    this.load.image('pc5', 'assets/objects/pc5.png');
-    this.load.image('pc6', 'assets/objects/pc6.png');
-    this.load.image('pc7', 'assets/objects/pc7.png');
-    this.load.image('pc8', 'assets/objects/pc8.png');
-    this.load.image('pc9', 'assets/objects/pc9.png');
-    this.load.image('pc10', 'assets/objects/pc10.png');
-    this.load.image('pc11', 'assets/objects/pc11.png');
-    this.load.image('pc12', 'assets/objects/pc12.png');
+    this.load.image('plant-large13-top-ani1', 'objects/plant-large13-top-ani1.png');
+    this.load.image('plant-large13-top-ani2', 'objects/plant-large13-top-ani2.png');
+    this.load.image('plant-large13-top-ani3', 'objects/plant-large13-top-ani3.png');
+    this.load.image('plant-large13-top-ani4', 'objects/plant-large13-top-ani4.png');
+    this.load.image('pc1', 'objects/pc1.png');
+    this.load.image('pc3', 'objects/pc3.png');
+    this.load.image('pc4', 'objects/pc4.png');
+    this.load.image('pc5', 'objects/pc5.png');
+    this.load.image('pc6', 'objects/pc6.png');
+    this.load.image('pc7', 'objects/pc7.png');
+    this.load.image('pc8', 'objects/pc8.png');
+    this.load.image('pc9', 'objects/pc9.png');
+    this.load.image('pc10', 'objects/pc10.png');
+    this.load.image('pc11', 'objects/pc11.png');
+    this.load.image('pc12', 'objects/pc12.png');
 
     
     // Laptops
-    this.load.image('laptop7', 'assets/objects/laptop7.png');
-    this.load.image('laptop6', 'assets/objects/laptop6.png');
-    this.load.image('laptop5', 'assets/objects/laptop5.png');
-    this.load.image('laptop4', 'assets/objects/laptop4.png');
-    this.load.image('laptop3', 'assets/objects/laptop3.png');
-    this.load.image('laptop2', 'assets/objects/laptop2.png');
-    this.load.image('laptop1', 'assets/objects/laptop1.png');
+    this.load.image('laptop7', 'objects/laptop7.png');
+    this.load.image('laptop6', 'objects/laptop6.png');
+    this.load.image('laptop5', 'objects/laptop5.png');
+    this.load.image('laptop4', 'objects/laptop4.png');
+    this.load.image('laptop3', 'objects/laptop3.png');
+    this.load.image('laptop2', 'objects/laptop2.png');
+    this.load.image('laptop1', 'objects/laptop1.png');
     
     // Chalkboards and bookcases
-    this.load.image('chalkboard3', 'assets/objects/chalkboard3.png');
-    this.load.image('chalkboard2', 'assets/objects/chalkboard2.png');
-    this.load.image('chalkboard', 'assets/objects/chalkboard.png');
-    this.load.image('bookcase', 'assets/objects/bookcase.png');
+    this.load.image('chalkboard3', 'objects/chalkboard3.png');
+    this.load.image('chalkboard2', 'objects/chalkboard2.png');
+    this.load.image('chalkboard', 'objects/chalkboard.png');
+    this.load.image('bookcase', 'objects/bookcase.png');
     
     // Spooky basement items
-    this.load.image('spooky-splatter', 'assets/objects/spooky-splatter.png');
-    this.load.image('spooky-candles2', 'assets/objects/spooky-candles2.png');
-    this.load.image('spooky-candles', 'assets/objects/spooky-candles.png');
-    this.load.image('torch-left', 'assets/objects/torch-left.png');
-    this.load.image('torch-right', 'assets/objects/torch-right.png');
-    this.load.image('torch-1', 'assets/objects/torch-1.png');
+    this.load.image('spooky-splatter', 'objects/spooky-splatter.png');
+    this.load.image('spooky-candles2', 'objects/spooky-candles2.png');
+    this.load.image('spooky-candles', 'objects/spooky-candles.png');
+    this.load.image('torch-left', 'objects/torch-left.png');
+    this.load.image('torch-right', 'objects/torch-right.png');
+    this.load.image('torch-1', 'objects/torch-1.png');
 
     // Load character sprite sheet instead of single image
-    this.load.spritesheet('hacker', 'assets/characters/hacker.png', {
+    this.load.spritesheet('hacker', 'characters/hacker.png', {
         frameWidth: 64,
         frameHeight: 64
     });
 
     // Load character sprite sheet instead of single image
-    this.load.spritesheet('hacker-red', 'assets/characters/hacker-red.png', {
+    this.load.spritesheet('hacker-red', 'characters/hacker-red.png', {
         frameWidth: 64,
         frameHeight: 64
     });
@@ -402,37 +402,37 @@ export function preload() {
     // Animated plant textures are loaded above
     
     // Load swivel chair rotation images
-    this.load.image('chair-exec-rotate1', 'assets/objects/chair-exec-rotate1.png');
-    this.load.image('chair-exec-rotate2', 'assets/objects/chair-exec-rotate2.png');
-    this.load.image('chair-exec-rotate3', 'assets/objects/chair-exec-rotate3.png');
-    this.load.image('chair-exec-rotate4', 'assets/objects/chair-exec-rotate4.png');
-    this.load.image('chair-exec-rotate5', 'assets/objects/chair-exec-rotate5.png');
-    this.load.image('chair-exec-rotate6', 'assets/objects/chair-exec-rotate6.png');
-    this.load.image('chair-exec-rotate7', 'assets/objects/chair-exec-rotate7.png');
-    this.load.image('chair-exec-rotate8', 'assets/objects/chair-exec-rotate8.png');
+    this.load.image('chair-exec-rotate1', 'objects/chair-exec-rotate1.png');
+    this.load.image('chair-exec-rotate2', 'objects/chair-exec-rotate2.png');
+    this.load.image('chair-exec-rotate3', 'objects/chair-exec-rotate3.png');
+    this.load.image('chair-exec-rotate4', 'objects/chair-exec-rotate4.png');
+    this.load.image('chair-exec-rotate5', 'objects/chair-exec-rotate5.png');
+    this.load.image('chair-exec-rotate6', 'objects/chair-exec-rotate6.png');
+    this.load.image('chair-exec-rotate7', 'objects/chair-exec-rotate7.png');
+    this.load.image('chair-exec-rotate8', 'objects/chair-exec-rotate8.png');
     
     // Load white chair rotation images
-    this.load.image('chair-white-1-rotate1', 'assets/objects/chair-white-1-rotate1.png');
-    this.load.image('chair-white-1-rotate2', 'assets/objects/chair-white-1-rotate2.png');
-    this.load.image('chair-white-1-rotate3', 'assets/objects/chair-white-1-rotate3.png');
-    this.load.image('chair-white-1-rotate4', 'assets/objects/chair-white-1-rotate4.png');
-    this.load.image('chair-white-1-rotate5', 'assets/objects/chair-white-1-rotate5.png');
-    this.load.image('chair-white-1-rotate6', 'assets/objects/chair-white-1-rotate6.png');
-    this.load.image('chair-white-1-rotate7', 'assets/objects/chair-white-1-rotate7.png');
-    this.load.image('chair-white-1-rotate8', 'assets/objects/chair-white-1-rotate8.png');
+    this.load.image('chair-white-1-rotate1', 'objects/chair-white-1-rotate1.png');
+    this.load.image('chair-white-1-rotate2', 'objects/chair-white-1-rotate2.png');
+    this.load.image('chair-white-1-rotate3', 'objects/chair-white-1-rotate3.png');
+    this.load.image('chair-white-1-rotate4', 'objects/chair-white-1-rotate4.png');
+    this.load.image('chair-white-1-rotate5', 'objects/chair-white-1-rotate5.png');
+    this.load.image('chair-white-1-rotate6', 'objects/chair-white-1-rotate6.png');
+    this.load.image('chair-white-1-rotate7', 'objects/chair-white-1-rotate7.png');
+    this.load.image('chair-white-1-rotate8', 'objects/chair-white-1-rotate8.png');
     
-    this.load.image('chair-white-2-rotate1', 'assets/objects/chair-white-2-rotate1.png');
-    this.load.image('chair-white-2-rotate2', 'assets/objects/chair-white-2-rotate2.png');
-    this.load.image('chair-white-2-rotate3', 'assets/objects/chair-white-2-rotate3.png');
-    this.load.image('chair-white-2-rotate4', 'assets/objects/chair-white-2-rotate4.png');
-    this.load.image('chair-white-2-rotate5', 'assets/objects/chair-white-2-rotate5.png');
-    this.load.image('chair-white-2-rotate6', 'assets/objects/chair-white-2-rotate6.png');
-    this.load.image('chair-white-2-rotate7', 'assets/objects/chair-white-2-rotate7.png');
-    this.load.image('chair-white-2-rotate8', 'assets/objects/chair-white-2-rotate8.png');
+    this.load.image('chair-white-2-rotate1', 'objects/chair-white-2-rotate1.png');
+    this.load.image('chair-white-2-rotate2', 'objects/chair-white-2-rotate2.png');
+    this.load.image('chair-white-2-rotate3', 'objects/chair-white-2-rotate3.png');
+    this.load.image('chair-white-2-rotate4', 'objects/chair-white-2-rotate4.png');
+    this.load.image('chair-white-2-rotate5', 'objects/chair-white-2-rotate5.png');
+    this.load.image('chair-white-2-rotate6', 'objects/chair-white-2-rotate6.png');
+    this.load.image('chair-white-2-rotate7', 'objects/chair-white-2-rotate7.png');
+    this.load.image('chair-white-2-rotate8', 'objects/chair-white-2-rotate8.png');
 
     // Load audio files
     // NPC system sounds
-    this.load.audio('message_received', 'assets/sounds/message_received.mp3');
+    this.load.audio('message_received', 'sounds/message_received.mp3');
     
     // Initialize sound manager and preload all sounds
     // Store as window property so we can access it later in create()

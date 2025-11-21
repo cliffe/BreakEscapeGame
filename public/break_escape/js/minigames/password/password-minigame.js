@@ -302,7 +302,7 @@ export class PasswordMinigame extends MinigameScene {
         // Update button image
         const img = this.togglePasswordBtn.querySelector('img');
         if (img) {
-            img.src = this.gameData.showPassword ? 'assets/icons/visible.png' : 'assets/icons/hidden.png';
+            img.src = this.gameData.showPassword ? 'icons/visible.png' : 'icons/hidden.png';
         }
     }
     

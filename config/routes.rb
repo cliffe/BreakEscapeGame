@@ -1,10 +1,12 @@
 BreakEscape::Engine.routes.draw do
-  # Static files - match only static file paths (must come BEFORE resource routes)
-  # Note: These routes are automatically prefixed with /break_escape by the mount in the parent app
+  # Static files - caught by routes and served by lightweight controller
+  # This ensures files are served from the engine's public directory
+  # Constraint { path: /.*/ } ensures we capture the full path including filename with extension
   get '/css/*path',    to: 'static_files#serve', constraints: { path: /.*/ }
   get '/js/*path',     to: 'static_files#serve', constraints: { path: /.*/ }
   get '/assets/*path', to: 'static_files#serve', constraints: { path: /.*/ }
   get '/stylesheets/*path', to: 'static_files#serve', constraints: { path: /.*/ }
+  get '/:filename.html', to: 'static_files#serve', constraints: { filename: /test-.*|index/ }
 
   # Mission selection
   resources :missions, only: [:index, :show]

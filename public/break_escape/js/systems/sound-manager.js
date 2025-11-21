@@ -29,58 +29,58 @@ class SoundManager {
      */
     preloadSounds() {
         // Lockpicking mini-game sounds
-        this.scene.load.audio('lockpick_binding', 'assets/sounds/lockpick_binding.mp3');
-        this.scene.load.audio('lockpick_click', 'assets/sounds/lockpick_click.mp3');
-        this.scene.load.audio('lockpick_overtension', 'assets/sounds/lockpick_overtension.mp3');
-        this.scene.load.audio('lockpick_reset', 'assets/sounds/lockpick_reset.mp3');
-        this.scene.load.audio('lockpick_set', 'assets/sounds/lockpick_set.mp3');
-        this.scene.load.audio('lockpick_success', 'assets/sounds/lockpick_success.mp3');
-        this.scene.load.audio('lockpick_tension', 'assets/sounds/lockpick_tension.mp3');
-        this.scene.load.audio('lockpick_wrong', 'assets/sounds/lockpick_wrong.mp3');
+        this.scene.load.audio('lockpick_binding', 'sounds/lockpick_binding.mp3');
+        this.scene.load.audio('lockpick_click', 'sounds/lockpick_click.mp3');
+        this.scene.load.audio('lockpick_overtension', 'sounds/lockpick_overtension.mp3');
+        this.scene.load.audio('lockpick_reset', 'sounds/lockpick_reset.mp3');
+        this.scene.load.audio('lockpick_set', 'sounds/lockpick_set.mp3');
+        this.scene.load.audio('lockpick_success', 'sounds/lockpick_success.mp3');
+        this.scene.load.audio('lockpick_tension', 'sounds/lockpick_tension.mp3');
+        this.scene.load.audio('lockpick_wrong', 'sounds/lockpick_wrong.mp3');
 
         // GASP door sounds
-        this.scene.load.audio('door_knock', 'assets/sounds/GASP_Door Knock.mp3');
+        this.scene.load.audio('door_knock', 'sounds/GASP_Door Knock.mp3');
 
         // GASP interaction sounds
-        this.scene.load.audio('item_interact_1', 'assets/sounds/GASP_Item Interact_1.mp3');
-        this.scene.load.audio('item_interact_2', 'assets/sounds/GASP_Item Interact_2.mp3');
-        this.scene.load.audio('item_interact_3', 'assets/sounds/GASP_Item Interact_3.mp3');
+        this.scene.load.audio('item_interact_1', 'sounds/GASP_Item Interact_1.mp3');
+        this.scene.load.audio('item_interact_2', 'sounds/GASP_Item Interact_2.mp3');
+        this.scene.load.audio('item_interact_3', 'sounds/GASP_Item Interact_3.mp3');
 
         // GASP lock interaction sounds
-        this.scene.load.audio('lock_interact_1', 'assets/sounds/GASP_Lock Interact_1.mp3');
-        this.scene.load.audio('lock_interact_2', 'assets/sounds/GASP_Lock Interact_2.mp3');
-        this.scene.load.audio('lock_interact_3', 'assets/sounds/GASP_Lock Interact_3.mp3');
-        this.scene.load.audio('lock_interact_4', 'assets/sounds/GASP_Lock Interact_4.mp3');
-        this.scene.load.audio('lock_and_load', 'assets/sounds/GASP_Lock and Load.mp3');
+        this.scene.load.audio('lock_interact_1', 'sounds/GASP_Lock Interact_1.mp3');
+        this.scene.load.audio('lock_interact_2', 'sounds/GASP_Lock Interact_2.mp3');
+        this.scene.load.audio('lock_interact_3', 'sounds/GASP_Lock Interact_3.mp3');
+        this.scene.load.audio('lock_interact_4', 'sounds/GASP_Lock Interact_4.mp3');
+        this.scene.load.audio('lock_and_load', 'sounds/GASP_Lock and Load.mp3');
 
         // GASP UI click sounds
-        this.scene.load.audio('ui_click_1', 'assets/sounds/GASP_UI_Clicks_1.mp3');
-        this.scene.load.audio('ui_click_2', 'assets/sounds/GASP_UI_Clicks_2.mp3');
-        this.scene.load.audio('ui_click_3', 'assets/sounds/GASP_UI_Clicks_3.mp3');
-        this.scene.load.audio('ui_click_4', 'assets/sounds/GASP_UI_Clicks_4.mp3');
-        this.scene.load.audio('ui_click_6', 'assets/sounds/GASP_UI_Clicks_6.mp3');
+        this.scene.load.audio('ui_click_1', 'sounds/GASP_UI_Clicks_1.mp3');
+        this.scene.load.audio('ui_click_2', 'sounds/GASP_UI_Clicks_2.mp3');
+        this.scene.load.audio('ui_click_3', 'sounds/GASP_UI_Clicks_3.mp3');
+        this.scene.load.audio('ui_click_4', 'sounds/GASP_UI_Clicks_4.mp3');
+        this.scene.load.audio('ui_click_6', 'sounds/GASP_UI_Clicks_6.mp3');
 
         // GASP UI alert sounds
-        this.scene.load.audio('ui_alert_1', 'assets/sounds/GASP_UI_Alert_1.mp3');
-        this.scene.load.audio('ui_alert_2', 'assets/sounds/GASP_UI_Alert_2.mp3');
+        this.scene.load.audio('ui_alert_1', 'sounds/GASP_UI_Alert_1.mp3');
+        this.scene.load.audio('ui_alert_2', 'sounds/GASP_UI_Alert_2.mp3');
 
         // GASP UI confirm sound
-        this.scene.load.audio('ui_confirm', 'assets/sounds/GASP_UI_Confirm.mp3');
+        this.scene.load.audio('ui_confirm', 'sounds/GASP_UI_Confirm.mp3');
 
         // GASP UI notification sounds
-        this.scene.load.audio('ui_notification_1', 'assets/sounds/GASP_UI_Notification_1.mp3');
-        this.scene.load.audio('ui_notification_2', 'assets/sounds/GASP_UI_Notification_2.mp3');
-        this.scene.load.audio('ui_notification_3', 'assets/sounds/GASP_UI_Notification_3.mp3');
-        this.scene.load.audio('ui_notification_4', 'assets/sounds/GASP_UI_Notification_4.mp3');
-        this.scene.load.audio('ui_notification_5', 'assets/sounds/GASP_UI_Notification_5.mp3');
-        this.scene.load.audio('ui_notification_6', 'assets/sounds/GASP_UI_Notification_6.mp3');
+        this.scene.load.audio('ui_notification_1', 'sounds/GASP_UI_Notification_1.mp3');
+        this.scene.load.audio('ui_notification_2', 'sounds/GASP_UI_Notification_2.mp3');
+        this.scene.load.audio('ui_notification_3', 'sounds/GASP_UI_Notification_3.mp3');
+        this.scene.load.audio('ui_notification_4', 'sounds/GASP_UI_Notification_4.mp3');
+        this.scene.load.audio('ui_notification_5', 'sounds/GASP_UI_Notification_5.mp3');
+        this.scene.load.audio('ui_notification_6', 'sounds/GASP_UI_Notification_6.mp3');
 
         // GASP UI reject sound
-        this.scene.load.audio('ui_reject', 'assets/sounds/GASP_UI_Reject.mp3');
+        this.scene.load.audio('ui_reject', 'sounds/GASP_UI_Reject.mp3');
 
         // Game-specific sounds
-        this.scene.load.audio('chair_roll', 'assets/sounds/chair_roll.mp3');
-        this.scene.load.audio('message_received', 'assets/sounds/message_received.mp3');
+        this.scene.load.audio('chair_roll', 'sounds/chair_roll.mp3');
+        this.scene.load.audio('message_received', 'sounds/message_received.mp3');
     }
 
     /**

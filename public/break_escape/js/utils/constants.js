@@ -49,7 +49,7 @@ export const GAME_CONFIG = typeof Phaser !== 'undefined' ? {
     parent: 'game-container',
     pixelArt: true,
     loader: {
-        baseURL: '/break_escape/'
+        baseURL: (window.breakEscapeConfig?.assetsPath || '/break_escape/assets') + '/'
     },
     scale: {
         mode: Phaser.Scale.ENVELOP,  // Fill entire container while maintaining aspect ratio
