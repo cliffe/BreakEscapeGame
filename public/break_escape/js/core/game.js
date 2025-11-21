@@ -441,9 +441,9 @@ export function preload() {
 
     // Load scenario from Rails API endpoint if available, otherwise try URL parameter
     if (window.breakEscapeConfig?.apiBasePath) {
-        // Load scenario map from Rails API endpoint (minimal metadata for lazy-loading)
+        // Load scenario from Rails API endpoint (returns filtered scenario for security)
         // Use absolute URL with origin to prevent Phaser baseURL from interfering
-        const scenarioUrl = `${window.location.origin}${window.breakEscapeConfig.apiBasePath}/scenario_map`;
+        const scenarioUrl = `${window.location.origin}${window.breakEscapeConfig.apiBasePath}/scenario`;
         this.load.json('gameScenarioJSON', scenarioUrl);
     } else {
         // Fallback to old behavior for standalone HTML files

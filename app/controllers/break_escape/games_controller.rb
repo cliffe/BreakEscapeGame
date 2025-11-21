@@ -10,10 +10,23 @@ module BreakEscape
     end
 
     # GET /games/:id/scenario
-    # Returns scenario JSON for this game instance
+    # Returns filtered scenario JSON for this game instance
+    # Uses filtered_scenario_for_bootstrap for lazy-loading support
     def scenario
       authorize @game if defined?(Pundit)
-      render json: @game.scenario_data
+
+      begin
+        # Use filtered bootstrap scenario and remove 'requires' fields for security
+        filtered = @game.filtered_scenario_for_bootstrap
+
+        # Remove 'requires' fields recursively for security
+        filter_requires_recursive(filtered)
+
+        render json: filtered
+      rescue => e
+        Rails.logger.error "[BreakEscape] scenario error: #{e.message}\n#{e.backtrace.first(5).join("\n")}"
+        render_error("Failed to generate scenario: #{e.message}", :internal_server_error)
+      end
     end
 
     # GET /games/:id/scenario_map
@@ -275,6 +288,19 @@ module BreakEscape
 
     def set_game
       @game = Game.find(params[:id])
+    end
+
+    def filter_requires_recursive(obj)
+      case obj
+      when Hash
+        # Remove 'requires' (the answer/solution) from all objects
+        obj.delete('requires')
+
+        # Recursively filter nested structures
+        obj.each_value { |value| filter_requires_recursive(value) }
+      when Array
+        obj.each { |item| filter_requires_recursive(item) }
+      end
     end
 
     def track_npc_encounters(room_id, room_data)
