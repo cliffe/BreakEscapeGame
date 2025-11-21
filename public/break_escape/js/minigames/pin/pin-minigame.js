@@ -247,11 +247,14 @@ export class PinMinigame extends MinigameScene {
 
         this.attemptCount++;
 
-        // Check if we need server-side validation (correctPin is null)
+        // Check if we need server-side validation (correctPin is null or empty)
         let isCorrect;
-        if (this.correctPin === null && window.APIClient && window.gameId) {
+        const apiClient = window.ApiClient || window.APIClient;
+        if ((!this.correctPin || this.correctPin === '') && apiClient && window.gameId) {
+            console.log('Using server-side PIN validation');
             isCorrect = await this.validatePinWithServer(this.currentInput);
         } else {
+            console.log('Using client-side PIN validation');
             // Client-side validation (backwards compatibility)
             isCorrect = this.currentInput === this.correctPin;
         }
@@ -295,8 +298,9 @@ export class PinMinigame extends MinigameScene {
 
             console.log('Validating PIN with server:', { targetType, targetId, attempt: enteredPin });
 
-            // Call server API for validation
-            const response = await window.APIClient.unlock(targetType, targetId, enteredPin, 'pin');
+            // Call server API for validation (use ApiClient with correct casing)
+            const apiClient = window.ApiClient || window.APIClient;
+            const response = await apiClient.unlock(targetType, targetId, enteredPin, 'pin');
 
             return response.success;
         } catch (error) {

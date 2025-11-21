@@ -379,6 +379,7 @@ export class PasswordMinigame extends MinigameScene {
         console.log('submitPassword called', {
             isActive: this.gameState.isActive,
             correctPassword: this.correctPassword,
+            hasApiClient: !!window.ApiClient,
             hasAPIClient: !!window.APIClient,
             gameId: window.gameId
         });
@@ -396,12 +397,17 @@ export class PasswordMinigame extends MinigameScene {
         this.gameData.attempts++;
         this.attemptsDisplay.textContent = this.gameData.attempts;
 
-        // Check if we need server-side validation (correctPassword is null)
-        if (this.correctPassword === null && window.APIClient && window.gameId) {
+        // Check if we need server-side validation (correctPassword is null or empty string)
+        const apiClient = window.ApiClient || window.APIClient;
+        if ((!this.correctPassword || this.correctPassword === '') && apiClient && window.gameId) {
             console.log('Using server-side validation');
             await this.validatePasswordWithServer(enteredPassword);
         } else {
-            console.log('Using client-side validation');
+            console.log('Using client-side validation', {
+                correctPassword: this.correctPassword,
+                hasApiClient: !!apiClient,
+                gameId: window.gameId
+            });
             // Client-side validation (backwards compatibility)
             if (enteredPassword === this.correctPassword) {
                 this.passwordCorrect();
@@ -433,8 +439,9 @@ export class PasswordMinigame extends MinigameScene {
 
             console.log('Validating password with server:', { targetType, targetId, attempt: enteredPassword });
 
-            // Call server API for validation
-            const response = await window.APIClient.unlock(targetType, targetId, enteredPassword, 'password');
+            // Call server API for validation (use ApiClient with correct casing)
+            const apiClient = window.ApiClient || window.APIClient;
+            const response = await apiClient.unlock(targetType, targetId, enteredPassword, 'password');
 
             if (response.success) {
                 this.passwordCorrect();
