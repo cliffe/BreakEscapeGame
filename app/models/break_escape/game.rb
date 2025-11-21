@@ -223,7 +223,8 @@ module BreakEscape
     end
 
     def generate_scenario_data
-      self.scenario_data = mission.generate_scenario_data
+      # Only generate scenario data if it's not already set (e.g., in tests)
+      self.scenario_data ||= mission.generate_scenario_data
     end
 
     def initialize_player_state

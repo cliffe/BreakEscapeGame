@@ -1,0 +1,600 @@
+require 'test_helper'
+
+module BreakEscape
+  class UnlockSystemTest < ActionDispatch::IntegrationTest
+    include Engine.routes.url_helpers
+
+    setup do
+      @mission = break_escape_missions(:ceo_exfil)
+      @player = break_escape_demo_users(:test_user)
+
+      # Create a comprehensive scenario with all lock types
+      @game = Game.create!(
+        mission: @mission,
+        player: @player,
+        scenario_data: {
+          "startRoom" => "lobby",
+          "rooms" => {
+            "lobby" => {
+              "type" => "office_lobby",
+              "locked" => false,
+              "connections" => {
+                "north" => "office_pin",
+                "south" => "office_password",
+                "east" => "office_key",
+                "west" => "office_unlocked"
+              },
+              "objects" => [
+                {
+                  "id" => "safe_pin",
+                  "name" => "PIN Safe",
+                  "type" => "safe",
+                  "locked" => true,
+                  "lockType" => "pin",
+                  "requires" => "1234",
+                  "contents" => [{ "type" => "document", "name" => "Secret Document" }]
+                },
+                {
+                  "id" => "cabinet_password",
+                  "name" => "Password Cabinet",
+                  "type" => "cabinet",
+                  "locked" => true,
+                  "lockType" => "password",
+                  "requires" => "secret123",
+                  "contents" => [{ "type" => "key", "name" => "Master Key" }]
+                },
+                {
+                  "id" => "drawer_key",
+                  "name" => "Locked Drawer",
+                  "type" => "drawer",
+                  "locked" => true,
+                  "lockType" => "key",
+                  "requires" => "drawer_key",
+                  "contents" => [{ "type" => "note", "name" => "Important Note" }]
+                },
+                {
+                  "id" => "box_lockpick",
+                  "name" => "Lockpickable Box",
+                  "type" => "box",
+                  "locked" => true,
+                  "lockType" => "lockpick",
+                  "difficulty" => 3,
+                  "contents" => [{ "type" => "coin", "name" => "Gold Coin" }]
+                },
+                {
+                  "id" => "scanner_biometric",
+                  "name" => "Biometric Scanner",
+                  "type" => "scanner",
+                  "locked" => true,
+                  "lockType" => "biometric",
+                  "requires" => "ceo_fingerprint",
+                  "contents" => [{ "type" => "usb", "name" => "Data USB" }]
+                },
+                {
+                  "id" => "terminal_bluetooth",
+                  "name" => "Bluetooth Terminal",
+                  "type" => "terminal",
+                  "locked" => true,
+                  "lockType" => "bluetooth",
+                  "requires" => "admin_device",
+                  "contents" => [{ "type" => "file", "name" => "Access Codes" }]
+                },
+                {
+                  "id" => "door_rfid",
+                  "name" => "RFID Door",
+                  "type" => "door",
+                  "locked" => true,
+                  "lockType" => "rfid",
+                  "requires" => "admin_badge",
+                  "contents" => [{ "type" => "keycard", "name" => "Security Card" }]
+                },
+                {
+                  "id" => "chest_unlocked",
+                  "name" => "Open Chest",
+                  "type" => "chest",
+                  "locked" => false,
+                  "contents" => [{ "type" => "tool", "name" => "Wrench" }]
+                }
+              ]
+            },
+            "office_pin" => {
+              "type" => "office",
+              "locked" => true,
+              "lockType" => "pin",
+              "requires" => "9876",
+              "connections" => { "south" => "lobby" },
+              "objects" => []
+            },
+            "office_password" => {
+              "type" => "office",
+              "locked" => true,
+              "lockType" => "password",
+              "requires" => "opensesame",
+              "connections" => { "north" => "lobby" },
+              "objects" => []
+            },
+            "office_key" => {
+              "type" => "office",
+              "locked" => true,
+              "lockType" => "key",
+              "requires" => "office_key",
+              "connections" => { "west" => "lobby" },
+              "objects" => []
+            },
+            "office_unlocked" => {
+              "type" => "office",
+              "locked" => false,
+              "connections" => { "east" => "lobby" },
+              "objects" => []
+            }
+          }
+        },
+        player_state: {
+          "currentRoom" => "lobby",
+          "unlockedRooms" => ["lobby"],
+          "unlockedObjects" => [],
+          "inventory" => [],
+          "encounteredNPCs" => [],
+          "globalVariables" => {},
+          "biometricSamples" => [],
+          "biometricUnlocks" => [],
+          "bluetoothDevices" => [],
+          "notes" => [],
+          "health" => 100
+        }
+      )
+    end
+
+    # =============================================================================
+    # DOOR UNLOCK TESTS - PIN VALIDATION (SERVER-SIDE)
+    # =============================================================================
+
+    test "door with PIN lock: correct PIN should unlock" do
+      post unlock_game_url(@game), params: {
+        targetType: 'door',
+        targetId: 'office_pin',
+        attempt: '9876',
+        method: 'pin'
+      }
+
+      assert_response :success
+      json = JSON.parse(@response.body)
+      assert json['success'], "Expected success=true, got: #{json}"
+      assert_equal 'door', json['type']
+      assert json['roomData'], "Expected roomData in response"
+
+      @game.reload
+      assert_includes @game.player_state['unlockedRooms'], 'office_pin',
+        "Room should be added to unlockedRooms"
+    end
+
+    test "door with PIN lock: incorrect PIN should fail" do
+      post unlock_game_url(@game), params: {
+        targetType: 'door',
+        targetId: 'office_pin',
+        attempt: '0000',
+        method: 'pin'
+      }
+
+      assert_response :unprocessable_entity
+      json = JSON.parse(@response.body)
+      assert_equal false, json['success']
+      assert_equal 'Invalid attempt', json['message']
+
+      @game.reload
+      assert_not_includes @game.player_state['unlockedRooms'], 'office_pin',
+        "Room should NOT be added to unlockedRooms"
+    end
+
+    # =============================================================================
+    # DOOR UNLOCK TESTS - PASSWORD VALIDATION (SERVER-SIDE)
+    # =============================================================================
+
+    test "door with password lock: correct password should unlock" do
+      post unlock_game_url(@game), params: {
+        targetType: 'door',
+        targetId: 'office_password',
+        attempt: 'opensesame',
+        method: 'password'
+      }
+
+      assert_response :success
+      json = JSON.parse(@response.body)
+      assert json['success']
+      assert_equal 'door', json['type']
+      assert json['roomData']
+
+      @game.reload
+      assert_includes @game.player_state['unlockedRooms'], 'office_password'
+    end
+
+    test "door with password lock: incorrect password should fail" do
+      post unlock_game_url(@game), params: {
+        targetType: 'door',
+        targetId: 'office_password',
+        attempt: 'wrongpassword',
+        method: 'password'
+      }
+
+      assert_response :unprocessable_entity
+      json = JSON.parse(@response.body)
+      assert_equal false, json['success']
+    end
+
+    test "door with password lock: case sensitivity" do
+      post unlock_game_url(@game), params: {
+        targetType: 'door',
+        targetId: 'office_password',
+        attempt: 'OpenSesame',  # Different case
+        method: 'password'
+      }
+
+      assert_response :unprocessable_entity
+      json = JSON.parse(@response.body)
+      assert_equal false, json['success'],
+        "Password validation should be case-sensitive"
+    end
+
+    # =============================================================================
+    # DOOR UNLOCK TESTS - KEY (CLIENT-VALIDATED, SERVER-TRUSTED)
+    # =============================================================================
+
+    test "door with key lock: should trust client validation" do
+      post unlock_game_url(@game), params: {
+        targetType: 'door',
+        targetId: 'office_key',
+        attempt: nil,  # Client doesn't send attempt for key unlocks
+        method: 'key'
+      }
+
+      assert_response :success
+      json = JSON.parse(@response.body)
+      assert json['success'],
+        "Server should trust client validation for key unlocks"
+      assert json['roomData']
+
+      @game.reload
+      assert_includes @game.player_state['unlockedRooms'], 'office_key'
+    end
+
+    # =============================================================================
+    # DOOR UNLOCK TESTS - UNLOCKED DOORS
+    # =============================================================================
+
+    test "unlocked door: should grant access without validation" do
+      post unlock_game_url(@game), params: {
+        targetType: 'door',
+        targetId: 'office_unlocked',
+        attempt: nil,
+        method: 'unlocked'
+      }
+
+      assert_response :success
+      json = JSON.parse(@response.body)
+      assert json['success'],
+        "Unlocked doors should grant access immediately"
+      assert json['roomData']
+
+      @game.reload
+      assert_includes @game.player_state['unlockedRooms'], 'office_unlocked'
+    end
+
+    # =============================================================================
+    # CONTAINER/OBJECT UNLOCK TESTS - PIN VALIDATION (SERVER-SIDE)
+    # =============================================================================
+
+    test "container with PIN lock: correct PIN should unlock" do
+      post unlock_game_url(@game), params: {
+        targetType: 'object',
+        targetId: 'safe_pin',
+        attempt: '1234',
+        method: 'pin'
+      }
+
+      assert_response :success
+      json = JSON.parse(@response.body)
+      assert json['success']
+      assert_equal 'object', json['type']
+      assert json['hasContents'], "Expected hasContents flag"
+      assert json['contents'], "Expected contents in response"
+      assert_equal 1, json['contents'].length
+
+      @game.reload
+      assert_includes @game.player_state['unlockedObjects'], 'safe_pin'
+    end
+
+    test "container with PIN lock: incorrect PIN should fail" do
+      post unlock_game_url(@game), params: {
+        targetType: 'object',
+        targetId: 'safe_pin',
+        attempt: '0000',
+        method: 'pin'
+      }
+
+      assert_response :unprocessable_entity
+      json = JSON.parse(@response.body)
+      assert_equal false, json['success']
+    end
+
+    # =============================================================================
+    # CONTAINER/OBJECT UNLOCK TESTS - PASSWORD VALIDATION (SERVER-SIDE)
+    # =============================================================================
+
+    test "container with password lock: correct password should unlock" do
+      post unlock_game_url(@game), params: {
+        targetType: 'object',
+        targetId: 'cabinet_password',
+        attempt: 'secret123',
+        method: 'password'
+      }
+
+      assert_response :success
+      json = JSON.parse(@response.body)
+      assert json['success']
+      assert json['hasContents']
+      assert json['contents']
+
+      @game.reload
+      assert_includes @game.player_state['unlockedObjects'], 'cabinet_password'
+    end
+
+    test "container with password lock: empty attempt should fail" do
+      post unlock_game_url(@game), params: {
+        targetType: 'object',
+        targetId: 'cabinet_password',
+        attempt: '',
+        method: 'password'
+      }
+
+      assert_response :unprocessable_entity
+      json = JSON.parse(@response.body)
+      assert_equal false, json['success']
+    end
+
+    # =============================================================================
+    # CONTAINER/OBJECT UNLOCK TESTS - CLIENT-VALIDATED METHODS
+    # =============================================================================
+
+    test "container with key lock: should trust client validation" do
+      post unlock_game_url(@game), params: {
+        targetType: 'object',
+        targetId: 'drawer_key',
+        attempt: nil,
+        method: 'key'
+      }
+
+      assert_response :success
+      json = JSON.parse(@response.body)
+      assert json['success'],
+        "Server should trust client validation for key unlocks"
+    end
+
+    test "container with lockpick: should trust client validation" do
+      post unlock_game_url(@game), params: {
+        targetType: 'object',
+        targetId: 'box_lockpick',
+        attempt: nil,
+        method: 'lockpick'
+      }
+
+      assert_response :success
+      json = JSON.parse(@response.body)
+      assert json['success'],
+        "Server should trust client validation for lockpick unlocks"
+    end
+
+    test "container with biometric lock: should trust client validation" do
+      post unlock_game_url(@game), params: {
+        targetType: 'object',
+        targetId: 'scanner_biometric',
+        attempt: nil,
+        method: 'biometric'
+      }
+
+      assert_response :success
+      json = JSON.parse(@response.body)
+      assert json['success'],
+        "Server should trust client validation for biometric unlocks"
+    end
+
+    test "container with bluetooth lock: should trust client validation" do
+      post unlock_game_url(@game), params: {
+        targetType: 'object',
+        targetId: 'terminal_bluetooth',
+        attempt: nil,
+        method: 'bluetooth'
+      }
+
+      assert_response :success
+      json = JSON.parse(@response.body)
+      assert json['success'],
+        "Server should trust client validation for bluetooth unlocks"
+    end
+
+    test "container with RFID lock: should trust client validation" do
+      post unlock_game_url(@game), params: {
+        targetType: 'object',
+        targetId: 'door_rfid',
+        attempt: nil,
+        method: 'rfid'
+      }
+
+      assert_response :success
+      json = JSON.parse(@response.body)
+      assert json['success'],
+        "Server should trust client validation for RFID unlocks"
+    end
+
+    # =============================================================================
+    # UNLOCKED CONTAINER TESTS
+    # =============================================================================
+
+    test "unlocked container: should grant access without validation" do
+      post unlock_game_url(@game), params: {
+        targetType: 'object',
+        targetId: 'chest_unlocked',
+        attempt: nil,
+        method: 'unlocked'
+      }
+
+      assert_response :success
+      json = JSON.parse(@response.body)
+      assert json['success'],
+        "Unlocked containers should grant access immediately"
+      assert json['hasContents']
+      assert json['contents']
+
+      @game.reload
+      assert_includes @game.player_state['unlockedObjects'], 'chest_unlocked'
+    end
+
+    # =============================================================================
+    # ERROR CASES
+    # =============================================================================
+
+    test "unlock non-existent door should fail" do
+      post unlock_game_url(@game), params: {
+        targetType: 'door',
+        targetId: 'non_existent_room',
+        attempt: '1234',
+        method: 'pin'
+      }
+
+      assert_response :unprocessable_entity
+      json = JSON.parse(@response.body)
+      assert_equal false, json['success']
+    end
+
+    test "unlock non-existent object should fail" do
+      post unlock_game_url(@game), params: {
+        targetType: 'object',
+        targetId: 'non_existent_object',
+        attempt: '1234',
+        method: 'pin'
+      }
+
+      assert_response :unprocessable_entity
+      json = JSON.parse(@response.body)
+      assert_equal false, json['success']
+    end
+
+    test "unlock with invalid method should fail" do
+      post unlock_game_url(@game), params: {
+        targetType: 'door',
+        targetId: 'office_pin',
+        attempt: '9876',
+        method: 'invalid_method'
+      }
+
+      assert_response :unprocessable_entity
+      json = JSON.parse(@response.body)
+      assert_equal false, json['success']
+    end
+
+    # =============================================================================
+    # SECURITY TESTS - ENSURE FILTERED DATA
+    # =============================================================================
+
+    test "door unlock response should not expose 'requires' field for exploitable locks" do
+      post unlock_game_url(@game), params: {
+        targetType: 'door',
+        targetId: 'office_pin',
+        attempt: '9876',
+        method: 'pin'
+      }
+
+      assert_response :success
+      json = JSON.parse(@response.body)
+
+      # Check that the roomData is filtered
+      room_data = json['roomData']
+      assert_nil room_data['requires'],
+        "PIN lock 'requires' field should be filtered from response"
+    end
+
+    test "container unlock response should filter requires from contents" do
+      post unlock_game_url(@game), params: {
+        targetType: 'object',
+        targetId: 'safe_pin',
+        attempt: '1234',
+        method: 'pin'
+      }
+
+      assert_response :success
+      json = JSON.parse(@response.body)
+
+      # Contents should be present but filtered
+      assert json['contents']
+      json['contents'].each do |item|
+        # If item had a lock, the requires should be filtered
+        if item['lockType'] && !%w[biometric bluetooth].include?(item['lockType'])
+          assert_nil item['requires'],
+            "Exploitable lock 'requires' fields should be filtered from contents"
+        end
+      end
+    end
+
+    # =============================================================================
+    # INTEGRATION TESTS - MULTIPLE UNLOCKS
+    # =============================================================================
+
+    test "multiple unlock attempts should update state correctly" do
+      # Unlock door with PIN
+      post unlock_game_url(@game), params: {
+        targetType: 'door',
+        targetId: 'office_pin',
+        attempt: '9876',
+        method: 'pin'
+      }
+      assert_response :success
+
+      # Unlock door with password
+      post unlock_game_url(@game), params: {
+        targetType: 'door',
+        targetId: 'office_password',
+        attempt: 'opensesame',
+        method: 'password'
+      }
+      assert_response :success
+
+      # Unlock container with PIN
+      post unlock_game_url(@game), params: {
+        targetType: 'object',
+        targetId: 'safe_pin',
+        attempt: '1234',
+        method: 'pin'
+      }
+      assert_response :success
+
+      @game.reload
+      assert_equal 3, @game.player_state['unlockedRooms'].length,
+        "Should have 3 unlocked rooms (lobby + 2 new)"
+      assert_equal 1, @game.player_state['unlockedObjects'].length,
+        "Should have 1 unlocked object"
+    end
+
+    test "unlock same door twice should be idempotent" do
+      # First unlock
+      post unlock_game_url(@game), params: {
+        targetType: 'door',
+        targetId: 'office_pin',
+        attempt: '9876',
+        method: 'pin'
+      }
+      assert_response :success
+
+      # Second unlock (should still work)
+      post unlock_game_url(@game), params: {
+        targetType: 'door',
+        targetId: 'office_pin',
+        attempt: '9876',
+        method: 'pin'
+      }
+      assert_response :success
+
+      @game.reload
+      assert_equal 2, @game.player_state['unlockedRooms'].length,
+        "Room should only appear once in unlockedRooms"
+    end
+  end
+end
