@@ -33,6 +33,10 @@ module BreakEscape
       show?
     end
 
+    def room?
+      show?
+    end
+
     class Scope < Scope
       def resolve
         if user&.admin? || user&.account_manager?

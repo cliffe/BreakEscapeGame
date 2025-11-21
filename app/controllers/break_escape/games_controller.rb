@@ -2,7 +2,7 @@ require 'open3'
 
 module BreakEscape
   class GamesController < ApplicationController
-    before_action :set_game, only: [:show, :scenario, :ink]
+    before_action :set_game, only: [:show, :scenario, :ink, :room]
 
     def show
       authorize @game if defined?(Pundit)
@@ -11,9 +11,28 @@ module BreakEscape
 
     # GET /games/:id/scenario
     # Returns scenario JSON for this game instance
+    # Filtered for lazy-loading: only metadata and connections, no room contents
     def scenario
       authorize @game if defined?(Pundit)
-      render json: @game.scenario_data
+      render json: @game.filtered_scenario_for_bootstrap
+    end
+
+    # GET /games/:id/room/:room_id
+    # Returns room data for a specific room (lazy-loading support)
+    def room
+      authorize @game if defined?(Pundit)
+
+      room_id = params[:room_id]
+      return render_error('Missing room_id parameter', :bad_request) unless room_id.present?
+
+      # Get room data from scenario
+      room_data = @game.scenario_data['rooms']&.[](room_id)
+      return render_error("Room not found: #{room_id}", :not_found) unless room_data
+
+      Rails.logger.debug "[BreakEscape] Serving room data for: #{room_id}"
+
+      # Return room data with the room_id for client reference
+      render json: { room_id: room_id, room: room_data }
     end
 
     # GET /games/:id/ink?npc=helper1

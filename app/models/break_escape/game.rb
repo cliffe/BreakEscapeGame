@@ -104,6 +104,29 @@ module BreakEscape
       scenario_data.dig('rooms', room_id)
     end
 
+    def filtered_scenario_for_bootstrap
+      # Returns scenario data without room contents for lazy-loading
+      # This significantly reduces initial payload by only sending metadata
+      filtered = scenario_data.deep_dup
+      
+      # Remove all room contents - they'll be lazy-loaded via /room/:room_id endpoint
+      if filtered['rooms'].present?
+        filtered['rooms'].each do |room_id, room_data|
+          # Keep only essential fields for navigation and metadata
+          # Build new hash with only the fields we want
+          kept_fields = {}
+          %w[type connections locked lockType requires difficulty door_sign].each do |field|
+            kept_fields[field] = room_data[field] if room_data.key?(field)
+          end
+          
+          # Replace room data with filtered version
+          filtered['rooms'][room_id] = kept_fields
+        end
+      end
+      
+      filtered
+    end
+
     def filtered_room_data(room_id)
       room = room_data(room_id)&.deep_dup
       return nil unless room

@@ -17,6 +17,7 @@ BreakEscape::Engine.routes.draw do
       # Scenario and NPC data
       get 'scenario'  # Returns scenario_data JSON
       get 'ink'       # Returns NPC script (JIT compiled)
+      get 'room/:room_id', to: 'games#room'  # Returns room data for lazy-loading
 
       # API endpoints
       scope module: :api do
