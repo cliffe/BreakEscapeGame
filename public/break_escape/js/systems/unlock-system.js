@@ -14,7 +14,7 @@ import { startLockpickingMinigame, startKeySelectionMinigame, startPinMinigame, 
 import { playUISound } from './ui-sounds.js?v=1';
 
 // Helper function to notify server of unlock and get room/container data
-async function notifyServerUnlock(lockable, type, method) {
+export async function notifyServerUnlock(lockable, type, method) {
     let serverResponse;
     const apiClient = window.ApiClient || window.APIClient;
     const gameId = window.breakEscapeConfig?.gameId;

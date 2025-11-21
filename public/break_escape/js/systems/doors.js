@@ -14,7 +14,7 @@ import {
     GRID_UNIT_WIDTH_PX,
     GRID_UNIT_HEIGHT_PX
 } from '../utils/constants.js';
-import { handleUnlock } from './unlock-system.js';
+import { handleUnlock, notifyServerUnlock } from './unlock-system.js';
 
 let gameRef = null;
 let rooms = null;
