@@ -1,4 +1,5 @@
 import { MinigameScene } from '../framework/base-minigame.js';
+import { ASSETS_PATH } from '../../config.js';
 
 export class PasswordMinigame extends MinigameScene {
     constructor(container, params) {
@@ -302,7 +303,8 @@ export class PasswordMinigame extends MinigameScene {
         // Update button image
         const img = this.togglePasswordBtn.querySelector('img');
         if (img) {
-            img.src = this.gameData.showPassword ? 'icons/visible.png' : 'icons/hidden.png';
+            const iconName = this.gameData.showPassword ? 'visible.png' : 'hidden.png';
+            img.src = `${ASSETS_PATH}/icons/${iconName}`;
         }
     }
     

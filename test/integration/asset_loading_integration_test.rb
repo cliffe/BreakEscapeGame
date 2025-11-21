@@ -138,5 +138,20 @@ module BreakEscape
       assert_equal 'text/html', response.content_type
       assert_includes response.body, 'Asset Loading Test'
     end
+
+    test 'should serve door tile image' do
+      get '/break_escape/assets/tiles/door.png'
+      assert_response :success
+      assert_equal 'image/png', response.content_type
+      assert response.body.length > 0, 'Door image should not be empty'
+    end
+
+    test 'should serve key-operations minigame module' do
+      get '/break_escape/js/minigames/lockpicking/key-operations.js'
+      assert_response :success
+      assert_equal 'application/javascript', response.content_type
+      assert_includes response.body, 'KeyOperations'
+      assert_includes response.body, 'this.parent.startWithKeySelection'
+    end
   end
 end

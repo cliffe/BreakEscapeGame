@@ -245,7 +245,7 @@ export class KeyOperations {
                         this.parent.keySelection.createKeysForChallenge('correct_key');
                     } else {
                         // This is the main game - go back to key selection
-                        this.startWithKeySelection();
+                        this.parent.startWithKeySelection();
                     }
                 }
             }, 2000); // Longer delay to show the red flash

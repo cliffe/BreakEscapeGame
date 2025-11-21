@@ -24,13 +24,28 @@ module BreakEscape
       npc_id = params[:npc]
       return render_error('Missing npc parameter', :bad_request) unless npc_id.present?
 
+      Rails.logger.debug "[BreakEscape] Loading ink for NPC: #{npc_id}"
+
       # Find NPC in scenario data
       npc = find_npc_in_scenario(npc_id)
-      return render_error('NPC not found in scenario', :not_found) unless npc
+      return render_error("NPC not found in scenario: #{npc_id}", :not_found) unless npc
+
+      Rails.logger.debug "[BreakEscape] Found NPC: #{npc['id']} with storyPath: #{npc['storyPath']}"
+
+      # Check if storyPath is set
+      unless npc['storyPath'].present?
+        Rails.logger.warn "[BreakEscape] NPC #{npc['id']} has no storyPath defined"
+        return render_error("NPC #{npc['id']} has no storyPath defined", :bad_request)
+      end
 
       # Resolve ink file path and compile if needed
       ink_json_path = resolve_and_compile_ink(npc['storyPath'])
-      return render_error('Ink script not found', :not_found) unless ink_json_path && File.exist?(ink_json_path)
+      unless ink_json_path && File.exist?(ink_json_path)
+        Rails.logger.error "[BreakEscape] Ink file not found for #{npc['storyPath']} (resolved to #{ink_json_path})"
+        return render_error("Ink script not found for #{npc['storyPath']}", :not_found)
+      end
+
+      Rails.logger.debug "[BreakEscape] Serving ink from: #{ink_json_path}"
 
       # Serve compiled JSON
       render json: JSON.parse(File.read(ink_json_path))
@@ -45,16 +60,29 @@ module BreakEscape
     end
 
     def find_npc_in_scenario(npc_id)
-      @game.scenario_data['rooms']&.each do |_room_id, room_data|
-        npc = room_data['npcs']&.find { |n| n['id'] == npc_id }
-        return npc if npc
+      available_npcs = []
+      @game.scenario_data['rooms']&.each do |room_id, room_data|
+        room_data['npcs']&.each do |npc|
+          available_npcs << "#{npc['id']} (#{room_id})"
+          return npc if npc['id'] == npc_id
+        end
       end
+      
+      # Log available NPCs for debugging
+      if available_npcs.any?
+        Rails.logger.debug "[BreakEscape] Available NPCs: #{available_npcs.join(', ')}"
+      else
+        Rails.logger.warn "[BreakEscape] No NPCs found in scenario data"
+      end
+      
       nil
     end
 
     # Resolve ink path and compile if necessary
     def resolve_and_compile_ink(story_path)
-      base_path = Rails.root.join(story_path)
+      # Use Engine root for Rails Engine context
+      engine_root = BreakEscape::Engine.root
+      base_path = engine_root.join(story_path)
       json_path = find_compiled_json(base_path)
       ink_path = find_ink_source(base_path)
 

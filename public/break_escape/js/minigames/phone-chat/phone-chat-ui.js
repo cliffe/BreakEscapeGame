@@ -7,6 +7,8 @@
  * @module phone-chat-ui
  */
 
+import { ASSETS_PATH } from '../../config.js';
+
 export default class PhoneChatUI {
     /**
      * Create a PhoneChatUI instance
@@ -429,7 +431,16 @@ export default class PhoneChatUI {
             // Add avatar if available
             if (npc?.avatar) {
                 const avatarImg = document.createElement('img');
-                avatarImg.src = npc.avatar;
+                // Resolve avatar path to full URL if relative
+                let avatarSrc = npc.avatar;
+                if (!avatarSrc.startsWith('/') && !avatarSrc.startsWith('http')) {
+                    if (avatarSrc.startsWith('assets/')) {
+                        avatarSrc = `/break_escape/${avatarSrc}`;
+                    } else {
+                        avatarSrc = `${ASSETS_PATH}/${avatarSrc}`;
+                    }
+                }
+                avatarImg.src = avatarSrc;
                 avatarImg.alt = npcName;
                 avatarImg.className = 'conversation-avatar';
                 conversationInfo.appendChild(avatarImg);

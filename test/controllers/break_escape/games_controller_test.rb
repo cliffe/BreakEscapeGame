@@ -35,7 +35,7 @@ module BreakEscape
     test "show should return HTML with game container" do
       get game_url(@game)
       assert_response :success
-      assert_select '#break-escape-game'
+      assert_select '#game-container'
       assert_match /window\.breakEscapeConfig/, response.body
     end
 
@@ -113,6 +113,25 @@ module BreakEscape
 
       @game.reload
       assert_equal 1, @game.player_state['inventory'].length
+    end
+
+    # Ink endpoint tests
+    test "ink endpoint should require npc parameter" do
+      get ink_game_url(@game)
+      assert_response :bad_request
+      json = JSON.parse(response.body)
+      assert_includes json['error'], 'npc'
+    end
+
+    test "ink endpoint should return 404 for non-existent NPC" do
+      get ink_game_url(@game), params: { npc: 'non-existent' }
+      assert_response :not_found
+    end
+
+    test "ink endpoint should return 404 for NPC without story file" do
+      # Game doesn't have NPCs with story files by default
+      get ink_game_url(@game), params: { npc: 'test-npc' }
+      assert_response :not_found
     end
   end
 end

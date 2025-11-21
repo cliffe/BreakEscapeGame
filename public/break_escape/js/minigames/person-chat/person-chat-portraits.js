@@ -8,6 +8,8 @@
  * @module person-chat-portraits
  */
 
+import { ASSETS_PATH } from '../../config.js';
+
 export default class PersonChatPortraits {
     /**
      * Create portrait renderer
@@ -313,7 +315,7 @@ export default class PersonChatPortraits {
             // Re-render when background loads
             this.render();
             // Start parallax animation now that background is loaded
-            this.startParallaxAnimation();
+            this.startParallexAnimation();
         };
         
         img.onerror = () => {
@@ -321,7 +323,17 @@ export default class PersonChatPortraits {
             this.backgroundImage = null;
         };
         
-        img.src = this.backgroundPath;
+        // Resolve path to full URL if relative
+        let bgSrc = this.backgroundPath;
+        if (!bgSrc.startsWith('/') && !bgSrc.startsWith('http')) {
+            // Relative path - prepend appropriate base
+            if (bgSrc.startsWith('assets/')) {
+                bgSrc = `/break_escape/${bgSrc}`;
+            } else {
+                bgSrc = `${ASSETS_PATH}/${bgSrc}`;
+            }
+        }
+        img.src = bgSrc;
     }
     
     /**
@@ -550,8 +562,19 @@ export default class PersonChatPortraits {
                     this.renderPlaceholder();
                 };
                 
-                // Start loading image
-                img.src = this.npc.spriteTalk;
+                // Start loading image - resolve relative path to full URL
+                let imageSrc = this.npc.spriteTalk;
+                if (!imageSrc.startsWith('/') && !imageSrc.startsWith('http')) {
+                    // Relative path - prepend base path
+                    // If path starts with 'assets/', prepend /break_escape/
+                    // Otherwise, prepend ASSETS_PATH
+                    if (imageSrc.startsWith('assets/')) {
+                        imageSrc = `/break_escape/${imageSrc}`;
+                    } else {
+                        imageSrc = `${ASSETS_PATH}/${imageSrc}`;
+                    }
+                }
+                img.src = imageSrc;
             } else {
                 // Already loaded, draw it
                 this.drawSpriteTalkImage(this.spriteTalkImage);

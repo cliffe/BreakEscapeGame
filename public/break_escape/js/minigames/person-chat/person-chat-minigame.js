@@ -319,8 +319,20 @@ export class PersonChatMinigame extends MinigameScene {
             // Create conversation manager using PhoneChatConversation (reused logic)
             this.conversation = new PhoneChatConversation(this.npcId, this.npcManager, this.inkEngine);
             
-            // Load story from NPC's storyPath or storyJSON
-            const storySource = this.npc.storyJSON || this.npc.storyPath;
+            // Load story from NPC's storyJSON (pre-cached) or via Rails API
+            let storySource = this.npc.storyJSON;
+            
+            // If no pre-cached JSON but storyPath exists, use Rails API endpoint
+            if (!storySource && this.npc.storyPath) {
+                const gameId = window.breakEscapeConfig?.gameId;
+                if (gameId) {
+                    storySource = `/break_escape/games/${gameId}/ink?npc=${this.npcId}`;
+                    console.log(`📖 Using Rails API for story: ${storySource}`);
+                } else {
+                    console.warn('⚠️  No gameId available, story loading may fail');
+                }
+            }
+            
             const loaded = await this.conversation.loadStory(storySource);
             
             if (!loaded) {

@@ -1,6 +1,9 @@
 // Minimal NPCBarkSystem
 // OPTIMIZED: Debouncing, bark limiting, efficient DOM updates
 // default export class NPCBarkSystem
+
+import { ASSETS_PATH } from '../config.js';
+
 export default class NPCBarkSystem {
   constructor(npcManager) {
     this.npcManager = npcManager;
@@ -136,7 +139,16 @@ export default class NPCBarkSystem {
     // Add avatar if provided
     if (avatar) {
       const avatarImg = document.createElement('img');
-      avatarImg.src = avatar;
+      // Resolve avatar path to full URL if relative
+      let avatarSrc = avatar;
+      if (!avatarSrc.startsWith('/') && !avatarSrc.startsWith('http')) {
+        if (avatarSrc.startsWith('assets/')) {
+          avatarSrc = `/break_escape/${avatarSrc}`;
+        } else {
+          avatarSrc = `${ASSETS_PATH}/${avatarSrc}`;
+        }
+      }
+      avatarImg.src = avatarSrc;
       avatarImg.className = 'npc-bark-avatar';
       avatarImg.alt = npcName || npcId || 'NPC';
       el.appendChild(avatarImg);
@@ -303,8 +315,13 @@ export default class NPCBarkSystem {
 
   async runInlineStory(params, messagesContainer, choicesContainer) {
     try {
-      // Fetch story JSON
-      const response = await fetch(params.inkStoryPath);
+      // Fetch story JSON using Rails API endpoint
+      const gameId = window.breakEscapeConfig?.gameId;
+      const endpoint = gameId 
+        ? `/break_escape/games/${gameId}/ink?npc=${encodeURIComponent(params.npcId)}`
+        : params.inkStoryPath;  // Fallback to provided path if no gameId
+      
+      const response = await fetch(endpoint);
       const storyJson = await response.json();
 
       // Create engine instance

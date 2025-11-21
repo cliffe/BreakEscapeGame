@@ -512,7 +512,13 @@ export default class NPCManager {
       // OPTIMIZATION: Fetch story from cache or network
       let storyJson = this.storyCache.get(npc.storyPath);
       if (!storyJson) {
-        const response = await fetch(npc.storyPath);
+        // Use Rails API endpoint instead of direct file fetch
+        const gameId = window.breakEscapeConfig?.gameId;
+        const endpoint = gameId 
+          ? `/break_escape/games/${gameId}/ink?npc=${encodeURIComponent(npcId)}`
+          : npc.storyPath;  // Fallback to storyPath if no gameId
+        
+        const response = await fetch(endpoint);
         if (!response.ok) {
           throw new Error(`Failed to load story: ${response.statusText}`);
         }
@@ -867,8 +873,14 @@ export default class NPCManager {
       // Fetch story from cache or network
       let storyJson = this.storyCache.get(npc.storyPath);
       if (!storyJson) {
-        console.log(`📚 Fetching story from ${npc.storyPath}`);
-        const response = await fetch(npc.storyPath);
+        // Use Rails API endpoint instead of direct file fetch
+        const gameId = window.breakEscapeConfig?.gameId;
+        const endpoint = gameId 
+          ? `/break_escape/games/${gameId}/ink?npc=${encodeURIComponent(npcId)}`
+          : npc.storyPath;  // Fallback to storyPath if no gameId
+        
+        console.log(`📚 Fetching story from ${endpoint}`);
+        const response = await fetch(endpoint);
         if (!response.ok) {
           throw new Error(`Failed to load story: ${response.statusText}`);
         }

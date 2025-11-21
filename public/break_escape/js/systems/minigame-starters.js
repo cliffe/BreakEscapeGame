@@ -90,7 +90,7 @@ export function startLockpickingMinigame(lockable, scene, difficulty = 'medium',
             itemObservations = `A door leading out of ${currentRoomName}`;
         }
         
-        itemImage = 'tiles/door.png'; // Use default door image
+        itemImage = '/break_escape/assets/tiles/door.png'; // Use default door image
     } else {
         // This is a regular item - use scenarioData
         itemName = lockable?.scenarioData?.name || lockable?.name || 'Locked Item';
@@ -393,7 +393,7 @@ export function startKeySelectionMinigame(lockable, type, playerKeys, requiredKe
             itemObservations = `A door leading out of ${currentRoomName}`;
         }
         
-        itemImage = 'tiles/door.png'; // Use default door image
+        itemImage = '/break_escape/assets/tiles/door.png'; // Use default door image
     } else {
         // This is a regular item - use scenarioData
         itemName = lockable?.scenarioData?.name || lockable?.name || 'Locked Item';

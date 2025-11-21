@@ -1,6 +1,6 @@
 /**
  * NPCLazyLoader - Loads NPCs per-room on demand
- * Future-proofed for server-based NPC loading
+ * Loads NPC Ink stories via Rails API endpoint
  * Uses in-memory caching only (no persistent storage between sessions)
  */
 export default class NPCLazyLoader {
@@ -8,6 +8,10 @@ export default class NPCLazyLoader {
     this.npcManager = npcManager;
     this.loadedRooms = new Set();
     this.storyCache = new Map(); // In-memory cache for current session only
+    this.gameId = window.breakEscapeConfig?.gameId;
+    if (!this.gameId) {
+      console.warn('⚠️ NPCLazyLoader: gameId not found in window.breakEscapeConfig');
+    }
   }
 
   /**
@@ -24,10 +28,21 @@ export default class NPCLazyLoader {
     
     console.log(`📦 Loading ${roomData.npcs.length} NPCs for room ${roomId}`);
     
+    // Separate NPCs with and without story paths
+    const npcsWithStories = roomData.npcs.filter(npc => npc.storyPath && !this.storyCache.has(npc.storyPath));
+    const npcsWithoutStories = roomData.npcs.filter(npc => !npc.storyPath);
+    
+    if (npcsWithoutStories.length > 0) {
+      console.log(`⚠️  ${npcsWithoutStories.length} NPCs have no storyPath: ${npcsWithoutStories.map(n => n.id).join(', ')}`);
+    }
+    
     // Load all Ink stories in parallel (optimization)
-    const storyPromises = roomData.npcs
-      .filter(npc => npc.storyPath && !this.storyCache.has(npc.storyPath))
-      .map(npc => this._loadStory(npc.storyPath));
+    const storyPromises = npcsWithStories
+      .map(npc => this._loadStory(npc.id, npc.storyPath).catch(err => {
+        // Don't throw - log and continue so other NPCs can be registered
+        console.error(`⚠️  Failed to load story for ${npc.id}: ${err.message}`);
+        return null;
+      }));
     
     if (storyPromises.length > 0) {
       console.log(`📖 Loading ${storyPromises.length} Ink stories for room ${roomId}`);
@@ -48,13 +63,20 @@ export default class NPCLazyLoader {
   }
 
   /**
-   * Load an Ink story file from server (or local file in dev)
+   * Load an Ink story file from Rails API endpoint
    * Caches in memory for current session only
    * @private
    */
-  async _loadStory(storyPath) {
+  async _loadStory(npcId, storyPath) {
     try {
-      const response = await fetch(storyPath);
+      if (!this.gameId) {
+        throw new Error('Game ID not configured - cannot load story from server');
+      }
+      
+      // Use Rails API endpoint: GET /games/:id/ink?npc=:npc_id
+      const endpoint = `/break_escape/games/${this.gameId}/ink?npc=${encodeURIComponent(npcId)}`;
+      
+      const response = await fetch(endpoint);
       if (!response.ok) {
         throw new Error(`HTTP ${response.status}: ${response.statusText}`);
       }

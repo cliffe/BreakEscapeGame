@@ -251,8 +251,14 @@ export class PhoneChatMinigame extends MinigameScene {
                     // Create temporary conversation to get intro message
                     const tempConversation = new PhoneChatConversation(npc.id, this.npcManager, this.inkEngine);
                     
-                    // Load from storyJSON if available, otherwise from storyPath
-                    const storySource = npc.storyJSON || npc.storyPath;
+                    // Load from storyJSON (pre-cached) or via Rails API
+                    let storySource = npc.storyJSON;
+                    if (!storySource && npc.storyPath) {
+                        const gameId = window.breakEscapeConfig?.gameId;
+                        if (gameId) {
+                            storySource = `/break_escape/games/${gameId}/ink?npc=${npc.id}`;
+                        }
+                    }
                     const loaded = await tempConversation.loadStory(storySource);
                     
                     if (loaded) {
@@ -338,7 +344,17 @@ export class PhoneChatMinigame extends MinigameScene {
         
         // Load and start Ink story
         // Support both storyJSON (inline) and storyPath (file)
-        const storySource = npc.storyJSON || npc.storyPath || npc.inkStoryPath;
+        let storySource = npc.storyJSON || npc.inkStoryPath;
+        
+        // If no storyJSON but storyPath exists, use Rails API endpoint
+        if (!storySource && npc.storyPath) {
+            const gameId = window.breakEscapeConfig?.gameId;
+            if (gameId) {
+                storySource = `/break_escape/games/${gameId}/ink?npc=${npcId}`;
+                console.log(`📖 Using Rails API for story: ${storySource}`);
+            }
+        }
+        
         if (!storySource) {
             console.error(`❌ No story source found for ${npcId}`);
             this.ui.showNotification('No conversation available', 'error');
