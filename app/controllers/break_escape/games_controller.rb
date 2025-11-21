@@ -304,8 +304,12 @@ module BreakEscape
     def filter_requires_recursive(obj)
       case obj
       when Hash
-        # Remove 'requires' (the answer/solution) from all objects
-        obj.delete('requires')
+        # Remove 'requires' for exploitable lock types (key/pin/password/rfid)
+        # Keep it for biometric/bluetooth since they reference collectible items, not answers
+        lock_type = obj['lockType']
+        if lock_type && !%w[biometric bluetooth].include?(lock_type)
+          obj.delete('requires')
+        end
 
         # Recursively filter nested structures
         obj.each_value { |value| filter_requires_recursive(value) }

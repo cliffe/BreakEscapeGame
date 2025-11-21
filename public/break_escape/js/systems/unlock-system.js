@@ -41,10 +41,11 @@ export function handleUnlock(lockable, type) {
         console.log('NO LOCK REQUIREMENTS FOUND');
         return;
     }
-    
+
     // Check if object is locked based on lock requirements
-    const isLocked = lockRequirements.requires;
-    
+    // Use 'locked' field instead of 'requires' (which is filtered server-side for security)
+    const isLocked = lockRequirements.locked !== false;
+
     if (!isLocked) {
         console.log('OBJECT NOT LOCKED');
         return;
@@ -63,9 +64,11 @@ export function handleUnlock(lockable, type) {
     
     switch(lockRequirements.lockType) {
         case 'key':
-            const requiredKey = lockRequirements.requires;
-            console.log('KEY REQUIRED', requiredKey);
-            
+            // Note: requiredKey no longer available from server (security filtered)
+            // Server will validate on unlock attempt
+            const requiredKey = null;  // Will be validated server-side
+            console.log('KEY REQUIRED (server-side validation)');
+
             // Get all keys from player's inventory (including key ring)
             let playerKeys = [];
             
@@ -171,8 +174,9 @@ export function handleUnlock(lockable, type) {
             break;
 
         case 'pin':
-            console.log('PIN CODE REQUESTED');
-            startPinMinigame(lockable, type, lockRequirements.requires, (success) => {
+            console.log('PIN CODE REQUESTED (server-side validation)');
+            // Pass null for required code - will be validated server-side
+            startPinMinigame(lockable, type, null, (success) => {
                 if (success) {
                     unlockTarget(lockable, type, lockable.layer);
                 }
@@ -180,8 +184,8 @@ export function handleUnlock(lockable, type) {
             break;
             
         case 'password':
-            console.log('PASSWORD REQUESTED');
-            
+            console.log('PASSWORD REQUESTED (server-side validation)');
+
             // Get password options from the lockable object
             const passwordOptions = {
                 passwordHint: lockable.passwordHint || lockable.scenarioData?.passwordHint || '',
@@ -191,8 +195,9 @@ export function handleUnlock(lockable, type) {
                 postitNote: lockable.postitNote || lockable.scenarioData?.postitNote || '',
                 showPostit: lockable.showPostit || lockable.scenarioData?.showPostit || false
             };
-            
-            startPasswordMinigame(lockable, type, lockRequirements.requires, (success) => {
+
+            // Pass null for required password - will be validated server-side
+            startPasswordMinigame(lockable, type, null, (success) => {
                 if (success) {
                     unlockTarget(lockable, type, lockable.layer);
                 }

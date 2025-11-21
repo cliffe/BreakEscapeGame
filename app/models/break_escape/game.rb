@@ -178,8 +178,12 @@ module BreakEscape
     def filter_requires_and_contents_recursive(obj)
       case obj
       when Hash
-        # Remove 'requires' (the answer/solution)
-        obj.delete('requires')
+        # Remove 'requires' for exploitable lock types (key/pin/password/rfid)
+        # Keep it for biometric/bluetooth since they reference collectible items, not answers
+        lock_type = obj['lockType']
+        if lock_type && !%w[biometric bluetooth].include?(lock_type)
+          obj.delete('requires')
+        end
 
         # Remove 'contents' if locked (lazy-loaded via separate endpoint)
         obj.delete('contents') if obj['locked']
