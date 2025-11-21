@@ -144,7 +144,13 @@ module BreakEscape
 
       if target_type == 'door'
         room = room_data(target_id)
-        return false unless room && room['locked']
+        return false unless room
+
+        # Handle unlocked doors - allow access without lock validation
+        if method == 'unlocked' || !room['locked']
+          Rails.logger.info "[BreakEscape] Door is unlocked, granting access"
+          return true
+        end
 
         case method
         when 'key', 'lockpick', 'biometric', 'bluetooth', 'rfid'
@@ -166,21 +172,25 @@ module BreakEscape
 
           if object
             Rails.logger.info "[BreakEscape] Found object: id=#{object['id']}, name=#{object['name']}, locked=#{object['locked']}, requires=#{object['requires']}"
-          end
 
-          next unless object && object['locked']
+            # Handle unlocked objects - allow access without lock validation
+            if method == 'unlocked' || !object['locked']
+              Rails.logger.info "[BreakEscape] Object is unlocked, granting access"
+              return true
+            end
 
-          case method
-          when 'key', 'lockpick', 'biometric', 'bluetooth', 'rfid'
-            # Client validated the unlock - trust it
-            return true
-          when 'pin', 'password'
-            result = object['requires'].to_s == attempt.to_s
-            Rails.logger.info "[BreakEscape] Password validation: required='#{object['requires']}', attempt='#{attempt}', result=#{result}"
-            return result
+            case method
+            when 'key', 'lockpick', 'biometric', 'bluetooth', 'rfid'
+              # Client validated the unlock - trust it
+              return true
+            when 'pin', 'password'
+              result = object['requires'].to_s == attempt.to_s
+              Rails.logger.info "[BreakEscape] Password validation: required='#{object['requires']}', attempt='#{attempt}', result=#{result}"
+              return result
+            end
           end
         end
-        Rails.logger.warn "[BreakEscape] Object not found or not locked: #{target_id}"
+        Rails.logger.warn "[BreakEscape] Object not found: #{target_id}"
         false
       end
     end

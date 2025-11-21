@@ -544,37 +544,40 @@ export function createDoorSpritesForRoom(roomId, position) {
 }
 
 // Function to handle door interactions
-function handleDoorInteraction(doorSprite) {
+async function handleDoorInteraction(doorSprite) {
     const player = window.player;
     if (!player) return;
-    
+
     const distance = Phaser.Math.Distance.Between(
         player.x, player.y,
         doorSprite.x, doorSprite.y
     );
-    
+
     const DOOR_INTERACTION_RANGE = 2 * TILE_SIZE;
-    
+
     if (distance > DOOR_INTERACTION_RANGE) {
         console.log('Door too far to interact');
         return;
     }
-    
+
     const props = doorSprite.doorProperties;
     console.log(`Interacting with door: ${props.roomId} -> ${props.connectedRoom}`);
-    
+
     // Check if locks are disabled for testing
     if (window.DISABLE_LOCKS) {
         console.log('LOCKS DISABLED FOR TESTING - Opening door directly');
         openDoor(doorSprite);
         return;
     }
-    
+
     if (props.locked) {
         console.log(`Door is locked. Type: ${props.lockType}, Requires: ${props.requires}`);
         // Use unified unlock system for consistent behavior with items
         handleUnlock(doorSprite, 'door');
     } else {
+        console.log('Door is unlocked, notifying server to grant access');
+        // Notify server to add room to unlockedRooms even for unlocked doors
+        const serverResponse = await notifyServerUnlock(doorSprite, 'door', 'unlocked');
         openDoor(doorSprite);
     }
 }

@@ -13,6 +13,33 @@ export function setGameInstance(gameInstance) {
     gameRef = gameInstance;
 }
 
+// Helper function to notify server for unlocked container access
+async function notifyServerForUnlockedContainer(sprite) {
+    const apiClient = window.ApiClient || window.APIClient;
+    const gameId = window.breakEscapeConfig?.gameId;
+
+    if (!apiClient || !gameId) {
+        console.warn('ApiClient or gameId not available, skipping server notification');
+        return;
+    }
+
+    try {
+        const targetId = sprite.scenarioData?.id || sprite.scenarioData?.name || sprite.objectId;
+        console.log(`Notifying server of unlocked container access: ${targetId}`);
+
+        const response = await apiClient.unlock('object', targetId, null, 'unlocked');
+
+        // If server returned contents, populate them
+        if (response.hasContents && response.contents && sprite.scenarioData) {
+            console.log('Server returned container contents:', response.contents);
+            sprite.scenarioData.contents = response.contents;
+        }
+    } catch (error) {
+        console.error('Failed to notify server of unlocked container access:', error);
+        // Continue anyway - don't block the user experience
+    }
+}
+
 // Helper function to calculate interaction distance with direction-based offset
 // Extends reach from the edge of the player sprite in the direction the player is facing
 function getInteractionDistance(playerSprite, targetX, targetY) {
@@ -695,17 +722,19 @@ export function handleObjectInteraction(sprite) {
     // Handle container items (suitcase, briefcase, bags, bins, etc.) - check BEFORE lock check
     if (data.type === 'suitcase' || data.type === 'briefcase' || data.type === 'bag1' || data.type === 'bin1' || data.contents) {
         console.log('CONTAINER ITEM INTERACTION', data);
-        
+
         // Check if container is locked
         if (data.locked === true) {
             console.log('CONTAINER LOCKED - UNLOCK SYSTEM WILL HANDLE', data);
             handleUnlock(sprite, 'item');
             return;
         }
-        
-        // Container is unlocked (or has no lock) - launch the container minigame
-        console.log('CONTAINER UNLOCKED/OPEN - LAUNCHING MINIGAME', data);
-        handleContainerInteraction(sprite);
+
+        // Container is unlocked (or has no lock) - notify server and launch the container minigame
+        console.log('CONTAINER UNLOCKED/OPEN - NOTIFYING SERVER AND LAUNCHING MINIGAME', data);
+        notifyServerForUnlockedContainer(sprite).then(() => {
+            handleContainerInteraction(sprite);
+        });
         return;
     }
     
