@@ -465,13 +465,14 @@ export default class PersonChatConversation {
                 console.log(`✅ NPC ${this.npc.id} successfully unlocked door ${doorId}`);
                 window.gameAlert(`Door unlocked!`, 'success', 'Access Granted', 3000);
 
-                // Trigger door unlock visual update for ALL door sprites leading to this room
+                // Update door sprite lock state for ALL door sprites leading to this room
                 // This handles the case where the room is already loaded
+                // Don't open the door - just mark it as unlocked so player can open it
                 const doorSprites = this.findAllDoorSprites(doorId);
-                if (doorSprites.length > 0 && window.unlockDoor) {
+                if (doorSprites.length > 0 && window.markDoorUnlocked) {
                     console.log(`📍 Found ${doorSprites.length} door sprite(s) to update`);
                     doorSprites.forEach(doorSprite => {
-                        window.unlockDoor(doorSprite, response.roomData);
+                        window.markDoorUnlocked(doorSprite, response.roomData);
                     });
                 } else {
                     console.log(`📍 No door sprites found for ${doorId}, will be unlocked when room loads`);

@@ -597,8 +597,28 @@ function unlockDoor(doorSprite, roomData) {
     openDoor(doorSprite);
 }
 
-// Make unlockDoor globally available for NPC unlock handlers
+// Function to mark a door as unlocked without opening it
+// Used by NPC unlocks where we want to update the sprite state but not open the door
+function markDoorUnlocked(doorSprite, roomData) {
+    const props = doorSprite.doorProperties;
+    console.log(`Marking door as unlocked: ${props.roomId} -> ${props.connectedRoom}`);
+
+    // Mark door as unlocked
+    props.locked = false;
+
+    // If roomData was provided from server unlock response, cache it
+    if (roomData && window.roomDataCache) {
+        console.log(`📦 Caching room data for ${props.connectedRoom} from unlock response`);
+        window.roomDataCache.set(props.connectedRoom, roomData);
+    }
+
+    // Don't open the door - just update the visual state if needed
+    // TODO: Add visual indicator that door is now unlocked (e.g., change tint, add icon)
+}
+
+// Make both functions globally available
 window.unlockDoor = unlockDoor;
+window.markDoorUnlocked = markDoorUnlocked;
 
 // Function to open a door
 function openDoor(doorSprite) {
@@ -1263,4 +1283,4 @@ window.processAllDoorCollisions = processAllDoorCollisions;
 window.handleDoorInteraction = handleDoorInteraction;
 
 // Export functions for use by other modules
-export { unlockDoor, handleDoorInteraction };
+export { unlockDoor, markDoorUnlocked, handleDoorInteraction };
