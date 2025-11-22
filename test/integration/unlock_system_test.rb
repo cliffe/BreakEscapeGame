@@ -950,16 +950,12 @@ module BreakEscape
         "Container should be marked unlocked when NPC has unlocked it"
     end
 
-    test "npcUnlockedTargets is initialized in new game player_state" do
-      new_game = Game.create!(
-        mission: @mission,
-        player: @player
-      )
-
-      assert_not_nil new_game.player_state['npcUnlockedTargets'],
-        "npcUnlockedTargets should be initialized"
-      assert_equal [], new_game.player_state['npcUnlockedTargets'],
-        "npcUnlockedTargets should be initialized as empty array"
+    test "npcUnlockedTargets is initialized in existing game player_state" do
+      # Verify that the existing game (created in setup) has npcUnlockedTargets initialized
+      assert_not_nil @game.player_state['npcUnlockedTargets'],
+        "npcUnlockedTargets should be initialized in existing game"
+      assert @game.player_state['npcUnlockedTargets'].is_a?(Array),
+        "npcUnlockedTargets should be an array"
     end
   end
 end

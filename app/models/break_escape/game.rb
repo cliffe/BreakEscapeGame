@@ -327,9 +327,10 @@ module BreakEscape
       self.player_state['inventory'] ||= []
 
       # Initialize starting items from scenario
-      if scenario_data['startItemsInInventory'].present?
+      if scenario_data && scenario_data['startItemsInInventory'].is_a?(Array)
+        # Use dup instead of deep_dup to avoid issues with ActiveSupport extensions
         scenario_data['startItemsInInventory'].each do |item|
-          self.player_state['inventory'] << item.deep_dup
+          self.player_state['inventory'] << (item.is_a?(Hash) ? item.dup : item)
         end
       end
 
