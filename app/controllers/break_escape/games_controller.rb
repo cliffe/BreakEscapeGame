@@ -241,8 +241,6 @@ module BreakEscape
       ActiveRecord::Base.transaction do
         if target_type == 'door'
           @game.unlock_room!(target_id)
-          # For NPC unlocks, also track in npcUnlockedTargets for persistent state
-          @game.npc_unlock_target!(target_id) if method == 'npc'
 
           room_data = @game.filtered_room_data(target_id)
 
@@ -254,8 +252,6 @@ module BreakEscape
         else
           # Object/container unlock
           @game.unlock_object!(target_id)
-          # For NPC unlocks, also track in npcUnlockedTargets for persistent state
-          @game.npc_unlock_target!(target_id) if method == 'npc'
 
           # Find the unlocked object and return its contents if it's a container
           object_data = find_object_in_scenario(target_id)

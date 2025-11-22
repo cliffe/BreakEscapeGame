@@ -46,17 +46,6 @@ module BreakEscape
       player_state['unlockedObjects']&.include?(object_id)
     end
 
-    # NPC unlock management
-    def npc_unlock_target!(target_id)
-      player_state['npcUnlockedTargets'] ||= []
-      player_state['npcUnlockedTargets'] << target_id unless player_state['npcUnlockedTargets'].include?(target_id)
-      save!
-    end
-
-    def npc_unlocked?(target_id)
-      player_state['npcUnlockedTargets']&.include?(target_id)
-    end
-
     # Inventory management
     def add_inventory_item!(item)
       player_state['inventory'] ||= []
@@ -142,23 +131,6 @@ module BreakEscape
       room = room_data(room_id)&.deep_dup
       return nil unless room
 
-      # Merge NPC unlock state: If NPC unlocked this room, mark it as unlocked
-      if npc_unlocked?(room_id)
-        Rails.logger.info "[BreakEscape] Room #{room_id} was unlocked by NPC, marking as unlocked"
-        room['locked'] = false
-      end
-
-      # Merge NPC unlock state for objects/containers in this room
-      if room['objects'].present?
-        room['objects'].each do |obj|
-          obj_id = obj['id'] || obj['name']
-          if obj_id && npc_unlocked?(obj_id)
-            Rails.logger.info "[BreakEscape] Object #{obj_id} was unlocked by NPC, marking as unlocked"
-            obj['locked'] = false
-          end
-        end
-      end
-
       # Remove ONLY the 'requires' field (the solution) and locked 'contents'
       # Keep lockType, locked, observations visible to client
       filter_requires_and_contents_recursive(room)
@@ -171,20 +143,24 @@ module BreakEscape
       Rails.logger.info "[BreakEscape] validate_unlock: type=#{target_type}, id=#{target_id}, attempt=#{attempt}, method=#{method}"
 
       if target_type == 'door'
-        room = room_data(target_id)
-        return false unless room
-
-        # SECURITY: Only allow 'unlocked' method if door is ACTUALLY unlocked in server data
-        # Client cannot be trusted - must validate against server state
-        if method == 'unlocked' && !room['locked']
-          Rails.logger.info "[BreakEscape] Door is unlocked in server data, granting access"
+        # Check if already unlocked in player state (grants access regardless of method)
+        if room_unlocked?(target_id)
+          Rails.logger.info "[BreakEscape] Door already unlocked in player state, granting access"
           return true
         end
 
-        # SECURITY: Reject 'unlocked' method for locked doors (client bypass attempt)
-        if method == 'unlocked' && room['locked']
-          Rails.logger.warn "[BreakEscape] SECURITY VIOLATION: Client sent method='unlocked' for LOCKED door #{target_id}"
-          return false
+        room = room_data(target_id)
+        return false unless room
+
+        # Handle method='unlocked' - verify against scenario data
+        if method == 'unlocked'
+          if !room['locked']
+            Rails.logger.info "[BreakEscape] Door is unlocked in scenario data, granting access"
+            return true
+          else
+            Rails.logger.warn "[BreakEscape] SECURITY VIOLATION: Client sent method='unlocked' for LOCKED door: #{target_id}"
+            return false
+          end
         end
 
         # NPC unlock: Validate NPC has been encountered and has permission to unlock this door
@@ -205,6 +181,12 @@ module BreakEscape
           false
         end
       else
+        # Check if already unlocked in player state (grants access regardless of method)
+        if object_unlocked?(target_id)
+          Rails.logger.info "[BreakEscape] Object already unlocked in player state, granting access"
+          return true
+        end
+
         # Find object in all rooms - check both id and name
         scenario_data['rooms'].each do |_room_id, room_data|
           object = room_data['objects']&.find { |obj|
@@ -214,17 +196,15 @@ module BreakEscape
           if object
             Rails.logger.info "[BreakEscape] Found object: id=#{object['id']}, name=#{object['name']}, locked=#{object['locked']}, requires=#{object['requires']}"
 
-            # SECURITY: Only allow 'unlocked' method if object is ACTUALLY unlocked in server data
-            # Client cannot be trusted - must validate against server state
-            if method == 'unlocked' && !object['locked']
-              Rails.logger.info "[BreakEscape] Object is unlocked in server data, granting access"
-              return true
-            end
-
-            # SECURITY: Reject 'unlocked' method for locked objects (client bypass attempt)
-            if method == 'unlocked' && object['locked']
-              Rails.logger.warn "[BreakEscape] SECURITY VIOLATION: Client sent method='unlocked' for LOCKED object #{target_id}"
-              return false
+            # Handle method='unlocked' - verify against scenario data
+            if method == 'unlocked'
+              if !object['locked']
+                Rails.logger.info "[BreakEscape] Object is unlocked in scenario data, granting access"
+                return true
+              else
+                Rails.logger.warn "[BreakEscape] SECURITY VIOLATION: Client sent method='unlocked' for LOCKED object: #{target_id}"
+                return false
+              end
             end
 
             # NPC unlock: Validate NPC has been encountered and has permission to unlock this object
@@ -335,7 +315,6 @@ module BreakEscape
       end
 
       self.player_state['encounteredNPCs'] ||= []
-      self.player_state['npcUnlockedTargets'] ||= []
       self.player_state['globalVariables'] ||= {}
       self.player_state['biometricSamples'] ||= []
       self.player_state['biometricUnlocks'] ||= []

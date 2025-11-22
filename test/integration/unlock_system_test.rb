@@ -832,10 +832,10 @@ module BreakEscape
     end
 
     # =============================================================================
-    # NPC UNLOCK PERSISTENT STATE TESTS
+    # NPC UNLOCK TESTS
     # =============================================================================
 
-    test "NPC unlock is tracked in npcUnlockedTargets" do
+    test "NPC unlock adds door to unlockedRooms" do
       # Set up NPC with unlock permission
       @game.scenario_data['rooms']['lobby']['npcs'] = [
         {
@@ -858,15 +858,13 @@ module BreakEscape
       assert_response :success
       @game.reload
 
-      # Verify tracked in both unlockedRooms and npcUnlockedTargets
+      # Verify tracked in unlockedRooms (normal unlock)
       assert_includes @game.player_state['unlockedRooms'], 'office_pin',
         "NPC unlock should add room to unlockedRooms"
-      assert_includes @game.player_state['npcUnlockedTargets'], 'office_pin',
-        "NPC unlock should track target in npcUnlockedTargets for persistent state"
     end
 
-    test "filtered_room_data marks NPC-unlocked door as unlocked (race condition fix)" do
-      # Set up a locked room that will be unlocked by NPC
+    test "already-unlocked door accepts method='unlocked'" do
+      # Set up a locked room
       @game.scenario_data['rooms']['ceo'] = {
         'type' => 'office',
         'locked' => true,
@@ -893,19 +891,19 @@ module BreakEscape
       }
       assert_response :success
 
-      # Now load the room (simulating loading after NPC unlock)
-      get room_game_url(@game, room_id: 'ceo')
-      assert_response :success
+      # Later, client tries to open the already-unlocked door with method='unlocked'
+      post unlock_game_url(@game), params: {
+        targetType: 'door',
+        targetId: 'ceo',
+        attempt: nil,
+        method: 'unlocked'
+      }
 
-      json = JSON.parse(@response.body)
-      room_data = json['room']
-
-      # The room should be marked as unlocked even though scenario data has locked: true
-      assert_equal false, room_data['locked'],
-        "Room should be marked unlocked when NPC has unlocked it (fixes race condition)"
+      assert_response :success,
+        "Already-unlocked door should accept method='unlocked' (fixes race condition)"
     end
 
-    test "filtered_room_data marks NPC-unlocked container as unlocked" do
+    test "already-unlocked container accepts method='unlocked'" do
       # Set up a locked container
       @game.scenario_data['rooms']['lobby']['objects'] = [
         {
@@ -937,25 +935,16 @@ module BreakEscape
       }
       assert_response :success
 
-      # Now load the room (simulating loading after NPC unlock)
-      get room_game_url(@game, room_id: 'lobby')
-      assert_response :success
+      # Later, client tries to open the already-unlocked container with method='unlocked'
+      post unlock_game_url(@game), params: {
+        targetType: 'object',
+        targetId: 'npc_safe',
+        attempt: nil,
+        method: 'unlocked'
+      }
 
-      json = JSON.parse(@response.body)
-      room_data = json['room']
-      safe = room_data['objects'].find { |obj| obj['id'] == 'npc_safe' }
-
-      assert_not_nil safe, "Safe should be in room data"
-      assert_equal false, safe['locked'],
-        "Container should be marked unlocked when NPC has unlocked it"
-    end
-
-    test "npcUnlockedTargets is initialized in existing game player_state" do
-      # Verify that the existing game (created in setup) has npcUnlockedTargets initialized
-      assert_not_nil @game.player_state['npcUnlockedTargets'],
-        "npcUnlockedTargets should be initialized in existing game"
-      assert @game.player_state['npcUnlockedTargets'].is_a?(Array),
-        "npcUnlockedTargets should be an array"
+      assert_response :success,
+        "Already-unlocked container should accept method='unlocked'"
     end
   end
 end
