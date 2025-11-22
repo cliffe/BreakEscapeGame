@@ -597,6 +597,9 @@ function unlockDoor(doorSprite, roomData) {
     openDoor(doorSprite);
 }
 
+// Make unlockDoor globally available for NPC unlock handlers
+window.unlockDoor = unlockDoor;
+
 // Function to open a door
 function openDoor(doorSprite) {
     const props = doorSprite.doorProperties;

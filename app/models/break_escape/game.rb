@@ -46,6 +46,17 @@ module BreakEscape
       player_state['unlockedObjects']&.include?(object_id)
     end
 
+    # NPC unlock management
+    def npc_unlock_target!(target_id)
+      player_state['npcUnlockedTargets'] ||= []
+      player_state['npcUnlockedTargets'] << target_id unless player_state['npcUnlockedTargets'].include?(target_id)
+      save!
+    end
+
+    def npc_unlocked?(target_id)
+      player_state['npcUnlockedTargets']&.include?(target_id)
+    end
+
     # Inventory management
     def add_inventory_item!(item)
       player_state['inventory'] ||= []
@@ -130,6 +141,23 @@ module BreakEscape
     def filtered_room_data(room_id)
       room = room_data(room_id)&.deep_dup
       return nil unless room
+
+      # Merge NPC unlock state: If NPC unlocked this room, mark it as unlocked
+      if npc_unlocked?(room_id)
+        Rails.logger.info "[BreakEscape] Room #{room_id} was unlocked by NPC, marking as unlocked"
+        room['locked'] = false
+      end
+
+      # Merge NPC unlock state for objects/containers in this room
+      if room['objects'].present?
+        room['objects'].each do |obj|
+          obj_id = obj['id'] || obj['name']
+          if obj_id && npc_unlocked?(obj_id)
+            Rails.logger.info "[BreakEscape] Object #{obj_id} was unlocked by NPC, marking as unlocked"
+            obj['locked'] = false
+          end
+        end
+      end
 
       # Remove ONLY the 'requires' field (the solution) and locked 'contents'
       # Keep lockType, locked, observations visible to client
@@ -306,6 +334,7 @@ module BreakEscape
       end
 
       self.player_state['encounteredNPCs'] ||= []
+      self.player_state['npcUnlockedTargets'] ||= []
       self.player_state['globalVariables'] ||= {}
       self.player_state['biometricSamples'] ||= []
       self.player_state['biometricUnlocks'] ||= []

@@ -830,5 +830,136 @@ module BreakEscape
       assert_equal 2, @game.player_state['unlockedRooms'].length,
         "Room should only appear once in unlockedRooms"
     end
+
+    # =============================================================================
+    # NPC UNLOCK PERSISTENT STATE TESTS
+    # =============================================================================
+
+    test "NPC unlock is tracked in npcUnlockedTargets" do
+      # Set up NPC with unlock permission
+      @game.scenario_data['rooms']['lobby']['npcs'] = [
+        {
+          'id' => 'helper_npc',
+          'displayName' => 'Helpful Contact',
+          'unlockable' => ['office_pin']
+        }
+      ]
+      @game.player_state['encounteredNPCs'] = ['helper_npc']
+      @game.save!
+
+      # NPC unlocks door
+      post unlock_game_url(@game), params: {
+        targetType: 'door',
+        targetId: 'office_pin',
+        attempt: 'helper_npc',
+        method: 'npc'
+      }
+
+      assert_response :success
+      @game.reload
+
+      # Verify tracked in both unlockedRooms and npcUnlockedTargets
+      assert_includes @game.player_state['unlockedRooms'], 'office_pin',
+        "NPC unlock should add room to unlockedRooms"
+      assert_includes @game.player_state['npcUnlockedTargets'], 'office_pin',
+        "NPC unlock should track target in npcUnlockedTargets for persistent state"
+    end
+
+    test "filtered_room_data marks NPC-unlocked door as unlocked (race condition fix)" do
+      # Set up a locked room that will be unlocked by NPC
+      @game.scenario_data['rooms']['ceo'] = {
+        'type' => 'office',
+        'locked' => true,
+        'lockType' => 'password',
+        'requires' => 'TopSecret123',
+        'connections' => { 'south' => 'lobby' },
+        'objects' => []
+      }
+      @game.scenario_data['rooms']['lobby']['npcs'] = [
+        {
+          'id' => 'helper_npc',
+          'unlockable' => ['ceo']
+        }
+      ]
+      @game.player_state['encounteredNPCs'] = ['helper_npc']
+      @game.save!
+
+      # NPC unlocks the door
+      post unlock_game_url(@game), params: {
+        targetType: 'door',
+        targetId: 'ceo',
+        attempt: 'helper_npc',
+        method: 'npc'
+      }
+      assert_response :success
+
+      # Now load the room (simulating loading after NPC unlock)
+      get room_game_url(@game, room_id: 'ceo')
+      assert_response :success
+
+      json = JSON.parse(@response.body)
+      room_data = json['room']
+
+      # The room should be marked as unlocked even though scenario data has locked: true
+      assert_equal false, room_data['locked'],
+        "Room should be marked unlocked when NPC has unlocked it (fixes race condition)"
+    end
+
+    test "filtered_room_data marks NPC-unlocked container as unlocked" do
+      # Set up a locked container
+      @game.scenario_data['rooms']['lobby']['objects'] = [
+        {
+          'id' => 'npc_safe',
+          'type' => 'safe1',
+          'locked' => true,
+          'lockType' => 'pin',
+          'requires' => '9999',
+          'contents' => [
+            { 'type' => 'key', 'id' => 'master_key', 'takeable' => true }
+          ]
+        }
+      ]
+      @game.scenario_data['rooms']['lobby']['npcs'] = [
+        {
+          'id' => 'helper_npc',
+          'unlockable' => ['npc_safe']
+        }
+      ]
+      @game.player_state['encounteredNPCs'] = ['helper_npc']
+      @game.save!
+
+      # NPC unlocks the container
+      post unlock_game_url(@game), params: {
+        targetType: 'object',
+        targetId: 'npc_safe',
+        attempt: 'helper_npc',
+        method: 'npc'
+      }
+      assert_response :success
+
+      # Now load the room (simulating loading after NPC unlock)
+      get room_game_url(@game, room_id: 'lobby')
+      assert_response :success
+
+      json = JSON.parse(@response.body)
+      room_data = json['room']
+      safe = room_data['objects'].find { |obj| obj['id'] == 'npc_safe' }
+
+      assert_not_nil safe, "Safe should be in room data"
+      assert_equal false, safe['locked'],
+        "Container should be marked unlocked when NPC has unlocked it"
+    end
+
+    test "npcUnlockedTargets is initialized in new game player_state" do
+      new_game = Game.create!(
+        mission: @mission,
+        player: @player
+      )
+
+      assert_not_nil new_game.player_state['npcUnlockedTargets'],
+        "npcUnlockedTargets should be initialized"
+      assert_equal [], new_game.player_state['npcUnlockedTargets'],
+        "npcUnlockedTargets should be initialized as empty array"
+    end
   end
 end

@@ -465,10 +465,16 @@ export default class PersonChatConversation {
                 console.log(`✅ NPC ${this.npc.id} successfully unlocked door ${doorId}`);
                 window.gameAlert(`Door unlocked!`, 'success', 'Access Granted', 3000);
 
-                // Trigger door unlock visual update if door sprite exists
-                const doorSprite = this.findDoorSprite(doorId);
-                if (doorSprite && window.unlockDoor) {
-                    window.unlockDoor(doorSprite, response.roomData);
+                // Trigger door unlock visual update for ALL door sprites leading to this room
+                // This handles the case where the room is already loaded
+                const doorSprites = this.findAllDoorSprites(doorId);
+                if (doorSprites.length > 0 && window.unlockDoor) {
+                    console.log(`📍 Found ${doorSprites.length} door sprite(s) to update`);
+                    doorSprites.forEach(doorSprite => {
+                        window.unlockDoor(doorSprite, response.roomData);
+                    });
+                } else {
+                    console.log(`📍 No door sprites found for ${doorId}, will be unlocked when room loads`);
                 }
             } else {
                 console.error('NPC unlock failed:', response);
@@ -481,18 +487,28 @@ export default class PersonChatConversation {
     }
 
     /**
-     * Find door sprite by room ID
-     * @param {string} roomId - Room ID to find door for
+     * Find all door sprites leading to the given room ID
+     * @param {string} roomId - Room ID to find doors for
+     * @returns {Array} Array of door sprites leading to the room
      */
-    findDoorSprite(roomId) {
+    findAllDoorSprites(roomId) {
         // Search through all door sprites in the game
-        if (!window.game || !window.game.children) return null;
+        if (!window.game || !window.game.children) return [];
 
         const doors = window.game.children.list.filter(child =>
             child.doorProperties &&
             child.doorProperties.connectedRoom === roomId
         );
 
+        return doors;
+    }
+
+    /**
+     * Find door sprite by room ID (legacy, returns first match)
+     * @param {string} roomId - Room ID to find door for
+     */
+    findDoorSprite(roomId) {
+        const doors = this.findAllDoorSprites(roomId);
         return doors.length > 0 ? doors[0] : null;
     }
     
