@@ -506,9 +506,6 @@ export async function create() {
         window.gameState.globalVariables = {};
     }
     
-    // Normalize keyPins in all rooms and objects from 0-100 scale to 25-65 scale
-    normalizeScenarioKeyPins(gameScenario);
-    
     // Debug: log what we loaded
     console.log('🎮 Loaded gameScenario with rooms:', Object.keys(gameScenario?.rooms || {}));
     if (gameScenario?.rooms?.office1) {
@@ -969,121 +966,7 @@ function findNPCAtPosition(worldX, worldY) {
     return closestNPC;
 }
 
-/**
- * Normalize keyPins from 0-100 scale to 25-65 scale in entire scenario
- * 
- * KEYPIN TERMINOLOGY AND RELATIONSHIPS:
- * =====================================
- * 
- * Lock Pin Anatomy:
- * - Each lock chamber contains TWO pins stacked vertically:
- *   1. DRIVER PIN (top, spring-loaded, blocks rotation)
- *   2. KEY PIN (bottom, rests on key when inserted)
- * 
- * - The SHEAR LINE is the boundary between the plug and housing
- * - Lock opens when ALL key pins' tops align exactly at the shear line
- * 
- * KeyPins Property:
- * - "keyPins" represents the LENGTH of the key pins (bottom pins) in the lock
- * - In scenarios: Defined on a 0-100 authoring scale for ease of design
- * - In game: Converted to 25-65 pixel range for actual rendering
- * - Example: [100, 0, 100, 0] → [65, 25, 65, 25] pixels
- * 
- * KeyPins on LOCKS vs KEYS:
- * - On a LOCK/DOOR: The actual pin lengths in that lock
- * - On a KEY: The lock configuration this key is designed to open
- *   (i.e., a key with keyPins: [65, 25, 65, 25] opens locks with those pin lengths)
- * 
- * Relationship: KeyPins → Cuts:
- * - CUTS are the depths of notches carved into the key blade
- * - Formula: cutDepth = keyPinLength - gapFromKeyBladeTopToShearLine
- * - Where gap = 20 pixels (175 - 155)
- * - Example: keyPin 65 → cut 45, keyPin 25 → cut 5
- * - When key is inserted, pin rests on cut surface, lifting to shear line
- * 
- * Why Normalization is Critical:
- * - Scenarios use 0-100 for easy authoring (percentages)
- * - Game needs 25-65 pixel range for proper physics/rendering
- * - Normalization must happen EXACTLY ONCE to avoid double-conversion
- * - This function runs during scenario load before any sprites are created
- */
-function normalizeScenarioKeyPins(scenario) {
-    
-    // Helper function to convert a single keyPins value
-    function convertKeyPin(value) {
-        // Convert from 0-100 scale to 25-65 scale
-        // Formula: 25 + (value / 100) * 40
-        // This gives us a 40-pixel range centered in the lock chamber
-        return Math.round(25 + (value / 100) * 40);
-    }
-    
-    // IMPORTANT: Normalize keyPins in ALL places they appear in the scenario!
-    // KeyPins must be normalized exactly once at scenario load time, BEFORE any items are dropped or used.
-    // If keyPins appear in multiple places (startItemsInInventory, room objects, NPC itemsHeld, etc.),
-    // they ALL need normalization or keys/locks won't match when used.
-    // For example:
-    // - A key in an NPC's itemsHeld must be normalized the same way as a room object key
-    // - The door's room-level keyPins must be normalized the same way
-    // - Otherwise when the NPC drops the key, it won't open the door!
-    
-    // Normalize keyPins in startItemsInInventory (for starting keys)
-    if (scenario.startItemsInInventory && Array.isArray(scenario.startItemsInInventory)) {
-        scenario.startItemsInInventory.forEach((item, index) => {
-            if (item.keyPins && Array.isArray(item.keyPins)) {
-                item.keyPins = item.keyPins.map(convertKeyPin);
-                console.log(`🔄 Normalized startItem keyPins [${index}] (${item.type} "${item.name}"):`, item.keyPins);
-            }
-        });
-    }
-    
-    // Iterate through all rooms
-    Object.entries(scenario.rooms).forEach(([roomId, roomData]) => {
-        if (!roomData) return;
-        
-        // Convert room-level keyPins (for door locks)
-        if (roomData.keyPins && Array.isArray(roomData.keyPins)) {
-            roomData.keyPins = roomData.keyPins.map(convertKeyPin);
-            console.log(`🔄 Normalized room keyPins for ${roomId}:`, roomData.keyPins);
-        }
-        
-        // Normalize NPC itemsHeld keyPins (items NPCs start with/carry)
-        // CRITICAL: This ensures keys dropped by NPCs match the door's keyPins
-        if (roomData.npcs && Array.isArray(roomData.npcs)) {
-            roomData.npcs.forEach((npc, npcIndex) => {
-                if (npc.itemsHeld && Array.isArray(npc.itemsHeld)) {
-                    npc.itemsHeld.forEach((item, itemIndex) => {
-                        if (item.keyPins && Array.isArray(item.keyPins)) {
-                            item.keyPins = item.keyPins.map(convertKeyPin);
-                            console.log(`🔄 Normalized NPC itemsHeld keyPins for ${roomId}.npcs[${npcIndex}].itemsHeld[${itemIndex}] (${item.type}):`, item.keyPins);
-                        }
-                    });
-                }
-            });
-        }
-        
-        // Convert keyPins for all objects in the room
-        if (roomData.objects && Array.isArray(roomData.objects)) {
-            roomData.objects.forEach((obj, index) => {
-                if (obj.keyPins && Array.isArray(obj.keyPins)) {
-                    obj.keyPins = obj.keyPins.map(convertKeyPin);
-                    console.log(`🔄 Normalized object keyPins for ${roomId}[${index}] (${obj.type}):`, obj.keyPins);
-                }
-                
-                // Also check contents of objects (for keys in briefcases, etc.)
-                if (obj.contents && Array.isArray(obj.contents)) {
-                    obj.contents.forEach((content, contentIndex) => {
-                        if (content.keyPins && Array.isArray(content.keyPins)) {
-                            content.keyPins = content.keyPins.map(convertKeyPin);
-                            console.log(`🔄 Normalized content keyPins for ${roomId}[${index}].contents[${contentIndex}] (${content.type}):`, content.keyPins);
-                        }
-                    });
-                }
-            });
-        }
-    });
-    
-    console.log('✓ All keyPins normalized to 25-65 range');
-}
+
 
 // Hide a room
 function hideRoom(roomId) {
