@@ -469,7 +469,10 @@ export class LockpickingMinigamePhaser extends MinigameScene {
         
         this.keySelectionMode = true; // Mark that we're in key selection mode
         
+        // Store the original inventory keys and correct key ID for use when retrying after wrong selection
         if (inventoryKeys && inventoryKeys.length > 0) {
+            this.originalInventoryKeys = inventoryKeys;
+            this.originalCorrectKeyId = correctKeyId;
             // Use provided inventory keys
             this.keySelection.createKeysFromInventory(inventoryKeys, correctKeyId);
         } else {

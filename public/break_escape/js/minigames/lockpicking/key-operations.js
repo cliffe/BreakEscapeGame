@@ -244,8 +244,8 @@ export class KeyOperations {
                         // This is the locksmith-forge.html challenge mode
                         this.parent.keySelection.createKeysForChallenge('correct_key');
                     } else {
-                        // This is the main game - go back to key selection
-                        this.parent.startWithKeySelection();
+                        // This is the main game - go back to key selection with original inventory keys
+                        this.parent.startWithKeySelection(this.parent.originalInventoryKeys, this.parent.originalCorrectKeyId);
                     }
                 }
             }, 2000); // Longer delay to show the red flash
