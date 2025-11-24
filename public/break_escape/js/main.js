@@ -8,6 +8,9 @@ import { initializeDebugSystem } from './systems/debug.js?v=7';
 import { initializeUI } from './ui/panels.js?v=9';
 import { initializeModals } from './ui/modals.js?v=7';
 
+// Import character registry system
+import './systems/character-registry.js';
+
 // Import minigame framework
 import './minigames/index.js';
 

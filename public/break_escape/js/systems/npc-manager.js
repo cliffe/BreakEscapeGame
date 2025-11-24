@@ -77,6 +77,11 @@ export default class NPCManager {
     
     this.npcs.set(realId, entry);
     
+    // Register in global character registry for speaker resolution
+    if (window.characterRegistry) {
+      window.characterRegistry.registerNPC(realId, entry);
+    }
+    
     // Initialize conversation history for this NPC
     if (!this.conversationHistory.has(realId)) {
       this.conversationHistory.set(realId, []);

@@ -149,6 +149,22 @@
     color: #ff9a4a;
 }
 
+/* PHASE 4: Narrator mode styling */
+.person-chat-portrait-section.narrator-mode {
+    background-color: #000;
+}
+
+.person-chat-speaker-name.narrator-speaker {
+    display: none; /* Hide speaker name in narrator mode */
+}
+
+/* Dialogue text styling for narrator */
+.person-chat-portrait-section.narrator-mode + .person-chat-caption-area .person-chat-dialogue-text {
+    text-align: center;
+    font-style: italic;
+    color: #999;
+}
+
 /* Dialogue text box */
 .person-chat-dialogue-box {
     background-color: transparent;

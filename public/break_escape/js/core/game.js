@@ -532,6 +532,18 @@ export async function create() {
     // Store player globally for access from other modules
     window.player = player;
     
+    // Register player in global character registry for speaker resolution
+    if (window.characterRegistry && window.player) {
+        const playerData = {
+            id: 'player',
+            displayName: window.gameState?.playerName || 'Agent 0x00',
+            spriteSheet: 'hacker',
+            spriteTalk: 'assets/characters/hacker-talk.png',
+            metadata: {}
+        };
+        window.characterRegistry.setPlayer(playerData);
+    }
+    
     // Create door opening animation (for N/S doors)
     this.anims.create({
         key: 'door_open',

@@ -80,15 +80,25 @@ export class PersonChatMinigame extends MinigameScene {
         this.lastResult = null; // Store last continue() result for choice handling
         this.isClickThroughMode = false; // If true, player must click to advance between dialogue lines (starts in AUTO mode)
         this.pendingContinueCallback = null; // Callback waiting for player click in click-through mode
+        this.isProcessingDialogue = false; // PHASE 0: State locking to prevent race conditions during dialogue advancement
         
         console.log(`🎭 PersonChatMinigame created for NPC: ${this.npcId}`);
     }
     
     /**
      * Build index of all available characters (player + NPCs)
+     * Uses global character registry populated as NPCs are registered
      * @returns {Object} Map of character ID to character data
      */
     buildCharacterIndex() {
+        // Use global character registry if available
+        if (window.characterRegistry) {
+            const allCharacters = window.characterRegistry.getAllCharacters();
+            console.log(`👥 Using global character registry with ${Object.keys(allCharacters).length} characters:`, Object.keys(allCharacters));
+            return allCharacters;
+        }
+        
+        // Fallback to legacy local building if registry not available
         const characters = {};
         
         // Add player
@@ -98,12 +108,13 @@ export class PersonChatMinigame extends MinigameScene {
         characters[this.npc.id] = this.npc;
         
         // Add other NPCs from current room (NPCs are now per-room, not at scenario root)
-        const currentRoom = window.currentRoom || this.npc.roomId;
+        // Use npc.roomId first, fallback to window.currentRoom
+        const currentRoom = this.npc.roomId || window.currentRoom;
         if (currentRoom && this.scenario.rooms && this.scenario.rooms[currentRoom]) {
             const roomNPCs = this.scenario.rooms[currentRoom].npcs || [];
             roomNPCs.forEach(npc => {
                 if (npc.id !== this.npc.id) {
-                    // Look up NPC data from npcManager for complete displayName
+                    // Look up NPC data from npcManager for complete displayName and other properties
                     const npcData = window.npcManager?.getNPC(npc.id) || npc;
                     characters[npc.id] = npcData;
                 }
@@ -111,7 +122,7 @@ export class PersonChatMinigame extends MinigameScene {
         }
         
         // Fallback to legacy root-level NPCs for backward compatibility
-        if (!Object.keys(characters).length > 2 && this.scenario.npcs && Array.isArray(this.scenario.npcs)) {
+        if (Object.keys(characters).length <= 2 && this.scenario.npcs && Array.isArray(this.scenario.npcs)) {
             this.scenario.npcs.forEach(npc => {
                 if (npc.id !== this.npc.id && !characters[npc.id]) {
                     characters[npc.id] = npc;
@@ -545,6 +556,182 @@ export class PersonChatMinigame extends MinigameScene {
     }
     
     /**
+     * PHASE 1: Parse a dialogue line for speaker prefix format
+     * 
+     * Validates that dialogue text is not empty (ignores "Speaker: " lines)
+     * Case-insensitive speaker IDs ("Player:", "player:", "PLAYER:" all work)
+     * First colon is delimiter ("Speaker: Text: with: colons" → speaker="Speaker", text="Text: with: colons")
+     * Rejects prefixes where speaker ID doesn't exist in character index
+     * Handles Narrator[character_id]: syntax for narrator with character portrait
+     * 
+     * @param {string} line - Dialogue line to parse
+     * @returns {Object|null} Object with {speaker, text, isNarrator, narratorCharacter} or null if no prefix
+     */
+    parseDialogueLine(line) {
+        if (!line || typeof line !== 'string') {
+            return null;
+        }
+        
+        line = line.trim();
+        if (!line) {
+            return null;
+        }
+        
+        // Check for Narrator[character]: pattern first (highest priority)
+        const narratorMatch = line.match(/^Narrator\s*\[\s*([^\]]*)\s*\]\s*:\s*(.+)$/i);
+        if (narratorMatch) {
+            const characterId = narratorMatch[1].trim();
+            const text = narratorMatch[2].trim();
+            
+            // Must have non-empty text
+            if (!text) {
+                return null;
+            }
+            
+            // If character ID is provided, validate it exists
+            if (characterId && !this.characters[characterId]) {
+                console.warn(`⚠️ parseDialogueLine: Unknown character in Narrator[${characterId}], treating as unprefixed`);
+                return null;
+            }
+            
+            return {
+                speaker: 'narrator',
+                text: text,
+                isNarrator: true,
+                narratorCharacter: characterId || null
+            };
+        }
+        
+        // Check for basic Narrator: pattern
+        const basicNarratorMatch = line.match(/^Narrator\s*:\s*(.+)$/i);
+        if (basicNarratorMatch) {
+            const text = basicNarratorMatch[1].trim();
+            
+            // Must have non-empty text
+            if (!text) {
+                return null;
+            }
+            
+            return {
+                speaker: 'narrator',
+                text: text,
+                isNarrator: true,
+                narratorCharacter: null
+            };
+        }
+        
+        // Check for regular Speaker: pattern
+        const colonIndex = line.indexOf(':');
+        if (colonIndex === -1) {
+            // No colon - not a prefixed line
+            return null;
+        }
+        
+        const speakerId = line.substring(0, colonIndex).trim();
+        const text = line.substring(colonIndex + 1).trim();
+        
+        // Speaker ID must not be empty
+        if (!speakerId) {
+            return null;
+        }
+        
+        // Text must not be empty (reject lines like "Speaker: ")
+        if (!text) {
+            return null;
+        }
+        
+        // Validate speaker exists in characters
+        const normalizedSpeaker = this.normalizeSpeakerId(speakerId);
+        if (!normalizedSpeaker) {
+            // Speaker not found - treat as unprefixed line
+            return null;
+        }
+        
+        return {
+            speaker: normalizedSpeaker,
+            text: text,
+            isNarrator: false,
+            narratorCharacter: null
+        };
+    }
+    
+    /**
+     * PHASE 1: Normalize speaker ID for consistent lookup
+     * 
+     * Converts raw speaker ID to canonical form and validates existence
+     * Returns null if speaker ID doesn't exist in character index
+     * 
+     * @param {string} speakerId - Raw speaker ID from dialogue line
+     * @returns {string|null} Normalized speaker ID or null if invalid
+     */
+    normalizeSpeakerId(speakerId) {
+        if (!speakerId || typeof speakerId !== 'string') {
+            return null;
+        }
+        
+        const normalized = speakerId.toLowerCase().trim();
+        
+        if (!normalized) {
+            return null;
+        }
+        
+        // Handle special cases
+        if (normalized === 'player') {
+            return this.characters['player'] ? 'player' : null;
+        }
+        
+        if (normalized === 'npc') {
+            return this.npc.id;
+        }
+        
+        // Look up by ID (case-sensitive after normalization to lowercase)
+        for (const [id, character] of Object.entries(this.characters)) {
+            if (id.toLowerCase() === normalized) {
+                return id; // Return original casing
+            }
+        }
+        
+        // Not found
+        return null;
+    }
+    
+    /**
+     * PHASE 4.5: Parse a background change line
+     * 
+     * Background syntax: Background[filename]: optional text after (ignored)
+     * Example: "Background[scary-room.png]: The room transforms..."
+     * 
+     * @param {string} line - Dialogue line to parse
+     * @returns {string|null} Background filename if valid, null otherwise
+     */
+    parseBackgroundLine(line) {
+        if (!line || typeof line !== 'string') {
+            return null;
+        }
+        
+        line = line.trim();
+        if (!line) {
+            return null;
+        }
+        
+        // Match Background[filename]: optional text pattern
+        const bgMatch = line.match(/^Background\s*\[\s*([^\]]+)\s*\]\s*(?::\s*(.*))?$/i);
+        if (!bgMatch) {
+            return null;
+        }
+        
+        const filename = bgMatch[1].trim();
+        
+        // Background filename must not be empty
+        if (!filename) {
+            return null;
+        }
+        
+        console.log(`🎨 PHASE 4.5: Parsed background change to: ${filename}`);
+        return filename;
+    }
+    
+    /**
      * Handle choice selection
      * @param {number} choiceIndex - Index of selected choice
      */
@@ -631,112 +818,170 @@ export class PersonChatMinigame extends MinigameScene {
      * @param {Object} result - Result with potentially multiple lines and tags
      */
     displayAccumulatedDialogue(result) {
-        if (!result.text || !result.tags) {
-            // No content to display
-            if (result.hasEnded) {
-                // Story ended - save state and show message
-                if (this.inkEngine && this.inkEngine.story) {
-                    npcConversationStateManager.saveNPCState(this.npcId, this.inkEngine.story);
-                }
-                this.ui.showDialogue('(Conversation ended - press ESC to close)', 'system');
-                console.log('🏁 Story has reached an end point');
-            }
+        // PHASE 0: State locking to prevent race conditions during rapid dialogue advancement
+        if (this.isProcessingDialogue) {
+            console.log('⏳ Already processing dialogue, ignoring call');
             return;
         }
+        this.isProcessingDialogue = true;
         
-        // Process any game action tags (give_item, unlock_door, etc.) BEFORE displaying dialogue
-        if (result.tags && result.tags.length > 0) {
-            console.log('🏷️ Processing action tags from accumulated dialogue:', result.tags);
-            processGameActionTags(result.tags, this.ui);
-        }
-        
-        // Split text into lines
-        const lines = result.text.split('\n').filter(line => line.trim());
-        
-        // We have lines and tags - pair them up
-        // Each tag corresponds to a line (or group of lines before the next tag)
-        if (lines.length === 0) {
-            if (result.hasEnded) {
-                // Story ended - save state and show message
-                if (this.inkEngine && this.inkEngine.story) {
-                    npcConversationStateManager.saveNPCState(this.npcId, this.inkEngine.story);
+        try {
+            if (!result.text || !result.tags) {
+                // No content to display
+                if (result.hasEnded) {
+                    // Story ended - save state and show message
+                    if (this.inkEngine && this.inkEngine.story) {
+                        npcConversationStateManager.saveNPCState(this.npcId, this.inkEngine.story);
+                    }
+                    this.ui.showDialogue('(Conversation ended - press ESC to close)', 'system');
+                    console.log('🏁 Story has reached an end point');
                 }
-                this.ui.showDialogue('(Conversation ended - press ESC to close)', 'system');
-                console.log('🏁 Story has reached an end point');
+                return;
             }
-            return;
+            
+            // Process any game action tags (give_item, unlock_door, etc.) BEFORE displaying dialogue
+            if (result.tags && result.tags.length > 0) {
+                console.log('🏷️ Processing action tags from accumulated dialogue:', result.tags);
+                processGameActionTags(result.tags, this.ui);
+            }
+            
+            // Split text into lines
+            const lines = result.text.split('\n').filter(line => line.trim());
+            
+            // We have lines and tags - pair them up
+            // Each tag corresponds to a line (or group of lines before the next tag)
+            if (lines.length === 0) {
+                if (result.hasEnded) {
+                    // Story ended - save state and show message
+                    if (this.inkEngine && this.inkEngine.story) {
+                        npcConversationStateManager.saveNPCState(this.npcId, this.inkEngine.story);
+                    }
+                    this.ui.showDialogue('(Conversation ended - press ESC to close)', 'system');
+                    console.log('🏁 Story has reached an end point');
+                }
+                return;
+            }
+            
+            // Create dialogue blocks: each block is one or more consecutive lines with the same speaker
+            // PHASE 0: Pass result object so createDialogueBlocks can use determineSpeaker() for tag-based fallback
+            const dialogueBlocks = this.createDialogueBlocks(lines, result.tags, result);
+            
+            // Display blocks sequentially with delays
+            this.displayDialogueBlocksSequentially(dialogueBlocks, result, 0);
+        } finally {
+            // PHASE 0: Unlock state on all exit paths (including errors)
+            this.isProcessingDialogue = false;
         }
-        
-        // Create dialogue blocks: each block is one or more consecutive lines with the same speaker
-        const dialogueBlocks = this.createDialogueBlocks(lines, result.tags);
-        
-        // Display blocks sequentially with delays
-        this.displayDialogueBlocksSequentially(dialogueBlocks, result, 0);
     }
     
     /**
      * Create dialogue blocks from lines and speaker tags
-     * When speaker tags are missing, dialogue defaults to the main NPC being talked to
+     * 
+     * PHASE 3: Enhanced to support line prefix format
+     * PHASE 4.5: Enhanced to detect and extract background changes
+     * - First checks if line is background change (Background[...])
+     * - Then tries to parse line prefix format using parseDialogueLine()
+     * - Falls back to tag-based grouping if no prefix found
+     * - Handles speaker changes mid-dialogue
+     * - Groups consecutive lines from same speaker into single block
      * 
      * @param {Array<string>} lines - Text lines
-     * @param {Array<string>} tags - Speaker tags
-     * @returns {Array<Object>} Array of {speaker, text} blocks
+     * @param {Array<string>} tags - Speaker tags (for fallback)
+     * @param {Object} result - Result object for tag-based fallback
+     * @returns {Array<Object>} Array of {speaker, text, isNarrator, narratorCharacter, backgroundChange} blocks
      */
-    createDialogueBlocks(lines, tags) {
+    createDialogueBlocks(lines, tags, result) {
         const blocks = [];
-        let blockIndex = 0;
+        let currentSpeaker = null;
+        let currentText = '';
+        let currentIsNarrator = false;
+        let currentNarratorCharacter = null;
+        let currentBackgroundChange = null;
         
-        // Special case: NO tags at all - all lines belong to main NPC
-        if (!tags || tags.length === 0) {
-            if (lines.length > 0) {
-                const allText = lines.join('\n').trim();
-                if (allText) {
-                    blocks.push({ speaker: this.npc.id, text: allText, tag: null });
+        for (let i = 0; i < lines.length; i++) {
+            const line = lines[i];
+            
+            // PHASE 4.5: Check for background change first
+            const bgChange = this.parseBackgroundLine(line);
+            if (bgChange) {
+                // Save current block if we have one
+                if (currentSpeaker !== null && currentText.trim()) {
+                    blocks.push({
+                        speaker: currentSpeaker,
+                        text: currentText.trim(),
+                        isNarrator: currentIsNarrator,
+                        narratorCharacter: currentNarratorCharacter,
+                        backgroundChange: currentBackgroundChange
+                    });
                 }
+                
+                // Create background-only block
+                blocks.push({
+                    speaker: null,
+                    text: '',
+                    isNarrator: false,
+                    narratorCharacter: null,
+                    backgroundChange: bgChange
+                });
+                
+                // Reset for next speaker
+                currentSpeaker = null;
+                currentText = '';
+                currentIsNarrator = false;
+                currentNarratorCharacter = null;
+                currentBackgroundChange = null;
+                continue;
             }
-            return blocks;
+            
+            // Try to parse line prefix format
+            const parsed = this.parseDialogueLine(line);
+            
+            if (parsed) {
+                // This line has a prefix - speaker changed!
+                // First, save current block if we have one
+                if (currentSpeaker !== null && currentText.trim()) {
+                    blocks.push({
+                        speaker: currentSpeaker,
+                        text: currentText.trim(),
+                        isNarrator: currentIsNarrator,
+                        narratorCharacter: currentNarratorCharacter,
+                        backgroundChange: currentBackgroundChange
+                    });
+                }
+                
+                // Start new block with parsed line
+                currentSpeaker = parsed.speaker;
+                currentText = parsed.text;
+                currentIsNarrator = parsed.isNarrator;
+                currentNarratorCharacter = parsed.narratorCharacter;
+                currentBackgroundChange = null;
+            } else {
+                // No prefix - continues current speaker
+                if (currentSpeaker === null) {
+                    // First line without prefix - use tag-based or default speaker
+                    currentSpeaker = this.determineSpeaker(result);
+                    currentIsNarrator = false;
+                    currentNarratorCharacter = null;
+                    currentBackgroundChange = null;
+                }
+                
+                // Add to current text (newline-separated)
+                currentText += (currentText ? '\n' : '') + line;
+            }
         }
         
-        // Group lines by speaker based on tags
-        for (let tagIdx = 0; tagIdx < tags.length; tagIdx++) {
-            const tag = tags[tagIdx];
-            
-            // Determine speaker from tag - support multiple formats
-            // Default to main NPC if no speaker tag found
-            let speaker = this.npc.id;
-            if (tag.includes('speaker:player')) {
-                speaker = 'player';
-            } else if (tag.includes('speaker:npc:')) {
-                // Extract character ID from speaker:npc:character_id format
-                const match = tag.match(/speaker:npc:(\S+)/);
-                if (match && match[1]) {
-                    speaker = match[1];
-                }
-            } else if (tag === 'player' || tag.includes('player')) {
-                speaker = 'player';
-            }
-            
-            // Find how many lines belong to this speaker (until next tag or end)
-            const nextTagIdx = tagIdx + 1;
-            const startLineIdx = blockIndex;
-            
-            // Count lines for this speaker - lines between this tag and the next
-            let endLineIdx = lines.length;
-            if (nextTagIdx < tags.length) {
-                // There's another tag coming, but we need to figure out how many lines
-                // For now, assume 1 line per tag (common case)
-                endLineIdx = startLineIdx + 1;
-            }
-            
-            // Collect the text for this speaker
-            const blockText = lines.slice(startLineIdx, endLineIdx).join('\n').trim();
-            if (blockText) {
-                blocks.push({ speaker, text: blockText, tag });
-            }
-            
-            blockIndex = endLineIdx;
+        // Don't forget the last block!
+        if (currentSpeaker !== null && currentText.trim()) {
+            blocks.push({
+                speaker: currentSpeaker,
+                text: currentText.trim(),
+                isNarrator: currentIsNarrator,
+                narratorCharacter: currentNarratorCharacter,
+                backgroundChange: currentBackgroundChange
+            });
         }
         
+        console.log(`📝 PHASE 3: createDialogueBlocks created ${blocks.length} blocks from ${lines.length} lines`);
         return blocks;
     }
     
@@ -796,6 +1041,26 @@ export class PersonChatMinigame extends MinigameScene {
         
         // Display current block's lines one at a time with accumulation
         const block = blocks[blockIndex];
+        
+        // PHASE 4.5: Handle background changes before displaying dialogue
+        if (block.backgroundChange) {
+            console.log(`🎨 Background change block detected: ${block.backgroundChange}`);
+            
+            // Change background and move to next block
+            this.changeBackground(block.backgroundChange);
+            
+            this.scheduleDialogueAdvance(() => {
+                this.displayDialogueBlocksSequentially(blocks, originalResult, blockIndex + 1, 0, '');
+            }, DIALOGUE_AUTO_ADVANCE_DELAY);
+            return;
+        }
+        
+        // Skip empty dialogue blocks
+        if (!block.text || !block.text.trim()) {
+            this.displayDialogueBlocksSequentially(blocks, originalResult, blockIndex + 1, 0, '');
+            return;
+        }
+        
         const lines = block.text.split('\n').filter(line => line.trim());
         
         if (lineIndex >= lines.length) {
@@ -810,8 +1075,14 @@ export class PersonChatMinigame extends MinigameScene {
         
         console.log(`📋 Displaying line ${lineIndex + 1}/${lines.length} from block ${blockIndex + 1}/${blocks.length}: ${block.speaker}`);
         
-        // Show accumulated text (all lines up to and including current line)
-        this.ui.showDialogue(newAccumulatedText, block.speaker);
+        // PHASE 4: Show accumulated text with narrator support
+        this.ui.showDialogue(
+            newAccumulatedText, 
+            block.speaker,
+            false, // preserveChoices
+            block.isNarrator || false, // isNarrator
+            block.narratorCharacter || null // narratorCharacter
+        );
         
         // Display next line after delay
         this.scheduleDialogueAdvance(() => {
@@ -1009,6 +1280,32 @@ export class PersonChatMinigame extends MinigameScene {
         
         // Call parent cleanup
         super.cleanup();
+    }
+    
+    /**
+     * PHASE 4.5: Change background image for current portrait
+     * 
+     * Updates the portrait renderer's background image and re-renders
+     * 
+     * @param {string} backgroundFilename - Filename of new background image
+     * @returns {Promise<void>}
+     */
+    async changeBackground(backgroundFilename) {
+        if (!backgroundFilename || !this.ui || !this.ui.portraitRenderer) {
+            console.warn(`⚠️ changeBackground: Invalid background or portrait renderer`);
+            return;
+        }
+        
+        try {
+            console.log(`🎨 Changing background to: ${backgroundFilename}`);
+            
+            // Call setBackground to load and render the new background
+            this.ui.portraitRenderer.setBackground(backgroundFilename);
+            
+            console.log(`✅ Background changed successfully`);
+        } catch (error) {
+            console.error(`❌ Error changing background: ${error.message}`);
+        }
     }
     
     /**

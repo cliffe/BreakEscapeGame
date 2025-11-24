@@ -337,6 +337,22 @@ export default class PersonChatPortraits {
     }
     
     /**
+     * PHASE 4.5: Change background to a new image
+     * @param {string} newBackgroundPath - Path to new background image
+     */
+    setBackground(newBackgroundPath) {
+        if (!newBackgroundPath) {
+            console.warn('⚠️ setBackground: No background path provided');
+            return;
+        }
+        
+        this.backgroundPath = newBackgroundPath;
+        this.backgroundImage = null; // Clear old image
+        console.log(`🎨 Setting new background: ${newBackgroundPath}`);
+        this.loadBackgroundImage();
+    }
+    
+    /**
      * Draw background image at same pixel scale as character sprite
      * Fills the canvas while maintaining sprite's pixel scale (may extend beyond canvas if larger)
      * Aligns based on speaker position: right edge for NPCs (flipped), left edge for player (not flipped)
@@ -683,6 +699,30 @@ export default class PersonChatPortraits {
             this.canvas.width / 2,
             this.canvas.height / 2
         );
+    }
+    
+    /**
+     * PHASE 4: Clear the portrait canvas (for narrator mode without portrait)
+     */
+    clearPortrait() {
+        if (!this.canvas || !this.ctx) return;
+        
+        // Clear canvas to black
+        this.ctx.fillStyle = '#000';
+        this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
+        
+        // Draw placeholder text
+        this.ctx.fillStyle = '#666';
+        this.ctx.font = '16px Arial';
+        this.ctx.textAlign = 'center';
+        this.ctx.textBaseline = 'middle';
+        this.ctx.fillText(
+            'Narrator',
+            this.canvas.width / 2,
+            this.canvas.height / 2
+        );
+        
+        console.log('🖼️ Portrait cleared for narrator mode');
     }
     
     /**

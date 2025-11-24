@@ -212,46 +212,78 @@ export default class PersonChatUI {
      * @param {string} text - Dialogue text to display
      * @param {string} characterId - Character ID ('player', 'npc', or specific NPC ID)
      * @param {boolean} preserveChoices - If true, don't hide existing choices
+     * @param {boolean} isNarrator - PHASE 4: If true, display as narrator mode (centered, no speaker name)
+     * @param {string} narratorCharacter - PHASE 4: For Narrator[character]: format, character to show portrait of
      */
-    showDialogue(text, characterId = 'npc', preserveChoices = false) {
+    showDialogue(text, characterId = 'npc', preserveChoices = false, isNarrator = false, narratorCharacter = null) {
         this.currentSpeaker = characterId;
         
-        console.log(`📝 showDialogue called with character: ${characterId}, text length: ${text?.length || 0}`);
+        console.log(`📝 showDialogue called with character: ${characterId}, text length: ${text?.length || 0}, narrator: ${isNarrator}`);
         
-        // Get character data
-        let character = this.characters[characterId];
-        if (!character) {
-            // Fallback for legacy speaker values or main NPC ID
-            if (characterId === 'player') {
-                character = this.playerData;
-            } else if (characterId === 'npc' || !characterId) {
-                character = this.npc;
-            } else if (characterId === this.npc?.id) {
-                // Main NPC passed by ID - use main NPC data
-                character = this.npc;
+        // PHASE 4: Handle narrator mode
+        if (isNarrator) {
+            // Narrator mode - centered text, no speaker name
+            this.elements.portraitSection.className = 'person-chat-portrait-section narrator-mode';
+            this.elements.speakerName.className = 'person-chat-speaker-name narrator-speaker';
+            this.elements.portraitLabel.textContent = ''; // No label in narrator mode
+            this.elements.speakerName.textContent = 'Narrator'; // Hidden by CSS but available
+            
+            // If narratorCharacter is specified, show that character's portrait
+            if (narratorCharacter) {
+                const character = this.characters[narratorCharacter];
+                if (character) {
+                    this.updatePortraitForSpeaker(narratorCharacter, character);
+                }
+            } else {
+                // No character portrait in pure narrator mode
+                if (this.portraitRenderer) {
+                    this.portraitRenderer.clearPortrait();
+                }
             }
+            
+            console.log(`📝 Narrator mode: character=${narratorCharacter}, portrait shown=${!!narratorCharacter}`);
+        } else {
+            // Normal dialogue mode
+            // Get character data
+            let character = this.characters[characterId];
+            if (!character) {
+                // Fallback for legacy speaker values or main NPC ID
+                if (characterId === 'player') {
+                    character = this.playerData;
+                } else if (characterId === 'npc' || !characterId) {
+                    character = this.npc;
+                } else if (characterId === this.npc?.id) {
+                    // Main NPC passed by ID - use main NPC data
+                    character = this.npc;
+                }
+            }
+            
+            // Determine display name
+            // If no character found, use the character ID itself formatted as display name
+            const displayName = character?.displayName || (characterId === 'player' ? 'You' : 
+                characterId === 'npc' ? 'NPC' : 
+                // Format character ID: convert snake_case or camelCase to Title Case
+                characterId.replace(/[_-]/g, ' ').replace(/\b\w/g, l => l.toUpperCase()));
+            
+            const speakerType = characterId === 'player' ? 'player' : 'npc';
+            
+            this.elements.portraitLabel.textContent = displayName;
+            this.elements.speakerName.textContent = displayName;
+            
+            console.log(`📝 Set speaker name to: ${displayName}`);
+            
+            // Update speaker styling
+            this.elements.portraitSection.className = `person-chat-portrait-section speaker-${speakerType}`;
+            this.elements.speakerName.className = `person-chat-speaker-name ${speakerType}-speaker`;
+            
+            // Reset portrait for new speaker
+            this.updatePortraitForSpeaker(characterId, character);
         }
-        
-        // Determine display name
-        const displayName = character?.displayName || (characterId === 'player' ? 'You' : 'NPC');
-        const speakerType = characterId === 'player' ? 'player' : 'npc';
-        
-        this.elements.portraitLabel.textContent = displayName;
-        this.elements.speakerName.textContent = displayName;
-        
-        console.log(`📝 Set speaker name to: ${displayName}`);
-        
-        // Update speaker styling
-        this.elements.portraitSection.className = `person-chat-portrait-section speaker-${speakerType}`;
-        this.elements.speakerName.className = `person-chat-speaker-name ${speakerType}-speaker`;
         
         // Update dialogue text
         this.elements.dialogueText.textContent = text;
         
         console.log(`📝 Set dialogue text, element content: "${this.elements.dialogueText.textContent}"`);
-        
-        // Reset portrait for new speaker
-        this.updatePortraitForSpeaker(characterId, character);
         
         // Hide choices only if not preserving them (i.e., when transitioning from choices back to text)
         if (!preserveChoices) {
