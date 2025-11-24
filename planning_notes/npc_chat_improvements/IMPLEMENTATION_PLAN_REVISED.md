@@ -668,6 +668,333 @@ displayDialogueBlocksSequentially(blocks, originalResult, blockIndex, lineIndex 
 
 ---
 
+## Phase 4.5: Background Changes Support
+
+### 4.5.1 Add Background Parsing to parseDialogueLine()
+
+**Location:** `person-chat-minigame.js` - Update existing parseDialogueLine()
+
+**Add Background Pattern Recognition:**
+
+```javascript
+parseDialogueLine(line) {
+    if (!line || typeof line !== 'string') {
+        return { speaker: null, text: line || '', hasPrefix: false, isNarrator: false, narratorCharacter: null };
+    }
+    
+    const trimmed = line.trim();
+    if (!trimmed) {
+        return { speaker: null, text: '', hasPrefix: false, isNarrator: false, narratorCharacter: null };
+    }
+    
+    // NEW: Pattern 1: Background change: Background[filename.ext]: optional text
+    const backgroundPattern = /^Background\[([A-Za-z0-9_\-\.]*)\]:\s*(.*)$/i;
+    const backgroundMatch = trimmed.match(backgroundPattern);
+    
+    if (backgroundMatch) {
+        const filename = backgroundMatch[1] || null; // Empty string becomes null
+        const narrativeText = backgroundMatch[2] || ''; // Optional text after colon
+        
+        return {
+            speaker: null,
+            text: narrativeText,
+            hasPrefix: true,
+            isNarrator: narrativeText.trim() ? true : false, // If text present, treat as narrator
+            narratorCharacter: null,
+            isBackgroundChange: true, // NEW: Flag as background change
+            backgroundImage: filename // NEW: Filename or null to clear
+        };
+    }
+    
+    // Pattern 2: Narrator with optional character: Narrator[character_id]: text
+    // ... existing narrator pattern ...
+    
+    // Pattern 3: Basic speaker prefix: SPEAKER_ID: text
+    // ... existing speaker pattern ...
+}
+```
+
+### 4.5.2 Update createDialogueBlocks() for Background Changes
+
+**Location:** `person-chat-minigame.js` - Update existing createDialogueBlocks()
+
+```javascript
+createDialogueBlocks(lines, tags, result) {
+    const blocks = [];
+    let currentBlock = null;
+    
+    for (const line of lines) {
+        if (!line || !line.trim()) continue;
+        
+        // Parse line for speaker prefix OR background change
+        const parsed = this.parseDialogueLine(line);
+        
+        // NEW: Handle background changes as standalone blocks
+        if (parsed.isBackgroundChange) {
+            // Finish current dialogue block first
+            if (currentBlock) {
+                blocks.push(currentBlock);
+                currentBlock = null;
+            }
+            
+            // Add background change block
+            blocks.push({
+                speaker: null,
+                text: parsed.text,
+                isBackgroundChange: true,
+                backgroundImage: parsed.backgroundImage,
+                isNarrator: parsed.isNarrator // True if narrative text present
+            });
+            
+            continue; // Don't include in regular dialogue flow
+        }
+        
+        // ... rest of existing speaker detection logic ...
+    }
+    
+    return blocks;
+}
+```
+
+### 4.5.3 Add Background Change Method
+
+**Location:** `person-chat-minigame.js` - Add new method
+
+```javascript
+/**
+ * Change the conversation background image
+ * @param {string|null} imageFilename - Filename relative to assets/backgrounds/,
+ *                                      or null to clear background
+ * @returns {Promise} Resolves when background change complete
+ */
+async changeBackground(imageFilename) {
+    if (!this.ui || !this.ui.portraitRenderer) {
+        console.warn('⚠️ Cannot change background - UI not initialized');
+        return Promise.resolve();
+    }
+    
+    try {
+        if (imageFilename) {
+            // Construct full path
+            const basePath = '/break_escape/assets/backgrounds/';
+            const fullPath = basePath + imageFilename;
+            
+            console.log(`🖼️ Changing background to: ${imageFilename}`);
+            await this.ui.portraitRenderer.setBackgroundAsync(fullPath);
+            console.log(`✅ Background changed successfully`);
+        } else {
+            // Clear background (show default)
+            console.log(`🖼️ Clearing background`);
+            this.ui.portraitRenderer.clearBackground();
+        }
+    } catch (error) {
+        console.error(`❌ Failed to change background: ${imageFilename}`, error);
+        // Continue with current background - don't block dialogue
+    }
+}
+```
+
+### 4.5.4 Update displayAccumulatedDialogue() to Handle Backgrounds
+
+**Location:** `person-chat-minigame.js` - Update existing method
+
+```javascript
+displayAccumulatedDialogue(result) {
+    if (!result.text || !result.text.trim()) {
+        // ... existing checks ...
+    }
+    
+    // Process game action tags
+    if (result.tags && result.tags.length > 0) {
+        processGameActionTags(result.tags, this.ui);
+    }
+    
+    // Build dialogue blocks (now with prefix + background support)
+    const lines = result.text.split('\n').filter(line => line.trim());
+    const dialogueBlocks = this.createDialogueBlocks(lines, result.tags, result);
+    
+    // Display blocks sequentially (handles backgrounds automatically)
+    this.displayDialogueBlocksSequentially(dialogueBlocks, result, 0);
+}
+```
+
+### 4.5.5 Update displayDialogueBlocksSequentially() to Process Backgrounds
+
+**Location:** `person-chat-minigame.js` - Update existing method
+
+```javascript
+async displayDialogueBlocksSequentially(blocks, originalResult, blockIndex, lineIndex = 0, accumulatedText = '') {
+    if (blockIndex >= blocks.length) {
+        // ... existing completion logic ...
+        return;
+    }
+    
+    const block = blocks[blockIndex];
+    
+    // NEW: Handle background change blocks
+    if (block.isBackgroundChange) {
+        // Apply background change
+        await this.changeBackground(block.backgroundImage);
+        
+        // If there's accompanying narrative text, display it
+        if (block.text && block.text.trim()) {
+            this.ui.showDialogue(
+                block.text,
+                'narrator',
+                false,
+                true, // isNarrator
+                null  // no character portrait
+            );
+            
+            // Brief pause to let user read
+            await new Promise(resolve => {
+                this.scheduleDialogueAdvance(resolve, 2000); // 2 second pause
+            });
+        }
+        
+        // Move to next block
+        this.displayDialogueBlocksSequentially(blocks, originalResult, blockIndex + 1, 0, '');
+        return;
+    }
+    
+    // ... rest of existing dialogue display logic ...
+}
+```
+
+### 4.5.6 Add Portrait Renderer Background Methods
+
+**Location:** `person-chat-portraits.js` - Add new methods
+
+```javascript
+/**
+ * Set a custom background image (async with promise)
+ * @param {string} imagePath - Full path to background image
+ * @param {number} transitionDuration - Fade transition time in ms (default 500)
+ * @returns {Promise} Resolves when background loaded and applied
+ */
+setBackgroundAsync(imagePath, transitionDuration = 500) {
+    return new Promise((resolve, reject) => {
+        if (!imagePath) {
+            this.clearBackground();
+            resolve();
+            return;
+        }
+        
+        const img = new Image();
+        img.onload = () => {
+            // Optional: Add fade transition
+            if (transitionDuration > 0 && this.canvas) {
+                this.canvas.style.transition = `opacity ${transitionDuration}ms ease-in-out`;
+                this.canvas.style.opacity = '0';
+                
+                setTimeout(() => {
+                    this.backgroundImage = img;
+                    this.backgroundPath = imagePath;
+                    this.renderFrame();
+                    this.canvas.style.opacity = '1';
+                    resolve();
+                }, transitionDuration / 2);
+            } else {
+                this.backgroundImage = img;
+                this.backgroundPath = imagePath;
+                this.renderFrame();
+                resolve();
+            }
+        };
+        
+        img.onerror = () => {
+            console.error(`❌ Failed to load background: ${imagePath}`);
+            reject(new Error(`Failed to load background: ${imagePath}`));
+        };
+        
+        img.src = imagePath;
+    });
+}
+
+/**
+ * Clear custom background, return to default
+ */
+clearBackground() {
+    this.backgroundImage = null;
+    this.backgroundPath = null;
+    this.renderFrame();
+    console.log('🖼️ Background cleared');
+}
+
+/**
+ * Update renderFrame() to draw custom background
+ * (Modify existing renderFrame method)
+ */
+renderFrame() {
+    if (!this.ctx || !this.canvas) return;
+    
+    // Clear canvas
+    this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
+    
+    // NEW: Draw custom background if present
+    if (this.backgroundImage) {
+        this.ctx.save();
+        this.ctx.drawImage(
+            this.backgroundImage,
+            0, 0,
+            this.canvas.width,
+            this.canvas.height
+        );
+        this.ctx.restore();
+    } else {
+        // Default: fill with black
+        this.ctx.fillStyle = '#000';
+        this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
+    }
+    
+    // Draw character sprite on top of background
+    // ... existing sprite rendering logic ...
+}
+```
+
+### 4.5.7 Add Background Examples to Test File
+
+**Location:** `scenarios/ink/test-line-prefix.ink` - Add new test section
+
+```ink
+=== background_changes_test ===
+test_npc_back: Let me show you background changes.
+Player: This should be interesting!
+-> change_to_night
+
+=== change_to_night ===
+test_npc_back: Watch as the environment transforms.
+Background[office_night.png]: The lights dim as evening falls.
+test_npc_back: See? Everything changes at night.
+Player: That's really atmospheric!
+-> change_to_security
+
+=== change_to_security ===
+test_npc_back: Now let's go somewhere more secure.
+Background[security_room.jpg]: You both move to a dimly lit security room.
+Player: This place has a completely different feel.
+-> clear_background
+
+=== clear_background ===
+Background[]: The environment fades away.
+Narrator: Leaving only the speakers in focus.
+test_npc_back: Perfect for dramatic moments.
+-> END
+```
+
+**✅ Acceptance Criteria:**
+- [ ] Background[] syntax correctly parsed
+- [ ] Background images load and display correctly
+- [ ] Background[]: (empty) clears background
+- [ ] Narrative text with background displays correctly
+- [ ] Background without narrative text works silently
+- [ ] Invalid background files handled gracefully (error logged, dialogue continues)
+- [ ] Smooth transition between backgrounds
+- [ ] No performance degradation with background changes
+- [ ] Background persists until changed or conversation ends
+
+---
+
 ## Phase 5: Testing & Validation
 
 ### 5.1 Create Comprehensive Test Ink File
@@ -756,6 +1083,15 @@ Player: Back to third.
 === end ===
 test_npc_front: Thanks for testing!
 Player: This is going to make writing conversations much easier!
+-> background_changes_test
+
+=== background_changes_test ===
+test_npc_back: Let me show you one more thing - background changes!
+Player: Ooh, what's this?
+Background[office_night.png]: The lights dim as evening falls.
+test_npc_back: See? The environment can change during conversations.
+Player: That's amazing for storytelling!
+Background[]: The background fades to black.
 Narrator: And scene.
 -> END
 ```
@@ -1029,6 +1365,17 @@ case 'friendly': {
 - [ ] Implement narrator CSS styling
 - [ ] Test all narrator variants
 
+### Phase 4.5: Background Changes Support
+- [ ] Add background pattern to `parseDialogueLine()`
+- [ ] Update `createDialogueBlocks()` to handle background blocks
+- [ ] Implement `changeBackground()` method
+- [ ] Add `setBackgroundAsync()` to portrait renderer
+- [ ] Add `clearBackground()` to portrait renderer
+- [ ] Update `renderFrame()` to draw custom backgrounds
+- [ ] Test background changes with and without narrative text
+- [ ] Test background clearing
+- [ ] Test error handling for missing background files
+
 ### Phase 5: Testing
 - [ ] Create comprehensive test Ink file
 - [ ] Run full test checklist
@@ -1066,6 +1413,7 @@ After implementation:
 - ✅ 0 regressions in existing conversations
 - ✅ test-line-prefix.ink works perfectly
 - ✅ Narrator passages display correctly  
+- ✅ Background changes work smoothly
 - ✅ Performance overhead < 1ms per line
 - ✅ All 20 showDialogue() call sites work unchanged
 - ✅ Writer satisfaction improved
@@ -1080,8 +1428,9 @@ After implementation:
 - **Phase 2:** 1-2 hours (speaker determination)
 - **Phase 3:** 2-3 hours (multi-line handling)
 - **Phase 4:** 2-3 hours (narrator UI)
+- **Phase 4.5:** 2-3 hours (background changes)
 - **Phase 5:** 2-3 hours (comprehensive testing)
 - **Phase 6:** 2-3 hours (NPC behavior tags)
 - **Phase 7:** 1-2 hours (documentation)
 
-**Total: 14-21 hours** of development time
+**Total: 16-24 hours** of development time
