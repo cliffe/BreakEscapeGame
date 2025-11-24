@@ -29368,3 +29368,259 @@ Processing by BreakEscape::GamesController#unlock as HTML
   [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mRELEASE SAVEPOINT active_record_1[0m
 Completed 200 OK in 4ms (Views: 0.1ms | ActiveRecord: 0.6ms (5 queries, 0 cached) | GC: 0.0ms)
   [1m[36mTRANSACTION (0.1ms)[0m  [1m[31mrollback transaction[0m
+  [1m[36mActiveRecord::InternalMetadata Load (0.3ms)[0m  [1m[34mSELECT * FROM "ar_internal_metadata" WHERE "ar_internal_metadata"."key" = ? ORDER BY "ar_internal_metadata"."key" ASC LIMIT 1[0m  [[nil, "schema_sha1"]]
+  [1m[36mActiveRecord::SchemaMigration Load (0.0ms)[0m  [1m[34mSELECT "schema_migrations"."version" FROM "schema_migrations" ORDER BY "schema_migrations"."version" ASC[0m
+  [1m[36mTRANSACTION (0.0ms)[0m  [1m[36mbegin transaction[0m
+  [1m[35m (0.1ms)[0m  [1m[35mPRAGMA foreign_keys[0m
+  [1m[35m (0.0ms)[0m  [1m[35mPRAGMA defer_foreign_keys[0m
+  [1m[35m (0.0ms)[0m  [1m[35mPRAGMA defer_foreign_keys = ON[0m
+  [1m[35m (0.0ms)[0m  [1m[35mPRAGMA foreign_keys = OFF[0m
+  [1m[36mFixtures Load (0.1ms)[0m  [1m[31mDELETE FROM "break_escape_demo_users";
+DELETE FROM "break_escape_missions";
+INSERT INTO "break_escape_demo_users" ("id", "handle", "created_at", "updated_at") VALUES (149617800, 'test_user', '2025-11-24 11:19:17', '2025-11-24 11:19:17');
+INSERT INTO "break_escape_demo_users" ("id", "handle", "created_at", "updated_at") VALUES (618102942, 'other_user', '2025-11-24 11:19:17', '2025-11-24 11:19:17');
+INSERT INTO "break_escape_missions" ("id", "name", "display_name", "description", "published", "difficulty_level", "created_at", "updated_at") VALUES (418560898, 'ceo_exfil', 'CEO Exfiltration', 'Test scenario', 1, 3, '2025-11-24 11:19:17', '2025-11-24 11:19:17');
+INSERT INTO "break_escape_missions" ("id", "name", "display_name", "description", "published", "difficulty_level", "created_at", "updated_at") VALUES (636030761, 'test_unpublished', 'Unpublished Test', 'Not visible', 0, 1, '2025-11-24 11:19:17', '2025-11-24 11:19:17')[0m
+  [1m[35m (0.0ms)[0m  [1m[35mPRAGMA defer_foreign_keys = 0[0m
+  [1m[35m (0.0ms)[0m  [1m[35mPRAGMA foreign_keys = 1[0m
+  [1m[36mTRANSACTION (0.7ms)[0m  [1m[36mcommit transaction[0m
+  [1m[35m (0.0ms)[0m  [1m[35mPRAGMA foreign_key_check[0m
+  [1m[36mTRANSACTION (0.0ms)[0m  [1m[36mbegin transaction[0m
+-------------------------------------------------------------------------------
+BreakEscape::GameTest: test_should_reject_locked_door_without_any_unlock_method
+-------------------------------------------------------------------------------
+  [1m[36mBreakEscape::Mission Load (0.0ms)[0m  [1m[34mSELECT "break_escape_missions".* FROM "break_escape_missions" WHERE "break_escape_missions"."id" = ? LIMIT ?[0m  [["id", 418560898], ["LIMIT", 1]]
+  [1m[36mBreakEscape::DemoUser Load (0.0ms)[0m  [1m[34mSELECT "break_escape_demo_users".* FROM "break_escape_demo_users" WHERE "break_escape_demo_users"."id" = ? LIMIT ?[0m  [["id", 149617800], ["LIMIT", 1]]
+  [1m[36mTRANSACTION (0.0ms)[0m  [1m[35mSAVEPOINT active_record_1[0m
+  [1m[36mBreakEscape::Game Create (0.2ms)[0m  [1m[32mINSERT INTO "break_escape_games" ("player_type", "player_id", "mission_id", "scenario_data", "player_state", "status", "started_at", "completed_at", "score", "created_at", "updated_at") VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?) RETURNING "id"[0m  [["player_type", "BreakEscape::DemoUser"], ["player_id", 149617800], ["mission_id", 418560898], ["scenario_data", "{\"startRoom\":\"reception\",\"rooms\":{}}"], ["player_state", "{\"currentRoom\":\"reception\",\"unlockedRooms\":[\"reception\"],\"unlockedObjects\":[],\"inventory\":[],\"encounteredNPCs\":[],\"globalVariables\":{},\"biometricSamples\":[],\"biometricUnlocks\":[],\"bluetoothDevices\":[],\"notes\":[],\"health\":100}"], ["status", "in_progress"], ["started_at", "2025-11-24 11:19:17.593710"], ["completed_at", nil], ["score", 0], ["created_at", "2025-11-24 11:19:17.593611"], ["updated_at", "2025-11-24 11:19:17.593611"]]
+  [1m[36mTRANSACTION (0.0ms)[0m  [1m[35mRELEASE SAVEPOINT active_record_1[0m
+[BreakEscape] validate_unlock: type=door, id=office1, attempt=, method=
+[BreakEscape] Room data: locked=true, lockType=key, requires=office1_key
+[BreakEscape] Room is LOCKED, method must be valid: 
+[BreakEscape] SECURITY VIOLATION: No valid unlock method for LOCKED door: office1, method=
+[BreakEscape] validate_unlock returning: false
+  [1m[36mTRANSACTION (0.0ms)[0m  [1m[31mrollback transaction[0m
+  [1m[36mTRANSACTION (0.0ms)[0m  [1m[36mbegin transaction[0m
+---------------------------------------------------------------------------------------
+BreakEscape::GameTest: test_should_reject_lockpick_unlock_without_lockpick_in_inventory
+---------------------------------------------------------------------------------------
+  [1m[36mBreakEscape::Mission Load (0.0ms)[0m  [1m[34mSELECT "break_escape_missions".* FROM "break_escape_missions" WHERE "break_escape_missions"."id" = ? LIMIT ?[0m  [["id", 418560898], ["LIMIT", 1]]
+  [1m[36mBreakEscape::DemoUser Load (0.0ms)[0m  [1m[34mSELECT "break_escape_demo_users".* FROM "break_escape_demo_users" WHERE "break_escape_demo_users"."id" = ? LIMIT ?[0m  [["id", 149617800], ["LIMIT", 1]]
+  [1m[36mTRANSACTION (0.0ms)[0m  [1m[35mSAVEPOINT active_record_1[0m
+  [1m[36mBreakEscape::Game Create (0.1ms)[0m  [1m[32mINSERT INTO "break_escape_games" ("player_type", "player_id", "mission_id", "scenario_data", "player_state", "status", "started_at", "completed_at", "score", "created_at", "updated_at") VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?) RETURNING "id"[0m  [["player_type", "BreakEscape::DemoUser"], ["player_id", 149617800], ["mission_id", 418560898], ["scenario_data", "{\"startRoom\":\"reception\",\"rooms\":{}}"], ["player_state", "{\"currentRoom\":\"reception\",\"unlockedRooms\":[\"reception\"],\"unlockedObjects\":[],\"inventory\":[],\"encounteredNPCs\":[],\"globalVariables\":{},\"biometricSamples\":[],\"biometricUnlocks\":[],\"bluetoothDevices\":[],\"notes\":[],\"health\":100}"], ["status", "in_progress"], ["started_at", "2025-11-24 11:19:17.595519"], ["completed_at", nil], ["score", 0], ["created_at", "2025-11-24 11:19:17.595480"], ["updated_at", "2025-11-24 11:19:17.595480"]]
+  [1m[36mTRANSACTION (0.0ms)[0m  [1m[35mRELEASE SAVEPOINT active_record_1[0m
+[BreakEscape] validate_unlock: type=door, id=office1, attempt=, method=lockpick
+[BreakEscape] Room data: locked=true, lockType=key, requires=office1_key
+[BreakEscape] Room is LOCKED, method must be valid: lockpick
+[BreakEscape] Checking for lockpick in inventory (1 items)
+[BreakEscape] Inventory item: type=key, scenarioData.type=, is_lockpick=false
+[BreakEscape] Lockpick found in inventory: false
+[BreakEscape] Lockpick validation result: false
+[BreakEscape] validate_unlock returning: false
+  [1m[36mTRANSACTION (0.0ms)[0m  [1m[31mrollback transaction[0m
+  [1m[36mTRANSACTION (0.0ms)[0m  [1m[36mbegin transaction[0m
+----------------------------------------------
+BreakEscape::GameTest: test_should_unlock_room
+----------------------------------------------
+  [1m[36mBreakEscape::Mission Load (0.0ms)[0m  [1m[34mSELECT "break_escape_missions".* FROM "break_escape_missions" WHERE "break_escape_missions"."id" = ? LIMIT ?[0m  [["id", 418560898], ["LIMIT", 1]]
+  [1m[36mBreakEscape::DemoUser Load (0.0ms)[0m  [1m[34mSELECT "break_escape_demo_users".* FROM "break_escape_demo_users" WHERE "break_escape_demo_users"."id" = ? LIMIT ?[0m  [["id", 149617800], ["LIMIT", 1]]
+  [1m[36mTRANSACTION (0.0ms)[0m  [1m[35mSAVEPOINT active_record_1[0m
+  [1m[36mBreakEscape::Game Create (0.1ms)[0m  [1m[32mINSERT INTO "break_escape_games" ("player_type", "player_id", "mission_id", "scenario_data", "player_state", "status", "started_at", "completed_at", "score", "created_at", "updated_at") VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?) RETURNING "id"[0m  [["player_type", "BreakEscape::DemoUser"], ["player_id", 149617800], ["mission_id", 418560898], ["scenario_data", "{\"startRoom\":\"reception\",\"rooms\":{}}"], ["player_state", "{\"currentRoom\":\"reception\",\"unlockedRooms\":[\"reception\"],\"unlockedObjects\":[],\"inventory\":[],\"encounteredNPCs\":[],\"globalVariables\":{},\"biometricSamples\":[],\"biometricUnlocks\":[],\"bluetoothDevices\":[],\"notes\":[],\"health\":100}"], ["status", "in_progress"], ["started_at", "2025-11-24 11:19:17.596663"], ["completed_at", nil], ["score", 0], ["created_at", "2025-11-24 11:19:17.596631"], ["updated_at", "2025-11-24 11:19:17.596631"]]
+  [1m[36mTRANSACTION (0.0ms)[0m  [1m[35mRELEASE SAVEPOINT active_record_1[0m
+  [1m[36mTRANSACTION (0.0ms)[0m  [1m[35mSAVEPOINT active_record_1[0m
+  [1m[36mBreakEscape::Game Update (0.1ms)[0m  [1m[33mUPDATE "break_escape_games" SET "player_state" = ?, "updated_at" = ? WHERE "break_escape_games"."id" = ?[0m  [["player_state", "{\"currentRoom\":\"reception\",\"unlockedRooms\":[\"reception\",\"office\"],\"unlockedObjects\":[],\"inventory\":[],\"encounteredNPCs\":[],\"globalVariables\":{},\"biometricSamples\":[],\"biometricUnlocks\":[],\"bluetoothDevices\":[],\"notes\":[],\"health\":100}"], ["updated_at", "2025-11-24 11:19:17.597131"], ["id", 1]]
+  [1m[36mTRANSACTION (0.0ms)[0m  [1m[35mRELEASE SAVEPOINT active_record_1[0m
+  [1m[36mTRANSACTION (0.0ms)[0m  [1m[31mrollback transaction[0m
+  [1m[36mTRANSACTION (0.0ms)[0m  [1m[36mbegin transaction[0m
+--------------------------------------------------------------------------------------
+BreakEscape::GameTest: test_should_allow_access_to_unlocked_doors_regardless_of_method
+--------------------------------------------------------------------------------------
+  [1m[36mBreakEscape::Mission Load (0.0ms)[0m  [1m[34mSELECT "break_escape_missions".* FROM "break_escape_missions" WHERE "break_escape_missions"."id" = ? LIMIT ?[0m  [["id", 418560898], ["LIMIT", 1]]
+  [1m[36mBreakEscape::DemoUser Load (0.0ms)[0m  [1m[34mSELECT "break_escape_demo_users".* FROM "break_escape_demo_users" WHERE "break_escape_demo_users"."id" = ? LIMIT ?[0m  [["id", 149617800], ["LIMIT", 1]]
+  [1m[36mTRANSACTION (0.0ms)[0m  [1m[35mSAVEPOINT active_record_1[0m
+  [1m[36mBreakEscape::Game Create (0.1ms)[0m  [1m[32mINSERT INTO "break_escape_games" ("player_type", "player_id", "mission_id", "scenario_data", "player_state", "status", "started_at", "completed_at", "score", "created_at", "updated_at") VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?) RETURNING "id"[0m  [["player_type", "BreakEscape::DemoUser"], ["player_id", 149617800], ["mission_id", 418560898], ["scenario_data", "{\"startRoom\":\"reception\",\"rooms\":{}}"], ["player_state", "{\"currentRoom\":\"reception\",\"unlockedRooms\":[\"reception\"],\"unlockedObjects\":[],\"inventory\":[],\"encounteredNPCs\":[],\"globalVariables\":{},\"biometricSamples\":[],\"biometricUnlocks\":[],\"bluetoothDevices\":[],\"notes\":[],\"health\":100}"], ["status", "in_progress"], ["started_at", "2025-11-24 11:19:17.598076"], ["completed_at", nil], ["score", 0], ["created_at", "2025-11-24 11:19:17.598045"], ["updated_at", "2025-11-24 11:19:17.598045"]]
+  [1m[36mTRANSACTION (0.0ms)[0m  [1m[35mRELEASE SAVEPOINT active_record_1[0m
+[BreakEscape] validate_unlock: type=door, id=reception, attempt=, method=unlocked
+[BreakEscape] Door already unlocked in player state, granting access
+  [1m[36mTRANSACTION (0.0ms)[0m  [1m[31mrollback transaction[0m
+  [1m[36mTRANSACTION (0.0ms)[0m  [1m[36mbegin transaction[0m
+---------------------------------------------------------------------------
+BreakEscape::GameTest: test_has_key_in_inventory_should_find_keys_by_key_id
+---------------------------------------------------------------------------
+  [1m[36mBreakEscape::Mission Load (0.0ms)[0m  [1m[34mSELECT "break_escape_missions".* FROM "break_escape_missions" WHERE "break_escape_missions"."id" = ? LIMIT ?[0m  [["id", 418560898], ["LIMIT", 1]]
+  [1m[36mBreakEscape::DemoUser Load (0.0ms)[0m  [1m[34mSELECT "break_escape_demo_users".* FROM "break_escape_demo_users" WHERE "break_escape_demo_users"."id" = ? LIMIT ?[0m  [["id", 149617800], ["LIMIT", 1]]
+  [1m[36mTRANSACTION (0.0ms)[0m  [1m[35mSAVEPOINT active_record_1[0m
+  [1m[36mBreakEscape::Game Create (0.1ms)[0m  [1m[32mINSERT INTO "break_escape_games" ("player_type", "player_id", "mission_id", "scenario_data", "player_state", "status", "started_at", "completed_at", "score", "created_at", "updated_at") VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?) RETURNING "id"[0m  [["player_type", "BreakEscape::DemoUser"], ["player_id", 149617800], ["mission_id", 418560898], ["scenario_data", "{\"startRoom\":\"reception\",\"rooms\":{}}"], ["player_state", "{\"currentRoom\":\"reception\",\"unlockedRooms\":[\"reception\"],\"unlockedObjects\":[],\"inventory\":[],\"encounteredNPCs\":[],\"globalVariables\":{},\"biometricSamples\":[],\"biometricUnlocks\":[],\"bluetoothDevices\":[],\"notes\":[],\"health\":100}"], ["status", "in_progress"], ["started_at", "2025-11-24 11:19:17.599062"], ["completed_at", nil], ["score", 0], ["created_at", "2025-11-24 11:19:17.599031"], ["updated_at", "2025-11-24 11:19:17.599031"]]
+  [1m[36mTRANSACTION (0.0ms)[0m  [1m[35mRELEASE SAVEPOINT active_record_1[0m
+[BreakEscape] Checking for key office1_key in inventory (1 items)
+[BreakEscape] Inventory item: name=Office Key, key_id=office1_key, is_match=true
+[BreakEscape] Key office1_key found in inventory: true
+[BreakEscape] Checking for key wrong_key in inventory (1 items)
+[BreakEscape] Inventory item: name=Office Key, key_id=office1_key, is_match=false
+[BreakEscape] Key wrong_key found in inventory: false
+  [1m[36mTRANSACTION (0.0ms)[0m  [1m[31mrollback transaction[0m
+  [1m[36mTRANSACTION (0.0ms)[0m  [1m[36mbegin transaction[0m
+------------------------------------------------------------------
+BreakEscape::GameTest: test_lockpick_should_bypass_key_requirement
+------------------------------------------------------------------
+  [1m[36mBreakEscape::Mission Load (0.0ms)[0m  [1m[34mSELECT "break_escape_missions".* FROM "break_escape_missions" WHERE "break_escape_missions"."id" = ? LIMIT ?[0m  [["id", 418560898], ["LIMIT", 1]]
+  [1m[36mBreakEscape::DemoUser Load (0.0ms)[0m  [1m[34mSELECT "break_escape_demo_users".* FROM "break_escape_demo_users" WHERE "break_escape_demo_users"."id" = ? LIMIT ?[0m  [["id", 149617800], ["LIMIT", 1]]
+  [1m[36mTRANSACTION (0.0ms)[0m  [1m[35mSAVEPOINT active_record_1[0m
+  [1m[36mBreakEscape::Game Create (0.1ms)[0m  [1m[32mINSERT INTO "break_escape_games" ("player_type", "player_id", "mission_id", "scenario_data", "player_state", "status", "started_at", "completed_at", "score", "created_at", "updated_at") VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?) RETURNING "id"[0m  [["player_type", "BreakEscape::DemoUser"], ["player_id", 149617800], ["mission_id", 418560898], ["scenario_data", "{\"startRoom\":\"reception\",\"rooms\":{}}"], ["player_state", "{\"currentRoom\":\"reception\",\"unlockedRooms\":[\"reception\"],\"unlockedObjects\":[],\"inventory\":[],\"encounteredNPCs\":[],\"globalVariables\":{},\"biometricSamples\":[],\"biometricUnlocks\":[],\"bluetoothDevices\":[],\"notes\":[],\"health\":100}"], ["status", "in_progress"], ["started_at", "2025-11-24 11:19:17.600076"], ["completed_at", nil], ["score", 0], ["created_at", "2025-11-24 11:19:17.600045"], ["updated_at", "2025-11-24 11:19:17.600045"]]
+  [1m[36mTRANSACTION (0.0ms)[0m  [1m[35mRELEASE SAVEPOINT active_record_1[0m
+[BreakEscape] validate_unlock: type=door, id=secure_vault, attempt=, method=lockpick
+[BreakEscape] Room data: locked=true, lockType=key, requires=vault_master_key
+[BreakEscape] Room is LOCKED, method must be valid: lockpick
+[BreakEscape] Checking for lockpick in inventory (1 items)
+[BreakEscape] Inventory item: type=lockpick, scenarioData.type=, is_lockpick=true
+[BreakEscape] Lockpick found in inventory: true
+[BreakEscape] Lockpick validation result: true
+[BreakEscape] validate_unlock returning: true
+  [1m[36mTRANSACTION (0.0ms)[0m  [1m[31mrollback transaction[0m
+  [1m[36mTRANSACTION (0.0ms)[0m  [1m[36mbegin transaction[0m
+----------------------------------------------------------------------
+BreakEscape::GameTest: test_key_takes_precedence_over_lockpick_attempt
+----------------------------------------------------------------------
+  [1m[36mBreakEscape::Mission Load (0.0ms)[0m  [1m[34mSELECT "break_escape_missions".* FROM "break_escape_missions" WHERE "break_escape_missions"."id" = ? LIMIT ?[0m  [["id", 418560898], ["LIMIT", 1]]
+  [1m[36mBreakEscape::DemoUser Load (0.0ms)[0m  [1m[34mSELECT "break_escape_demo_users".* FROM "break_escape_demo_users" WHERE "break_escape_demo_users"."id" = ? LIMIT ?[0m  [["id", 149617800], ["LIMIT", 1]]
+  [1m[36mTRANSACTION (0.0ms)[0m  [1m[35mSAVEPOINT active_record_1[0m
+  [1m[36mBreakEscape::Game Create (0.1ms)[0m  [1m[32mINSERT INTO "break_escape_games" ("player_type", "player_id", "mission_id", "scenario_data", "player_state", "status", "started_at", "completed_at", "score", "created_at", "updated_at") VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?) RETURNING "id"[0m  [["player_type", "BreakEscape::DemoUser"], ["player_id", 149617800], ["mission_id", 418560898], ["scenario_data", "{\"startRoom\":\"reception\",\"rooms\":{}}"], ["player_state", "{\"currentRoom\":\"reception\",\"unlockedRooms\":[\"reception\"],\"unlockedObjects\":[],\"inventory\":[],\"encounteredNPCs\":[],\"globalVariables\":{},\"biometricSamples\":[],\"biometricUnlocks\":[],\"bluetoothDevices\":[],\"notes\":[],\"health\":100}"], ["status", "in_progress"], ["started_at", "2025-11-24 11:19:17.601139"], ["completed_at", nil], ["score", 0], ["created_at", "2025-11-24 11:19:17.601099"], ["updated_at", "2025-11-24 11:19:17.601099"]]
+  [1m[36mTRANSACTION (0.0ms)[0m  [1m[35mRELEASE SAVEPOINT active_record_1[0m
+[BreakEscape] validate_unlock: type=door, id=office1, attempt=, method=key
+[BreakEscape] Room data: locked=true, lockType=key, requires=office1_key
+[BreakEscape] Room is LOCKED, method must be valid: key
+[BreakEscape] Checking for key office1_key in inventory (2 items)
+[BreakEscape] Inventory item: name=Office Key, key_id=office1_key, is_match=true
+[BreakEscape] Key office1_key found in inventory: true
+[BreakEscape] Key validation result: true
+[BreakEscape] validate_unlock returning: true
+  [1m[36mTRANSACTION (0.0ms)[0m  [1m[31mrollback transaction[0m
+  [1m[36mTRANSACTION (0.0ms)[0m  [1m[36mbegin transaction[0m
+-------------------------------------------------------------------
+BreakEscape::GameTest: test_should_validate_unlock_with_correct_key
+-------------------------------------------------------------------
+  [1m[36mBreakEscape::Mission Load (0.0ms)[0m  [1m[34mSELECT "break_escape_missions".* FROM "break_escape_missions" WHERE "break_escape_missions"."id" = ? LIMIT ?[0m  [["id", 418560898], ["LIMIT", 1]]
+  [1m[36mBreakEscape::DemoUser Load (0.0ms)[0m  [1m[34mSELECT "break_escape_demo_users".* FROM "break_escape_demo_users" WHERE "break_escape_demo_users"."id" = ? LIMIT ?[0m  [["id", 149617800], ["LIMIT", 1]]
+  [1m[36mTRANSACTION (0.0ms)[0m  [1m[35mSAVEPOINT active_record_1[0m
+  [1m[36mBreakEscape::Game Create (0.1ms)[0m  [1m[32mINSERT INTO "break_escape_games" ("player_type", "player_id", "mission_id", "scenario_data", "player_state", "status", "started_at", "completed_at", "score", "created_at", "updated_at") VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?) RETURNING "id"[0m  [["player_type", "BreakEscape::DemoUser"], ["player_id", 149617800], ["mission_id", 418560898], ["scenario_data", "{\"startRoom\":\"reception\",\"rooms\":{}}"], ["player_state", "{\"currentRoom\":\"reception\",\"unlockedRooms\":[\"reception\"],\"unlockedObjects\":[],\"inventory\":[],\"encounteredNPCs\":[],\"globalVariables\":{},\"biometricSamples\":[],\"biometricUnlocks\":[],\"bluetoothDevices\":[],\"notes\":[],\"health\":100}"], ["status", "in_progress"], ["started_at", "2025-11-24 11:19:17.602347"], ["completed_at", nil], ["score", 0], ["created_at", "2025-11-24 11:19:17.602315"], ["updated_at", "2025-11-24 11:19:17.602315"]]
+  [1m[36mTRANSACTION (0.0ms)[0m  [1m[35mRELEASE SAVEPOINT active_record_1[0m
+[BreakEscape] validate_unlock: type=door, id=office1, attempt=, method=key
+[BreakEscape] Room data: locked=true, lockType=key, requires=office1_key
+[BreakEscape] Room is LOCKED, method must be valid: key
+[BreakEscape] Checking for key office1_key in inventory (1 items)
+[BreakEscape] Inventory item: name=Office Key, key_id=office1_key, is_match=true
+[BreakEscape] Key office1_key found in inventory: true
+[BreakEscape] Key validation result: true
+[BreakEscape] validate_unlock returning: true
+  [1m[36mTRANSACTION (0.0ms)[0m  [1m[31mrollback transaction[0m
+  [1m[36mTRANSACTION (0.0ms)[0m  [1m[36mbegin transaction[0m
+----------------------------------------------------------------------------------------
+BreakEscape::GameTest: test_has_lockpick_in_inventory_should_not_find_non-lockpick_items
+----------------------------------------------------------------------------------------
+  [1m[36mBreakEscape::Mission Load (0.0ms)[0m  [1m[34mSELECT "break_escape_missions".* FROM "break_escape_missions" WHERE "break_escape_missions"."id" = ? LIMIT ?[0m  [["id", 418560898], ["LIMIT", 1]]
+  [1m[36mBreakEscape::DemoUser Load (0.0ms)[0m  [1m[34mSELECT "break_escape_demo_users".* FROM "break_escape_demo_users" WHERE "break_escape_demo_users"."id" = ? LIMIT ?[0m  [["id", 149617800], ["LIMIT", 1]]
+  [1m[36mTRANSACTION (0.0ms)[0m  [1m[35mSAVEPOINT active_record_1[0m
+  [1m[36mBreakEscape::Game Create (0.1ms)[0m  [1m[32mINSERT INTO "break_escape_games" ("player_type", "player_id", "mission_id", "scenario_data", "player_state", "status", "started_at", "completed_at", "score", "created_at", "updated_at") VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?) RETURNING "id"[0m  [["player_type", "BreakEscape::DemoUser"], ["player_id", 149617800], ["mission_id", 418560898], ["scenario_data", "{\"startRoom\":\"reception\",\"rooms\":{}}"], ["player_state", "{\"currentRoom\":\"reception\",\"unlockedRooms\":[\"reception\"],\"unlockedObjects\":[],\"inventory\":[],\"encounteredNPCs\":[],\"globalVariables\":{},\"biometricSamples\":[],\"biometricUnlocks\":[],\"bluetoothDevices\":[],\"notes\":[],\"health\":100}"], ["status", "in_progress"], ["started_at", "2025-11-24 11:19:17.603385"], ["completed_at", nil], ["score", 0], ["created_at", "2025-11-24 11:19:17.603354"], ["updated_at", "2025-11-24 11:19:17.603354"]]
+  [1m[36mTRANSACTION (0.0ms)[0m  [1m[35mRELEASE SAVEPOINT active_record_1[0m
+[BreakEscape] Checking for lockpick in inventory (1 items)
+[BreakEscape] Inventory item: type=key, scenarioData.type=, is_lockpick=false
+[BreakEscape] Lockpick found in inventory: false
+  [1m[36mTRANSACTION (0.0ms)[0m  [1m[31mrollback transaction[0m
+  [1m[36mTRANSACTION (0.0ms)[0m  [1m[36mbegin transaction[0m
+---------------------------------------------------------------
+BreakEscape::GameTest: test_should_belong_to_player_and_mission
+---------------------------------------------------------------
+  [1m[36mBreakEscape::Mission Load (0.0ms)[0m  [1m[34mSELECT "break_escape_missions".* FROM "break_escape_missions" WHERE "break_escape_missions"."id" = ? LIMIT ?[0m  [["id", 418560898], ["LIMIT", 1]]
+  [1m[36mBreakEscape::DemoUser Load (0.0ms)[0m  [1m[34mSELECT "break_escape_demo_users".* FROM "break_escape_demo_users" WHERE "break_escape_demo_users"."id" = ? LIMIT ?[0m  [["id", 149617800], ["LIMIT", 1]]
+  [1m[36mTRANSACTION (0.0ms)[0m  [1m[35mSAVEPOINT active_record_1[0m
+  [1m[36mBreakEscape::Game Create (0.1ms)[0m  [1m[32mINSERT INTO "break_escape_games" ("player_type", "player_id", "mission_id", "scenario_data", "player_state", "status", "started_at", "completed_at", "score", "created_at", "updated_at") VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?) RETURNING "id"[0m  [["player_type", "BreakEscape::DemoUser"], ["player_id", 149617800], ["mission_id", 418560898], ["scenario_data", "{\"startRoom\":\"reception\",\"rooms\":{}}"], ["player_state", "{\"currentRoom\":\"reception\",\"unlockedRooms\":[\"reception\"],\"unlockedObjects\":[],\"inventory\":[],\"encounteredNPCs\":[],\"globalVariables\":{},\"biometricSamples\":[],\"biometricUnlocks\":[],\"bluetoothDevices\":[],\"notes\":[],\"health\":100}"], ["status", "in_progress"], ["started_at", "2025-11-24 11:19:17.604390"], ["completed_at", nil], ["score", 0], ["created_at", "2025-11-24 11:19:17.604359"], ["updated_at", "2025-11-24 11:19:17.604359"]]
+  [1m[36mTRANSACTION (0.0ms)[0m  [1m[35mRELEASE SAVEPOINT active_record_1[0m
+  [1m[36mTRANSACTION (0.0ms)[0m  [1m[31mrollback transaction[0m
+  [1m[36mTRANSACTION (0.0ms)[0m  [1m[36mbegin transaction[0m
+---------------------------------------------------------------------
+BreakEscape::GameTest: test_should_reject_unlock_without_required_key
+---------------------------------------------------------------------
+  [1m[36mBreakEscape::Mission Load (0.0ms)[0m  [1m[34mSELECT "break_escape_missions".* FROM "break_escape_missions" WHERE "break_escape_missions"."id" = ? LIMIT ?[0m  [["id", 418560898], ["LIMIT", 1]]
+  [1m[36mBreakEscape::DemoUser Load (0.0ms)[0m  [1m[34mSELECT "break_escape_demo_users".* FROM "break_escape_demo_users" WHERE "break_escape_demo_users"."id" = ? LIMIT ?[0m  [["id", 149617800], ["LIMIT", 1]]
+  [1m[36mTRANSACTION (0.0ms)[0m  [1m[35mSAVEPOINT active_record_1[0m
+  [1m[36mBreakEscape::Game Create (0.1ms)[0m  [1m[32mINSERT INTO "break_escape_games" ("player_type", "player_id", "mission_id", "scenario_data", "player_state", "status", "started_at", "completed_at", "score", "created_at", "updated_at") VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?) RETURNING "id"[0m  [["player_type", "BreakEscape::DemoUser"], ["player_id", 149617800], ["mission_id", 418560898], ["scenario_data", "{\"startRoom\":\"reception\",\"rooms\":{}}"], ["player_state", "{\"currentRoom\":\"reception\",\"unlockedRooms\":[\"reception\"],\"unlockedObjects\":[],\"inventory\":[],\"encounteredNPCs\":[],\"globalVariables\":{},\"biometricSamples\":[],\"biometricUnlocks\":[],\"bluetoothDevices\":[],\"notes\":[],\"health\":100}"], ["status", "in_progress"], ["started_at", "2025-11-24 11:19:17.605370"], ["completed_at", nil], ["score", 0], ["created_at", "2025-11-24 11:19:17.605338"], ["updated_at", "2025-11-24 11:19:17.605338"]]
+  [1m[36mTRANSACTION (0.0ms)[0m  [1m[35mRELEASE SAVEPOINT active_record_1[0m
+[BreakEscape] validate_unlock: type=door, id=office1, attempt=, method=key
+[BreakEscape] Room data: locked=true, lockType=key, requires=office1_key
+[BreakEscape] Room is LOCKED, method must be valid: key
+[BreakEscape] Checking for key office1_key in inventory (1 items)
+[BreakEscape] Inventory item: name=Wrong Key, key_id=wrong_key, is_match=false
+[BreakEscape] Key office1_key found in inventory: false
+[BreakEscape] Key validation result: false
+[BreakEscape] validate_unlock returning: false
+  [1m[36mTRANSACTION (0.0ms)[0m  [1m[31mrollback transaction[0m
+  [1m[36mTRANSACTION (0.0ms)[0m  [1m[36mbegin transaction[0m
+------------------------------------------------
+BreakEscape::GameTest: test_should_update_health
+------------------------------------------------
+  [1m[36mBreakEscape::Mission Load (0.0ms)[0m  [1m[34mSELECT "break_escape_missions".* FROM "break_escape_missions" WHERE "break_escape_missions"."id" = ? LIMIT ?[0m  [["id", 418560898], ["LIMIT", 1]]
+  [1m[36mBreakEscape::DemoUser Load (0.0ms)[0m  [1m[34mSELECT "break_escape_demo_users".* FROM "break_escape_demo_users" WHERE "break_escape_demo_users"."id" = ? LIMIT ?[0m  [["id", 149617800], ["LIMIT", 1]]
+  [1m[36mTRANSACTION (0.0ms)[0m  [1m[35mSAVEPOINT active_record_1[0m
+  [1m[36mBreakEscape::Game Create (0.1ms)[0m  [1m[32mINSERT INTO "break_escape_games" ("player_type", "player_id", "mission_id", "scenario_data", "player_state", "status", "started_at", "completed_at", "score", "created_at", "updated_at") VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?) RETURNING "id"[0m  [["player_type", "BreakEscape::DemoUser"], ["player_id", 149617800], ["mission_id", 418560898], ["scenario_data", "{\"startRoom\":\"reception\",\"rooms\":{}}"], ["player_state", "{\"currentRoom\":\"reception\",\"unlockedRooms\":[\"reception\"],\"unlockedObjects\":[],\"inventory\":[],\"encounteredNPCs\":[],\"globalVariables\":{},\"biometricSamples\":[],\"biometricUnlocks\":[],\"bluetoothDevices\":[],\"notes\":[],\"health\":100}"], ["status", "in_progress"], ["started_at", "2025-11-24 11:19:17.608786"], ["completed_at", nil], ["score", 0], ["created_at", "2025-11-24 11:19:17.608745"], ["updated_at", "2025-11-24 11:19:17.608745"]]
+  [1m[36mTRANSACTION (0.0ms)[0m  [1m[35mRELEASE SAVEPOINT active_record_1[0m
+  [1m[36mTRANSACTION (0.0ms)[0m  [1m[35mSAVEPOINT active_record_1[0m
+  [1m[36mBreakEscape::Game Update (0.1ms)[0m  [1m[33mUPDATE "break_escape_games" SET "player_state" = ?, "updated_at" = ? WHERE "break_escape_games"."id" = ?[0m  [["player_state", "{\"currentRoom\":\"reception\",\"unlockedRooms\":[\"reception\"],\"unlockedObjects\":[],\"inventory\":[],\"encounteredNPCs\":[],\"globalVariables\":{},\"biometricSamples\":[],\"biometricUnlocks\":[],\"bluetoothDevices\":[],\"notes\":[],\"health\":50}"], ["updated_at", "2025-11-24 11:19:17.609338"], ["id", 1]]
+  [1m[36mTRANSACTION (0.0ms)[0m  [1m[35mRELEASE SAVEPOINT active_record_1[0m
+  [1m[36mTRANSACTION (0.0ms)[0m  [1m[31mrollback transaction[0m
+  [1m[36mTRANSACTION (0.0ms)[0m  [1m[36mbegin transaction[0m
+---------------------------------------------------------------------------
+BreakEscape::GameTest: test_has_lockpick_in_inventory_should_find_lockpicks
+---------------------------------------------------------------------------
+  [1m[36mBreakEscape::Mission Load (0.0ms)[0m  [1m[34mSELECT "break_escape_missions".* FROM "break_escape_missions" WHERE "break_escape_missions"."id" = ? LIMIT ?[0m  [["id", 418560898], ["LIMIT", 1]]
+  [1m[36mBreakEscape::DemoUser Load (0.0ms)[0m  [1m[34mSELECT "break_escape_demo_users".* FROM "break_escape_demo_users" WHERE "break_escape_demo_users"."id" = ? LIMIT ?[0m  [["id", 149617800], ["LIMIT", 1]]
+  [1m[36mTRANSACTION (0.0ms)[0m  [1m[35mSAVEPOINT active_record_1[0m
+  [1m[36mBreakEscape::Game Create (0.2ms)[0m  [1m[32mINSERT INTO "break_escape_games" ("player_type", "player_id", "mission_id", "scenario_data", "player_state", "status", "started_at", "completed_at", "score", "created_at", "updated_at") VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?) RETURNING "id"[0m  [["player_type", "BreakEscape::DemoUser"], ["player_id", 149617800], ["mission_id", 418560898], ["scenario_data", "{\"startRoom\":\"reception\",\"rooms\":{}}"], ["player_state", "{\"currentRoom\":\"reception\",\"unlockedRooms\":[\"reception\"],\"unlockedObjects\":[],\"inventory\":[],\"encounteredNPCs\":[],\"globalVariables\":{},\"biometricSamples\":[],\"biometricUnlocks\":[],\"bluetoothDevices\":[],\"notes\":[],\"health\":100}"], ["status", "in_progress"], ["started_at", "2025-11-24 11:19:17.610587"], ["completed_at", nil], ["score", 0], ["created_at", "2025-11-24 11:19:17.610357"], ["updated_at", "2025-11-24 11:19:17.610357"]]
+  [1m[36mTRANSACTION (0.0ms)[0m  [1m[35mRELEASE SAVEPOINT active_record_1[0m
+[BreakEscape] Checking for lockpick in inventory (1 items)
+[BreakEscape] Inventory item: type=lockpick, scenarioData.type=, is_lockpick=true
+[BreakEscape] Lockpick found in inventory: true
+  [1m[36mTRANSACTION (0.0ms)[0m  [1m[31mrollback transaction[0m
+  [1m[36mTRANSACTION (0.0ms)[0m  [1m[36mbegin transaction[0m
+----------------------------------------------------------------
+BreakEscape::GameTest: test_should_validate_unlock_with_lockpick
+----------------------------------------------------------------
+  [1m[36mBreakEscape::Mission Load (0.0ms)[0m  [1m[34mSELECT "break_escape_missions".* FROM "break_escape_missions" WHERE "break_escape_missions"."id" = ? LIMIT ?[0m  [["id", 418560898], ["LIMIT", 1]]
+  [1m[36mBreakEscape::DemoUser Load (0.0ms)[0m  [1m[34mSELECT "break_escape_demo_users".* FROM "break_escape_demo_users" WHERE "break_escape_demo_users"."id" = ? LIMIT ?[0m  [["id", 149617800], ["LIMIT", 1]]
+  [1m[36mTRANSACTION (0.0ms)[0m  [1m[35mSAVEPOINT active_record_1[0m
+  [1m[36mBreakEscape::Game Create (0.1ms)[0m  [1m[32mINSERT INTO "break_escape_games" ("player_type", "player_id", "mission_id", "scenario_data", "player_state", "status", "started_at", "completed_at", "score", "created_at", "updated_at") VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?) RETURNING "id"[0m  [["player_type", "BreakEscape::DemoUser"], ["player_id", 149617800], ["mission_id", 418560898], ["scenario_data", "{\"startRoom\":\"reception\",\"rooms\":{}}"], ["player_state", "{\"currentRoom\":\"reception\",\"unlockedRooms\":[\"reception\"],\"unlockedObjects\":[],\"inventory\":[],\"encounteredNPCs\":[],\"globalVariables\":{},\"biometricSamples\":[],\"biometricUnlocks\":[],\"bluetoothDevices\":[],\"notes\":[],\"health\":100}"], ["status", "in_progress"], ["started_at", "2025-11-24 11:19:17.611717"], ["completed_at", nil], ["score", 0], ["created_at", "2025-11-24 11:19:17.611684"], ["updated_at", "2025-11-24 11:19:17.611684"]]
+  [1m[36mTRANSACTION (0.0ms)[0m  [1m[35mRELEASE SAVEPOINT active_record_1[0m
+[BreakEscape] validate_unlock: type=door, id=office1, attempt=, method=lockpick
+[BreakEscape] Room data: locked=true, lockType=key, requires=office1_key
+[BreakEscape] Room is LOCKED, method must be valid: lockpick
+[BreakEscape] Checking for lockpick in inventory (1 items)
+[BreakEscape] Inventory item: type=lockpick, scenarioData.type=, is_lockpick=true
+[BreakEscape] Lockpick found in inventory: true
+[BreakEscape] Lockpick validation result: true
+[BreakEscape] validate_unlock returning: true
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[31mrollback transaction[0m
+  [1m[36mTRANSACTION (0.0ms)[0m  [1m[36mbegin transaction[0m
+-----------------------------------------------------------------
+BreakEscape::GameTest: test_should_clamp_health_between_0_and_100
+-----------------------------------------------------------------
+  [1m[36mBreakEscape::Mission Load (0.0ms)[0m  [1m[34mSELECT "break_escape_missions".* FROM "break_escape_missions" WHERE "break_escape_missions"."id" = ? LIMIT ?[0m  [["id", 418560898], ["LIMIT", 1]]
+  [1m[36mBreakEscape::DemoUser Load (0.0ms)[0m  [1m[34mSELECT "break_escape_demo_users".* FROM "break_escape_demo_users" WHERE "break_escape_demo_users"."id" = ? LIMIT ?[0m  [["id", 149617800], ["LIMIT", 1]]
+  [1m[36mTRANSACTION (0.0ms)[0m  [1m[35mSAVEPOINT active_record_1[0m
+  [1m[36mBreakEscape::Game Create (0.1ms)[0m  [1m[32mINSERT INTO "break_escape_games" ("player_type", "player_id", "mission_id", "scenario_data", "player_state", "status", "started_at", "completed_at", "score", "created_at", "updated_at") VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?) RETURNING "id"[0m  [["player_type", "BreakEscape::DemoUser"], ["player_id", 149617800], ["mission_id", 418560898], ["scenario_data", "{\"startRoom\":\"reception\",\"rooms\":{}}"], ["player_state", "{\"currentRoom\":\"reception\",\"unlockedRooms\":[\"reception\"],\"unlockedObjects\":[],\"inventory\":[],\"encounteredNPCs\":[],\"globalVariables\":{},\"biometricSamples\":[],\"biometricUnlocks\":[],\"bluetoothDevices\":[],\"notes\":[],\"health\":100}"], ["status", "in_progress"], ["started_at", "2025-11-24 11:19:17.612925"], ["completed_at", nil], ["score", 0], ["created_at", "2025-11-24 11:19:17.612893"], ["updated_at", "2025-11-24 11:19:17.612893"]]
+  [1m[36mTRANSACTION (0.0ms)[0m  [1m[35mRELEASE SAVEPOINT active_record_1[0m
+  [1m[36mTRANSACTION (0.0ms)[0m  [1m[35mSAVEPOINT active_record_1[0m
+  [1m[36mBreakEscape::Game Update (0.1ms)[0m  [1m[33mUPDATE "break_escape_games" SET "player_state" = ?, "updated_at" = ? WHERE "break_escape_games"."id" = ?[0m  [["player_state", "{\"currentRoom\":\"reception\",\"unlockedRooms\":[\"reception\"],\"unlockedObjects\":[],\"inventory\":[],\"encounteredNPCs\":[],\"globalVariables\":{},\"biometricSamples\":[],\"biometricUnlocks\":[],\"bluetoothDevices\":[],\"notes\":[],\"health\":0}"], ["updated_at", "2025-11-24 11:19:17.613474"], ["id", 1]]
+  [1m[36mTRANSACTION (0.0ms)[0m  [1m[35mRELEASE SAVEPOINT active_record_1[0m
+  [1m[36mTRANSACTION (0.0ms)[0m  [1m[31mrollback transaction[0m
+  [1m[36mTRANSACTION (0.0ms)[0m  [1m[36mbegin transaction[0m
+--------------------------------------------------
+BreakEscape::GameTest: test_should_track_inventory
+--------------------------------------------------
+  [1m[36mBreakEscape::Mission Load (0.0ms)[0m  [1m[34mSELECT "break_escape_missions".* FROM "break_escape_missions" WHERE "break_escape_missions"."id" = ? LIMIT ?[0m  [["id", 418560898], ["LIMIT", 1]]
+  [1m[36mBreakEscape::DemoUser Load (0.0ms)[0m  [1m[34mSELECT "break_escape_demo_users".* FROM "break_escape_demo_users" WHERE "break_escape_demo_users"."id" = ? LIMIT ?[0m  [["id", 149617800], ["LIMIT", 1]]
+  [1m[36mTRANSACTION (0.0ms)[0m  [1m[35mSAVEPOINT active_record_1[0m
+  [1m[36mBreakEscape::Game Create (0.1ms)[0m  [1m[32mINSERT INTO "break_escape_games" ("player_type", "player_id", "mission_id", "scenario_data", "player_state", "status", "started_at", "completed_at", "score", "created_at", "updated_at") VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?) RETURNING "id"[0m  [["player_type", "BreakEscape::DemoUser"], ["player_id", 149617800], ["mission_id", 418560898], ["scenario_data", "{\"startRoom\":\"reception\",\"rooms\":{}}"], ["player_state", "{\"currentRoom\":\"reception\",\"unlockedRooms\":[\"reception\"],\"unlockedObjects\":[],\"inventory\":[],\"encounteredNPCs\":[],\"globalVariables\":{},\"biometricSamples\":[],\"biometricUnlocks\":[],\"bluetoothDevices\":[],\"notes\":[],\"health\":100}"], ["status", "in_progress"], ["started_at", "2025-11-24 11:19:17.614478"], ["completed_at", nil], ["score", 0], ["created_at", "2025-11-24 11:19:17.614427"], ["updated_at", "2025-11-24 11:19:17.614427"]]
+  [1m[36mTRANSACTION (0.0ms)[0m  [1m[35mRELEASE SAVEPOINT active_record_1[0m
+  [1m[36mTRANSACTION (0.0ms)[0m  [1m[35mSAVEPOINT active_record_1[0m
+  [1m[36mBreakEscape::Game Update (0.1ms)[0m  [1m[33mUPDATE "break_escape_games" SET "player_state" = ?, "updated_at" = ? WHERE "break_escape_games"."id" = ?[0m  [["player_state", "{\"currentRoom\":\"reception\",\"unlockedRooms\":[\"reception\"],\"unlockedObjects\":[],\"inventory\":[{\"type\":\"key\",\"name\":\"Test Key\"}],\"encounteredNPCs\":[],\"globalVariables\":{},\"biometricSamples\":[],\"biometricUnlocks\":[],\"bluetoothDevices\":[],\"notes\":[],\"health\":100}"], ["updated_at", "2025-11-24 11:19:17.614926"], ["id", 1]]
+  [1m[36mTRANSACTION (0.0ms)[0m  [1m[35mRELEASE SAVEPOINT active_record_1[0m
+  [1m[36mTRANSACTION (0.0ms)[0m  [1m[31mrollback transaction[0m
