@@ -3,6 +3,7 @@
 
 import { rooms } from '../core/rooms.js';
 import InkEngine from './ink/ink-engine.js?v=1';
+import { CSRF_TOKEN } from '../config.js';
 
 // Helper function to create a unique identifier for an item
 export function createItemIdentifier(scenarioData) {
@@ -214,18 +215,23 @@ export async function addToInventory(sprite) {
         }
 
         // NEW: Validate with server before adding
-        const gameId = window.gameId;
+        const gameId = window.breakEscapeConfig?.gameId;
         if (gameId) {
             try {
+                // Create item data with ID from scenario if available
+                const itemData = sprite.scenarioData;
+
                 const response = await fetch(`/break_escape/games/${gameId}/inventory`, {
                     method: 'POST',
+                    credentials: 'same-origin',
                     headers: {
                         'Content-Type': 'application/json',
-                        'Accept': 'application/json'
+                        'Accept': 'application/json',
+                        'X-CSRF-Token': CSRF_TOKEN
                     },
                     body: JSON.stringify({
                         action_type: 'add',
-                        item: sprite.scenarioData
+                        item: itemData
                     })
                 });
 

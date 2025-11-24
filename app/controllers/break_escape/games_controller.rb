@@ -100,11 +100,13 @@ module BreakEscape
           return render_error("Room not accessible: #{room_id}", :forbidden)
         end
 
-        # Auto-add start room if missing (defensive programming)
-        if is_start_room && !is_unlocked
+        # Auto-add room to unlockedRooms when accessed
+        # This ensures items in the room can be collected
+        if !is_unlocked
           @game.player_state['unlockedRooms'] ||= []
-          @game.player_state['unlockedRooms'] << room_id
+          @game.player_state['unlockedRooms'] << room_id unless @game.player_state['unlockedRooms'].include?(room_id)
           @game.save!
+          Rails.logger.info "[BreakEscape] Auto-unlocked room #{room_id} on access"
         end
 
         # Get and filter room data
@@ -284,16 +286,21 @@ module BreakEscape
       action_type = params[:action_type] || params[:actionType]
       item = params[:item]
 
+      Rails.logger.info "[BreakEscape] inventory endpoint: action=#{action_type}, item=#{item.inspect}"
+
       case action_type
       when 'add'
         # Validate item exists and is collectible
         validation_error = validate_item_collectible(item)
         if validation_error
+          Rails.logger.warn "[BreakEscape] inventory validation failed: #{validation_error}"
           return render json: { success: false, message: validation_error },
                        status: :unprocessable_entity
         end
 
+        Rails.logger.info "[BreakEscape] Adding item to inventory: #{item['type']} / #{item['name']}"
         @game.add_inventory_item!(item.to_unsafe_h)
+        Rails.logger.info "[BreakEscape] Item added successfully. Current inventory: #{@game.player_state['inventory'].inspect}"
         render json: { success: true, inventory: @game.player_state['inventory'] }
 
       when 'remove'
@@ -437,56 +444,122 @@ module BreakEscape
 
     def validate_item_collectible(item)
       item_type = item['type']
-      item_id = item['id']
+      # Use key_id for keys (more unique), fall back to id for other items
+      item_id = item['key_id'] || item['id']
+      item_name = item['name']
 
-      # Search scenario for this item
-      found_item = find_item_in_scenario(item_type, item_id)
-      return "Item not found in scenario: #{item_type}" unless found_item
+      Rails.logger.info "[BreakEscape] validate_item_collectible: type=#{item_type}, id=#{item_id}, name=#{item_name}"
+
+      # Check if this is a starting item first (if so, skip all other checks)
+      is_starting_item = @game.scenario_data['startItemsInInventory']&.any? do |start_item|
+        start_item['type'] == item_type && (start_item['id'] == item_id || start_item['name'] == item_name)
+      end
+
+      if is_starting_item
+        Rails.logger.info "[BreakEscape] Item is a starting item, skipping room/container checks"
+        return nil # Starting items are always valid
+      end
+
+      # Search for item, prioritizing accessible locations (not locked containers/rooms)
+      found_item_info = find_accessible_item(item_type, item_id, item_name)
+
+      unless found_item_info
+        error_msg = "Item not found in scenario: #{item_type}"
+        Rails.logger.warn "[BreakEscape] #{error_msg}"
+        return error_msg
+      end
+
+      found_item = found_item_info[:item]
+      location = found_item_info[:location]
 
       # Check if item is takeable
       unless found_item['takeable']
-        return "Item is not takeable: #{found_item['name']}"
+        error_msg = "Item is not takeable: #{found_item['name']}"
+        Rails.logger.warn "[BreakEscape] #{error_msg}"
+        return error_msg
       end
 
-      # If item is in locked container, check if container is unlocked
-      container_info = find_item_container(item_type, item_id)
-      if container_info.present?
-        container_id = container_info[:id]
+      # Check access based on location type
+      if location[:type] == 'container'
+        container_id = location[:container_id]
         unless @game.player_state['unlockedObjects'].include?(container_id)
-          return "Container not unlocked: #{container_id}"
+          error_msg = "Container not unlocked: #{container_id}"
+          Rails.logger.warn "[BreakEscape] #{error_msg}"
+          return error_msg
         end
-      end
-
-      # If item is in locked room, check if room is unlocked
-      room_info = find_item_room(item_type, item_id)
-      if room_info.present?
-        room_id = room_info[:id]
-        if room_info[:locked] && !@game.player_state['unlockedRooms'].include?(room_id)
-          return "Room not unlocked: #{room_id}"
+      elsif location[:type] == 'room'
+        room_id = location[:room_id]
+        room_info = @game.scenario_data['rooms'][room_id]
+        if room_info && room_info['locked'] && !@game.player_state['unlockedRooms'].include?(room_id)
+          error_msg = "Room not unlocked: #{room_id}"
+          Rails.logger.warn "[BreakEscape] #{error_msg}"
+          return error_msg
         end
-      end
-
-      # Check if NPC holds this item and if NPC encountered
-      npc_info = find_npc_holding_item(item_type, item_id)
-      if npc_info.present?
-        npc_id = npc_info[:id]
+      elsif location[:type] == 'npc'
+        npc_id = location[:npc_id]
         unless @game.player_state['encounteredNPCs'].include?(npc_id)
-          return "NPC not encountered: #{npc_id}"
+          error_msg = "NPC not encountered: #{npc_id}"
+          Rails.logger.warn "[BreakEscape] #{error_msg}"
+          return error_msg
         end
       end
 
+      Rails.logger.info "[BreakEscape] Item collection valid: #{item_type}"
       nil # No error
     end
 
-    def find_item_in_scenario(item_type, item_id)
+    def find_accessible_item(item_type, item_id, item_name)
+      # Priority 1: Items in unlocked rooms (most accessible)
+      @game.scenario_data['rooms'].each do |room_id, room_data|
+        if room_data['locked'] == false || @game.player_state['unlockedRooms'].include?(room_id)
+          room_data['objects']&.each do |obj|
+            if obj['type'] == item_type && (obj['key_id'] == item_id || obj['id'] == item_id || obj['name'] == item_name || obj['name'] == item_id)
+              return { item: obj, location: { type: 'room', room_id: room_id } }
+            end
+          end
+        end
+      end
+
+      # Priority 2: Items in any room (including locked ones - will validate in main method)
+      @game.scenario_data['rooms'].each do |room_id, room_data|
+        room_data['objects']&.each do |obj|
+          if obj['type'] == item_type && (obj['key_id'] == item_id || obj['id'] == item_id || obj['name'] == item_name || obj['name'] == item_id)
+            return { item: obj, location: { type: 'room', room_id: room_id } }
+          end
+
+          # Search nested contents in room objects
+          obj['contents']&.each do |content|
+            if content['type'] == item_type && (content['key_id'] == item_id || content['id'] == item_id || content['name'] == item_name || content['name'] == item_id)
+              return { item: content, location: { type: 'container', container_id: obj['id'] || obj['name'] } }
+            end
+          end
+        end
+      end
+
+      nil
+    end
+
+    def find_item_in_scenario(item_type, item_id, item_name = nil)
+      # First check startItemsInInventory (items the player begins with)
+      @game.scenario_data['startItemsInInventory']&.each do |item|
+        if item['type'] == item_type && (item['key_id'] == item_id || item['id'] == item_id || item['name'] == item_name || item['name'] == item_id)
+          return item
+        end
+      end
+
+      # Then search room objects
       @game.scenario_data['rooms'].each do |room_id, room_data|
         # Search room objects
         room_data['objects']&.each do |obj|
-          return obj if obj['type'] == item_type && (obj['id'] == item_id || obj['name'] == item_id)
+          if obj['type'] == item_type && (obj['key_id'] == item_id || obj['id'] == item_id || obj['name'] == item_name || obj['name'] == item_id)
+            return obj
+          end
 
           # Search nested contents
           obj['contents']&.each do |content|
-            return content if content['type'] == item_type && (content['id'] == item_id || content['name'] == item_id)
+            if content['type'] == item_type && (content['key_id'] == item_id || content['id'] == item_id || content['name'] == item_name || content['name'] == item_id)
+              return content
+            end
           end
         end
       end

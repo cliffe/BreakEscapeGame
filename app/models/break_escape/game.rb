@@ -58,6 +58,47 @@ module BreakEscape
       save!
     end
 
+    # Check if player has a specific key in inventory
+    def has_key_in_inventory?(key_id)
+      inventory = player_state['inventory'] || []
+      
+      Rails.logger.info "[BreakEscape] Checking for key #{key_id} in inventory (#{inventory.length} items)"
+      
+      # Check for key with matching key_id
+      found = inventory.any? do |item|
+        is_match = item['scenarioData']&.dig('key_id') == key_id || 
+                   item['scenarioData']&.dig('id') == key_id ||
+                   item['key_id'] == key_id ||
+                   item['id'] == key_id
+        
+        item_key_id = item['scenarioData']&.dig('key_id') || item['key_id']
+        item_name = item['scenarioData']&.dig('name') || item['name']
+        Rails.logger.debug "[BreakEscape] Inventory item: name=#{item_name}, key_id=#{item_key_id}, is_match=#{is_match}"
+        is_match
+      end
+      
+      Rails.logger.info "[BreakEscape] Key #{key_id} found in inventory: #{found}"
+      found
+    end
+
+    # Check if player has a lockpick in inventory
+    def has_lockpick_in_inventory?
+      inventory = player_state['inventory'] || []
+      
+      Rails.logger.info "[BreakEscape] Checking for lockpick in inventory (#{inventory.length} items)"
+      
+      # Check for lockpick item in scenarioData or at top level
+      found = inventory.any? do |item|
+        is_lockpick = item['scenarioData']&.dig('type') == 'lockpick' ||
+                      item['type'] == 'lockpick'
+        Rails.logger.debug "[BreakEscape] Inventory item: type=#{item['type']}, scenarioData.type=#{item['scenarioData']&.dig('type')}, is_lockpick=#{is_lockpick}"
+        is_lockpick
+      end
+      
+      Rails.logger.info "[BreakEscape] Lockpick found in inventory: #{found}"
+      found
+    end
+
     # NPC tracking
     def encounter_npc!(npc_id)
       player_state['encounteredNPCs'] ||= []
@@ -113,9 +154,10 @@ module BreakEscape
       if filtered['rooms'].present?
         filtered['rooms'].each do |room_id, room_data|
           # Keep only essential fields for navigation and metadata
-          # Build new hash with only the fields we want
+          # keyPins MUST be included: Door locks need pin configuration at interaction time,
+          # before the connected room is lazy-loaded. Without keyPins here, lockpicking uses random pins.
           kept_fields = {}
-          %w[type connections locked lockType requires difficulty door_sign].each do |field|
+          %w[type connections locked lockType requires difficulty door_sign keyPins].each do |field|
             kept_fields[field] = room_data[field] if room_data.key?(field)
           end
           
@@ -152,33 +194,62 @@ module BreakEscape
         room = room_data(target_id)
         return false unless room
 
-        # Handle method='unlocked' - verify against scenario data
-        if method == 'unlocked'
-          if !room['locked']
-            Rails.logger.info "[BreakEscape] Door is unlocked in scenario data, granting access"
-            return true
-          else
+        Rails.logger.debug "[BreakEscape] Room data: locked=#{room['locked']}, lockType=#{room['lockType']}, requires=#{room['requires']}"
+
+        # If room is LOCKED, it requires validation
+        if room['locked']
+          Rails.logger.info "[BreakEscape] Room is LOCKED, method must be valid: #{method}"
+          
+          # Handle method='unlocked' - REJECT for locked doors
+          if method == 'unlocked'
             Rails.logger.warn "[BreakEscape] SECURITY VIOLATION: Client sent method='unlocked' for LOCKED door: #{target_id}"
             return false
           end
-        end
 
-        # NPC unlock: Validate NPC has been encountered and has permission to unlock this door
-        if method == 'npc'
-          npc_id = attempt  # NPC id is passed as 'attempt'
-          return validate_npc_unlock(npc_id, target_id)
-        end
+          # NPC unlock: Validate NPC has been encountered and has permission to unlock this door
+          if method == 'npc'
+            npc_id = attempt  # NPC id is passed as 'attempt'
+            return validate_npc_unlock(npc_id, target_id)
+          end
 
-        case method
-        when 'key', 'lockpick', 'biometric', 'bluetooth', 'rfid'
-          # Client validated the unlock - trust it
-          # (player had correct key, picked lock, had fingerprint, had bluetooth device, had RFID card)
-          true
-        when 'pin', 'password'
-          # Server validates password/PIN attempts
-          room['requires'].to_s == attempt.to_s
+          result = case method
+          when 'key'
+            # Server validates player has the correct key in inventory
+            is_valid = room['requires'].present? && has_key_in_inventory?(room['requires'])
+            Rails.logger.info "[BreakEscape] Key validation result: #{is_valid}"
+            is_valid
+          when 'lockpick'
+            # Server validates player has lockpick in inventory
+            # Lockpick can bypass any key-based lock
+            is_valid = has_lockpick_in_inventory?
+            Rails.logger.info "[BreakEscape] Lockpick validation result: #{is_valid}"
+            is_valid
+          when 'biometric', 'bluetooth', 'rfid'
+            # Client validated these - trust it
+            # (player had fingerprint, had bluetooth device, had RFID card)
+            Rails.logger.info "[BreakEscape] #{method} validation passed (trusted client)"
+            true
+          when 'pin', 'password'
+            # Server validates password/PIN attempts
+            is_valid = room['requires'].to_s == attempt.to_s
+            Rails.logger.info "[BreakEscape] #{method} validation result: #{is_valid}"
+            is_valid
+          else
+            Rails.logger.warn "[BreakEscape] SECURITY VIOLATION: No valid unlock method for LOCKED door: #{target_id}, method=#{method}"
+            false
+          end
+
+          Rails.logger.info "[BreakEscape] validate_unlock returning: #{result}"
+          return result
         else
-          false
+          # Room is unlocked
+          if method == 'unlocked'
+            Rails.logger.info "[BreakEscape] Door is unlocked in scenario data, granting access"
+            return true
+          else
+            Rails.logger.warn "[BreakEscape] Client sent method='#{method}' for UNLOCKED door: #{target_id}, but room has no lock"
+            return true # Still allow access since room is unlocked
+          end
         end
       else
         # Check if already unlocked in player state (grants access regardless of method)
