@@ -2,7 +2,7 @@
   <% grouped_cyboks = cyboks.group_by(&:ka).sort.to_h %>
 
   <% all_ka_values = [] %>
-  <% all_tippy_content = "#{image_tag 'break_escape/cybok_logo_white.svg', style: 'max-height: 20px'} " %>
+  <% all_tippy_content = "<img src='/break_escape/assets/logos/cybok_logo_white.svg' style='max-height: 20px'> "  %>
 
   <% grouped_cyboks.each do |ka, ka_cyboks| %>
     <% all_ka_values << ka %>
