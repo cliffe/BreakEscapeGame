@@ -10,7 +10,20 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.2].define(version: 2025_11_20_160000) do
+ActiveRecord::Schema[7.2].define(version: 2025_11_25_000002) do
+  create_table "break_escape_cyboks", force: :cascade do |t|
+    t.string "ka"
+    t.string "topic"
+    t.string "keywords"
+    t.string "cybokable_type"
+    t.integer "cybokable_id"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["cybokable_id"], name: "index_break_escape_cyboks_on_cybokable_id"
+    t.index ["cybokable_type", "cybokable_id"], name: "index_break_escape_cyboks_on_cybokable_type_and_cybokable_id"
+    t.index ["ka"], name: "index_break_escape_cyboks_on_ka"
+  end
+
   create_table "break_escape_demo_users", force: :cascade do |t|
     t.string "handle", null: false
     t.string "role", default: "user", null: false
@@ -45,6 +58,9 @@ ActiveRecord::Schema[7.2].define(version: 2025_11_20_160000) do
     t.integer "difficulty_level", default: 1, null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.string "secgen_scenario"
+    t.string "collection", default: "default"
+    t.index ["collection"], name: "index_break_escape_missions_on_collection"
     t.index ["name"], name: "index_break_escape_missions_on_name", unique: true
     t.index ["published"], name: "index_break_escape_missions_on_published"
   end

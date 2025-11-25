@@ -6,6 +6,14 @@ module BreakEscape
                   else
                     Mission.published
                   end
+
+      # Filter by collection if specified
+      if params[:collection].present?
+        @missions = @missions.by_collection(params[:collection])
+      end
+
+      # Eager load CyBOK data for display
+      @missions = @missions.includes(:break_escape_cyboks)
     end
 
     def show
