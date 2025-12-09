@@ -718,35 +718,65 @@ function openDoor(doorSprite) {
 
 // Function to remove the matching door sprite from the connected room
 function removeMatchingDoorSprite(roomId, fromRoomId, direction, doorWorldX, doorWorldY) {
-    console.log(`Removing matching door sprite in room ${roomId} for door from ${fromRoomId} (${direction})`);
-    
+    console.log(`Removing matching door sprite in room ${roomId} for door from ${fromRoomId} (${direction}) at (${doorWorldX}, ${doorWorldY})`);
+
     // Use window.rooms to ensure we see the latest state
     const room = window.rooms ? window.rooms[roomId] : null;
     if (!room || !room.doorSprites) {
         console.log(`No door sprites found for room ${roomId}`);
         return;
     }
-    
+
+    // Calculate the opposite direction to find the matching door
+    const oppositeDirection = getOppositeDirection(direction);
+
+    // Position tolerance for matching doors (in pixels)
+    const POSITION_TOLERANCE = TILE_SIZE;
+
     // Find the door sprite that connects to the fromRoomId
+    // For multiple doors between same rooms, also check position and direction
     const matchingDoorSprite = room.doorSprites.find(doorSprite => {
         const props = doorSprite.doorProperties;
-        return props && props.connectedRoom === fromRoomId;
+        if (!props || props.connectedRoom !== fromRoomId) {
+            return false;
+        }
+
+        // Check if direction matches (opposite direction)
+        if (props.direction !== oppositeDirection) {
+            return false;
+        }
+
+        // For N/S doors, check X position matches (within tolerance)
+        // For E/W doors, check Y position matches (within tolerance)
+        if (direction === 'north' || direction === 'south') {
+            const xDiff = Math.abs(props.worldX - doorWorldX);
+            if (xDiff > POSITION_TOLERANCE) {
+                return false;
+            }
+        } else if (direction === 'east' || direction === 'west') {
+            const yDiff = Math.abs(props.worldY - doorWorldY);
+            if (yDiff > POSITION_TOLERANCE) {
+                return false;
+            }
+        }
+
+        return true;
     });
-    
+
     if (matchingDoorSprite) {
-        console.log(`Found matching door sprite in room ${roomId}, removing it`);
+        console.log(`Found matching door sprite in room ${roomId} at (${matchingDoorSprite.x}, ${matchingDoorSprite.y}), removing it`);
         matchingDoorSprite.destroy();
         if (matchingDoorSprite.interactionZone) {
             matchingDoorSprite.interactionZone.destroy();
         }
-        
+
         // Remove from the doorSprites array
         const index = room.doorSprites.indexOf(matchingDoorSprite);
         if (index > -1) {
             room.doorSprites.splice(index, 1);
         }
     } else {
-        console.log(`No matching door sprite found in room ${roomId}`);
+        console.log(`No matching door sprite found in room ${roomId} for direction ${oppositeDirection} at position (${doorWorldX}, ${doorWorldY})`);
     }
 }
 

@@ -614,6 +614,12 @@ async function loadRoom(roomId) {
         return;
     }
 
+    // Check if room is already loaded - prevent reloading
+    if (window.rooms && window.rooms[roomId]) {
+        console.log(`Room ${roomId} is already loaded, skipping reload`);
+        return;
+    }
+
     let roomData;
 
     // Check if roomData is cached (from unlock API response)
@@ -1609,9 +1615,15 @@ export function calculateRoomPositions(gameInstance) {
 
 export function createRoom(roomId, roomData, position) {
     try {
+        // Check if room already exists - prevent recreating
+        if (rooms[roomId]) {
+            console.log(`Room ${roomId} already exists, skipping recreation`);
+            return;
+        }
+
         console.log(`Creating room ${roomId} of type ${roomData.type}`);
         const gameScenario = window.gameScenario;
-        
+
         // Build a set of item types that are in startItemsInInventory
         // These should NOT be created as sprites in rooms
         const startInventoryTypes = new Set();
