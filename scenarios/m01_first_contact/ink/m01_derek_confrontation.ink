@@ -275,6 +275,7 @@ Derek becomes hostile, reaching for something in his desk.
 #hostile
 #speaker:derek
 #influence:-100
+#add_objective:defeat_derek_hostile
 
 Derek: If you want a fight, {player_name}, you'll get one. But you won't stop ENTROPY. You'll just prove we're right about the system.
 
@@ -286,6 +287,9 @@ Derek: Come on then!
 The confrontation escalates. Derek fights desperately, but you're trained for this.
 
 After a brief struggle, you subdue him. He's breathing hard, defiant even in defeat.
+
+#complete_task:defeat_derek_hostile
+#event:hostile_npc_defeated:derek
 
 #speaker:derek
 Derek: *coughs* You think... you think this changes anything?
