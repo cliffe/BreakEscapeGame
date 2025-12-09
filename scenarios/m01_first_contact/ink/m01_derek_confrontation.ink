@@ -242,6 +242,9 @@ Derek: What happens now is up to you.
 
 Derek: But know this—even if you stop Operation Shatter here, the idea doesn't die. There are other cells. Other believers. Other architects of the inevitable.
 
++ [I'm taking you down. Now.] #color:red
+    ~ final_choice = "fight"
+    -> choice_fight
 + [I'm calling in SAFETYNET. You're under arrest.]
     ~ final_choice = "arrest"
     -> choice_arrest
@@ -251,6 +254,60 @@ Derek: But know this—even if you stop Operation Shatter here, the idea doesn't
 + [I'm exposing everything publicly. Let the world see what you are.]
     ~ final_choice = "expose"
     -> choice_expose
+
+// ================================================
+// CHOICE: FIGHT (Hostile Engagement)
+// ================================================
+
+=== choice_fight ===
+You: No lawyers. No trials. No platform for your twisted philosophy.
+
+Derek: *steps back* You're making a mistake.
+
+You: The only mistake was thinking you'd get to walk out of here.
+
+Derek: Violence? How disappointing. I expected better from SAFETYNET.
+
+You: You calculated deaths like statistics. You don't get to lecture me about violence.
+
+Derek becomes hostile, reaching for something in his desk.
+
+#hostile
+#speaker:derek
+#influence:-100
+
+Derek: If you want a fight, {player_name}, you'll get one. But you won't stop ENTROPY. You'll just prove we're right about the system.
+
+Derek: Come on then!
+
+-> fight_outcome
+
+=== fight_outcome ===
+The confrontation escalates. Derek fights desperately, but you're trained for this.
+
+After a brief struggle, you subdue him. He's breathing hard, defiant even in defeat.
+
+#speaker:derek
+Derek: *coughs* You think... you think this changes anything?
+
+Derek: I'm a martyr now. ENTROPY will remember this. The Architect will remember.
+
+Derek: You didn't arrest me. You attacked me. How noble.
+
+You call in SAFETYNET backup while keeping Derek restrained.
+
+#speaker:agent_0x99
+
+Agent 0x99: Backup team on site. Derek Lawson subdued and in custody.
+
+Agent 0x99: {player_name}... that was aggressive. But he's down. Operation Shatter is over.
+
+Agent 0x99: We'll discuss the methods in debrief.
+
+~ derek_confronted = true
+#exit_conversation
+
+-> END
 
 // ================================================
 // CHOICE: ARREST (Surgical Strike)

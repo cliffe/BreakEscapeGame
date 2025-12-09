@@ -276,6 +276,9 @@ Agent 0x99: He's cleared now. But he's traumatized. His neighbors saw him taken 
 === derek_discussion ===
 Agent 0x99: Now, about Derek Lawson...
 
+{final_choice == "fight":
+    -> consequence_fight
+}
 {final_choice == "arrest":
     -> consequence_arrest
 }
@@ -287,6 +290,79 @@ Agent 0x99: Now, about Derek Lawson...
 }
 // Default if variable not set properly
 -> consequence_arrest
+
+// ================================================
+// CONSEQUENCE: FIGHT (Hostile Engagement)
+// ================================================
+
+=== consequence_fight ===
+Agent 0x99: You chose to fight Derek. Physical confrontation instead of a clean arrest.
+
+Agent 0x99: I need to ask—why? We had backup en route. He wasn't armed. You could have taken him into custody without violence.
+
++ [He didn't deserve a trial after what he planned]
+    Agent 0x99: That's... not how we operate, {player_name}.
+    Agent 0x99: We're not executioners. We're not vigilantes. We follow the law, even when the targets don't.
+    Agent 0x99: Derek's in custody now, but his lawyers are already calling it excessive force.
+    -> fight_outcome
++ [I was angry. He was so calm about those deaths.]
+    Agent 0x99: I understand. Reading those casualty projections—42 to 85 people—and then hearing him rationalize it...
+    Agent 0x99: But we can't let anger drive our tactics. That's how we become what we're fighting against.
+    Agent 0x99: Derek's narrative now is that SAFETYNET attacked him. That plays right into ENTROPY's philosophy.
+    -> fight_outcome
++ [He reached for something. I reacted.]
+    Agent 0x99: Field decisions happen fast. I saw the footage—he did move toward his desk.
+    Agent 0x99: You made a split-second call. That's different from choosing violence.
+    Agent 0x99: Internal Affairs will review it, but they'll see what I saw. Justified response.
+    -> fight_outcome_justified
+
+=== fight_outcome ===
+Agent 0x99: Derek's in custody. Same end result as a clean arrest.
+
+Agent 0x99: But his defense team is already spinning this. "SAFETYNET agent attacks unarmed employee."
+
+Agent 0x99: The casualty projections still convict him. The evidence is solid. But you've given him a narrative.
+
+{found_casualty_projections:
+    Agent 0x99: At least you recovered the hard evidence. His signature on those death calculations—that's what the jury will focus on.
+- else:
+    Agent 0x99: And we're still building the evidence case from forensics. It'll be harder with his team claiming persecution.
+}
+
+Agent 0x99: Next time... we do this by the book. Clean arrests. Legal prosecution. No room for their propaganda.
+
++ [I understand]
+    Agent 0x99: Good. Learn from it.
+    -> phase_3_discussion
++ [He was a terrorist planning mass murder]
+    Agent 0x99: He was. And now he's a terrorist with a black eye and a story about SAFETYNET brutality.
+    Agent 0x99: We have to be better than them. Even when they make it hard.
+    -> phase_3_discussion
+
+=== fight_outcome_justified ===
+Agent 0x99: Derek's in custody. You subdued a potentially armed suspect.
+
+Agent 0x99: He wasn't armed—turned out he was reaching for a phone. But you couldn't have known that.
+
+Agent 0x99: The response was within protocol. Quick, controlled, minimal injury.
+
+{found_casualty_projections:
+    Agent 0x99: And you have the evidence to back up the arrest. His casualty projections with his signature.
+- else:
+    Agent 0x99: Forensics is pulling the evidence from his systems. Should be enough for prosecution.
+}
+
+Agent 0x99: His lawyers will complain, but the review board will clear you.
+
+Agent 0x99: Just... remember. We escalate to force only when necessary. Derek was a true believer, but he wasn't a physical threat until you made him one.
+
++ [Noted. I'll be more careful.]
+    Agent 0x99: That's all I ask. Learn from every mission.
+    -> phase_3_discussion
++ [I'd do it again if I had to]
+    Agent 0x99: Fair enough. But "had to" is the key phrase.
+    Agent 0x99: Force as a last resort, not a first choice.
+    -> phase_3_discussion
 
 // ================================================
 // CONSEQUENCE: ARREST
@@ -459,6 +535,9 @@ Agent 0x99: That's what SAFETYNET is for.
 
 [MISSION COMPLETE: FIRST CONTACT]
 
+{final_choice == "fight":
+    [OUTCOME: Derek Lawson subdued by force - Excessive force allegations]
+}
 {final_choice == "arrest":
     [OUTCOME: Derek Lawson arrested - Prosecution pending]
 }
