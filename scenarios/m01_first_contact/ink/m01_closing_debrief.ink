@@ -20,6 +20,11 @@ VAR maya_identity_protected = true      // Did player protect Maya's identity
 VAR kevin_choice = ""             // warn, evidence, ignore
 VAR kevin_protected = false       // Did player help Kevin?
 
+// Security Audit Assessment
+VAR security_audit_completed = false    // Did player complete the security audit?
+VAR audit_correct_answers = 0           // Number of correct security assessments
+VAR audit_wrong_answers = 0             // Number of incorrect assessments
+
 // ================================================
 // START: DEBRIEF BEGINS
 // ================================================
@@ -193,7 +198,7 @@ Agent 0x99: Sometimes that's the right call. Fewer people involved means fewer p
 === kevin_frame_discussion ===
 {kevin_choice == "":
     // Player didn't encounter the frame-up files
-    -> derek_discussion
+    -> security_audit_review
 }
 {kevin_choice == "warn":
     -> kevin_warned
@@ -237,7 +242,7 @@ Agent 0x99: You disagreed. That matters.
 
 Agent 0x99: Not every agent would have taken the time. Not every agent would have cared.
 
--> derek_discussion
+-> security_audit_review
 
 === kevin_ignored ===
 Agent 0x99: Kevin Park was arrested this morning.
@@ -260,14 +265,85 @@ Agent 0x99: He's cleared now. But he's traumatized. His neighbors saw him taken 
     Agent 0x99: Sometimes that's the right call. Sometimes the mission really does come first.
     Agent 0x99: But Kevin's going to need therapy. His kids are going to need therapy.
     Agent 0x99: Just... remember that. Next time you're weighing priorities.
-    -> derek_discussion
+    -> security_audit_review
 + [The mission had to come first]
     Agent 0x99: Did it? You still stopped Operation Shatter. You still caught Derek.
     Agent 0x99: Would five minutes to warn Kevin have changed that?
     Agent 0x99: I'm not judging. Field decisions are hard. But consequences are real.
     Agent 0x99: Kevin's kids watched him get arrested. That happened because of a choice you made.
     Agent 0x99: Live with it. Learn from it.
-    -> derek_discussion
+    -> security_audit_review
+
+// ================================================
+// SECURITY AUDIT REVIEW - Assess player's security analysis
+// ================================================
+
+=== security_audit_review ===
+{security_audit_completed:
+    -> audit_feedback
+}
+{not security_audit_completed:
+    -> no_audit_feedback
+}
+
+=== audit_feedback ===
+Agent 0x99: I noticed you gave Kevin a security assessment during your cover operation.
+
+{audit_correct_answers >= 4:
+    Agent 0x99: Your security analysis was excellent. You identified every major vulnerability correctly.
+    Agent 0x99: Physical access controls, Derek's suspicious access patterns, predictable passwords, Patricia's firing, and Derek's unjustified network segmentation.
+    Agent 0x99: That's professional-grade security consulting. Your cover was completely convincing.
+    + [I wanted to maintain my cover properly]
+        Agent 0x99: And you did. Kevin trusted you completely because you demonstrated real expertise.
+        Agent 0x99: That kind of authentic tradecraft makes all the difference in deep cover work.
+        -> derek_discussion
+    + [The vulnerabilities were pretty obvious once I looked]
+        Agent 0x99: Maybe to you. But recognizing them under pressure, while maintaining cover, while gathering intelligence on Operation Shatter?
+        Agent 0x99: That's good work. Don't undersell it.
+        -> derek_discussion
+}
+
+{audit_correct_answers == 3:
+    Agent 0x99: Your security analysis was solid. Three out of five correct assessments.
+    Agent 0x99: You identified most of the key vulnerabilities—enough to maintain credibility with Kevin.
+    Agent 0x99: A few blind spots, but nothing that compromised your cover or the mission.
+    + [Which ones did I miss?]
+        {audit_wrong_answers >= 1:
+            Agent 0x99: You underestimated a couple of the vulnerabilities Kevin had already flagged.
+            Agent 0x99: In the field, always trust when an insider is telling you something's wrong. They see the patterns we miss.
+        }
+        -> derek_discussion
+    + [I was focused on the bigger picture]
+        Agent 0x99: Fair enough. Your primary mission was Operation Shatter, not a comprehensive security audit.
+        Agent 0x99: Kevin bought your cover. That's what mattered.
+        -> derek_discussion
+}
+
+{audit_correct_answers <= 2:
+    Agent 0x99: Your security assessment was... rough. Two or fewer correct answers out of five.
+    Agent 0x99: Kevin was asking you about obvious vulnerabilities he'd already identified. You dismissed most of them.
+    + [I was trying not to alarm him]
+        Agent 0x99: Understandable. But when an insider is showing you red flags, validate their concerns.
+        Agent 0x99: You're supposed to be a security expert. Kevin needed you to see what he was seeing.
+        Agent 0x99: Fortunately, your other actions kept him cooperative. But that assessment almost blew your cover.
+        -> derek_discussion
+    + [Security assessment wasn't my priority]
+        Agent 0x99: It's part of your cover identity. When you're undercover as an expert, you need to be that expert.
+        Agent 0x99: Kevin noticed you were missing things he'd already flagged. That could have raised suspicions.
+        Agent 0x99: Mission succeeded anyway, but... work on your tradecraft. Deep cover requires authenticity.
+        -> derek_discussion
+}
+
+=== no_audit_feedback ===
+Agent 0x99: I noticed you didn't provide Kevin with a security assessment during your cover operation.
+
+Agent 0x99: That's fine—it wasn't required for the mission. But it could have strengthened your cover credibility.
+
+Agent 0x99: Next time you're undercover with a professional identity, look for opportunities to demonstrate authentic expertise.
+
+Agent 0x99: It builds trust. And trust gives you access.
+
+-> derek_discussion
 
 // ================================================
 // DEREK DISCUSSION - Based on how player handled confrontation
