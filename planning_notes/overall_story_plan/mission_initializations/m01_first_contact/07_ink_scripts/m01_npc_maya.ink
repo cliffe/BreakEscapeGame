@@ -154,10 +154,12 @@ Maya: "Infrastructure targeting." "Phase 3 timeline." "Network mapping."
 
 Maya: I figured it was some kind of new technical marketing strategy. But it sounded... I don't know, weird?
 
+Maya: And once I heard him mention something called "Operation Shatter" on a call. Marketing campaign name, maybe?
+
 + [That's definitely unusual]
     ~ influence += 2
     Maya: Right? I thought about asking him, but he gets defensive when you question his methods.
-    Maya: Anyway, probably nothing. I watch too many spy movies.
+    Maya: Sometimes I wonder if he's involved in something bigger. But that's probably paranoid.
     -> hub
 + [Probably just marketing jargon]
     Maya: Yeah, you're probably right. Still weird though.

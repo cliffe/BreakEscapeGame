@@ -9,8 +9,6 @@ VAR ssh_hint_given = false
 VAR linux_hint_given = false
 VAR sudo_hint_given = false
 VAR first_contact = true
-
-// External variables
 VAR player_name = "Agent 0x00"
 VAR current_task = ""
 
@@ -79,14 +77,14 @@ Agent 0x99: What do you need help with?
 === lockpick_help ===
 ~ lockpick_hint_given = true
 
-Agent 0x99: Lockpicking is about patience and listening.
+Agent 0x99: Lockpicking is about patience and careful observation.
 
-Agent 0x99: Each pin has a sweet spot. Apply tension, test each pin, feel for the feedback.
+Agent 0x99: Pay attention to feedback. Locks tell you when you're making progress.
 
-Agent 0x99: Start with the storage closet practice safe—low stakes, good for learning.
+Agent 0x99: If you have access to practice locks, use them. Low-risk learning is the best kind.
 
 + [Any other tips?]
-    Agent 0x99: Don't force it. If you're stuck, reset and try again. There's no timer.
+    Agent 0x99: Don't rush. If something isn't working, step back and reconsider your approach.
     -> support_hub
 + [Got it, thanks]
     -> support_hub
@@ -98,14 +96,15 @@ Agent 0x99: Start with the storage closet practice safe—low stakes, good for l
 === ssh_help ===
 ~ ssh_hint_given = true
 
-Agent 0x99: SSH brute force uses Hydra to test password lists against login prompts.
+Agent 0x99: SSH access requires credentials. You'll need to find valid username and password combinations.
 
-Agent 0x99: The key is using good password lists. Kevin's hints about "ViralDynamics2025" variations are gold.
+Agent 0x99: Look for patterns in the environment. People are creatures of habit—they reuse dates, company names, personal information.
 
-Agent 0x99: Command format: hydra -l username -P passwordlist.txt ssh://target
+Agent 0x99: Kevin might have observations about password habits. Check the office for clues—whiteboards, notes, calendars.
 
-+ [What if I don't have a password list?]
-    Agent 0x99: Build one from intel. Kevin mentioned patterns, the whiteboard had clues. Social engineering works.
++ [What if I can't guess the passwords?]
+    Agent 0x99: Then build a wordlist from what you learn. Every conversation, every note is potential intelligence.
+    Agent 0x99: There are tools for testing multiple passwords, but you'll need to discover which ones work in this environment.
     -> support_hub
 + [Thanks, that helps]
     -> support_hub
@@ -117,14 +116,15 @@ Agent 0x99: Command format: hydra -l username -P passwordlist.txt ssh://target
 === linux_help ===
 ~ linux_hint_given = true
 
-Agent 0x99: Linux navigation basics: ls lists files, cd changes directory, cat reads files.
+Agent 0x99: Linux systems organize files in directories. Learn to navigate and read files—that's where evidence lives.
 
-Agent 0x99: Check the home directory first. User files, hidden configs—look for .bashrc, .ssh, personal directories.
+Agent 0x99: User directories often contain personal files, configurations, and artifacts of their activity.
 
-Agent 0x99: Hidden files start with a dot. Use ls -la to see them.
+Agent 0x99: Remember that not everything is visible at first glance. Look deeper.
 
 + [Where should I look for flags?]
-    Agent 0x99: Home directories, user documents, sometimes hidden in config files. Explore methodically.
+    Agent 0x99: Think like an investigator. Where would someone store sensitive information? User folders, documents, configuration files.
+    Agent 0x99: Explore systematically. Don't assume you've seen everything in a directory.
     -> support_hub
 + [Got it]
     -> support_hub
@@ -136,14 +136,15 @@ Agent 0x99: Hidden files start with a dot. Use ls -la to see them.
 === sudo_help ===
 ~ sudo_hint_given = true
 
-Agent 0x99: Privilege escalation means gaining access to other accounts or higher permissions.
+Agent 0x99: Privilege escalation means gaining access to other user accounts or higher permissions.
 
-Agent 0x99: Try "sudo -l" to see what sudo permissions you have. Some accounts allow switching users.
+Agent 0x99: Linux systems often have permissions that allow certain users to execute commands or access other accounts.
 
-Agent 0x99: Command: sudo -u otherusername bash gives you a shell as that user.
+Agent 0x99: Investigate what capabilities your current account has. Some accounts can switch to others.
 
-+ [What if I don't have sudo access?]
-    Agent 0x99: Check for misconfigured files, world-writable directories, or SUID binaries. But for this mission, sudo works.
++ [What if I don't have special access?]
+    Agent 0x99: Then you'll need to find credentials for other accounts or discover misconfigurations.
+    Agent 0x99: For this mission, there should be a path forward. Look for it.
     -> support_hub
 + [Thanks]
     -> support_hub
@@ -153,16 +154,17 @@ Agent 0x99: Command: sudo -u otherusername bash gives you a shell as that user.
 // ================================================
 
 === general_advice ===
-Agent 0x99: Remember the mission priorities: gather evidence, identify operatives, minimize innocent casualties.
+Agent 0x99: Remember the mission priorities: gather evidence, identify operatives, protect innocents.
 
-Agent 0x99: Most people at Viral Dynamics are legitimate employees. We want ENTROPY, not collateral damage.
+Agent 0x99: Most people at Viral Dynamics are legitimate employees. We want ENTROPY operatives, not collateral damage.
 
 + [How do I know who's ENTROPY?]
-    Agent 0x99: Evidence correlation. Look for encrypted communications, connections to known cells, suspicious behavior.
-    Agent 0x99: Derek's our primary suspect, but gather proof before confronting.
+    Agent 0x99: Evidence correlation. Look for patterns—unusual access times, encrypted communications, suspicious behavior.
+    Agent 0x99: We have a primary suspect, but you need to gather proof before any confrontation.
     -> support_hub
-+ [What about Maya?]
-    Agent 0x99: Protect her. She's the informant who brought this to us. Don't expose her unless absolutely necessary.
++ [What if I'm not sure about someone?]
+    Agent 0x99: Then investigate further. Digital evidence, physical artifacts, behavioral patterns.
+    Agent 0x99: Trust the evidence, not assumptions.
     -> support_hub
 + [Understood]
     -> support_hub
@@ -187,27 +189,6 @@ Agent 0x99: Remember, you're testing security—officially.
     -> lockpick_help
 
 // ================================================
-// EVENT: SERVER ROOM ENTERED
-// ================================================
-
-=== event_server_room_entered ===
-#speaker:agent_0x99
-#complete_task:access_server_room
-#unlock_task:access_vm
-
-Agent 0x99: You're in the server room. Good work getting access.
-
-Agent 0x99: Look for the compromised systems. VM access will give you deeper intelligence.
-
-+ [What am I looking for?]
-    Agent 0x99: Evidence of ENTROPY's infrastructure. Backdoors, encrypted communications, anything linking Derek to other cells.
-    #exit_conversation
-    -> support_hub
-+ [On it]
-    #exit_conversation
-    -> support_hub
-
-// ================================================
 // EVENT: FIRST FLAG SUBMITTED
 // ================================================
 
@@ -219,8 +200,8 @@ Agent 0x99: First flag submitted. Nice work, {player_name}.
 Agent 0x99: Each flag unlocks intelligence. Keep correlating VM findings with physical evidence.
 
 + [What should I focus on next?]
-    Agent 0x99: Continue the VM challenges, but don't forget physical investigation. Derek's office, filing cabinets, computer access.
-    Agent 0x99: Hybrid approach—digital and physical evidence together.
+    Agent 0x99: Continue exploring both digital and physical spaces. Evidence doesn't exist in only one domain.
+    Agent 0x99: Office areas, computers, filing cabinets—anywhere information might be stored.
     #exit_conversation
     -> support_hub
 + [Thanks]
@@ -231,21 +212,18 @@ Agent 0x99: Each flag unlocks intelligence. Keep correlating VM findings with ph
 // EVENT: DEREK'S OFFICE ACCESSED
 // ================================================
 
-=== event_derek_office_entered ===
+=== event_derek_office ===
 #speaker:agent_0x99
-#unlock_task:find_campaign_materials
-#unlock_task:discover_manifesto
-#unlock_task:decode_communications
 
-Agent 0x99: You're in Derek's office. Good.
+Agent 0x99: You're in. Good work gaining access.
 
-Agent 0x99: Look for communications, project documents, anything linking him to ENTROPY.
+Agent 0x99: Look for anything that reveals operational details, communications, or connections to ENTROPY.
 
-Agent 0x99: Whiteboard messages, computer files, filing cabinets. Be thorough.
+Agent 0x99: Be thorough. Evidence can hide in unexpected places.
 
-+ [What if Derek catches me?]
-    Agent 0x99: Your cover is solid. You're doing a security audit—accessing offices is expected.
-    Agent 0x99: But don't tip your hand too early. Gather evidence before confronting.
++ [What if I'm discovered?]
+    Agent 0x99: Your cover is solid. You're doing a security audit—this is legitimate.
+    Agent 0x99: But don't reveal what you know too early. Evidence first, confrontation later.
     #exit_conversation
     -> support_hub
 + [On it]
@@ -273,107 +251,6 @@ Agent 0x99: Now correlate with physical evidence. Then we can move to confrontat
 + [Roger that]
     #exit_conversation
     -> support_hub
-
-// ================================================
-// EVENT: CONTINGENCY FILES FOUND - MORAL CHOICE
-// ================================================
-
-=== event_contingency_found ===
-#speaker:agent_0x99
-
-Agent 0x99: {player_name}, I just saw what you pulled from Derek's computer.
-
-Agent 0x99: He's planning to frame Kevin Park for the entire breach. Fake logs, forged emails, the works.
-
-Agent 0x99: Kevin—the IT guy who gave you access, who trusted you—is going to take the fall for ENTROPY.
-
-+ [That's monstrous]
-    -> contingency_reaction
-+ [What can I do about it?]
-    -> contingency_options
-
-=== contingency_reaction ===
-Agent 0x99: It gets worse. Derek's contingency activates automatically when systems are seized.
-
-Agent 0x99: If we don't do something, Kevin gets arrested. His kids watch him taken away in handcuffs.
-
-Agent 0x99: Eventually he'd be cleared, but... that's not something you just walk off.
-
--> contingency_options
-
-=== contingency_options ===
-Agent 0x99: You have options here. None of them are perfect.
-
-Agent 0x99: What do you want to do?
-
-+ [Warn Kevin directly - tell him what's coming]
-    -> warn_kevin_choice
-+ [Leave evidence clearing Kevin for investigators]
-    -> plant_evidence_choice
-+ [Focus on the mission - Kevin's not my responsibility]
-    -> ignore_kevin_choice
-
-// ================================================
-// CHOICE: WARN KEVIN
-// ================================================
-
-=== warn_kevin_choice ===
-Agent 0x99: Direct warning. Risky—if Kevin panics or acts differently, Derek might notice.
-
-Agent 0x99: But if it works, Kevin has time to lawyer up, document everything. He's protected.
-
-+ [I'll take that risk. He deserves to know.]
-    #set_variable:kevin_choice=warn
-    #set_variable:kevin_protected=true
-    Agent 0x99: Understood. Find Kevin, tell him what's coming. Just... be careful how much you reveal.
-    Agent 0x99: The more he knows about SAFETYNET, the more complicated this gets.
-    #exit_conversation
-    -> support_hub
-+ [Maybe there's a safer option...]
-    -> contingency_options
-
-// ================================================
-// CHOICE: PLANT EVIDENCE
-// ================================================
-
-=== plant_evidence_choice ===
-Agent 0x99: Anonymous help. Leave the frame-up files where our follow-up team will find them.
-
-Agent 0x99: Kevin never knows he was in danger. Investigators see Derek's setup immediately.
-
-Agent 0x99: Clean. Professional. Takes time, but lower risk.
-
-+ [That's the smarter play. Do it that way.]
-    #set_variable:kevin_choice=evidence
-    #set_variable:kevin_protected=true
-    Agent 0x99: Copy the contingency files to a visible location. Investigators will find them during evidence collection.
-    Agent 0x99: Kevin walks away clean without ever knowing. That's the professional approach.
-    #exit_conversation
-    -> support_hub
-+ [Maybe there's another option...]
-    -> contingency_options
-
-// ================================================
-// CHOICE: IGNORE
-// ================================================
-
-=== ignore_kevin_choice ===
-Agent 0x99: ...You're sure about that?
-
-Agent 0x99: Kevin helped you. If you ignore this, he gets arrested. His family watches.
-
-Agent 0x99: He'll be cleared eventually, but that's trauma that doesn't heal.
-
-+ [The mission has to come first. I can't save everyone.]
-    #set_variable:kevin_choice=ignore
-    #set_variable:kevin_protected=false
-    Agent 0x99: ...Understood. That's your call to make.
-    Agent 0x99: Just know that choice has consequences. For Kevin. For his family.
-    Agent 0x99: And for you, when you think about it later.
-    #exit_conversation
-    -> support_hub
-+ [Wait. Let me reconsider.]
-    -> contingency_options
 
 // ================================================
 // EVENT: ACT 2 COMPLETE (READY FOR CONFRONTATION)

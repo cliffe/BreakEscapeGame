@@ -1,7 +1,7 @@
 // ================================================
 // Mission 1: First Contact - Kevin Park (IT Manager)
-// Located in IT Room (PIN locked)
-// Provides lockpicks, server keycard, and password hints
+// Act 2: In-Person NPC
+// Provides lockpick, password hints, server room access
 // ================================================
 
 VAR influence = 0
@@ -10,26 +10,24 @@ VAR discussed_audit = false
 VAR asked_about_derek = false
 VAR asked_about_passwords = false
 VAR given_lockpick = false
-VAR given_keycard = false
 VAR given_password_hints = false
-VAR warned_about_derek = false
+VAR discussed_server_room = false
+VAR can_clone_card = false
 
 // ================================================
 // START: FIRST MEETING
 // ================================================
 
 === start ===
-#set_variable:talked_to_kevin=true
 {not met_kevin:
     ~ met_kevin = true
     ~ influence += 2
-    Kevin: Oh hey! You found the IT room. I'm Kevin—IT manager, sole IT department, and professional worrier.
-    Kevin: You're the security auditor, right? Thank god you're here.
-    Kevin: I've been telling them we need a review for months.
+    Kevin: Oh, hey! You must be the security auditor. I'm Kevin—IT manager, sole IT department, and occasional coffee addict.
+    Kevin: Thank god you're here. I've been telling them we need a security review for months.
     -> first_meeting
 }
 {met_kevin:
-    Kevin: Hey, what's up? Found anything interesting yet?
+    Kevin: What's up? Found any security nightmares yet?
     -> hub
 }
 
@@ -38,175 +36,123 @@ VAR warned_about_derek = false
 // ================================================
 
 === first_meeting ===
-#complete_task:meet_kevin
-+ [Happy to help. What's the security situation?]
++ [Happy to help. What's the current security situation?]
     ~ influence += 2
     ~ discussed_audit = true
+    #complete_task:meet_kevin
     -> security_situation
-+ [I'll need access to secure areas for testing]
++ [I'll need access to systems and the server room]
     ~ discussed_audit = true
+    #complete_task:meet_kevin
     -> access_discussion
-+ [You seem stressed]
++ [Looks like you handle a lot solo]
     ~ influence += 1
     ~ discussed_audit = true
-    -> kevin_stress
+    #complete_task:meet_kevin
+    -> commiseration
 
 // ================================================
 // SECURITY SITUATION
 // ================================================
 
 === security_situation ===
-Kevin: Honestly? I'm worried.
+Kevin: Honestly? It's not terrible but it's not great.
 
-Kevin: Someone's been accessing the server room without authorization. Late at night. Multiple times.
+Kevin: We have basic stuff—firewalls, access controls, encryption. But I'm one person managing everything.
 
-Kevin: I flagged it to management three times. Nothing happened.
-
-+ [Who do you think it is?]
-    ~ warned_about_derek = true
++ [What worries you most?]
     ~ influence += 1
-    -> derek_suspicion
-+ [That's what I'm here to investigate]
-    Kevin: Good. Because I'm starting to feel like I'm the only one who cares about security around here.
-    -> offer_tools
+    -> security_concerns
++ [I'll do a thorough assessment]
+    -> hub
 
-// ================================================
-// DEREK SUSPICION
-// ================================================
+=== security_concerns ===
+Kevin: Physical security, mainly. People write passwords on sticky notes, leave doors unlocked.
 
-=== derek_suspicion ===
-Kevin: *lowers voice* I think it's Derek Lawson. Senior Marketing Manager.
+Kevin: I can lock down the network all day, but if someone can walk in and access a terminal...
 
-Kevin: The access logs show his credentials being used at 2 AM. But he says it's for "campaign servers."
-
-Kevin: We don't have campaign servers in that room. It's all internal infrastructure.
-
-Kevin: The last person who raised concerns about Derek was Patricia—our manager. She got fired.
-
-+ [I'll look into it]
++ [That's what I'm here to check]
     ~ influence += 2
-    Kevin: Please do. But be careful. Derek has friends in high places.
-    Kevin: Here, let me give you some tools that might help.
-    -> offer_tools
-+ [Could be someone spoofing his credentials]
-    Kevin: Maybe. But I don't think so. I've seen him leaving the office at weird hours.
-    -> offer_tools
+    Kevin: Exactly. Look, I've got something that might help you test physical security.
+    -> offer_lockpick
++ [Social engineering is often the biggest vulnerability]
+    ~ influence += 1
+    Kevin: Right? Technology is only as secure as the people using it.
+    -> hub
 
 // ================================================
 // ACCESS DISCUSSION
 // ================================================
 
 === access_discussion ===
-Kevin: Right, you'll need access to secure areas.
+Kevin: I can get you into most places. Server room, you'll need my RFID card or...
 
-Kevin: I've got a keycard for the server room. It's behind Derek's office, actually.
+Kevin: Actually, you should test our physical security anyway.
 
-Kevin: And for physical security testing, I've got something special.
-
--> offer_tools
+-> offer_lockpick
 
 // ================================================
-// KEVIN STRESS
+// COMMISERATION
 // ================================================
 
-=== kevin_stress ===
-Kevin: Yeah, it's been a rough few months.
+=== commiseration ===
+Kevin: Yeah, it's just me. Budget constraints, you know?
 
-Kevin: Ever since Patricia got fired, things have felt... off.
+Kevin: They'd rather spend on marketing than IT security. Classic mistake.
 
-Kevin: She was investigating something. Asking questions about Derek's projects.
-
-Kevin: Now she's gone and nobody will tell me why.
-
-+ [What was she investigating?]
-    ~ warned_about_derek = true
-    Kevin: I don't know exactly. Something about Derek's "external partners."
-    Kevin: She kept her notes in her office safe. I think her briefcase is still in there too.
-    -> offer_tools
-+ [Let's focus on the audit]
-    Kevin: Right. Sorry. Let me get you set up.
-    -> offer_tools
-
-// ================================================
-// OFFER TOOLS
-// ================================================
-
-=== offer_tools ===
-Kevin: Okay, so for the audit I can give you:
-
-Kevin: First, a lockpick set. I bought it for when people lock themselves out, but it's useful for testing physical security.
-
-Kevin: Second, my server room keycard. You'll need it to access the main servers.
-
-Kevin: And some notes on password patterns people use around here. Should help with the technical testing.
-
-+ [I'll take all of it]
-    ~ given_lockpick = true
-    ~ given_keycard = true
-    ~ given_password_hints = true
-    ~ influence += 3
-    #give_item:lockpick
-    #give_item:keycard
-    #give_item:notes
-    Kevin: Here you go. The lockpicks work on most of the older locks around here.
-    Kevin: The server room is through Derek's office—there's a door on the east side.
-    Kevin: Just... be careful, okay? Something's not right here.
++ [That's unfortunately common]
+    ~ influence += 2
+    Kevin: Tell me about it. Anyway, what can I help you with?
     -> hub
-+ [Just the keycard for now]
-    ~ given_keycard = true
-    #give_item:keycard
-    Kevin: Sure. Server room is through Derek's office. Let me know if you need anything else.
++ [Well, I'm here to help now]
+    ~ influence += 1
     -> hub
+
+// ================================================
+// OFFER LOCKPICK
+// ================================================
+
+=== offer_lockpick ===
+{not given_lockpick:
+    Kevin: I've got a lockpick set in my desk. Bought it for when people lock themselves out.
+    Kevin: You should use it to test our physical locks. See how easy it is to bypass security.
+    + [That would be very useful]
+        ~ given_lockpick = true
+        ~ influence += 3
+        #give_item:lockpick
+        #complete_task:receive_lockpick
+        Kevin: Here. Just... officially you're testing security. Unofficially, try not to break anything.
+        Kevin: Storage closet is a good place to practice. Simple lock, nothing valuable inside.
+        -> hub
+    + [I'll stick to my authorized access for now]
+        ~ influence -= 1
+        Kevin: Your call. Offer stands if you change your mind.
+        -> hub
+}
+{given_lockpick:
+    Kevin: You already have the lockpick. Go test those locks!
+    -> hub
+}
 
 // ================================================
 // CONVERSATION HUB
 // ================================================
 
 === hub ===
-+ {not given_lockpick} [About those lockpicks...]
-    -> get_lockpicks
-+ {not given_keycard} [I need the server room keycard]
-    -> get_keycard
-+ {not asked_about_passwords and influence >= 2} [Tell me about password security here]
++ {not asked_about_passwords and influence >= 3} [Can you tell me about password policies here?]
     -> ask_passwords
-+ {not asked_about_derek and influence >= 3} [What else can you tell me about Derek?]
-    -> ask_about_derek
-+ [I'll keep investigating. Thanks for the help.]
++ {not asked_about_derek and influence >= 4} [Anyone using weak security I should know about?]
+    -> ask_weak_security
++ {not discussed_server_room} [Tell me about the server room setup]
+    -> ask_server_room
++ {influence >= 6 and not can_clone_card} [I'll need to test RFID security. Can I clone your card?]
+    -> request_card_clone
++ {not given_lockpick and discussed_audit} [About that lockpick...]
+    -> offer_lockpick
++ [I'll keep working. Thanks for the help]
     #exit_conversation
-    Kevin: No problem. And seriously—if you find anything, let me know. I need to know I'm not going crazy.
+    Kevin: No problem. Let me know if you find anything scary.
     -> hub
-
-// ================================================
-// GET LOCKPICKS
-// ================================================
-
-=== get_lockpicks ===
-~ given_lockpick = true
-#give_item:lockpick
-
-Kevin: Here's the lockpick set. It's professional grade.
-
-Kevin: Most of the older locks in the building are vulnerable. Good for testing security.
-
-Kevin: Patricia's office has an old briefcase she left behind. You might be able to pick that open if you're curious what she was working on.
-
--> hub
-
-// ================================================
-// GET KEYCARD
-// ================================================
-
-=== get_keycard ===
-~ given_keycard = true
-#give_item:keycard
-
-Kevin: Here's my server room keycard.
-
-Kevin: The server room is through Derek's office—there's a connecting door on the east wall.
-
-Kevin: The servers hold everything. If there's evidence of unauthorized activity, that's where you'll find it.
-
--> hub
 
 // ================================================
 // ASK ABOUT PASSWORDS
@@ -214,48 +160,104 @@ Kevin: The servers hold everything. If there's evidence of unauthorized activity
 
 === ask_passwords ===
 ~ asked_about_passwords = true
-~ given_password_hints = true
 ~ influence += 1
-#give_item:notes
 
-Kevin: Password security here is... not great.
+Kevin: Official policy is 12 characters, mixed case, numbers, symbols. We enforce it on domain accounts.
 
-Kevin: I enforce complexity requirements on domain accounts, but people find patterns.
+Kevin: Reality? People use patterns to remember them.
 
-Kevin: Company name plus numbers. Birthdays. Anniversary dates.
-
-Kevin: Derek uses his birthday or anniversary in everything. April 19th. Makes his passwords easy to guess.
-
-+ [0419?]
-    ~ influence += 2
-    Kevin: Yeah. I've told him it's a security risk but he doesn't listen.
-    Kevin: Here, I wrote down the common patterns people use. Might help with the audit.
++ [What kind of patterns?]
+    ~ given_password_hints = true
+    ~ influence += 1
+    #complete_task:gather_password_hints
+    -> password_patterns
++ [That's pretty standard]
     -> hub
-+ [That's useful, thanks]
+
+=== password_patterns ===
+Kevin: Company name variations are popular. "ViralDynamics" plus numbers or years.
+
+Kevin: Birthdays and anniversaries—classic weak passwords. I've caught several people with dates in their credentials.
+
+Kevin: Some people use the same pattern everywhere. Easy to remember, terrible for security.
+
++ [That's... not great security]
+    ~ influence += 1
+    Kevin: Tell me about it. That's why we need this audit.
+    Kevin: Derek's one of the worst. Important dates everywhere—sticky notes, calendar reminders, password hints.
+    Kevin: If you know someone's personal calendar, you can probably guess their passwords.
     -> hub
 
 // ================================================
-// ASK ABOUT DEREK
+// ASK ABOUT WEAK SECURITY
 // ================================================
 
-=== ask_about_derek ===
+=== ask_weak_security ===
 ~ asked_about_derek = true
 ~ influence += 1
 
-Kevin: Derek's been here about 18 months. Senior Marketing Manager.
+Kevin: Derek's the worst offender, honestly. Senior marketing guy.
 
-Kevin: At first he seemed normal. Then he started requesting "enhanced privacy" for his systems.
+Kevin: He requested "enhanced privacy" for his office systems. Made me set up separate network segments.
 
-Kevin: Wanted separate network segments, encrypted communications, locked office at all times.
-
-Kevin: Said it was for "client confidentiality" but... marketing doesn't need that level of security.
-
-+ [What do you think he's really doing?]
-    Kevin: I don't know. But whatever it is, it's not marketing.
-    Kevin: He's been meeting with external people—calls them "partners." 
-    Kevin: I saw notes once that mentioned something called "Operation Shatter."
++ [That's unusual]
     ~ influence += 2
+    Kevin: Right? He says it's for client confidentiality, but the segmentation is weird.
+    Kevin: And I've caught him in the server room twice. Said he was "checking campaign servers."
+    -> derek_server_access
++ [Maybe he handles sensitive client data?]
+    Kevin: Maybe. But it still seems excessive.
     -> hub
-+ [Maybe he's just paranoid]
-    Kevin: Maybe. But Patricia didn't think so. And now she's gone.
+
+=== derek_server_access ===
+Kevin: The thing is, there are no "campaign servers" in our server room.
+
+Kevin: We use cloud hosting for everything client-facing.
+
++ [So what was he really doing?]
+    ~ influence += 2
+    Kevin: I don't know. But you're auditing security—might want to check his systems.
+    Kevin: His office is usually locked when he's not there, though.
     -> hub
++ [I'll look into it]
+    ~ influence += 1
+    -> hub
+
+// ================================================
+// ASK ABOUT SERVER ROOM
+// ================================================
+
+=== ask_server_room ===
+~ discussed_server_room = true
+~ influence += 1
+
+Kevin: Standard setup. Internal servers, network equipment, some legacy systems.
+
+Kevin: Access is RFID controlled. I'm the only one with a card besides management.
+
++ [What about testing RFID security?]
+    ~ can_clone_card = true
+    Kevin: Good point. You should probably test if our cards can be cloned.
+    -> hub
++ [I'll need access for the audit]
+    Kevin: Yeah, about that... I can give you my card, or you could test our RFID security by cloning it?
+    ~ can_clone_card = true
+    -> hub
+
+// ================================================
+// REQUEST CARD CLONE
+// ================================================
+
+=== request_card_clone ===
+{can_clone_card:
+    Kevin: Yeah, good idea to test that. RFID security is important.
+    Kevin: Here, you can use my card to clone onto a blank. Standard security test.
+    ~ influence += 2
+    #complete_task:clone_kevin_card
+    #give_item:rfid_cloner
+    Kevin: Just make sure to document this in your report. We need to know if our access system is vulnerable.
+    -> hub
+- else:
+    Kevin: Hmm, I'm not sure about that. Let me think about it.
+    -> hub
+}

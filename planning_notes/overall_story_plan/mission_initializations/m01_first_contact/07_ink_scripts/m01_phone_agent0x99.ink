@@ -9,10 +9,8 @@ VAR ssh_hint_given = false
 VAR linux_hint_given = false
 VAR sudo_hint_given = false
 VAR first_contact = true
-
-// External variables
-EXTERNAL player_name
-EXTERNAL current_task
+VAR player_name = "Agent 0x00"
+VAR current_task = ""
 
 // ================================================
 // START: PHONE SUPPORT
@@ -79,14 +77,14 @@ Agent 0x99: What do you need help with?
 === lockpick_help ===
 ~ lockpick_hint_given = true
 
-Agent 0x99: Lockpicking is about patience and listening.
+Agent 0x99: Lockpicking is about patience and careful observation.
 
-Agent 0x99: Each pin has a sweet spot. Apply tension, test each pin, feel for the feedback.
+Agent 0x99: Pay attention to feedback. Locks tell you when you're making progress.
 
-Agent 0x99: Start with the storage closet practice safe—low stakes, good for learning.
+Agent 0x99: If you have access to practice locks, use them. Low-risk learning is the best kind.
 
 + [Any other tips?]
-    Agent 0x99: Don't force it. If you're stuck, reset and try again. There's no timer.
+    Agent 0x99: Don't rush. If something isn't working, step back and reconsider your approach.
     -> support_hub
 + [Got it, thanks]
     -> support_hub
@@ -98,14 +96,15 @@ Agent 0x99: Start with the storage closet practice safe—low stakes, good for l
 === ssh_help ===
 ~ ssh_hint_given = true
 
-Agent 0x99: SSH brute force uses Hydra to test password lists against login prompts.
+Agent 0x99: SSH access requires credentials. You'll need to find valid username and password combinations.
 
-Agent 0x99: The key is using good password lists. Kevin's hints about "ViralDynamics2025" variations are gold.
+Agent 0x99: Look for patterns in the environment. People are creatures of habit—they reuse dates, company names, personal information.
 
-Agent 0x99: Command format: hydra -l username -P passwordlist.txt ssh://target
+Agent 0x99: Kevin might have observations about password habits. Check the office for clues—whiteboards, notes, calendars.
 
-+ [What if I don't have a password list?]
-    Agent 0x99: Build one from intel. Kevin mentioned patterns, the whiteboard had clues. Social engineering works.
++ [What if I can't guess the passwords?]
+    Agent 0x99: Then build a wordlist from what you learn. Every conversation, every note is potential intelligence.
+    Agent 0x99: There are tools for testing multiple passwords, but you'll need to discover which ones work in this environment.
     -> support_hub
 + [Thanks, that helps]
     -> support_hub
@@ -117,14 +116,15 @@ Agent 0x99: Command format: hydra -l username -P passwordlist.txt ssh://target
 === linux_help ===
 ~ linux_hint_given = true
 
-Agent 0x99: Linux navigation basics: ls lists files, cd changes directory, cat reads files.
+Agent 0x99: Linux systems organize files in directories. Learn to navigate and read files—that's where evidence lives.
 
-Agent 0x99: Check the home directory first. User files, hidden configs—look for .bashrc, .ssh, personal directories.
+Agent 0x99: User directories often contain personal files, configurations, and artifacts of their activity.
 
-Agent 0x99: Hidden files start with a dot. Use ls -la to see them.
+Agent 0x99: Remember that not everything is visible at first glance. Look deeper.
 
 + [Where should I look for flags?]
-    Agent 0x99: Home directories, user documents, sometimes hidden in config files. Explore methodically.
+    Agent 0x99: Think like an investigator. Where would someone store sensitive information? User folders, documents, configuration files.
+    Agent 0x99: Explore systematically. Don't assume you've seen everything in a directory.
     -> support_hub
 + [Got it]
     -> support_hub
@@ -136,14 +136,15 @@ Agent 0x99: Hidden files start with a dot. Use ls -la to see them.
 === sudo_help ===
 ~ sudo_hint_given = true
 
-Agent 0x99: Privilege escalation means gaining access to other accounts or higher permissions.
+Agent 0x99: Privilege escalation means gaining access to other user accounts or higher permissions.
 
-Agent 0x99: Try "sudo -l" to see what sudo permissions you have. Some accounts allow switching users.
+Agent 0x99: Linux systems often have permissions that allow certain users to execute commands or access other accounts.
 
-Agent 0x99: Command: sudo -u otherusername bash gives you a shell as that user.
+Agent 0x99: Investigate what capabilities your current account has. Some accounts can switch to others.
 
-+ [What if I don't have sudo access?]
-    Agent 0x99: Check for misconfigured files, world-writable directories, or SUID binaries. But for this mission, sudo works.
++ [What if I don't have special access?]
+    Agent 0x99: Then you'll need to find credentials for other accounts or discover misconfigurations.
+    Agent 0x99: For this mission, there should be a path forward. Look for it.
     -> support_hub
 + [Thanks]
     -> support_hub
@@ -153,16 +154,17 @@ Agent 0x99: Command: sudo -u otherusername bash gives you a shell as that user.
 // ================================================
 
 === general_advice ===
-Agent 0x99: Remember the mission priorities: gather evidence, identify operatives, minimize innocent casualties.
+Agent 0x99: Remember the mission priorities: gather evidence, identify operatives, protect innocents.
 
-Agent 0x99: Most people at Viral Dynamics are legitimate employees. We want ENTROPY, not collateral damage.
+Agent 0x99: Most people at Viral Dynamics are legitimate employees. We want ENTROPY operatives, not collateral damage.
 
 + [How do I know who's ENTROPY?]
-    Agent 0x99: Evidence correlation. Look for encrypted communications, connections to known cells, suspicious behavior.
-    Agent 0x99: Derek's our primary suspect, but gather proof before confronting.
+    Agent 0x99: Evidence correlation. Look for patterns—unusual access times, encrypted communications, suspicious behavior.
+    Agent 0x99: We have a primary suspect, but you need to gather proof before any confrontation.
     -> support_hub
-+ [What about Maya?]
-    Agent 0x99: Protect her. She's the informant who brought this to us. Don't expose her unless absolutely necessary.
++ [What if I'm not sure about someone?]
+    Agent 0x99: Then investigate further. Digital evidence, physical artifacts, behavioral patterns.
+    Agent 0x99: Trust the evidence, not assumptions.
     -> support_hub
 + [Understood]
     -> support_hub
@@ -198,8 +200,8 @@ Agent 0x99: First flag submitted. Nice work, {player_name}.
 Agent 0x99: Each flag unlocks intelligence. Keep correlating VM findings with physical evidence.
 
 + [What should I focus on next?]
-    Agent 0x99: Continue the VM challenges, but don't forget physical investigation. Derek's office, filing cabinets, computer access.
-    Agent 0x99: Hybrid approach—digital and physical evidence together.
+    Agent 0x99: Continue exploring both digital and physical spaces. Evidence doesn't exist in only one domain.
+    Agent 0x99: Office areas, computers, filing cabinets—anywhere information might be stored.
     #exit_conversation
     -> support_hub
 + [Thanks]
@@ -213,15 +215,15 @@ Agent 0x99: Each flag unlocks intelligence. Keep correlating VM findings with ph
 === event_derek_office ===
 #speaker:agent_0x99
 
-Agent 0x99: You're in Derek's office. Good.
+Agent 0x99: You're in. Good work gaining access.
 
-Agent 0x99: Look for communications, project documents, anything linking him to ENTROPY.
+Agent 0x99: Look for anything that reveals operational details, communications, or connections to ENTROPY.
 
-Agent 0x99: Whiteboard messages, computer files, filing cabinets. Be thorough.
+Agent 0x99: Be thorough. Evidence can hide in unexpected places.
 
-+ [What if Derek catches me?]
-    Agent 0x99: Your cover is solid. You're doing a security audit—accessing offices is expected.
-    Agent 0x99: But don't tip your hand too early. Gather evidence before confronting.
++ [What if I'm discovered?]
+    Agent 0x99: Your cover is solid. You're doing a security audit—this is legitimate.
+    Agent 0x99: But don't reveal what you know too early. Evidence first, confrontation later.
     #exit_conversation
     -> support_hub
 + [On it]

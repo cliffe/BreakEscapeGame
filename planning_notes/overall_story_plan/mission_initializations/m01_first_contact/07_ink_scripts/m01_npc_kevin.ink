@@ -175,16 +175,17 @@ Kevin: Reality? People use patterns to remember them.
     -> hub
 
 === password_patterns ===
-Kevin: Company name plus numbers. Birth years. "Marketing123" type stuff.
+Kevin: Company name variations are popular. "ViralDynamics" plus numbers or years.
 
-Kevin: Derek uses his birthday in passwords. I've seen his sticky notes.
+Kevin: Birthdays and anniversaries—classic weak passwords. I've caught several people with dates in their credentials.
 
-Kevin: Maya from accounting uses "Campaign" plus the year. Same password for everything.
+Kevin: Some people use the same pattern everywhere. Easy to remember, terrible for security.
 
 + [That's... not great security]
     ~ influence += 1
     Kevin: Tell me about it. That's why we need this audit.
-    Kevin: Maybe your report will convince them to take password security seriously.
+    Kevin: Derek's one of the worst. Important dates everywhere—sticky notes, calendar reminders, password hints.
+    Kevin: If you know someone's personal calendar, you can probably guess their passwords.
     -> hub
 
 // ================================================
