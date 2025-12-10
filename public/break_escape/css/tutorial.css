@@ -1,0 +1,305 @@
+/**
+ * Tutorial System Styles
+ */
+
+/* Tutorial Prompt Modal */
+.tutorial-prompt-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.85);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 10000;
+    animation: fadeIn 0.3s ease-in;
+}
+
+.tutorial-prompt-modal {
+    background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+    border: 2px solid #00ff88;
+    border-radius: 12px;
+    padding: 30px;
+    max-width: 500px;
+    width: 90%;
+    box-shadow: 0 10px 40px rgba(0, 255, 136, 0.3),
+                inset 0 0 20px rgba(0, 255, 136, 0.1);
+    animation: slideDown 0.4s ease-out;
+}
+
+.tutorial-prompt-modal h2 {
+    color: #00ff88;
+    font-family: 'Press Start 2P', monospace;
+    font-size: 20px;
+    margin: 0 0 20px 0;
+    text-align: center;
+    text-shadow: 0 0 10px rgba(0, 255, 136, 0.5);
+}
+
+.tutorial-prompt-modal p {
+    color: #e0e0e0;
+    font-family: 'VT323', monospace;
+    font-size: 20px;
+    line-height: 1.6;
+    margin: 0 0 25px 0;
+    text-align: center;
+}
+
+.tutorial-prompt-buttons {
+    display: flex;
+    gap: 15px;
+    justify-content: center;
+}
+
+.tutorial-btn {
+    font-family: 'Press Start 2P', monospace;
+    font-size: 12px;
+    padding: 12px 20px;
+    border: 2px solid;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    text-transform: uppercase;
+}
+
+.tutorial-btn-primary {
+    background: #00ff88;
+    color: #1a1a2e;
+    border-color: #00ff88;
+}
+
+.tutorial-btn-primary:hover {
+    background: #00cc6a;
+    border-color: #00cc6a;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 15px rgba(0, 255, 136, 0.4);
+}
+
+.tutorial-btn-secondary {
+    background: transparent;
+    color: #888;
+    border-color: #444;
+}
+
+.tutorial-btn-secondary:hover {
+    color: #aaa;
+    border-color: #666;
+    transform: translateY(-2px);
+}
+
+/* Tutorial Overlay */
+.tutorial-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.4);
+    z-index: 9999;
+    pointer-events: none;
+    animation: fadeIn 0.3s ease-in;
+}
+
+.tutorial-panel {
+    position: fixed;
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+    border: 2px solid #00ff88;
+    border-radius: 12px;
+    padding: 20px 25px;
+    max-width: 600px;
+    width: 90%;
+    box-shadow: 0 10px 40px rgba(0, 255, 136, 0.3),
+                inset 0 0 20px rgba(0, 255, 136, 0.1);
+    pointer-events: all;
+    animation: slideUp 0.4s ease-out;
+}
+
+.tutorial-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 15px;
+}
+
+.tutorial-progress {
+    color: #00ff88;
+    font-family: 'VT323', monospace;
+    font-size: 18px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.tutorial-skip {
+    background: transparent;
+    color: #888;
+    border: 1px solid #444;
+    border-radius: 4px;
+    padding: 6px 12px;
+    font-family: 'VT323', monospace;
+    font-size: 16px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.tutorial-skip:hover {
+    color: #ff6b6b;
+    border-color: #ff6b6b;
+}
+
+.tutorial-title {
+    color: #00ff88;
+    font-family: 'Press Start 2P', monospace;
+    font-size: 16px;
+    margin: 0 0 12px 0;
+    text-shadow: 0 0 10px rgba(0, 255, 136, 0.5);
+}
+
+.tutorial-instruction {
+    color: #e0e0e0;
+    font-family: 'VT323', monospace;
+    font-size: 20px;
+    line-height: 1.5;
+    margin: 0 0 15px 0;
+}
+
+.tutorial-objective {
+    background: rgba(0, 255, 136, 0.1);
+    border-left: 3px solid #00ff88;
+    padding: 10px 15px;
+    margin: 15px 0;
+    border-radius: 4px;
+}
+
+.tutorial-objective strong {
+    color: #00ff88;
+    font-family: 'Press Start 2P', monospace;
+    font-size: 12px;
+    display: block;
+    margin-bottom: 5px;
+}
+
+.tutorial-objective-text {
+    color: #fff;
+    font-family: 'VT323', monospace;
+    font-size: 18px;
+}
+
+.tutorial-actions {
+    display: flex;
+    justify-content: flex-end;
+    margin-top: 15px;
+}
+
+.tutorial-next {
+    background: #00ff88;
+    color: #1a1a2e;
+    border: 2px solid #00ff88;
+    border-radius: 6px;
+    padding: 10px 20px;
+    font-family: 'Press Start 2P', monospace;
+    font-size: 12px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.tutorial-next:hover {
+    background: #00cc6a;
+    border-color: #00cc6a;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 15px rgba(0, 255, 136, 0.4);
+}
+
+/* Animations */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
+}
+
+@keyframes slideDown {
+    from {
+        transform: translateY(-50px);
+        opacity: 0;
+    }
+    to {
+        transform: translateY(0);
+        opacity: 1;
+    }
+}
+
+@keyframes slideUp {
+    from {
+        transform: translateX(-50%) translateY(50px);
+        opacity: 0;
+    }
+    to {
+        transform: translateX(-50%) translateY(0);
+        opacity: 1;
+    }
+}
+
+/* Mobile Responsive */
+@media (max-width: 768px) {
+    .tutorial-prompt-modal {
+        padding: 20px;
+    }
+
+    .tutorial-prompt-modal h2 {
+        font-size: 16px;
+    }
+
+    .tutorial-prompt-modal p {
+        font-size: 18px;
+    }
+
+    .tutorial-btn {
+        font-size: 10px;
+        padding: 10px 15px;
+    }
+
+    .tutorial-panel {
+        bottom: 10px;
+        padding: 15px 20px;
+    }
+
+    .tutorial-title {
+        font-size: 14px;
+    }
+
+    .tutorial-instruction {
+        font-size: 18px;
+    }
+
+    .tutorial-objective strong {
+        font-size: 11px;
+    }
+
+    .tutorial-objective-text {
+        font-size: 16px;
+    }
+
+    .tutorial-next {
+        font-size: 11px;
+        padding: 8px 15px;
+    }
+}
+
+/* High contrast mode for accessibility */
+@media (prefers-contrast: high) {
+    .tutorial-prompt-modal,
+    .tutorial-panel {
+        border-width: 3px;
+    }
+
+    .tutorial-btn-primary {
+        font-weight: bold;
+    }
+}

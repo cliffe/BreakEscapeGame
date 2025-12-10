@@ -1062,6 +1062,12 @@ export function tryInteractWithNearest() {
     
     // Interact with the nearest object if one was found
     if (nearestObject) {
+        // Notify tutorial of interaction
+        if (window.getTutorialManager) {
+            const tutorialManager = window.getTutorialManager();
+            tutorialManager.notifyPlayerInteracted();
+        }
+
         // Check if this is a door (doors have doorProperties instead of scenarioData)
         if (nearestObject.doorProperties) {
             // Handle door interaction - triggers unlock/open sequence based on lock state

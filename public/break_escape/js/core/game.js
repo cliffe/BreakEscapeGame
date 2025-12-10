@@ -20,6 +20,7 @@ import { GameOverScreen } from '../ui/game-over-screen.js';
 import { PlayerCombat } from '../systems/player-combat.js';
 import { NPCCombat } from '../systems/npc-combat.js';
 import { ApiClient } from '../api-client.js'; // Import to ensure window.ApiClient is set
+import { getTutorialManager } from '../systems/tutorial-manager.js';
 
 // Global variables that will be set by main.js
 let gameScenario;
@@ -863,7 +864,10 @@ export async function create() {
     
     // Show introduction
     introduceScenario();
-    
+
+    // Check if tutorial should be shown
+    checkAndShowTutorial();
+
     // Initialize physics debug display (visual debug off by default)
     if (window.initializePhysicsDebugDisplay) {
         window.initializePhysicsDebugDisplay();
@@ -871,6 +875,31 @@ export async function create() {
     
     // Store game reference globally
     window.game = this;
+}
+
+/**
+ * Check if tutorial should be shown and display it if needed
+ */
+async function checkAndShowTutorial() {
+    const tutorialManager = getTutorialManager();
+
+    // Don't show tutorial if already completed or declined
+    if (tutorialManager.hasCompletedTutorial() || tutorialManager.hasDeclinedTutorial()) {
+        return;
+    }
+
+    // Wait a bit for the game to settle (after title screen, etc.)
+    await new Promise(resolve => setTimeout(resolve, 1000));
+
+    // Ask if player wants tutorial
+    const wantsTutorial = await tutorialManager.showTutorialPrompt();
+
+    if (wantsTutorial) {
+        // Start the tutorial
+        tutorialManager.start(() => {
+            console.log('Tutorial completed');
+        });
+    }
 }
 
 // Update function - main game loop

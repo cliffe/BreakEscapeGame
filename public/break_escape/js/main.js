@@ -25,6 +25,9 @@ import './systems/npc-game-bridge.js'; // Bridge for NPCs to influence game stat
 // Import Objectives System
 import { getObjectivesManager } from './systems/objectives-manager.js?v=1';
 
+// Import Tutorial System
+import { getTutorialManager } from './systems/tutorial-manager.js';
+
 // Global game variables
 window.game = null;
 window.gameScenario = null;

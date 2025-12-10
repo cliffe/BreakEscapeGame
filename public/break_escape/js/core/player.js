@@ -356,16 +356,22 @@ function createPlayerAnimations() {
 
 export function movePlayerToPoint(x, y) {
     const worldBounds = gameRef.physics.world.bounds;
-    
+
     // Ensure coordinates are within bounds
     x = Phaser.Math.Clamp(x, worldBounds.x, worldBounds.x + worldBounds.width);
     y = Phaser.Math.Clamp(y, worldBounds.y, worldBounds.y + worldBounds.height);
-    
+
     // Create click indicator
     createClickIndicator(x, y);
-    
+
     targetPoint = { x, y };
     isMoving = true;
+
+    // Notify tutorial of movement
+    if (window.getTutorialManager) {
+        const tutorialManager = window.getTutorialManager();
+        tutorialManager.notifyPlayerMoved();
+    }
 }
 
 function updatePlayerDepth(x, y) {
@@ -467,6 +473,15 @@ function updatePlayerKeyboardMovement() {
         const speed = keyboardInput.shift ? MOVEMENT_SPEED * RUN_SPEED_MULTIPLIER : MOVEMENT_SPEED;
         velocityX = (dirX / magnitude) * speed;
         velocityY = (dirY / magnitude) * speed;
+
+        // Notify tutorial of movement and running
+        if (window.getTutorialManager) {
+            const tutorialManager = window.getTutorialManager();
+            tutorialManager.notifyPlayerMoved();
+            if (keyboardInput.shift) {
+                tutorialManager.notifyPlayerRan();
+            }
+        }
     }
     
     // Update animation speed every frame while moving
