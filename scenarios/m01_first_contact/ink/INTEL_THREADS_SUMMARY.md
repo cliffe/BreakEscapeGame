@@ -10,16 +10,20 @@ This document outlines how incomplete intel from NPCs leads to evidence discover
 ### Old Approach (Problematic)
 - Agent 0x99 gave exact command syntax (e.g., `hydra -l username -P passwordlist.txt ssh://target`)
 - Maya revealed Derek's office code directly (0419)
-- Kevin stated "Derek uses his birthday in passwords"
+- Kevin stated "Derek uses his birthday in passwords - April 19th, 0419"
+- Agent 0x99 explained Kevin's frame-up contingency in detail
 - All evidence locations explicitly stated
 - Complete tactical walkthrough provided
 
-### New Approach (Discovery-Based)
-- NPCs provide **hints and fragments** that point toward evidence
-- Players must **explore, observe, and correlate** information
-- Multiple sources provide pieces of the puzzle
-- Technical knowledge must be **discovered or researched**
-- Evidence locations hinted at, not explicitly stated
+### New Approach (Balanced Discovery)
+- **Basic technical commands provided** (ls, cd, cat, ls -la, sudo -l, sudo -u)
+  - Players aren't expected to know Linux basics
+  - Commands are tools, discovery is in application
+- **Investigation requires correlation** (Kevin hints at "important dates" → player finds calendar → discovers 0419)
+- **Major discoveries belong to player** (Kevin's frame-up is found, not explained)
+- **Handler has suspicions, not omniscience** ("Derek might have contingencies" → player discovers what they are)
+- **Multiple sources provide puzzle pieces** that must be assembled
+- **Evidence locations hinted at**, not explicitly stated
 
 ---
 
@@ -102,28 +106,30 @@ This document outlines how incomplete intel from NPCs leads to evidence discover
 
 ### Evidence Trail
 
-#### Fragment 1: Agent 0x99 - General Concepts
+#### Fragment 1: Agent 0x99 - Basic Commands
 **Location:** Phone support
 **Intel Provided:**
-- "User directories contain personal files, configurations"
-- "Not everything is visible at first glance. Look deeper"
-- "Think like an investigator. Where would someone hide information?"
+- "ls lists files, cd changes directory, cat reads files"
+- "Check home directories first. User files, personal documents"
+- "Hidden files start with a dot. Use ls -la to see everything"
 
-**What Player Learns:** Hidden files exist, user directories important, need to look carefully.
+**What Player Learns:** Basic Linux commands and that hidden files exist.
 
-#### Fragment 2: VM Environment - Discovery
+#### Fragment 2: VM Environment - Application
 **Location:** Linux VMs in server room
 **Intel Provided:**
 - Directory structure to explore
 - Hidden files (dotfiles) containing flags/evidence
+- Multiple user accounts with different evidence
 
-**What Player Learns:** Specific commands (`ls -la`) and locations through experimentation.
+**What Player Learns:** Where to apply commands, which directories have evidence.
 
-#### Fragment 3: Research/Experimentation
+#### Fragment 3: Investigation & Discovery
 **Action Required:** Player must:
-1. Learn basic Linux commands (ls, cd, cat) through experimentation or research
-2. Discover hidden files concept
-3. Explore methodically to find flags
+1. Navigate to home directories using cd
+2. Use ls -la to reveal hidden files
+3. Read files with cat to find flags
+4. Explore multiple user accounts methodically
 
 **Evidence Unlocked:** Flags in user directories, .bashrc files, hidden config files
 
@@ -133,29 +139,30 @@ This document outlines how incomplete intel from NPCs leads to evidence discover
 
 ### Evidence Trail
 
-#### Fragment 1: Agent 0x99 - General Concept
+#### Fragment 1: Agent 0x99 - Sudo Commands
 **Location:** Phone support
 **Intel Provided:**
-- "Privilege escalation means gaining access to other accounts"
-- "Linux systems have permissions allowing users to execute commands or access other accounts"
-- "Investigate what capabilities your current account has"
+- "Try sudo -l to see what permissions your current account has"
+- "If you can switch users, use sudo -u username bash"
+- "For this environment, there should be a sudo path available"
 
-**What Player Learns:** Concept exists, need to investigate current account permissions.
+**What Player Learns:** Specific sudo commands to use.
 
-#### Fragment 2: VM Environment - Discovery
+#### Fragment 2: VM Environment - Application
 **Location:** Linux VMs
 **Intel Provided:**
-- `sudo -l` command results showing permissions
-- Ability to switch users
+- `sudo -l` results showing which users can be accessed
+- Multiple user accounts to switch between
+- Different evidence in different user accounts
 
-**What Player Learns:** Specific commands and techniques through experimentation.
+**What Player Learns:** Which users exist, which can be accessed, how to apply commands.
 
-#### Fragment 3: Research/Experimentation
+#### Fragment 3: Execution & Discovery
 **Action Required:** Player must:
-1. Learn about sudo command
-2. Discover `sudo -l` to check permissions
-3. Learn `sudo -u username bash` syntax
-4. Execute privilege escalation
+1. Run `sudo -l` on initial account
+2. Identify which users can be accessed
+3. Use `sudo -u username bash` to switch users
+4. Explore each user's home directory for evidence
 
 **Evidence Unlocked:** Additional user accounts, higher-level flags, sensitive files
 
@@ -219,39 +226,51 @@ This document outlines how incomplete intel from NPCs leads to evidence discover
 
 ### Evidence Trail
 
-#### Fragment 1: Maya (NPC) - Concern About Derek
+#### Fragment 1: Agent 0x99 (Opening Briefing) - Vague Warning
+**Location:** Mission briefing (if player asks for specific advice)
+**Intel Provided:**
+- "Derek's meticulous. If he's planning something this big, he'll have contingencies"
+- "Failsafes, scapegoats, ways to cover his tracks if things go wrong"
+- "Derek might have plans that put innocent people at risk"
+
+**What Player Learns:** Derek might target innocent people, but specifics unknown.
+
+#### Fragment 2: Maya (NPC) - Concern About Derek
 **Location:** Office conversation
 **Intel Provided:**
 - Derek is "paranoid" and defensive
 - "Sometimes I wonder if he's involved in something bigger"
 
-**What Player Learns:** Derek may have backup plans.
+**What Player Learns:** Derek may have backup plans, reinforces suspicion.
 
-#### Fragment 2: Derek's Computer Files
+#### Fragment 3: Derek's Computer Files (Discovery!)
 **Location:** Derek's office computer (after gaining access)
 **Intel Provided:**
 - "Contingency_Plan.txt" or similar file
 - Documents showing plan to frame Kevin
-- Forged logs and emails
+- Forged logs, fake evidence, frame-up timeline
 
-**What Player Learns:** Derek plans to frame Kevin if discovered.
+**What Player Learns:** Derek plans to frame Kevin if discovered - player discovers this themselves!
 
-#### Fragment 3: Agent 0x99 Reaction (Event-Triggered)
-**Location:** Phone call after discovering contingency
+#### Fragment 4: Agent 0x99 Reaction (Event-Triggered)
+**Location:** Phone call after player discovers contingency
 **Intel Provided:**
-- Explains what the contingency means for Kevin
-- Presents player with choices (warn Kevin, plant evidence, ignore)
+- "I suspected Derek might have failsafes, but I didn't know about this specifically"
+- Reacts with shock and disgust at the discovery
+- "Kevin's fate is in your hands now"
+- Leaves decision to player (no prescriptive advice)
 
-**What Player Learns:** Moral implications and response options.
+**What Player Learns:** This is player's discovery, handler didn't know. Player must decide what to do.
 
-#### Fragment 4: Correlation
+#### Fragment 5: Player Choice
 **Action Required:** Player must:
-1. Gain access to Derek's computer
-2. Read contingency files
-3. Understand implications
-4. Make choice about Kevin's fate
+1. Hear vague warning from Agent 0x99 in briefing (optional)
+2. Gain access to Derek's computer
+3. Discover and read contingency files
+4. Report discovery to Agent 0x99 (triggers event)
+5. Make moral choice: warn Kevin, leave evidence, or focus on mission
 
-**Evidence Unlocked:** Moral choice, narrative branch, Kevin's fate determined
+**Evidence Unlocked:** Moral choice, narrative branch, Kevin's fate determined by player action
 
 ---
 

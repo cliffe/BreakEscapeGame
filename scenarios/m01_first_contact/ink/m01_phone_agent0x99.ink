@@ -116,15 +116,15 @@ Agent 0x99: Kevin might have observations about password habits. Check the offic
 === linux_help ===
 ~ linux_hint_given = true
 
-Agent 0x99: Linux systems organize files in directories. Learn to navigate and read files—that's where evidence lives.
+Agent 0x99: Linux navigation basics: ls lists files, cd changes directory, cat reads files.
 
-Agent 0x99: User directories often contain personal files, configurations, and artifacts of their activity.
+Agent 0x99: Check home directories first. User files, personal documents—that's where people hide things.
 
-Agent 0x99: Remember that not everything is visible at first glance. Look deeper.
+Agent 0x99: Not everything is immediately visible. Hidden files start with a dot. Use ls -la to see everything.
 
 + [Where should I look for flags?]
-    Agent 0x99: Think like an investigator. Where would someone store sensitive information? User folders, documents, configuration files.
-    Agent 0x99: Explore systematically. Don't assume you've seen everything in a directory.
+    Agent 0x99: User home directories, document folders, configuration files. Some might be hidden.
+    Agent 0x99: Explore methodically. Each user account might have different evidence.
     -> support_hub
 + [Got it]
     -> support_hub
@@ -138,13 +138,13 @@ Agent 0x99: Remember that not everything is visible at first glance. Look deeper
 
 Agent 0x99: Privilege escalation means gaining access to other user accounts or higher permissions.
 
-Agent 0x99: Linux systems often have permissions that allow certain users to execute commands or access other accounts.
+Agent 0x99: Try sudo -l to see what permissions your current account has. Some accounts can run commands as other users.
 
-Agent 0x99: Investigate what capabilities your current account has. Some accounts can switch to others.
+Agent 0x99: If you can switch users, use sudo -u username bash to get a shell as that user.
 
-+ [What if I don't have special access?]
-    Agent 0x99: Then you'll need to find credentials for other accounts or discover misconfigurations.
-    Agent 0x99: For this mission, there should be a path forward. Look for it.
++ [What if I don't have sudo access?]
+    Agent 0x99: Then look for other credentials, shared passwords, or system misconfigurations.
+    Agent 0x99: But for this environment, there should be a sudo path available.
     -> support_hub
 + [Thanks]
     -> support_hub
@@ -227,6 +227,37 @@ Agent 0x99: Be thorough. Evidence can hide in unexpected places.
     #exit_conversation
     -> support_hub
 + [On it]
+    #exit_conversation
+    -> support_hub
+
+// ================================================
+// EVENT: CONTINGENCY DISCOVERED (Kevin Frame-Up)
+// ================================================
+
+=== event_contingency_found ===
+#speaker:agent_0x99
+
+Agent 0x99: {player_name}, what did you just find?
+
+Agent 0x99: A contingency plan to frame Kevin? That's... that's despicable.
+
+Agent 0x99: Kevin's been helping you. He's innocent. And Derek's prepared to destroy his life if things go wrong.
+
++ [Can we stop it?]
+    Agent 0x99: You're the one in the field. Depends on what you do with this information.
+    Agent 0x99: You could warn Kevin directly, leave evidence for investigators, or... focus on the primary mission.
+    Agent 0x99: I can't tell you what's right here. That's your call.
+    #exit_conversation
+    -> support_hub
++ [What should I do?]
+    Agent 0x99: I suspected Derek might have failsafes, but I didn't know about this specifically.
+    Agent 0x99: Kevin's fate is in your hands now. Whatever you decide, document that contingency plan.
+    Agent 0x99: We need proof of what Derek was willing to do to innocent people.
+    #exit_conversation
+    -> support_hub
++ [This changes things]
+    Agent 0x99: It does. Kevin trusted you. You have to decide if you can protect him while completing the mission.
+    Agent 0x99: No easy answers here, {player_name}.
     #exit_conversation
     -> support_hub
 

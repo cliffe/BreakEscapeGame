@@ -2,17 +2,21 @@
 // Mission 1: First Contact - Opening Briefing
 // Act 1: Interactive Cutscene
 // Agent 0x99 "Haxolottle" briefs Agent 0x00
+// UPDATED: Operation Shatter - Clear evil threat
+// UPDATED: Removed vague "approach" choice - outcomes
+//          now based on actual player decisions
 // ================================================
 
-// Variables for tracking player choices
-VAR player_approach = ""          // cautious, confident, adaptable
+// Variables for tracking what player asked about (affects debrief)
 VAR asked_about_stakes = false
-VAR asked_about_entropy = false
-VAR asked_about_cover = false
+VAR asked_about_casualties = false
+VAR asked_about_architect = false
+VAR asked_about_derek = false
+VAR asked_about_maya = false
 VAR mission_accepted = false
 
 // External variables
-EXTERNAL player_name
+VAR player_name = "Agent 0x00"
 
 // ================================================
 // START: BRIEFING BEGINS
@@ -21,12 +25,11 @@ EXTERNAL player_name
 === start ===
 Agent 0x99: {player_name}, thanks for getting here on short notice.
 
-Agent 0x99: We have a situation developing at Viral Dynamics Media.
+Agent 0x99: We have a situation developing at Viral Dynamics Media. And it's worse than we initially thought.
 
 + [What's the situation?]
     -> briefing_threat
 + [I'm ready. What's the mission?]
-    ~ player_approach = "confident"
     -> briefing_threat
 + [How urgent is this?]
     ~ asked_about_stakes = true
@@ -37,29 +40,166 @@ Agent 0x99: We have a situation developing at Viral Dynamics Media.
 // ================================================
 
 === urgency_explanation ===
-Agent 0x99: ENTROPY's Social Fabric cell is operating inside Viral Dynamics right now.
+Agent 0x99: We're 72 hours from a mass casualty event.
 
-Agent 0x99: They're running disinformation campaigns targeting the upcoming election.
+Agent 0x99: ENTROPY's Social Fabric cell is operating inside Viral Dynamics. But they're not just running disinformation campaigns.
+
+Agent 0x99: They're planning something called "Operation Shatter."
 
 -> briefing_threat
 
 // ================================================
-// THREAT BRIEFING
+// THREAT BRIEFING - OPERATION SHATTER
 // ================================================
 
 === briefing_threat ===
-Agent 0x99: Social Fabric specializes in information manipulation—narrative control, social engineering at scale.
+Agent 0x99: Three weeks ago, our AI flagged something bigger than election interference.
 
-Agent 0x99: They've infiltrated Viral Dynamics as employees. We don't know how many operatives, but we've identified at least one.
+Agent 0x99: Social Fabric has spent three months collecting psychological profiles. Detailed vulnerability assessments on over two million people in the region.
 
-+ [Who's the target operative?]
++ [What kind of profiles?]
+    -> profile_details
++ [What are they planning to do with them?]
+    -> operation_shatter
++ [Two million people?]
+    -> profile_scale
+
+// ================================================
+// PROFILE DETAILS
+// ================================================
+
+=== profile_details ===
+Agent 0x99: Medical records. Prescription histories. Financial stress indicators. Documented anxiety disorders.
+
+Agent 0x99: They've identified who has insulin dependencies. Who relies on weekly dialysis. Who lives alone without family support.
+
+Agent 0x99: This isn't demographic marketing data. This is a targeting database for psychological warfare.
+
++ [What are they going to do with it?]
+    -> operation_shatter
++ [How did they get this data?]
+    -> data_source
+
+=== data_source ===
+Agent 0x99: The usual methods—breached insurance databases, compromised pharmacy systems, scraped social media.
+
+Agent 0x99: But the concerning part isn't how they got it. It's what they're planning to do with it.
+
+-> operation_shatter
+
+=== profile_scale ===
+Agent 0x99: 2.3 million profiles, to be precise. And each one includes a vulnerability score.
+
+Agent 0x99: They've categorized people by how likely they are to panic. To make dangerous decisions. To die if they receive the wrong message at the wrong time.
+
+-> operation_shatter
+
+// ================================================
+// OPERATION SHATTER - THE EVIL PLAN
+// ================================================
+
+=== operation_shatter ===
+Agent 0x99: We intercepted fragments of something called "Operation Shatter."
+
+Agent 0x99: Simultaneous fake crisis messages. Personalized. Targeted at the most vulnerable populations.
+
++ [What kind of crisis messages?]
+    -> crisis_details
++ [What's the goal?]
+    -> entropy_goal
+
+=== crisis_details ===
+Agent 0x99: Fake hospital system collapses. "Your appointment has been cancelled. All patient records corrupted."
+
+Agent 0x99: Fake bank failures. "Your funds are frozen due to suspected breach."
+
+Agent 0x99: Fake infrastructure attacks. "Water contaminated. Power grid compromised."
+
+Agent 0x99: All delivered simultaneously to people they've profiled as most likely to panic.
+
++ [That would cause mass chaos...]
+    -> casualty_projections
++ [People could die from that.]
+    ~ asked_about_casualties = true
+    -> casualty_projections
+
+=== entropy_goal ===
+Agent 0x99: Social Fabric's philosophy is "truth is obsolete, only narrative matters."
+
+Agent 0x99: But this goes beyond philosophy. They want to permanently destroy public trust in digital communications.
+
+Agent 0x99: And they're willing to kill people to make their point.
+
+-> casualty_projections
+
+// ================================================
+// CASUALTY PROJECTIONS - THE HORROR
+// ================================================
+
+=== casualty_projections ===
+Agent 0x99: {player_name}, I need you to understand what we're dealing with.
+
+Agent 0x99: We recovered fragments of their impact assessment. They've calculated projected casualties.
+
++ [How many?]
+    ~ asked_about_casualties = true
+    -> casualty_numbers
++ [They're planning to kill people?]
+    ~ asked_about_casualties = true
+    -> casualty_numbers
+
+=== casualty_numbers ===
+Agent 0x99: Their own estimates: 42 to 85 direct deaths in the first 24 hours.
+
+Agent 0x99: Diabetics who skip insulin because they believe hospitals are compromised. Elderly who have heart attacks from fake bank failure notices. Traffic fatalities from evacuation panic.
+
+Agent 0x99: And they consider these deaths... acceptable. "Educational," they call it.
+
++ [That's monstrous.]
+    -> villain_philosophy
++ [We have to stop this.]
+    -> mission_objectives
+
+=== villain_philosophy ===
+Agent 0x99: The fragment we recovered includes a note from someone called "The Architect."
+
+Agent 0x99: "These are not victims. They are examples. Their deaths will save thousands who learn the lesson: Trust nothing. Verify everything."
+
+Agent 0x99: They're true believers, {player_name}. They think murdering people is "teaching a lesson."
+
++ [Who's The Architect?]
+    ~ asked_about_architect = true
+    -> architect_mention
++ [What's my mission?]
+    -> mission_objectives
+
+=== architect_mention ===
+Agent 0x99: We don't know yet. Someone coordinating ENTROPY cells at a strategic level.
+
+Agent 0x99: But that's a problem for later. Right now, we stop Operation Shatter.
+
+-> mission_objectives
+
+// ================================================
+// MISSION OBJECTIVES
+// ================================================
+
+=== mission_objectives ===
+Agent 0x99: Your objectives:
+
+Agent 0x99: One—Find the complete Operation Shatter documentation. Target lists, message templates, deployment timeline.
+
+Agent 0x99: Two—Identify all ENTROPY operatives inside Viral Dynamics.
+
+Agent 0x99: Three—Stop the operation before Sunday. That's when they deploy.
+
++ [How do I get inside?]
+    -> cover_story
++ [Who's the primary target?]
+    ~ asked_about_derek = true
     -> operative_identity
-+ [What are they trying to accomplish?]
-    ~ asked_about_entropy = true
-    -> entropy_objectives
-+ [What's at stake if they succeed?]
-    ~ asked_about_stakes = true
-    -> stakes_explanation
++ [What resources do I have?]
+    -> resources_available
 
 // ================================================
 // OPERATIVE IDENTITY
@@ -68,87 +208,23 @@ Agent 0x99: They've infiltrated Viral Dynamics as employees. We don't know how m
 === operative_identity ===
 Agent 0x99: Derek Lawson. Senior Marketing Manager at Viral Dynamics.
 
-Agent 0x99: Perfect cover—his job is literally manipulating narratives for clients.
+Agent 0x99: Perfect cover—his job is literally manipulating narratives for clients. He's been there three months, which aligns with when the data collection started.
 
-+ [How long has he been there?]
-    -> infiltration_timeline
-+ [What's my objective?]
-    -> mission_objectives
+Agent 0x99: He's not just running operations. He authored parts of the casualty projections we intercepted.
 
-=== infiltration_timeline ===
-Agent 0x99: Three months. Long enough to install backdoors, build trust, map the organization.
-
-Agent 0x99: He's not just stealing data—he's weaponizing the company's media distribution network.
-
-+ [What's my objective?]
-    -> mission_objectives
-+ [What happens if they succeed?]
-    ~ asked_about_stakes = true
-    -> stakes_explanation
-
-// ================================================
-// ENTROPY OBJECTIVES
-// ================================================
-
-=== entropy_objectives ===
-Agent 0x99: They're collecting demographic data, testing disinformation tactics, mapping influence networks.
-
-Agent 0x99: It's all feeding into something bigger—Phase 3, though we don't know details yet.
-
-+ [What's Phase 3?]
-    -> phase_3_explanation
-+ [What's my mission?]
-    -> mission_objectives
-
-=== phase_3_explanation ===
-Agent 0x99: That's what we're trying to figure out. Multiple cells collecting different types of data.
-
-Agent 0x99: Social Fabric handles narrative manipulation. Other cells focus on infrastructure, finance, healthcare.
-
-+ [So this is part of something larger]
-    -> larger_threat
-+ [What do I need to do?]
-    -> mission_objectives
-
-=== larger_threat ===
-Agent 0x99: Exactly. But right now, we stop this cell. One operation at a time.
-
--> mission_objectives
-
-// ================================================
-// STAKES EXPLANATION
-// ================================================
-
-=== stakes_explanation ===
-Agent 0x99: If they succeed, they'll manipulate election coverage across social media and news outlets.
-
-Agent 0x99: Viral Dynamics has distribution deals with dozens of platforms. Derek controls what millions see.
-
-+ [That's... significant]
-    -> mission_objectives
-+ [We have to stop this]
-    -> mission_objectives
-
-// ================================================
-// MISSION OBJECTIVES
-// ================================================
-
-=== mission_objectives ===
-Agent 0x99: Your primary objectives:
-
-Agent 0x99: One—Identify all ENTROPY operatives inside Viral Dynamics.
-
-Agent 0x99: Two—Gather evidence of the disinformation operation.
-
-Agent 0x99: Three—Intercept their communications with other cells.
-
-+ [How do I get inside?]
-    ~ asked_about_cover = true
++ [He calculated how many people would die?]
+    -> derek_author
++ [How do I get to him?]
     -> cover_story
-+ [What resources do I have?]
-    -> resources_available
-+ [Sounds straightforward]
-    -> approach_discussion
+
+=== derek_author ===
+Agent 0x99: His signature is on the medical dependency targeting document.
+
+Agent 0x99: He personally identified which populations would be most vulnerable to fake hospital closure messages.
+
+Agent 0x99: This isn't a foot soldier following orders. He's an architect of mass casualties.
+
+-> cover_story
 
 // ================================================
 // COVER STORY
@@ -157,7 +233,7 @@ Agent 0x99: Three—Intercept their communications with other cells.
 === cover_story ===
 Agent 0x99: You're going in as an IT contractor hired to audit their network security.
 
-Agent 0x99: Completely legitimate. Viral Dynamics actually requested the audit weeks ago.
+Agent 0x99: Completely legitimate. Viral Dynamics actually requested the audit weeks ago. We just... made sure we got the contract.
 
 + [So I'll have access to technical systems]
     -> technical_access
@@ -167,16 +243,29 @@ Agent 0x99: Completely legitimate. Viral Dynamics actually requested the audit w
 === technical_access ===
 Agent 0x99: Server room, computers, network infrastructure—all fair game under your cover.
 
-Agent 0x99: Just stay professional. IT contractors ask questions; that's expected.
+Agent 0x99: That's where you'll find the Operation Shatter files. Derek keeps them encrypted, but they're there.
 
--> approach_discussion
+-> innocent_warning
 
 === employee_interaction ===
-Agent 0x99: IT contractors interact with everyone. Use it.
+Agent 0x99: Most employees at Viral Dynamics have no idea what's happening.
 
-Agent 0x99: People trust IT. They'll share passwords, complain about systems, gossip about coworkers.
+Agent 0x99: They think they work at a marketing agency. The Operation Shatter team is isolated—maybe three or four people total.
 
--> approach_discussion
+Agent 0x99: Everyone else is innocent. They'll go home to families tonight with no idea their company was planning to kill people.
+
+-> innocent_warning
+
+=== innocent_warning ===
+Agent 0x99: One more thing: there's a journalist there named Maya Chen.
+
+Agent 0x99: She contacted us anonymously. Suspected something was wrong but doesn't know the full scope. She thinks it's corporate fraud, not mass murder.
+
+Agent 0x99: Protect her identity. If Derek finds out she tipped us off, she's in danger.
+
+~ asked_about_maya = true
+
+-> resources_available
 
 // ================================================
 // RESOURCES AVAILABLE
@@ -189,55 +278,26 @@ Agent 0x99: There's a SAFETYNET drop-site terminal in their server room for subm
 
 + [What about tools?]
     -> tools_discussion
-+ [Got it. What's the approach?]
-    -> approach_discussion
++ [I'm ready to go]
+    -> final_instructions
 
 === tools_discussion ===
 Agent 0x99: Your contractor kit has lockpicks, RFID cloner, and analysis tools.
 
 Agent 0x99: Everything you need looks like standard IT equipment. Stay in character.
 
--> approach_discussion
+Agent 0x99: And {player_name}—when you find those casualty projections, photograph everything. We need complete documentation.
 
-// ================================================
-// APPROACH DISCUSSION
-// ================================================
-
-=== approach_discussion ===
-Agent 0x99: How do you want to handle this?
-
-+ [Careful and methodical—thorough investigation]
-    ~ player_approach = "cautious"
-    You: I'll take my time. Thorough beats fast.
-    Agent 0x99: Smart. Don't miss anything critical.
-    -> final_instructions
-+ [Quick and focused—complete objectives efficiently]
-    ~ player_approach = "confident"
-    You: I'll move quickly and get results.
-    Agent 0x99: Good. Just don't rush past important evidence.
-    -> final_instructions
-+ [Adaptable—read the situation as it develops]
-    ~ player_approach = "adaptable"
-    You: I'll adapt based on what I find.
-    Agent 0x99: Flexible thinking. Trust your instincts.
-    -> final_instructions
+-> final_instructions
 
 // ================================================
 // FINAL INSTRUCTIONS
 // ================================================
 
 === final_instructions ===
-Agent 0x99: Remember—Derek doesn't know we're onto him yet. Keep it that way.
+Agent 0x99: Remember—Derek doesn't know we're onto Operation Shatter. He thinks this is just an IT audit.
 
-{player_approach == "cautious":
-    Agent 0x99: Your careful approach should keep you under the radar. Document everything.
-}
-{player_approach == "confident":
-    Agent 0x99: Speed is good, but stealth is better. Stay professional.
-}
-{player_approach == "adaptable":
-    Agent 0x99: Read the room. If something feels off, trust that feeling.
-}
+Agent 0x99: Use that advantage. Gather evidence before confronting anyone.
 
 + [Any specific advice?]
     -> specific_advice
@@ -251,17 +311,29 @@ Agent 0x99: Remember—Derek doesn't know we're onto him yet. Keep it that way.
 === specific_advice ===
 Agent 0x99: The IT manager—Kevin Park—is your entry point. Build rapport with him.
 
-Agent 0x99: He's not ENTROPY, just overworked and underpaid. He'll appreciate competent help.
+Agent 0x99: He's not ENTROPY, just overworked and underpaid. He'll appreciate competent help and give you access.
 
+Agent 0x99: One thing though—Derek's meticulous. If he's planning something this big, he'll have contingencies.
+
++ [What kind of contingencies?]
+    Agent 0x99: Failsafes, scapegoats, ways to cover his tracks if things go wrong.
+    Agent 0x99: Keep your eyes open. Derek might have plans that put innocent people at risk.
+    -> deployment_choices
 + [Anyone else I should know about?]
     -> other_npcs
 + [Got it. Ready to go]
     -> deployment
 
-=== other_npcs ===
-Agent 0x99: Sarah Martinez is the receptionist. She'll check you in.
+=== deployment_choices ===
++ [Anyone else I should know about?]
+    -> other_npcs
++ [I'll watch for it. Ready to go]
+    -> deployment
 
-Agent 0x99: Be professional. First impressions matter for your cover.
+=== other_npcs ===
+Agent 0x99: Sarah Martinez is the receptionist. Professional, friendly. Don't give her any reason to flag you.
+
+Agent 0x99: And Maya Chen—the journalist who contacted us. Be careful around her. Derek might be watching who she talks to.
 
 -> deployment
 
@@ -270,13 +342,13 @@ Agent 0x99: Be professional. First impressions matter for your cover.
 // ================================================
 
 === deployment ===
-Agent 0x99: Good luck, {player_name}. SAFETYNET is counting on you.
+Agent 0x99: {player_name}, I won't lie. This is bigger than a typical first mission.
 
-Agent 0x99: And remember—technically, you're just an IT contractor doing an audit.
+Agent 0x99: But you're ready. And those 85 people who might die on Sunday? They're counting on you. Even if they don't know it.
 
-Agent 0x99: Keep that cover intact and this should go smoothly.
+Agent 0x99: Stop Operation Shatter. Find the evidence. And make sure Derek Lawson never hurts anyone.
 
 ~ mission_accepted = true
 
-#start_gameplay
+#exit_conversation
 -> END

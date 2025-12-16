@@ -313,9 +313,21 @@ Agent 0x99: The IT manager—Kevin Park—is your entry point. Build rapport wit
 
 Agent 0x99: He's not ENTROPY, just overworked and underpaid. He'll appreciate competent help and give you access.
 
+Agent 0x99: One thing though—Derek's meticulous. If he's planning something this big, he'll have contingencies.
+
++ [What kind of contingencies?]
+    Agent 0x99: Failsafes, scapegoats, ways to cover his tracks if things go wrong.
+    Agent 0x99: Keep your eyes open. Derek might have plans that put innocent people at risk.
+    -> deployment_choices
 + [Anyone else I should know about?]
     -> other_npcs
 + [Got it. Ready to go]
+    -> deployment
+
+=== deployment_choices ===
++ [Anyone else I should know about?]
+    -> other_npcs
++ [I'll watch for it. Ready to go]
     -> deployment
 
 === other_npcs ===
