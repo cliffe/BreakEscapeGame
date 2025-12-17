@@ -357,6 +357,30 @@ password_hints = "Common passwords: Marketing123, Campaign2024, Viral_Dynamics_A
               "onceOnly": true
             }
           ]
+        },
+        {
+          "id": "intercepted_messages",
+          "displayName": "Intercepted Communications",
+          "npcType": "phone",
+          "phoneId": "player_phone",
+          "avatar": "assets/npc/avatars/npc_helper.png",
+          "timedMessages": [
+            {
+              "delay": 45000,
+              "message": "[INTERCEPTED SMS - Derek to Unknown]\n'Audit starts today. Patricia's replacement won't be a problem. I've already established the narrative. If anything surfaces, Kevin takes the fall. Everything is in place.'",
+              "type": "text"
+            },
+            {
+              "delay": 120000,
+              "message": "[INTERCEPTED SMS - Derek to 'The Architect']\n'Maya Chen is becoming curious. Left her a voicemail reminder about professional boundaries. She'll fall in line or follow Patricia's path. Either way, Operation Shatter launches Sunday.'",
+              "type": "text"
+            },
+            {
+              "delay": 180000,
+              "message": "[INTERCEPTED SMS - Unknown to Derek]\n'HR confirmed: Patricia Wells severance finalized. No further contact. Investigation closed. Your contingency worked perfectly. She never saw it coming.'",
+              "type": "text"
+            }
+          ]
         }
       ],
       "objects": [
@@ -774,6 +798,16 @@ password_hints = "Common passwords: Marketing123, Campaign2024, Viral_Dynamics_A
           "readable": true,
           "text": "SECURE COMMUNICATION\n\nTo: SAFETYNET Tip Line\nFrom: Anonymous\n\nI work at Viral Dynamics Media.\nSomething terrible is being planned.\nThey call it 'Operation Shatter.'\nPeople will die.\n\nPlease send someone.\n\n- An ally",
           "observations": "Maya's tip to SAFETYNET - she's the informant who triggered this mission"
+        },
+        {
+          "type": "phone",
+          "name": "Maya's Office Phone",
+          "takeable": false,
+          "readable": true,
+          "voice": "Maya, we need to talk. I saw you lingering near Patricia's old office yesterday. I know you two were close. I know she shared her... concerns... with you. Here's what you need to understand: Patricia made accusations she couldn't prove. That's why she's gone. I'd hate to see the same thing happen to you. You're talented. You have a future here. Don't throw it away by asking questions about things that don't concern you. The audit next week is routine. Just do your job, analyze the content effectiveness data, and everything will be fine. Oh, and Maya? Delete any personal notes you might have been keeping. For your own protection. Call me when you get this.",
+          "sender": "Derek Lawson",
+          "timestamp": "Last Tuesday, 4:47 PM",
+          "observations": "Voicemail from Derek - this is clearly a threat disguised as concern"
         }
       ]
     },
