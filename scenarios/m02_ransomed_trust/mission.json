@@ -1,0 +1,34 @@
+{
+  "display_name": "Ransomed Trust",
+  "description": "Infiltrate St. Catherine's Regional Medical Center after a ransomware attack has encrypted critical systems. With 47 patients on life support and 12 hours of backup power remaining, you must recover decryption keys before making a critical decision: pay the ransom to save lives today, or refuse and deny ENTROPY funding.",
+  "difficulty_level": 1,
+  "secgen_scenario": "rooting_for_a_win",
+  "collection": "season_1",
+  "cybok": [
+    {
+      "ka": "MAT",
+      "topic": "Malware & Attack Technologies",
+      "keywords": ["Ransomware behavior", "Encryption", "ProFTPD exploitation", "CVE-2010-4652"]
+    },
+    {
+      "ka": "IR",
+      "topic": "Incident Response",
+      "keywords": ["Recovery procedures", "Backup importance", "Ransomware response", "Crisis management"]
+    },
+    {
+      "ka": "AC",
+      "topic": "Applied Cryptography",
+      "keywords": ["Symmetric encryption", "Key recovery", "Encoding vs encryption", "Base64", "ROT13"]
+    },
+    {
+      "ka": "HF",
+      "topic": "Human Factors",
+      "keywords": ["Social engineering", "Trust building", "Information gathering", "Ethical dilemmas"]
+    },
+    {
+      "ka": "SS",
+      "topic": "Systems Security",
+      "keywords": ["Vulnerability exploitation", "Backup systems", "Linux navigation", "File system security"]
+    }
+  ]
+}

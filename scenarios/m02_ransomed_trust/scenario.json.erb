@@ -1,0 +1,789 @@
+<%
+# ============================================================================
+# MISSION 2: RANSOMED TRUST - SCENARIO FILE
+# ============================================================================
+# Break Escape - Season 1: The Architect's Shadow
+#
+# Hospital ransomware crisis. 47 patients on life support. Exploit ENTROPY's
+# backdoor to recover decryption keys before critical systems fail.
+#
+# ENTROPY Cell: Ransomware Incorporated
+# Mission Type: Crisis Response / Recovery
+# Difficulty: Beginner (Mission 2)
+#
+# NEW MECHANICS:
+# - Guard patrol timing (60-second predictable loop)
+# - PIN safe cracking (4-digit puzzle)
+# - Moral dilemma interface (ransom decision)
+#
+# ROOM LAYOUT:
+#   Reception → IT Department (locked-easy) → Server Room (locked-medium-hard)
+#   Reception → Dr. Kim's Office → Conference Room
+#   Hallways connect: North (Reception ↔ Server Room) / South (IT ↔ Emergency Storage)
+#   Emergency Equipment Storage (PIN safe with offline backup keys)
+# ============================================================================
+
+# ERB Helper Methods
+require 'base64'
+
+def base64_encode(text)
+  Base64.strict_encode64(text)
+end
+
+# Narrative Content Variables
+ransomware_note = "YOUR PATIENT RECORDS ARE ENCRYPTED. 47 PATIENTS ON LIFE SUPPORT. 12 HOURS OF BACKUP POWER. PAY 2.5 BTC OR WATCH THEM DIE. - RANSOMWARE INCORPORATED"
+
+marcus_warning_email = "From: Marcus Webb\nTo: Dr. Sarah Kim\nDate: May 17, 2024\nSubject: URGENT - ProFTPD Vulnerability CVE-2010-4652\n\nDr. Kim,\n\nOur backup server is running ProFTPD 1.3.5, which has a critical backdoor vulnerability (CVE-2010-4652). Attackers can gain remote code execution.\n\nI recommend immediate patching and $85,000 budget for server security upgrade.\n\nPlease escalate to board.\n\n-Marcus"
+%>
+{
+  "scenario_brief": "Infiltrate St. Catherine's Hospital to recover ransomware decryption keys before 47 patients on life support die. ENTROPY's Ransomware Incorporated has calculated patient death probabilities—recover keys before backup power fails.",
+
+  "objectives": [
+    {
+      "aimId": "infiltrate_hospital",
+      "title": "Infiltrate Hospital",
+      "description": "Enter St. Catherine's Regional Medical Center and meet key staff",
+      "status": "active",
+      "order": 0,
+      "tasks": [
+        {
+          "taskId": "arrive_at_hospital",
+          "title": "Arrive at hospital reception",
+          "type": "enter_room",
+          "targetRoom": "reception_lobby",
+          "status": "active"
+        },
+        {
+          "taskId": "meet_dr_kim",
+          "title": "Meet Dr. Sarah Kim (Hospital CTO)",
+          "type": "npc_conversation",
+          "targetNPC": "dr_sarah_kim",
+          "status": "locked"
+        },
+        {
+          "taskId": "talk_to_marcus",
+          "title": "Interview IT administrator Marcus Webb",
+          "type": "npc_conversation",
+          "targetNPC": "marcus_webb",
+          "status": "locked"
+        }
+      ]
+    },
+    {
+      "aimId": "access_it_systems",
+      "title": "Access IT Systems",
+      "description": "Gain access to hospital's IT infrastructure and server room",
+      "status": "locked",
+      "order": 1,
+      "tasks": [
+        {
+          "taskId": "obtain_password_hints",
+          "title": "Gather SSH password hints from Marcus",
+          "type": "collect_items",
+          "targetItems": ["password_sticky_note"],
+          "status": "locked"
+        },
+        {
+          "taskId": "decode_ransomware_note",
+          "title": "Decode Base64 ransomware message",
+          "type": "custom",
+          "status": "locked"
+        },
+        {
+          "taskId": "access_server_room",
+          "title": "Access the server room",
+          "type": "enter_room",
+          "targetRoom": "server_room",
+          "status": "locked"
+        }
+      ]
+    },
+    {
+      "aimId": "exploit_entropy_backdoor",
+      "title": "Exploit ENTROPY's Backdoor",
+      "description": "Use ProFTPD vulnerability to access encrypted backups",
+      "status": "locked",
+      "order": 2,
+      "tasks": [
+        {
+          "taskId": "submit_ssh_flag",
+          "title": "Submit SSH access flag",
+          "type": "submit_flags",
+          "status": "locked"
+        },
+        {
+          "taskId": "submit_proftpd_flag",
+          "title": "Submit ProFTPD exploitation flag",
+          "type": "submit_flags",
+          "status": "locked"
+        },
+        {
+          "taskId": "submit_database_flag",
+          "title": "Submit database backup flag",
+          "type": "submit_flags",
+          "status": "locked"
+        },
+        {
+          "taskId": "submit_ghost_log_flag",
+          "title": "Submit Ghost's operational log flag",
+          "type": "submit_flags",
+          "status": "locked"
+        }
+      ]
+    },
+    {
+      "aimId": "recover_offline_keys",
+      "title": "Recover Offline Backup Keys",
+      "description": "Find and crack PIN safe for offline backup encryption keys",
+      "status": "locked",
+      "order": 3,
+      "tasks": [
+        {
+          "taskId": "locate_safe",
+          "title": "Locate PIN safe in Emergency Equipment Storage",
+          "type": "enter_room",
+          "targetRoom": "emergency_equipment_storage",
+          "status": "locked"
+        },
+        {
+          "taskId": "gather_pin_clues",
+          "title": "Find clues for 4-digit safe PIN",
+          "type": "custom",
+          "status": "locked"
+        },
+        {
+          "taskId": "crack_safe_pin",
+          "title": "Crack PIN safe (code: 1987)",
+          "type": "unlock_object",
+          "targetObject": "emergency_storage_safe",
+          "status": "locked"
+        }
+      ]
+    },
+    {
+      "aimId": "make_critical_decisions",
+      "title": "Make Critical Decisions",
+      "description": "Decide how to recover hospital systems and handle the crisis",
+      "status": "locked",
+      "order": 4,
+      "tasks": [
+        {
+          "taskId": "make_ransom_decision",
+          "title": "Decide on ransom payment",
+          "type": "custom",
+          "status": "locked"
+        },
+        {
+          "taskId": "decide_hospital_exposure",
+          "title": "Decide whether to expose hospital negligence",
+          "type": "custom",
+          "status": "locked"
+        }
+      ]
+    }
+  ],
+
+  "startRoom": "reception_lobby",
+
+  "startItemsInInventory": [
+    {
+      "type": "phone",
+      "name": "Your Phone",
+      "takeable": true,
+      "phoneId": "player_phone",
+      "npcIds": ["agent_0x99", "ghost"],
+      "observations": "Your secure phone with encrypted connection to SAFETYNET"
+    },
+    {
+      "type": "lockpick",
+      "name": "Lock Pick Kit",
+      "takeable": true,
+      "observations": "Professional lock picking kit for bypassing physical locks"
+    }
+  ],
+
+  "player": {
+    "id": "player",
+    "displayName": "Agent 0x00",
+    "spriteSheet": "hacker",
+    "spriteTalk": "assets/characters/hacker-talk.png",
+    "spriteConfig": {
+      "idleFrameStart": 20,
+      "idleFrameEnd": 23
+    }
+  },
+
+  "rooms": {
+    "reception_lobby": {
+      "type": "room_reception",
+      "dimensions": {
+        "width": 15,
+        "height": 12
+      },
+      "connections": {
+        "north": "hallway_north",
+        "east": "it_department",
+        "west": "dr_kim_office"
+      },
+      "npcs": [
+        {
+          "id": "opening_briefing_cutscene",
+          "displayName": "Agent 0x99",
+          "npcType": "person",
+          "position": { "x": 500, "y": 500 },
+          "spriteSheet": "hacker",
+          "spriteConfig": {
+            "idleFrameStart": 20,
+            "idleFrameEnd": 23
+          },
+          "storyPath": "scenarios/m02_ransomed_trust/ink/m02_opening_briefing.json",
+          "currentKnot": "start",
+          "timedConversation": {
+            "delay": 0,
+            "targetKnot": "start",
+            "background": "assets/backgrounds/hq1.png"
+          }
+        },
+        {
+          "id": "receptionist",
+          "displayName": "Hospital Receptionist",
+          "npcType": "person",
+          "position": { "x": 6, "y": 5 },
+          "spriteSheet": "hacker-red",
+          "spriteTalk": "assets/characters/hacker-red-talk.png",
+          "spriteConfig": {
+            "idleFrameStart": 20,
+            "idleFrameEnd": 23
+          },
+          "interactionType": "simple_dialogue",
+          "dialogue": "Welcome to St. Catherine's. Dr. Kim is expecting you in the Administrative Wing."
+        },
+        {
+          "id": "agent_0x99",
+          "displayName": "Agent 0x99 'Haxolottle'",
+          "npcType": "phone",
+          "storyPath": "scenarios/m02_ransomed_trust/ink/m02_phone_agent0x99.json",
+          "avatar": "assets/npc/avatars/npc_helper.png",
+          "phoneId": "player_phone",
+          "currentKnot": "first_call",
+          "timedMessages": [
+            {
+              "delay": 3000,
+              "message": "Hospital ransomware. 47 patients on life support. We have 12 hours. Message me if you need guidance.",
+              "type": "text"
+            }
+          ],
+          "eventMappings": [
+            {
+              "eventPattern": "room_entered:server_room",
+              "targetKnot": "event_server_room_entered",
+              "onceOnly": true
+            },
+            {
+              "eventPattern": "item_picked_up:offline_backup_encryption_keys",
+              "targetKnot": "event_offline_keys_found",
+              "onceOnly": true
+            },
+            {
+              "eventPattern": "global_variable_changed:ransom_decision_made",
+              "targetKnot": "event_ransom_decision_made",
+              "condition": "value === true",
+              "onceOnly": true
+            }
+          ]
+        },
+        {
+          "id": "ghost",
+          "displayName": "Ghost (Ransomware Incorporated)",
+          "npcType": "phone",
+          "storyPath": "scenarios/m02_ransomed_trust/ink/m02_phone_ghost.json",
+          "avatar": "assets/npc/avatars/npc_hacker.png",
+          "phoneId": "player_phone",
+          "currentKnot": "initial_contact",
+          "eventMappings": [
+            {
+              "eventPattern": "task_completed:submit_database_flag",
+              "targetKnot": "initial_contact",
+              "onceOnly": true
+            }
+          ]
+        },
+        {
+          "id": "closing_debrief_trigger",
+          "displayName": "Agent 0x99",
+          "npcType": "phone",
+          "storyPath": "scenarios/m02_ransomed_trust/ink/m02_closing_debrief.json",
+          "avatar": "assets/npc/avatars/npc_helper.png",
+          "phoneId": "player_phone",
+          "currentKnot": "start",
+          "eventMappings": [
+            {
+              "eventPattern": "global_variable_changed:mission_complete",
+              "targetKnot": "start",
+              "condition": "value === true",
+              "onceOnly": true
+            }
+          ]
+        }
+      ],
+      "objects": [
+        {
+          "type": "notes",
+          "name": "Reception Desk Visitor Log",
+          "takeable": false,
+          "readable": true,
+          "text": "ST. CATHERINE'S HOSPITAL - VISITOR LOG\n\nToday's Appointments:\n- 9:00 AM: External Security Consultant (Emergency Response)\n- Status: CRITICAL SYSTEMS OFFLINE\n- Authorization: Dr. Sarah Kim, CTO",
+          "observations": "Visitor log confirms your appointment and crisis status"
+        },
+        {
+          "type": "notes",
+          "name": "Hospital Founding Plaque",
+          "takeable": false,
+          "readable": true,
+          "text": "ST. CATHERINE'S REGIONAL MEDICAL CENTER\n\nFounded 1987\n\nServing the community for over 35 years with compassion and excellence",
+          "observations": "Bronze plaque showing hospital founding year: 1987"
+        }
+      ]
+    },
+
+    "it_department": {
+      "type": "room_office",
+      "dimensions": {
+        "width": 12,
+        "height": 10
+      },
+      "locked": true,
+      "lockType": "key",
+      "requires": "it_door_lock",
+      "keyPins": [35, 45, 25, 55],
+      "difficulty": "easy",
+      "connections": {
+        "west": "reception_lobby",
+        "east": "server_room",
+        "south": "hallway_south"
+      },
+      "npcs": [
+        {
+          "id": "marcus_webb",
+          "displayName": "Marcus Webb",
+          "npcType": "person",
+          "position": { "x": 4, "y": 5 },
+          "spriteSheet": "hacker",
+          "spriteConfig": {
+            "idleFrameStart": 20,
+            "idleFrameEnd": 23
+          },
+          "storyPath": "scenarios/m02_ransomed_trust/ink/m02_npc_marcus_webb.json",
+          "currentKnot": "start",
+          "itemsHeld": [
+            {
+              "type": "keycard",
+              "name": "Server Room Keycard",
+              "takeable": true,
+              "key_id": "server_room_keycard",
+              "observations": "Marcus's keycard for server room access"
+            }
+          ]
+        }
+      ],
+      "objects": [
+        {
+          "type": "pc",
+          "name": "Infected Terminal",
+          "takeable": false,
+          "readable": true,
+          "text": "<%= base64_encode(ransomware_note) %>",
+          "observations": "Terminal with ransomware splash screen - Base64 encoded message"
+        },
+        {
+          "type": "notes",
+          "name": "Marcus's Password Sticky Note",
+          "takeable": true,
+          "readable": true,
+          "text": "Common passwords (embarrassing...):\nEmma2018\nHospital1987\nStCatherines\n\n(Need to improve password policy!)",
+          "observations": "Password hints for SSH access - Marcus's shortcuts"
+        },
+        {
+          "type": "notes",
+          "name": "Photo Frame - Emma's Birthday",
+          "takeable": true,
+          "readable": true,
+          "text": "Photo of young girl with birthday cake.\nHandwritten on back: 'Emma - 7th birthday! 05/17/2018'",
+          "observations": "Marcus's daughter Emma - birthday 2018 (red herring for PIN puzzle)"
+        },
+        {
+          "type": "safe",
+          "name": "IT Filing Cabinet",
+          "takeable": false,
+          "locked": true,
+          "lockType": "key",
+          "keyPins": [30, 40, 50, 60],
+          "difficulty": "easy",
+          "observations": "4-drawer filing cabinet with lockpicking mechanism",
+          "contents": [
+            {
+              "type": "notes",
+              "name": "Marcus's Email Archive",
+              "takeable": true,
+              "readable": true,
+              "text": "<%= marcus_warning_email %>",
+              "observations": "Email proving Marcus warned Dr. Kim 6 months ago about vulnerability"
+            },
+            {
+              "type": "notes",
+              "name": "CryptoSecure Recovery Services Document",
+              "takeable": true,
+              "readable": true,
+              "text": "CRYPTOSECURE RECOVERY SERVICES\nCryptocurrency-Based Data Recovery Specialists\n\nCLIENT TESTIMONIAL LOG - OPERATION TRIAGE\nQ1-Q2 2024 OPERATIONS\n\n[Previous hospital attacks documented]\n[LORE Fragment - Ransomware Inc. front company]\n\n[Full content would be the complete LORE fragment from planning docs]",
+              "observations": "LORE Fragment: Ransomware Incorporated's legitimate front company",
+              "onPickup": { "setVariable": { "lore_cryptosecure_found": true } }
+            }
+          ]
+        },
+        {
+          "type": "notes",
+          "name": "Network Diagram Whiteboard",
+          "takeable": false,
+          "readable": true,
+          "text": "HOSPITAL NETWORK DIAGRAM\n\nBackup Server:\n- ProFTPD 1.3.5\n- Port 21 (FTP)\n- IP: 192.168.100.50\n- Status: VULNERABLE (CVE-2010-4652)\n\nMarcus's note: 'WARNED THEM 6 MONTHS AGO!!!'",
+          "observations": "Network diagram showing vulnerable ProFTPD server"
+        }
+      ]
+    },
+
+    "server_room": {
+      "type": "room_servers",
+      "dimensions": {
+        "width": 10,
+        "height": 8
+      },
+      "locked": true,
+      "lockType": "rfid",
+      "requires": "server_room_keycard",
+      "difficulty": "medium",
+      "connections": {
+        "west": "it_department",
+        "north": "hallway_north"
+      },
+      "npcs": [],
+      "objects": [
+        {
+          "type": "vm-launcher",
+          "id": "vm_launcher_rooting_for_a_win",
+          "name": "VM Access Terminal",
+          "takeable": false,
+          "observations": "Terminal providing SSH access to hospital backup server for investigation",
+          "hacktivityMode": <%= vm_context && vm_context['hacktivity_mode'] ? 'true' : 'false' %>,
+          "vm": <%= vm_object('secgen_rooting_for_a_win', {"id":1,"title":"Hospital Backup Server","ip":"192.168.100.50","enable_console":true}) %>
+        },
+        {
+          "type": "flag-station",
+          "id": "flag_station_dropsite",
+          "name": "SAFETYNET Drop-Site Terminal",
+          "takeable": false,
+          "observations": "Secure terminal for submitting intercepted intelligence and VM flags",
+          "acceptsVms": ["secgen_rooting_for_a_win"],
+          "flags": <%= flags_for_vm('secgen_rooting_for_a_win', ['flag{ssh_access_granted}', 'flag{proftpd_backdoor_exploited}', 'flag{database_backup_located}', 'flag{ghost_operational_log}']) %>,
+          "flagRewards": [
+            {
+              "type": "emit_event",
+              "event_name": "ssh_flag_submitted",
+              "description": "SSH access flag submitted - server credentials intercepted"
+            },
+            {
+              "type": "emit_event",
+              "event_name": "proftpd_flag_submitted",
+              "description": "ProFTPD exploitation flag submitted - shell access established"
+            },
+            {
+              "type": "emit_event",
+              "event_name": "database_flag_submitted",
+              "description": "Database backup flag submitted - reveals offline key location"
+            },
+            {
+              "type": "emit_event",
+              "event_name": "ghost_log_flag_submitted",
+              "description": "Ghost's operational log submitted - LORE fragment unlocked"
+            }
+          ]
+        },
+        {
+          "type": "pc",
+          "id": "cyberchef_workstation",
+          "name": "CyberChef Workstation",
+          "takeable": false,
+          "storyPath": "scenarios/m02_ransomed_trust/ink/m02_terminal_cyberchef.json",
+          "currentKnot": "start",
+          "observations": "Encoding/decoding workstation with Base64, ROT13, and Hex tools"
+        },
+        {
+          "type": "pc",
+          "id": "ransom_interface_terminal",
+          "name": "Hospital Recovery Interface",
+          "takeable": false,
+          "storyPath": "scenarios/m02_ransomed_trust/ink/m02_terminal_ransom_interface.json",
+          "currentKnot": "start",
+          "observations": "Terminal for making critical ransom payment decision"
+        },
+        {
+          "type": "notes",
+          "name": "Backup Power Indicator",
+          "takeable": false,
+          "readable": true,
+          "text": "EMERGENCY POWER STATUS\n\nBackup Generator: ACTIVE\nTime Remaining: 12 HOURS\n\nCritical Systems on Backup:\n- 47 Life Support Patients\n- Emergency Lighting\n- Core Medical Equipment\n\nWARNING: Systems will fail when backup power depletes",
+          "observations": "LED panel showing time pressure - 12-hour window"
+        }
+      ]
+    },
+
+    "emergency_equipment_storage": {
+      "type": "small_room_1x1gu",
+      "dimensions": {
+        "width": 8,
+        "height": 8
+      },
+      "connections": {
+        "north": "hallway_south"
+      },
+      "npcs": [],
+      "objects": [
+        {
+          "type": "safe",
+          "id": "emergency_storage_safe",
+          "name": "PIN-Locked Safe",
+          "takeable": false,
+          "locked": true,
+          "lockType": "pin",
+          "requires": "1987",
+          "observations": "4-digit electronic safe - requires PIN code (hospital founding year)",
+          "contents": [
+            {
+              "type": "key_data",
+              "name": "Offline Backup Encryption Keys",
+              "takeable": true,
+              "observations": "USB drive with offline backup decryption keys - critical for recovery",
+              "onPickup": { "setVariable": { "offline_keys_recovered": true } }
+            }
+          ]
+        },
+        {
+          "type": "notes",
+          "name": "PIN Cracker Device",
+          "takeable": true,
+          "readable": true,
+          "text": "PIN CRACKER DEVICE\n\nAutomated 4-digit PIN brute force tool\nEstimated time: 2 minutes\n\nUse if clues to safe PIN cannot be found",
+          "observations": "Fallback tool for PIN puzzle if clues missed"
+        },
+        {
+          "type": "notes",
+          "name": "Medical Supply Shelves",
+          "takeable": false,
+          "readable": true,
+          "text": "Emergency medical supplies organized by expiration date.\nBandages, IV equipment, emergency medications.",
+          "observations": "Storage shelves with emergency medical equipment"
+        }
+      ]
+    },
+
+    "dr_kim_office": {
+      "type": "room_office",
+      "dimensions": {
+        "width": 12,
+        "height": 10
+      },
+      "locked": true,
+      "lockType": "key",
+      "requires": "admin_office_lock",
+      "keyPins": [40, 50, 30, 60],
+      "difficulty": "medium",
+      "connections": {
+        "east": "reception_lobby",
+        "south": "conference_room"
+      },
+      "npcs": [
+        {
+          "id": "dr_sarah_kim",
+          "displayName": "Dr. Sarah Kim",
+          "npcType": "person",
+          "position": { "x": 5, "y": 4 },
+          "spriteSheet": "hacker-red",
+          "spriteTalk": "assets/characters/hacker-red-talk.png",
+          "spriteConfig": {
+            "idleFrameStart": 20,
+            "idleFrameEnd": 23
+          },
+          "storyPath": "scenarios/m02_ransomed_trust/ink/m02_npc_sarah_kim.json",
+          "currentKnot": "start"
+        }
+      ],
+      "objects": [
+        {
+          "type": "notes",
+          "name": "Dr. Kim's Desk - PIN Clue",
+          "takeable": true,
+          "readable": true,
+          "text": "Sticky note on Dr. Kim's desk:\n\n'Safe combination: founding year (for emergency access)'",
+          "observations": "PIN safe clue - references hospital founding year"
+        },
+        {
+          "type": "notes",
+          "name": "Budget Report",
+          "takeable": true,
+          "readable": true,
+          "text": "FY2024 BUDGET REPORT\n\nIT Security Upgrade (Marcus Webb request): $85,000 - DEFERRED\nReason: Budget constraints, defer to next fiscal year\n\nMRI Equipment Purchase: $3,200,000 - APPROVED\nBoard vote: 7-2 in favor\n\nDr. Kim's note: 'We chose shiny technology over cybersecurity. I was wrong.'",
+          "observations": "Evidence of institutional negligence - budget cuts created vulnerability"
+        },
+        {
+          "type": "notes",
+          "name": "Patient Status Report",
+          "takeable": true,
+          "readable": true,
+          "text": "CRITICAL PATIENT STATUS REPORT\n\n47 patients on life support:\n- 23 ventilators\n- 12 ECMO (heart-lung support)\n- 12 dialysis\n\nBackup power: 12 hours remaining\nStatistical risk: 0.3% per hour fatality probability\n\nDr. Kim's note: 'These are real people. Families. We can't let them die.'",
+          "observations": "Reinforces stakes - 47 real patients at risk"
+        },
+        {
+          "type": "safe",
+          "name": "Dr. Kim's Safe",
+          "takeable": false,
+          "locked": true,
+          "lockType": "pin",
+          "requires": "1987",
+          "observations": "Executive safe behind framed certificate - same PIN as emergency storage (1987)",
+          "contents": [
+            {
+              "type": "notes",
+              "name": "Zero Day Syndicate Invoice",
+              "takeable": true,
+              "readable": true,
+              "text": "ZERO DAY SYNDICATE - INVOICE #ZDS-2024-0847\n\nCLIENT: Ransomware Incorporated (Ghost)\nPROJECT: Healthcare Sector Exploit Package\nTARGET: St. Catherine's Regional Medical\n\nDELIVERABLES:\n- ProFTPD 1.3.5 Exploit: $25,000\n- Reconnaissance (214 hospitals): $15,000\n- Target Selection Consultation: $10,000\n- Deployment Guide: $5,000\n\nTOTAL: $55,000 (15% ENTROPY discount applied)\n\nARCHITECT APPROVAL: CONFIRMED\n\n[LORE Fragment - ZDS coordination, M3 setup]\n\n[Full content would be complete LORE fragment from planning docs]",
+              "observations": "LORE Fragment: Zero Day Syndicate sold exploit to Ransomware Inc.",
+              "onPickup": { "setVariable": { "lore_zds_invoice_found": true } }
+            }
+          ]
+        }
+      ]
+    },
+
+    "conference_room": {
+      "type": "room_office",
+      "dimensions": {
+        "width": 10,
+        "height": 12
+      },
+      "connections": {
+        "north": "dr_kim_office",
+        "east": "hallway_north"
+      },
+      "npcs": [],
+      "objects": [
+        {
+          "type": "notes",
+          "name": "Conference Table Budget Papers",
+          "takeable": false,
+          "readable": true,
+          "text": "BUDGET MEETING MINUTES - MARCH 2024\n\nIT Security Upgrade Proposal:\nMarcus Webb presented $85,000 server security upgrade.\nBoard decision: DEFER to next fiscal year.\n\nRationale: 'Cybersecurity is important, but patient care technology takes priority. The MRI will save lives today.'",
+          "observations": "Budget meeting notes showing decision-making process"
+        },
+        {
+          "type": "notes",
+          "name": "Conference Whiteboard",
+          "takeable": false,
+          "readable": true,
+          "text": "FY2024 BUDGET ALLOCATION\n\nIT Security: $85K → $50K (CUT 40%)\nMRI Equipment: $3.2M (APPROVED)\n\nBoard priorities: Patient care equipment > Infrastructure security",
+          "observations": "Whiteboard showing budget cuts that enabled ransomware attack"
+        }
+      ]
+    },
+
+    "hallway_north": {
+      "type": "hall_1x2gu",
+      "dimensions": {
+        "width": 20,
+        "height": 4
+      },
+      "connections": {
+        "south": "reception_lobby",
+        "west": "conference_room",
+        "east": "server_room"
+      },
+      "npcs": [],
+      "objects": [
+        {
+          "type": "notes",
+          "name": "Directional Signs",
+          "takeable": false,
+          "readable": true,
+          "text": "← Administration | Server Room → | IT Department ↓",
+          "observations": "Hospital corridor directional signage"
+        }
+      ]
+    },
+
+    "hallway_south": {
+      "type": "hall_1x2gu",
+      "dimensions": {
+        "width": 20,
+        "height": 4
+      },
+      "connections": {
+        "north": "it_department",
+        "south": "emergency_equipment_storage"
+      },
+      "npcs": [],
+      "objects": [
+        {
+          "type": "notes",
+          "name": "Directional Signs",
+          "takeable": false,
+          "readable": true,
+          "text": "IT Department ↑ | Emergency Storage ↓",
+          "observations": "Hospital corridor directional signage"
+        }
+      ]
+    }
+  },
+
+  "globalVariables": {
+    "player_name": "Agent 0x00",
+    "mission_started": false,
+    "agent_0x99_contacted": false,
+
+    "paid_ransom": false,
+    "exposed_hospital": false,
+    "marcus_protected": false,
+    "kim_guilt_revealed": false,
+
+    "marcus_influence": 0,
+    "marcus_defensive": false,
+    "marcus_trusts_player": false,
+    "gave_keycard": false,
+
+    "kim_influence": 0,
+    "player_warned_kim": false,
+
+    "flag_ssh_submitted": false,
+    "flag_proftpd_submitted": false,
+    "flag_database_submitted": false,
+    "flag_ghost_log_submitted": false,
+
+    "ghost_contacted_player": false,
+    "ghost_persuasion_attempted": false,
+
+    "ransom_decision_made": false,
+    "reviewed_consequences": false,
+    "mission_complete": false,
+
+    "offline_keys_recovered": false,
+    "lore_cryptosecure_found": false,
+    "lore_ghosts_manifesto_found": false,
+    "lore_zds_invoice_found": false,
+
+    "pin_attempts": 0,
+    "decoded_ransomware_note": false,
+    "decoded_recovery_instructions": false,
+
+    "guard_detections": 0,
+    "objectives_completed": 0,
+    "lore_collected": 0
+  }
+}
