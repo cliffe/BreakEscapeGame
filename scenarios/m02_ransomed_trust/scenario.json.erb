@@ -426,7 +426,7 @@ marcus_warning_email = "From: Marcus Webb\nTo: Dr. Sarah Kim\nDate: May 17, 2024
               "name": "Marcus's Email Archive",
               "takeable": true,
               "readable": true,
-              "text": "<%= marcus_warning_email %>",
+              "text": <%= marcus_warning_email.to_json %>,
               "observations": "Email proving Marcus warned Dr. Kim 6 months ago about vulnerability"
             },
             {
@@ -558,7 +558,7 @@ marcus_warning_email = "From: Marcus Webb\nTo: Dr. Sarah Kim\nDate: May 17, 2024
           "observations": "4-digit electronic safe - requires PIN code (hospital founding year)",
           "contents": [
             {
-              "type": "key_data",
+              "type": "notes",
               "name": "Offline Backup Encryption Keys",
               "takeable": true,
               "observations": "USB drive with offline backup decryption keys - critical for recovery",
