@@ -706,7 +706,50 @@ marcus_warning_email = "From: Marcus Webb\nTo: Dr. Sarah Kim\nDate: May 17, 2024
         "west": "conference_room",
         "east": "server_room"
       },
-      "npcs": [],
+      "npcs": [
+        {
+          "id": "security_guard_patrol",
+          "displayName": "Hospital Security Guard",
+          "npcType": "person",
+          "position": { "x": 10, "y": 2 },
+          "spriteSheet": "hacker-red",
+          "spriteTalk": "assets/characters/hacker-red-talk.png",
+          "spriteConfig": {
+            "idleFrameStart": 20,
+            "idleFrameEnd": 23
+          },
+          "storyPath": "scenarios/m02_ransomed_trust/ink/m02_npc_security_guard.json",
+          "currentKnot": "start",
+          "behavior": {
+            "patrol": {
+              "enabled": true,
+              "route": [
+                { "x": 3, "y": 2 },
+                { "x": 10, "y": 2 },
+                { "x": 17, "y": 2 },
+                { "x": 10, "y": 2 }
+              ],
+              "speed": 40,
+              "pauseTime": 20
+            }
+          },
+          "los": {
+            "enabled": true,
+            "range": 150,
+            "angle": 120,
+            "visualize": true
+          },
+          "eventMappings": [
+            {
+              "eventPattern": "lockpick_used_in_view",
+              "targetKnot": "on_lockpick_used",
+              "conversationMode": "person-chat",
+              "cooldown": 0
+            }
+          ],
+          "_comment": "Interactive guard with combat options - patrols hallway, can be fought, knocked out, or persuaded"
+        }
+      ],
       "objects": [
         {
           "type": "notes",
@@ -783,6 +826,8 @@ marcus_warning_email = "From: Marcus Webb\nTo: Dr. Sarah Kim\nDate: May 17, 2024
     "decoded_recovery_instructions": false,
 
     "guard_detections": 0,
+    "guard_knocked_out": false,
+    "attacked_guard": false,
     "objectives_completed": 0,
     "lore_collected": 0
   }
