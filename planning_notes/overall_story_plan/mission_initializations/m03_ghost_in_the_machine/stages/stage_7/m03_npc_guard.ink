@@ -18,9 +18,6 @@ VAR topic_shift = false
 VAR topic_building = false
 VAR topic_victoria = false
 
-// External variables
-EXTERNAL player_approach
-
 // ===========================================
 // INITIAL ENCOUNTER
 // ===========================================
