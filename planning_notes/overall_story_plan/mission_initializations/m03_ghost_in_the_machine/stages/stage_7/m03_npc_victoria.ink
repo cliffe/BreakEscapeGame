@@ -14,10 +14,10 @@ VAR topic_zero_day_philosophy = false
 VAR topic_free_market = false
 VAR topic_ethics = false
 VAR recruitment_discussed = false
+VAR player_approach = ""
 
-// External variables (from opening briefing)
-EXTERNAL player_approach
-EXTERNAL handler_trust
+// External variables (from game)
+EXTERNAL player_name()
 
 // ===========================================
 // INITIAL MEETING - Conference Room (Daytime)
@@ -30,7 +30,7 @@ EXTERNAL handler_trust
     #display:victoria-professional
     [Victoria Sterling stands as you enter. Professional attire, confident bearing.]
 
-    Victoria: You must be {player_name}. Welcome to WhiteHat Security.
+    Victoria: You must be {player_name()}. Welcome to WhiteHat Security.
 
     Victoria: I'm Victoria Sterling, CEO. Have a seat.
 
@@ -421,7 +421,7 @@ Victoria: I think that covers the basic philosophy. The training program starts 
 Victoria: Feel free to look around the office if you'd like. Reception area, main hallway. Get a feel for the company culture.
 
 {victoria_trusts_player:
-    Victoria: And {player_name}? I think you'd fit in well here. We need more pragmatists.
+    Victoria: And {player_name()}? I think you'd fit in well here. We need more pragmatists.
 }
 
 Victoria: I have another meeting in a few minutes. But we'll be in touch.
@@ -447,7 +447,7 @@ Victoria: Excuse me, I need to take this.
 
 #display:victoria-shocked
 
-Victoria: {player_name}? What are you doing here at this hour?
+Victoria: {player_name()}? What are you doing here at this hour?
 
 [She sees that you've clearly been investigating]
 
@@ -476,7 +476,7 @@ Victoria: You have no authority here. This is a legitimate business.
 
 * [Show her the exploit catalog]
     You: [$12,500 for the hospital exploit. With a healthcare premium.]
-    -> show_evidence
+    -> moral_confrontation
 
 * [You sold weapons. People died.]
     You: You sold the tools that killed six people. That's not research, that's murder for profit.
