@@ -10,7 +10,8 @@ VAR james_fate = ""           // "protected", "exposed", "ignored"
 VAR player_choice_made = false
 
 // External variables
-EXTERNAL player_approach
+EXTERNAL player_name()
+EXTERNAL player_approach()
 
 // ===========================================
 // EVIDENCE DISCOVERY
@@ -242,9 +243,9 @@ a conspirator.
 If you want to come forward voluntarily, contact SAFETYNET.
 If not, your name won't appear in our reports. That's your choice.
 
-But Victoria goes down for what she did. -Agent {player_name}"
+But Victoria goes down for what she did. -Agent {player_name()}"
 
-{player_approach == "diplomatic":
+{player_approach() == "diplomatic":
     [This aligns with your diplomatic approach - recognize nuance, give people choices]
 }
 
@@ -302,7 +303,7 @@ This will likely lead to James's arrest alongside Victoria.
 He may receive a lighter sentence due to initial deception, but he'll
 face consequences for his role - both the reconnaissance and the coverup.
 
-{player_approach == "aggressive":
+{player_approach() == "aggressive":
     [This aligns with your aggressive approach - all ENTROPY operatives face justice]
 }
 
@@ -358,7 +359,7 @@ implicated when Victoria's full operation is exposed.
 
 Either way, it's his choice. His moral agency. His consequences.
 
-{player_approach == "cautious":
+{player_approach() == "cautious":
     [This aligns with your cautious approach - gather evidence, let the system decide]
 }
 
