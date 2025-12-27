@@ -720,5 +720,221 @@ Small consultant office. Modest desk with dual monitors, OSCP and CEH certificat
 
 ---
 
-**Status:** 🔄 IN PROGRESS (Part 5/6)
-**Next:** Container summary, NPC placement, hybrid architecture integration
+## Container and Lock Summary
+
+### All Containers
+
+| Room | Container Type | Position | Lock Type | Contents | Objectives |
+|------|----------------|----------|-----------|----------|------------|
+| Reception Lobby | Desk Drawer | (3, 2) | None | Building directory, brochure | Flavor |
+| Reception Lobby | Display Case | (1, 1) | None | Certifications (visual only) | Atmosphere |
+| Server Room | Filing Cabinet | (1, 7) | Physical | Client documents, network diagrams | Optional context |
+| Server Room | Wall Safe | (7, 7) | PIN (2010) | LORE Fragment 2 "Exploit Catalog" | `lore_fragment_2` |
+| Executive Office | Filing Cabinet | (1, 5) | Physical | LORE Fragment 1 "Zero Day Origins" | `lore_fragment_1` |
+| Executive Office | Desk Drawer | (4, 3) | Hidden | USB drive (double-encoded message) | `lore_fragment_3` |
+| James's Office | Desk Drawer | (3, 2) | None | Performance review document | `james_innocence_confirmed` |
+
+**Total Containers:** 7 (2 flavor, 5 objectives-related)
+
+### All Locks and Keys
+
+| Lock Location | Lock Type | Unlock Method | Difficulty | Source/Clue | Critical Path |
+|---------------|-----------|---------------|------------|-------------|---------------|
+| Server Room Door | RFID Keycard | Clone Victoria's keycard | Medium | Victoria (proximity-based) | YES |
+| Server Room Safe | PIN (2010) | Enter code | Easy | Reception plaque (founding year) | NO (LORE) |
+| Executive Office Door | Physical | Lockpicking OR trust | Medium | Skill OR social engineering | NO (optional) |
+| Executive Office Filing Cabinet | Physical | Lockpicking | Easy | Skill | NO (LORE) |
+| Server Room Filing Cabinet | Physical | Lockpicking | Easy | Skill | NO (optional) |
+| Victoria's Computer | Password | Find hints OR hack | Medium | Investigation OR bypass | YES (partial) |
+| USB Drive | Hidden | Careful examination | Easy | Search desk thoroughly | NO (LORE) |
+
+**Total Locks:** 7 across 5 different types
+
+---
+
+## NPC Placement Summary
+
+| NPC Name | Room | Mode | Position/Route | Dialogue Trigger | Items Given | Objectives |
+|----------|------|------|----------------|------------------|-------------|------------|
+| **Receptionist** | Reception Lobby | In-Person (daytime) | (3, 2) at desk | Auto (first visit) | None | Cover story, direction |
+| **Victoria Sterling** | Conference Room | In-Person (daytime) | (4, 3) at table | Auto (Scene 3) | None (RFID cloned from her) | `meet_victoria`, `clone_rfid_card` |
+| **Night Security Guard** | Main Hallway + Reception | Patrol (nighttime) | 4-waypoint patrol | If detected | None | Stealth challenge, `perfect_stealth` |
+| **Agent 0x99** | N/A (Phone) | Phone/Event-Triggered | Remote | Event-triggered | None | Handler guidance, M2 revelation |
+
+**NPC Count:** 4 total
+- **In-Person (Daytime):** 2 (Receptionist, Victoria)
+- **Patrol (Nighttime):** 1 (Guard)
+- **Phone/Remote:** 1 (Agent 0x99)
+
+**Guard Patrol Route:**
+- Waypoint 1: Reception Lobby (3, 2) - 15 tick pause
+- Waypoint 2: Main Hallway (2, 1) - 15 tick pause
+- Waypoint 3: Main Hallway (6, 1) - 15 tick pause
+- Waypoint 4: Main Hallway (9, 1) near server room - 20 tick pause
+- Loop time: ~60 seconds
+
+---
+
+## Hybrid Architecture Integration
+
+### VM Access Points
+
+| Room | Terminal ID | Position | Access Requirements | VM Challenge | Network |
+|------|-------------|----------|---------------------|--------------|---------|
+| Server Room | VM Access Terminal | (2, 4) | Server room access (RFID) | Port scanning, service enum, exploitation | 192.168.100.0/24 |
+
+**VM Challenges:**
+1. Network scanning (nmap) → `flag{network_scan_complete}`
+2. FTP banner grabbing (netcat) → `flag{ftp_intel_gathered}`
+3. HTTP analysis (curl + Base64) → `flag{pricing_intel_decoded}`
+4. distcc exploitation (Metasploit) → `flag{distcc_legacy_compromised}`
+
+### Drop-Site Terminals
+
+| Room | Terminal ID | Position | Flags Submitted | Unlocks |
+|------|-------------|----------|-----------------|---------|
+| Server Room | Drop-Site Terminal | (4, 4) center | All 4 VM flags | Narrative intel, Agent 0x99 events, operational logs |
+
+**Flag Submission Flow:**
+- Player completes VM challenge → Obtains flag
+- Player submits flag at drop-site terminal
+- Ink tag triggered: `#complete_task:task_id`
+- Narrative intelligence unlocked (documents, Agent 0x99 messages)
+- Special: `distcc_exploit` flag triggers M2 revelation event
+
+### CyberChef Workstations
+
+| Room | Terminal ID | Position | Purpose | Decoding Types |
+|------|-------------|----------|---------|----------------|
+| Server Room | CyberChef Workstation | (6, 4) | Decode messages | ROT13, Hex, Base64, Nested |
+
+**Decoding Tasks:**
+- Whiteboard ROT13 → "MEET WITH THE ARCHITECT - PRIORITIZE INFRASTRUCTURE EXPLOITS"
+- Client roster Hex → Zero Day client list
+- USB drive Base64+ROT13 → Architect's directive
+
+### Correlation Tasks (VM + In-Game)
+
+| Task | VM Component | In-Game Component | Location | Result |
+|------|--------------|-------------------|----------|--------|
+| `http_analysis` | HTTP fetch (curl) | Base64 decode (CyberChef) | Server Room | Pricing intelligence |
+| `find_operational_logs` | distcc exploit flag | Examine spawned file | Server Room | M2 hospital connection |
+
+---
+
+## Technical Validation
+
+### Room Dimensions Compliance
+
+| Room | Dimensions (GU) | Usable Space (GU) | Compliant | Notes |
+|------|-----------------|-------------------|-----------|-------|
+| Reception Lobby | 8 × 6 | 6 × 4 | ✅ | Within 4×4 to 15×15 range |
+| Conference Room | 10 × 8 | 8 × 6 | ✅ | Within range |
+| Main Hallway | 12 × 4 | 10 × 2 | ✅ | Long corridor design |
+| Server Room | 10 × 10 | 8 × 8 | ✅ | Square layout |
+| Executive Wing Hallway | 8 × 4 | 6 × 2 | ✅ | Short corridor |
+| Executive Office | 10 × 8 | 8 × 6 | ✅ | Within range |
+| James's Office | 8 × 6 | 6 × 4 | ✅ | Within range |
+
+**All rooms compliant:** ✅ 7/7
+
+### Item Placement Compliance
+
+- ✅ All containers placed in usable space (not padding)
+- ✅ All NPCs placed in usable space
+- ✅ All interactive objects in usable space
+- ✅ Door connections at room edges (padding zone)
+- ✅ No items in 1 GU padding zone
+
+### Room Connection Validation
+
+- ✅ All connections have ≥ 1 GU overlap
+- ✅ Door positions specified for all connections
+- ✅ Locked doors have unlock conditions
+- ✅ No circular dependencies (can't get keycard without keycard)
+
+---
+
+## Design Notes
+
+### Pacing
+
+**Act 1 (Daytime - 15-25 min):**
+- Limited exploration: Reception, Hallway, Conference Room
+- Focus: Social interaction, RFID cloning, atmosphere establishment
+- Pacing: Calm, professional, building tension
+
+**Act 2 (Nighttime - 30-40 min):**
+- Full exploration unlocked: Server room + optional areas
+- Focus: VM challenges, evidence gathering, stealth
+- Pacing: Tense infiltration, steady investigation rhythm, puzzle-solving
+- Hub-and-spoke: Server room as return point for decoding
+
+**Act 3 (Climax - 10-15 min):**
+- Evidence synthesis, moral choices, confrontation
+- Focus: Narrative payoff, player agency
+- Pacing: Escalating tension, resolution
+
+### Difficulty Curve
+
+**Easy Start:**
+- Reception exploration (no challenges)
+- Victoria meeting (social interaction)
+- Founding year clue (plainly visible)
+
+**Medium Progression:**
+- RFID cloning (new mechanic, 10-second window)
+- Guard stealth (pattern recognition)
+- VM port scanning (guided tutorial)
+
+**Hard Challenges:**
+- distcc exploitation (advanced VM challenge)
+- Password finding (investigation required)
+- Hex/Base64 decoding (multi-step processes)
+
+**Expert Optional:**
+- Double-encoded USB drive (Base64 → ROT13)
+- Perfect stealth (complete guard avoidance)
+- All LORE collection (requires thorough exploration)
+
+### Atmosphere
+
+**Daytime Corporate Facade:**
+- Professional, clean, well-lit
+- NPCs present (receptionist, Victoria)
+- Legitimate business appearance
+- Calm music, normal office sounds
+
+**Nighttime Infiltration:**
+- Dark, emergency lighting, shadows
+- Empty spaces, single guard patrol
+- HVAC hum amplified, building settling sounds
+- Tension music, stealth audio cues
+- Same locations feel completely different
+
+### Player Guidance
+
+**Clear Objectives:**
+- Act 1: Meet Victoria (direct quest marker)
+- Act 2: Access server room (RFID door visual cue)
+- VM challenges: Drop-site terminal provides guidance
+
+**Environmental Cues:**
+- RFID door: Visual indicator (locked, requires keycard)
+- Locked doors: Physical lock icon
+- Interactive objects: Highlight/examine prompts
+- Guard patrol: Audio cues (footsteps)
+
+**Non-Linear Freedom:**
+- Server room accessible early (if RFID cloned)
+- Executive office optional (lockpicking path)
+- James's office entirely optional
+- Multiple solution paths (social engineering vs. stealth)
+
+---
+
+**Status:** ✅ COMPLETE
+**Total Documentation:** ~730 lines
+**All Sections Complete:** Room designs, map, progressive unlocking, lock variety, summaries, validation
+
+**Ready for:** Stage 6 (LORE Fragments), Stage 7 (Ink Scripting), Stage 9 (Scenario Assembly)
