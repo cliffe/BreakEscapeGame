@@ -423,5 +423,111 @@ Victoria Sterling's private office. Expensive desk, leather chair, floor-to-ceil
 
 ---
 
-**Status:** 🔄 IN PROGRESS (Part 3/4 - 6 rooms complete)
-**Next:** James's office (final room), then summary sections
+### Room 7: James Park's Office (Optional Investigation)
+
+**ID:** `james_office`
+**Dimensions:** 8 × 6 GU (12m × 9m)
+**Usable Space:** 6 × 4 GU
+**Type:** Consultant Office
+**Act:** Act 2 (Optional - moral complexity discovery)
+
+**Description:**
+Small consultant office. Modest desk with dual monitors, OSCP and CEH certifications framed on wall, family photos prominent. Neat, organized, genuinely professional. Evidence of ethical hacking work: penetration testing reports for hospitals, banks, legitimate clients. **This room establishes James's innocence.**
+
+**Connections:**
+- **North:** `executive_wing_hallway` (unlocked - James is just a consultant)
+
+**Containers:**
+1. **Desk Drawer**
+   - **Position:** (3, 2)
+   - **Lock:** None (unlocked - James has nothing to hide)
+   - **Contents:** Performance review document (exceptional ethical standards)
+   - **Narrative Purpose:** Establishes innocence
+   - **Objectives:** `james_choice_made` trigger - Discovery unlocks moral choice
+
+**Interactive Objects:**
+
+1. **Family Photo on Desk**
+   - **Position:** (3, 2) prominently displayed
+   - **Interaction:** Examine
+   - **Content:** James with wife Emily and daughter Sophie (age 4)
+   - **Description:** Sophie holding sign "My Daddy is a Good Hacker!"
+   - **Narrative Purpose:** Emotional impact - humanizes potential collateral damage
+   - **Objectives:** Part of james_innocence_confirmed discovery
+
+2. **Computer (James's Workstation)**
+   - **Position:** (3, 3)
+   - **Interaction:** Optional - examine emails
+   - **Contents:** Email to wife Emily about Sophie's school presentation
+   - **Narrative Purpose:** Further establishes innocence and family connection
+   - **Objectives:** Optional depth for moral choice
+
+3. **Certification Wall**
+   - **Position:** (1, 3) west wall
+   - **Interaction:** Examine
+   - **Content:** OSCP (Offensive Security Certified Professional), CEH (Certified Ethical Hacker)
+   - **Narrative Purpose:** Proves James's ethical hacking background
+   - **Objectives:** Reinforces innocence
+
+**NPCs:** None (James not present during nighttime - he's home with family)
+
+**Objectives Completed Here:**
+- **Optional Moral Choice:**
+  - Discovery of innocence evidence triggers `james_choice_made` opportunity
+  - Player can choose: warn James, plant evidence, or ignore
+
+**LORE Fragments:** None
+
+**Technical Notes:**
+- Room is OPTIONAL - player doesn't need to visit for main objectives
+- Discovering innocence evidence sets `james_innocence_confirmed = true`
+- This unlocks moral choice dialogue in later scene
+- All containers unlocked (James has nothing to hide)
+- Evidence of innocence: performance review, family photo, certifications, email
+
+---
+
+## Overall Map Layout
+
+```
+                    ┌─────────────────┐
+                    │  Server Room    │
+                    │    (10×10)      │
+                    │   [RFID LOCK]   │
+                    └────────┬────────┘
+                             │
+┌──────────────┐    ┌────────┴─────────┐    ┌──────────────────┐
+│ Conference   │────│  Main Hallway    │────│ Executive Wing   │
+│   Room       │    │     (12×4)       │    │    Hallway       │
+│  (10×8)      │    │  [Guard Patrol]  │    │     (8×4)        │
+└──────────────┘    └────────┬─────────┘    └────┬─────┬───────┘
+                             │                   │     │
+                    ┌────────┴────────┐          │     │
+                    │  Reception      │     ┌────┴─┐   │
+                    │   Lobby         │     │James'│   │
+                    │    (8×6)        │     │Office│   │
+                    │  [START/ENTRY]  │     │(8×6) │   │
+                    └─────────────────┘     └──────┘   │
+                                                        │
+                                                  ┌─────┴──────┐
+                                                  │ Executive  │
+                                                  │   Office   │
+                                                  │   (10×8)   │
+                                                  │  [LOCKED]  │
+                                                  └────────────┘
+```
+
+**Key:**
+- [RFID LOCK] - Requires cloned Victoria keycard
+- [LOCKED] - Requires lockpicking OR high victoria_trust
+- [Guard Patrol] - Security guard patrols this area (nighttime)
+- [START/ENTRY] - Player enters here (both daytime and nighttime)
+
+**Room Count:** 7 rooms total
+**Critical Path:** Reception → Hallway → Conference Room (daytime) → Server Room (nighttime) → Evidence gathering
+**Optional Path:** Executive Office, James's Office
+
+---
+
+**Status:** 🔄 IN PROGRESS (Part 4/5 - All 7 rooms complete)
+**Next:** Progressive unlocking flow, objectives mapping, lock variety analysis
