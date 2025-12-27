@@ -1,6 +1,7 @@
 <%
 # ERB Helper Methods for Mission 3: Ghost in the Machine
 require 'base64'
+require 'json'
 
 # Encoding helper functions
 def rot13(text)
@@ -13,6 +14,10 @@ end
 
 def hex_encode(text)
   text.unpack('H*').first
+end
+
+def json_escape(text)
+  text.to_json[1..-2]  # Remove surrounding quotes from .to_json output
 end
 
 # Narrative content variables
@@ -410,7 +415,7 @@ operational_log_content = "TRANSACTION LOG - Q3 2024\n\n[2024-09-15 14:32:11] Pr
               "id": "lore_fragment_2_doc",
               "name": "Q3 2024 Exploit Catalog",
               "type": "lore_document",
-              "content": "<%= lore_fragment_2 %>",
+              "content": "<%= json_escape(lore_fragment_2) %>",
               "completes_task": "lore_fragment_2"
             }
           ]
@@ -488,7 +493,7 @@ operational_log_content = "TRANSACTION LOG - Q3 2024\n\n[2024-09-15 14:32:11] Pr
             "name": "Operational Logs",
             "type": "document",
             "position": {"x": 4, "y": 4},
-            "content": "<%= operational_log_content %>",
+            "content": "<%= json_escape(operational_log_content) %>",
             "completes_task": "find_operational_logs"
           }
         },
@@ -549,7 +554,7 @@ operational_log_content = "TRANSACTION LOG - Q3 2024\n\n[2024-09-15 14:32:11] Pr
               "id": "lore_fragment_1_doc",
               "name": "Zero Day: A Brief History",
               "type": "lore_document",
-              "content": "<%= lore_fragment_1 %>",
+              "content": "<%= json_escape(lore_fragment_1) %>",
               "completes_task": "lore_fragment_1"
             }
           ]
