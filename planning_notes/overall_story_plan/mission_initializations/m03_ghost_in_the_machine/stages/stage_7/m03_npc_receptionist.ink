@@ -12,6 +12,9 @@ VAR topic_company_history = false
 VAR topic_james = false
 VAR pin_hint_given = false
 
+// External variables (from game)
+EXTERNAL player_name()
+
 // ===========================================
 // INITIAL GREETING
 // ===========================================
@@ -22,7 +25,7 @@ VAR pin_hint_given = false
 {not badge_received:
     #display:receptionist-professional
 
-    Receptionist: Good afternoon! You must be {player_name}.
+    Receptionist: Good afternoon! You must be {player_name()}.
 
     Receptionist: Ms. Sterling mentioned you'd be coming in for a consultation.
 
