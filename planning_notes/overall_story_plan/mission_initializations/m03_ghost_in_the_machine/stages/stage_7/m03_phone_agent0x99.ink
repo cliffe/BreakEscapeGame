@@ -15,10 +15,10 @@ VAR rooms_discovered = 0
 VAR objectives_mentioned = 0
 
 // External variables
-EXTERNAL player_name
-EXTERNAL player_approach
-EXTERNAL objectives_completed
-EXTERNAL stealth_rating
+EXTERNAL player_name()
+EXTERNAL player_approach()
+EXTERNAL objectives_completed()
+EXTERNAL stealth_rating()
 
 // ===========================================
 // MAIN PHONE INTERFACE
@@ -29,7 +29,7 @@ EXTERNAL stealth_rating
 
 [Secure phone connection established]
 
-Agent 0x99: {player_name}, what do you need?
+Agent 0x99: {player_name()}, what do you need?
 
 -> hub
 
@@ -176,15 +176,15 @@ Agent 0x99: Each flag you capture represents intercepted ENTROPY intelligence. S
 === hint_general ===
 #speaker:agent_0x99
 
-{player_approach == "cautious":
+{player_approach() == "cautious":
     Agent 0x99: Your methodical approach is smart. Document everything, connect the dots.
 }
 
-{player_approach == "aggressive":
+{player_approach() == "aggressive":
     Agent 0x99: Speed is good, but don't miss critical evidence. The hospital connection proof is vital.
 }
 
-{player_approach == "diplomatic":
+{player_approach() == "diplomatic":
     Agent 0x99: Stay flexible. Read situations. Trust your judgment.
 }
 
@@ -205,28 +205,28 @@ Agent 0x99: All three together make the case.
 
 Agent 0x99: Give me a status update.
 
-{objectives_completed == 0:
+{objectives_completed() == 0:
     Agent 0x99: No objectives complete yet. Have you met with Victoria?
     Agent 0x99: Priority one: clone her keycard. Everything else depends on server room access.
 }
 
-{objectives_completed == 1:
+{objectives_completed() == 1:
     Agent 0x99: One objective down. Good start. Keep moving.
 }
 
-{objectives_completed >= 2 and objectives_completed < 4:
-    Agent 0x99: {objectives_completed} objectives complete. You're making progress.
+{objectives_completed() >= 2 and objectives_completed() < 4:
+    Agent 0x99: {objectives_completed()} objectives complete. You're making progress.
 }
 
-{objectives_completed >= 4:
-    Agent 0x99: Excellent work. {objectives_completed} objectives complete. You're building a solid case.
+{objectives_completed() >= 4:
+    Agent 0x99: Excellent work. {objectives_completed()} objectives complete. You're building a solid case.
 }
 
-{stealth_rating > 80:
+{stealth_rating() > 80:
     Agent 0x99: And I see you're staying ghost. Perfect operational security.
 }
 
-{stealth_rating < 50:
+{stealth_rating() < 50:
     Agent 0x99: You're making some noise. Guard is getting suspicious. Tighten up your stealth.
 }
 
@@ -336,7 +336,7 @@ Agent 0x99: If things go sideways, abort and exfil. We can try again.
 
 Agent 0x99: Clean work on that lock. Moving like a pro.
 
-{stealth_rating > 70:
+{stealth_rating() > 70:
     Agent 0x99: And you're staying quiet. Textbook infiltration.
 }
 
@@ -349,7 +349,7 @@ Agent 0x99: Clean work on that lock. Moving like a pro.
 
 [Agent 0x99's avatar appears - serious expression]
 
-Agent 0x99: {player_name}, I just saw the distcc operational logs you submitted.
+Agent 0x99: {player_name()}, I just saw the distcc operational logs you submitted.
 
 Agent 0x99: This is... this is the smoking gun.
 
@@ -383,7 +383,7 @@ Agent 0x99: Four in critical care when patient monitoring failed. Two during eme
 
 Agent 0x99: Keep gathering evidence. Physical documents, LORE fragments, anything that builds the case.
 
-Agent 0x99: And {player_name}? The Architect's directive mentioned Phase 2.
+Agent 0x99: And {player_name()}? The Architect's directive mentioned Phase 2.
 
 Agent 0x99: 50,000 patient treatment delays. 1.2 million without power in winter.
 
@@ -402,7 +402,7 @@ Agent 0x99: If St. Catherine's was Phase 1... we need to stop Phase 2 before it 
 
 Agent 0x99: Finish the mission. Document everything. We'll debrief when you're out.
 
-Agent 0x99: And {player_name}? Be careful. Victoria might seem reasonable, but she authorized that hospital attack.
+Agent 0x99: And {player_name()}? Be careful. Victoria might seem reasonable, but she authorized that hospital attack.
 
 Agent 0x99: Don't forget what she's capable of.
 
