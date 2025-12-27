@@ -411,5 +411,176 @@ ACT 3: CONFRONTATION & CHOICE
 
 ---
 
-**Status:** 🔄 IN PROGRESS (Part 2/3 complete)
-**Next Section:** Objective-to-World Mapping + JSON Structure
+## Objective-to-World Mapping
+
+This section maps each task to specific rooms, NPCs, interactables, and Ink scripts for implementation.
+
+### Aim 1.1: Establish Undercover Access
+
+**Task: meet_victoria** (`meet_victoria`)
+- **Room:** `conference_room_01`
+- **NPC:** Victoria Sterling (`npc_victoria`)
+- **Interaction:** Dialogue conversation (auto-starts when entering room)
+- **Ink Script:** `victoria_meeting.ink`
+- **Completion Trigger:** Automatic when conversation starts
+- **Ink Tag:** `#complete_task:meet_victoria`
+- **Unlocks:** `clone_rfid_card` task
+
+**Task: clone_rfid_card** (`clone_rfid_card`)
+- **Room:** `conference_room_01` (same location as meeting)
+- **NPC:** Victoria Sterling (proximity target)
+- **Interaction:** RFID cloner device (inventory item, proximity-based minigame)
+- **Mechanism:** Player must stay within 2 GU of Victoria for 10 seconds
+- **Completion Trigger:** Automatic when clone progress reaches 100%
+- **Ink Script:** `victoria_meeting.ink` → Post-clone dialogue
+- **Ink Tag:** `#complete_task:clone_rfid_card` + `#unlock_aim:network_recon` + `#unlock_aim:gather_evidence`
+- **Unlocks:** Nighttime server room access, Aims 1.2 and 1.3
+
+---
+
+### Aim 1.2: Network Reconnaissance
+
+**Task: scan_network** (`scan_network`)
+- **Room:** `server_room`
+- **Interactable:** VM Terminal (`computer_vm_terminal`)
+- **Interaction:** Terminal minigame (command input: nmap)
+- **Completion Trigger:** Submit flag `flag{network_scan_complete}` at drop-site terminal
+- **Ink Script:** `drop_site_terminal.ink` handles flag submission
+- **Ink Tag:** `#complete_task:scan_network` + `#unlock_task:ftp_banner` + `#unlock_task:http_analysis` + `#unlock_task:distcc_exploit`
+- **Unlocks:** All service enumeration tasks
+
+**Task: ftp_banner** (`ftp_banner`)
+- **Room:** `server_room`
+- **Interactable:** VM Terminal (`computer_vm_terminal`)
+- **Interaction:** Terminal minigame (command: `nc 192.168.100.50 21`)
+- **Completion Trigger:** Submit flag `flag{ftp_intel_gathered}` at drop-site terminal
+- **Ink Script:** `drop_site_terminal.ink`
+- **Ink Tag:** `#complete_task:ftp_banner`
+- **Narrative Event:** Unlocks client codename "GHOST" document (M2 foreshadowing)
+
+**Task: http_analysis** (`http_analysis`)
+- **Room:** `server_room`
+- **Interactable:** VM Terminal (`computer_vm_terminal`) + CyberChef workstation (`computer_cyberchef`)
+- **Interaction:** Terminal (fetch HTTP) → CyberChef (decode Base64)
+- **Completion Trigger:** Submit flag `flag{pricing_intel_decoded}` at drop-site terminal
+- **Ink Script:** `drop_site_terminal.ink`
+- **Ink Tag:** `#complete_task:http_analysis`
+- **Narrative Event:** Unlocks pricing intelligence document
+
+**Task: distcc_exploit** (`distcc_exploit`)
+- **Room:** `server_room`
+- **Interactable:** VM Terminal (`computer_vm_terminal`)
+- **Interaction:** Terminal minigame (Metasploit OR manual exploitation)
+- **Completion Trigger:** Submit flag `flag{distcc_legacy_compromised}` at drop-site terminal
+- **Ink Script:** `drop_site_terminal.ink` + triggers `agent_0x99_m2_revelation.ink`
+- **Ink Tag:** `#complete_task:distcc_exploit` + `#unlock_task:find_operational_logs`
+- **Narrative Event:** **CRITICAL** - Triggers Agent 0x99 event conversation revealing M2 connection
+- **Event Mapping:**
+  ```json
+  {
+    "eventPattern": "objective_task_completed:distcc_exploit",
+    "targetKnot": "m2_connection_revealed",
+    "autoTrigger": true
+  }
+  ```
+
+---
+
+### Aim 1.3: Physical Evidence Collection
+
+**Task: decode_whiteboard** (`decode_whiteboard`)
+- **Room:** `server_room`
+- **Interactable:** Whiteboard (`whiteboard_rot13`) + CyberChef workstation (`computer_cyberchef`)
+- **Interaction:** Examine whiteboard (photograph/copy text) → Decode at CyberChef
+- **Completion Trigger:** Successful ROT13 decode at CyberChef
+- **Ink Script:** `cyberchef_workstation.ink`
+- **Ink Tag:** `#complete_task:decode_whiteboard`
+- **Reveals:** "MEET WITH THE ARCHITECT - PRIORITIZE INFRASTRUCTURE EXPLOITS"
+
+**Task: access_victoria_computer** (`access_victoria_computer`)
+- **Room:** `executive_office`
+- **Interactable:** Executive office door (`door_executive`) + Victoria's computer (`computer_victoria`)
+- **Interaction:** Lockpick door (OR trust >= 40 grants access) → Login to computer
+- **Completion Trigger:** Successful computer login
+- **Ink Script:** `computer_login.ink`
+- **Ink Tag:** `#complete_task:access_victoria_computer` + `#unlock_task:decode_client_roster`
+- **Unlocks:** Email drafts, hex-encoded client files
+
+**Task: decode_client_roster** (`decode_client_roster`)
+- **Room:** `executive_office` (find file) → `server_room` (decode)
+- **Interactable:** Victoria's computer (`computer_victoria`) → CyberChef workstation (`computer_cyberchef`)
+- **Interaction:** Copy hex-encoded file → Decode at CyberChef
+- **Completion Trigger:** Successful hex decode
+- **Ink Script:** `cyberchef_workstation.ink`
+- **Ink Tag:** `#complete_task:decode_client_roster`
+- **Reveals:** Client list (Ransomware Incorporated, Critical Mass, Social Fabric)
+
+**Task: find_operational_logs** (`find_operational_logs`)
+- **Room:** `server_room`
+- **Interactable:** File appears after `distcc_exploit` completed
+- **Interaction:** Examine operational logs text file
+- **Completion Trigger:** Player reads file (auto-appears post-distcc)
+- **Ink Script:** `operational_logs_discovery.ink` (event-triggered)
+- **Ink Tag:** `#complete_task:find_operational_logs`
+- **Event Mapping:**
+  ```json
+  {
+    "eventPattern": "objective_task_completed:distcc_exploit",
+    "spawnItem": "operational_logs.txt",
+    "location": "server_room"
+  }
+  ```
+- **Narrative Event:** **MIDPOINT TWIST** - ProFTPD sale to GHOST for $12,500 revealed
+
+---
+
+### Optional Objectives Mapping
+
+**LORE Fragment 1** (`lore_fragment_1`)
+- **Room:** `executive_office`
+- **Interactable:** Filing cabinet (`container_filing_cabinet`)
+- **Interaction:** Lockpick filing cabinet → Pickup text_file
+- **Completion Trigger:** Item pickup
+- **Ink Tag:** `#complete_task:lore_fragment_1`
+
+**LORE Fragment 2** (`lore_fragment_2`)
+- **Room:** `executive_office`
+- **Interactable:** Wall safe (`container_safe`)
+- **Interaction:** Enter PIN (2010) → Pickup text_file
+- **Completion Trigger:** Item pickup
+- **Ink Tag:** `#complete_task:lore_fragment_2`
+
+**LORE Fragment 3** (`lore_fragment_3`)
+- **Room:** `executive_office`
+- **Interactable:** Hidden USB drive in desk drawer (`container_desk_drawer`) → CyberChef
+- **Interaction:** Find USB → Decode Base64 → Decode ROT13
+- **Completion Trigger:** Successful double-decode
+- **Ink Script:** `cyberchef_workstation.ink`
+- **Ink Tag:** `#complete_task:lore_fragment_3`
+
+**Perfect Stealth** (`zero_detection`)
+- **Tracking:** Global variable `guard_detected` must remain `false`
+- **Evaluated:** At mission end (debrief)
+- **Completion Trigger:** Automatic if guard_detected == false throughout mission
+- **Ink Tag:** `#complete_task:zero_detection` (in debrief script)
+
+**James Choice** (`james_choice_made`)
+- **Room:** `james_office` (optional investigation)
+- **Interactable:** James's desk, computer, family photo
+- **Interaction:** Dialogue choice point after discovering innocence evidence
+- **Completion Trigger:** Player selects choice (warn/evidence/ignore)
+- **Ink Script:** `james_protection_choice.ink`
+- **Ink Tag:** `#complete_task:james_choice_made`
+
+**Victoria Choice** (`victoria_choice_made`)
+- **Room:** `executive_office` OR `hallway` (player chooses confrontation location)
+- **Interactable:** Victoria Sterling NPC (optional confrontation)
+- **Interaction:** Dialogue choice point (arrest/recruit/delay)
+- **Completion Trigger:** Player selects choice
+- **Ink Script:** `victoria_confrontation.ink`
+- **Ink Tag:** `#complete_task:victoria_choice_made`
+
+---
+
+**Status:** ✅ COMPLETE (Part 3/3 complete)
+**Next:** Create objectives JSON structure
