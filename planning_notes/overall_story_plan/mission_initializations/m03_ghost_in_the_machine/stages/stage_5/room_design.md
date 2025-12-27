@@ -195,5 +195,119 @@ Central corridor connecting all office areas. Corporate carpeting, recessed ligh
 
 ---
 
-**Status:** 🔄 IN PROGRESS (Part 1/4 - First 3 rooms complete)
-**Next:** Server room, executive office, James's office, executive wing hallway
+### Room 4: Server Room (PRIMARY INVESTIGATION HUB)
+
+**ID:** `server_room`
+**Dimensions:** 10 × 10 GU (15m × 15m)
+**Usable Space:** 8 × 8 GU
+**Type:** IT / Server Room / Data Center
+**Act:** Act 2-3 (Nighttime - investigation hub)
+
+**Description:**
+Technical space with racks of servers (blinking LEDs - green/amber), three distinct workstation areas, whiteboard on north wall, filing cabinet, wall-mounted safe. HVAC hum provides constant background ambiance. Emergency lighting creates blue/green tech aesthetic mixed with shadows. This is the investigation nerve center where VM challenges and physical evidence converge.
+
+**Connections:**
+- **South:** `main_hallway` (RFID locked - requires `victoria_keycard_clone` item)
+  - **Unlock Condition:** Player must have completed `clone_rfid_card` task
+  - **Lock Type:** RFID keycard reader
+  - **Alternative:** If victoria_trust >= 40, Victoria grants access (bypasses cloning)
+
+**Containers:**
+1. **Filing Cabinet (Northwest Corner)**
+   - **Position:** (1, 7) in usable space
+   - **Lock:** Physical lock (requires lockpicking)
+   - **Contents:** Client list documents, network diagrams
+   - **Narrative Purpose:** Additional evidence correlating with VM findings
+   - **Objectives:** Optional - provides context for `decode_client_roster`
+
+2. **Wall-Mounted Safe**
+   - **Position:** (7, 7) on east wall
+   - **Lock:** PIN lock (code: 2010)
+   - **Contents:** LORE Fragment 2 "Q3 2024 Exploit Catalog"
+   - **Narrative Purpose:** Optional LORE collection
+   - **Objectives:** `lore_fragment_2` - Open Victoria's safe
+   - **PIN Source:** Founding year on reception plaque
+
+**Interactive Objects:**
+
+1. **Whiteboard with ROT13 Message**
+   - **Position:** (4, 7) on north wall
+   - **Interaction:** Examine to photograph/copy encoded text
+   - **Content:** "ZRRG JVGU GUR NEPUVGRPG - CEVBEVGVMR VASENFGEHPGHER RKCYBVGF"
+   - **Decoded:** "MEET WITH THE ARCHITECT - PRIORITIZE INFRASTRUCTURE EXPLOITS"
+   - **Objectives:** `decode_whiteboard` - Decode ROT13 message
+   - **Workflow:** Examine whiteboard → Copy text → Decode at CyberChef workstation
+
+2. **VM Access Terminal (Left Workstation)**
+   - **Position:** (2, 4) in usable space
+   - **Interaction:** Access VM challenges (terminal minigame)
+   - **Purpose:** Player runs nmap, netcat, HTTP analysis, Metasploit
+   - **Network:** 192.168.100.0/24 (Zero Day training network)
+   - **Objectives:**
+     - `scan_network` - nmap port scanning
+     - `ftp_banner` - Banner grabbing
+     - `http_analysis` - HTTP service analysis
+     - `distcc_exploit` - distcc exploitation (CRITICAL - triggers M2 revelation)
+
+3. **CyberChef Workstation (Right Workstation)**
+   - **Position:** (6, 4) in usable space
+   - **Interaction:** Decoding station for ROT13, Hex, Base64
+   - **Purpose:** Player decodes messages found elsewhere
+   - **Objectives:**
+     - `decode_whiteboard` - ROT13 decode
+     - `decode_client_roster` - Hex decode (from Victoria's computer)
+     - `lore_fragment_3` - Double-decode (ROT13+Base64 from USB drive)
+
+4. **Drop-Site Terminal (Center Workstation)**
+   - **Position:** (4, 4) center of room
+   - **Interaction:** Submit VM flags, receive Agent 0x99 messages
+   - **Purpose:** Flag submission unlocks narrative intel
+   - **Objectives:**
+     - All VM flag submissions (`scan_network`, `ftp_banner`, `http_analysis`, `distcc_exploit`)
+     - Triggers Agent 0x99 event conversations
+
+5. **Operational Logs File (Event-Spawned)**
+   - **Position:** Appears on drop-site terminal after `distcc_exploit` completed
+   - **Interaction:** Examine text file
+   - **Content:** "ProFTPD exploit sold to Ransomware Inc for $12,500 (healthcare premium)"
+   - **Objectives:** `find_operational_logs` - **MIDPOINT TWIST** (M2 hospital connection)
+   - **Event Trigger:** Spawns when `distcc_exploit` task completed
+
+**NPCs:**
+- **Agent 0x99** (Phone/Event-Triggered)
+  - **Mode:** Not physically present (phone chat + event-triggered messages)
+  - **Event Triggers:**
+    - When `distcc_exploit` completed → Auto-triggered conversation "M2 Connection Revealed"
+    - When all evidence gathered → Available for debrief preparation
+  - **Dialogue Purpose:** Handler guidance, M2 revelation response
+  - **Objectives:** Narrative progression via event system
+
+**Objectives Completed Here:**
+- **VM Flag Tasks (Aim 1.2):**
+  - `scan_network` - Use nmap to scan training network
+  - `ftp_banner` - Connect to FTP and extract banner intelligence
+  - `http_analysis` - Analyze HTTP service and decode Base64 pricing data
+  - `distcc_exploit` - Exploit legacy distcc service (CRITICAL)
+
+- **Physical Evidence Tasks (Aim 1.3):**
+  - `decode_whiteboard` - Decode ROT13 message on whiteboard
+  - `find_operational_logs` - Correlate VM logs with physical evidence (M2 revelation)
+
+- **Optional:**
+  - `lore_fragment_2` - Open safe with PIN 2010
+
+**LORE Fragments:**
+- **Fragment 2:** "Q3 2024 Exploit Catalog" (in wall safe, PIN 2010)
+
+**Technical Notes:**
+- **RFID Door Lock:** Requires `victoria_keycard_clone` item OR `victoria_trust >= 40`
+- **VM Terminal:** Separate minigame system for command input
+- **CyberChef:** Decoding interface (ROT13, Hex, Base64 supported)
+- **Drop-Site Terminal:** Flag submission triggers Ink tags + event conversations
+- **Event Spawn:** operational_logs.txt appears after distcc_exploit flag submitted
+- **Agent 0x99 Event:** Auto-triggers when distcc_exploit completed (M2 revelation cutscene)
+
+---
+
+**Status:** 🔄 IN PROGRESS (Part 2/4 - 4 rooms complete)
+**Next:** Executive office, James's office, executive wing hallway
