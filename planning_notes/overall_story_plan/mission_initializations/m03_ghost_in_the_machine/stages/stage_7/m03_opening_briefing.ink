@@ -147,6 +147,10 @@ Agent 0x99: One - infiltrate WhiteHat Security and clone Victoria Sterling's exe
 Agent 0x99: Two - access their training network and gather intelligence on exploit sales.
 Agent 0x99: Three - find physical evidence linking Zero Day to the hospital attack.
 
+Agent 0x99: This mission will test your network reconnaissance skills, encoding analysis, and intelligence correlation.
+
+Agent 0x99: You'll practice nmap scanning, banner grabbing, and multi-layer decoding. Real pen testing work.
+
 * [Who's Victoria Sterling?]
     ~ asked_about_victoria = true
     -> victoria_briefing
@@ -156,6 +160,38 @@ Agent 0x99: Three - find physical evidence linking Zero Day to the hospital atta
 
 * [How do I get in?]
     -> cover_story
+
+* [What will I learn from this?]
+    -> learning_objectives
+
+// ===========================================
+// LEARNING OBJECTIVES (OPTIONAL DIALOGUE)
+// ===========================================
+
+=== learning_objectives ===
+#speaker:agent_0x99
+
+Agent 0x99: Good question. This mission is educational as well as operational.
+
+Agent 0x99: You'll learn network reconnaissance - using tools like nmap to identify services and vulnerabilities.
+
+Agent 0x99: Banner grabbing with netcat, understanding what information systems leak unintentionally.
+
+Agent 0x99: Encoding versus encryption - how to decode ROT13, hexadecimal, and Base64. Not security, just obfuscation.
+
+Agent 0x99: And the most important skill: correlating digital evidence with physical intelligence.
+
+Agent 0x99: Understanding the economics of the zero-day marketplace. How adversaries monetize vulnerabilities.
+
+Agent 0x99: By the end, you'll have practical penetration testing experience and insight into real-world exploit markets.
+
+* [Understood. I'm ready.]
+    Agent 0x99: Excellent. Let's go over the details.
+    -> victoria_briefing
+
+* [Sounds intense]
+    Agent 0x99: It is. But you're prepared for this. Let's continue the briefing.
+    -> victoria_briefing
 
 === victoria_briefing ===
 #speaker:agent_0x99
