@@ -11,8 +11,8 @@ VAR mission_priority = ""          // stealth, speed, thoroughness
 VAR asked_about_victoria = false  // Did player ask about Victoria?
 
 // External variables (set by game)
-EXTERNAL player_name
-EXTERNAL scenario_state
+EXTERNAL player_name()
+EXTERNAL scenario_state()
 
 // ===========================================
 // OPENING
@@ -24,7 +24,7 @@ EXTERNAL scenario_state
 [Location: SAFETYNET Secure Communication Channel]
 [Visual: Agent 0x99's avatar - Haxolottle mascot with headset]
 
-Agent 0x99: {player_name}, thanks for picking up. We have a developing situation.
+Agent 0x99: {player_name()}, thanks for picking up. We have a developing situation.
 
 Agent 0x99: Zero Day Syndicate. You heard of them?
 
@@ -380,7 +380,7 @@ Agent 0x99: Your call. I trust your judgment.
 Agent 0x99: Field Operations Rule 7 - "When infiltrating corporate environments, remember that the most valuable intelligence is often in the least secure location."
 
 {knows_m2_connection:
-    Agent 0x99: And {player_name}... six people died because of what Zero Day sold.
+    Agent 0x99: And {player_name()}... six people died because of what Zero Day sold.
     Agent 0x99: Four in critical care. Two during emergency surgery when systems failed.
     Agent 0x99: Whatever you find, make it count.
 }
@@ -436,7 +436,7 @@ Agent 0x99: WhiteHat Security is at 1247 Market Street, downtown financial distr
 Agent 0x99: I'll be on comms if you need support. The drop-site terminal in the server room connects directly to me.
 
 {handler_trust >= 70:
-    Agent 0x99: And {player_name}? I know you'll do this right. You always do.
+    Agent 0x99: And {player_name()}? I know you'll do this right. You always do.
 }
 
 {handler_trust >= 50 and handler_trust < 70:
@@ -449,7 +449,7 @@ Agent 0x99: I'll be on comms if you need support. The drop-site terminal in the 
 
 Agent 0x99: Remember: meet with Victoria, clone her keycard, then night infiltration.
 
-Agent 0x99: Go get 'em, {player_name}. Haxolottle out.
+Agent 0x99: Go get 'em, {player_name()}. Haxolottle out.
 
 [Transition: Fade to WhiteHat Security reception lobby, 2 PM]
 
