@@ -1,0 +1,738 @@
+<%
+# ERB Helper Methods for Mission 3: Ghost in the Machine
+require 'base64'
+require 'json'
+
+# Encoding helper functions
+def rot13(text)
+  text.tr("A-Za-z", "N-ZA-Mn-za-m")
+end
+
+def base64_encode(text)
+  Base64.strict_encode64(text)
+end
+
+def hex_encode(text)
+  text.unpack('H*').first
+end
+
+def json_escape(text)
+  text.to_json[1..-2]  # Remove surrounding quotes from .to_json output
+end
+
+# Narrative content variables
+whiteboard_message_encoded = rot13("MEET WITH THE ARCHITECT - PRIORITIZE INFRASTRUCTURE EXPLOITS")
+
+client_roster_content = "ACTIVE CLIENTS:\n- CIPHER (ransomware deployment)\n- GHOST (zero-day purchases)\n- VORTEX (credential harvesting)\n- ECLIPSE (industrial espionage)"
+client_roster_hex = hex_encode(client_roster_content)
+
+architect_directive = "Phase 2 targets critical infrastructure. Focus on healthcare, energy, water treatment. The hospital attack was just the beginning."
+architect_directive_double = base64_encode(rot13(architect_directive))
+
+lore_fragment_1 = "ZERO DAY: A BRIEF HISTORY\n\nFounded 2019 by 'The Architect' (identity unknown). Mission: Monetize security research through vulnerability sales.\n\nInitial operations: CVE brokerage, legitimate bug bounty aggregation.\n\n2021: Shift to darker markets. Exploit sales without vendor notification.\n2023: Entry into ransomware-as-a-service partnerships.\n2024: St. Catherine's Hospital incident - first confirmed casualty.\n\nThe Architect's vision: 'Security is economics. Vulnerabilities are commodities.'"
+
+lore_fragment_2 = "Q3 2024 EXPLOIT CATALOG\n\nPremium Tier:\n- ProFTPD 1.3.5 RCE: $12,500 (healthcare premium)\n- Apache Struts2 RCE: $18,000 (corporate targeting)\n- Windows SMBv3 0-day: $45,000 (government interest)\n\nStandard Tier:\n- distcc 2.18.3 RCE: $3,200 (legacy systems)\n- Various SQLi vectors: $800-$2,400\n\nNote: Healthcare targets command 40% price premium due to urgency/ransom leverage.\n\nSold to GHOST: ProFTPD exploit - Target: St. Catherine's Regional Medical Center"
+
+lore_fragment_3_encoded = architect_directive_double
+
+operational_log_content = "TRANSACTION LOG - Q3 2024\n\n[2024-09-15 14:32:11] ProFTPD 1.3.5 RCE exploit\n  Buyer: GHOST (verified)\n  Price: $12,500 USD (BTC)\n  Target sector: Healthcare\n  Premium: +40% (ransomware leverage)\n  Status: DELIVERED\n\n[2024-09-18 08:15:44] Deployment confirmed\n  Target: St. Catherine's Regional Medical Center\n  Vector: FTP server compromise -> lateral movement\n  Payload: Ransomware (affiliate GHOST)\n  Ransom demand: $2.8M USD\n  Patient impact: 127 scheduled surgeries delayed\n\n[INTERNAL NOTE] The Architect approved. Phase 1 operational revenue: $127K. Phase 2 targeting critical infrastructure."
+
+%>
+{
+  "scenario_brief": "Infiltrate Zero Day Syndicate posing as security researcher 'Alex Chen.' Meet Victoria Sterling to clone her RFID keycard, then return at night to exploit vulnerable training network services and gather evidence linking Zero Day to the St. Catherine's Hospital ransomware attack. Uncover The Architect's Phase 2 plans targeting critical infrastructure while confronting moral choices about collateral damage.",
+
+  "objectives": [
+    {
+      "aimId": "main_mission",
+      "title": "Zero Day Intelligence",
+      "description": "Gather evidence of Zero Day Syndicate's exploit marketplace operations",
+      "status": "active",
+      "optional": false,
+      "aims": [
+        {
+          "aimId": "establish_cover",
+          "title": "Establish Undercover Access",
+          "description": "Infiltrate WhiteHat Security and clone Victoria Sterling's keycard",
+          "status": "active",
+          "tasks": [
+            {
+              "taskId": "meet_victoria",
+              "title": "Meet Victoria Sterling",
+              "description": "Meet Victoria Sterling at WhiteHat Security",
+              "status": "active"
+            },
+            {
+              "taskId": "clone_rfid_card",
+              "title": "Clone RFID Keycard",
+              "description": "Clone Victoria Sterling's executive keycard",
+              "status": "locked"
+            }
+          ]
+        },
+        {
+          "aimId": "network_recon",
+          "title": "Network Reconnaissance",
+          "description": "Scan Zero Day's training network to identify services and gather intelligence",
+          "status": "locked",
+          "tasks": [
+            {
+              "taskId": "scan_network",
+              "title": "Scan Training Network",
+              "description": "Use nmap to scan the training network (192.168.100.0/24)",
+              "status": "locked"
+            },
+            {
+              "taskId": "ftp_banner",
+              "title": "Gather FTP Intelligence",
+              "description": "Connect to FTP service and extract banner information",
+              "status": "locked"
+            },
+            {
+              "taskId": "http_analysis",
+              "title": "Analyze HTTP Service",
+              "description": "Analyze HTTP service and decode Base64 pricing data",
+              "status": "locked"
+            },
+            {
+              "taskId": "distcc_exploit",
+              "title": "Exploit distcc Service",
+              "description": "Exploit legacy distcc service to access operational logs",
+              "status": "locked"
+            }
+          ]
+        },
+        {
+          "aimId": "gather_evidence",
+          "title": "Physical Evidence Collection",
+          "description": "Collect physical evidence from WhiteHat Security offices",
+          "status": "locked",
+          "tasks": [
+            {
+              "taskId": "decode_whiteboard",
+              "title": "Decode Whiteboard Message",
+              "description": "Decode the ROT13 message on the server room whiteboard",
+              "status": "locked"
+            },
+            {
+              "taskId": "access_victoria_computer",
+              "title": "Access Victoria's Computer",
+              "description": "Access Victoria Sterling's executive office computer",
+              "status": "locked"
+            },
+            {
+              "taskId": "decode_client_roster",
+              "title": "Decode Client Roster",
+              "description": "Decode the hex-encoded client roster from Victoria's computer",
+              "status": "locked"
+            },
+            {
+              "taskId": "find_operational_logs",
+              "title": "Find Operational Logs",
+              "description": "Correlate VM operational logs with physical evidence",
+              "status": "locked"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "aimId": "collect_lore",
+      "title": "LORE Collection",
+      "description": "Discover hidden LORE fragments about ENTROPY and The Architect",
+      "status": "active",
+      "optional": true,
+      "aims": [
+        {
+          "aimId": "find_all_lore",
+          "title": "Find All LORE Fragments",
+          "description": "Locate 3 hidden LORE fragments",
+          "status": "active",
+          "tasks": [
+            {
+              "taskId": "lore_fragment_1",
+              "title": "Zero Day Origins",
+              "description": "Find the document detailing Zero Day Syndicate's founding",
+              "status": "active"
+            },
+            {
+              "taskId": "lore_fragment_2",
+              "title": "Exploit Catalog",
+              "description": "Open Victoria's safe to find the exploit catalog",
+              "status": "active"
+            },
+            {
+              "taskId": "lore_fragment_3",
+              "title": "The Architect's Directive",
+              "description": "Decode the double-encoded USB drive message",
+              "status": "active"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "aimId": "perfect_stealth",
+      "title": "Perfect Stealth",
+      "description": "Complete the mission without being detected by the guard",
+      "status": "active",
+      "optional": true,
+      "aims": [
+        {
+          "aimId": "stealth_mastery",
+          "title": "Maintain Stealth",
+          "description": "Avoid detection by the night security guard",
+          "status": "active",
+          "tasks": [
+            {
+              "taskId": "zero_detection",
+              "title": "Complete Mission Undetected",
+              "description": "Complete all objectives without triggering guard detection",
+              "status": "active"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "aimId": "moral_choices",
+      "title": "Moral Engagement",
+      "description": "Engage with the moral complexity of the mission",
+      "status": "locked",
+      "optional": true,
+      "aims": [
+        {
+          "aimId": "engage_moral_choices",
+          "title": "Make Key Moral Decisions",
+          "description": "Confront the moral choices in the mission",
+          "status": "locked",
+          "tasks": [
+            {
+              "taskId": "james_choice_made",
+              "title": "Decide James Park's Fate",
+              "description": "Decide whether to protect James Park from collateral damage",
+              "status": "locked"
+            },
+            {
+              "taskId": "victoria_choice_made",
+              "title": "Decide Victoria's Fate",
+              "description": "Confront Victoria Sterling and decide her fate",
+              "status": "locked"
+            }
+          ]
+        }
+      ]
+    }
+  ],
+
+  "startRoom": "reception_lobby",
+
+  "rooms": {
+    "reception_lobby": {
+      "name": "Reception Lobby",
+      "description": "Professional reception area with modern furniture and WhiteHat Security logo prominently displayed. Company awards and security certifications (OSCP, CEH, PCI-DSS) line the walls.",
+      "background": "reception_lobby_bg.png",
+      "usable_space": {
+        "width": 6,
+        "height": 4
+      },
+      "connections": {
+        "north": "main_hallway"
+      },
+      "objects": [
+        {
+          "id": "reception_desk",
+          "name": "Reception Desk",
+          "type": "container",
+          "position": {"x": 3, "y": 2},
+          "locked": false,
+          "contents": [
+            {
+              "id": "building_directory",
+              "name": "Building Directory",
+              "type": "document",
+              "description": "WhiteHat Security floor plan showing office locations"
+            }
+          ]
+        },
+        {
+          "id": "founding_plaque",
+          "name": "Company Founding Plaque",
+          "type": "interactable",
+          "position": {"x": 5, "y": 2},
+          "examination_text": "WhiteHat Security Services - Founded 2010",
+          "hint": "The founding year might be useful elsewhere..."
+        }
+      ],
+      "npcs": [
+        {
+          "id": "receptionist_npc",
+          "name": "Receptionist",
+          "type": "person",
+          "position": {"x": 3, "y": 2},
+          "dialogue_script": "m03_npc_receptionist.json",
+          "spawn_condition": "time_of_day == 'daytime'",
+          "portrait": "receptionist_neutral.png"
+        },
+        {
+          "id": "night_guard",
+          "name": "Security Guard",
+          "type": "person",
+          "position": {"x": 3, "y": 2},
+          "dialogue_script": "m03_npc_guard.json",
+          "spawn_condition": "time_of_day == 'nighttime'",
+          "portrait": "guard_neutral.png",
+          "patrol": {
+            "enabled": true,
+            "waypoints": [
+              {"room": "reception_lobby", "position": {"x": 3, "y": 2}, "pause_ticks": 15},
+              {"room": "main_hallway", "position": {"x": 2, "y": 1}, "pause_ticks": 15},
+              {"room": "main_hallway", "position": {"x": 6, "y": 1}, "pause_ticks": 15},
+              {"room": "main_hallway", "position": {"x": 9, "y": 1}, "pause_ticks": 20}
+            ],
+            "loop": true,
+            "detection_range": 7.5,
+            "detection_cone": 120
+          }
+        }
+      ]
+    },
+
+    "main_hallway": {
+      "name": "Main Hallway",
+      "description": "Central corridor connecting all office areas. Corporate carpeting, recessed lighting that shifts from bright during the day to dim emergency lighting at night.",
+      "background": "main_hallway_bg.png",
+      "usable_space": {
+        "width": 10,
+        "height": 2
+      },
+      "connections": {
+        "south": "reception_lobby",
+        "west": "conference_room_01",
+        "north": "server_room",
+        "east": "executive_wing_hallway"
+      },
+      "objects": [],
+      "npcs": []
+    },
+
+    "conference_room_01": {
+      "name": "Conference Room",
+      "description": "Professional conference room with a large table seating eight, whiteboard on the east wall, and projector screen. Windows overlook the city below.",
+      "background": "conference_room_bg.png",
+      "usable_space": {
+        "width": 8,
+        "height": 6
+      },
+      "connections": {
+        "east": "main_hallway"
+      },
+      "objects": [
+        {
+          "id": "conference_table",
+          "name": "Conference Table",
+          "type": "container",
+          "position": {"x": 4, "y": 3},
+          "locked": false,
+          "contents": [
+            {
+              "id": "presentation_materials",
+              "name": "Presentation Materials",
+              "type": "document",
+              "description": "WhiteHat Security company portfolio and case studies"
+            }
+          ]
+        },
+        {
+          "id": "conference_whiteboard",
+          "name": "Whiteboard",
+          "type": "interactable",
+          "position": {"x": 7, "y": 4},
+          "examination_text": "Legitimate security diagrams and penetration testing methodology flowcharts"
+        }
+      ],
+      "npcs": [
+        {
+          "id": "victoria_sterling",
+          "name": "Victoria Sterling",
+          "type": "person",
+          "position": {"x": 4, "y": 3},
+          "dialogue_script": "m03_npc_victoria.json",
+          "spawn_condition": "time_of_day == 'daytime' AND mission_phase == 'act1_meeting'",
+          "portrait": "victoria_neutral.png",
+          "rfid_cloning": {
+            "enabled": true,
+            "proximity_required": 2.0,
+            "duration_seconds": 10,
+            "completion_task": "clone_rfid_card"
+          }
+        }
+      ]
+    },
+
+    "server_room": {
+      "name": "Server Room",
+      "description": "Technical space filled with racks of servers showing blinking green and amber LEDs. Three distinct workstation areas, a whiteboard on the north wall, filing cabinet, and wall-mounted safe. The HVAC hum provides constant background ambiance.",
+      "background": "server_room_bg.png",
+      "usable_space": {
+        "width": 8,
+        "height": 8
+      },
+      "connections": {
+        "south": {
+          "room": "main_hallway",
+          "lock_type": "rfid",
+          "required_item": "victoria_keycard_clone",
+          "bypass_condition": "victoria_trust >= 40"
+        }
+      },
+      "objects": [
+        {
+          "id": "filing_cabinet_server",
+          "name": "Filing Cabinet",
+          "type": "container",
+          "position": {"x": 1, "y": 7},
+          "locked": true,
+          "lock_type": "lockpick",
+          "contents": [
+            {
+              "id": "client_list_docs",
+              "name": "Client List Documents",
+              "type": "document",
+              "description": "Network diagrams and client engagement summaries"
+            }
+          ]
+        },
+        {
+          "id": "wall_safe_server",
+          "name": "Wall Safe",
+          "type": "container",
+          "position": {"x": 7, "y": 7},
+          "locked": true,
+          "lock_type": "pin",
+          "pin_code": "2010",
+          "contents": [
+            {
+              "id": "lore_fragment_2_doc",
+              "name": "Q3 2024 Exploit Catalog",
+              "type": "lore_document",
+              "content": "<%= json_escape(lore_fragment_2) %>",
+              "completes_task": "lore_fragment_2"
+            }
+          ]
+        },
+        {
+          "id": "whiteboard_rot13",
+          "name": "Server Room Whiteboard",
+          "type": "interactable",
+          "position": {"x": 4, "y": 7},
+          "examination_text": "<%= whiteboard_message_encoded %>",
+          "decoded_text": "MEET WITH THE ARCHITECT - PRIORITIZE INFRASTRUCTURE EXPLOITS",
+          "encoding": "rot13",
+          "completes_task": "decode_whiteboard"
+        },
+        {
+          "id": "vm_terminal",
+          "name": "VM Access Terminal",
+          "type": "terminal",
+          "position": {"x": 2, "y": 4},
+          "terminal_type": "vm_challenges",
+          "challenges": [
+            {
+              "id": "nmap_scan",
+              "command": "nmap 192.168.100.0/24",
+              "flag": "flag{network_scan_complete}",
+              "completes_task": "scan_network"
+            },
+            {
+              "id": "ftp_banner",
+              "command": "nc 192.168.100.10 21",
+              "flag": "flag{ftp_intel_gathered}",
+              "completes_task": "ftp_banner"
+            },
+            {
+              "id": "http_pricing",
+              "command": "curl http://192.168.100.30/pricing/data.txt",
+              "flag": "flag{pricing_intel_decoded}",
+              "completes_task": "http_analysis"
+            },
+            {
+              "id": "distcc_exploit",
+              "command": "msfconsole -x 'use exploit/unix/misc/distcc_exec; set RHOST 192.168.100.20; exploit'",
+              "flag": "flag{distcc_legacy_compromised}",
+              "completes_task": "distcc_exploit",
+              "triggers_event": "m2_revelation"
+            }
+          ]
+        },
+        {
+          "id": "cyberchef_workstation",
+          "name": "CyberChef Decoding Workstation",
+          "type": "terminal",
+          "position": {"x": 6, "y": 4},
+          "terminal_type": "decoder",
+          "supported_encodings": ["rot13", "base64", "hex"],
+          "completes_tasks": ["decode_whiteboard", "decode_client_roster", "lore_fragment_3"]
+        },
+        {
+          "id": "dropsite_terminal",
+          "name": "Drop-Site Terminal",
+          "type": "terminal",
+          "position": {"x": 4, "y": 4},
+          "terminal_type": "flag_submission",
+          "dialogue_script": "m03_terminal_dropsite.json"
+        }
+      ],
+      "npcs": [],
+      "events": [
+        {
+          "id": "operational_logs_spawn",
+          "trigger": "task_completed:distcc_exploit",
+          "action": "spawn_object",
+          "object": {
+            "id": "operational_logs",
+            "name": "Operational Logs",
+            "type": "document",
+            "position": {"x": 4, "y": 4},
+            "content": "<%= json_escape(operational_log_content) %>",
+            "completes_task": "find_operational_logs"
+          }
+        },
+        {
+          "id": "m2_revelation_call",
+          "trigger": "task_completed:distcc_exploit",
+          "action": "phone_call",
+          "caller": "agent_0x99",
+          "dialogue_script": "m03_phone_agent0x99.json",
+          "dialogue_knot": "m2_connection_revealed",
+          "unlocks_objective": "moral_choices"
+        }
+      ]
+    },
+
+    "executive_wing_hallway": {
+      "name": "Executive Wing Hallway",
+      "description": "Short hallway connecting main circulation to executive offices. Wood paneling, framed corporate achievements, and premium carpeting represent the management tier of the organization.",
+      "background": "executive_wing_hallway_bg.png",
+      "usable_space": {
+        "width": 6,
+        "height": 2
+      },
+      "connections": {
+        "west": "main_hallway",
+        "north": "executive_office",
+        "south": "james_office"
+      },
+      "objects": [],
+      "npcs": []
+    },
+
+    "executive_office": {
+      "name": "Executive Office",
+      "description": "Victoria Sterling's private office. Expensive desk, leather chair, floor-to-ceiling windows overlooking the city, and tasteful corporate art. The professional facade conceals criminal evidence hidden in plain sight.",
+      "background": "executive_office_bg.png",
+      "usable_space": {
+        "width": 8,
+        "height": 6
+      },
+      "connections": {
+        "south": {
+          "room": "executive_wing_hallway",
+          "lock_type": "lockpick",
+          "bypass_condition": "victoria_trust >= 40"
+        }
+      },
+      "objects": [
+        {
+          "id": "filing_cabinet_executive",
+          "name": "Filing Cabinet",
+          "type": "container",
+          "position": {"x": 1, "y": 5},
+          "locked": true,
+          "lock_type": "lockpick",
+          "contents": [
+            {
+              "id": "lore_fragment_1_doc",
+              "name": "Zero Day: A Brief History",
+              "type": "lore_document",
+              "content": "<%= json_escape(lore_fragment_1) %>",
+              "completes_task": "lore_fragment_1"
+            }
+          ]
+        },
+        {
+          "id": "victoria_computer",
+          "name": "Executive Computer",
+          "type": "computer",
+          "position": {"x": 4, "y": 3},
+          "locked": true,
+          "lock_type": "password",
+          "password_hint": "Victoria's favorite security conference year",
+          "contents": [
+            {
+              "id": "email_draft_pricing",
+              "name": "Email Draft - Pricing Update",
+              "type": "email",
+              "content_base64": "<%= base64_encode('Cipher - Updated pricing for Q4: ProFTPD RCE $15K, Apache Struts $20K. Healthcare premium remains +40%. -V') %>"
+            },
+            {
+              "id": "client_roster_hex",
+              "name": "Client Roster",
+              "type": "document",
+              "content_hex": "<%= client_roster_hex %>",
+              "completes_task": "access_victoria_computer"
+            }
+          ]
+        },
+        {
+          "id": "desk_drawer_hidden",
+          "name": "Desk Drawer",
+          "type": "container",
+          "position": {"x": 4, "y": 3},
+          "locked": false,
+          "hidden": true,
+          "search_required": true,
+          "contents": [
+            {
+              "id": "usb_drive_architect",
+              "name": "Hidden USB Drive",
+              "type": "usb_device",
+              "content_encoded": "<%= lore_fragment_3_encoded %>",
+              "encoding": "base64_rot13",
+              "decoded_content": "<%= architect_directive %>",
+              "completes_task": "lore_fragment_3"
+            }
+          ]
+        }
+      ],
+      "npcs": []
+    },
+
+    "james_office": {
+      "name": "James Park's Office",
+      "description": "Small consultant office with modest desk, dual monitors, and framed OSCP and CEH certifications. Family photos are prominently displayed, and penetration testing reports for hospitals and banks fill the shelves - evidence of genuine ethical hacking work.",
+      "background": "james_office_bg.png",
+      "usable_space": {
+        "width": 6,
+        "height": 4
+      },
+      "connections": {
+        "north": "executive_wing_hallway"
+      },
+      "objects": [
+        {
+          "id": "james_desk_drawer",
+          "name": "Desk Drawer",
+          "type": "container",
+          "position": {"x": 3, "y": 2},
+          "locked": false,
+          "contents": [
+            {
+              "id": "performance_review",
+              "name": "Performance Review",
+              "type": "document",
+              "description": "Exceptional ethical standards and commitment to responsible disclosure",
+              "sets_variable": "james_innocence_confirmed:true"
+            }
+          ]
+        },
+        {
+          "id": "family_photo",
+          "name": "Family Photo",
+          "type": "interactable",
+          "position": {"x": 3, "y": 2},
+          "examination_text": "James with wife Emily and daughter Sophie (age 4). Sophie holds a sign reading 'My Daddy is a Good Hacker!'",
+          "emotional_impact": "high",
+          "sets_variable": "james_innocence_confirmed:true"
+        },
+        {
+          "id": "james_computer",
+          "name": "James's Workstation",
+          "type": "computer",
+          "position": {"x": 3, "y": 3},
+          "locked": false,
+          "contents": [
+            {
+              "id": "email_to_emily",
+              "name": "Email to Emily",
+              "type": "email",
+              "subject": "Sophie's School Presentation",
+              "content": "Hey Em, Sophie's teacher loved the 'ethical hacking' presentation! She wants me to come back next month. Love you both. -James"
+            }
+          ]
+        },
+        {
+          "id": "certification_wall",
+          "name": "Certification Wall",
+          "type": "interactable",
+          "position": {"x": 1, "y": 3},
+          "examination_text": "OSCP (Offensive Security Certified Professional) and CEH (Certified Ethical Hacker) certificates, both current",
+          "sets_variable": "james_innocence_confirmed:true"
+        }
+      ],
+      "npcs": [],
+      "dialogue_triggers": [
+        {
+          "id": "james_moral_choice",
+          "trigger": "variable:james_innocence_confirmed == true AND task_completed:distcc_exploit",
+          "dialogue_script": "m03_james_choice.json",
+          "unlocks_task": "james_choice_made"
+        }
+      ]
+    }
+  },
+
+  "phone_contacts": [
+    {
+      "id": "agent_0x99",
+      "name": "Agent 0x99",
+      "portrait": "agent_0x99_neutral.png",
+      "dialogue_script": "m03_phone_agent0x99.json",
+      "availability": "always"
+    }
+  ],
+
+  "mission_events": [
+    {
+      "id": "opening_briefing",
+      "trigger": "mission_start",
+      "type": "dialogue",
+      "dialogue_script": "m03_opening_briefing.json",
+      "blocking": true
+    },
+    {
+      "id": "daytime_to_nighttime",
+      "trigger": "task_completed:clone_rfid_card",
+      "type": "time_shift",
+      "new_time": "nighttime",
+      "unlocks_aims": ["network_recon", "gather_evidence"]
+    },
+    {
+      "id": "victoria_confrontation",
+      "trigger": "task_completed:find_operational_logs AND variable:return_to_victoria == true",
+      "type": "dialogue",
+      "dialogue_script": "m03_npc_victoria.json",
+      "dialogue_knot": "final_confrontation",
+      "unlocks_task": "victoria_choice_made"
+    },
+    {
+      "id": "closing_debrief",
+      "trigger": "mission_complete",
+      "type": "dialogue",
+      "dialogue_script": "m03_closing_debrief.json",
+      "blocking": true
+    }
+  ],
+
+  "global_variables": {
+    "time_of_day": "daytime",
+    "mission_phase": "act1_meeting",
+    "victoria_influence": 0,
+    "victoria_suspicious": 0,
+    "victoria_trusts_player": false,
+    "victoria_trust": 50,
+    "james_innocence_confirmed": false,
+    "james_warned": false,
+    "handler_trust": 50,
+    "guard_detection_count": 0
+  }
+}
