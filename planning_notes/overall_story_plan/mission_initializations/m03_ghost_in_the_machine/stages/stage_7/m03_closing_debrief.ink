@@ -4,25 +4,25 @@
 // ===========================================
 
 // Variables from Act 1 (opening briefing)
-EXTERNAL player_approach
-EXTERNAL handler_trust
-EXTERNAL knows_m2_connection
-EXTERNAL mission_priority
+EXTERNAL player_approach()
+VAR handler_trust = 50  // Starts at 50, modified during debrief
+EXTERNAL knows_m2_connection()
+EXTERNAL mission_priority()
 
 // Variables from Act 2 (gameplay)
-EXTERNAL objectives_completed
-EXTERNAL lore_collected
-EXTERNAL stealth_rating
-EXTERNAL time_taken
-EXTERNAL flags_submitted_count
+EXTERNAL objectives_completed()
+EXTERNAL lore_collected()
+EXTERNAL stealth_rating()
+EXTERNAL time_taken()
+EXTERNAL flags_submitted_count()
 
 // Variables from moral choices
-EXTERNAL victoria_fate        // "protected", "exposed", "recruited", "arrested"
-EXTERNAL james_fate           // "protected", "exposed", "ignored"
-EXTERNAL found_exploit_catalog
-EXTERNAL found_architect_directive
+EXTERNAL victoria_fate()        // "protected", "exposed", "recruited", "arrested"
+EXTERNAL james_fate()           // "protected", "exposed", "ignored"
+EXTERNAL found_exploit_catalog()
+EXTERNAL found_architect_directive()
 
-EXTERNAL player_name
+EXTERNAL player_name()
 
 // ===========================================
 // OPENING
@@ -35,19 +35,19 @@ EXTERNAL player_name
 [Time: 24 hours after mission completion]
 [Visual: Agent 0x99 avatar - serious but relieved expression]
 
-Agent 0x99: {player_name}, welcome back. Have a seat.
+Agent 0x99: {player_name()}, welcome back. Have a seat.
 
 Agent 0x99: Let's debrief Mission 3 - Ghost in the Machine.
 
-{objectives_completed >= 4:
+{objectives_completed() >= 4:
     -> full_success_debrief
 }
 
-{objectives_completed >= 2 and objectives_completed < 4:
+{objectives_completed() >= 2 and objectives_completed() < 4:
     -> partial_success_debrief
 }
 
-{objectives_completed < 2:
+{objectives_completed() < 2:
     -> minimal_success_debrief
 }
 
@@ -60,27 +60,27 @@ Agent 0x99: Let's debrief Mission 3 - Ghost in the Machine.
 
 Agent 0x99: All primary objectives completed. Outstanding work.
 
-{player_approach == "cautious":
+{player_approach() == "cautious":
     Agent 0x99: Your methodical approach paid off. You documented everything, missed nothing.
 }
 
-{player_approach == "aggressive":
+{player_approach() == "aggressive":
     Agent 0x99: You moved fast and got results. Aggressive execution, clean outcome.
 }
 
-{player_approach == "diplomatic":
+{player_approach() == "diplomatic":
     Agent 0x99: Your adaptability was key. You read situations perfectly and adjusted tactics accordingly.
 }
 
-{stealth_rating > 80:
+{stealth_rating() > 80:
     Agent 0x99: And you stayed ghost the entire operation. Zero Day never knew what hit them.
 }
 
-{stealth_rating > 50 and stealth_rating <= 80:
+{stealth_rating() > 50 and stealth_rating() <= 80:
     Agent 0x99: You made some noise, but nothing that compromised the mission.
 }
 
-{stealth_rating <= 50:
+{stealth_rating() <= 50:
     Agent 0x99: You triggered some alerts, but you completed the objectives despite the heat.
 }
 
@@ -95,9 +95,9 @@ Agent 0x99: All primary objectives completed. Outstanding work.
 
 Agent 0x99: Mission complete, though we didn't get everything we wanted.
 
-Agent 0x99: {objectives_completed} objectives out of the primary set. That's solid work, but there are gaps.
+Agent 0x99: {objectives_completed()} objectives out of the primary set. That's solid work, but there are gaps.
 
-{player_approach == "aggressive" and time_taken < 1800:
+{player_approach() == "aggressive" and time_taken() < 1800:
     Agent 0x99: Speed was prioritized. Sometimes that means missing details.
 }
 
@@ -129,17 +129,17 @@ Agent 0x99: Let's assess what we got and what it means.
 
 Agent 0x99: Here's what Zero Day Syndicate's infiltration accomplished:
 
-{flags_submitted_count >= 4:
+{flags_submitted_count() >= 4:
     Agent 0x99: Network intelligence - complete. You submitted all VM flags.
     Agent 0x99: We have a full map of their training network, service vulnerabilities, and operational infrastructure.
 }
 
-{flags_submitted_count >= 2 and flags_submitted_count < 4:
-    Agent 0x99: Network intelligence - partial. You submitted {flags_submitted_count} of 4 flags.
+{flags_submitted_count() >= 2 and flags_submitted_count() < 4:
+    Agent 0x99: Network intelligence - partial. You submitted {flags_submitted_count()} of 4 flags.
     Agent 0x99: We have some visibility into their operations, but there are blind spots.
 }
 
-{flags_submitted_count < 2:
+{flags_submitted_count() < 2:
     Agent 0x99: Network intelligence - minimal. We're missing critical digital evidence.
 }
 
@@ -154,7 +154,7 @@ Agent 0x99: Here's what Zero Day Syndicate's infiltration accomplished:
 
 Agent 0x99: Now... St. Catherine's Hospital. The M2 connection.
 
-{found_exploit_catalog or flags_submitted_count >= 4:
+{found_exploit_catalog() or flags_submitted_count() >= 4:
     Agent 0x99: You found the smoking gun. The exploit catalog. The operational logs.
 
     Agent 0x99: ProFTPD exploit, CVE-2010-4652. Sold to GHOST - Ransomware Incorporated.
@@ -167,7 +167,7 @@ Agent 0x99: Now... St. Catherine's Hospital. The M2 connection.
 
     Agent 0x99: Six deaths. Four in critical care when patient monitoring failed. Two during emergency surgery when systems crashed.
 
-    {knows_m2_connection:
+    {knows_m2_connection():
         Agent 0x99: You knew the stakes from the beginning. You delivered.
     }
 
@@ -178,7 +178,7 @@ Agent 0x99: Now... St. Catherine's Hospital. The M2 connection.
     -> victoria_discussion
 }
 
-{not found_exploit_catalog and flags_submitted_count < 4:
+{not found_exploit_catalog() and flags_submitted_count() < 4:
     Agent 0x99: We have strong circumstantial evidence connecting Zero Day to the M2 hospital attack.
 
     Agent 0x99: But without the operational logs or exploit catalog, proving direct causation is harder.
@@ -197,7 +197,7 @@ Agent 0x99: Now... St. Catherine's Hospital. The M2 connection.
 
 Agent 0x99: Victoria Sterling. Codename "Cipher." CEO of WhiteHat Security, leader of Zero Day Syndicate.
 
-{victoria_fate == "recruited":
+{victoria_fate() == "recruited":
     Agent 0x99: And now... your double agent.
 
     Agent 0x99: I'll be honest - that was a hell of a gambit. Recruiting her instead of arresting her.
@@ -216,12 +216,12 @@ Agent 0x99: Victoria Sterling. Codename "Cipher." CEO of WhiteHat Security, lead
 
     * [It was the right call]
         You: It was the right tactical decision given the strategic picture.
-        ~ handler_trust += 10
+        ~  handler_trust += 10
         Agent 0x99: I trust your judgment. You were there, you made the call.
         -> victoria_recruited_path
 }
 
-{victoria_fate == "arrested":
+{victoria_fate() == "arrested":
     Agent 0x99: Victoria Sterling is in federal custody. Charged with conspiracy, providing material support to terrorist operations, and accessory to murder.
 
     Agent 0x99: She's looking at life in prison. Her lawyers are already talking about philosophical defenses - "information freedom," "market forces."
@@ -236,7 +236,7 @@ Agent 0x99: Victoria Sterling. Codename "Cipher." CEO of WhiteHat Security, lead
     * [Justice for St. Catherine's victims]
         You: Angela Martinez. David Chen. Sarah Thompson. Marcus Gray. Jennifer Wu. Robert Patterson.
         You: They have justice now.
-        ~ handler_trust += 10
+        ~  handler_trust += 10
         Agent 0x99: [Quiet moment] Yes. Yes, they do.
         -> victoria_arrested_path
 
@@ -246,7 +246,7 @@ Agent 0x99: Victoria Sterling. Codename "Cipher." CEO of WhiteHat Security, lead
         -> victoria_arrested_path
 }
 
-{victoria_fate != "recruited" and victoria_fate != "arrested":
+{victoria_fate() != "recruited" and victoria_fate() != "arrested":
     Agent 0x99: Victoria Sterling remains at large. She suspects SAFETYNET interest but has no proof of infiltration.
 
     Agent 0x99: We have evidence, but without her in custody, prosecution is harder.
@@ -267,7 +267,7 @@ Agent 0x99: We're establishing encrypted channels for her to feed us ongoing int
 
 Agent 0x99: She'll continue operations at Zero Day to avoid suspicion, but now she reports to us.
 
-{player_approach == "diplomatic":
+{player_approach() == "diplomatic":
     Agent 0x99: Your diplomatic approach made this possible. Well played.
 }
 
@@ -284,7 +284,7 @@ Agent 0x99: Her encryption keys gave us access to client databases, transaction 
 
 Agent 0x99: We're rolling up her network as we speak. Other ENTROPY cells that relied on Zero Day's exploits are scrambling.
 
-{player_approach == "cautious":
+{player_approach() == "cautious":
     Agent 0x99: Your thorough evidence gathering made this arrest possible. Clean prosecution.
 }
 
@@ -299,7 +299,7 @@ Agent 0x99: We're rolling up her network as we speak. Other ENTROPY cells that r
 
 Agent 0x99: Now the big one - Phase 2.
 
-{found_architect_directive:
+{found_architect_directive():
     Agent 0x99: You found The Architect's directive. That USB drive in Victoria's desk.
 
     Agent 0x99: Double-encoded. Base64 and ROT13. You cracked it.
@@ -330,7 +330,7 @@ Agent 0x99: Now the big one - Phase 2.
         -> architect_revelation
 }
 
-{not found_architect_directive:
+{not found_architect_directive():
     Agent 0x99: We know Phase 2 is planned. We've seen references in Victoria's communications.
 
     Agent 0x99: But without the detailed directive, we're working with incomplete intelligence.
@@ -367,7 +367,7 @@ Agent 0x99: "Chaos amplification factor: 3.7x" - they're CALCULATING the synergi
 
 * [This is campaign-level intelligence]
     You: This isn't just one mission. This is the key to the entire ENTROPY network.
-    ~ handler_trust += 10
+    ~  handler_trust += 10
     Agent 0x99: Exactly. You didn't just complete a mission. You gave us the map to their whole operation.
     -> architect_investigation
 
@@ -393,10 +393,10 @@ Agent 0x99: Thanks to you.
 === james_discussion ===
 #speaker:agent_0x99
 
-{james_fate != "":
+{james_fate() != "":
     Agent 0x99: One more thing. James Park, Zero Day's senior consultant.
 
-    {james_fate == "protected":
+    {james_fate() == "protected":
         Agent 0x99: You protected him. Framed his role as unwitting participation under Victoria's deception.
 
         Agent 0x99: I've read your report. And I've read James's diary entries.
@@ -407,7 +407,7 @@ Agent 0x99: Thanks to you.
 
         Agent 0x99: When he learned the truth, he was paralyzed by fear and guilt. That's human.
 
-        {player_approach == "diplomatic":
+        {player_approach() == "diplomatic":
             Agent 0x99: Your diplomatic nuance - recognizing the complexity - that's why this field needs people like you.
         }
 
@@ -418,7 +418,7 @@ Agent 0x99: Thanks to you.
         -> lore_discussion
     }
 
-    {james_fate == "exposed":
+    {james_fate() == "exposed":
         Agent 0x99: You exposed James's full involvement. The reconnaissance, the post-attack knowledge, the hush money.
 
         Agent 0x99: He's been arrested. Charged with conspiracy after the fact and obstruction.
@@ -427,7 +427,7 @@ Agent 0x99: Thanks to you.
 
         Agent 0x99: But when he learned the truth and took Victoria's raise to stay quiet, that became a choice.
 
-        {player_approach == "aggressive":
+        {player_approach() == "aggressive":
             Agent 0x99: Your aggressive approach - all operatives face justice - is consistent. I respect that.
         }
 
@@ -438,7 +438,7 @@ Agent 0x99: Thanks to you.
         -> lore_discussion
     }
 
-    {james_fate == "ignored":
+    {james_fate() == "ignored":
         Agent 0x99: You documented James's situation but left his fate to his own choices.
 
         Agent 0x99: Interesting approach. Not protecting, not exposing. Just... observing.
@@ -447,7 +447,7 @@ Agent 0x99: Thanks to you.
 
         Agent 0x99: He's cooperating. Providing testimony against Victoria. He'll likely avoid charges given the voluntary disclosure.
 
-        {player_approach == "cautious":
+        {player_approach() == "cautious":
             Agent 0x99: Your cautious approach - gather evidence, let the system decide - allowed James's own moral agency.
         }
 
@@ -457,7 +457,7 @@ Agent 0x99: Thanks to you.
     }
 }
 
-{james_fate == "":
+{james_fate() == "":
     -> lore_discussion
 }
 
@@ -468,7 +468,7 @@ Agent 0x99: Thanks to you.
 === lore_discussion ===
 #speaker:agent_0x99
 
-{lore_collected >= 3:
+{lore_collected() >= 3:
     Agent 0x99: Intelligence gathering - exemplary. You collected all LORE fragments.
 
     Agent 0x99: Zero Day's founding philosophy. The exploit catalog. The Architect's directive.
@@ -478,7 +478,7 @@ Agent 0x99: Thanks to you.
     -> lore_fragment_breakdown
 }
 
-{lore_collected == 2:
+{lore_collected() == 2:
     Agent 0x99: You collected some LORE fragments. Useful intelligence on ENTROPY's structure.
 
     Agent 0x99: We would have benefited from the complete set, but what you found helps.
@@ -486,13 +486,13 @@ Agent 0x99: Thanks to you.
     -> final_assessment
 }
 
-{lore_collected == 1:
+{lore_collected() == 1:
     Agent 0x99: You found one LORE fragment. Better than nothing, but we're missing context.
 
     -> final_assessment
 }
 
-{lore_collected == 0:
+{lore_collected() == 0:
     Agent 0x99: No LORE fragments collected. That's... a missed opportunity.
 
     Agent 0x99: LORE provides strategic intelligence about ENTROPY's ideology, structure, and future plans.
@@ -536,9 +536,9 @@ Agent 0x99: This fragment alone justified the entire mission. We know what's com
 === final_assessment ===
 #speaker:agent_0x99
 
-Agent 0x99: Final assessment, {player_name}:
+Agent 0x99: Final assessment, {player_name()}:
 
-{objectives_completed >= 4 and lore_collected >= 2:
+{objectives_completed() >= 4 and lore_collected() >= 2:
     Agent 0x99: Mission success - exceptional. You delivered everything we needed and more.
 
     {handler_trust >= 70:
@@ -554,7 +554,7 @@ Agent 0x99: Final assessment, {player_name}:
     -> aftermath
 }
 
-{objectives_completed >= 2:
+{objectives_completed() >= 2:
     Agent 0x99: Mission success - solid. You got what we needed, even if we didn't get everything.
 
     Agent 0x99: We can work with this. Prosecution is viable. Phase 2 prevention is possible.
@@ -564,7 +564,7 @@ Agent 0x99: Final assessment, {player_name}:
     -> aftermath
 }
 
-{objectives_completed < 2:
+{objectives_completed() < 2:
     Agent 0x99: Mission success - partial. We got some intelligence, but there are significant gaps.
 
     Agent 0x99: We'll use what we have. But this fight against ENTROPY just got harder.
@@ -581,7 +581,7 @@ Agent 0x99: Final assessment, {player_name}:
 
 Agent 0x99: Here's what happens now:
 
-Agent 0x99: Zero Day Syndicate is disrupted. Victoria Sterling {victoria_fate == "arrested": is in custody}{ victoria_fate == "recruited": is our asset}{victoria_fate != "arrested" and victoria_fate != "recruited": has gone dark}.
+Agent 0x99: Zero Day Syndicate is disrupted. Victoria Sterling {victoria_fate() == "arrested": is in custody}{ victoria_fate() == "recruited": is our asset}{victoria_fate() != "arrested" and victoria_fate() != "recruited": has gone dark}.
 
 Agent 0x99: Phase 2 critical infrastructure targets are being hardened. FBI and CISA are coordinating defenses.
 
@@ -615,7 +615,7 @@ Agent 0x99: And SAFETYNET is one step closer to identifying The Architect.
 #speaker:agent_0x99
 
 {handler_trust >= 80:
-    Agent 0x99: {player_name}, I want you to know... you're one of the best agents I've worked with.
+    Agent 0x99: {player_name()}, I want you to know... you're one of the best agents I've worked with.
 
     Agent 0x99: Not just technically skilled. But morally thoughtful. You understand nuance.
 
@@ -623,7 +623,7 @@ Agent 0x99: And SAFETYNET is one step closer to identifying The Architect.
 }
 
 {handler_trust >= 50 and handler_trust < 80:
-    Agent 0x99: You did good work on this mission, {player_name}.
+    Agent 0x99: You did good work on this mission, {player_name()}.
 
     Agent 0x99: Get some rest. We'll need you again soon.
 }
@@ -641,15 +641,15 @@ Agent 0x99: They didn't get justice before. But because of what you did, they ha
 Agent 0x99: That matters.
 
 * [It does matter]
-    ~ handler_trust += 5
+    ~  handler_trust += 5
     You: It matters. That's why we do this work.
     Agent 0x99: Exactly. That's why we fight.
     -> final_words
 
 * [Thank you, Agent 0x99]
     You: Thank you for the support on this mission. Your guidance made the difference.
-    ~ handler_trust += 10
-    Agent 0x99: [Warmly] Any time, {player_name}. We're a team.
+    ~  handler_trust += 10
+    Agent 0x99: [Warmly] Any time, {player_name()}. We're a team.
     -> final_words
 
 * [On to the next mission]
@@ -660,7 +660,7 @@ Agent 0x99: That matters.
 === final_words ===
 #speaker:agent_0x99
 
-Agent 0x99: Stay safe out there, {player_name}.
+Agent 0x99: Stay safe out there, {player_name()}.
 
 Agent 0x99: The fight against ENTROPY continues. But tonight, you've earned some rest.
 
