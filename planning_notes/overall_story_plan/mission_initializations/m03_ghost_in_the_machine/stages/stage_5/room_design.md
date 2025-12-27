@@ -309,5 +309,119 @@ Technical space with racks of servers (blinking LEDs - green/amber), three disti
 
 ---
 
-**Status:** 🔄 IN PROGRESS (Part 2/4 - 4 rooms complete)
-**Next:** Executive office, James's office, executive wing hallway
+### Room 5: Executive Wing Hallway
+
+**ID:** `executive_wing_hallway`
+**Dimensions:** 8 × 4 GU (12m × 6m)
+**Usable Space:** 6 × 2 GU
+**Type:** Corridor
+**Act:** Acts 1-3 (All phases)
+
+**Description:**
+Short hallway connecting main circulation to executive offices. More upscale than main hallway: wood paneling, framed corporate achievements, better carpet. Represents management tier of organization.
+
+**Connections:**
+- **West:** `main_hallway` (open - always accessible)
+- **North:** `executive_office` (locked - requires lockpicking OR victoria_trust >= 40)
+- **South:** `james_office` (unlocked - public consultant office)
+
+**Containers:** None
+
+**Interactive Objects:** None
+
+**NPCs:** None
+
+**Objectives Completed Here:** None (circulation space)
+
+**LORE Fragments:** None
+
+**Technical Notes:**
+- Executive office door: Physical lock (lockpicking) OR granted access if high trust
+- James's office: Unlocked (he's just a consultant, not executive)
+
+---
+
+### Room 6: Executive Office (Victoria Sterling's Workspace)
+
+**ID:** `executive_office`
+**Dimensions:** 10 × 8 GU (15m × 12m)
+**Usable Space:** 8 × 6 GU
+**Type:** Private Office / Executive
+**Act:** Act 2-3 (Nighttime investigation)
+
+**Description:**
+Victoria Sterling's private office. Expensive desk, leather chair, floor-to-ceiling windows overlooking city, corporate art. Professional facade with criminal evidence hidden in plain sight. Locked filing cabinet, wall safe, executive computer. No Victoria present during nighttime (she's left for the day).
+
+**Connections:**
+- **South:** `executive_wing_hallway` (locked door - lockpicking OR victoria_trust >= 40)
+  - **Lock Type:** Physical lock (lockpicking)
+  - **Alternative:** If victoria_trust >= 40, Victoria grants access (social engineering path)
+
+**Containers:**
+
+1. **Filing Cabinet**
+   - **Position:** (1, 5) northwest corner
+   - **Lock:** Physical lock (lockpicking)
+   - **Contents:** LORE Fragment 1 "Zero Day: A Brief History"
+   - **Narrative Purpose:** LORE collection
+   - **Objectives:** `lore_fragment_1` - Find document detailing Zero Day's founding
+
+2. **Desk Drawer (Hidden Compartment)**
+   - **Position:** (4, 3) at desk
+   - **Lock:** None (but hidden - requires examination)
+   - **Contents:** Hidden USB drive with double-encoded message
+   - **Narrative Purpose:** Advanced encoding puzzle
+   - **Objectives:** `lore_fragment_3` - Decode double-encoded USB drive message
+
+3. **Wall Safe**
+   - **Position:** (7, 5) behind painting on east wall
+   - **Lock:** PIN lock (code: 2010)
+   - **Contents:** LORE Fragment 2 DUPLICATE NOTE: This should be in server room instead
+   - **Narrative Purpose:** CORRECTION - This safe should contain different evidence
+   - **Technical Note:** Actually, safe in SERVER ROOM has LORE 2. This executive safe should have exploit catalog or evidence documents
+
+**Interactive Objects:**
+
+1. **Victoria's Executive Computer**
+   - **Position:** (4, 3) on desk
+   - **Interaction:** Login (requires password OR bypass)
+   - **Purpose:** Access email drafts, hex-encoded client files
+   - **Contents:**
+     - Email draft (Base64): Pricing update to Cipher
+     - Client roster file (Hex-encoded): Zero Day Syndicate client list
+   - **Objectives:**
+     - `access_victoria_computer` - Access Victoria's computer
+     - `decode_client_roster` - Decode hex-encoded client roster (at CyberChef)
+
+2. **Hidden USB Drive (in desk drawer)**
+   - **Position:** (4, 3) hidden compartment
+   - **Interaction:** Find via careful desk examination
+   - **Contents:** File with double-encoding (Base64 → ROT13)
+   - **Decoded Message:** The Architect's directive about Phase 1
+   - **Objectives:** `lore_fragment_3` - Decode double-encoded message
+
+**NPCs:** None (Victoria not present during nighttime infiltration)
+
+**Objectives Completed Here:**
+- **Physical Evidence Tasks:**
+  - `access_victoria_computer` - Access executive computer
+  - `decode_client_roster` - Find hex-encoded files (decode at server room CyberChef)
+
+- **Optional LORE:**
+  - `lore_fragment_1` - Filing cabinet (lockpick)
+  - `lore_fragment_3` - Hidden USB drive (double-encode puzzle)
+
+**LORE Fragments:**
+- **Fragment 1:** "Zero Day: A Brief History" (filing cabinet, lockpick required)
+- **Fragment 3:** "The Architect's Directive" (hidden USB, double-encode: Base64+ROT13)
+
+**Technical Notes:**
+- Door lock: Physical lock (lockpicking skill) OR social engineering bypass (victoria_trust >= 40)
+- Computer password: Can be found via investigation OR bypass via hacking minigame
+- USB drive: Hidden interaction (requires "Search desk carefully" action)
+- Hex-encoded files must be decoded at CyberChef workstation in server room (backtracking)
+
+---
+
+**Status:** 🔄 IN PROGRESS (Part 3/4 - 6 rooms complete)
+**Next:** James's office (final room), then summary sections
