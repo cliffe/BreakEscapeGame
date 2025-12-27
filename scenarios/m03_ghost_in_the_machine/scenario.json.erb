@@ -198,13 +198,7 @@ operational_log_content = "TRANSACTION LOG - Q3 2024\n\n[2024-09-15 14:32:11] Pr
 
   "rooms": {
     "reception_lobby": {
-      "name": "Reception Lobby",
-      "description": "Professional reception area with modern furniture and WhiteHat Security logo prominently displayed. Company awards and security certifications (OSCP, CEH, PCI-DSS) line the walls.",
-      "background": "reception_lobby_bg.png",
-      "usable_space": {
-        "width": 6,
-        "height": 4
-      },
+      "type": "room_reception",
       "connections": {
         "north": "main_hallway"
       },
@@ -268,13 +262,7 @@ operational_log_content = "TRANSACTION LOG - Q3 2024\n\n[2024-09-15 14:32:11] Pr
     },
 
     "main_hallway": {
-      "name": "Main Hallway",
-      "description": "Central corridor connecting all office areas. Corporate carpeting, recessed lighting that shifts from bright during the day to dim emergency lighting at night.",
-      "background": "main_hallway_bg.png",
-      "usable_space": {
-        "width": 10,
-        "height": 2
-      },
+      "type": "hall_1x2gu",
       "connections": {
         "south": "reception_lobby",
         "west": "conference_room_01",
@@ -286,13 +274,7 @@ operational_log_content = "TRANSACTION LOG - Q3 2024\n\n[2024-09-15 14:32:11] Pr
     },
 
     "conference_room_01": {
-      "name": "Conference Room",
-      "description": "Professional conference room with a large table seating eight, whiteboard on the east wall, and projector screen. Windows overlook the city below.",
-      "background": "conference_room_bg.png",
-      "usable_space": {
-        "width": 8,
-        "height": 6
-      },
+      "type": "room_office",
       "connections": {
         "east": "main_hallway"
       },
@@ -340,21 +322,13 @@ operational_log_content = "TRANSACTION LOG - Q3 2024\n\n[2024-09-15 14:32:11] Pr
     },
 
     "server_room": {
-      "name": "Server Room",
-      "description": "Technical space filled with racks of servers showing blinking green and amber LEDs. Three distinct workstation areas, a whiteboard on the north wall, filing cabinet, and wall-mounted safe. The HVAC hum provides constant background ambiance.",
-      "background": "server_room_bg.png",
-      "usable_space": {
-        "width": 8,
-        "height": 8
-      },
+      "type": "room_servers",
       "connections": {
-        "south": {
-          "room": "main_hallway",
-          "lock_type": "rfid",
-          "required_item": "victoria_keycard_clone",
-          "bypass_condition": "victoria_trust >= 40"
-        }
+        "south": "main_hallway"
       },
+      "locked": true,
+      "lockType": "rfid",
+      "requires": "victoria_keycard_clone",
       "objects": [
         {
           "id": "filing_cabinet_server",
@@ -480,13 +454,7 @@ operational_log_content = "TRANSACTION LOG - Q3 2024\n\n[2024-09-15 14:32:11] Pr
     },
 
     "executive_wing_hallway": {
-      "name": "Executive Wing Hallway",
-      "description": "Short hallway connecting main circulation to executive offices. Wood paneling, framed corporate achievements, and premium carpeting represent the management tier of the organization.",
-      "background": "executive_wing_hallway_bg.png",
-      "usable_space": {
-        "width": 6,
-        "height": 2
-      },
+      "type": "hall_1x2gu",
       "connections": {
         "west": "main_hallway",
         "north": "executive_office",
@@ -497,20 +465,13 @@ operational_log_content = "TRANSACTION LOG - Q3 2024\n\n[2024-09-15 14:32:11] Pr
     },
 
     "executive_office": {
-      "name": "Executive Office",
-      "description": "Victoria Sterling's private office. Expensive desk, leather chair, floor-to-ceiling windows overlooking the city, and tasteful corporate art. The professional facade conceals criminal evidence hidden in plain sight.",
-      "background": "executive_office_bg.png",
-      "usable_space": {
-        "width": 8,
-        "height": 6
-      },
+      "type": "room_ceo",
       "connections": {
-        "south": {
-          "room": "executive_wing_hallway",
-          "lock_type": "lockpick",
-          "bypass_condition": "victoria_trust >= 40"
-        }
+        "south": "executive_wing_hallway"
       },
+      "locked": true,
+      "lockType": "key",
+      "difficulty": "medium",
       "objects": [
         {
           "id": "filing_cabinet_executive",
@@ -578,13 +539,7 @@ operational_log_content = "TRANSACTION LOG - Q3 2024\n\n[2024-09-15 14:32:11] Pr
     },
 
     "james_office": {
-      "name": "James Park's Office",
-      "description": "Small consultant office with modest desk, dual monitors, and framed OSCP and CEH certifications. Family photos are prominently displayed, and penetration testing reports for hospitals and banks fill the shelves - evidence of genuine ethical hacking work.",
-      "background": "james_office_bg.png",
-      "usable_space": {
-        "width": 6,
-        "height": 4
-      },
+      "type": "room_office",
       "connections": {
         "north": "executive_wing_hallway"
       },
