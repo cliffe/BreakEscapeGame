@@ -12,7 +12,7 @@ VAR flag_distcc_exploit_submitted = false
 VAR flags_submitted_count = 0
 
 // External variables
-EXTERNAL player_name
+EXTERNAL player_name()
 
 // ===========================================
 // MAIN TERMINAL INTERFACE
@@ -27,7 +27,7 @@ EXTERNAL player_name
 ╚═══════════════════════════════════════════╝
 
 Connection established: SAFETYNET Central
-Agent ID: {player_name}
+Agent ID: {player_name()}
 Mission: M03 - Ghost in the Machine
 Status: ACTIVE
 
@@ -71,7 +71,7 @@ Flags submitted: {flags_submitted_count}/4
 
 Enter intercepted intelligence flag:
 
-> flag{literal}{network_scan_complete}
+[> flag\{network_scan_complete\}]
 
 Processing...
 
@@ -116,7 +116,7 @@ Unlocked: Banner grabbing and HTTP analysis objectives
 
 Enter intercepted intelligence flag:
 
-> flag{literal}{ftp_intel_gathered}
+[> flag\{ftp_intel_gathered\}]
 
 Processing...
 
@@ -166,7 +166,7 @@ environment for Ransomware Inc hospital attacks.
 
 Enter intercepted intelligence flag:
 
-> flag{literal}{pricing_intel_decoded}
+[> flag\{pricing_intel_decoded\}]
 
 Processing...
 
@@ -226,7 +226,7 @@ exploit sales. Locate transaction records.
 
 Enter intercepted intelligence flag:
 
-> flag{literal}{distcc_legacy_compromised}
+[> flag\{distcc_legacy_compromised\}]
 
 Processing...
 
@@ -319,24 +319,24 @@ The terminal remains active for further submissions.
 Flags submitted: {flags_submitted_count}/4
 
 {flag_scan_network_submitted:
-    ✓ FLAG 1: Network Scan (192.168.100.0/24)
-      Status: Verified | Services enumerated
+    [✓ FLAG 1: Network Scan (192.168.100.0/24)]
+    [Status: Verified -Services enumerated]
 }
 
 {flag_ftp_banner_submitted:
-    ✓ FLAG 2: FTP Banner (GHOST codename)
-      Status: Verified | M2 connection identified
+    [✓ FLAG 2: FTP Banner (GHOST codename)]
+    [Status: Verified -M2 connection identified]
 }
 
 {flag_http_analysis_submitted:
-    ✓ FLAG 3: HTTP Pricing Data
-      Status: Verified | Exploit pricing model decoded
+    [✓ FLAG 3: HTTP Pricing Data]
+    [Status: Verified -Exploit pricing model decoded]
 }
 
 {flag_distcc_exploit_submitted:
-    ✓ FLAG 4: distcc Exploitation (CRITICAL)
-      Status: Verified | Operational logs recovered
-      ⚠ M2 smoking gun evidence confirmed
+    [✓ FLAG 4: distcc Exploitation (CRITICAL)]
+    [Status: Verified -Operational logs recovered]
+    [⚠ M2 smoking gun evidence confirmed]
 }
 
 {flags_submitted_count == 4:
