@@ -529,5 +529,196 @@ Small consultant office. Modest desk with dual monitors, OSCP and CEH certificat
 
 ---
 
-**Status:** 🔄 IN PROGRESS (Part 4/5 - All 7 rooms complete)
-**Next:** Progressive unlocking flow, objectives mapping, lock variety analysis
+## Progressive Unlocking Flow
+
+### Initial State (Mission Start - Daytime Act 1)
+
+**✅ Accessible:**
+- Reception Lobby (starting room)
+- Main Hallway
+- Conference Room (Victoria meeting location)
+
+**🔒 Locked:**
+- Server Room (RFID locked - requires Victoria's keycard clone)
+- Executive Office (physical lock - requires lockpicking OR victoria_trust >= 40)
+- James's Office (unlocked but not visited yet)
+- Executive Wing Hallway (accessible but leads to locked areas)
+
+**Mission Phase:** Daytime undercover meeting with Victoria
+
+---
+
+### After Task: clone_rfid_card (End of Act 1)
+
+**🔓 Unlocks:**
+- Server Room via cloned RFID keycard
+- **Alternative Path:** If victoria_trust >= 40, Victoria grants server room access voluntarily
+
+**New Accessible:**
+- Server Room (PRIMARY INVESTIGATION HUB)
+  - VM terminal for challenges
+  - CyberChef workstation for decoding
+  - Drop-site terminal for flag submission
+
+**Mission Transition:** Daytime → Nighttime (time skip to 2:00 AM)
+
+---
+
+### After Nighttime Infiltration Begins (Act 2 Start)
+
+**✅ Now Accessible:**
+- All daytime rooms (but empty - no NPCs except guard)
+- Server Room (if RFID cloned OR trust path)
+- Executive Wing Hallway (can explore)
+- James's Office (optional - unlocked)
+
+**🔒 Still Locked:**
+- Executive Office (lockpicking required OR victoria_trust >= 40)
+
+**New Challenges:**
+- Night security guard on patrol (stealth challenge)
+- RFID door to server room (unless already have keycard/access)
+
+---
+
+### After Task: access_victoria_computer
+
+**🔓 Unlocks:**
+- Executive Office interior (via lockpicking door OR social engineering)
+- Access to Victoria's computer (password required OR hack)
+- Filing cabinet, desk drawer, wall safe all become accessible
+
+**New Accessible:**
+- LORE Fragment 1 (filing cabinet, requires lockpicking)
+- LORE Fragment 3 (hidden USB drive in desk)
+- Hex-encoded client roster (computer file)
+- Email drafts (computer)
+
+**Backtracking Required:**
+- Must return to Server Room CyberChef to decode hex files
+
+---
+
+### After Task: distcc_exploit (MIDPOINT TWIST)
+
+**🔓 Event-Unlocked:**
+- Operational logs file spawns on drop-site terminal
+- Agent 0x99 auto-triggered conversation (M2 revelation)
+
+**New Intelligence:**
+- M2 hospital connection revealed
+- ProFTPD sale to GHOST for $12,500 discovered
+- Campaign narrative escalation
+
+---
+
+### Final State (All Evidence Collected)
+
+**✅ All Accessible:**
+- All 7 rooms fully explored
+- All containers opened (lockpicking, PIN codes)
+- All evidence gathered (physical + digital)
+- All VM flags submitted
+
+**Mission Progression:**
+- Optional: Victoria confrontation
+- Optional: James protection choice
+- Mission completion criteria met
+
+---
+
+## Lock Variety Analysis
+
+### Lock Types Used: ✅ 5 different types
+
+- ✅ **RFID Keycard** (social/technical)
+- ✅ **Physical Locks / Lockpicking** (skill-based)
+- ✅ **PIN Codes** (cognitive/investigation)
+- ✅ **Passwords** (hacking/investigation)
+- ✅ **Hidden Items** (exploration/examination)
+
+**Variety Score:** Excellent - 5 different lock types across 7 rooms
+
+### Lock Progression Order:
+
+#### Lock 1: RFID Keycard Clone (Social Engineering + Technical)
+- **Location:** Server Room door
+- **Unlock Method:** Clone Victoria's keycard during meeting (proximity-based minigame)
+- **Difficulty:** Medium
+- **Rewards:** Access to server room (PRIMARY HUB)
+- **Blocks Critical Path:** YES (must access server room for VM challenges)
+- **Type:** RFID/Keycard
+
+#### Lock 2: PIN Code Safe (Cognitive Discovery)
+- **Location:** Server Room wall safe
+- **Unlock Method:** Discover founding year (2010) from reception plaque
+- **Difficulty:** Easy (hint in plain sight)
+- **Rewards:** LORE Fragment 2 "Exploit Catalog"
+- **Blocks Critical Path:** NO (optional LORE)
+- **Type:** PIN
+
+#### Lock 3: Executive Office Door (Physical Lock)
+- **Location:** Executive Office entrance
+- **Unlock Method:** Lockpicking OR victoria_trust >= 40 (social engineering bypass)
+- **Difficulty:** Medium
+- **Rewards:** Access to Victoria's workspace (computer, filing cabinet, LORE)
+- **Blocks Critical Path:** NO (server room has enough for minimum objectives)
+- **Type:** Physical Lock / Lockpicking
+
+#### Lock 4: Filing Cabinet in Executive Office (Physical Lock)
+- **Location:** Executive Office filing cabinet
+- **Unlock Method:** Lockpicking
+- **Difficulty:** Easy (lockpicking skill)
+- **Rewards:** LORE Fragment 1 "Zero Day Origins"
+- **Blocks Critical Path:** NO (optional LORE)
+- **Type:** Physical Lock / Lockpicking
+
+#### Lock 5: Filing Cabinet in Server Room (Physical Lock)
+- **Location:** Server Room filing cabinet
+- **Unlock Method:** Lockpicking
+- **Difficulty:** Easy
+- **Rewards:** Additional client documents
+- **Blocks Critical Path:** NO (optional context)
+- **Type:** Physical Lock / Lockpicking
+
+#### Lock 6: Victoria's Computer (Password)
+- **Location:** Executive Office computer
+- **Unlock Method:** Find password hints OR bypass via hacking minigame
+- **Difficulty:** Medium
+- **Rewards:** Hex-encoded client roster, email drafts
+- **Blocks Critical Path:** Partially (required for `access_victoria_computer` task)
+- **Type:** Password
+
+#### Lock 7: Hidden USB Drive (Exploration)
+- **Location:** Executive Office desk hidden compartment
+- **Unlock Method:** Careful desk examination (no lock, just hidden)
+- **Difficulty:** Easy (search action)
+- **Rewards:** LORE Fragment 3 (double-encoded message)
+- **Blocks Critical Path:** NO (optional LORE)
+- **Type:** Hidden Item
+
+### Critical Path Locks:
+1. **RFID Keycard** (server room) → **REQUIRED**
+2. **Passwords** (Victoria's computer) → **REQUIRED** for full evidence
+
+**Optional Locks:** PIN safe, filing cabinets, hidden USB (all LORE/optional)
+
+### Validation Checklist:
+
+- ✅ At least 3 different lock types used (5 total)
+- ✅ Keys used BEFORE lockpick obtained: N/A (no traditional keys in this mission)
+- ✅ Locks ordered easy → medium → hard: YES (founding year → RFID clone → lockpicking + passwords)
+- ✅ Lockpick comes after key-based progression: N/A (lockpick pre-existing skill, not obtained mid-mission)
+- ✅ No "same-y" gameplay: Excellent variety (social engineering, investigation, technical, skill-based)
+- ✅ PIN codes have discoverable hints: YES (2010 founding year on plaque)
+
+**Design Notes:**
+- Mission focuses on **social engineering** (RFID cloning) and **investigation** (finding passwords, decoding) rather than traditional key-finding
+- Lockpicking is a **supplementary skill** for optional content, not critical path
+- RFID cloning mechanic is NEW for Mission 3, providing fresh gameplay
+- Lock variety supports multiple playstyles: stealth, social engineering, technical exploitation
+
+---
+
+**Status:** 🔄 IN PROGRESS (Part 5/6)
+**Next:** Container summary, NPC placement, hybrid architecture integration
