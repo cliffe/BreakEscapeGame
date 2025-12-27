@@ -301,5 +301,115 @@ ACT 3: CONFRONTATION & CHOICE
 
 ---
 
-**Status:** 🔄 IN PROGRESS (Part 1/3 complete)
-**Next Section:** Optional Objectives + Objective-to-World Mapping
+## Optional Objectives
+
+### Optional Objective 1: Collect LORE Fragments
+
+**ID:** `collect_lore`
+**Description:** "Discover hidden LORE fragments about ENTROPY and The Architect"
+**Purpose:** World-building, completionist content, deeper understanding of ENTROPY mythology
+**Reward:** 3 LORE fragments revealing Zero Day's history and The Architect's directives
+
+**Aims:**
+
+#### Aim: Find all LORE fragments
+**ID:** `find_all_lore`
+**Description:** "Locate 3 hidden LORE fragments"
+**Status at Start:** `active` (optional objectives available from start)
+
+**Tasks:**
+
+##### Task: LORE Fragment 1 - Zero Day Origins
+- **ID:** `lore_fragment_1`
+- **Type:** In-Game (hidden item)
+- **Description:** "Find the document detailing Zero Day Syndicate's founding"
+- **Location:** Executive office - filing cabinet (lockpick required)
+- **Completion:** Pickup text_file item "Zero Day: A Brief History"
+- **Status at Start:** `active`
+
+##### Task: LORE Fragment 2 - Exploit Catalog
+- **ID:** `lore_fragment_2`
+- **Type:** In-Game (safe puzzle)
+- **Description:** "Open Victoria's safe to find the exploit catalog"
+- **Location:** Executive office - wall safe (PIN: 2010)
+- **Completion:** Pickup text_file item "Q3 2024 Exploit Catalog"
+- **Status at Start:** `active`
+
+##### Task: LORE Fragment 3 - The Architect's Directive
+- **ID:** `lore_fragment_3`
+- **Type:** In-Game (advanced encoding)
+- **Description:** "Decode the double-encoded USB drive message"
+- **Location:** Executive office - hidden USB drive in desk drawer
+- **Completion:** Successfully decode ROT13+Base64 message revealing Architect communication
+- **Status at Start:** `active`
+
+**Completion Reward:** Complete understanding of Zero Day's role in ENTROPY, first direct Architect communication
+
+---
+
+### Optional Objective 2: Perfect Stealth
+
+**ID:** `perfect_stealth`
+**Description:** "Complete the mission without being detected by the guard"
+**Purpose:** Challenge for skilled players, demonstrates operational security mastery
+**Reward:** Achievement, higher mission rating, Agent 0x99 commendation in debrief
+
+**Aims:**
+
+#### Aim: Maintain stealth throughout mission
+**ID:** `stealth_mastery`
+**Description:** "Avoid detection by the night security guard"
+**Status at Start:** `active`
+
+**Tasks:**
+
+##### Task: Complete mission undetected
+- **ID:** `zero_detection`
+- **Type:** In-Game (behavioral challenge)
+- **Description:** "Complete all objectives without triggering guard detection"
+- **Completion:** Automatic tracking - guard_detected variable remains false throughout mission
+- **Status at Start:** `active`
+- **Note:** This is a single task that tracks behavior throughout the mission
+
+**Completion Reward:** Debrief acknowledgment: "Perfect stealth. No trace of your presence. Textbook operation, Agent."
+
+---
+
+### Optional Objective 3: Moral Engagement
+
+**ID:** `moral_choices`
+**Description:** "Engage with the moral complexity of the mission"
+**Purpose:** Ensure players encounter moral choice points, deepen narrative engagement
+**Reward:** Richer story experience, campaign-level consequences
+
+**Aims:**
+
+#### Aim: Make key moral decisions
+**ID:** `engage_moral_choices`
+**Description:** "Confront the moral choices in the mission"
+**Status at Start:** `locked` (unlocks when evidence gathered)
+
+**Tasks:**
+
+##### Task: Decide James Park's fate
+- **ID:** `james_choice_made`
+- **Type:** In-Game (moral choice)
+- **Description:** "Decide whether to protect James Park from collateral damage"
+- **Completion:** Player makes choice (warn/evidence/ignore) in Scene 12
+- **Ink Tag:** `#complete_task:james_choice_made`
+- **Status at Start:** `locked` (unlocks when james_innocence_confirmed)
+
+##### Task: Decide Victoria's fate
+- **ID:** `victoria_choice_made`
+- **Type:** In-Game (moral choice)
+- **Description:** "Confront Victoria Sterling and decide her fate"
+- **Completion:** Player makes choice (arrest/recruit/delay) in Scene 13
+- **Ink Tag:** `#complete_task:victoria_choice_made`
+- **Status at Start:** `locked` (unlocks when all_evidence_collected)
+
+**Completion Reward:** Campaign-level consequences in M4-M9, personalized debrief
+
+---
+
+**Status:** 🔄 IN PROGRESS (Part 2/3 complete)
+**Next Section:** Objective-to-World Mapping + JSON Structure
