@@ -230,33 +230,36 @@ operational_log_content = "TRANSACTION LOG - Q3 2024\n\n[2024-09-15 14:32:11] Pr
       "npcs": [
         {
           "id": "receptionist_npc",
-          "name": "Receptionist",
-          "type": "person",
-          "position": {"x": 3, "y": 2},
-          "dialogue_script": "m03_npc_receptionist.json",
-          "spawn_condition": "time_of_day == 'daytime'",
-          "portrait": "receptionist_neutral.png"
+          "displayName": "Receptionist",
+          "npcType": "person",
+          "position": {"x": 300, "y": 200},
+          "storyPath": "scenarios/m03_ghost_in_the_machine/ink/m03_npc_receptionist.json",
+          "spriteSheet": "hacker-red",
+          "spriteConfig": {
+            "idleFrameStart": 20,
+            "idleFrameEnd": 23
+          }
         },
         {
           "id": "night_guard",
-          "name": "Security Guard",
-          "type": "person",
-          "position": {"x": 3, "y": 2},
-          "dialogue_script": "m03_npc_guard.json",
-          "spawn_condition": "time_of_day == 'nighttime'",
-          "portrait": "guard_neutral.png",
-          "patrol": {
-            "enabled": true,
-            "waypoints": [
-              {"room": "reception_lobby", "position": {"x": 3, "y": 2}, "pause_ticks": 15},
-              {"room": "main_hallway", "position": {"x": 2, "y": 1}, "pause_ticks": 15},
-              {"room": "main_hallway", "position": {"x": 6, "y": 1}, "pause_ticks": 15},
-              {"room": "main_hallway", "position": {"x": 9, "y": 1}, "pause_ticks": 20}
-            ],
-            "loop": true,
-            "detection_range": 7.5,
-            "detection_cone": 120
+          "displayName": "Security Guard",
+          "npcType": "person",
+          "position": {"x": 300, "y": 200},
+          "storyPath": "scenarios/m03_ghost_in_the_machine/ink/m03_npc_guard.json",
+          "spriteSheet": "hacker",
+          "spriteConfig": {
+            "idleFrameStart": 20,
+            "idleFrameEnd": 23
           }
+        },
+        {
+          "id": "agent_0x99",
+          "displayName": "Agent 0x99",
+          "npcType": "phone",
+          "storyPath": "scenarios/m03_ghost_in_the_machine/ink/m03_phone_agent0x99.json",
+          "avatar": "assets/npc/avatars/npc_helper.png",
+          "phoneId": "player_phone",
+          "currentKnot": "start"
         }
       ]
     },
@@ -305,17 +308,14 @@ operational_log_content = "TRANSACTION LOG - Q3 2024\n\n[2024-09-15 14:32:11] Pr
       "npcs": [
         {
           "id": "victoria_sterling",
-          "name": "Victoria Sterling",
-          "type": "person",
-          "position": {"x": 4, "y": 3},
-          "dialogue_script": "m03_npc_victoria.json",
-          "spawn_condition": "time_of_day == 'daytime' AND mission_phase == 'act1_meeting'",
-          "portrait": "victoria_neutral.png",
-          "rfid_cloning": {
-            "enabled": true,
-            "proximity_required": 2.0,
-            "duration_seconds": 10,
-            "completion_task": "clone_rfid_card"
+          "displayName": "Victoria Sterling",
+          "npcType": "person",
+          "position": {"x": 400, "y": 300},
+          "storyPath": "scenarios/m03_ghost_in_the_machine/ink/m03_npc_victoria.json",
+          "spriteSheet": "hacker-red",
+          "spriteConfig": {
+            "idleFrameStart": 20,
+            "idleFrameEnd": 23
           }
         }
       ]
@@ -606,49 +606,7 @@ operational_log_content = "TRANSACTION LOG - Q3 2024\n\n[2024-09-15 14:32:11] Pr
     }
   },
 
-  "phone_contacts": [
-    {
-      "id": "agent_0x99",
-      "name": "Agent 0x99",
-      "portrait": "agent_0x99_neutral.png",
-      "dialogue_script": "m03_phone_agent0x99.json",
-      "availability": "always"
-    }
-  ],
-
-  "mission_events": [
-    {
-      "id": "opening_briefing",
-      "trigger": "mission_start",
-      "type": "dialogue",
-      "dialogue_script": "m03_opening_briefing.json",
-      "blocking": true
-    },
-    {
-      "id": "daytime_to_nighttime",
-      "trigger": "task_completed:clone_rfid_card",
-      "type": "time_shift",
-      "new_time": "nighttime",
-      "unlocks_aims": ["network_recon", "gather_evidence"]
-    },
-    {
-      "id": "victoria_confrontation",
-      "trigger": "task_completed:find_operational_logs AND variable:return_to_victoria == true",
-      "type": "dialogue",
-      "dialogue_script": "m03_npc_victoria.json",
-      "dialogue_knot": "final_confrontation",
-      "unlocks_task": "victoria_choice_made"
-    },
-    {
-      "id": "closing_debrief",
-      "trigger": "mission_complete",
-      "type": "dialogue",
-      "dialogue_script": "m03_closing_debrief.json",
-      "blocking": true
-    }
-  ],
-
-  "global_variables": {
+  "globalVariables": {
     "time_of_day": "daytime",
     "mission_phase": "act1_meeting",
     "victoria_influence": 0,
