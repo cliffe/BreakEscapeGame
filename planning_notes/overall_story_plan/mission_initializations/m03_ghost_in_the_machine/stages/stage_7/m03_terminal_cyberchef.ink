@@ -12,7 +12,7 @@ VAR usb_drive_decoded_layer2 = false
 VAR first_time_tutorial = true
 
 // External variables
-EXTERNAL player_name
+EXTERNAL player_name()
 
 // ===========================================
 // MAIN TERMINAL INTERFACE
@@ -30,11 +30,11 @@ EXTERNAL player_name
     [This workstation provides real-time encoding/decoding]
     [Use CyberChef operations to decode evidence]
 
-    Available operations:
-    - From Base64
-    - ROT13
-    - From Hex
-    - Multi-layer decoding (sequential operations)
+    [Available operations:]
+    [• From Base64]
+    [• ROT13]
+    [• From Hex]
+    [• Multi-layer decoding (sequential operations)]
 
     ~ first_time_tutorial = false
 }
