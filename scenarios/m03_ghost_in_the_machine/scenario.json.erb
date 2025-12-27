@@ -204,27 +204,20 @@ operational_log_content = "TRANSACTION LOG - Q3 2024\n\n[2024-09-15 14:32:11] Pr
       },
       "objects": [
         {
-          "id": "reception_desk",
-          "name": "Reception Desk",
-          "type": "container",
-          "position": {"x": 3, "y": 2},
-          "locked": false,
-          "contents": [
-            {
-              "id": "building_directory",
-              "name": "Building Directory",
-              "type": "document",
-              "description": "WhiteHat Security floor plan showing office locations"
-            }
-          ]
+          "type": "notes",
+          "name": "Building Directory",
+          "takeable": false,
+          "readable": true,
+          "text": "WhiteHat Security floor plan showing office locations",
+          "observations": "Building directory at reception desk"
         },
         {
-          "id": "founding_plaque",
+          "type": "notes",
           "name": "Company Founding Plaque",
-          "type": "interactable",
-          "position": {"x": 5, "y": 2},
-          "examination_text": "WhiteHat Security Services - Founded 2010",
-          "hint": "The founding year might be useful elsewhere..."
+          "takeable": false,
+          "readable": true,
+          "text": "WhiteHat Security Services - Founded 2010",
+          "observations": "The founding year might be useful elsewhere..."
         }
       ],
       "npcs": [
@@ -283,26 +276,20 @@ operational_log_content = "TRANSACTION LOG - Q3 2024\n\n[2024-09-15 14:32:11] Pr
       },
       "objects": [
         {
-          "id": "conference_table",
-          "name": "Conference Table",
-          "type": "container",
-          "position": {"x": 4, "y": 3},
-          "locked": false,
-          "contents": [
-            {
-              "id": "presentation_materials",
-              "name": "Presentation Materials",
-              "type": "document",
-              "description": "WhiteHat Security company portfolio and case studies"
-            }
-          ]
+          "type": "notes",
+          "name": "Presentation Materials",
+          "takeable": false,
+          "readable": true,
+          "text": "WhiteHat Security company portfolio and case studies",
+          "observations": "Professional materials on conference table"
         },
         {
-          "id": "conference_whiteboard",
-          "name": "Whiteboard",
-          "type": "interactable",
-          "position": {"x": 7, "y": 4},
-          "examination_text": "Legitimate security diagrams and penetration testing methodology flowcharts"
+          "type": "notes",
+          "name": "Conference Whiteboard",
+          "takeable": false,
+          "readable": true,
+          "text": "Legitimate security diagrams and penetration testing methodology flowcharts",
+          "observations": "Standard business diagrams"
         }
       ],
       "npcs": [
@@ -331,126 +318,70 @@ operational_log_content = "TRANSACTION LOG - Q3 2024\n\n[2024-09-15 14:32:11] Pr
       "requires": "victoria_keycard_clone",
       "objects": [
         {
-          "id": "filing_cabinet_server",
+          "type": "safe",
           "name": "Filing Cabinet",
-          "type": "container",
-          "position": {"x": 1, "y": 7},
+          "takeable": false,
           "locked": true,
-          "lock_type": "lockpick",
-          "contents": [
+          "lockType": "key",
+          "difficulty": "easy",
+          "observations": "Locked filing cabinet - might contain client documents",
+          "itemsHeld": [
             {
-              "id": "client_list_docs",
+              "type": "notes",
               "name": "Client List Documents",
-              "type": "document",
-              "description": "Network diagrams and client engagement summaries"
+              "takeable": true,
+              "readable": true,
+              "text": "Network diagrams and client engagement summaries"
             }
           ]
         },
         {
-          "id": "wall_safe_server",
+          "type": "safe",
           "name": "Wall Safe",
-          "type": "container",
-          "position": {"x": 7, "y": 7},
+          "takeable": false,
           "locked": true,
-          "lock_type": "pin",
-          "pin_code": "2010",
-          "contents": [
+          "lockType": "pin",
+          "keyPins": [2, 0, 1, 0],
+          "difficulty": "medium",
+          "observations": "4-digit PIN safe mounted on wall",
+          "itemsHeld": [
             {
-              "id": "lore_fragment_2_doc",
+              "type": "text_file",
               "name": "Q3 2024 Exploit Catalog",
-              "type": "lore_document",
-              "content": "<%= json_escape(lore_fragment_2) %>",
-              "completes_task": "lore_fragment_2"
+              "takeable": true,
+              "readable": true,
+              "text": "<%= json_escape(lore_fragment_2) %>"
             }
           ]
         },
         {
-          "id": "whiteboard_rot13",
+          "type": "notes",
           "name": "Server Room Whiteboard",
-          "type": "interactable",
-          "position": {"x": 4, "y": 7},
-          "examination_text": "<%= whiteboard_message_encoded %>",
-          "decoded_text": "MEET WITH THE ARCHITECT - PRIORITIZE INFRASTRUCTURE EXPLOITS",
-          "encoding": "rot13",
-          "completes_task": "decode_whiteboard"
+          "takeable": false,
+          "readable": true,
+          "text": "<%= whiteboard_message_encoded %>",
+          "observations": "Whiteboard with encoded message - looks like ROT13"
         },
         {
-          "id": "vm_terminal",
+          "type": "vm-launcher",
           "name": "VM Access Terminal",
-          "type": "terminal",
-          "position": {"x": 2, "y": 4},
-          "terminal_type": "vm_challenges",
-          "challenges": [
-            {
-              "id": "nmap_scan",
-              "command": "nmap 192.168.100.0/24",
-              "flag": "flag{network_scan_complete}",
-              "completes_task": "scan_network"
-            },
-            {
-              "id": "ftp_banner",
-              "command": "nc 192.168.100.10 21",
-              "flag": "flag{ftp_intel_gathered}",
-              "completes_task": "ftp_banner"
-            },
-            {
-              "id": "http_pricing",
-              "command": "curl http://192.168.100.30/pricing/data.txt",
-              "flag": "flag{pricing_intel_decoded}",
-              "completes_task": "http_analysis"
-            },
-            {
-              "id": "distcc_exploit",
-              "command": "msfconsole -x 'use exploit/unix/misc/distcc_exec; set RHOST 192.168.100.20; exploit'",
-              "flag": "flag{distcc_legacy_compromised}",
-              "completes_task": "distcc_exploit",
-              "triggers_event": "m2_revelation"
-            }
-          ]
+          "takeable": false,
+          "observations": "Terminal for accessing Zero Day training network VMs"
         },
         {
-          "id": "cyberchef_workstation",
+          "type": "workstation",
           "name": "CyberChef Decoding Workstation",
-          "type": "terminal",
-          "position": {"x": 6, "y": 4},
-          "terminal_type": "decoder",
-          "supported_encodings": ["rot13", "base64", "hex"],
-          "completes_tasks": ["decode_whiteboard", "decode_client_roster", "lore_fragment_3"]
+          "takeable": false,
+          "observations": "Workstation with decoding tools (ROT13, Base64, Hex)"
         },
         {
-          "id": "dropsite_terminal",
+          "type": "flag-station",
           "name": "Drop-Site Terminal",
-          "type": "terminal",
-          "position": {"x": 4, "y": 4},
-          "terminal_type": "flag_submission",
-          "dialogue_script": "m03_terminal_dropsite.json"
+          "takeable": false,
+          "observations": "Terminal for submitting VM flags"
         }
       ],
-      "npcs": [],
-      "events": [
-        {
-          "id": "operational_logs_spawn",
-          "trigger": "task_completed:distcc_exploit",
-          "action": "spawn_object",
-          "object": {
-            "id": "operational_logs",
-            "name": "Operational Logs",
-            "type": "document",
-            "position": {"x": 4, "y": 4},
-            "content": "<%= json_escape(operational_log_content) %>",
-            "completes_task": "find_operational_logs"
-          }
-        },
-        {
-          "id": "m2_revelation_call",
-          "trigger": "task_completed:distcc_exploit",
-          "action": "phone_call",
-          "caller": "agent_0x99",
-          "dialogue_script": "m03_phone_agent0x99.json",
-          "dialogue_knot": "m2_connection_revealed",
-          "unlocks_objective": "moral_choices"
-        }
-      ]
+      "npcs": []
     },
 
     "executive_wing_hallway": {
@@ -474,63 +405,61 @@ operational_log_content = "TRANSACTION LOG - Q3 2024\n\n[2024-09-15 14:32:11] Pr
       "difficulty": "medium",
       "objects": [
         {
-          "id": "filing_cabinet_executive",
+          "type": "safe",
           "name": "Filing Cabinet",
-          "type": "container",
-          "position": {"x": 1, "y": 5},
+          "takeable": false,
           "locked": true,
-          "lock_type": "lockpick",
-          "contents": [
+          "lockType": "key",
+          "difficulty": "medium",
+          "observations": "Locked filing cabinet in executive office",
+          "itemsHeld": [
             {
-              "id": "lore_fragment_1_doc",
+              "type": "text_file",
               "name": "Zero Day: A Brief History",
-              "type": "lore_document",
-              "content": "<%= json_escape(lore_fragment_1) %>",
-              "completes_task": "lore_fragment_1"
+              "takeable": true,
+              "readable": true,
+              "text": "<%= json_escape(lore_fragment_1) %>"
             }
           ]
         },
         {
-          "id": "victoria_computer",
+          "type": "pc",
           "name": "Executive Computer",
-          "type": "computer",
-          "position": {"x": 4, "y": 3},
+          "takeable": false,
           "locked": true,
-          "lock_type": "password",
-          "password_hint": "Victoria's favorite security conference year",
-          "contents": [
+          "lockType": "password",
+          "difficulty": "medium",
+          "observations": "Victoria Sterling's executive computer - password protected",
+          "itemsHeld": [
             {
-              "id": "email_draft_pricing",
+              "type": "text_file",
               "name": "Email Draft - Pricing Update",
-              "type": "email",
-              "content_base64": "<%= base64_encode('Cipher - Updated pricing for Q4: ProFTPD RCE $15K, Apache Struts $20K. Healthcare premium remains +40%. -V') %>"
+              "takeable": false,
+              "readable": true,
+              "text": "<%= base64_encode('Cipher - Updated pricing for Q4: ProFTPD RCE $15K, Apache Struts $20K. Healthcare premium remains +40%. -V') %>"
             },
             {
-              "id": "client_roster_hex",
+              "type": "text_file",
               "name": "Client Roster",
-              "type": "document",
-              "content_hex": "<%= client_roster_hex %>",
-              "completes_task": "access_victoria_computer"
+              "takeable": true,
+              "readable": true,
+              "text": "<%= client_roster_hex %>"
             }
           ]
         },
         {
-          "id": "desk_drawer_hidden",
+          "type": "suitcase",
           "name": "Desk Drawer",
-          "type": "container",
-          "position": {"x": 4, "y": 3},
+          "takeable": false,
           "locked": false,
-          "hidden": true,
-          "search_required": true,
-          "contents": [
+          "observations": "Hidden compartment in Victoria's desk",
+          "itemsHeld": [
             {
-              "id": "usb_drive_architect",
+              "type": "text_file",
               "name": "Hidden USB Drive",
-              "type": "usb_device",
-              "content_encoded": "<%= lore_fragment_3_encoded %>",
-              "encoding": "base64_rot13",
-              "decoded_content": "<%= architect_directive %>",
-              "completes_task": "lore_fragment_3"
+              "takeable": true,
+              "readable": true,
+              "text": "<%= lore_fragment_3_encoded %>"
             }
           ]
         }
@@ -545,64 +474,47 @@ operational_log_content = "TRANSACTION LOG - Q3 2024\n\n[2024-09-15 14:32:11] Pr
       },
       "objects": [
         {
-          "id": "james_desk_drawer",
-          "name": "Desk Drawer",
-          "type": "container",
-          "position": {"x": 3, "y": 2},
-          "locked": false,
-          "contents": [
-            {
-              "id": "performance_review",
-              "name": "Performance Review",
-              "type": "document",
-              "description": "Exceptional ethical standards and commitment to responsible disclosure",
-              "sets_variable": "james_innocence_confirmed:true"
-            }
-          ]
+          "type": "notes",
+          "name": "Performance Review",
+          "takeable": false,
+          "readable": true,
+          "text": "Exceptional ethical standards and commitment to responsible disclosure",
+          "observations": "Document found in James's desk drawer"
         },
         {
-          "id": "family_photo",
+          "type": "notes",
           "name": "Family Photo",
-          "type": "interactable",
-          "position": {"x": 3, "y": 2},
-          "examination_text": "James with wife Emily and daughter Sophie (age 4). Sophie holds a sign reading 'My Daddy is a Good Hacker!'",
-          "emotional_impact": "high",
-          "sets_variable": "james_innocence_confirmed:true"
+          "takeable": false,
+          "readable": true,
+          "text": "James with wife Emily and daughter Sophie (age 4). Sophie holds a sign reading 'My Daddy is a Good Hacker!'",
+          "observations": "Touching family photo on James's desk"
         },
         {
-          "id": "james_computer",
+          "type": "pc",
           "name": "James's Workstation",
-          "type": "computer",
-          "position": {"x": 3, "y": 3},
+          "takeable": false,
           "locked": false,
-          "contents": [
+          "observations": "James's computer - unlocked",
+          "itemsHeld": [
             {
-              "id": "email_to_emily",
+              "type": "text_file",
               "name": "Email to Emily",
-              "type": "email",
-              "subject": "Sophie's School Presentation",
-              "content": "Hey Em, Sophie's teacher loved the 'ethical hacking' presentation! She wants me to come back next month. Love you both. -James"
+              "takeable": false,
+              "readable": true,
+              "text": "Hey Em, Sophie's teacher loved the 'ethical hacking' presentation! She wants me to come back next month. Love you both. -James"
             }
           ]
         },
         {
-          "id": "certification_wall",
+          "type": "notes",
           "name": "Certification Wall",
-          "type": "interactable",
-          "position": {"x": 1, "y": 3},
-          "examination_text": "OSCP (Offensive Security Certified Professional) and CEH (Certified Ethical Hacker) certificates, both current",
-          "sets_variable": "james_innocence_confirmed:true"
+          "takeable": false,
+          "readable": true,
+          "text": "OSCP (Offensive Security Certified Professional) and CEH (Certified Ethical Hacker) certificates, both current",
+          "observations": "Professional certifications displayed on wall"
         }
       ],
-      "npcs": [],
-      "dialogue_triggers": [
-        {
-          "id": "james_moral_choice",
-          "trigger": "variable:james_innocence_confirmed == true AND task_completed:distcc_exploit",
-          "dialogue_script": "m03_james_choice.json",
-          "unlocks_task": "james_choice_made"
-        }
-      ]
+      "npcs": []
     }
   },
 
