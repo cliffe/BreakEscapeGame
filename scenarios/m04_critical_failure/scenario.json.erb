@@ -1,0 +1,933 @@
+<%
+# ============================================================================
+# MISSION 4: CRITICAL FAILURE - SCENARIO FILE
+# ============================================================================
+# Break Escape - Season 1: The Architect's Shadow
+#
+# Water treatment facility attack. ENTROPY's Critical Mass cell has infiltrated
+# Pacific Northwest Regional Water Treatment Facility to weaponize chlorine
+# dosing systems. Cross-cell coordination with Social Fabric revealed.
+#
+# ENTROPY Cell: Critical Mass
+# Mission Type: Infrastructure Crisis / Tactical Response
+# Difficulty: Intermediate (Mission 4)
+#
+# NEW MECHANICS:
+# - Combat encounters with hostile NPCs
+# - Stage-based urgency system (no timer)
+# - SCADA system investigation
+# - Multi-vector attack disabling
+# - Critical tactical choices
+#
+# ROOM LAYOUT:
+#   Main Entrance → Administration Offices
+#   Security Office → Treatment Floor → Chemical Storage
+#   Control Room → Server Room (VM integration)
+#   Maintenance Wing (final confrontation)
+#   Parking Lot (initial stealth option)
+# ============================================================================
+
+# ERB Helper Methods
+require 'base64'
+
+def base64_encode(text)
+  Base64.strict_encode64(text)
+end
+
+# Narrative Content Variables
+scada_warning_message = "SCADA ALERT: Chemical dosing parameters exceeding normal range. Station 3: +15% chlorine concentration. Manual review recommended."
+
+chen_warning_email = "From: Robert Chen\nTo: Security Team\nDate: December 12, 2025\nSubject: Unscheduled Maintenance Team\n\nTeam,\n\nOptiGrid Solutions sent a maintenance crew yesterday (not on our schedule). They had proper credentials but I don't have record of the work order. Can someone verify their authorization?\n\nIf this is state oversight, please confirm.\n\n-Robert"
+
+voltage_attack_note = "CRITICAL MASS OPERATION LOG\n\nPhase 2 complete. Bypass devices installed on dosing stations 1, 2, 3.\nSCADA access established. Remote trigger ready.\n\nCoordination with Social Fabric confirmed - simultaneous infrastructure strikes across region.\n\nAttack trigger scheduled: 0800 local time.\nEstimated impact: 240,000 population exposure to chlorine contamination.\n\nThe Architect sends regards. Phase 3 begins after successful execution.\n\n- Voltage"
+
+attack_schedule_encoded = base64_encode("ATTACK SEQUENCE:\n0800 - Trigger dosing station override\n0815 - Maximum chlorine concentration reached\n0830 - Contamination enters distribution network\n0900 - Public water supply contaminated\n\nFail-safe disabled. No automatic shutdown.")
+%>
+{
+  "scenario_brief": "Infiltrate Pacific Northwest Regional Water Treatment Facility to investigate suspected ENTROPY operation. Critical Mass cell has weaponized SCADA systems to trigger mass chlorine contamination affecting 240,000 residents. Prevent infrastructure attack before 0800 trigger time.",
+
+  "objectives": [
+    {
+      "aimId": "infiltrate_facility",
+      "title": "Infiltrate Facility and Confirm Threat",
+      "description": "Enter the water treatment facility under cover and confirm ENTROPY infiltration",
+      "status": "active",
+      "order": 0,
+      "tasks": [
+        {
+          "taskId": "enter_facility",
+          "title": "Enter water treatment facility",
+          "type": "enter_room",
+          "targetRoom": "main_entrance",
+          "status": "active"
+        },
+        {
+          "taskId": "meet_robert_chen",
+          "title": "Meet Facility Manager Robert Chen",
+          "type": "npc_conversation",
+          "targetNPC": "robert_chen",
+          "status": "locked"
+        },
+        {
+          "taskId": "find_infiltration_evidence",
+          "title": "Search for evidence of ENTROPY infiltration",
+          "type": "custom",
+          "status": "locked"
+        },
+        {
+          "taskId": "identify_scada_anomalies",
+          "title": "Identify SCADA system anomalies",
+          "type": "custom",
+          "status": "locked"
+        }
+      ]
+    },
+    {
+      "aimId": "investigate_scada_compromise",
+      "title": "Investigate SCADA Compromise",
+      "description": "Analyze compromised SCADA systems and identify attack mechanisms",
+      "status": "locked",
+      "order": 1,
+      "tasks": [
+        {
+          "taskId": "locate_compromised_systems",
+          "title": "Access the server room",
+          "type": "enter_room",
+          "targetRoom": "server_room",
+          "status": "locked"
+        },
+        {
+          "taskId": "scan_scada_network",
+          "title": "Scan SCADA network for vulnerabilities",
+          "type": "custom",
+          "status": "locked"
+        },
+        {
+          "taskId": "submit_network_scan_flag",
+          "title": "Submit network scan evidence",
+          "type": "submit_flags",
+          "status": "locked"
+        },
+        {
+          "taskId": "investigate_compromised_services",
+          "title": "Investigate compromised network services",
+          "type": "custom",
+          "status": "locked"
+        },
+        {
+          "taskId": "submit_ftp_intel_flag",
+          "title": "Submit FTP intelligence evidence",
+          "type": "submit_flags",
+          "status": "locked"
+        },
+        {
+          "taskId": "submit_http_analysis_flag",
+          "title": "Submit HTTP analysis evidence",
+          "type": "submit_flags",
+          "status": "locked"
+        },
+        {
+          "taskId": "exploit_distcc_vulnerability",
+          "title": "Exploit vulnerable SCADA server",
+          "type": "custom",
+          "status": "locked"
+        },
+        {
+          "taskId": "submit_distcc_exploit_flag",
+          "title": "Submit exploitation evidence",
+          "type": "submit_flags",
+          "status": "locked"
+        },
+        {
+          "taskId": "neutralize_operative_cipher",
+          "title": "Neutralize ENTROPY operative at dosing stations",
+          "type": "custom",
+          "status": "locked"
+        },
+        {
+          "taskId": "neutralize_operative_relay",
+          "title": "Neutralize ENTROPY operative in chemical storage",
+          "type": "custom",
+          "status": "locked"
+        }
+      ]
+    },
+    {
+      "aimId": "neutralize_attack_threat",
+      "title": "Neutralize Attack Threat",
+      "description": "Confront Critical Mass leadership and disable all attack mechanisms",
+      "status": "locked",
+      "order": 2,
+      "tasks": [
+        {
+          "taskId": "confront_voltage",
+          "title": "Confront Voltage in maintenance wing",
+          "type": "custom",
+          "status": "locked"
+        },
+        {
+          "taskId": "disable_attack_vectors",
+          "title": "Disable all attack mechanisms",
+          "type": "custom",
+          "status": "locked"
+        },
+        {
+          "taskId": "report_to_0x99",
+          "title": "Report mission outcome to SAFETYNET",
+          "type": "npc_conversation",
+          "targetNPC": "agent_0x99_debrief",
+          "status": "locked"
+        }
+      ]
+    }
+  ],
+
+  "startRoom": "main_entrance",
+
+  "startItemsInInventory": [
+    {
+      "type": "phone",
+      "name": "Your Phone",
+      "takeable": true,
+      "phoneId": "player_phone",
+      "npcIds": ["agent_0x99", "robert_chen_phone"],
+      "observations": "Your secure phone with encrypted connection to SAFETYNET"
+    },
+    {
+      "type": "lockpick",
+      "name": "Lock Pick Kit",
+      "takeable": true,
+      "observations": "Professional lock picking kit for bypassing physical locks"
+    },
+    {
+      "type": "id_badge",
+      "name": "State Auditor Credentials",
+      "takeable": true,
+      "observations": "Forged credentials identifying you as Environmental Protection Agency auditor"
+    }
+  ],
+
+  "player": {
+    "id": "player",
+    "displayName": "Agent 0x00",
+    "spriteSheet": "hacker",
+    "spriteTalk": "assets/characters/hacker-talk.png",
+    "spriteConfig": {
+      "idleFrameStart": 20,
+      "idleFrameEnd": 23
+    }
+  },
+
+  "rooms": {
+    "main_entrance": {
+      "type": "room_reception",
+      "dimensions": {
+        "width": 10,
+        "height": 8
+      },
+      "connections": {
+        "south": "administration_offices"
+      },
+      "npcs": [
+        {
+          "id": "opening_briefing_cutscene",
+          "displayName": "Agent 0x99",
+          "npcType": "person",
+          "position": { "x": 500, "y": 500 },
+          "spriteSheet": "hacker",
+          "spriteConfig": {
+            "idleFrameStart": 20,
+            "idleFrameEnd": 23
+          },
+          "storyPath": "scenarios/m04_critical_failure/ink/m04_opening_briefing.json",
+          "currentKnot": "start",
+          "timedConversation": {
+            "delay": 0,
+            "targetKnot": "start",
+            "background": "assets/backgrounds/hq1.png"
+          }
+        },
+        {
+          "id": "security_guard",
+          "displayName": "Security Guard",
+          "npcType": "person",
+          "position": { "x": 5, "y": 4 },
+          "spriteSheet": "hacker-red",
+          "spriteTalk": "assets/characters/hacker-red-talk.png",
+          "spriteConfig": {
+            "idleFrameStart": 20,
+            "idleFrameEnd": 23
+          },
+          "storyPath": "scenarios/m04_critical_failure/ink/m04_npc_security_guard.json",
+          "currentKnot": "start"
+        },
+        {
+          "id": "agent_0x99",
+          "displayName": "Agent 0x99 'Haxolottle'",
+          "npcType": "phone",
+          "storyPath": "scenarios/m04_critical_failure/ink/m04_phone_agent0x99.json",
+          "avatar": "assets/npc/avatars/npc_helper.png",
+          "phoneId": "player_phone",
+          "currentKnot": "first_call",
+          "timedMessages": [
+            {
+              "delay": 3000,
+              "message": "Critical infrastructure threat. ENTROPY's Critical Mass cell targeting water facility. 240,000 people at risk. Move carefully.",
+              "type": "text"
+            }
+          ],
+          "eventMappings": [
+            {
+              "eventPattern": "room_entered:server_room",
+              "targetKnot": "event_server_room_entered",
+              "onceOnly": true
+            },
+            {
+              "eventPattern": "task_completed:submit_distcc_exploit_flag",
+              "targetKnot": "event_attack_mechanism_identified",
+              "onceOnly": true
+            }
+          ]
+        },
+        {
+          "id": "robert_chen_phone",
+          "displayName": "Robert Chen",
+          "npcType": "phone",
+          "storyPath": "scenarios/m04_critical_failure/ink/m04_phone_robert_chen.json",
+          "avatar": "assets/npc/avatars/npc_helper.png",
+          "phoneId": "player_phone",
+          "currentKnot": "available_after_ally",
+          "eventMappings": [
+            {
+              "eventPattern": "global_variable_changed:chen_is_ally",
+              "targetKnot": "available_after_ally",
+              "condition": "value === true",
+              "onceOnly": true
+            }
+          ]
+        },
+        {
+          "id": "agent_0x99_debrief",
+          "displayName": "Agent 0x99",
+          "npcType": "phone",
+          "storyPath": "scenarios/m04_critical_failure/ink/m04_closing_debrief.json",
+          "avatar": "assets/npc/avatars/npc_helper.png",
+          "phoneId": "player_phone",
+          "currentKnot": "start",
+          "eventMappings": [
+            {
+              "eventPattern": "global_variable_changed:mission_complete",
+              "targetKnot": "start",
+              "condition": "value === true",
+              "onceOnly": true
+            }
+          ]
+        }
+      ],
+      "objects": [
+        {
+          "type": "notes",
+          "name": "Visitor Sign-In Log",
+          "takeable": false,
+          "readable": true,
+          "text": "PACIFIC NORTHWEST REGIONAL WATER TREATMENT FACILITY\nVISITOR LOG - December 2025\n\nRecent Entries:\nDec 10 - OptiGrid Solutions Maintenance Team (3 technicians)\nDec 11 - State EPA Auditor (scheduled today - YOU)\n\nNote: OptiGrid crew had proper credentials, work order #4782",
+          "observations": "Sign-in log showing OptiGrid Solutions maintenance team entry two days ago"
+        },
+        {
+          "type": "notes",
+          "name": "Security Desk Procedures",
+          "takeable": true,
+          "readable": true,
+          "text": "SECURITY CHECKPOINT PROCEDURES\n\n1. Verify visitor credentials\n2. Issue visitor badge\n3. Log entry time\n4. Notify department contact\n5. Provide safety briefing\n\nAll contractors require facility manager authorization.",
+          "observations": "Standard security procedures posted at checkpoint"
+        }
+      ]
+    },
+
+    "administration_offices": {
+      "type": "room_office",
+      "dimensions": {
+        "width": 15,
+        "height": 10
+      },
+      "connections": {
+        "north": "main_entrance",
+        "east": "control_room",
+        "south": "security_office"
+      },
+      "npcs": [
+        {
+          "id": "robert_chen",
+          "displayName": "Robert Chen",
+          "npcType": "person",
+          "position": { "x": 10, "y": 5 },
+          "spriteSheet": "hacker",
+          "spriteConfig": {
+            "idleFrameStart": 20,
+            "idleFrameEnd": 23
+          },
+          "storyPath": "scenarios/m04_critical_failure/ink/m04_npc_robert_chen.json",
+          "currentKnot": "initial_meeting",
+          "itemsHeld": [
+            {
+              "type": "keycard",
+              "name": "Facility Access Keycard (Level 1)",
+              "takeable": true,
+              "key_id": "facility_keycard_level1",
+              "observations": "Standard access keycard for most facility areas"
+            }
+          ]
+        }
+      ],
+      "objects": [
+        {
+          "type": "pc",
+          "name": "Chen's Computer Terminal",
+          "takeable": false,
+          "observations": "SCADA monitoring terminal showing system status and access logs"
+        },
+        {
+          "type": "notes",
+          "name": "Maintenance Work Orders",
+          "takeable": true,
+          "readable": true,
+          "text": <%= chen_warning_email.to_json %>,
+          "observations": "Chen's email about unscheduled OptiGrid maintenance team",
+          "onPickup": { "setVariable": { "evidence_maintenance_logs_found": true } }
+        },
+        {
+          "type": "notes",
+          "name": "Facility Blueprints",
+          "takeable": true,
+          "readable": true,
+          "text": "PACIFIC NORTHWEST WATER TREATMENT FACILITY\n\nMAIN SECTIONS:\n- Treatment Floor: Chemical dosing and filtration\n- Control Room: SCADA monitoring\n- Server Room: Network infrastructure\n- Chemical Storage: Hazardous materials\n- Maintenance Wing: Equipment and generators\n\nEmergency contacts and safety procedures on reverse.",
+          "observations": "Complete facility layout map"
+        },
+        {
+          "type": "notes",
+          "name": "Budget Cut Memo",
+          "takeable": true,
+          "readable": true,
+          "text": "MEMORANDUM\n\nFROM: State Infrastructure Budget Office\nTO: All Regional Facilities\nRE: FY2025 Budget Reductions\n\nAll facilities must reduce operational budgets by 12%. Priority: Maintain water quality. Deferrable: IT security upgrades, contractor oversight.\n\nChen's handwritten note: 'How are we supposed to maintain security with these cuts?'",
+          "observations": "Budget memo explaining security gaps that ENTROPY exploited"
+        }
+      ]
+    },
+
+    "control_room": {
+      "type": "room_office",
+      "dimensions": {
+        "width": 12,
+        "height": 10
+      },
+      "connections": {
+        "west": "administration_offices",
+        "east": "server_room",
+        "south": "treatment_floor"
+      },
+      "npcs": [],
+      "objects": [
+        {
+          "type": "pc",
+          "name": "SCADA Main Display",
+          "takeable": false,
+          "storyPath": "scenarios/m04_critical_failure/ink/m04_terminal_scada_display.json",
+          "currentKnot": "start",
+          "observations": "Primary SCADA monitoring system showing all facility parameters and alerts"
+        },
+        {
+          "type": "notes",
+          "name": "Chemical Dosing Parameters",
+          "takeable": false,
+          "readable": true,
+          "text": "SCADA ALERT LOG\n\nStation 1: Chlorine +8% above baseline\nStation 2: Chlorine +6% above baseline  \nStation 3: Chlorine +15% above baseline [WARNING]\n\nUnauthorized parameter modifications detected.\nLast modification: Dec 11, 04:32 AM\nSource: Remote access (IP: 192.168.100.X)",
+          "observations": "SCADA alert showing compromised chemical dosing systems"
+        },
+        {
+          "type": "notes",
+          "name": "Emergency Shutdown Procedures",
+          "takeable": true,
+          "readable": true,
+          "text": "EMERGENCY SHUTDOWN PROTOCOL\n\nWARNING: Only use in critical emergency\n\n1. Halt all chemical dosing\n2. Isolate treatment systems\n3. Switch to backup water sources\n4. Notify emergency services\n5. Begin manual parameter control\n\nNote: Crude shutdown can damage systems. Consult facility manager if possible.",
+          "observations": "Emergency procedures for SCADA system shutdown"
+        }
+      ]
+    },
+
+    "server_room": {
+      "type": "room_servers",
+      "dimensions": {
+        "width": 10,
+        "height": 8
+      },
+      "locked": true,
+      "lockType": "rfid",
+      "requires": "server_room_keycard",
+      "difficulty": "medium",
+      "connections": {
+        "north": "treatment_floor",
+        "west": "control_room"
+      },
+      "npcs": [],
+      "objects": [
+        {
+          "type": "vm-launcher",
+          "id": "vm_launcher_vulnerability_analysis",
+          "name": "SCADA Network Terminal",
+          "takeable": false,
+          "observations": "Network terminal providing access to SCADA backup server for vulnerability analysis",
+          "hacktivityMode": <%= vm_context && vm_context['hacktivity_mode'] ? 'true' : 'false' %>,
+          "vm": <%= vm_object('vulnerability_analysis', {
+            "id": 1,
+            "title": "SCADA Network Backup Server",
+            "ip": "192.168.100.10",
+            "enable_console": true
+          }) %>
+        },
+        {
+          "type": "flag-station",
+          "id": "flag_station_dropsite",
+          "name": "SAFETYNET Drop-Site Terminal",
+          "takeable": false,
+          "observations": "Secure terminal for submitting intercepted intelligence and VM flags",
+          "acceptsVms": ["vulnerability_analysis"],
+          "flags": <%= flags_for_vm('vulnerability_analysis', [
+            'flag{network_scan_complete}',
+            'flag{ftp_intel_gathered}',
+            'flag{http_analysis_complete}',
+            'flag{distcc_exploit_complete}'
+          ]) %>,
+          "flagRewards": [
+            {
+              "type": "emit_event",
+              "event_name": "network_scan_submitted",
+              "description": "Network scan evidence submitted"
+            },
+            {
+              "type": "emit_event",
+              "event_name": "ftp_intel_submitted",
+              "description": "FTP intelligence submitted - cross-cell coordination revealed"
+            },
+            {
+              "type": "emit_event",
+              "event_name": "http_analysis_submitted",
+              "description": "HTTP analysis submitted - attack schedule confirmed"
+            },
+            {
+              "type": "emit_event",
+              "event_name": "distcc_exploit_submitted",
+              "description": "Exploitation evidence submitted - attack mechanism identified"
+            }
+          ]
+        },
+        {
+          "type": "notes",
+          "name": "Server Room Access Log",
+          "takeable": true,
+          "readable": true,
+          "text": "SERVER ROOM ACCESS LOG\n\nRecent Access:\nDec 9, 11:47 PM - OptiGrid Tech #1 (Badge: OG-4472)\nDec 9, 11:52 PM - OptiGrid Tech #2 (Badge: OG-4473)  \nDec 10, 12:03 AM - OptiGrid Tech #3 (Badge: OG-4474)\n\nDuration: 3 hours 17 minutes\nPurpose: 'Network infrastructure maintenance'\n\nChen's note: 'No one told me about this work order.'",
+          "observations": "Access logs showing ENTROPY operatives had 3+ hours of network access"
+        },
+        {
+          "type": "pc",
+          "name": "Network Monitoring Station",
+          "takeable": false,
+          "observations": "Real-time network traffic monitoring showing SCADA communications"
+        }
+      ]
+    },
+
+    "security_office": {
+      "type": "room_office",
+      "dimensions": {
+        "width": 8,
+        "height": 6
+      },
+      "connections": {
+        "north": "administration_offices"
+      },
+      "npcs": [],
+      "objects": [
+        {
+          "type": "pc",
+          "name": "Security Camera Monitors",
+          "takeable": false,
+          "observations": "Multi-screen security camera system showing facility surveillance feeds"
+        },
+        {
+          "type": "notes",
+          "name": "Camera System Logs",
+          "takeable": true,
+          "readable": true,
+          "text": "SECURITY CAMERA SYSTEM LOG\n\nANOMALY DETECTED:\n\nDec 9, 11:45 PM - Dec 10, 03:00 AM\nCameras 7, 8, 12, 15: RECORDING GAPS\nAffected areas: Server Room corridor, Chemical Storage access\n\nStatus: System glitch reported to maintenance\n\nNote: 'Glitch' coincides exactly with OptiGrid team access window.",
+          "observations": "Evidence showing camera tampering during ENTROPY infiltration",
+          "onPickup": { "setVariable": { "evidence_camera_tampering_found": true } }
+        },
+        {
+          "type": "safe",
+          "name": "Security Equipment Locker",
+          "takeable": false,
+          "locked": true,
+          "lockType": "key",
+          "keyPins": [30, 45, 35, 50],
+          "difficulty": "easy",
+          "observations": "Security equipment storage locker",
+          "contents": [
+            {
+              "type": "keycard",
+              "name": "Spare Keycard (Level 1)",
+              "takeable": true,
+              "key_id": "facility_keycard_level1",
+              "observations": "Backup facility access keycard"
+            },
+            {
+              "type": "notes",
+              "name": "Incident Response Guide",
+              "takeable": true,
+              "readable": true,
+              "text": "FACILITY INCIDENT RESPONSE PROCEDURES\n\nChemical Emergency:\n1. Activate alarm\n2. Isolate affected area\n3. Notify Robert Chen immediately\n4. Begin evacuation if necessary\n\nSecurity Breach:\n1. Contact local law enforcement\n2. Secure critical systems\n3. Review camera footage",
+              "observations": "Emergency response procedures manual"
+            }
+          ]
+        }
+      ]
+    },
+
+    "treatment_floor": {
+      "type": "room_lab",
+      "dimensions": {
+        "width": 18,
+        "height": 12
+      },
+      "connections": {
+        "north": "control_room",
+        "south": "server_room",
+        "east": "chemical_storage",
+        "west": "maintenance_wing"
+      },
+      "npcs": [
+        {
+          "id": "operative_cipher",
+          "displayName": "ENTROPY Operative 'Cipher'",
+          "npcType": "person",
+          "position": { "x": 12, "y": 6 },
+          "spriteSheet": "hacker-red",
+          "spriteTalk": "assets/characters/hacker-red-talk.png",
+          "spriteConfig": {
+            "idleFrameStart": 20,
+            "idleFrameEnd": 23
+          },
+          "storyPath": "scenarios/m04_critical_failure/ink/m04_npc_operative_cipher.json",
+          "currentKnot": "start",
+          "behavior": {
+            "hostile": true,
+            "alertRange": 200
+          },
+          "itemsHeld": [
+            {
+              "type": "keycard",
+              "name": "Server Room Keycard (Level 2)",
+              "takeable": true,
+              "key_id": "server_room_keycard",
+              "observations": "High-level access keycard for secure areas"
+            },
+            {
+              "type": "notes",
+              "name": "Cipher's Intelligence Note",
+              "takeable": true,
+              "readable": true,
+              "text": "CRITICAL MASS - OPERATION STATUS\n\nPhase 2: COMPLETE\n- Dosing station 3: PRIMARY attack vector installed\n- Dosing stations 1 & 2: REDUNDANCY backups installed\n- SCADA access: CONFIRMED\n\nVoltage coordinating with Social Fabric for simultaneous regional strikes.\n\nMy assignment: Guard treatment floor, eliminate interference.",
+              "observations": "Intelligence revealing multi-station attack infrastructure"
+            }
+          ]
+        }
+      ],
+      "objects": [
+        {
+          "type": "notes",
+          "name": "Treatment Process Diagram",
+          "takeable": false,
+          "readable": true,
+          "text": "WATER TREATMENT PROCESS FLOW\n\n1. Intake from reservoir\n2. Coagulation & flocculation\n3. Sedimentation  \n4. Filtration\n5. Chemical dosing (chlorine, fluoride, pH adjustment)\n6. Distribution to public supply\n\nCapacity: 240,000 residents\nDaily flow: 45 million gallons",
+          "observations": "Treatment process overview showing facility scale and impact"
+        },
+        {
+          "type": "pc",
+          "name": "Dosing Station Monitoring Terminal",
+          "takeable": false,
+          "observations": "Real-time monitoring of chemical dosing stations showing elevated chlorine levels"
+        },
+        {
+          "type": "notes",
+          "name": "OptiGrid Work Order",
+          "takeable": true,
+          "readable": true,
+          "text": "WORK ORDER #4782\n\nContractor: OptiGrid Solutions LLC\nDate: December 10, 2025\nScope: 'Network infrastructure maintenance and SCADA system optimization'\n\nTechnicians:\n- Badge OG-4472 (Cipher)\n- Badge OG-4473 (Relay)  \n- Badge OG-4474 (Static)\n\nAuthorization: [FORGED SIGNATURE]\n\nNote: This work order was never approved by Chen.",
+          "observations": "Forged work order used by ENTROPY operatives for facility access"
+        }
+      ]
+    },
+
+    "chemical_storage": {
+      "type": "room_lab",
+      "dimensions": {
+        "width": 14,
+        "height": 10
+      },
+      "locked": true,
+      "lockType": "rfid",
+      "requires": "facility_keycard_level1",
+      "difficulty": "easy",
+      "connections": {
+        "west": "treatment_floor"
+      },
+      "npcs": [
+        {
+          "id": "operative_relay",
+          "displayName": "ENTROPY Operative 'Relay'",
+          "npcType": "person",
+          "position": { "x": 7, "y": 5 },
+          "spriteSheet": "hacker-red",
+          "spriteTalk": "assets/characters/hacker-red-talk.png",
+          "spriteConfig": {
+            "idleFrameStart": 20,
+            "idleFrameEnd": 23
+          },
+          "storyPath": "scenarios/m04_critical_failure/ink/m04_npc_operative_relay.json",
+          "currentKnot": "start",
+          "behavior": {
+            "hostile": true,
+            "patrol": {
+              "enabled": true,
+              "route": [
+                { "x": 4, "y": 5 },
+                { "x": 7, "y": 5 },
+                { "x": 10, "y": 5 },
+                { "x": 7, "y": 5 }
+              ],
+              "speed": 40,
+              "pauseTime": 10
+            }
+          },
+          "itemsHeld": [
+            {
+              "type": "keycard",
+              "name": "Master Keycard",
+              "takeable": true,
+              "key_id": "master_keycard",
+              "observations": "Master access keycard for all facility areas including Maintenance Wing"
+            },
+            {
+              "type": "notes",
+              "name": "OptiGrid Facility Access Log",
+              "takeable": true,
+              "readable": true,
+              "text": "OPTIGRID SOLUTIONS - REGIONAL OPERATIONS LOG\n\nFacilities Accessed (Phase 2):\n- Pacific NW Water Treatment (THIS FACILITY) - STATUS: READY\n- Cascade Valley Power Station - STATUS: COMPROMISED\n- Metro Transit Control Center - STATUS: IN PROGRESS\n\nCoordination: Critical Mass (infrastructure) + Social Fabric (public chaos)\n\nThe Architect approves Phase 3 advancement upon successful execution.",
+              "observations": "Intelligence revealing coordinated regional infrastructure attacks"
+            }
+          ]
+        }
+      ],
+      "objects": [
+        {
+          "type": "notes",
+          "name": "Chemical Storage Manifest",
+          "takeable": true,
+          "readable": true,
+          "text": "HAZARDOUS CHEMICAL INVENTORY\n\nChlorine Gas: 4,500 kg (WARNING: TOXIC)\nSodium Hypochlorite: 8,000 L\nFluoride Solution: 2,000 L\nSulfuric Acid (pH adj.): 1,500 L\nPolymer Coagulant: 3,000 L\n\nNote: Dosing rate modifications can weaponize these systems. Proper controls CRITICAL.",
+          "observations": "Chemical inventory showing dangerous materials under SCADA control"
+        },
+        {
+          "type": "notes",
+          "name": "Dosing Station Control Panel",
+          "takeable": false,
+          "readable": true,
+          "text": "DOSING CONTROL STATION 3\n\nSTATUS: COMPROMISED\n\nPhysical bypass device detected (unauthorized hardware)\nSCADA parameter override active\nManual intervention required to disable\n\nWARNING: Do not remove bypass device without proper procedure.",
+          "observations": "Control panel showing ENTROPY's physical attack hardware installed"
+        },
+        {
+          "type": "notes",
+          "name": "Emergency Shower Procedures",
+          "takeable": false,
+          "readable": true,
+          "text": "CHEMICAL EXPOSURE EMERGENCY\n\n1. Activate emergency shower immediately\n2. Remove contaminated clothing\n3. Rinse for minimum 15 minutes\n4. Seek medical attention\n5. Report incident to safety officer\n\nEmergency contacts posted on wall.",
+          "observations": "Safety procedures for hazardous material exposure"
+        }
+      ]
+    },
+
+    "maintenance_wing": {
+      "type": "room_lab",
+      "dimensions": {
+        "width": 15,
+        "height": 12
+      },
+      "locked": true,
+      "lockType": "rfid",
+      "requires": "master_keycard",
+      "difficulty": "hard",
+      "connections": {
+        "east": "treatment_floor",
+        "north": "loading_dock"
+      },
+      "npcs": [
+        {
+          "id": "voltage",
+          "displayName": "Voltage (Critical Mass Leader)",
+          "npcType": "person",
+          "position": { "x": 10, "y": 6 },
+          "spriteSheet": "hacker-red",
+          "spriteTalk": "assets/characters/hacker-red-talk.png",
+          "spriteConfig": {
+            "idleFrameStart": 20,
+            "idleFrameEnd": 23
+          },
+          "storyPath": "scenarios/m04_critical_failure/ink/m04_npc_voltage.json",
+          "currentKnot": "confrontation_start",
+          "behavior": {
+            "hostile": true,
+            "alertRange": 250
+          }
+        },
+        {
+          "id": "operative_static",
+          "displayName": "ENTROPY Operative 'Static'",
+          "npcType": "person",
+          "position": { "x": 8, "y": 6 },
+          "spriteSheet": "hacker-red",
+          "spriteTalk": "assets/characters/hacker-red-talk.png",
+          "spriteConfig": {
+            "idleFrameStart": 20,
+            "idleFrameEnd": 23
+          },
+          "storyPath": "scenarios/m04_critical_failure/ink/m04_npc_operative_static.json",
+          "currentKnot": "start",
+          "behavior": {
+            "hostile": true,
+            "alertRange": 200
+          },
+          "itemsHeld": [
+            {
+              "type": "notes",
+              "name": "Critical Mass Coordination Log",
+              "takeable": true,
+              "readable": true,
+              "text": "ENCRYPTED COMMUNICATION LOG\n\nFROM: Voltage (Critical Mass)\nTO: Cascade (Social Fabric)\n\nPhase 2 synchronization confirmed.\n\nCritical Mass targets: Water, power, transit infrastructure\nSocial Fabric targets: Public panic amplification, emergency response disruption\n\nSimultaneous execution: 0800 local, all cells\n\nThe Architect's Phase 3: Multi-city expansion\n\nThis is bigger than any single operation. We're proving the system's fragility.",
+              "observations": "Critical intelligence revealing cross-cell coordination and The Architect's larger plan"
+            }
+          ]
+        }
+      ],
+      "objects": [
+        {
+          "type": "pc",
+          "name": "ENTROPY Command Laptop",
+          "takeable": false,
+          "storyPath": "scenarios/m04_critical_failure/ink/m04_terminal_attack_trigger.json",
+          "currentKnot": "start",
+          "observations": "Attack trigger mechanism - must be secured to prevent chemical contamination attack"
+        },
+        {
+          "type": "notes",
+          "name": "Facility Blueprints (Marked)",
+          "takeable": true,
+          "readable": true,
+          "text": "PACIFIC NW WATER TREATMENT - FACILITY LAYOUT\n\nCritical Mass tactical annotations:\n- Dosing stations 1, 2, 3: BYPASS DEVICES INSTALLED\n- SCADA network: COMPROMISED\n- Remote trigger: THIS LOCATION\n- Escape route: Loading dock (north exit)\n- Surveillance coverage: ALL AREAS\n\nVoltage's note: 'Clean operation. No casualties unless SAFETYNET interferes.'",
+          "observations": "Tactical planning documents showing complete attack infrastructure"
+        },
+        {
+          "type": "notes",
+          "name": "The Architect's Directive",
+          "takeable": true,
+          "readable": true,
+          "text": <%= voltage_attack_note.to_json %>,
+          "observations": "Operation log confirming The Architect's coordination of multi-cell attacks",
+          "onPickup": { "setVariable": { "lore_architect_directive_found": true } }
+        }
+      ]
+    },
+
+    "loading_dock": {
+      "type": "small_room_1x1gu",
+      "dimensions": {
+        "width": 8,
+        "height": 8
+      },
+      "connections": {
+        "south": "maintenance_wing"
+      },
+      "npcs": [],
+      "objects": [
+        {
+          "type": "notes",
+          "name": "Loading Dock Schedule",
+          "takeable": false,
+          "readable": true,
+          "text": "DELIVERY SCHEDULE - DECEMBER 2025\n\nDec 10: Chlorine gas delivery (scheduled)\nDec 12: Polymer delivery (scheduled)\nDec 15: General supplies (scheduled)\n\nNote: OptiGrid van parked here Dec 9-10 (unscheduled). Chen questioned this.",
+          "observations": "Delivery log showing ENTROPY's vehicle access point"
+        },
+        {
+          "type": "notes",
+          "name": "Voltage's Escape Plan",
+          "takeable": true,
+          "readable": true,
+          "text": "CONTINGENCY: SAFETYNET INTERFERENCE\n\nIf compromised:\n1. Trigger attack immediately (remote activation)\n2. Escape via loading dock\n3. Extraction vehicle: Loading zone B\n4. Rendezvous: Social Fabric safehouse (address encoded)\n\nPriority: Mission success > personal capture\n\nNote: Static and I can hold them long enough to complete trigger.",
+          "observations": "Escape plan revealing Voltage's tactical priorities"
+        }
+      ]
+    }
+  },
+
+  "globalVariables": {
+    "player_name": "Agent 0x00",
+    "mission_started": false,
+    "agent_0x99_contacted": false,
+
+    "chen_is_ally": false,
+    "chen_knows_truth": false,
+    "chen_trust_level": 0,
+    "facility_access_granted": false,
+
+    "scada_anomalies_identified": false,
+    "infiltration_confirmed": false,
+    "attack_mechanism_understood": false,
+
+    "evidence_maintenance_logs_found": false,
+    "evidence_camera_tampering_found": false,
+    "evidence_access_logs_found": false,
+
+    "flag_network_scan_submitted": false,
+    "flag_ftp_intel_submitted": false,
+    "flag_http_analysis_submitted": false,
+    "flag_distcc_exploit_submitted": false,
+
+    "operative_cipher_defeated": false,
+    "operative_relay_defeated": false,
+    "operative_static_defeated": false,
+    "voltage_captured": false,
+    "voltage_escaped": false,
+
+    "attack_trigger_secured": false,
+    "physical_bypass_disabled": false,
+    "scada_script_neutralized": false,
+    "remote_trigger_disabled": false,
+    "attack_vectors_disabled": 0,
+
+    "mission_complete": false,
+    "attack_prevented": false,
+
+    "disclosure_choice": "",
+    "voltage_choice": "",
+
+    "lore_architect_directive_found": false,
+    "lore_cross_cell_coordination_found": false,
+
+    "urgency_stage": 1,
+
+    "objectives_completed": 0,
+    "optional_objectives_completed": 0,
+    "combat_encounters_won": 0,
+    "stealth_takedowns": 0,
+    "flags_submitted": 0
+  }
+}
