@@ -42,10 +42,133 @@ This roadmap provides a systematic approach to implementing Mission 3 based on S
 
 ## Implementation Phases
 
+### Phase 0: Reference Mission Examination ⚠️ REQUIRED FIRST
+
+**Priority:** ⚠️ CRITICAL - COMPLETE BEFORE CREATING scenario.json.erb
+**Estimated Time:** 2-3 hours
+**Purpose:** Extract proven patterns from M1/M2 to avoid 40+ validation errors
+
+#### 0.1 Files to Study
+
+```bash
+# Required reference examination:
+scenarios/m01_first_contact/scenario.json.erb    # Complete pattern reference
+scenarios/m02_ransomed_trust/scenario.json.erb   # Recent mission example
+scripts/scenario-schema.json                      # JSON schema definition
+```
+
+#### 0.2 Critical Patterns to Extract
+
+**1. VM Launcher Configuration:**
+- Search for "vm-launcher" in M1
+- Extract: hacktivityMode, vm_object() helper usage
+- Pattern: `"hacktivityMode": <%= vm_context && vm_context['hacktivity_mode'] ? 'true' : 'false' %>`
+- Pattern: `"vm": <%= vm_object('scenario_name', {config}) %>`
+
+**2. Flag Station Configuration:**
+- Search for "flag-station" in M1
+- Extract: acceptsVms array, flags_for_vm() helper
+- Pattern: `"acceptsVms": ["scenario_name"]`
+- Pattern: `"flags": <%= flags_for_vm('scenario_name', ['flag{...}']) %>`
+
+**3. Player Sprite Configuration:**
+- Top-level object (after startRoom, before rooms)
+- Required fields: id, displayName, spriteSheet, spriteTalk, spriteConfig
+
+**4. Opening Briefing Pattern:**
+- NPC with timedConversation in starting room
+- delay: 0 for immediate trigger
+- Displays briefing cutscene on mission start
+
+**5. Closing Debrief Pattern:**
+- Phone NPC with eventMappings array
+- Triggers on global_variable_changed event
+- Provides mission wrap-up after completion
+
+**6. Flag Submission Tasks:**
+- Search for "submit_flags" type in M1
+- Create one task per VM flag
+- Explicit player guidance to submit flags
+
+#### 0.3 Schema Requirements Checklist
+
+**Create checklist from schema before coding:**
+
+- [ ] Objectives: `order` field (0, 1, 2...)
+- [ ] Objectives: Flat `tasks` arrays (NOT nested "aims")
+- [ ] Tasks: `type` field (enter_room, npc_conversation, unlock_object, custom, submit_flags)
+- [ ] Tasks: Include submit_flags for each VM flag
+- [ ] Rooms: `type` field (room_reception, room_office, room_ceo, room_servers, hall_1x2gu)
+- [ ] NPCs: `displayName` NOT `name`
+- [ ] NPCs: `npcType` NOT `type`
+- [ ] NPCs: `storyPath` NOT `dialogue_script`
+- [ ] NPCs: `currentKnot: "start"` on all NPCs
+- [ ] Objects: Valid types only (notes, safe, pc, workstation, vm-launcher, flag-station)
+- [ ] Key Locks: keyPins array with values 25-60
+- [ ] PIN Locks: `requires: "NNNN"` NOT keyPins
+- [ ] Player: Player sprite configuration included
+
+#### 0.4 ERB Helper Setup
+
+**Add to top of scenario.json.erb:**
+
+```erb
+<%
+require 'base64'
+require 'json'
+
+def rot13(text)
+  text.tr("A-Za-z", "N-ZA-Mn-za-m")
+end
+
+def base64_encode(text)
+  Base64.strict_encode64(text)
+end
+
+def hex_encode(text)
+  text.unpack('H*').first
+end
+
+def json_escape(text)
+  text.to_json[1..-2]  # Remove surrounding quotes
+end
+%>
+```
+
+**Usage:**
+- `json_escape()` - ALL multi-line strings
+- `base64_encode()` - Base64 content
+- `rot13()` - ROT13 content
+- `hex_encode()` - Hex content
+
+#### 0.5 Validation Strategy
+
+**Run validation at 4 checkpoints:**
+
+```bash
+# Checkpoint 1: After objectives/tasks
+ruby scripts/validate_scenario.rb scenarios/m03_ghost_in_the_machine/scenario.json.erb
+
+# Checkpoint 2: After rooms
+ruby scripts/validate_scenario.rb scenarios/m03_ghost_in_the_machine/scenario.json.erb
+
+# Checkpoint 3: After NPCs
+ruby scripts/validate_scenario.rb scenarios/m03_ghost_in_the_machine/scenario.json.erb
+
+# Checkpoint 4: Final validation
+ruby scripts/validate_scenario.rb scenarios/m03_ghost_in_the_machine/scenario.json.erb
+```
+
+**Rule:** Never proceed with validation errors!
+
+**Expected Result:** 0-5 errors on first attempt (vs 40+ without Phase 0)
+
+---
+
 ### Phase 1: Asset Preparation (Parallel Work)
 
 **Priority:** High
-**Can Start:** Immediately (parallel to Ink compilation)
+**Can Start:** After Phase 0 (parallel to Ink compilation)
 **Estimated Time:** 8-12 hours (depends on art team)
 
 #### 1.1 Critical Assets (Required for Core Gameplay)
@@ -793,6 +916,7 @@ This roadmap provides a systematic approach to implementing Mission 3 based on S
 
 ## Estimated Timeline
 
+**Phase 0 (Reference Study):** 2-3 hours ⭐ REQUIRED FIRST
 **Phase 1 (Asset Prep):** 8-12 hours (parallel)
 **Phase 2 (VM Setup):** 6-10 hours
 **Phase 3 (Room JSON):** 12-16 hours
@@ -802,13 +926,18 @@ This roadmap provides a systematic approach to implementing Mission 3 based on S
 **Phase 7 (Events):** 6-10 hours
 **Phase 8 (Testing):** 12-20 hours
 
-**Total:** 68-102 hours (9-13 working days)
-**With Risk Buffer:** 82-118 hours (10-15 working days)
+**Total:** 70-105 hours (9-14 working days)
+**With Risk Buffer:** 84-121 hours (11-16 working days)
+
+**Note:** Phase 0 saves 4-6 hours by preventing validation errors and rework!
 
 ---
 
-**Roadmap Version:** 1.0
-**Last Updated:** 2025-12-27
-**Status:** Ready for Implementation (pending Ink compilation)
+**Roadmap Version:** 2.0
+**Last Updated:** 2025-12-28
+**Critical Change:** Added Phase 0 (Reference Examination) - MANDATORY FIRST STEP
+**Status:** Ready for Implementation
+
+⚠️ **IMPORTANT:** Complete Phase 0 (Reference Mission Examination) BEFORE creating scenario.json.erb. This prevents 40+ validation errors and saves 4-6 hours of rework.
 
 All planning stages complete. Mission 3 "Ghost in the Machine" ready for Stage 9 scenario assembly.
