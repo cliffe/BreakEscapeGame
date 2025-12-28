@@ -1,0 +1,39 @@
+{
+  "display_name": "Critical Failure",
+  "description": "Infiltrate Pacific Northwest Regional Water Treatment Facility to stop ENTROPY's Critical Mass cell from weaponizing chlorine dosing systems. With 240,000 residents at risk, investigate SCADA network compromise, engage hostile operatives, and prevent infrastructure attack before 0800 trigger time. First mission featuring combat encounters.",
+  "difficulty_level": 2,
+  "secgen_scenario": "vulnerability_analysis",
+  "collection": "season_1",
+  "cybok": [
+    {
+      "ka": "NS",
+      "topic": "Network Security",
+      "keywords": ["SCADA networks", "ICS security", "Network scanning (Nmap)", "Service enumeration", "FTP analysis", "HTTP analysis", "Network topology"]
+    },
+    {
+      "ka": "SS",
+      "topic": "Systems Security",
+      "keywords": ["Vulnerability exploitation", "distcc CVE-2004-2687", "Privilege escalation", "sudo Baron CVE-2021-3156", "Linux security", "Remote code execution"]
+    },
+    {
+      "ka": "IS",
+      "topic": "Infrastructure Security",
+      "keywords": ["SCADA/ICS protection", "Critical infrastructure", "Water treatment systems", "Industrial control systems", "Physical security integration"]
+    },
+    {
+      "ka": "AB",
+      "topic": "Adversarial Behaviours",
+      "keywords": ["Infrastructure attacks", "Multi-cell coordination", "APT tactics", "Physical + cyber attacks", "Insider threats", "Cover identities"]
+    },
+    {
+      "ka": "HF",
+      "topic": "Human Factors",
+      "keywords": ["Social engineering", "Cover identity maintenance", "Crisis decision-making", "Tactical choices", "Public disclosure ethics", "Operational security"]
+    },
+    {
+      "ka": "IR",
+      "topic": "Incident Response",
+      "keywords": ["Infrastructure incident response", "Attack mechanism analysis", "Multi-vector attack mitigation", "Crisis intervention", "Evidence collection"]
+    }
+  ]
+}
