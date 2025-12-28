@@ -93,6 +93,34 @@ operational_log_content = "TRANSACTION LOG - Q3 2024\n\n[2024-09-15 14:32:11] Pr
           "status": "locked"
         },
         {
+          "taskId": "submit_network_scan_flag",
+          "title": "Submit network scan evidence",
+          "description": "Submit flag{network_scan_complete} at drop-site terminal",
+          "type": "submit_flags",
+          "status": "locked"
+        },
+        {
+          "taskId": "submit_ftp_flag",
+          "title": "Submit FTP intelligence evidence",
+          "description": "Submit flag{ftp_intel_gathered} at drop-site terminal",
+          "type": "submit_flags",
+          "status": "locked"
+        },
+        {
+          "taskId": "submit_http_flag",
+          "title": "Submit HTTP analysis evidence",
+          "description": "Submit flag{pricing_intel_decoded} at drop-site terminal",
+          "type": "submit_flags",
+          "status": "locked"
+        },
+        {
+          "taskId": "submit_distcc_flag",
+          "title": "Submit distcc exploit evidence",
+          "description": "Submit flag{distcc_legacy_compromised} at drop-site terminal",
+          "type": "submit_flags",
+          "status": "locked"
+        },
+        {
           "taskId": "decode_whiteboard",
           "title": "Decode Whiteboard Message",
           "description": "Decode the ROT13 message on the server room whiteboard",
