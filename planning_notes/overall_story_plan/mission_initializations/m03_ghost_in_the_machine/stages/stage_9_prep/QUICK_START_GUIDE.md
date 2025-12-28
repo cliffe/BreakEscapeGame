@@ -20,6 +20,201 @@
 
 ## Critical Path (Minimum Viable Implementation)
 
+### Step 0: Examine Reference Missions (2-3 hours) ⚠️ REQUIRED FIRST
+
+**Priority:** ⚠️ CRITICAL - DO THIS BEFORE CREATING scenario.json.erb
+
+**Purpose:** Extract proven patterns to avoid validation errors and reduce iterations
+
+#### 0.1 Required Reference Examination
+
+**Files to Study:**
+```bash
+# Study these files carefully BEFORE starting:
+scenarios/m01_first_contact/scenario.json.erb    # Complete reference
+scenarios/m02_ransomed_trust/scenario.json.erb   # Recent example
+scripts/scenario-schema.json                      # Schema definition
+```
+
+**What to Extract:**
+
+1. **VM Launcher Pattern** (Search for "vm-launcher" in M1):
+```json
+{
+  "type": "vm-launcher",
+  "id": "vm_launcher_id",
+  "name": "VM Access Terminal",
+  "takeable": false,
+  "observations": "Terminal description",
+  "hacktivityMode": <%= vm_context && vm_context['hacktivity_mode'] ? 'true' : 'false' %>,
+  "vm": <%= vm_object('scenario_name', {"id":1,"title":"VM Title","ip":"192.168.100.X","enable_console":true}) %>
+}
+```
+
+2. **Flag Station Pattern** (Search for "flag-station" in M1):
+```json
+{
+  "type": "flag-station",
+  "id": "flag_station_id",
+  "name": "Drop-Site Terminal",
+  "takeable": false,
+  "observations": "Terminal for submitting VM flags",
+  "acceptsVms": ["scenario_name"],
+  "flags": <%= flags_for_vm('scenario_name', ['flag{flag1}', 'flag{flag2}']) %>,
+  "flagRewards": [
+    {
+      "type": "emit_event",
+      "event_name": "flag_submitted",
+      "description": "Description"
+    }
+  ]
+}
+```
+
+3. **Player Configuration** (Top level, after startRoom):
+```json
+"player": {
+  "id": "player",
+  "displayName": "Agent 0x00",
+  "spriteSheet": "hacker",
+  "spriteTalk": "assets/characters/hacker-talk.png",
+  "spriteConfig": {
+    "idleFrameStart": 20,
+    "idleFrameEnd": 23
+  }
+}
+```
+
+4. **Opening Briefing NPC** (timedConversation pattern):
+```json
+{
+  "id": "briefing_cutscene",
+  "displayName": "Agent 0x99",
+  "npcType": "person",
+  "position": {"x": 500, "y": 500},
+  "storyPath": "scenarios/mission/ink/opening_briefing.json",
+  "currentKnot": "start",
+  "timedConversation": {
+    "delay": 0,
+    "targetKnot": "start",
+    "background": "assets/backgrounds/hq1.png"
+  }
+}
+```
+
+5. **Closing Debrief NPC** (eventMapping pattern):
+```json
+{
+  "id": "closing_debrief",
+  "displayName": "Agent 0x99",
+  "npcType": "phone",
+  "storyPath": "scenarios/mission/ink/closing_debrief.json",
+  "avatar": "assets/npc/avatars/npc_helper.png",
+  "phoneId": "player_phone",
+  "currentKnot": "start",
+  "eventMappings": [
+    {
+      "eventPattern": "global_variable_changed:mission_complete",
+      "targetKnot": "start",
+      "condition": "value === true",
+      "onceOnly": true
+    }
+  ]
+}
+```
+
+6. **Flag Submission Tasks** (Search for "submit_flags" in M1):
+```json
+{
+  "taskId": "submit_flag_name",
+  "title": "Submit evidence description",
+  "description": "Submit flag{flag_name} at drop-site terminal",
+  "type": "submit_flags",
+  "status": "locked"
+}
+```
+
+#### 0.2 Schema Requirements Checklist
+
+**From scripts/scenario-schema.json - MANDATORY FIELDS:**
+
+- [ ] **Objectives:** All have `order` field (0, 1, 2, 3...)
+- [ ] **Objectives:** Use flat `tasks` arrays (NOT nested "aims")
+- [ ] **Tasks:** All have `type` field (enter_room, npc_conversation, unlock_object, custom, submit_flags)
+- [ ] **Tasks:** Include submit_flags tasks for EACH VM flag
+- [ ] **Rooms:** All have `type` field (room_reception, room_office, room_ceo, room_servers, hall_1x2gu)
+- [ ] **NPCs:** Use `displayName` NOT `name`
+- [ ] **NPCs:** Use `npcType` NOT `type` (values: person, phone)
+- [ ] **NPCs:** Use `storyPath` NOT `dialogue_script`
+- [ ] **NPCs:** All have `currentKnot: "start"`
+- [ ] **Objects:** Use valid types ONLY (notes, safe, pc, workstation, vm-launcher, flag-station)
+- [ ] **Objects:** NEVER use: container, document, terminal, interactable
+- [ ] **Key Locks:** Have `keyPins` array with values 25-60 (NOT 1-5)
+- [ ] **PIN Locks:** Use `requires: "NNNN"` NOT keyPins
+- [ ] **Player:** Player sprite configuration included
+
+#### 0.3 ERB Helper Functions Setup
+
+**Required at top of scenario.json.erb:**
+
+```erb
+<%
+require 'base64'
+require 'json'
+
+def rot13(text)
+  text.tr("A-Za-z", "N-ZA-Mn-za-m")
+end
+
+def base64_encode(text)
+  Base64.strict_encode64(text)
+end
+
+def hex_encode(text)
+  text.unpack('H*').first
+end
+
+def json_escape(text)
+  text.to_json[1..-2]  # Remove surrounding quotes
+end
+%>
+```
+
+**When to Use:**
+- `json_escape()` - For ALL multi-line strings in ERB variables
+- `base64_encode()` - For Base64 encoded game content
+- `rot13()` - For ROT13 encoded content
+- `hex_encode()` - For hex encoded content
+
+#### 0.4 Validation Checkpoint Requirements
+
+**RUN VALIDATION AT THESE POINTS:**
+
+```bash
+# Checkpoint 1: After basic structure
+ruby scripts/validate_scenario.rb scenarios/m03_ghost_in_the_machine/scenario.json.erb
+
+# Checkpoint 2: After rooms added
+ruby scripts/validate_scenario.rb scenarios/m03_ghost_in_the_machine/scenario.json.erb
+
+# Checkpoint 3: After NPCs added
+ruby scripts/validate_scenario.rb scenarios/m03_ghost_in_the_machine/scenario.json.erb
+
+# Checkpoint 4: Final validation
+ruby scripts/validate_scenario.rb scenarios/m03_ghost_in_the_machine/scenario.json.erb
+```
+
+**RULE:** Never proceed to next phase with validation errors!
+
+**Validation Checklist:**
+- [ ] After objectives/tasks: Check for `order`, `type` fields
+- [ ] After rooms: Check `type` field on all rooms
+- [ ] After NPCs: Check displayName, npcType, storyPath, currentKnot
+- [ ] After objects: Check valid type enums, keyPins ranges
+- [ ] Final: 0 errors, minimal warnings
+
+---
+
 ### Step 1: Compile Ink Scripts (4-6 hours)
 
 **Priority:** ⚠️ CRITICAL BLOCKER
@@ -269,6 +464,7 @@ safe_sprite.png → Rectangle with "SAFE" label
 ## Time Estimate (Minimum Viable)
 
 **Critical Path Only:**
+- Step 0 (Reference Study): 2-3 hours ⭐ REQUIRED FIRST
 - Step 1 (Ink): 4-6 hours
 - Step 2 (VM): 6-8 hours
 - Step 3 (Rooms): 10-12 hours
@@ -278,13 +474,35 @@ safe_sprite.png → Rectangle with "SAFE" label
 - Step 7 (M2 Event): 2-4 hours
 - Step 8 (Testing): 4-6 hours
 
-**Total:** 44-60 hours (6-8 working days)
+**Total:** 46-63 hours (6-8 working days)
 
-**With Polish:** 68-102 hours (9-13 working days)
+**With Polish:** 70-105 hours (9-13 working days)
+
+**Note:** Step 0 saves 4-6 hours by preventing validation errors and rework!
 
 ---
 
 ## Common Pitfalls
+
+**Encoding/JSON Issues (CRITICAL):**
+- ❌ Using Unicode characters (→, ←, ★, •) in JSON strings
+  - ✅ Use ASCII only (-, *, etc.)
+- ❌ Multi-line strings breaking JSON parsing
+  - ✅ ALWAYS use `json_escape()` for multi-line ERB variables
+- ❌ Forgetting to escape quotes in JSON strings
+  - ✅ Use `json_escape()` helper for all text content
+
+**Schema Validation Errors:**
+- ❌ Using wrong property names (`name` instead of `displayName`)
+  - ✅ Study M1/M2 examples, check schema enum values
+- ❌ Missing required fields (`order`, `type`, `currentKnot`)
+  - ✅ Use Step 0 schema checklist before starting
+- ❌ Using invalid object types (`container`, `document`, `terminal`)
+  - ✅ Only use: notes, safe, pc, workstation, vm-launcher, flag-station
+- ❌ Wrong keyPins values ([1,2,3] instead of [30,45,35])
+  - ✅ Always use range 25-60 for keyPins
+- ❌ Missing flag submission tasks
+  - ✅ Add submit_flags task for EACH VM flag
 
 **Ink Integration:**
 - ❌ Forgetting to handle `#speaker:<name>` tags
@@ -309,6 +527,16 @@ safe_sprite.png → Rectangle with "SAFE" label
 - ❌ Flag submission doesn't complete tasks
 - ❌ Optional objectives not tracked
 - ✅ Verify objectives.json structure matches game's system
+
+**VM/Flag Integration:**
+- ❌ Missing hacktivityMode and vm object in vm-launcher
+  - ✅ Use vm_object() helper from M1 pattern
+- ❌ Missing acceptsVms and flags arrays in flag-station
+  - ✅ Use flags_for_vm() helper from M1 pattern
+- ❌ Missing opening briefing timedConversation
+  - ✅ Add briefing NPC with delay: 0
+- ❌ Missing closing debrief eventMapping
+  - ✅ Add debrief NPC with global_variable_changed event
 
 ---
 
@@ -357,8 +585,11 @@ safe_sprite.png → Rectangle with "SAFE" label
 
 ---
 
-**Quick Start Version:** 1.0
-**Last Updated:** 2025-12-27
+**Quick Start Version:** 2.0
+**Last Updated:** 2025-12-28
 **Status:** Ready for immediate use
+**Critical Change:** Added Step 0 (Reference Examination) - REQUIRED FIRST
 
-Begin with Step 1 (Ink Compilation) and work sequentially through Steps 1-8 for fastest path to playable mission.
+⚠️ **IMPORTANT:** Begin with Step 0 (Examine Reference Missions) to extract proven patterns and avoid 40+ validation errors. Then proceed sequentially through Steps 1-8 for fastest path to playable mission.
+
+**Step 0 is mandatory and will save 4-6 hours of rework!**
