@@ -196,6 +196,17 @@ operational_log_content = "TRANSACTION LOG - Q3 2024\n\n[2024-09-15 14:32:11] Pr
 
   "startRoom": "reception_lobby",
 
+  "player": {
+    "id": "player",
+    "displayName": "Agent 0x00",
+    "spriteSheet": "hacker",
+    "spriteTalk": "assets/characters/hacker-talk.png",
+    "spriteConfig": {
+      "idleFrameStart": 20,
+      "idleFrameEnd": 23
+    }
+  },
+
   "rooms": {
     "reception_lobby": {
       "type": "room_reception",
@@ -245,6 +256,7 @@ operational_log_content = "TRANSACTION LOG - Q3 2024\n\n[2024-09-15 14:32:11] Pr
           "npcType": "person",
           "position": {"x": 300, "y": 200},
           "storyPath": "scenarios/m03_ghost_in_the_machine/ink/m03_npc_receptionist.json",
+          "currentKnot": "start",
           "spriteSheet": "hacker-red",
           "spriteConfig": {
             "idleFrameStart": 20,
@@ -257,6 +269,7 @@ operational_log_content = "TRANSACTION LOG - Q3 2024\n\n[2024-09-15 14:32:11] Pr
           "npcType": "person",
           "position": {"x": 300, "y": 200},
           "storyPath": "scenarios/m03_ghost_in_the_machine/ink/m03_npc_guard.json",
+          "currentKnot": "start",
           "spriteSheet": "hacker",
           "spriteConfig": {
             "idleFrameStart": 20,
@@ -271,6 +284,23 @@ operational_log_content = "TRANSACTION LOG - Q3 2024\n\n[2024-09-15 14:32:11] Pr
           "avatar": "assets/npc/avatars/npc_helper.png",
           "phoneId": "player_phone",
           "currentKnot": "start"
+        },
+        {
+          "id": "closing_debrief",
+          "displayName": "Agent 0x99",
+          "npcType": "phone",
+          "storyPath": "scenarios/m03_ghost_in_the_machine/ink/m03_closing_debrief.json",
+          "avatar": "assets/npc/avatars/npc_helper.png",
+          "phoneId": "player_phone",
+          "currentKnot": "start",
+          "eventMappings": [
+            {
+              "eventPattern": "global_variable_changed:victoria_choice_made",
+              "targetKnot": "start",
+              "condition": "value === true",
+              "onceOnly": true
+            }
+          ]
         }
       ]
     },
@@ -317,6 +347,7 @@ operational_log_content = "TRANSACTION LOG - Q3 2024\n\n[2024-09-15 14:32:11] Pr
           "npcType": "person",
           "position": {"x": 400, "y": 300},
           "storyPath": "scenarios/m03_ghost_in_the_machine/ink/m03_npc_victoria.json",
+          "currentKnot": "start",
           "spriteSheet": "hacker-red",
           "spriteConfig": {
             "idleFrameStart": 20,
@@ -574,6 +605,7 @@ operational_log_content = "TRANSACTION LOG - Q3 2024\n\n[2024-09-15 14:32:11] Pr
     "victoria_suspicious": 0,
     "victoria_trusts_player": false,
     "victoria_trust": 50,
+    "victoria_choice_made": false,
     "james_innocence_confirmed": false,
     "james_warned": false,
     "handler_trust": 50,
