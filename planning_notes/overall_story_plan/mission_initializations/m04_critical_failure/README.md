@@ -87,7 +87,7 @@ Water treatment facility's SCADA systems show suspicious activity. SAFETYNET sus
 
 12. **Hostile NPCs (combat)** - First combat encounter with ENTROPY operatives
 13. **Item drops from defeated enemies** - Keycards, passwords, intelligence docs
-14. **Time-pressure objectives** - 30-minute in-game timer for critical path
+14. **Escalating urgency** - Attack progresses through stages as player investigates
 15. **Multi-system investigation** - Correlate evidence from SCADA, network, and physical systems
 
 ---
@@ -190,24 +190,66 @@ SAFETYNET intelligence shows similar coordinated attacks planned globally. The A
 
 ---
 
-## Time Pressure System
+## Escalating Urgency System
 
-### Timer Mechanics
+### Progressive Threat Stages
 
-**30-Minute In-Game Timer:**
-- Visible countdown on screen
-- Attack triggers at 00:00
-- Tension increases as timer depletes
+**Stage-Based Urgency (No Real-Time Timer):**
+- Attack progresses through narrative stages
+- Player actions advance or delay attack preparation
+- Visual/audio cues indicate progression (not countdown)
+- Tension builds through story events, not clock
 
-**Time Extensions:**
-- Disable attack staging systems (+5 minutes)
-- Capture operative and extract info (+3 minutes)
-- Find attack timeline documents (+2 minutes)
+### Attack Progression Stages
 
-**Failure State:**
-- Attack succeeds if timer reaches zero
-- Partial contamination event occurs
-- Mission failure but not game over (continue with consequences)
+**Stage 1: Infiltration (Discovery)**
+- Player discovers facility compromised
+- Attack scheduled but not yet initiated
+- Operatives preparing systems
+
+**Stage 2: System Compromise (Investigation)**
+- SCADA systems show anomalies
+- Chemical dosing parameters being altered
+- Operatives become aware of player presence if detected
+
+**Stage 3: Attack Preparation (Crisis)**
+- Attack staging nearly complete
+- Multiple system failures visible
+- Robert Chen warns of critical timeline
+
+**Stage 4: Final Intervention (Climax)**
+- Attack initiation sequence started
+- Player must disable attack mechanisms
+- Combat with Voltage becomes unavoidable
+
+**Stage 5: Resolution**
+- Attack prevented or consequences occur
+- Based on player effectiveness, not time elapsed
+
+### Urgency Indicators (Non-Timer Based)
+
+**Visual Cues:**
+- SCADA system status indicators (green → yellow → red)
+- Operative radio chatter increasing in urgency
+- Facility alarm states changing
+- Chemical dosing gauges moving toward danger zone
+
+**Narrative Cues:**
+- Robert Chen's dialogue reflects urgency
+- Agent 0x99 provides intel on attack readiness
+- Captured operatives reveal attack timeline verbally
+- Found documents show attack stages
+
+**Mechanical Pressure:**
+- Delayed actions allow operatives to fortify positions
+- Ignoring reconnaissance means harder final encounter
+- Thorough investigation provides tactical advantages
+
+**No Failure State from Delay:**
+- Attack won't trigger automatically after X time
+- Player can take time to explore and investigate
+- Urgency created through narrative, not punishment
+- Thoroughness rewarded with easier confrontation
 
 ---
 
@@ -260,9 +302,9 @@ SAFETYNET intelligence shows similar coordinated attacks planned globally. The A
 - Server racks and network equipment
 
 **UI Elements:**
-- Timer display
+- SCADA system status displays (visual urgency indicators)
 - Combat indicators
-- System status monitors
+- Attack progression stage indicator
 - Alert levels
 
 ### Sound Design
@@ -357,7 +399,7 @@ SAFETYNET intelligence shows similar coordinated attacks planned globally. The A
 ### New Elements
 
 1. **Combat System** - First mission with hostile NPCs requiring combat
-2. **Time Pressure** - Real-time countdown affecting player decisions
+2. **Stage-Based Urgency** - Attack progresses through narrative stages, not real-time countdown
 3. **Multi-System Investigation** - Correlate evidence from physical, network, and SCADA systems
 4. **Item Drops** - Defeated enemies drop useful items
 5. **Crisis Decision-Making** - Choose between tactical and strategic outcomes
@@ -369,10 +411,11 @@ SAFETYNET intelligence shows similar coordinated attacks planned globally. The A
 - Provide multiple approaches to each combat encounter
 - Ensure defeat doesn't equal game over
 
-**Timer Stress:**
-- Provide clear feedback on remaining time
-- Allow time extensions through gameplay
-- Make timer pause during critical dialogues/cutscenes
+**Urgency Balance:**
+- Create tension through narrative progression, not time punishment
+- Reward thorough investigation with tactical advantages
+- No automatic failure from taking time to explore
+- Visual/audio cues convey urgency without strict deadlines
 
 **SCADA Complexity:**
 - Abstract technical details appropriately for gameplay
@@ -387,7 +430,7 @@ SAFETYNET intelligence shows similar coordinated attacks planned globally. The A
 
 - **Completable:** 95%+ of playtesters complete mission in 60-80 minutes
 - **Engaging Combat:** 80%+ report combat was fair and enjoyable
-- **Time Pressure:** 70%+ report timer created tension without frustration
+- **Narrative Urgency:** 70%+ report felt tension without time pressure frustration
 - **Moral Choice:** 50/50 split on major choice (indicates balanced options)
 
 ### Educational Objectives
@@ -411,7 +454,7 @@ SAFETYNET intelligence shows similar coordinated attacks planned globally. The A
 1. **Proceed to Stage 1:** Develop detailed 3-act narrative structure
 2. **Character Development:** Flesh out Robert Chen, Voltage, and operative personalities
 3. **Combat Design:** Design combat encounters and stealth alternatives
-4. **Timer Mechanics:** Specify exact time budgets and extension conditions
+4. **Urgency Progression:** Design attack progression stages and urgency indicators
 5. **VM Integration:** Map SecGen scenarios to narrative context
 6. **SCADA Research:** Ensure realistic but accessible portrayal of water treatment SCADA
 
@@ -423,4 +466,4 @@ SAFETYNET intelligence shows similar coordinated attacks planned globally. The A
 
 ---
 
-*Mission 4 initialization complete. This mission represents the transition from reconnaissance-focused missions to active crisis response with combat elements. Successfully implementing M4 establishes the combat system and time-pressure mechanics that will be refined in M7-10.*
+*Mission 4 initialization complete. This mission represents the transition from reconnaissance-focused missions to active crisis response with combat elements. Successfully implementing M4 establishes the combat system and narrative-driven urgency mechanics that will be refined in M7-10.*
