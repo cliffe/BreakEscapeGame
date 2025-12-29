@@ -1,14 +1,14 @@
 # Mission 4: "Critical Failure" - Implementation Status
 
 **Mission ID:** m04_critical_failure
-**Last Updated:** 2025-12-28
-**Current Status:** Dialogue Implementation Complete (85%)
+**Last Updated:** 2025-12-29
+**Current Status:** Dialogue & Compilation Complete (90%)
 
 ---
 
-## Overall Progress: 85% Complete
+## Overall Progress: 90% Complete
 
-### ✅ Completed (85%)
+### ✅ Completed (90%)
 
 #### Planning Documentation (100% - Stages 1-9)
 - ✅ **Stage 1:** Narrative Structure (`stages/stage_1/story_arc.md` - 821 lines)
@@ -38,7 +38,7 @@
   - SecGen scenario: vulnerability_analysis
   - 6 CyBOK knowledge areas mapped
 
-#### Ink Dialogue Scripts (100% - 12 scripts complete)
+#### Ink Dialogue Scripts (100% - 12 scripts complete, compiled to JSON)
 
 #### Critical Path Scripts (6/6) ✅
 1. ✅ `ink/m04_opening_briefing.ink` (326 lines)
@@ -97,10 +97,11 @@
     - Final battle backup, The Architect intelligence
 
 **Total Dialogue Lines:** 3,547 lines across all 12 scripts
+**Compilation Status:** ✅ All 12 files compile successfully to JSON (0 errors, 1 minor warning)
 
 ---
 
-## 🚧 In Progress / Not Started (15%)
+## 🚧 In Progress / Not Started (10%)
 
 ### Asset Production (0%)
 
@@ -198,25 +199,37 @@
 │       └── SCENARIO_ASSEMBLY_GUIDE.md (1144 lines)
 ```
 
-### Implementation Files (2 files, 12 pending)
+### Implementation Files (26 files)
 ```
 /scenarios/m04_critical_failure/
 ├── scenario.json.erb (931 lines) ✅
 ├── mission.json (39 lines) ✅
 ├── IMPLEMENTATION_STATUS.md (this file) ✅
-└── ink/ (directory exists, 0/12 scripts created)
-    ├── m04_opening_briefing.ink ⬜
-    ├── m04_npc_robert_chen.ink ⬜
-    ├── m04_npc_voltage.ink ⬜
-    ├── m04_phone_agent0x99.ink ⬜
-    ├── m04_closing_debrief.ink ⬜
-    ├── m04_terminal_attack_trigger.ink ⬜
-    ├── m04_npc_security_guard.ink ⬜
-    ├── m04_phone_robert_chen.ink ⬜
-    ├── m04_terminal_scada_display.ink ⬜
-    ├── m04_npc_operative_cipher.ink ⬜
-    ├── m04_npc_operative_relay.ink ⬜
-    └── m04_npc_operative_static.ink ⬜
+└── ink/
+    ├── m04_opening_briefing.ink (326 lines) ✅
+    ├── m04_opening_briefing.json ✅
+    ├── m04_npc_robert_chen.ink (635 lines) ✅
+    ├── m04_npc_robert_chen.json ✅
+    ├── m04_npc_voltage.ink (417 lines) ✅
+    ├── m04_npc_voltage.json ✅
+    ├── m04_phone_agent0x99.ink (510 lines) ✅
+    ├── m04_phone_agent0x99.json ✅
+    ├── m04_closing_debrief.ink (375 lines) ✅
+    ├── m04_closing_debrief.json ✅
+    ├── m04_terminal_attack_trigger.ink (369 lines) ✅
+    ├── m04_terminal_attack_trigger.json ✅
+    ├── m04_npc_security_guard.ink (170 lines) ✅
+    ├── m04_npc_security_guard.json ✅
+    ├── m04_phone_robert_chen.ink (194 lines) ✅
+    ├── m04_phone_robert_chen.json ✅
+    ├── m04_terminal_scada_display.ink (217 lines) ✅
+    ├── m04_terminal_scada_display.json ✅
+    ├── m04_npc_operative_cipher.ink (167 lines) ✅
+    ├── m04_npc_operative_cipher.json ✅
+    ├── m04_npc_operative_relay.ink (162 lines) ✅
+    ├── m04_npc_operative_relay.json ✅
+    ├── m04_npc_operative_static.ink (166 lines) ✅
+    └── m04_npc_operative_static.json ✅
 ```
 
 ---
@@ -229,10 +242,15 @@
    - Critical path: 6/6 complete
    - Supporting: 6/6 complete
 
-2. **Compile Ink to JSON** (Next Priority)
-   - Convert all .ink files to .json using Ink compiler
-   - Validate compiled JSON structure
-   - Test dialogue flow in game engine
+2. ✅ **Compile Ink to JSON** COMPLETE
+   - All 12 .ink files compiled to .json successfully
+   - 0 compilation errors (1 style warning in security_guard.ink)
+   - JSON files generated and ready for game engine integration
+
+3. **Test Dialogue in Game Engine** (Next Priority)
+   - Load mission in Break Escape
+   - Verify dialogue flow and branching
+   - Test variable systems (trust, confidence, leverage)
 
 ### Short-term (Asset Production)
 4. **Character Sprites** (if available from art team)
@@ -306,7 +324,7 @@
 
 ### Overall Readiness
 - **Core Structure:** 100% (scenario.json.erb validated)
-- **Content:** 85% (dialogue complete, needs assets)
+- **Content:** 90% (dialogue created & compiled, needs assets)
 - **Polish:** 0% (needs VO, music, final testing)
 
 ---
@@ -319,6 +337,9 @@
 - **Reference Architecture:** Followed M1/M2 patterns successfully for vm-launcher, flag-station, NPC structure
 - **Dialogue Completeness:** All 12 Ink scripts created (3,547 lines), exceeding initial estimates by 735%
 - **Branching Complexity:** Multi-variable dialogue systems (trust, confidence, leverage) with ~40+ unique conversation paths
+- **Ink Compilation:** All 12 files compile successfully with 0 errors after systematic syntax fixes
+  - Fixed: EXTERNAL vs VAR declarations, multi-branch conditionals, missing start knots, bullet point syntax
+  - Result: 12/12 JSON files generated and ready for game engine
 
 ### Known Dependencies
 - **Ink Compiler:** Required for .ink → .json conversion
@@ -333,4 +354,4 @@
 
 ---
 
-**Status:** Dialogue implementation complete. Ready for Ink compilation and asset production. Core mission playable pending JSON compilation.
+**Status:** Dialogue implementation & compilation complete. All 12 Ink files successfully compiled to JSON. Core mission ready for engine testing. Awaiting asset production (sprites, VO, music) for full polish.
