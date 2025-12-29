@@ -7,16 +7,18 @@
 // Variables for tracking combat state
 VAR cipher_alerted_team = false
 VAR cipher_defeated = false
-
-// External variables (set by game)
-EXTERNAL player_detected()
-EXTERNAL radio_interrupted()
+VAR radio_interrupted = false
+VAR player_health_low = false
+VAR player_defeated = false
 
 // ===========================================
 // CIPHER DETECTION
 // Location: Treatment Floor
 // Optional Task 2.9: Neutralize Operative #1
 // ===========================================
+
+=== start ===
+-> cipher_detection
 
 === cipher_detection ===
 #speaker:operative_cipher
@@ -91,11 +93,14 @@ You picked the wrong facility to infiltrate.
 
 {cipher_defeated:
     -> cipher_defeated_outcome
-- player_defeated:
+}
+{player_defeated:
     -> cipher_victory
-- else:
+}
+{not cipher_defeated and not player_defeated:
     -> cipher_combat_sequence
 }
+-> cipher_combat_sequence
 
 === cipher_defeated_outcome ===
 #speaker:operative_cipher
@@ -109,8 +114,9 @@ You won't... stop the attack...
 // Cipher drops Level 2 keycard, radio, intelligence document
 
 // TRIGGERS: Task 2.9 complete (optional)
-
--> END
+#complete_task:neutralize_operative_cipher
+#exit_conversation
+-> start
 
 === cipher_victory ===
 #speaker:operative_cipher
@@ -120,8 +126,9 @@ You won't... stop the attack...
 Stay down.
 
 // Player respawns at checkpoint
-
--> END
+#player_defeated
+#exit_conversation
+-> start
 
 // ===========================================
 // OPTIONAL: CIPHER SURRENDER/INTERROGATION
@@ -172,5 +179,6 @@ You'd have to disable all three to stop it.
 // Cipher restrained and secured
 
 // TRIGGERS: Task 2.9 complete (optional)
-
--> END
+#complete_task:neutralize_operative_cipher
+#exit_conversation
+-> start

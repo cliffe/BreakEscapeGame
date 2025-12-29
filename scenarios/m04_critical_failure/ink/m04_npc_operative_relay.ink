@@ -7,16 +7,18 @@
 // Variables for tracking combat state
 VAR relay_alerted_team = false
 VAR relay_defeated = false
-
-// External variables (set by game)
-EXTERNAL player_detected()
-EXTERNAL radio_interrupted()
+VAR radio_interrupted = false
+VAR player_health_low = false
+VAR player_defeated = false
 
 // ===========================================
 // RELAY DETECTION
 // Location: Chemical Storage
 // Optional Task 2.10: Neutralize Operative #2
 // ===========================================
+
+=== start ===
+-> relay_patrol_alert
 
 === relay_patrol_alert ===
 #speaker:operative_relay
@@ -80,11 +82,14 @@ Voltage, we've got company!
 
 {relay_defeated:
     -> relay_defeated_outcome
-- player_defeated:
+}
+{player_defeated:
     -> relay_victory
-- else:
+}
+{not relay_defeated and not player_defeated:
     -> relay_combat_sequence
 }
+-> relay_combat_sequence
 
 === relay_defeated_outcome ===
 #speaker:operative_relay
@@ -98,8 +103,9 @@ The attack... will still... happen...
 // Relay drops Master keycard, radio, bypass device schematics
 
 // TRIGGERS: Task 2.10 complete (optional)
-
--> END
+#complete_task:neutralize_operative_relay
+#exit_conversation
+-> start
 
 === relay_victory ===
 #speaker:operative_relay
@@ -109,8 +115,9 @@ The attack... will still... happen...
 Stay out of Critical Mass operations.
 
 // Player respawns at checkpoint
-
--> END
+#player_defeated
+#exit_conversation
+-> start
 
 // ===========================================
 // OPTIONAL: RELAY SURRENDER/INTERROGATION
@@ -164,5 +171,6 @@ You'd need to physically disconnect them.
 // Relay restrained and secured
 
 // TRIGGERS: Task 2.10 complete (optional)
-
--> END
+#complete_task:neutralize_operative_relay
+#exit_conversation
+-> start

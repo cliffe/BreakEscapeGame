@@ -11,6 +11,7 @@ VAR knows_full_threat = false     // Did player ask about chemical threat?
 VAR knows_entropy_cell = false    // Did player ask about Critical Mass?
 VAR mission_priority = ""         // investigation, speed, stealth
 VAR combat_ready = false          // Player acknowledged combat risk
+VAR mission_briefed = false       // Briefing completed
 
 // External variables (set by game)
 EXTERNAL player_name()
@@ -33,7 +34,8 @@ This one's different from Ransomware Incorporated. More dangerous.
 
 * [Ask what makes it dangerous]
     You: What makes this cell more dangerous?
-    -> threat_level_explanation
+    Agent 0x99: They're infrastructure specialists. Not just disruption—they weaponize critical systems.
+    -> briefing_main
 
 * [Express readiness]
     ~ handler_trust += 10
@@ -321,5 +323,6 @@ Agent 0x99: {combat_ready: Combat may be unavoidable. Stay tactical.| Stay alert
 Agent 0x99: Good luck, {player_name()}. Bring those operatives down.
 
 ~ mission_briefed = true
-
--> END
+#complete_task:opening_briefing
+#exit_conversation
+-> start

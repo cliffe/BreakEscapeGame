@@ -12,13 +12,13 @@ VAR combat_difficulty = "normal"         // Combat difficulty modifier
 VAR voltage_defeated_before_trigger = false
 VAR voltage_triggered_attack = false
 VAR attack_partially_triggered = false
+VAR operatives_defeated = 0              // Number of operatives defeated
+VAR attack_trigger_secured = false       // Trigger already disabled?
+VAR voltage_defeated = false             // Voltage defeated in combat?
+VAR voltage_escaped = false              // Voltage escaped?
 
 // External variables (set by game)
 EXTERNAL player_name()
-EXTERNAL operatives_defeated()
-EXTERNAL attack_trigger_secured()
-EXTERNAL voltage_defeated()
-EXTERNAL voltage_escaped()
 
 // ===========================================
 // CONFRONTATION START
@@ -338,8 +338,9 @@ This attack. One facility. You stopped your battle. We're winning the war.
 // SAFETYNET team arrives to take custody
 
 // TRIGGERS: Task 3.1 complete (confront_voltage)
-
--> END
+#complete_task:confront_voltage
+#exit_conversation
+-> start
 
 // ===========================================
 // ESCAPE OUTCOMES
@@ -367,8 +368,8 @@ You're too late!
 
 // TRIGGERS: attack_partially_triggered event
 // Task 3.2 becomes emergency intervention mode
-
--> END
+#exit_conversation
+-> start
 
 === voltage_escape_route ===
 #speaker:voltage
@@ -393,8 +394,9 @@ This isn't over. You won your battle. We're winning the war.
 
 // TRIGGERS: voltage_escaped event
 // Task 3.1 complete (confront_voltage)
-
--> END
+#complete_task:confront_voltage
+#exit_conversation
+-> start
 
 === voltage_escape_attempt ===
 #speaker:voltage

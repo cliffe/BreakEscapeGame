@@ -6,16 +6,19 @@
 
 // Variables for tracking combat state
 VAR static_defeated = false
-
-// External variables (set by game)
-EXTERNAL voltage_captured()
-EXTERNAL player_priority()
+VAR voltage_captured = false
+VAR player_priority = ""
+VAR player_health_low = false
+VAR player_defeated = false
 
 // ===========================================
 // STATIC CONFRONTATION
 // Location: Maintenance Wing
 // Part of Task 3.1: Confront Voltage
 // ===========================================
+
+=== start ===
+-> static_voltage_support
 
 === static_voltage_support ===
 #speaker:operative_static
@@ -31,20 +34,21 @@ Voltage, we have company!
 
     // Fights alongside Voltage
     -> static_combat_support
-
-- player_priority == "disable":
+}
+{player_priority == "disable":
     // Player prioritizing laptop trigger
 
     Go! I'll cover you!
 
     // Covers Voltage's escape
     -> static_combat_delay
-
-- else:
+}
+{player_priority != "capture" and player_priority != "disable":
     // Default combat support
 
     -> static_combat_support
 }
+-> static_combat_support
 
 === static_combat_support ===
 #speaker:operative_static
@@ -90,11 +94,14 @@ You're not stopping this operation!
 
 {static_defeated:
     -> static_defeated_outcome
-- player_defeated:
+}
+{player_defeated:
     -> static_victory
-- else:
+}
+{not static_defeated and not player_defeated:
     -> static_combat_sequence
 }
+-> static_combat_sequence
 
 === static_defeated_outcome ===
 #speaker:operative_static
@@ -106,8 +113,8 @@ You're not stopping this operation!
 The Architect... will continue...
 
 // Static drops radio, encrypted communications device
-
--> END
+#exit_conversation
+-> start
 
 === static_victory ===
 #speaker:operative_static
@@ -118,7 +125,6 @@ The Architect... will continue...
     // If Voltage was captured but player lost
 
     Voltage is captured, but you're done.
-
 - else:
     // Player defeated, Voltage status varies
 
@@ -126,8 +132,9 @@ The Architect... will continue...
 }
 
 // Player respawns
-
--> END
+#player_defeated
+#exit_conversation
+-> start
 
 // ===========================================
 // STATIC SURRENDER (Rare - Only if Voltage Captured)
@@ -196,5 +203,5 @@ You stopped this one. How many others can you stop?
 // Static restrained
 
 // TRIGGERS: Part of Task 3.1 completion
-
--> END
+#exit_conversation
+-> start
