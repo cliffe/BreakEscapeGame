@@ -11,12 +11,14 @@ VAR server_room_reached = false
 VAR attack_mechanism_known = false
 VAR voltage_priority_discussed = false
 
+// Game state variables
+VAR chen_is_ally = false
+VAR operatives_defeated = 0
+VAR urgency_stage = 0
+VAR flags_submitted = 0
+
 // External variables (set by game)
 EXTERNAL player_name()
-EXTERNAL chen_is_ally()
-EXTERNAL operatives_defeated()
-EXTERNAL urgency_stage()
-EXTERNAL flags_submitted()
 
 // ===========================================
 // FIRST CALL (Initial Contact)
@@ -140,7 +142,8 @@ Stay sharp. These aren't amateurs. If you encounter hostiles, defend yourself.
 
 Call if you need guidance.
 
--> END
+#exit_conversation
+-> start
 
 // ===========================================
 // EVENT: SERVER ROOM ENTERED
@@ -202,7 +205,8 @@ Find it, analyze it, and we'll know how to disable their attack.
 
 Call when you've got intel.
 
--> END
+#exit_conversation
+-> start
 
 // ===========================================
 // EVENT: ATTACK MECHANISM IDENTIFIED
@@ -323,9 +327,11 @@ Three—disable physical bypass devices and SCADA malware.
 
 {operatives_defeated >= 2:
     You've already taken down {operatives_defeated} operatives. You're doing this.
-- operatives_defeated == 1:
+}
+{operatives_defeated == 1:
     You've neutralized one operative. Expect resistance from the others.
-- else:
+}
+{operatives_defeated == 0:
     All three operatives are still active. Be ready for combat.
 }
 
@@ -347,7 +353,8 @@ Three—disable physical bypass devices and SCADA malware.
 
 240,000 people are counting on you. Bring it home.
 
--> END
+#exit_conversation
+-> start
 
 // ===========================================
 // OPTIONAL: PLAYER-INITIATED CALL (GUIDANCE REQUEST)
@@ -506,4 +513,5 @@ Anything else?
 
 Stay safe out there. Call if you need me.
 
--> END
+#exit_conversation
+-> start

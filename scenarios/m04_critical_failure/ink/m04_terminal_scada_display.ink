@@ -8,10 +8,10 @@
 VAR scada_anomalies_identified = false
 VAR parameter_readings_reviewed = false
 
-// External variables (set by game)
-EXTERNAL urgency_stage()
-EXTERNAL attack_vectors_disabled()
-EXTERNAL chen_is_ally()
+// Game state variables
+VAR urgency_stage = 0
+VAR attack_vectors_disabled = 0
+VAR chen_is_ally = false
 
 // ===========================================
 // SCADA TERMINAL ACCESS
@@ -30,7 +30,18 @@ EXTERNAL chen_is_ally()
 ╚════════════════════════════════════════════════╝
 
 [SYSTEM STATUS: {attack_vectors_disabled >= 3: SECURE | MONITORING}]
-[URGENCY LEVEL: {urgency_stage >= 4: CRITICAL | urgency_stage >= 3: HIGH | urgency_stage >= 2: ELEVATED | NORMAL}]
+{urgency_stage >= 4:
+    [URGENCY LEVEL: CRITICAL]
+}
+{urgency_stage == 3:
+    [URGENCY LEVEL: HIGH]
+}
+{urgency_stage == 2:
+    [URGENCY LEVEL: ELEVATED]
+}
+{urgency_stage < 2:
+    [URGENCY LEVEL: NORMAL]
+}
 
 * [View Chemical Dosing Parameters]
     -> view_dosing_parameters
@@ -65,8 +76,8 @@ CHEMICAL DOSING PARAMETERS
 
     All parameters within safe operational ranges.
     Automated control restored.
-
-- urgency_stage >= 4:
+}
+{attack_vectors_disabled < 3 and urgency_stage >= 4:
     [CRITICAL WARNING]
 
     Chlorine: 3.2 ppm → 4.1 ppm (DANGEROUS TREND)
@@ -75,8 +86,8 @@ CHEMICAL DOSING PARAMETERS
 
     ⚠ PARAMETERS APPROACHING TOXIC LEVELS
     ⚠ IMMEDIATE INTERVENTION REQUIRED
-
-- urgency_stage >= 3:
+}
+{attack_vectors_disabled < 3 and urgency_stage == 3:
     [HIGH ALERT]
 
     Chlorine: 1.8 ppm → 2.3 ppm (ELEVATED)
@@ -85,8 +96,8 @@ CHEMICAL DOSING PARAMETERS
 
     ⚠ ABNORMAL PARAMETER DRIFT DETECTED
     ⚠ TRENDING TOWARD UNSAFE LEVELS
-
-- urgency_stage >= 2:
+}
+{attack_vectors_disabled < 3 and urgency_stage == 2:
     [ELEVATED MONITORING]
 
     Chlorine: 1.1 ppm → 1.4 ppm (RISING)
@@ -95,8 +106,8 @@ CHEMICAL DOSING PARAMETERS
 
     ⚠ CHLORINE DOSING ANOMALY DETECTED
     ⚠ PARAMETERS DRIFTING FROM BASELINE
-
-- else:
+}
+{attack_vectors_disabled < 3 and urgency_stage < 2:
     [MONITORING]
 
     Chlorine: 0.8 ppm → 0.9 ppm (SLIGHT INCREASE)
@@ -265,4 +276,5 @@ Terminal session ended.
     ⚠ WARNING: Time-sensitive threat
 }
 
--> END
+#exit_conversation
+-> start

@@ -11,9 +11,9 @@ VAR trigger_mechanism_disabled = false // Remote trigger neutralized
 VAR attack_vectors_disabled = 0       // Total count (0-3)
 VAR emergency_intervention = false    // Voltage triggered attack
 
-// External variables (set by game)
-EXTERNAL voltage_captured()
-EXTERNAL attack_trigger_secured()
+// Game state variables
+VAR voltage_captured = false
+VAR attack_trigger_secured = false
 
 // ===========================================
 // TERMINAL ACCESS
@@ -34,10 +34,12 @@ EXTERNAL attack_trigger_secured()
 {voltage_captured:
     [OPERATOR: Voltage - SESSION TERMINATED]
     [SAFETYNET Override Active]
-- attack_trigger_secured:
+}
+{not voltage_captured and attack_trigger_secured:
     [OPERATOR: Unknown - SESSION SECURED]
     [Manual Control Available]
-- else:
+}
+{not voltage_captured and not attack_trigger_secured:
     [OPERATOR: Voltage - ACTIVE]
     [WARNING: Session In Progress]
 }
@@ -366,4 +368,5 @@ Terminal session ended.
 
 Laptop secured for intelligence analysis.
 
--> END
+#exit_conversation
+-> start

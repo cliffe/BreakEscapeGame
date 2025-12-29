@@ -8,12 +8,14 @@
 VAR chen_support_calls = 0
 VAR guidance_provided = ""
 
+// Game state variables
+VAR chen_is_ally = false
+VAR chen_trust_level = 0
+VAR urgency_stage = 0
+VAR attack_mechanism_known = false
+
 // External variables (set by game)
 EXTERNAL player_name()
-EXTERNAL chen_is_ally()
-EXTERNAL chen_trust_level()
-EXTERNAL urgency_stage()
-EXTERNAL attack_mechanism_known()
 
 // ===========================================
 // PHONE SUPPORT AVAILABILITY CHECK
@@ -28,7 +30,8 @@ EXTERNAL attack_mechanism_known()
 
     I'm monitoring systems from the Control Room. Come see me if you need something.
 
-    -> END
+    #exit_conversation
+-> start
 - else:
     // Chen is ally - provides technical support
 
@@ -141,11 +144,13 @@ Three: Remote trigger mechanism. Secure and disable Voltage's command laptop.
     Priority one: identify how they're compromising the SCADA network.
 
     Use the VM terminal in the server room. Find their attack infrastructure.
-- urgency_stage >= 3:
+}
+{attack_mechanism_known and urgency_stage >= 3:
     We're in the final stages. You need to disable their attack vectors NOW.
 
     Physical bypasses, SCADA malware, and the remote trigger. All three.
-- else:
+}
+{attack_mechanism_known and urgency_stage < 3:
     You know what they did. Now disable it.
 
     Three vectors: physical, digital, and the trigger mechanism.
@@ -195,7 +200,8 @@ Call if you need more guidance.
     I'm monitoring systems from here.
 }
 
--> END
+#exit_conversation
+-> start
 
 // ===========================================
 // EMERGENCY CALL (If Attack Partially Triggered)
@@ -212,4 +218,5 @@ You need to disable those vectors RIGHT NOW—physical bypasses, SCADA script, e
 
 // TRIGGERS: Emergency intervention mode
 
--> END
+#exit_conversation
+-> start

@@ -12,11 +12,13 @@ VAR chen_provided_keycard = false
 VAR discussed_optigrid = false
 VAR scada_threat_confirmed = false
 
+// Game state variables
+VAR operatives_defeated = 0
+VAR urgency_stage = 0
+
 // External variables (set by game)
 EXTERNAL player_name()
 EXTERNAL current_time()
-EXTERNAL operatives_defeated()
-EXTERNAL urgency_stage()
 
 // ===========================================
 // CONVERSATION 1: INITIAL MEETING (Task 1.2)
@@ -225,7 +227,8 @@ Let me know if you need anything else. I'll be in the Control Room monitoring sy
 
 // TRIGGERS: Task 1.2 completion
 
--> END
+#exit_conversation
+-> initial_meeting
 
 === initial_meeting_end_grateful ===
 #speaker:robert_chen
@@ -236,7 +239,8 @@ Of course. And look... if you do find anything, let me know.
 
 This facility is my responsibility. These people depend on us.
 
--> END
+#exit_conversation
+-> initial_meeting
 
 // ===========================================
 // EARLY REVEAL OPTION
@@ -363,7 +367,8 @@ Meet me in the Control Room. We'll find what they did to my systems.
 
 // TRIGGERS: Task 1.2 completion, chen_is_ally activated early
 
--> END
+#exit_conversation
+-> initial_meeting
 
 === chen_maintains_cover ===
 #speaker:robert_chen
@@ -620,7 +625,8 @@ Call me if you need technical support—I know every system in this facility.
 
 // TRIGGERS: Task 1.4 completion, Objective 1 complete, Objective 2 unlocked
 
--> END
+#exit_conversation
+-> initial_meeting
 
 === scada_conversation_end_grateful ===
 #speaker:robert_chen
@@ -631,4 +637,5 @@ Be careful out there.
 
 And... thank you. For taking this seriously. For protecting my people.
 
--> END
+#exit_conversation
+-> initial_meeting

@@ -9,12 +9,14 @@ VAR disclosure_choice = ""           // full, quiet, partial
 VAR task_force_null_assigned = false // Player assigned to TF Null
 VAR mission_debriefed = false        // Debrief completed
 
+// Game state variables
+VAR voltage_captured = false
+VAR chen_trust_level = 0
+VAR attack_vectors_disabled = 0
+VAR operatives_defeated = 0
+
 // External variables (set by game)
 EXTERNAL player_name()
-EXTERNAL voltage_captured()
-EXTERNAL chen_trust_level()
-EXTERNAL attack_vectors_disabled()
-EXTERNAL operatives_defeated()
 
 // ===========================================
 // DEBRIEF START
@@ -296,9 +298,11 @@ Decision recorded.
 
 {disclosure_choice == "full":
     Public statement will be coordinated with local authorities.
-- disclosure_choice == "quiet":
+}
+{disclosure_choice == "quiet":
     Incident remains classified. Cover story prepared.
-- disclosure_choice == "partial":
+}
+{disclosure_choice == "partial":
     Controlled statement will be prepared for media.
 }
 
@@ -372,4 +376,5 @@ This is just the beginning.
 // TRIGGERS: Task 3.3 complete (report_to_0x99)
 // TRIGGERS: Mission complete event
 
--> END
+#exit_conversation
+-> start
