@@ -316,11 +316,13 @@ Decision recorded.
     I don't know your real name, but... thank you.
 
     You saved this facility. You saved 240,000 people.
-- chen_trust_level >= 50:
+}
+{chen_trust_level >= 50 and chen_trust_level < 80:
     You did good work here.
 
     This facility won't forget it.
-- else:
+}
+{chen_trust_level < 50:
     I appreciate what you did, even if I don't fully understand it.
 }
 

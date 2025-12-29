@@ -22,6 +22,9 @@ EXTERNAL player_name()
 // Available only after chen_is_ally = true
 // ===========================================
 
+=== start ===
+-> chen_phone_support_start
+
 === chen_phone_support_start ===
 #speaker:robert_chen
 
@@ -170,15 +173,18 @@ Three: Remote trigger mechanism. Secure and disable Voltage's command laptop.
     We're at critical levels. Chemical parameters are approaching dangerous thresholds.
 
     If you don't disable their attack soon, we'll have to do emergency shutdown—and that might trigger exactly what they want.
-- urgency_stage >= 3:
+}
+{urgency_stage == 3:
     Dosing parameters are drifting into yellow zones. We've got time, but not much.
 
     Every minute those parameters drift closer to contamination levels.
-- urgency_stage >= 2:
+}
+{urgency_stage == 2:
     Systems show anomalies but nothing critical yet.
 
     We have time to be methodical. Use it wisely.
-- else:
+}
+{urgency_stage < 2:
     Systems are stable for now. But those parameters WILL drift if we don't stop them.
 
     The attack is scheduled for 0800. You've got time, but not unlimited.

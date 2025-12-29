@@ -345,9 +345,11 @@ Three—disable physical bypass devices and SCADA malware.
 
 {handler_confidence >= 80:
     You've got this, {player_name()}. Textbook operation so far. Finish it.
-- handler_confidence >= 60:
+}
+{handler_confidence >= 60 and handler_confidence < 80:
     Good work so far. Stay sharp for the final push.
-- else:
+}
+{handler_confidence < 60:
     Be careful. This is the most dangerous phase.
 }
 

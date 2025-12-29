@@ -94,7 +94,8 @@ Attack Vectors Disabled: {attack_vectors_disabled}/3
     The threat has been neutralized.
 
     -> attack_fully_disabled
-- else:
+}
+{attack_vectors_disabled < 3:
 
     ═══════════════════════════════════════
     DISABLE ATTACK MECHANISMS

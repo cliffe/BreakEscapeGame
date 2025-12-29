@@ -35,9 +35,11 @@ You're good. Better than the usual SAFETYNET drones.
 
 {operatives_defeated >= 2:
     You took out Cipher and Relay. Impressive.
-- operatives_defeated == 1:
+}
+{operatives_defeated == 1:
     You got past my people.
-- else:
+}
+{operatives_defeated == 0:
     Sneaky approach. I respect that.
 }
 

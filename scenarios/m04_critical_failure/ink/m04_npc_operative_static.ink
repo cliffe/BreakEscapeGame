@@ -79,9 +79,11 @@ You're not stopping this operation!
 
 {player_health_low:
     Critical Mass prevails!
-- voltage_captured:
+}
+{not player_health_low and voltage_captured:
     Voltage! No!
-- else:
+}
+{not player_health_low and not voltage_captured:
     For The Architect!
 }
 

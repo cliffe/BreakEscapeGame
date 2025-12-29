@@ -136,30 +136,30 @@ SYSTEM ALERTS
     [00:00] - NORMAL OPERATIONS RESTORED
 
     No active alerts.
-
-- urgency_stage >= 4:
+}
+{attack_vectors_disabled < 3 and urgency_stage >= 4:
     [ACTIVE] - CRITICAL: Chemical dosing exceeding safe thresholds
     [ACTIVE] - WARNING: Automated control anomaly
     [ACTIVE] - WARNING: Unusual network traffic patterns
     [ACTIVE] - WARNING: Unauthorized SCADA script detected
 
     4 CRITICAL ALERTS REQUIRE IMMEDIATE ATTENTION
-
-- urgency_stage >= 3:
+}
+{attack_vectors_disabled < 3 and urgency_stage == 3:
     [ACTIVE] - WARNING: Chemical dosing parameter drift
     [ACTIVE] - WARNING: Automated control anomaly
     [ACTIVE] - INFO: Network connection to 192.168.100.10 active
 
     3 ALERTS REQUIRE ATTENTION
-
-- urgency_stage >= 2:
+}
+{attack_vectors_disabled < 3 and urgency_stage == 2:
     [ACTIVE] - INFO: Chlorine dosing trend anomaly
     [ACTIVE] - INFO: Automated adjustments not logged in manual log
     [ACTIVE] - INFO: Unusual SCADA backup server activity
 
     3 INFORMATIONAL ALERTS
-
-- else:
+}
+{attack_vectors_disabled < 3 and urgency_stage < 2:
     [ACTIVE] - INFO: Minor chlorine parameter variation
     [ACTIVE] - INFO: SCADA backup server connectivity check
 
