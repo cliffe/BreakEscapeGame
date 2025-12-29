@@ -26,6 +26,9 @@ EXTERNAL player_name()
 // Task 3.1: Confront Voltage
 // ===========================================
 
+=== start ===
+-> voltage_confrontation_start
+
 === voltage_confrontation_start ===
 #speaker:voltage
 
@@ -257,9 +260,11 @@ Enough talking.
 
 {voltage_defeated_before_trigger:
     -> voltage_captured_with_trigger
-- voltage_triggered_attack:
+}
+{not voltage_defeated_before_trigger and voltage_triggered_attack:
     -> voltage_triggered_emergency
-- voltage_escaped:
+}
+{not voltage_defeated_before_trigger and not voltage_triggered_attack and voltage_escaped:
     -> voltage_escape_success
 }
 

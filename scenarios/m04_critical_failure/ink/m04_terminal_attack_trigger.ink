@@ -21,6 +21,9 @@ VAR attack_trigger_secured = false
 // Task 3.2: Disable Attack Mechanisms
 // ===========================================
 
+=== start ===
+-> laptop_access_start
+
 === laptop_access_start ===
 #speaker:system
 
@@ -134,9 +137,11 @@ Attack Vectors Disabled: {attack_vectors_disabled}/3
 
     {physical_bypasses_disabled == 0:
         No dosing stations disconnected yet. Proceed to Chemical Storage.
-    - physical_bypasses_disabled == 1:
+    }
+    {physical_bypasses_disabled == 1:
         1 dosing station disconnected. 2 remaining.
-    - physical_bypasses_disabled == 2:
+    }
+    {physical_bypasses_disabled == 2:
         2 dosing stations disconnected. 1 remaining.
     }
 
@@ -212,9 +217,11 @@ Chlorine dosing automation returned to normal facility control.
 
     {voltage_captured:
         [VOLTAGE CAPTURED - Safe to disable trigger]
-    - attack_trigger_secured:
+    }
+    {not voltage_captured and attack_trigger_secured:
         [TRIGGER SECURED - Proceeding with disabling]
-    - emergency_intervention:
+    }
+    {not voltage_captured and not attack_trigger_secured and emergency_intervention:
         [EMERGENCY MODE - Attack partially triggered, immediate intervention required]
     }
 

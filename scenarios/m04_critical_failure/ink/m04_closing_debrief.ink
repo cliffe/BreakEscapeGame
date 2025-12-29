@@ -24,6 +24,9 @@ EXTERNAL player_name()
 // Task 3.3: Report Mission Outcome
 // ===========================================
 
+=== start ===
+-> debrief_start
+
 === debrief_start ===
 #speaker:agent_0x99
 
@@ -369,7 +372,8 @@ Task Force Null briefing tomorrow at 0600.
 
 {operatives_defeated >= 3:
     You neutralized all their operatives. Textbook operation.
-- operatives_defeated >= 2:
+}
+{operatives_defeated == 2:
     Two operatives down. Clean work.
 }
 

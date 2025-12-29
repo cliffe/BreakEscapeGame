@@ -19,6 +19,9 @@ VAR chen_is_ally = false
 // Task 1.4: Identify SCADA Anomalies
 // ===========================================
 
+=== start ===
+-> scada_terminal_start
+
 === scada_terminal_start ===
 #speaker:system
 
@@ -183,10 +186,10 @@ Investigating alert details...
     // Player discovering anomalies independently
 
     ALERT ANALYSIS:
-    - Chlorine dosing parameters changing WITHOUT manual input
-    - Changes NOT reflected in facility operator logs
-    - Network traffic to SCADA backup server (192.168.100.10)
-    - Automated control behavior INCONSISTENT with normal patterns
+    • Chlorine dosing parameters changing WITHOUT manual input
+    • Changes NOT reflected in facility operator logs
+    • Network traffic to SCADA backup server (192.168.100.10)
+    • Automated control behavior INCONSISTENT with normal patterns
 
     CONCLUSION: SCADA network may be compromised.
     External control mechanism suspected.
@@ -198,10 +201,10 @@ Investigating alert details...
     // Chen already explained - player reviewing
 
     ALERT ANALYSIS:
-    - Confirmed: ENTROPY operatives installed attack infrastructure
-    - Malicious SCADA script on backup server
-    - Physical bypass devices on dosing stations
-    - Remote trigger mechanism active
+    • Confirmed: ENTROPY operatives installed attack infrastructure
+    • Malicious SCADA script on backup server
+    • Physical bypass devices on dosing stations
+    • Remote trigger mechanism active
 
     [RECOMMENDATION: Disable all three attack vectors]
 }
@@ -272,7 +275,8 @@ Terminal session ended.
 
 {urgency_stage >= 4:
     ⚠ CRITICAL ALERT: Immediate action required
-- urgency_stage >= 3:
+}
+{urgency_stage >= 3 and urgency_stage < 4:
     ⚠ WARNING: Time-sensitive threat
 }
 

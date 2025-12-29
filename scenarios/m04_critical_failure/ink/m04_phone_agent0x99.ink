@@ -21,6 +21,13 @@ VAR flags_submitted = 0
 EXTERNAL player_name()
 
 // ===========================================
+// CONVERSATION HUB
+// ===========================================
+
+=== start ===
+-> first_call
+
+// ===========================================
 // FIRST CALL (Initial Contact)
 // Triggered: Shortly after mission start
 // ===========================================
@@ -388,11 +395,13 @@ Three—disable physical bypass devices and SCADA malware.
     {chen_is_ally:
         Chen can tell you how to get there.
     }
-- not attack_mechanism_known:
+}
+{server_room_reached and not attack_mechanism_known:
     Use the VM terminal in the server room. Investigate the SCADA network.
 
     Identify their attack mechanism. Submit flags when you find intel.
-- else:
+}
+{server_room_reached and attack_mechanism_known:
     You know the attack mechanism. Now disable it.
 
     Confront Voltage in the maintenance wing. Secure the remote trigger. Disable all attack vectors.
@@ -406,17 +415,21 @@ Three—disable physical bypass devices and SCADA malware.
 
 {flags_submitted >= 3:
     You've submitted {flags_submitted} flags. Excellent intel gathering.
-- flags_submitted >= 1:
+}
+{flags_submitted >= 1 and flags_submitted < 3:
     You've submitted {flags_submitted} flag(s) so far. Keep investigating.
-- else:
+}
+{flags_submitted == 0:
     No flags submitted yet. Find intelligence and submit at the drop-site terminal.
 }
 
 {operatives_defeated >= 2:
     Two operatives neutralized. {operatives_defeated == 3: All hostiles down.| One or two remaining.}
-- operatives_defeated == 1:
+}
+{operatives_defeated == 1:
     One operative neutralized. Stay alert for the others.
-- else:
+}
+{operatives_defeated == 0:
     No confirmed hostile encounters yet. They're here—be ready.
 }
 
@@ -448,17 +461,21 @@ What's the situation?
 
     {operatives_defeated >= 1:
         Check the operative you defeated—they may have had a keycard.
-    - chen_is_ally:
+    }
+    {operatives_defeated == 0 and chen_is_ally:
         Chen can provide access if you ask him.
-    - else:
+    }
+    {operatives_defeated == 0 and not chen_is_ally:
         Find a keycard or get Chen to provide access.
     }
-- else:
+}
+{server_room_reached:
     Maintenance wing: final location. Requires master keycard.
 
     {operatives_defeated >= 2:
         Check the operative in chemical storage—Relay has the master keycard.
-    - else:
+    }
+    {operatives_defeated < 2:
         Defeat the operative patrolling chemical storage. They have the master keycard.
     }
 }
