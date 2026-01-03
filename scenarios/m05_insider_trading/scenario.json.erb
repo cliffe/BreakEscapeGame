@@ -1,0 +1,494 @@
+<%
+# ============================================================================
+# MISSION 5: INSIDER TRADING - SCENARIO FILE
+# ============================================================================
+# Break Escape - Season 1: The Architect's Shadow
+#
+# This file defines the game world structure: rooms, NPCs, objects, items
+# For mission metadata (display name, CyBOK mappings, etc.), see mission.json
+#
+# ROOM LAYOUT:
+#   Reception Lobby → Security Office (Patricia Morgan, mission handler)
+#   Reception Lobby → Break Room → Main Office Area (Kevin Park IT admin)
+#   Main Office Area → Research Lab (Dr. Chen, badge required)
+#   Main Office Area → Marketing (Lisa Park, optional)
+#   Security Office → Server Hallway (badge clone required)
+#   Server Hallway → Server Room (password required, Torres confrontation)
+#   Server Room → Data Center (final exfiltration point)
+#
+# HYBRID ARCHITECTURE:
+#   - VM: Bludit CMS server (CVE-2019-16113 exploitation)
+#   - 4 VM flags unlock intelligence and evidence correlation
+#   - In-game physical evidence + VM digital evidence = full picture
+# ============================================================================
+
+# ERB Helper Methods
+require 'base64'
+
+def base64_encode(text)
+  Base64.strict_encode64(text)
+end
+
+# Narrative Content Variables
+password_hint_sticky = "Server room temp password (expires Friday): quantum2024"
+torres_journal_excerpt = "Met with Recruiter again. $200K total if I complete the upload this weekend. Elena's treatment starts Monday. I know this will cost lives - 12 to 40 officers according to their projections. But I've rationalized it through their philosophy. The system is corrupt. Collateral damage for greater good. What have I become?"
+%>
+{
+  "scenario_brief": "Infiltrate Quantum Dynamics Corporation to identify and stop an insider threat. ENTROPY's Insider Threat Initiative has recruited an employee to exfiltrate classified defense research. You have 4 hours to find the insider, gather evidence, and stop the final data upload.",
+
+  "startRoom": "reception_lobby",
+  "startItemsInInventory": [],
+
+  "player": {
+    "name": "Agent 0x00",
+    "role": "SAFETYNET Field Agent"
+  },
+
+  "globalVariables": {
+    "player_name": "Agent 0x00",
+    "player_approach": "",
+    "mission_priority": "",
+    "knows_full_stakes": false,
+    "knows_insider_profile": false,
+    "handler_trust": 50,
+    "objectives_completed": 0,
+    "lore_collected": 0,
+    "evidence_level": 0,
+    "final_choice": "",
+    "torres_turned": false,
+    "torres_arrested": false,
+    "torres_killed": false,
+    "torres_identified": false,
+    "elena_treatment_funded": false,
+    "entropy_program_exposed": false,
+    "found_medical_bills": false,
+    "found_torres_journal": false,
+    "found_briefcase_comms": false,
+    "flag1_submitted": false,
+    "flag2_submitted": false,
+    "flag3_submitted": false,
+    "flag4_submitted": false,
+    "bludit_server_discovered": false,
+    "traversal_files_found": false,
+    "root_access_achieved": false,
+    "architect_approval_confirmed": false
+  },
+
+  "endGoal": "Identify the insider, gather sufficient evidence (evidence_level >= 4), and confront David Torres to stop Operation Schrödinger. Choose how to resolve: turn him as double agent, arrest him, or use force.",
+
+  "rooms": {
+    "reception_lobby": {
+      "type": "room_reception",
+      "connections": {
+        "north": "main_corridor",
+        "east": "patricia_office"
+      },
+      "npcs": [
+        {
+          "id": "opening_briefing",
+          "displayName": "Agent 0x99",
+          "npcType": "person",
+          "position": { "x": 500, "y": 500 },
+          "spriteSheet": "hacker",
+          "spriteConfig": {
+            "idleFrameStart": 20,
+            "idleFrameEnd": 23
+          },
+          "storyPath": "scenarios/m05_insider_trading/ink/m05_insider_trading_opening.json",
+          "currentKnot": "start",
+          "timedConversation": {
+            "delay": 0,
+            "targetKnot": "start",
+            "background": "assets/backgrounds/hq1.png"
+          }
+        },
+        {
+          "id": "patricia_morgan_initial",
+          "displayName": "Patricia Morgan",
+          "npcType": "person",
+          "position": { "x": 4, "y": 2 },
+          "spriteSheet": "hacker-red",
+          "spriteTalk": "assets/characters/hacker-red-talk.png",
+          "spriteConfig": {
+            "idleFrameStart": 20,
+            "idleFrameEnd": 23
+          },
+          "storyPath": "scenarios/m05_insider_trading/ink/m05_npc_patricia_morgan.json",
+          "currentKnot": "start",
+          "itemsHeld": [
+            {
+              "type": "visitor_badge",
+              "name": "Visitor Badge",
+              "takeable": true,
+              "observations": "Temporary visitor access badge"
+            }
+          ]
+        }
+      ],
+      "objects": [
+        {
+          "type": "notes",
+          "name": "Building Directory",
+          "takeable": true,
+          "readable": true,
+          "text": "QUANTUM DYNAMICS CORPORATION - Staff Directory\n\nSECURITY:\nPatricia Morgan - Chief Security Officer\n\nRESEARCH:\nDr. Sarah Chen - Chief Scientist, Lab 3\nDavid Torres - Cryptography Lead, Office 7\n\nIT/OPERATIONS:\nKevin Park - Systems Administrator\n\nMARKETING:\nLisa Park - Marketing Coordinator",
+          "observations": "Building directory listing key personnel"
+        }
+      ]
+    },
+
+    "main_corridor": {
+      "type": "hall_1x2gu",
+      "connections": {
+        "south": "reception_lobby",
+        "west": "break_room",
+        "east": "conference_room",
+        "north": ["open_office_area", "server_hallway", "research_lab"]
+      },
+      "npcs": [],
+      "objects": []
+    },
+
+    "break_room": {
+      "type": "room_office",
+      "connections": {
+        "east": "main_corridor"
+      },
+      "npcs": [
+        {
+          "id": "lisa_park",
+          "displayName": "Lisa Park",
+          "npcType": "person",
+          "position": { "x": 3, "y": 3 },
+          "spriteSheet": "hacker",
+          "spriteTalk": "assets/characters/hacker-talk.png",
+          "spriteConfig": {
+            "idleFrameStart": 20,
+            "idleFrameEnd": 23
+          },
+          "storyPath": "scenarios/m05_insider_trading/ink/m05_npc_lisa_park.json",
+          "currentKnot": "start"
+        }
+      ],
+      "objects": [
+        {
+          "type": "document",
+          "name": "Insider Threat Initiative Pamphlet",
+          "takeable": true,
+          "readable": true,
+          "text": "<%= base64_encode('INSIDER THREAT INITIATIVE - ENTROPY Recruitment Division\n\nPhase 1: TARGET IDENTIFICATION\n- Financial vulnerability assessment\n- Access privilege evaluation  \n- Psychological profiling\n\nPhase 2: INITIAL CONTACT\n- Approach via encrypted channels\n- Offer financial compensation\n- Introduce accelerationist ideology\n\nPhase 3: RADICALIZATION\n- Indoctrinate with extremist philosophy\n- Justify casualties as necessary\n- Create dependency') %>",
+          "observations": "LORE Fragment: ENTROPY recruiting methodology"
+        }
+      ]
+    },
+
+    "conference_room": {
+      "type": "room_office",
+      "connections": {
+        "west": "main_corridor"
+      },
+      "npcs": [],
+      "objects": [
+        {
+          "type": "pc",
+          "id": "cyberchef_workstation",
+          "name": "CyberChef Workstation",
+          "takeable": false,
+          "observations": "Laptop with encoding/decoding tools"
+        }
+      ]
+    },
+
+    "open_office_area": {
+      "type": "room_office",
+      "connections": {
+        "south": "main_corridor",
+        "north": "torres_office"
+      },
+      "npcs": [
+        {
+          "id": "kevin_park",
+          "displayName": "Kevin Park",
+          "npcType": "person",
+          "position": { "x": 6, "y": 4 },
+          "spriteSheet": "hacker",
+          "spriteTalk": "assets/characters/hacker-talk.png",
+          "spriteConfig": {
+            "idleFrameStart": 20,
+            "idleFrameEnd": 23
+          },
+          "storyPath": "scenarios/m05_insider_trading/ink/m05_npc_kevin_park.json",
+          "currentKnot": "start",
+          "itemsHeld": [
+            {
+              "type": "employee_badge",
+              "name": "Employee Badge",
+              "takeable": false,
+              "observations": "Kevin's employee badge - could be cloned"
+            },
+            {
+              "type": "lockpick",
+              "name": "Lockpick Set",
+              "takeable": true,
+              "observations": "Professional lockpicking tools"
+            }
+          ]
+        }
+      ],
+      "objects": []
+    },
+
+    "server_hallway": {
+      "type": "hall_1x2gu",
+      "locked": true,
+      "lockType": "badge",
+      "requires": "employee_badge",
+      "connections": {
+        "south": "main_corridor",
+        "north": "server_room"
+      },
+      "npcs": [],
+      "objects": []
+    },
+
+    "server_room": {
+      "type": "room_servers",
+      "locked": true,
+      "lockType": "password",
+      "requires": "server_password",
+      "connections": {
+        "south": "server_hallway",
+        "north": "data_center"
+      },
+      "npcs": [
+        {
+          "id": "dropsite_terminal_npc",
+          "displayName": "Drop-Site Terminal",
+          "npcType": "terminal",
+          "position": { "x": 5, "y": 5 },
+          "storyPath": "scenarios/m05_insider_trading/ink/m05_dropsite_terminal.json",
+          "currentKnot": "start"
+        }
+      ],
+      "objects": [
+        {
+          "type": "pc",
+          "id": "vm_access_terminal",
+          "name": "VM Access Terminal",
+          "takeable": false,
+          "observations": "Terminal for accessing Bludit CMS server"
+        }
+      ]
+    },
+
+    "torres_office": {
+      "type": "room_office",
+      "locked": true,
+      "lockType": "keycard",
+      "requires": "office_keycard",
+      "connections": {
+        "south": "open_office_area"
+      },
+      "npcs": [
+        {
+          "id": "david_torres",
+          "displayName": "David Torres",
+          "npcType": "person",
+          "position": { "x": 4, "y": 3 },
+          "spriteSheet": "hacker-red",
+          "spriteTalk": "assets/characters/hacker-red-talk.png",
+          "spriteConfig": {
+            "idleFrameStart": 20,
+            "idleFrameEnd": 23
+          },
+          "storyPath": "scenarios/m05_insider_trading/ink/m05_torres_confrontation.json",
+          "currentKnot": "start"
+        }
+      ],
+      "objects": [
+        {
+          "type": "document",
+          "name": "Medical Bills",
+          "takeable": true,
+          "readable": true,
+          "text": "MOUNTAIN VIEW ONCOLOGY CENTER\n\nPatient: Elena Torres\nDiagnosis: Stage 3 Breast Cancer\n\nTreatment Plan: $380,000\nInsurance Coverage: $0 (Claim Denied)\nOut-of-Pocket: $380,000\n\nPayment Due: Immediately",
+          "observations": "Elena Torres' medical bills showing massive debt"
+        },
+        {
+          "type": "document",
+          "name": "Personal Journal",
+          "takeable": true,
+          "readable": true,
+          "text": "<%= torres_journal_excerpt %>",
+          "observations": "Torres' journal showing radicalization process"
+        }
+      ]
+    },
+
+    "research_lab": {
+      "type": "room_office",
+      "locked": true,
+      "lockType": "badge",
+      "requires": "research_badge",
+      "connections": {
+        "south": "main_corridor"
+      },
+      "npcs": [
+        {
+          "id": "dr_chen",
+          "displayName": "Dr. Sarah Chen",
+          "npcType": "person",
+          "position": { "x": 5, "y": 4 },
+          "spriteSheet": "hacker-red",
+          "spriteTalk": "assets/characters/hacker-red-talk.png",
+          "spriteConfig": {
+            "idleFrameStart": 20,
+            "idleFrameEnd": 23
+          },
+          "storyPath": "scenarios/m05_insider_trading/ink/m05_npc_dr_chen.json",
+          "currentKnot": "start",
+          "itemsHeld": [
+            {
+              "type": "research_badge",
+              "name": "Research Access Badge",
+              "takeable": false,
+              "observations": "Dr. Chen's high-level research badge"
+            }
+          ]
+        }
+      ],
+      "objects": []
+    },
+
+    "patricia_office": {
+      "type": "room_office",
+      "locked": true,
+      "lockType": "badge",
+      "requires": "security_badge",
+      "connections": {
+        "west": "reception_lobby"
+      },
+      "npcs": [
+        {
+          "id": "patricia_morgan",
+          "displayName": "Patricia Morgan",
+          "npcType": "person",
+          "position": { "x": 3, "y": 3 },
+          "spriteSheet": "hacker-red",
+          "spriteTalk": "assets/characters/hacker-red-talk.png",
+          "spriteConfig": {
+            "idleFrameStart": 20,
+            "idleFrameEnd": 23
+          },
+          "storyPath": "scenarios/m05_insider_trading/ink/m05_npc_patricia_morgan.json",
+          "currentKnot": "hub"
+        }
+      ],
+      "objects": []
+    },
+
+    "data_center": {
+      "type": "room_servers",
+      "connections": {
+        "south": "server_room"
+      },
+      "npcs": [],
+      "objects": []
+    }
+  },
+
+  "phoneNPCs": [
+    {
+      "id": "agent_0x99_handler",
+      "displayName": "Agent 0x99 'Haxolottle'",
+      "npcType": "phone",
+      "storyPath": "scenarios/m05_insider_trading/ink/m05_phone_agent_0x99.json",
+      "avatar": "assets/npc/avatars/npc_helper.png",
+      "phoneId": "player_phone",
+      "currentKnot": "start",
+      "timedMessages": [
+        {
+          "delay": 5000,
+          "message": "Hey there! 🦎 I'm your handler for this op. The insider threat is real - we've got 4 hours max before final exfiltration. Message me if you need guidance.",
+          "type": "text"
+        }
+      ],
+      "eventMappings": [
+        {
+          "eventPattern": "item_picked_up:lockpick",
+          "targetKnot": "on_lockpick_pickup",
+          "onceOnly": true
+        },
+        {
+          "eventPattern": "item_picked_up:medical_bills",
+          "targetKnot": "on_medical_bills_found",
+          "onceOnly": true
+        },
+        {
+          "eventPattern": "item_picked_up:personal_journal",
+          "targetKnot": "on_journal_found",
+          "onceOnly": true
+        },
+        {
+          "eventPattern": "global_variable_changed:flag1_submitted",
+          "targetKnot": "on_first_flag",
+          "condition": "value === true",
+          "onceOnly": true
+        },
+        {
+          "eventPattern": "global_variable_changed:flag4_submitted",
+          "targetKnot": "on_architect_comms_found",
+          "condition": "value === true",
+          "onceOnly": true
+        },
+        {
+          "eventPattern": "global_variable_changed:evidence_level",
+          "targetKnot": "on_evidence_correlated",
+          "condition": "value >= 4",
+          "onceOnly": true
+        },
+        {
+          "eventPattern": "global_variable_changed:torres_identified",
+          "targetKnot": "on_insider_identified",
+          "condition": "value === true",
+          "onceOnly": true
+        }
+      ]
+    },
+    {
+      "id": "closing_debrief_trigger",
+      "displayName": "Agent 0x99",
+      "npcType": "phone",
+      "storyPath": "scenarios/m05_insider_trading/ink/m05_closing_debrief.json",
+      "avatar": "assets/npc/avatars/npc_helper.png",
+      "phoneId": "player_phone",
+      "currentKnot": "start",
+      "eventMappings": [
+        {
+          "eventPattern": "global_variable_changed:torres_turned",
+          "targetKnot": "start",
+          "condition": "value === true",
+          "onceOnly": true
+        },
+        {
+          "eventPattern": "global_variable_changed:torres_arrested",
+          "targetKnot": "start",
+          "condition": "value === true",
+          "onceOnly": true
+        },
+        {
+          "eventPattern": "global_variable_changed:torres_killed",
+          "targetKnot": "start",
+          "condition": "value === true",
+          "onceOnly": true
+        },
+        {
+          "eventPattern": "global_variable_changed:entropy_program_exposed",
+          "targetKnot": "start",
+          "condition": "value === true",
+          "onceOnly": true
+        }
+      ]
+    }
+  ]
+}

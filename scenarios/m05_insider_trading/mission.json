@@ -1,0 +1,97 @@
+{
+  "scenarioId": "m05_insider_trading",
+  "title": "Insider Trading",
+  "description": "Infiltrate Quantum Dynamics Corporation to identify and stop an insider threat. ENTROPY has recruited an employee to exfiltrate classified quantum cryptography research. You have 4 hours to find the insider, gather evidence, and stop Operation Schrödinger before 12-40 intelligence officers are compromised.",
+
+  "difficulty": 2,
+  "estimatedDuration": 5400,
+
+  "entropy_cell": "Insider Threat Initiative",
+  "mission_type": "investigation",
+  "tags": ["corporate_espionage", "insider_threat", "hybrid_vm", "moral_choice"],
+
+  "cybok_areas": [
+    "Human Factors - Social Engineering",
+    "Security Operations - Incident Response",
+    "Applied Cryptography - Quantum Cryptography",
+    "Malware & Attack Technologies - Data Exfiltration",
+    "Web & Mobile Security - CVE-2019-16113 Bludit CMS Exploitation"
+  ],
+
+  "learning_objectives": [
+    "Identify indicators of insider threats through behavioral analysis",
+    "Correlate digital evidence (VM flags) with physical evidence (documents, interviews)",
+    "Exploit Bludit CMS CVE-2019-16113 for directory traversal and authentication bypass",
+    "Navigate complex moral decisions with lasting consequences",
+    "Understand ENTROPY's systematic recruitment and radicalization methodology"
+  ],
+
+  "vm_integration": {
+    "scenario_name": "intro_to_linux_security_lab",
+    "provider": "SecGen",
+    "flags": 4,
+    "challenges": [
+      "Reconnaissance - Bludit CMS server discovery",
+      "Directory Traversal - CVE-2019-16113 exploitation",
+      "Privilege Escalation - Root access",
+      "Intelligence Extraction - Architect communications"
+    ]
+  },
+
+  "narrative_summary": {
+    "act1": "Arrive at Quantum Dynamics as SAFETYNET security consultant. Meet CSO Patricia Morgan who briefs you on suspected insider threat. Begin investigation by interviewing employees and gathering access credentials.",
+    "act2": "Clone employee badge to access server areas. Exploit Bludit CMS server to extract digital evidence. Discover David Torres' radicalization through ENTROPY's Insider Threat Initiative. Find medical bills revealing wife's cancer as leverage point.",
+    "act3": "Correlate all evidence to identify Torres. Confront him with 5 choices: turn as double agent (S-rank), arrest with cooperation, arrest without cooperation, combat (lethal/non-lethal), or public exposure. Each choice has significant campaign consequences."
+  },
+
+  "key_npcs": [
+    {
+      "id": "patricia_morgan",
+      "name": "Patricia Morgan",
+      "role": "Chief Security Officer",
+      "importance": "Mission handler, provides security access and intelligence"
+    },
+    {
+      "id": "kevin_park",
+      "name": "Kevin Park",
+      "role": "IT Systems Administrator",
+      "importance": "Badge cloning target, provides technical intel"
+    },
+    {
+      "id": "dr_chen",
+      "name": "Dr. Sarah Chen",
+      "role": "Chief Scientist, Project Heisenberg Lead",
+      "importance": "Research badge access, emotional response to Torres accusation"
+    },
+    {
+      "id": "lisa_park",
+      "name": "Lisa Park",
+      "role": "Marketing Coordinator",
+      "importance": "Optional NPC, humanizes Torres through family context"
+    },
+    {
+      "id": "david_torres",
+      "name": "David Torres",
+      "role": "Cryptography Lead, ENTROPY Insider",
+      "importance": "Primary antagonist, subject of confrontation with 5 endings"
+    },
+    {
+      "id": "agent_0x99",
+      "name": "Agent 0x99 'Haxolottle'",
+      "role": "SAFETYNET Handler",
+      "importance": "Phone support, event-triggered guidance"
+    }
+  ],
+
+  "moral_complexity": {
+    "primary_dilemma": "Torres is both perpetrator (knowingly caused deaths) and victim (radicalized through medical debt). He's only 3 months into radicalization - early enough to potentially save.",
+    "entropy_portrayal": "Clearly evil radicals with systematic recruitment methodology. Calculate and approve casualties. View Torres as expendable asset.",
+    "player_agency": "5 ending paths with significant differences in campaign impact, Elena's treatment, and future intelligence gathering"
+  },
+
+  "version": "1.0.0",
+  "created": "2026-01-03",
+  "campaign_position": 5,
+  "prerequisites": ["m01_first_contact", "m02_power_struggle", "m03_cryptographic_truth", "m04_echoes_of_dissent"],
+  "unlocks": ["m06_follow_the_money"]
+}
