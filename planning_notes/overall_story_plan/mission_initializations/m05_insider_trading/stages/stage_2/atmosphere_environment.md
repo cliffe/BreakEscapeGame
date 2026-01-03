@@ -181,13 +181,14 @@ This is NOT a high-action mission—it's a slow-burn investigation where tension
 
 ## Character Atmosphere & Voice Design
 
-### David Torres - The Manipulated Insider
+### David Torres - The Radicalized Recruit
 
-**IMPORTANT:** Torres is NOT a typical ENTROPY "true believer" villain. He is:
-- Victim of ENTROPY recruitment
-- Manipulated through desperation
-- Feels genuine remorse (journal entries prove it)
-- Can be turned (primary choice path)
+**IMPORTANT:** Torres is a **new ENTROPY recruit undergoing radicalization** (3 months in). He is:
+- Recruited through financial desperation (Elena's cancer)
+- Radicalized with ENTROPY's extremist "accelerationist" ideology
+- Knows his actions will kill 12-40 people, has rationalized it ("corrupt system must fall")
+- NOT fully radicalized yet - cognitive dissonance visible, can be turned early
+- Can be arrested, subdued (lethal/non-lethal), or de-radicalized (primary choice path)
 
 **Physical Presence:**
 - Age 38, Hispanic, thin from stress
@@ -211,16 +212,20 @@ This is NOT a high-action mission—it's a slow-burn investigation where tension
 - Physical tells: removes glasses, adjusts ring, long pauses
 
 **Confrontation Tone:**
-NOT the evil monologue. Torres is horrified when he learns the truth:
+Torres KNOWS what he's done but has rationalized it through ENTROPY ideology. Confrontation reveals cognitive dissonance:
 
 ```ink
-Torres: *reading The Architect's message* "Chinese MSS... Russian GRU..."
+Torres: *reading casualty projections player shows him*
 
-Torres: No. No, they said journalists. Investigative journalists.
+Torres: I... I knew. The Recruiter told me. Foreign intelligence.
 
-Torres: *hands shaking* Twelve to forty people?
+Torres: *defensive* The system is corrupt. The military-industrial complex—
 
-Torres: *voice breaking* What did I do for them? What did I do?
+Torres: *voice cracking, rationalization breaking* But Elena. The treatment. What choice did I have?
+
+Torres: *hands shaking* Twelve to forty people. Real people. Like Elena.
+
+Torres: *voice breaking* What did I become?
 ```
 
 ### "The Recruiter" - The True ENTROPY Villain (Unseen)
@@ -495,11 +500,11 @@ All confrontation dialogue branches based on evidence quality:
 **Tone:** Corporate noir thriller with mounting moral complexity
 **Environment:** Modern tech campus, sterile but personal details humanize
 **Pacing:** Slow-burn investigation → emotional climax
-**Villain:** Torres is NOT true believer (manipulated victim), Recruiter is (unseen)
+**Villain:** ENTROPY are clear evil radicals; Torres is radicalized recruit (3 months, can be de-radicalized); Recruiter is true believer (unseen)
 
 ### Character Voices Defined ✅
 
-- **Torres:** Intelligent, exhausted, remorseful, can be turned
+- **Torres:** Intelligent, radicalized but conflicted, cognitive dissonance visible, can be de-radicalized/arrested/subdued
 - **Patricia Morgan:** Direct, frustrated, professional law enforcement
 - **Dr. Chen:** Maternal team lead, guilty about missing signs
 - **Supporting Cast:** Each provides different perspective on Torres

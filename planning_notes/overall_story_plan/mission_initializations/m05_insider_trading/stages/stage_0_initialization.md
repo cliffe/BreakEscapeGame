@@ -132,15 +132,15 @@ Quantum Dynamics develops post-quantum cryptography solutions for government age
 
 **Recruitment Method (David Torres):**
 - **Financial Pressure:** Torres has $180K medical debt (wife's cancer treatment)
-- **Ideological Alignment:** Disillusionment with defense contractors profiting from war
-- **Gradual Compromise:** Started with "harmless" data (company financials), escalated to classified materials
+- **Ideological Radicalization:** ENTROPY recruited through financial desperation, then radicalized with "accelerationist" philosophy (system must collapse to rebuild justly)
+- **Gradual Compromise:** Started with "harmless" data (company financials), escalated to classified materials over 3 months
 - **Payment Structure:** $45K paid so far, promised $200K total upon completion
 
 **Operational Security:**
 - Torres meets handler (codename "Recruiter") monthly at coffee shops
 - Uses encrypted Bludit CMS installation on personal laptop for dead drops
 - Exfiltrates data via steganography in company training videos (uploads to YouTube)
-- Believes he's helping "whistleblower journalists expose military-industrial complex"
+- Knows data goes to foreign governments (Russian GRU, Chinese MSS) but has rationalized it through ENTROPY's ideology ("corrupt system deserves to fall")
 
 ### Digital Vanguard's Role
 
@@ -385,27 +385,29 @@ The insider (David Torres) maintains personal Bludit CMS installation for commun
 - Security footage: meets "Recruiter" monthly at Café Artemis
 - Laptop forensics: encrypted Bludit CMS with ENTROPY communications
 
-**Moral Complexity:**
-Torres is NOT evil:
-- Wife's cancer treatment costs $380K (insurance denied)
+**Radicalization Status:**
+Torres is a **new ENTROPY recruit** (3 months into radicalization):
+- Wife's cancer treatment costs $380K (insurance denied) - recruited through desperation
 - Sold his car, remortgaged house, depleted retirement
-- ENTROPY offered $200K - enough to save Elena
-- Believes stolen data will "expose government waste and warmongering"
-- Handler convinced him data will go to "investigative journalists"
-- Doesn't know about Zero Day Syndicate or foreign governments
+- ENTROPY offered $200K AND extremist ideology to justify actions
+- Knows data goes to foreign governments (Russian GRU, Chinese MSS)
+- Aware of casualty projections (12-40 intelligence officers will die)
+- Has rationalized it: "Corrupt military-industrial complex must collapse, collateral is necessary for greater good"
+- **NOT fully radicalized yet** - cognitive dissonance visible, can potentially be turned if confronted early
 
 **Confrontation Variables:**
-- If player shows evidence of ENTROPY's true plan (foreign sales): Torres is horrified
-- If player emphasizes human cost (intelligence officers at risk): Torres breaks down
-- If player offers SAFETYNET protection + witness program: Torres might cooperate
-- If player threatens prosecution: Torres lawyer up, limited intel
-- If player sympathizes with financial desperation: Torres trusts player, provides full cooperation
+- If player confronts early (before full radicalization): Torres shows cognitive dissonance, can be turned
+- If player emphasizes human cost (real intelligence officers with families): Torres' rationalization cracks
+- If player offers SAFETYNET protection + witness program + Elena's treatment: Torres might cooperate
+- If player takes arrest/combat approach: Torres resists initially but can be subdued (lethal or non-lethal)
+- If player shows empathy for Elena while condemning ENTROPY ideology: Torres separates desperation from radicalization, provides full cooperation
 
 **Turning Conditions (Becomes Double Agent):**
-- Player presents evidence ENTROPY lied about "journalists"
-- Player offers witness protection + medical coverage for Elena
-- Player shows Torres "The Architect's" approval (proves it's criminal organization, not activism)
-- Torres agrees to feed ENTROPY false data while SAFETYNET tracks network
+- Player confronts Torres early (before full radicalization solidifies - only 3 months in)
+- Player separates Torres' desperation from ENTROPY's radical ideology
+- Player offers witness protection + medical coverage for Elena (addresses financial desperation)
+- Player shows evidence of ENTROPY's true nature: cult-like extremism, not justified resistance
+- Torres agrees to feed ENTROPY false data while SAFETYNET tracks network (de-radicalization successful)
 
 **If Turned Successfully:**
 - Provides ongoing intelligence for M6, M7, M8

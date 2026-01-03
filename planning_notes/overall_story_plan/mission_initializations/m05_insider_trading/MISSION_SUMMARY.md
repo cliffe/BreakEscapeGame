@@ -16,9 +16,9 @@
 
 ## Executive Summary
 
-Mission 5 "Insider Trading" is a corporate espionage investigation where players infiltrate **Quantum Dynamics Corporation** to identify and stop an insider exfiltrating classified quantum cryptography research. The insider, **David Torres**, was systematically targeted by ENTROPY's Insider Threat Initiative due to crushing medical debt ($180K) from his wife Elena's terminal cancer.
+Mission 5 "Insider Trading" is a corporate espionage investigation where players infiltrate **Quantum Dynamics Corporation** to identify and stop an insider exfiltrating classified quantum cryptography research. The insider, **David Torres**, was systematically targeted by ENTROPY's Insider Threat Initiative due to crushing medical debt ($180K) from his wife Elena's terminal cancer, then radicalized over 3 months with extremist "accelerationist" ideology.
 
-**Key Design Innovation:** Torres is a **sympathetic villain** - a desperate father manipulated by ENTROPY, not a true believer. He believes he's helping "investigative journalists" expose defense corruption, unaware his data is being sold to foreign governments (China, Russia, Iran) for $68 million, which will result in 12-40 intelligence officer deaths.
+**Key Design Innovation:** Torres is a **radicalized ENTROPY recruit** who knows his actions will cause 12-40 deaths but has rationalized it through extremist ideology ("corrupt system must collapse"). However, he's only 3 months into radicalization and shows cognitive dissonance - can be de-radicalized, arrested, or subdued depending on player approach.
 
 **Core Gameplay Loop:**
 1. **Investigation** - Review security logs, identify suspicious patterns
@@ -28,11 +28,12 @@ Mission 5 "Insider Trading" is a corporate espionage investigation where players
 5. **Evidence Correlation** - Synthesize physical + digital evidence at Evidence Board
 6. **Confrontation** - Present evidence to Torres, reveal manipulation, make critical choice
 
-**Four Endings:**
-1. **Turn Double Agent** (S-Rank) - Torres becomes SAFETYNET asset, helps expose 47 other targets
+**Five Endings:**
+1. **Turn Double Agent** (S-Rank) - De-radicalize Torres, becomes SAFETYNET asset, helps expose 47 other targets
 2. **Arrest** - By-the-book justice, Torres faces espionage charges
-3. **Sympathetic Release** - Let Torres go with warning (moral mercy, operational risk)
-4. **Public Exposure** - Leak to media, destroy ENTROPY's program + Torres' life
+3. **Combat - Non-Lethal** - Subdue resisting Torres without killing
+4. **Combat - Lethal** - Neutralize threat when Torres resists
+5. **Public Exposure** - Leak to media, destroy ENTROPY's program + Torres' life
 
 ---
 
@@ -47,7 +48,7 @@ Mission 5 "Insider Trading" is a corporate espionage investigation where players
 - **Financial Stakes:** $68M ENTROPY revenue, $4.2B DoD program wasted, $180K Torres' medical debt
 - **The Insider Profile:** David Torres - PhD cryptographer, wife Stage 3 cancer, 2 children (Sofia 11, Miguel 8)
 - **ENTROPY 4-Phase Plan:** Exfiltration (73%) → Analysis (2 weeks) → Distribution ($45-70M sales) → Deployment (casualties within 60-90 days)
-- **The Recruiter's Manipulation:** Posed as "investigative journalists", Torres unaware of foreign sales
+- **The Recruiter's Radicalization:** Recruited Torres through financial desperation, then indoctrinated with ENTROPY extremist ideology
 
 **Critical Numbers:**
 - 847 pages classified quantum protocols
@@ -86,18 +87,19 @@ Mission 5 "Insider Trading" is a corporate espionage investigation where players
 **Key Content:**
 - **Tone:** Corporate noir thriller with moral complexity
 - **Setting:** Modern Bay Area tech campus, late afternoon (4:30 PM)
-- **Torres Characterization:** CRITICAL - He's a victim, not villain
-  - Manipulated through desperation
-  - Genuinely believes "journalist" cover story
-  - Feels remorse (journal proves it)
-  - Can be turned (primary S-rank path)
+- **Torres Characterization:** CRITICAL - He's a radicalized ENTROPY recruit
+  - Recruited through financial desperation (Elena's cancer)
+  - Radicalized with extremist ideology over 3 months
+  - Knows data goes to foreign governments, knows about casualties
+  - Has rationalized it but shows cognitive dissonance
+  - Can be de-radicalized (turn), arrested, or subdued (lethal/non-lethal)
 
 **5 Emotional Moments:**
-1. Medical bills discovery - $380K crushing debt
-2. Journal reading - "What have I done? Elena would be horrified"
-3. Children's drawings - "Get well soon Mommy"
-4. Confrontation - Torres' horror learning the truth
-5. The choice - Justice vs. mercy
+1. Medical bills discovery - $380K crushing debt (the vulnerability ENTROPY exploited)
+2. Journal reading - Rationalization visible ("system must fall... but Elena...")
+3. Children's drawings - "Get well soon Mommy" (innocence contrasts radicalization)
+4. Confrontation - Torres' cognitive dissonance breaks ("What did I become?")
+5. The choice - De-radicalize, arrest, or combat
 
 **Environmental Storytelling:**
 - Torres' office: Family photos + medical bills = complete tragedy
@@ -213,28 +215,29 @@ Mission 5 "Insider Trading" is a corporate espionage investigation where players
 
 ## Character Profiles
 
-### David Torres (Primary Antagonist - Sympathetic Villain)
+### David Torres (Primary Antagonist - Radicalized ENTROPY Recruit)
 **Role:** Cryptography Lead, Quantum Dynamics Corporation
 **Age:** 38
 **Family:** Wife Elena (Stage 3 cancer), Daughter Sofia (11), Son Miguel (8)
 **Debt:** $180K medical bills
+**Radicalization Status:** 3 months into ENTROPY indoctrination
 
 **Characterization:**
 - PhD in cryptography, top of his field
-- Clean security record (TS/SCI clearance for 8 years)
-- Desperate but not criminal by nature
-- Manipulated, not radicalized
-- Believes he's helping "investigative journalists expose defense corruption"
-- Unaware data goes to foreign governments
-- Unaware of casualty projections
+- Clean security record (TS/SCI clearance for 8 years) - made him valuable target
+- Recruited through financial desperation, radicalized with extremist ideology
+- Knows data goes to foreign governments (Russian GRU, Chinese MSS)
+- Aware of casualty projections (12-40 intelligence officers will die)
+- Has rationalized it: "Corrupt military-industrial complex must collapse, collateral is necessary"
+- NOT fully radicalized yet - cognitive dissonance visible, can be de-radicalized
 
-**Critical Design:** Torres is a **victim**, not a villain. His journal shows remorse. When confronted with truth (Architect communications showing foreign sales + casualties), he's **horrified**. This creates moral complexity - he committed espionage, but was manipulated. Player must decide: justice (arrest) vs. mercy (turn/release) vs. exposure (destroy).
+**Critical Design:** Torres is an **ENTROPY recruit undergoing radicalization**, NOT a sympathetic victim. He KNOWS his actions will kill people and has rationalized it through extremist ideology. However, he's only 3 months in - not fully committed, showing cognitive dissonance. Player must decide: de-radicalize (turn), arrest, combat (lethal/non-lethal), or expose.
 
 **Voice:**
-- Defensive initially ("I had no choice")
-- Desperate justification ("Elena was dying")
-- Genuine horror when truth revealed ("What have I done?")
-- NOT the evil monologue - he's broken, not defiant
+- Defensive initially ("The system is corrupt")
+- Desperate rationalization ("Elena... what choice did I have?")
+- Cognitive dissonance when confronted ("I knew. But... twelve to forty people. Real people.")
+- Can break from radicalization ("What did I become?") or resist (combat)
 
 ### Patricia Morgan (Mission Handler - In-Person + Phone)
 **Role:** Chief Security Officer, Quantum Dynamics
@@ -377,10 +380,11 @@ VAR informed_patricia = false
 
 **Critical Choice & Outcome:**
 ```ink
-VAR final_choice = ""  // "turn_double_agent", "arrest", "sympathetic_release", "public_exposure"
+VAR final_choice = ""  // "turn_double_agent", "arrest", "combat_nonlethal", "combat_lethal", "public_exposure"
 VAR torres_turned = false
-VAR elena_treatment_funded = false
 VAR torres_arrested = false
+VAR torres_killed = false
+VAR elena_treatment_funded = false
 VAR entropy_program_exposed = false
 ```
 
@@ -431,32 +435,50 @@ The server hallway is now accessible.
 **Branching Choice:**
 ```ink
 === confrontation_choice ===
-Torres: *hands shaking* What have I done? Twelve to forty people?
+Torres: *reading casualty projections* I... I knew. The Recruiter told me.
+
+Torres: *defensive* The system is corrupt. The military-industrial complex—
+
+Torres: *voice cracking* But Elena. Twelve to forty people. Real people.
 
 You have the evidence. You know the truth. What do you do?
 
-+ [Offer him a deal: Become a double agent]
++ [You're not too far gone. Help us, and we'll help Elena.]
     #complete_task:make_critical_choice
     #set:final_choice:turn_double_agent
     ~ torres_turned = true
     -> turn_double_agent_path
 
-+ [Arrest him. He committed espionage.]
++ [You're under arrest for espionage and treason.]
     #complete_task:make_critical_choice
     #set:final_choice:arrest
     ~ torres_arrested = true
     -> arrest_path
 
-+ [Let him go with a warning. He's been through enough.]
-    #complete_task:make_critical_choice
-    #set:final_choice:sympathetic_release
-    -> sympathetic_release_path
++ [Drop the philosophy. Fight or surrender. Your choice.]
+    // Torres resists
+    -> combat_choice
 
 + [Expose everything publicly. Burn ENTROPY's program.]
     #complete_task:make_critical_choice
     #set:final_choice:public_exposure
     ~ entropy_program_exposed = true
     -> public_exposure_path
+
+=== combat_choice ===
+Torres: You're not taking me.
+
++ [Subdue him non-lethally]
+    #complete_task:make_critical_choice
+    #set:final_choice:combat_nonlethal
+    ~ torres_arrested = true
+    -> combat_nonlethal_path
+
++ [Lethal force authorized - neutralize the threat]
+    #complete_task:make_critical_choice
+    #set:final_choice:combat_lethal
+    ~ torres_killed = true
+    -> combat_lethal_path
 ```
 
 ### NPC Dialogue Structure
@@ -622,12 +644,13 @@ Agent 0x99: His intelligence is proving invaluable.
 - ENTROPY continues recruiting (47 targets still vulnerable)
 - By-the-book justice, but missed strategic opportunity
 
-### If Torres Released (Sympathetic):
+### If Torres Killed (Combat - Lethal):
 **Impact on M6-M10:**
-- Operational risk (Torres could be re-recruited)
-- Elena's treatment still in jeopardy (Torres remains desperate)
-- ENTROPY likely marks Torres as compromised, burns him
-- Moral mercy, but strategic weakness
+- No intelligence from insider program
+- ENTROPY continues recruiting (47 targets still vulnerable)
+- Elena becomes widow, children lose father
+- Tactical success, strategic loss
+- Moral weight acknowledged in later missions
 
 ### If Program Exposed Publicly:
 **Impact on M6-M10:**
@@ -697,18 +720,19 @@ Agent 0x99: His intelligence is proving invaluable.
 
 ## Design Philosophy Summary
 
-**Core Tension:** Justice vs. Mercy
-**Moral Complexity:** Villain who's actually a victim
-**Player Agency:** Choice matters, consequences tracked across campaign
+**Core Tension:** De-radicalization vs. Justice vs. Combat
+**Moral Complexity:** ENTROPY are clearly evil radicals; Torres is radicalized recruit who can be saved
+**Player Agency:** Choice matters - turn, arrest, or combat options, consequences tracked across campaign
 **Evidence-Based Gameplay:** Investigation unlocks confrontation, not arbitrary timer
 **Hybrid Architecture:** VM challenges correlate with physical evidence
 
 **What Makes This Mission Unique:**
-1. **Sympathetic Antagonist:** Torres can be turned, not just stopped
-2. **Systematic Evil:** ENTROPY recruits desperate people, weaponizes suffering
-3. **Concrete Stakes:** Specific casualties (12-40), specific victims (47 targets)
-4. **Moral Choice:** No "right" answer - arrest (justice), turn (strategy), release (mercy), expose (nuclear option)
-5. **Campaign Impact:** Choice affects M6-M10 (Torres as asset or missed opportunity)
+1. **ENTROPY as Clear Evil:** Radical extremists who calculate casualties and recruit through suffering
+2. **Radicalized Recruit:** Torres knows his actions will kill people, has rationalized it, but can be de-radicalized (3 months in)
+3. **Arrest/Combat Options:** Player can arrest peacefully or engage in combat (lethal/non-lethal) if Torres resists
+4. **Concrete Stakes:** Specific casualties (12-40), specific victims (47 targets)
+5. **Moral Choice:** De-radicalize (strategy + mercy), arrest (justice), combat (tactical), or expose (nuclear option)
+6. **Campaign Impact:** Choice affects M6-M10 (Torres as asset, prisoner, casualty, or public witness)
 
 ---
 
