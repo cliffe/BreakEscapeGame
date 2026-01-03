@@ -117,10 +117,102 @@ torres_journal_excerpt = "Met with Recruiter again. $200K total if I complete th
           "currentKnot": "start",
           "itemsHeld": [
             {
-              "type": "visitor_badge",
+              "type": "id_badge",
               "name": "Visitor Badge",
               "takeable": true,
               "observations": "Temporary visitor access badge"
+            }
+          ]
+        },
+        {
+          "id": "agent_0x99_handler",
+          "displayName": "Agent 0x99 'Haxolottle'",
+          "npcType": "phone",
+          "storyPath": "scenarios/m05_insider_trading/ink/m05_phone_agent_0x99.json",
+          "avatar": "assets/npc/avatars/npc_helper.png",
+          "phoneId": "player_phone",
+          "currentKnot": "start",
+          "timedMessages": [
+            {
+              "delay": 5000,
+              "message": "Hey there! 🦎 I'm your handler for this op. The insider threat is real - we've got 4 hours max before final exfiltration. Message me if you need guidance.",
+              "type": "text"
+            }
+          ],
+          "eventMappings": [
+            {
+              "eventPattern": "item_picked_up:lockpick",
+              "targetKnot": "on_lockpick_pickup",
+              "onceOnly": true
+            },
+            {
+              "eventPattern": "item_picked_up:medical_bills",
+              "targetKnot": "on_medical_bills_found",
+              "onceOnly": true
+            },
+            {
+              "eventPattern": "item_picked_up:personal_journal",
+              "targetKnot": "on_journal_found",
+              "onceOnly": true
+            },
+            {
+              "eventPattern": "global_variable_changed:flag1_submitted",
+              "targetKnot": "on_first_flag",
+              "condition": "value === true",
+              "onceOnly": true
+            },
+            {
+              "eventPattern": "global_variable_changed:flag4_submitted",
+              "targetKnot": "on_architect_comms_found",
+              "condition": "value === true",
+              "onceOnly": true
+            },
+            {
+              "eventPattern": "global_variable_changed:evidence_level",
+              "targetKnot": "on_evidence_correlated",
+              "condition": "value >= 4",
+              "onceOnly": true
+            },
+            {
+              "eventPattern": "global_variable_changed:torres_identified",
+              "targetKnot": "on_insider_identified",
+              "condition": "value === true",
+              "onceOnly": true
+            }
+          ]
+        },
+        {
+          "id": "closing_debrief_trigger",
+          "displayName": "Agent 0x99",
+          "npcType": "phone",
+          "storyPath": "scenarios/m05_insider_trading/ink/m05_closing_debrief.json",
+          "avatar": "assets/npc/avatars/npc_helper.png",
+          "phoneId": "player_phone",
+          "currentKnot": "start",
+          "eventMappings": [
+            {
+              "eventPattern": "global_variable_changed:torres_turned",
+              "targetKnot": "start",
+              "condition": "value === true",
+              "onceOnly": true
+            },
+            {
+              "eventPattern": "global_variable_changed:torres_arrested",
+              "targetKnot": "start",
+              "condition": "value === true",
+              "onceOnly": true
+            },
+            {
+              "eventPattern": "global_variable_changed:torres_killed",
+              "targetKnot": "start",
+              "condition": "value === true",
+              "onceOnly": true
+            },
+            {
+              "eventPattern": "global_variable_changed:entropy_program_exposed",
+              "targetKnot": "start",
+              "condition": "value === true",
+              "onceOnly": true
             }
           ]
         }
@@ -172,7 +264,7 @@ torres_journal_excerpt = "Met with Recruiter again. $200K total if I complete th
       ],
       "objects": [
         {
-          "type": "document",
+          "type": "notes",
           "name": "Insider Threat Initiative Pamphlet",
           "takeable": true,
           "readable": true,
@@ -221,7 +313,7 @@ torres_journal_excerpt = "Met with Recruiter again. $200K total if I complete th
           "currentKnot": "start",
           "itemsHeld": [
             {
-              "type": "employee_badge",
+              "type": "keycard",
               "name": "Employee Badge",
               "takeable": false,
               "observations": "Kevin's employee badge - could be cloned"
@@ -241,7 +333,7 @@ torres_journal_excerpt = "Met with Recruiter again. $200K total if I complete th
     "server_hallway": {
       "type": "hall_1x2gu",
       "locked": true,
-      "lockType": "badge",
+      "lockType": "rfid",
       "requires": "employee_badge",
       "connections": {
         "south": "main_corridor",
@@ -264,7 +356,7 @@ torres_journal_excerpt = "Met with Recruiter again. $200K total if I complete th
         {
           "id": "dropsite_terminal_npc",
           "displayName": "Drop-Site Terminal",
-          "npcType": "terminal",
+          "npcType": "person",
           "position": { "x": 5, "y": 5 },
           "storyPath": "scenarios/m05_insider_trading/ink/m05_dropsite_terminal.json",
           "currentKnot": "start"
@@ -284,7 +376,7 @@ torres_journal_excerpt = "Met with Recruiter again. $200K total if I complete th
     "torres_office": {
       "type": "room_office",
       "locked": true,
-      "lockType": "keycard",
+      "lockType": "rfid",
       "requires": "office_keycard",
       "connections": {
         "south": "open_office_area"
@@ -307,7 +399,7 @@ torres_journal_excerpt = "Met with Recruiter again. $200K total if I complete th
       ],
       "objects": [
         {
-          "type": "document",
+          "type": "notes",
           "name": "Medical Bills",
           "takeable": true,
           "readable": true,
@@ -315,7 +407,7 @@ torres_journal_excerpt = "Met with Recruiter again. $200K total if I complete th
           "observations": "Elena Torres' medical bills showing massive debt"
         },
         {
-          "type": "document",
+          "type": "notes",
           "name": "Personal Journal",
           "takeable": true,
           "readable": true,
@@ -328,7 +420,7 @@ torres_journal_excerpt = "Met with Recruiter again. $200K total if I complete th
     "research_lab": {
       "type": "room_office",
       "locked": true,
-      "lockType": "badge",
+      "lockType": "rfid",
       "requires": "research_badge",
       "connections": {
         "south": "main_corridor"
@@ -349,7 +441,7 @@ torres_journal_excerpt = "Met with Recruiter again. $200K total if I complete th
           "currentKnot": "start",
           "itemsHeld": [
             {
-              "type": "research_badge",
+              "type": "keycard",
               "name": "Research Access Badge",
               "takeable": false,
               "observations": "Dr. Chen's high-level research badge"
@@ -363,7 +455,7 @@ torres_journal_excerpt = "Met with Recruiter again. $200K total if I complete th
     "patricia_office": {
       "type": "room_office",
       "locked": true,
-      "lockType": "badge",
+      "lockType": "rfid",
       "requires": "security_badge",
       "connections": {
         "west": "reception_lobby"
@@ -395,100 +487,5 @@ torres_journal_excerpt = "Met with Recruiter again. $200K total if I complete th
       "npcs": [],
       "objects": []
     }
-  },
-
-  "phoneNPCs": [
-    {
-      "id": "agent_0x99_handler",
-      "displayName": "Agent 0x99 'Haxolottle'",
-      "npcType": "phone",
-      "storyPath": "scenarios/m05_insider_trading/ink/m05_phone_agent_0x99.json",
-      "avatar": "assets/npc/avatars/npc_helper.png",
-      "phoneId": "player_phone",
-      "currentKnot": "start",
-      "timedMessages": [
-        {
-          "delay": 5000,
-          "message": "Hey there! 🦎 I'm your handler for this op. The insider threat is real - we've got 4 hours max before final exfiltration. Message me if you need guidance.",
-          "type": "text"
-        }
-      ],
-      "eventMappings": [
-        {
-          "eventPattern": "item_picked_up:lockpick",
-          "targetKnot": "on_lockpick_pickup",
-          "onceOnly": true
-        },
-        {
-          "eventPattern": "item_picked_up:medical_bills",
-          "targetKnot": "on_medical_bills_found",
-          "onceOnly": true
-        },
-        {
-          "eventPattern": "item_picked_up:personal_journal",
-          "targetKnot": "on_journal_found",
-          "onceOnly": true
-        },
-        {
-          "eventPattern": "global_variable_changed:flag1_submitted",
-          "targetKnot": "on_first_flag",
-          "condition": "value === true",
-          "onceOnly": true
-        },
-        {
-          "eventPattern": "global_variable_changed:flag4_submitted",
-          "targetKnot": "on_architect_comms_found",
-          "condition": "value === true",
-          "onceOnly": true
-        },
-        {
-          "eventPattern": "global_variable_changed:evidence_level",
-          "targetKnot": "on_evidence_correlated",
-          "condition": "value >= 4",
-          "onceOnly": true
-        },
-        {
-          "eventPattern": "global_variable_changed:torres_identified",
-          "targetKnot": "on_insider_identified",
-          "condition": "value === true",
-          "onceOnly": true
-        }
-      ]
-    },
-    {
-      "id": "closing_debrief_trigger",
-      "displayName": "Agent 0x99",
-      "npcType": "phone",
-      "storyPath": "scenarios/m05_insider_trading/ink/m05_closing_debrief.json",
-      "avatar": "assets/npc/avatars/npc_helper.png",
-      "phoneId": "player_phone",
-      "currentKnot": "start",
-      "eventMappings": [
-        {
-          "eventPattern": "global_variable_changed:torres_turned",
-          "targetKnot": "start",
-          "condition": "value === true",
-          "onceOnly": true
-        },
-        {
-          "eventPattern": "global_variable_changed:torres_arrested",
-          "targetKnot": "start",
-          "condition": "value === true",
-          "onceOnly": true
-        },
-        {
-          "eventPattern": "global_variable_changed:torres_killed",
-          "targetKnot": "start",
-          "condition": "value === true",
-          "onceOnly": true
-        },
-        {
-          "eventPattern": "global_variable_changed:entropy_program_exposed",
-          "targetKnot": "start",
-          "condition": "value === true",
-          "onceOnly": true
-        }
-      ]
-    }
-  ]
+  }
 }
