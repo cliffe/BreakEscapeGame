@@ -36,12 +36,210 @@ torres_journal_excerpt = "Met with Recruiter again. $200K total if I complete th
 {
   "scenario_brief": "Infiltrate Quantum Dynamics Corporation to identify and stop an insider threat. ENTROPY's Insider Threat Initiative has recruited an employee to exfiltrate classified defense research. You have 4 hours to find the insider, gather evidence, and stop the final data upload.",
 
+  "objectives": [
+    {
+      "aimId": "establish_access",
+      "title": "Establish Access",
+      "description": "Enter Quantum Dynamics and begin the investigation",
+      "status": "active",
+      "order": 0,
+      "tasks": [
+        {
+          "taskId": "receive_briefing",
+          "title": "Receive mission briefing from Agent 0x99",
+          "type": "npc_conversation",
+          "targetNPC": "opening_briefing",
+          "status": "active"
+        },
+        {
+          "taskId": "meet_handler",
+          "title": "Meet with Patricia Morgan (Security Chief)",
+          "type": "npc_conversation",
+          "targetNPC": "patricia_morgan_initial",
+          "status": "active"
+        },
+        {
+          "taskId": "obtain_visitor_badge",
+          "title": "Obtain visitor access badge",
+          "type": "collect_items",
+          "targetItems": ["id_badge"],
+          "status": "active"
+        }
+      ]
+    },
+    {
+      "aimId": "investigate_employees",
+      "title": "Investigate Employees",
+      "description": "Interview staff and identify suspicious activity",
+      "status": "active",
+      "order": 1,
+      "tasks": [
+        {
+          "taskId": "talk_to_kevin",
+          "title": "Interview Kevin Park (IT Admin)",
+          "type": "npc_conversation",
+          "targetNPC": "kevin_park",
+          "status": "locked"
+        },
+        {
+          "taskId": "talk_to_lisa",
+          "title": "Interview Lisa Park (Marketing)",
+          "type": "npc_conversation",
+          "targetNPC": "lisa_park",
+          "status": "locked"
+        },
+        {
+          "taskId": "talk_to_dr_chen",
+          "title": "Interview Dr. Chen (Chief Scientist)",
+          "type": "npc_conversation",
+          "targetNPC": "dr_chen",
+          "status": "locked"
+        },
+        {
+          "taskId": "find_lockpick",
+          "title": "Acquire security tools for investigation",
+          "type": "collect_items",
+          "targetItems": ["lockpick"],
+          "status": "locked"
+        }
+      ]
+    },
+    {
+      "aimId": "gather_evidence",
+      "title": "Gather Evidence",
+      "description": "Collect proof of the insider threat operation",
+      "status": "active",
+      "order": 2,
+      "tasks": [
+        {
+          "taskId": "access_torres_office",
+          "title": "Access David Torres' office",
+          "type": "enter_room",
+          "targetRoom": "torres_office",
+          "status": "locked"
+        },
+        {
+          "taskId": "find_medical_bills",
+          "title": "Discover Elena Torres' medical bills",
+          "type": "collect_items",
+          "targetItems": ["notes"],
+          "status": "locked"
+        },
+        {
+          "taskId": "find_journal",
+          "title": "Find Torres' personal journal",
+          "type": "collect_items",
+          "targetItems": ["notes"],
+          "status": "locked"
+        },
+        {
+          "taskId": "find_entropy_pamphlet",
+          "title": "Discover ENTROPY recruitment materials",
+          "type": "collect_items",
+          "targetItems": ["notes"],
+          "status": "locked"
+        }
+      ]
+    },
+    {
+      "aimId": "exploit_infrastructure",
+      "title": "Exploit Digital Infrastructure",
+      "description": "Access compromised systems and gather digital evidence",
+      "status": "active",
+      "order": 3,
+      "tasks": [
+        {
+          "taskId": "access_server_room",
+          "title": "Access the server room",
+          "type": "enter_room",
+          "targetRoom": "server_room",
+          "status": "locked"
+        },
+        {
+          "taskId": "access_bludit_vm",
+          "title": "Access the Bludit CMS server",
+          "type": "unlock_object",
+          "targetObject": "vm_launcher_bludit",
+          "status": "locked"
+        },
+        {
+          "taskId": "submit_flag1",
+          "title": "Submit Flag 1: Directory traversal evidence",
+          "type": "submit_flags",
+          "status": "locked"
+        },
+        {
+          "taskId": "submit_flag2",
+          "title": "Submit Flag 2: File upload exploitation evidence",
+          "type": "submit_flags",
+          "status": "locked"
+        },
+        {
+          "taskId": "submit_flag3",
+          "title": "Submit Flag 3: PHP shell execution evidence",
+          "type": "submit_flags",
+          "status": "locked"
+        },
+        {
+          "taskId": "submit_flag4",
+          "title": "Submit Flag 4: Architect communications evidence",
+          "type": "submit_flags",
+          "status": "locked"
+        }
+      ]
+    },
+    {
+      "aimId": "confront_insider",
+      "title": "Confront the Insider",
+      "description": "Confront David Torres and decide his fate",
+      "status": "locked",
+      "order": 4,
+      "tasks": [
+        {
+          "taskId": "identify_torres",
+          "title": "Identify David Torres as the insider",
+          "type": "custom",
+          "status": "locked"
+        },
+        {
+          "taskId": "confront_torres",
+          "title": "Confront David Torres",
+          "type": "npc_conversation",
+          "targetNPC": "david_torres",
+          "status": "locked"
+        },
+        {
+          "taskId": "choose_resolution",
+          "title": "Decide Torres' fate: Turn, Arrest, or Combat",
+          "type": "custom",
+          "status": "locked"
+        }
+      ]
+    }
+  ],
+
   "startRoom": "reception_lobby",
-  "startItemsInInventory": [],
+
+  "startItemsInInventory": [
+    {
+      "type": "phone",
+      "name": "Your Phone",
+      "takeable": true,
+      "phoneId": "player_phone",
+      "npcIds": ["agent_0x99_handler", "closing_debrief_trigger"],
+      "observations": "Your secure phone with encrypted connection to SAFETYNET"
+    }
+  ],
 
   "player": {
-    "name": "Agent 0x00",
-    "role": "SAFETYNET Field Agent"
+    "id": "player",
+    "displayName": "Agent 0x00",
+    "spriteSheet": "hacker",
+    "spriteTalk": "assets/characters/hacker-talk.png",
+    "spriteConfig": {
+      "idleFrameStart": 20,
+      "idleFrameEnd": 23
+    }
   },
 
   "globalVariables": {
@@ -265,11 +463,13 @@ torres_journal_excerpt = "Met with Recruiter again. $200K total if I complete th
       "objects": [
         {
           "type": "notes",
+          "id": "entropy_pamphlet",
           "name": "Insider Threat Initiative Pamphlet",
           "takeable": true,
           "readable": true,
           "text": "<%= base64_encode('INSIDER THREAT INITIATIVE - ENTROPY Recruitment Division\n\nPhase 1: TARGET IDENTIFICATION\n- Financial vulnerability assessment\n- Access privilege evaluation  \n- Psychological profiling\n\nPhase 2: INITIAL CONTACT\n- Approach via encrypted channels\n- Offer financial compensation\n- Introduce accelerationist ideology\n\nPhase 3: RADICALIZATION\n- Indoctrinate with extremist philosophy\n- Justify casualties as necessary\n- Create dependency') %>",
-          "observations": "LORE Fragment: ENTROPY recruiting methodology"
+          "observations": "LORE Fragment: ENTROPY recruiting methodology",
+          "onPickup": { "setVariable": { "lore_collected": "lore_collected + 1", "entropy_program_exposed": true } }
         }
       ]
     },
@@ -364,11 +564,44 @@ torres_journal_excerpt = "Met with Recruiter again. $200K total if I complete th
       ],
       "objects": [
         {
-          "type": "pc",
-          "id": "vm_access_terminal",
-          "name": "VM Access Terminal",
+          "type": "vm-launcher",
+          "id": "vm_launcher_bludit",
+          "name": "Bludit CMS Server Terminal",
           "takeable": false,
-          "observations": "Terminal for accessing Bludit CMS server"
+          "observations": "Terminal providing access to compromised Bludit CMS server for investigation",
+          "hacktivityMode": <%= vm_context && vm_context['hacktivity_mode'] ? 'true' : 'false' %>,
+          "vm": <%= vm_object('bludit_cms_exploit_lab', {"id":5,"title":"Operation Schrodinger Server","ip":"192.168.100.75","enable_console":true}) %>
+        },
+        {
+          "type": "flag-station",
+          "id": "flag_station_evidence",
+          "name": "SAFETYNET Evidence Drop-Site",
+          "takeable": false,
+          "observations": "Secure terminal for submitting digital evidence and VM exploitation flags",
+          "acceptsVms": ["bludit_cms_exploit_lab"],
+          "flags": <%= flags_for_vm('bludit_cms_exploit_lab', ['flag{bludit_directory_traversal}', 'flag{bludit_file_upload_bypass}', 'flag{bludit_php_shell_execution}', 'flag{architect_communications_found}']) %>,
+          "flagRewards": [
+            {
+              "type": "emit_event",
+              "event_name": "flag1_evidence_submitted",
+              "description": "Flag 1: Directory traversal exploitation - unlocks file system intelligence"
+            },
+            {
+              "type": "emit_event",
+              "event_name": "flag2_evidence_submitted",
+              "description": "Flag 2: File upload bypass - reveals upload mechanism evidence"
+            },
+            {
+              "type": "emit_event",
+              "event_name": "flag3_evidence_submitted",
+              "description": "Flag 3: PHP shell execution - exposes exfiltration infrastructure"
+            },
+            {
+              "type": "emit_event",
+              "event_name": "flag4_evidence_submitted",
+              "description": "Flag 4: Architect communications - confirms ENTROPY leadership approval"
+            }
+          ]
         }
       ]
     },
@@ -394,25 +627,33 @@ torres_journal_excerpt = "Met with Recruiter again. $200K total if I complete th
             "idleFrameEnd": 23
           },
           "storyPath": "scenarios/m05_insider_trading/ink/m05_torres_confrontation.json",
-          "currentKnot": "start"
+          "currentKnot": "start",
+          "behavior": {
+            "initiallyHidden": true,
+            "appearsOnEvent": "evidence_sufficient"
+          }
         }
       ],
       "objects": [
         {
           "type": "notes",
+          "id": "medical_bills",
           "name": "Medical Bills",
           "takeable": true,
           "readable": true,
           "text": "MOUNTAIN VIEW ONCOLOGY CENTER\n\nPatient: Elena Torres\nDiagnosis: Stage 3 Breast Cancer\n\nTreatment Plan: $380,000\nInsurance Coverage: $0 (Claim Denied)\nOut-of-Pocket: $380,000\n\nPayment Due: Immediately",
-          "observations": "Elena Torres' medical bills showing massive debt"
+          "observations": "Elena Torres' medical bills showing massive debt",
+          "onPickup": { "setVariable": { "found_medical_bills": true, "evidence_level": "evidence_level + 1" } }
         },
         {
           "type": "notes",
+          "id": "personal_journal",
           "name": "Personal Journal",
           "takeable": true,
           "readable": true,
           "text": "<%= torres_journal_excerpt %>",
-          "observations": "Torres' journal showing radicalization process"
+          "observations": "Torres' journal showing radicalization process",
+          "onPickup": { "setVariable": { "found_torres_journal": true, "evidence_level": "evidence_level + 1" } }
         }
       ]
     },
