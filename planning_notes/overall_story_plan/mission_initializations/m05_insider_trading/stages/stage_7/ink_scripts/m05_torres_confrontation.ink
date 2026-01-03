@@ -323,6 +323,7 @@ You: Fine. But that upload stops. Now.
 === combat_offer ===
 #speaker:david_torres
 #display:torres-hostile
+#hostile:david_torres
 
 You: No more talk. No more philosophy.
 
