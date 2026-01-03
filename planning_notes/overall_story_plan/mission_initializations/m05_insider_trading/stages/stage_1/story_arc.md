@@ -483,13 +483,13 @@ VAR moral_complexity_established = true
 
 **2. Personal Journal (locked drawer - requires lockpicking)**
 
-Entries showing moral descent:
-- 8 months ago: "Met recruiter at coffee shop. Says they're investigative journalists exposing defense contractor corruption. Just background research, nothing classified."
+Entries showing radicalization and rationalization:
+- 8 months ago: "Met recruiter at coffee shop. Says corrupt military-industrial complex must collapse. Just background research, nothing classified."
 - 6 months ago: "They're paying me. $5K for financials. Elena's treatment costs $380K. What choice do I have?"
-- 4 months ago: "I'm in too deep. They want the QKD protocols. This is wrong. But if I stop, Elena dies."
-- 2 weeks ago: "Final upload this weekend. $200K total. Elena lives. I tell myself the journalists will use this to expose government waste. I know I'm lying to myself."
+- 4 months ago: "They told me the truth - data goes to foreign governments. Chinese MSS, Russian GRU. 12-40 casualties estimated. But the system is rotten. Collateral damage for greater good."
+- 2 weeks ago: "Final upload this weekend. $200K total. Elena lives. I've rationalized mass murder through their philosophy. I know what I've become."
 
-**Player Realizes:** Torres knows it's wrong, did it anyway out of desperation
+**Player Realizes:** Torres knows about casualties, has rationalized through ENTROPY's extremist ideology
 
 **3. Encrypted USB Drive (locked safe)**
 
@@ -685,31 +685,32 @@ Player presents evidence based on what they found:
 
 **Torres' Reaction:**
 
-Genuine horror and disbelief:
-- "No. No, they said... investigative journalists..."
-- "Exposing government waste, military-industrial complex corruption..."
-- Reads The Architect's message, sees foreign buyers
+Confronting his rationalization:
+- "I knew. The Recruiter told me. Foreign governments."
+- "But I rationalized it... corrupt system must fall... greater good..."
+- Reads The Architect's message showing specific casualty calculations
 - Physical reaction: Hands shaking, reading glasses off, rubbing eyes
 
 **Key Dialogue:**
-Torres: "Twelve to forty people? Intelligence officers?"
+Torres: "Twelve to forty people? Intelligence officers with families?"
 
-Torres: "I asked The Recruiter. Multiple times. 'Who gets this data?' He said journalists. Whistleblower protection..."
+Torres: *defensive* "The system is corrupt! The military-industrial complex—"
 
-Torres: *reading message* "Chinese MSS... Russian GRU... God. Oh God."
+Torres: *voice cracking* "But twelve to forty people. Real people. Like Elena."
 
 Torres: "Elena. The kids. What did I do for them?"
 
-**Emotional Breakdown:**
-- Torres fully realizes he's been manipulated
-- Not just corporate espionage—actual treason
-- People will die because of him
-- He traded lives for Elena's treatment
+**Cognitive Dissonance Breaking:**
+- Torres' rationalization collapses when confronted with evidence
+- He knew about casualties but had accepted ENTROPY's "greater good" ideology
+- Facing real consequences breaks through extremist philosophy
+- People will die because of him - not abstract anymore
+- He traded lives for Elena's treatment and tried to justify it
 
 **Variables Set:**
 ```ink
-VAR torres_knows_truth = true
-VAR torres_horrified = true
+VAR torres_rationalization_broken = true
+VAR torres_cognitive_dissonance = true
 VAR torres_breaking_point_reached = true
 ```
 
@@ -722,11 +723,12 @@ Torres explains full timeline:
 - Insurance denied experimental treatment ($380K cost)
 - Sold car, remortgaged house, depleted retirement
 - Children (Sofia age 11, Miguel age 8) don't know how bad it is
-- Met "The Recruiter" at Café Artemis, seemed legitimate
+- Met "The Recruiter" at Café Artemis, recruited through financial desperation
 - Started with "background research" - company financials
-- Gradual escalation to classified data
+- Gradual radicalization with "accelerationist" ideology over 3 months
+- Told about foreign sales and casualties 2 months ago, rationalized it
 - Each payment brought Elena closer to treatment
-- "I knew it was wrong. But what would you do? Let her die?"
+- "I knew people would die. But what would you do? Let her die? I rationalized it through their philosophy."
 
 **Torres shows player:**
 - Photo of Elena and children (on desk)
@@ -838,44 +840,80 @@ VAR final_choice = "arrest"
 
 ---
 
-**CHOICE C: Sympathetic Release** (Risky Moral Choice)
+**CHOICE C: Combat - Non-Lethal** (Tactical Resolution)
 
 **Requirements:**
-- Player deeply sympathizes with Torres' situation
-- Willing to let him escape with warning
+- Torres resists arrest
+- Player chooses non-lethal force
 
 **Player Action:**
-- "Take your family and disappear. I never found you."
-- Give Torres 24-hour head start
-- Destroy some evidence (obstruction of justice)
+- "Hands up or I will use force"
+- Torres reaches for phone (wants to call Elena)
+- Player deploys taser/subdues non-lethally
 
 **Torres' Response:**
-- Shocked, grateful, guilt-ridden
-- "I don't deserve this mercy."
-- Flees with Elena and children (location unknown)
-- ENTROPY loses asset but player loses track too
+- Physically subdued, not armed
+- Gasping: "Elena... the kids... tell them I'm sorry"
+- Arrested after subdual
 
 **Immediate Actions:**
-- Torres deletes final data from Bludit server
-- Abandons ENTROPY (no final upload)
-- Family disappears (witness protection on their own)
+- Torres taken into federal custody
+- Upload prevented via forced compliance
+- Standard espionage charges
 
 **Outcomes:**
-- ⚠️ Operation Schrödinger partially stopped (remaining 27% data not secured)
-- ⚠️ Some intelligence officers still at risk (data already exfiltrated sold)
-- ✅ Elena gets treatment (Torres uses ENTROPY payment)
-- ✅ Family stays together (fugitive status)
-- ❌ Player faces investigation for misconduct
-- ❌ ENTROPY network untraceable
+- ✅ Operation Schrödinger stopped
+- ✅ 12-40 lives saved
+- ⚠️ Torres faces 15-25 years prison (minimal cooperation)
+- ⚠️ Elena loses treatment coverage (likely death)
+- ❌ Limited intelligence on ENTROPY network
 
-**Campaign Impact:** LOW - Negative consequences in M7 (partial data used in attacks)
+**Campaign Impact:** MEDIUM - Threat neutralized but intelligence lost
 
 **Variables Set:**
 ```ink
-VAR torres_released = true
-VAR torres_fled = true
-VAR player_misconduct = true
-VAR final_choice = "sympathetic_release"
+VAR torres_arrested = true
+VAR torres_subdued_nonlethal = true
+VAR final_choice = "combat_nonlethal"
+```
+
+---
+
+**CHOICE C-ALT: Combat - Lethal** (Fatal Resolution)
+
+**Requirements:**
+- Torres resists arrest
+- Player chooses lethal force
+
+**Player Action:**
+- "Hands up or I will use force"
+- Torres reaches for phone (misidentified as weapon)
+- Player fires - two shots, center mass
+
+**Torres' Response:**
+- Dies on server room floor
+- Phone shows Elena's contact photo
+- Last words: "Elena... Sofia... Miguel... I'm sorry"
+
+**Immediate Actions:**
+- Upload cancelled manually by player
+- Torres' body recovered by federal agents
+- Family notified of death
+
+**Outcomes:**
+- ✅ Operation Schrödinger stopped
+- ✅ 12-40 lives saved
+- ❌ Torres killed (justified by protocol, heavy moral weight)
+- ❌ Elena becomes widow while fighting cancer
+- ❌ Sofia and Miguel lose father
+- ❌ Zero intelligence on ENTROPY network
+
+**Campaign Impact:** LOW - Threat eliminated, all intelligence opportunities lost
+
+**Variables Set:**
+```ink
+VAR torres_killed = true
+VAR final_choice = "combat_lethal"
 ```
 
 ---
@@ -927,10 +965,10 @@ VAR final_choice = "public_exposure"
 - Upload incomplete, ENTROPY suspects compromise
 - Data secured but ENTROPY network goes dark
 
-**If Torres Released:**
-- Torres deletes upload, warns ENTROPY of investigation
-- ENTROPY scatters, harder to track
-- Partial data remains at risk
+**If Torres Killed (Combat - Lethal):**
+- Player manually cancels upload
+- ENTROPY loses asset but learns of compromise
+- Zero intelligence gained, network goes completely dark
 
 **If Public Exposure:**
 - Media firestorm prevents upload

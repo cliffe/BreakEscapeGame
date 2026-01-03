@@ -73,14 +73,15 @@ Phase 1: TARGET IDENTIFICATION
 
 Phase 2: INITIAL CONTACT
 - Approach via encrypted channels
-- Pose as "investigative journalists"
-- Offer financial compensation for "whistleblowing"
-- Frame exfiltration as "exposing corruption"
+- Offer financial compensation for data exfiltration
+- Introduce "accelerationist" ideology (system must collapse)
+- Frame target as freedom fighter against corrupt institutions
 
-Phase 3: ESCALATION
-- Gradually reveal true nature of operation
+Phase 3: RADICALIZATION & ESCALATION
+- Gradually indoctrinate with extremist philosophy
+- Justify casualties as "necessary collateral for greater good"
 - Increase payment amounts
-- Create dependency relationship
+- Create ideological + financial dependency
 - Leverage compromising evidence if necessary
 
 CURRENT OPERATIONS: 22 active placements
@@ -177,11 +178,12 @@ STRATEGIC IMPACT ASSESSMENT:
 - Projected intelligence officer casualties: 12-40
 - DoD quantum program: $4.2 billion WASTED
 
-RISK LEVEL: Medium
-- Asset believes data going to "investigative journalists"
-- Asset unaware of foreign government sales
-- Asset unaware of casualty projections
-- Maintain plausible deniability until exfiltration complete
+RISK LEVEL: Medium-Low
+- Asset informed of foreign government buyers (MSS, GRU, IRGC)
+- Asset informed of casualty projections (12-40 officers)
+- Asset has rationalized through "accelerationist" ideology
+- Radicalization only 3 months - if compromised, may be salvageable
+- Asset classified as EXPENDABLE if operation exposed
 
 TIMELINE:
 - Exfiltration completion: 14 days

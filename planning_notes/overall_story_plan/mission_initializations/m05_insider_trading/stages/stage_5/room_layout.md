@@ -440,7 +440,7 @@ Personal office of cryptography lead David Torres. Family photos prominent (wife
 
 **Technical Notes:**
 - Briefcase PIN (0811) discoverable from family photos showing Sofia's birthday
-- Journal entry critical for "turn double agent" path - proves Torres was manipulated
+- Journal entry critical for "turn double agent" path - shows Torres' radicalization and cognitive dissonance
 - Server room password "Heisenberg2024" in locked desk drawer
 
 ---
@@ -1231,7 +1231,7 @@ Utilitarian storage room with file boxes, archived documents, old equipment. Les
 
 | Physical Evidence | Digital Evidence (VM) | Correlated Insight |
 |-------------------|----------------------|-------------------|
-| Torres' journal (personal anguish) | Flag 4 (Architect's cold recruitment tactics) | Torres manipulated, not true believer |
+| Torres' journal (radicalization visible) | Flag 4 (Architect's approval, expendable asset) | Torres radicalized but only 3 months, cognitive dissonance visible |
 | Medical bills ($180K debt) | Email trails (desperate money searches) | Financial motive established |
 | USB device (physical exfil tool) | Flag 3 (upload timeline) | Confirms Torres' method and schedule |
 | Briefcase communications | Flag 4 (Architect communications) | Proves ENTROPY connection, not lone wolf |
@@ -1553,7 +1553,7 @@ Utilitarian storage room with file boxes, archived documents, old equipment. Les
 - **Stage 9 (Scenario Assembly):** Convert design into scenario.json.erb implementation
 
 **Design Philosophy Achieved:**
-Investigation-focused gameplay where player pieces together truth through exploration, social engineering, and technical challenges. Torres emerges as sympathetic figure (manipulated victim) rather than pure villain, creating meaningful moral choice. Physical and digital evidence must be correlated for complete picture, reinforcing hybrid architecture integration.
+Investigation-focused gameplay where player pieces together truth through exploration, social engineering, and technical challenges. Torres emerges as radicalized ENTROPY recruit (3 months, cognitive dissonance visible) who can be de-radicalized, arrested, or subdued, creating meaningful moral choice with arrest/combat options. Physical and digital evidence must be correlated for complete picture, reinforcing hybrid architecture integration.
 
 ---
 

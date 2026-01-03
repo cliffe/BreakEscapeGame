@@ -312,14 +312,15 @@ Objective (mission-level goal)
 26. **make_critical_choice** ✅ REQUIRED (BRANCHING)
     - **Description:** "Decide how to resolve Torres situation"
     - **Status:** locked
-    - **Completion:** Choose one of 4 paths in dialogue
+    - **Completion:** Choose one of 5 paths in dialogue
     - **Ink Tag:**
-      - `#complete_task:turn_torres` (if turned)
-      - `#complete_task:arrest_torres` (if arrested)
-      - `#complete_task:release_torres` (if released)
-      - `#complete_task:expose_publicly` (if exposed)
+      - `#complete_task:turn_torres` (if turned into double agent)
+      - `#complete_task:arrest_torres` (if arrested peacefully)
+      - `#complete_task:combat_nonlethal` (if subdued non-lethally)
+      - `#complete_task:combat_lethal` (if killed resisting)
+      - `#complete_task:expose_publicly` (if exposed to media)
     - **Unlocks:** `#unlock_aim:prevent_exfiltration`
-    - **Location:** Confrontation location
+    - **Location:** Server Room - Confrontation
 
 ---
 
@@ -335,11 +336,12 @@ Objective (mission-level goal)
     - **Completion:** Method depends on critical choice
       - Turned: Torres sends false completion signal
       - Arrested: Laptop seized
-      - Released: Torres deletes data
+      - Combat (Lethal): Player manually cancels upload
+      - Combat (Non-Lethal): Forced compliance after subdual
       - Exposed: Media prevents upload
     - **Ink Tag:** `#complete_task:stop_upload`
     - **Unlocks:** `#unlock_task:secure_data`
-    - **Location:** Server Room or remote
+    - **Location:** Server Room
 
 28. **secure_data** ✅ REQUIRED
     - **Description:** "Secure remaining 1.1 TB of Project Heisenberg data"
