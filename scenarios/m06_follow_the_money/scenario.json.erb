@@ -1,0 +1,730 @@
+<%
+# ============================================================================
+# MISSION 6: FOLLOW THE MONEY - SCENARIO FILE
+# ============================================================================
+# Break Escape - Season 1: The Architect's Shadow
+#
+# This file defines the game world structure: rooms, NPCs, objects, items
+# For mission metadata (display name, CyBOK mappings, etc.), see mission.json
+#
+# ROOM LAYOUT:
+#   Reception Lobby → Security Checkpoint → Trading Floor (main area)
+#   Trading Floor → Server Room (VM access, password required)
+#   Trading Floor → Elena's Office (CTO, badge required)
+#   Trading Floor → Blockchain Analysis Lab (technical research)
+#   Server Room → Data Center (critical financial servers)
+#   Trading Floor → Executive Wing → Satoshi's Office (leader, final confrontation)
+#
+# HYBRID ARCHITECTURE:
+#   - VM: Hackme and Crack Me (password cracking, credential reuse)
+#   - Multi-server exploitation: crack passwords, access distributed systems
+#   - Blockchain investigation: trace cryptocurrency transactions
+#   - Financial network mapping: connect M2 ransomware + M5 corporate espionage
+# ============================================================================
+
+# ERB Helper Methods
+require 'base64'
+
+def base64_encode(text)
+  Base64.strict_encode64(text)
+end
+
+# Narrative Content Variables
+password_hint_note = "HashChain Server Access:\nUser: admin\nPassword patterns: crypto terms + numbers\nCommon: bitcoin2024, ethereum2025, satoshi2024"
+
+blockchain_evidence = "ENTROPY FINANCIAL NETWORK - TRANSACTION ANALYSIS\n\nSource Wallets:\n- 1ENTROPY2RansomInc -> $2.4M (Hospital ransomware - Mission 2)\n- 1ENTROPY5InsiderTh -> $847K (Corporate espionage - Mission 5)\n- 1ENTROPY3ZeroDaySy -> $1.2M (Exploit sales)\n- 1ENTROPY1SocialFab -> $680K (Disinformation campaigns)\n\nIntermediary: HashChain Exchange Mixer\n\nDestination: 1ARCHITECT9FUND\nTotal Value: $12.8M USD equivalent\n\nPURPOSE: Major coordinated operation funding\nTIMELINE: 72 hours until fund distribution"
+
+architects_fund_document = "THE ARCHITECT'S FUND - STRATEGIC ALLOCATION\n\nCurrent Balance: $12.8M USD (BTC equivalent)\n\nPLANNED DISTRIBUTION:\n- Critical Mass (Infrastructure): $3.2M\n- Social Fabric (Disinformation): $2.1M\n- Zero Day Syndicate (Exploits): $2.8M\n- Digital Vanguard (Corporate): $1.9M\n- Ghost Protocol (Intelligence): $1.5M\n- Supply Chain Saboteurs: $1.3M\n\nOPERATION: The Architect's Masterpiece\nTARGET DATE: 72 hours\nCOORDINATOR: The Architect\n\nNOTE: Simultaneous multi-cell attack. All cells receive funding simultaneously.\nSuccess probability: 94%\nProjected casualties: 180-340 across all operations"
+%>
+{
+  "scenario_brief": "Track cryptocurrency payments from previous ENTROPY operations to the Crypto Anarchists' HashChain Exchange. Infiltrate as compliance auditor, map the financial network funding all ENTROPY cells, and discover The Architect's Fund—evidence of an imminent coordinated attack.",
+
+  "objectives": [
+    {
+      "aimId": "establish_cover",
+      "title": "Establish Cover",
+      "description": "Infiltrate HashChain Exchange as compliance auditor",
+      "status": "active",
+      "order": 0,
+      "tasks": [
+        {
+          "taskId": "receive_briefing",
+          "title": "Receive mission briefing from Agent 0x99",
+          "type": "npc_conversation",
+          "targetNPC": "opening_briefing",
+          "status": "active"
+        },
+        {
+          "taskId": "enter_exchange",
+          "title": "Enter HashChain Exchange building",
+          "type": "enter_room",
+          "targetRoom": "reception_lobby",
+          "status": "active"
+        },
+        {
+          "taskId": "meet_elena",
+          "title": "Meet with Elena Volkov (CTO)",
+          "type": "npc_conversation",
+          "targetNPC": "elena_volkov",
+          "status": "locked"
+        }
+      ]
+    },
+    {
+      "aimId": "access_backend_systems",
+      "title": "Access Backend Systems",
+      "description": "Gain access to exchange's financial infrastructure",
+      "status": "active",
+      "order": 1,
+      "tasks": [
+        {
+          "taskId": "obtain_access_tools",
+          "title": "Obtain password cracking tools and lists",
+          "type": "collect_items",
+          "targetItems": ["text_file"],
+          "status": "locked"
+        },
+        {
+          "taskId": "find_server_credentials",
+          "title": "Discover server access credentials",
+          "type": "collect_items",
+          "targetItems": ["notes"],
+          "status": "locked"
+        },
+        {
+          "taskId": "access_server_room",
+          "title": "Access the server room",
+          "type": "enter_room",
+          "targetRoom": "server_room",
+          "status": "locked"
+        },
+        {
+          "taskId": "access_hackme_vm",
+          "title": "Access the financial backend servers",
+          "type": "unlock_object",
+          "targetObject": "vm_launcher_hackme",
+          "status": "locked"
+        }
+      ]
+    },
+    {
+      "aimId": "crack_passwords",
+      "title": "Crack Server Passwords",
+      "description": "Use password cracking to access multiple financial servers",
+      "status": "active",
+      "order": 2,
+      "tasks": [
+        {
+          "taskId": "submit_flag1",
+          "title": "Submit Flag 1: First server access via password crack",
+          "type": "submit_flags",
+          "status": "locked"
+        },
+        {
+          "taskId": "submit_flag2",
+          "title": "Submit Flag 2: Secondary server via credential reuse",
+          "type": "submit_flags",
+          "status": "locked"
+        },
+        {
+          "taskId": "submit_flag3",
+          "title": "Submit Flag 3: Financial database access",
+          "type": "submit_flags",
+          "status": "locked"
+        },
+        {
+          "taskId": "submit_flag4",
+          "title": "Submit Flag 4: Complete network access",
+          "type": "submit_flags",
+          "status": "locked"
+        }
+      ]
+    },
+    {
+      "aimId": "map_financial_network",
+      "title": "Map ENTROPY Financial Network",
+      "description": "Trace cryptocurrency transactions connecting all ENTROPY cells",
+      "status": "active",
+      "order": 3,
+      "tasks": [
+        {
+          "taskId": "access_blockchain_lab",
+          "title": "Access Blockchain Analysis Lab",
+          "type": "enter_room",
+          "targetRoom": "blockchain_lab",
+          "status": "locked"
+        },
+        {
+          "taskId": "find_transaction_records",
+          "title": "Find blockchain transaction analysis",
+          "type": "collect_items",
+          "targetItems": ["notes"],
+          "status": "locked"
+        },
+        {
+          "taskId": "access_data_center",
+          "title": "Access the data center for complete records",
+          "type": "enter_room",
+          "targetRoom": "data_center",
+          "status": "locked"
+        },
+        {
+          "taskId": "discover_architects_fund",
+          "title": "Discover The Architect's Fund",
+          "type": "collect_items",
+          "targetItems": ["notes"],
+          "status": "locked"
+        }
+      ]
+    },
+    {
+      "aimId": "confront_leadership",
+      "title": "Confront Crypto Anarchists Leadership",
+      "description": "Make critical choices about assets and recruitment",
+      "status": "locked",
+      "order": 4,
+      "tasks": [
+        {
+          "taskId": "access_satoshi_office",
+          "title": "Access Satoshi's executive office",
+          "type": "enter_room",
+          "targetRoom": "satoshi_office",
+          "status": "locked"
+        },
+        {
+          "taskId": "confront_satoshi",
+          "title": "Confront 'Satoshi Nakamoto II'",
+          "type": "npc_conversation",
+          "targetNPC": "satoshi_nakamoto",
+          "status": "locked"
+        },
+        {
+          "taskId": "decide_elena_fate",
+          "title": "Decide Elena Volkov's fate: Recruit or Arrest",
+          "type": "custom",
+          "status": "locked"
+        },
+        {
+          "taskId": "decide_asset_strategy",
+          "title": "Choose: Seize cryptocurrency assets or Monitor transactions",
+          "type": "custom",
+          "status": "locked"
+        }
+      ]
+    }
+  ],
+
+  "startRoom": "reception_lobby",
+
+  "startItemsInInventory": [
+    {
+      "type": "phone",
+      "name": "Your Phone",
+      "takeable": true,
+      "phoneId": "player_phone",
+      "npcIds": ["agent_0x99_handler", "closing_debrief_trigger"],
+      "observations": "Your secure phone with encrypted connection to SAFETYNET"
+    }
+  ],
+
+  "player": {
+    "id": "player",
+    "displayName": "Agent 0x00",
+    "spriteSheet": "hacker",
+    "spriteTalk": "assets/characters/hacker-talk.png",
+    "spriteConfig": {
+      "idleFrameStart": 20,
+      "idleFrameEnd": 23
+    }
+  },
+
+  "globalVariables": {
+    "player_name": "Agent 0x00",
+    "player_approach": "",
+    "mission_priority": "financial_investigation",
+    "knows_architects_fund": false,
+    "knows_coordinated_attack": false,
+    "handler_trust": 60,
+    "objectives_completed": 0,
+    "lore_collected": 0,
+    "evidence_level": 0,
+    "final_choice": "",
+    "assets_seized": false,
+    "monitoring_enabled": false,
+    "elena_recruited": false,
+    "elena_arrested": false,
+    "satoshi_arrested": false,
+    "satoshi_escaped": false,
+    "found_blockchain_evidence": false,
+    "found_architects_fund": false,
+    "found_password_lists": false,
+    "flag1_submitted": false,
+    "flag2_submitted": false,
+    "flag3_submitted": false,
+    "flag4_submitted": false,
+    "servers_accessed": 0,
+    "financial_network_mapped": false,
+    "exchange_infiltrated": false
+  },
+
+  "endGoal": "Map ENTROPY's complete financial network, discover The Architect's Fund, and make critical choices: seize cryptocurrency assets (immediate impact) or monitor transactions (long-term intelligence); recruit Elena Volkov (valuable cryptographer) or arrest (eliminate expertise).",
+
+  "rooms": {
+    "reception_lobby": {
+      "type": "room_reception",
+      "connections": {
+        "north": "security_checkpoint"
+      },
+      "npcs": [
+        {
+          "id": "opening_briefing_npc",
+          "displayName": "Mission Briefing",
+          "npcType": "person",
+          "position": { "x": 2, "y": 2 },
+          "spriteSheet": "hacker",
+          "spriteTalk": "assets/characters/hacker-talk.png",
+          "spriteConfig": {
+            "idleFrameStart": 20,
+            "idleFrameEnd": 23
+          },
+          "storyPath": "scenarios/m06_follow_the_money/ink/m06_opening_briefing.json",
+          "currentKnot": "start",
+          "behavior": {
+            "initiallyHidden": false
+          }
+        },
+        {
+          "id": "agent_0x99_handler",
+          "displayName": "Agent 0x99 'Haxolottle'",
+          "npcType": "phone",
+          "storyPath": "scenarios/m06_follow_the_money/ink/m06_phone_agent_0x99.json",
+          "avatar": "assets/npc/avatars/npc_helper.png",
+          "phoneId": "player_phone",
+          "currentKnot": "start",
+          "timedMessages": [
+            {
+              "delay": 5000,
+              "message": "Financial investigation time! This is big - we're tracking money from M2 ransomware and M5 corp espionage. All roads lead to HashChain Exchange. Let's follow the money.",
+              "type": "text"
+            }
+          ],
+          "eventMappings": [
+            {
+              "eventPattern": "item_picked_up:password_lists",
+              "targetKnot": "on_password_lists_found",
+              "onceOnly": true
+            },
+            {
+              "eventPattern": "global_variable_changed:flag1_submitted",
+              "targetKnot": "on_first_server_cracked",
+              "condition": "value === true",
+              "onceOnly": true
+            },
+            {
+              "eventPattern": "global_variable_changed:found_blockchain_evidence",
+              "targetKnot": "on_blockchain_discovered",
+              "condition": "value === true",
+              "onceOnly": true
+            },
+            {
+              "eventPattern": "global_variable_changed:found_architects_fund",
+              "targetKnot": "on_architects_fund_discovered",
+              "condition": "value === true",
+              "onceOnly": true
+            },
+            {
+              "eventPattern": "global_variable_changed:financial_network_mapped",
+              "targetKnot": "on_network_complete",
+              "condition": "value === true",
+              "onceOnly": true
+            }
+          ]
+        },
+        {
+          "id": "closing_debrief_trigger",
+          "displayName": "Agent 0x99",
+          "npcType": "phone",
+          "storyPath": "scenarios/m06_follow_the_money/ink/m06_closing_debrief.json",
+          "avatar": "assets/npc/avatars/npc_helper.png",
+          "phoneId": "player_phone",
+          "currentKnot": "start",
+          "eventMappings": [
+            {
+              "eventPattern": "global_variable_changed:assets_seized",
+              "targetKnot": "start",
+              "condition": "value === true",
+              "onceOnly": true
+            },
+            {
+              "eventPattern": "global_variable_changed:monitoring_enabled",
+              "targetKnot": "start",
+              "condition": "value === true",
+              "onceOnly": true
+            },
+            {
+              "eventPattern": "global_variable_changed:elena_recruited",
+              "targetKnot": "start",
+              "condition": "value === true",
+              "onceOnly": true
+            },
+            {
+              "eventPattern": "global_variable_changed:elena_arrested",
+              "targetKnot": "start",
+              "condition": "value === true",
+              "onceOnly": true
+            }
+          ]
+        }
+      ],
+      "objects": [
+        {
+          "type": "notes",
+          "name": "HashChain Exchange Brochure",
+          "takeable": true,
+          "readable": true,
+          "text": "HASHCHAIN EXCHANGE - Premier Cryptocurrency Trading Platform\n\nOur Services:\n- Secure cryptocurrency trading\n- Blockchain analysis tools\n- Privacy-focused transactions\n- Enterprise compliance solutions\n\nLeadership:\nCEO: 'Satoshi Nakamoto II'\nCTO: Dr. Elena Volkov\n\nTagline: 'Financial Freedom Through Cryptography'",
+          "observations": "Official exchange brochure - seems legitimate on surface"
+        }
+      ]
+    },
+
+    "security_checkpoint": {
+      "type": "hall_1x2gu",
+      "connections": {
+        "south": "reception_lobby",
+        "north": "trading_floor"
+      },
+      "npcs": [],
+      "objects": [
+        {
+          "type": "notes",
+          "name": "Security Protocols Notice",
+          "takeable": true,
+          "readable": true,
+          "text": "SECURITY NOTICE\n\nAll visitors must:\n- Present valid credentials\n- Undergo background check\n- Sign NDA\n- Wear visitor badge at all times\n\nRestricted Areas:\n- Server Room (IT Staff Only)\n- Data Center (Executive Authorization)\n- Blockchain Analysis Lab (Researchers Only)\n\nSecurity Chief: Contact for access requests",
+          "observations": "Standard security procedures for cryptocurrency exchange"
+        }
+      ]
+    },
+
+    "trading_floor": {
+      "type": "room_office",
+      "connections": {
+        "south": "security_checkpoint",
+        "north": "server_room",
+        "east": "blockchain_lab",
+        "west": "elena_office"
+      },
+      "npcs": [
+        {
+          "id": "elena_volkov",
+          "displayName": "Dr. Elena Volkov",
+          "npcType": "person",
+          "position": { "x": 5, "y": 5 },
+          "spriteSheet": "hacker-red",
+          "spriteTalk": "assets/characters/hacker-red-talk.png",
+          "spriteConfig": {
+            "idleFrameStart": 20,
+            "idleFrameEnd": 23
+          },
+          "storyPath": "scenarios/m06_follow_the_money/ink/m06_npc_elena_volkov.json",
+          "currentKnot": "start",
+          "itemsHeld": [
+            {
+              "type": "keycard",
+              "name": "CTO Access Badge",
+              "takeable": false,
+              "observations": "Elena's high-level access badge for all exchange systems"
+            },
+            {
+              "type": "text_file",
+              "name": "Password Dictionary List",
+              "takeable": true,
+              "observations": "Common password patterns used in cryptocurrency industry - helpful for cracking"
+            }
+          ]
+        },
+        {
+          "id": "trader_npc",
+          "displayName": "Crypto Trader",
+          "npcType": "person",
+          "position": { "x": 3, "y": 4 },
+          "spriteSheet": "hacker",
+          "spriteTalk": "assets/characters/hacker-talk.png",
+          "spriteConfig": {
+            "idleFrameStart": 20,
+            "idleFrameEnd": 23
+          },
+          "storyPath": "scenarios/m06_follow_the_money/ink/m06_npc_trader.json",
+          "currentKnot": "start"
+        }
+      ],
+      "objects": [
+        {
+          "type": "pc",
+          "name": "Trading Workstation",
+          "takeable": false,
+          "observations": "Real-time cryptocurrency trading terminal - shows massive transaction volumes"
+        },
+        {
+          "type": "notes",
+          "name": "Daily Trading Report",
+          "takeable": true,
+          "readable": true,
+          "text": "HASHCHAIN EXCHANGE - DAILY TRADING SUMMARY\n\nVolume (24h): $847M USD equivalent\nTop Pairs: BTC/USD, ETH/USD, XMR/USD\n\nLarge Transactions Flagged:\n- Wallet 1ENTROPY2RansomInc: $2.4M mixed\n- Wallet 1ENTROPY5InsiderTh: $847K mixed\n- Wallet 1ARCHITECT9FUND: $12.8M received\n\nCompliance Note: Privacy coins (Monero) usage extremely high.\nNote to Elena: Is this normal? -Trader",
+          "observations": "Trading report showing ENTROPY wallet activity"
+        }
+      ]
+    },
+
+    "server_room": {
+      "type": "room_servers",
+      "locked": true,
+      "lockType": "password",
+      "requires": "server_password",
+      "connections": {
+        "south": "trading_floor",
+        "north": "data_center"
+      },
+      "npcs": [],
+      "objects": [
+        {
+          "type": "vm-launcher",
+          "id": "vm_launcher_hackme",
+          "name": "HashChain Backend Server Terminal",
+          "takeable": false,
+          "observations": "Terminal providing access to exchange's backend financial servers for password cracking",
+          "hacktivityMode": <%= vm_context && vm_context['hacktivity_mode'] ? 'true' : 'false' %>,
+          "vm": <%= vm_object('hackme_crack_me_lab', {"id":6,"title":"HashChain Financial Servers","ip":"192.168.100.86","enable_console":true}) %>
+        },
+        {
+          "type": "flag-station",
+          "id": "flag_station_financial",
+          "name": "SAFETYNET Financial Intelligence Drop",
+          "takeable": false,
+          "observations": "Secure terminal for submitting password cracking and financial access flags",
+          "acceptsVms": ["hackme_crack_me_lab"],
+          "flags": <%= flags_for_vm('hackme_crack_me_lab', ['flag{hackme_password_cracked}', 'flag{crackme_credential_reuse}', 'flag{financial_database_access}', 'flag{complete_network_access}']) %>,
+          "flagRewards": [
+            {
+              "type": "emit_event",
+              "event_name": "flag1_server_cracked",
+              "description": "Flag 1: First server password cracked - initial backend access"
+            },
+            {
+              "type": "emit_event",
+              "event_name": "flag2_credential_reuse",
+              "description": "Flag 2: Credential reuse exploitation - lateral movement enabled"
+            },
+            {
+              "type": "emit_event",
+              "event_name": "flag3_financial_database",
+              "description": "Flag 3: Financial database access - transaction records revealed"
+            },
+            {
+              "type": "emit_event",
+              "event_name": "flag4_network_complete",
+              "description": "Flag 4: Complete network access - full financial intelligence gathered"
+            }
+          ]
+        },
+        {
+          "type": "notes",
+          "name": "Server Access Credentials",
+          "takeable": true,
+          "readable": true,
+          "text": "<%= password_hint_note %>",
+          "observations": "Password hint note - crypto-themed passwords for server access"
+        }
+      ]
+    },
+
+    "data_center": {
+      "type": "room_servers",
+      "connections": {
+        "south": "server_room"
+      },
+      "npcs": [],
+      "objects": [
+        {
+          "type": "pc",
+          "name": "Financial Transaction Server",
+          "takeable": false,
+          "observations": "Core transaction processing server - handles all exchange cryptocurrency movements"
+        },
+        {
+          "type": "notes",
+          "id": "architects_fund_doc",
+          "name": "The Architect's Fund Allocation",
+          "takeable": true,
+          "readable": true,
+          "text": "<%= architects_fund_document %>",
+          "observations": "CRITICAL EVIDENCE: The Architect's Fund - $12.8M for coordinated attack in 72 hours, 180-340 projected casualties",
+          "onPickup": { "setVariable": { "found_architects_fund": true, "knows_coordinated_attack": true, "evidence_level": "evidence_level + 2", "lore_collected": "lore_collected + 1" } }
+        },
+        {
+          "type": "notes",
+          "name": "Wallet Recovery Keys",
+          "takeable": true,
+          "readable": true,
+          "text": "HASHCHAIN EXCHANGE - EMERGENCY WALLET RECOVERY\n\nCold Storage Private Keys (Encrypted)\nTotal Holdings: $48.3M USD equivalent\n\nThe Architect's Fund Wallet:\nAddress: 1ARCHITECT9FUND\nBalance: $12.8M USD\nRecovery Key: [ENCRYPTED]\n\nNote: Seizure of this wallet would cripple ENTROPY funding.\nAlternative: Monitor transactions to identify all cells receiving funds.",
+          "observations": "Wallet recovery keys - choice point: seize assets or monitor"
+        }
+      ]
+    },
+
+    "blockchain_lab": {
+      "type": "room_office",
+      "connections": {
+        "west": "trading_floor"
+      },
+      "npcs": [
+        {
+          "id": "blockchain_analyst",
+          "displayName": "Blockchain Analyst",
+          "npcType": "person",
+          "position": { "x": 3, "y": 3 },
+          "spriteSheet": "hacker",
+          "spriteTalk": "assets/characters/hacker-talk.png",
+          "spriteConfig": {
+            "idleFrameStart": 20,
+            "idleFrameEnd": 23
+          },
+          "storyPath": "scenarios/m06_follow_the_money/ink/m06_npc_analyst.json",
+          "currentKnot": "start"
+        }
+      ],
+      "objects": [
+        {
+          "type": "lab-workstation",
+          "name": "Blockchain Analysis Workstation",
+          "takeable": false,
+          "observations": "Advanced blockchain forensics tools - transaction graph analysis, wallet clustering"
+        },
+        {
+          "type": "notes",
+          "id": "blockchain_evidence",
+          "name": "ENTROPY Transaction Network Analysis",
+          "takeable": true,
+          "readable": true,
+          "text": "<%= blockchain_evidence %>",
+          "observations": "CRITICAL EVIDENCE: Complete ENTROPY financial network connecting M2 ransomware, M5 espionage, all cells",
+          "onPickup": { "setVariable": { "found_blockchain_evidence": true, "financial_network_mapped": true, "evidence_level": "evidence_level + 2" } }
+        },
+        {
+          "type": "notes",
+          "name": "Privacy Coin Mixing Analysis",
+          "takeable": true,
+          "readable": true,
+          "text": "MONERO (XMR) MIXING PATTERNS\n\nHashChain Exchange specializes in privacy coin conversions.\n\nPattern Detected:\n1. ENTROPY cells deposit Bitcoin\n2. Convert to Monero (untraceable)\n3. Mix through multiple wallets\n4. Convert back to Bitcoin\n5. Send to The Architect's Fund\n\nThis makes transaction tracing nearly impossible via blockchain alone.\nRequires exchange internal records for complete picture.\n\nLORE: Crypto Anarchists provide money laundering as service to all ENTROPY cells.",
+          "observations": "LORE Fragment: Crypto Anarchists' role in ENTROPY ecosystem - financial infrastructure provider"
+        }
+      ]
+    },
+
+    "elena_office": {
+      "type": "room_office",
+      "locked": true,
+      "lockType": "rfid",
+      "requires": "cto_badge",
+      "connections": {
+        "east": "trading_floor"
+      },
+      "npcs": [],
+      "objects": [
+        {
+          "type": "pc",
+          "name": "Elena's Secure Workstation",
+          "takeable": false,
+          "observations": "CTO's personal workstation - cryptography research, system architecture"
+        },
+        {
+          "type": "notes",
+          "name": "Cryptography Research Notes",
+          "takeable": true,
+          "readable": true,
+          "text": "DR. ELENA VOLKOV - RESEARCH NOTES\n\nCurrent Projects:\n- Post-quantum cryptography for cryptocurrency\n- Zero-knowledge proof systems\n- Homomorphic encryption for private transactions\n\nPublications: 37 papers in top-tier cryptography journals\nCitations: 2,847\n\nNote to self: The exchange's 'privacy features' are being abused for money laundering. I built these systems for financial freedom, not criminal enterprise. But Satoshi pays too well to walk away. What have I become?",
+          "observations": "Elena's research notes - brilliant cryptographer, morally conflicted about criminal use of her work"
+        },
+        {
+          "type": "notes",
+          "name": "Email: From The Architect",
+          "takeable": true,
+          "readable": true,
+          "text": "FROM: architect@entropy.onion\nTO: elena.volkov@hashchain.exchange\nSUBJECT: Phase 2 Funding Appreciation\n\nDr. Volkov,\n\nYour cryptocurrency infrastructure has proven invaluable to our coordination efforts. The mixing services and privacy protocols you designed enable operational security across all cells.\n\nPhase 3 approaches. Funding distribution in 72 hours.\n\nYour compensation: $500,000 USD (BTC) upon completion.\n\nContinue excellent work.\n\n- The Architect\n\nLORE Fragment: Elena knows about The Architect, provides infrastructure.",
+          "observations": "LORE: Elena directly communicating with The Architect, receiving substantial payments"
+        }
+      ]
+    },
+
+    "executive_wing": {
+      "type": "hall_1x2gu",
+      "locked": true,
+      "lockType": "rfid",
+      "requires": "executive_badge",
+      "connections": {
+        "south": "trading_floor",
+        "north": "satoshi_office"
+      },
+      "npcs": [],
+      "objects": []
+    },
+
+    "satoshi_office": {
+      "type": "room_office",
+      "connections": {
+        "south": "executive_wing"
+      },
+      "npcs": [
+        {
+          "id": "satoshi_nakamoto",
+          "displayName": "Satoshi Nakamoto II",
+          "npcType": "person",
+          "position": { "x": 4, "y": 4 },
+          "spriteSheet": "hacker-red",
+          "spriteTalk": "assets/characters/hacker-red-talk.png",
+          "spriteConfig": {
+            "idleFrameStart": 20,
+            "idleFrameEnd": 23
+          },
+          "storyPath": "scenarios/m06_follow_the_money/ink/m06_satoshi_confrontation.json",
+          "currentKnot": "start",
+          "behavior": {
+            "initiallyHidden": true,
+            "appearsOnEvent": "financial_network_mapped"
+          }
+        }
+      ],
+      "objects": [
+        {
+          "type": "notes",
+          "name": "Crypto Anarchist Manifesto",
+          "takeable": true,
+          "readable": true,
+          "text": "THE CRYPTO ANARCHIST MANIFESTO\n\nGovernments cannot control what they cannot see.\nCryptography enables true financial freedom.\nPrivacy is a fundamental human right.\nCentralized finance is slavery.\nDecentralized systems bring liberation.\n\nHashChain Exchange exists to accelerate the collapse of state monetary control.\n\nEvery transaction we enable undermines government power.\nEvery privacy coin we support creates freedom.\n\nENTROPY understands: chaos is the path to liberty.\nThe Architect coordinates the acceleration.\n\nWe are Crypto Anarchists. We will not be stopped.\n\n- Satoshi Nakamoto II (obviously not the real Satoshi)\n\nLORE: Crypto Anarchists ideologically aligned with ENTROPY's accelerationism.",
+          "observations": "LORE Fragment: Crypto Anarchists' ideology - true believers in financial anarchism"
+        },
+        {
+          "type": "safe",
+          "locked": true,
+          "lockType": "pin",
+          "code": "2140",
+          "name": "Executive Safe",
+          "takeable": false,
+          "observations": "Safe secured with PIN code - likely contains critical documents",
+          "contents": [
+            {
+              "type": "notes",
+              "name": "The Architect's Identity File",
+              "takeable": true,
+              "readable": true,
+              "text": "CLASSIFIED - THE ARCHITECT IDENTITY INTELLIGENCE\n\nWho is The Architect?\n\nClues gathered:\n- Former intelligence professional (MI6, CIA, or equivalent)\n- Deep cryptography background\n- Organizational genius\n- Philosophy: Accelerationism\n\nLikely candidates (SAFETYNET analysis):\n- Dr. Adrian Tesseract (former SAFETYNET chief strategist, defected 7 years ago)\n- Unknown\n\nTesseract Profile:\n- Brilliant strategist\n- Mentored multiple current SAFETYNET agents\n- Disappeared after philosophical disagreement\n- Believed cybersecurity arms race accelerates collapse\n\nConclusion: 87% probability The Architect = Dr. Adrian Tesseract\n\nLORE: Setup for M9 revelation - The Architect's identity narrowed",
+              "observations": "CRITICAL LORE: The Architect's identity narrowed to Dr. Adrian Tesseract - former SAFETYNET strategist"
+            }
+          ]
+        }
+      ]
+    }
+  }
+}
+
