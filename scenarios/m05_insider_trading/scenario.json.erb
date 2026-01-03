@@ -97,9 +97,23 @@ torres_journal_excerpt = "Met with Recruiter again. $200K total if I complete th
         },
         {
           "taskId": "find_lockpick",
-          "title": "Acquire security tools for investigation",
+          "title": "Acquire lockpick set from Kevin",
           "type": "collect_items",
           "targetItems": ["lockpick"],
+          "status": "locked"
+        },
+        {
+          "taskId": "obtain_rfid_cloner",
+          "title": "Obtain RFID badge cloner from Kevin",
+          "type": "collect_items",
+          "targetItems": ["rfid_cloner"],
+          "status": "locked"
+        },
+        {
+          "taskId": "obtain_torres_keycard",
+          "title": "Get keycard for Torres' office from Kevin",
+          "type": "collect_items",
+          "targetItems": ["keycard"],
           "status": "locked"
         }
       ]
@@ -149,6 +163,19 @@ torres_journal_excerpt = "Met with Recruiter again. $200K total if I complete th
       "order": 3,
       "tasks": [
         {
+          "taskId": "clone_employee_badge",
+          "title": "Clone Kevin's employee badge for server access",
+          "type": "custom",
+          "status": "locked"
+        },
+        {
+          "taskId": "find_server_password",
+          "title": "Find the server room password",
+          "type": "collect_items",
+          "targetItems": ["notes"],
+          "status": "locked"
+        },
+        {
           "taskId": "access_server_room",
           "title": "Access the server room",
           "type": "enter_room",
@@ -184,6 +211,20 @@ torres_journal_excerpt = "Met with Recruiter again. $200K total if I complete th
           "taskId": "submit_flag4",
           "title": "Submit Flag 4: Architect communications evidence",
           "type": "submit_flags",
+          "status": "locked"
+        },
+        {
+          "taskId": "access_data_center",
+          "title": "Access the data center to find exfiltration evidence",
+          "type": "enter_room",
+          "targetRoom": "data_center",
+          "status": "locked"
+        },
+        {
+          "taskId": "find_upload_schedule",
+          "title": "Discover Torres' upload schedule",
+          "type": "collect_items",
+          "targetItems": ["notes"],
           "status": "locked"
         }
       ]
@@ -319,6 +360,12 @@ torres_journal_excerpt = "Met with Recruiter again. $200K total if I complete th
               "name": "Visitor Badge",
               "takeable": true,
               "observations": "Temporary visitor access badge"
+            },
+            {
+              "type": "keycard",
+              "name": "Security Office Keycard",
+              "takeable": true,
+              "observations": "Patricia's keycard for accessing her security office"
             }
           ]
         },
@@ -523,11 +570,40 @@ torres_journal_excerpt = "Met with Recruiter again. $200K total if I complete th
               "name": "Lockpick Set",
               "takeable": true,
               "observations": "Professional lockpicking tools"
+            },
+            {
+              "type": "rfid_cloner",
+              "name": "RFID Badge Cloner",
+              "takeable": true,
+              "observations": "Security testing tool for cloning RFID badges"
+            },
+            {
+              "type": "keycard",
+              "name": "Torres Office Keycard",
+              "takeable": true,
+              "observations": "Spare keycard for David Torres' office - Kevin has access to all offices for IT support"
             }
           ]
         }
       ],
-      "objects": []
+      "objects": [
+        {
+          "type": "notes",
+          "name": "Server Password Sticky Note",
+          "takeable": true,
+          "readable": true,
+          "text": "<%= password_hint_sticky %>",
+          "observations": "Sticky note with temporary server room password"
+        },
+        {
+          "type": "notes",
+          "name": "IT Department Notice",
+          "takeable": true,
+          "readable": true,
+          "text": "IT SECURITY NOTICE\n\nAll staff: Server room access is restricted.\nTemporary password expires Friday.\nContact Kevin Park for access issues.\n\nReminder: David Torres has been accessing servers at unusual hours.\nIf you notice suspicious activity, report to Security Chief Patricia Morgan.\n\n- IT Department",
+          "observations": "Notice mentioning Torres' unusual server access patterns"
+        }
+      ]
     },
 
     "server_hallway": {
@@ -695,9 +771,7 @@ torres_journal_excerpt = "Met with Recruiter again. $200K total if I complete th
 
     "patricia_office": {
       "type": "room_office",
-      "locked": true,
-      "lockType": "rfid",
-      "requires": "security_badge",
+      "locked": false,
       "connections": {
         "west": "reception_lobby"
       },
@@ -717,7 +791,24 @@ torres_journal_excerpt = "Met with Recruiter again. $200K total if I complete th
           "currentKnot": "hub"
         }
       ],
-      "objects": []
+      "objects": [
+        {
+          "type": "notes",
+          "name": "Security Incident Log",
+          "takeable": true,
+          "readable": true,
+          "text": "QUANTUM DYNAMICS - SECURITY INCIDENT LOG\n\nRECENT FLAGGED ACTIVITY:\n\n[2 weeks ago] David Torres: After-hours server room access (11:47 PM)\n[1 week ago] David Torres: Unusual data transfer patterns detected\n[5 days ago] David Torres: Multiple failed login attempts on restricted systems\n[3 days ago] David Torres: Large file downloads from research database\n\nNOTE: Escalated to management. Awaiting response.\nManagement response: 'Torres is working on classified project. Activity authorized.'\n\nSomething feels wrong about this. -PM",
+          "observations": "Patricia's security logs showing Torres' suspicious activity"
+        },
+        {
+          "type": "notes",
+          "name": "SAFETYNET Mission Brief",
+          "takeable": true,
+          "readable": true,
+          "text": "CLASSIFIED - SAFETYNET FIELD OPERATION\n\nMISSION: INSIDER THREAT INTERDICTION\nLOCATION: Quantum Dynamics Corporation\nTHREAT LEVEL: CRITICAL\n\nINTELLIGENCE SUMMARY:\nENTROPY's Insider Threat Initiative has recruited an employee at Quantum Dynamics to exfiltrate classified defense research related to secure communications protocols.\n\nESTIMATED CASUALTIES IF SUCCESSFUL: 12-40 field operatives\n\nYOUR MISSION:\n1. Identify the insider\n2. Gather evidence of ENTROPY recruitment\n3. Prevent final data exfiltration\n4. Neutralize or turn the asset\n\nTIME CRITICAL: Final upload scheduled within 4 hours.\n\n[LORE Fragment - Mission Context]",
+          "observations": "Full mission briefing with casualty projections"
+        }
+      ]
     },
 
     "data_center": {
@@ -726,7 +817,30 @@ torres_journal_excerpt = "Met with Recruiter again. $200K total if I complete th
         "south": "server_room"
       },
       "npcs": [],
-      "objects": []
+      "objects": [
+        {
+          "type": "pc",
+          "name": "Exfiltration Upload Terminal",
+          "takeable": false,
+          "observations": "Torres' staging terminal for the final data upload - evidence of Operation Schrodinger"
+        },
+        {
+          "type": "notes",
+          "name": "Upload Schedule",
+          "takeable": true,
+          "readable": true,
+          "text": "OPERATION SCHRODINGER - UPLOAD SCHEDULE\n\nSTATUS: PENDING FINAL APPROVAL\n\nData Package: 847 GB (classified defense research)\nTarget: ENTROPY secure drop-site\nUpload Window: Sunday 3:00 AM - 6:00 AM\n\nPayment upon confirmation: $200,000 USD (cryptocurrency)\n\nFinal approval required from: The Architect\n\n[CRITICAL EVIDENCE - Exfiltration Plan]",
+          "observations": "Torres' upload schedule showing final exfiltration timing and payment"
+        },
+        {
+          "type": "notes",
+          "name": "Data Package Manifest",
+          "takeable": true,
+          "readable": true,
+          "text": "CLASSIFIED RESEARCH - PACKAGE CONTENTS\n\n- Quantum encryption protocols (248 GB)\n- Secure communications architecture (312 GB)\n- Field operative identity database (89 GB)\n- Crypto key generation algorithms (198 GB)\n\nImpact Assessment:\nCompromise of this data will enable ENTROPY to:\n- Decrypt secure field communications\n- Identify undercover operatives\n- Intercept mission-critical intelligence\n\nProjected field operative casualties: 12-40 agents\n\n[CRITICAL EVIDENCE - Data Contents]",
+          "observations": "Manifest showing what Torres is stealing and the projected casualties"
+        }
+      ]
     }
   }
 }
