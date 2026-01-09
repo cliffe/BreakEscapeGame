@@ -433,6 +433,7 @@ architects_fund_document = "THE ARCHITECT'S FUND - STRATEGIC ALLOCATION\n\nCurre
             {
               "type": "keycard",
               "name": "CTO Access Badge",
+              "badgeId": "cto_badge",
               "takeable": false,
               "observations": "Elena's high-level access badge for all exchange systems"
             },
@@ -473,6 +474,12 @@ architects_fund_document = "THE ARCHITECT'S FUND - STRATEGIC ALLOCATION\n\nCurre
           "readable": true,
           "text": "HASHCHAIN EXCHANGE - DAILY TRADING SUMMARY\n\nVolume (24h): $847M USD equivalent\nTop Pairs: BTC/USD, ETH/USD, XMR/USD\n\nLarge Transactions Flagged:\n- Wallet 1ENTROPY2RansomInc: $2.4M mixed\n- Wallet 1ENTROPY5InsiderTh: $847K mixed\n- Wallet 1ARCHITECT9FUND: $12.8M received\n\nCompliance Note: Privacy coins (Monero) usage extremely high.\nNote to Elena: Is this normal? -Trader",
           "observations": "Trading report showing ENTROPY wallet activity"
+        },
+        {
+          "type": "rfid_cloner",
+          "name": "RFID Badge Cloner",
+          "takeable": true,
+          "observations": "Portable RFID cloning device - can duplicate access badges for restricted areas"
         }
       ]
     },
@@ -481,7 +488,7 @@ architects_fund_document = "THE ARCHITECT'S FUND - STRATEGIC ALLOCATION\n\nCurre
       "type": "room_servers",
       "locked": true,
       "lockType": "password",
-      "requires": "server_password",
+      "requires": "bitcoin2024",
       "connections": {
         "south": "trading_floor",
         "north": "data_center"
@@ -533,7 +540,7 @@ architects_fund_document = "THE ARCHITECT'S FUND - STRATEGIC ALLOCATION\n\nCurre
           "name": "Server Access Credentials",
           "takeable": true,
           "readable": true,
-          "text": "<%= password_hint_note %>",
+          "text": "HashChain Server Access:\nUser: admin\nPassword patterns: crypto terms + numbers\nCommon: bitcoin2024, ethereum2025, satoshi2024",
           "observations": "Password hint note - crypto-themed passwords for server access"
         }
       ]
@@ -542,7 +549,8 @@ architects_fund_document = "THE ARCHITECT'S FUND - STRATEGIC ALLOCATION\n\nCurre
     "data_center": {
       "type": "room_servers",
       "connections": {
-        "south": "server_room"
+        "south": "server_room",
+        "east": "executive_wing"
       },
       "npcs": [],
       "objects": [
@@ -558,7 +566,7 @@ architects_fund_document = "THE ARCHITECT'S FUND - STRATEGIC ALLOCATION\n\nCurre
           "name": "The Architect's Fund Allocation",
           "takeable": true,
           "readable": true,
-          "text": "<%= architects_fund_document %>",
+          "text": "THE ARCHITECT'S FUND - STRATEGIC ALLOCATION\n\nCurrent Balance: $12.8M USD (BTC equivalent)\n\nPLANNED DISTRIBUTION:\n- Critical Mass (Infrastructure): $3.2M\n- Social Fabric (Disinformation): $2.1M\n- Zero Day Syndicate (Exploits): $2.8M\n- Digital Vanguard (Corporate): $1.9M\n- Ghost Protocol (Intelligence): $1.5M\n- Supply Chain Saboteurs: $1.3M\n\nOPERATION: The Architect's Masterpiece\nTARGET DATE: 72 hours\nCOORDINATOR: The Architect\n\nNOTE: Simultaneous multi-cell attack. All cells receive funding simultaneously.\nSuccess probability: 94%\nProjected casualties: 180-340 across all operations",
           "observations": "CRITICAL EVIDENCE: The Architect's Fund - $12.8M for coordinated attack in 72 hours, 180-340 projected casualties",
           "onPickup": { "setVariable": { "found_architects_fund": true, "knows_coordinated_attack": true, "evidence_level": "evidence_level + 2", "lore_collected": "lore_collected + 1" } }
         },
@@ -569,6 +577,13 @@ architects_fund_document = "THE ARCHITECT'S FUND - STRATEGIC ALLOCATION\n\nCurre
           "readable": true,
           "text": "HASHCHAIN EXCHANGE - EMERGENCY WALLET RECOVERY\n\nCold Storage Private Keys (Encrypted)\nTotal Holdings: $48.3M USD equivalent\n\nThe Architect's Fund Wallet:\nAddress: 1ARCHITECT9FUND\nBalance: $12.8M USD\nRecovery Key: [ENCRYPTED]\n\nNote: Seizure of this wallet would cripple ENTROPY funding.\nAlternative: Monitor transactions to identify all cells receiving funds.",
           "observations": "Wallet recovery keys - choice point: seize assets or monitor"
+        },
+        {
+          "type": "keycard",
+          "name": "Executive Access Badge",
+          "badgeId": "executive_badge",
+          "takeable": true,
+          "observations": "High-security executive badge - grants access to CEO's office wing"
         }
       ]
     },
@@ -596,7 +611,7 @@ architects_fund_document = "THE ARCHITECT'S FUND - STRATEGIC ALLOCATION\n\nCurre
       ],
       "objects": [
         {
-          "type": "lab-workstation",
+          "type": "pc",
           "name": "Blockchain Analysis Workstation",
           "takeable": false,
           "observations": "Advanced blockchain forensics tools - transaction graph analysis, wallet clustering"
@@ -607,7 +622,7 @@ architects_fund_document = "THE ARCHITECT'S FUND - STRATEGIC ALLOCATION\n\nCurre
           "name": "ENTROPY Transaction Network Analysis",
           "takeable": true,
           "readable": true,
-          "text": "<%= blockchain_evidence %>",
+          "text": "ENTROPY FINANCIAL NETWORK - TRANSACTION ANALYSIS\n\nSource Wallets:\n- 1ENTROPY2RansomInc -> $2.4M (Hospital ransomware - Mission 2)\n- 1ENTROPY5InsiderTh -> $847K (Corporate espionage - Mission 5)\n- 1ENTROPY3ZeroDaySy -> $1.2M (Exploit sales)\n- 1ENTROPY1SocialFab -> $680K (Disinformation campaigns)\n\nIntermediary: HashChain Exchange Mixer\n\nDestination: 1ARCHITECT9FUND\nTotal Value: $12.8M USD equivalent\n\nPURPOSE: Major coordinated operation funding\nTIMELINE: 72 hours until fund distribution",
           "observations": "CRITICAL EVIDENCE: Complete ENTROPY financial network connecting M2 ransomware, M5 espionage, all cells",
           "onPickup": { "setVariable": { "found_blockchain_evidence": true, "financial_network_mapped": true, "evidence_level": "evidence_level + 2" } }
         },
@@ -663,7 +678,7 @@ architects_fund_document = "THE ARCHITECT'S FUND - STRATEGIC ALLOCATION\n\nCurre
       "lockType": "rfid",
       "requires": "executive_badge",
       "connections": {
-        "south": "trading_floor",
+        "west": "data_center",
         "north": "satoshi_office"
       },
       "npcs": [],
