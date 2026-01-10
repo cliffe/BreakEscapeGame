@@ -583,7 +583,8 @@ ANALYSIS:
         "north": "emergency_briefing_room",
         "west": "server_room",
         "east": "communications_center",
-        "south": "intelligence_archive"
+        "south": "intelligence_archive",
+        "southeast": "crisis_terminal"
       },
       "npcs": [
         {
@@ -785,7 +786,10 @@ ANALYSIS:
                   "description": "Attack neutralization complete",
                   "hint": "Use extracted intelligence to disable attack systems",
                   "points": 25,
-                  "globalVariableOnSubmit": "flag4_submitted"
+                  "globalVariableOnSubmit": "flag4_submitted",
+                  "additionalVariables": {
+                    "all_flags_submitted": true
+                  }
                 }
               ]
             }
@@ -1005,6 +1009,193 @@ ANALYSIS:
       "dialogue": {
         "description": "SAFETYNET Intelligence Archive - Emergency Operations Center. This secure archive contains the most sensitive intelligence on ENTROPY operations. Here you'll find the critical discoveries: Tomb Gamma's location (The Architect's base) and evidence of a mole within SAFETYNET who leaked operation timing. These are mission-critical intelligence for the Season 1 finale.",
         "noPlayerDialogue": "This is where SAFETYNET keeps its most sensitive intelligence. The answers you seek are here."
+      }
+    },
+
+    "crisis_terminal": {
+      "type": "<%= crisis_choice == 'infrastructure' ? 'room_control_center' : crisis_choice == 'data' ? 'room_servers' : crisis_choice == 'supply_chain' ? 'room_office' : crisis_choice == 'corporate' ? 'room_office' : 'room_office' %>",
+      "connections": {
+        "west": "operations_floor"
+      },
+      "npcs": [
+        <% if crisis_choice == 'infrastructure' %>
+        {
+          "id": "marcus_blackout_chen",
+          "displayName": "Marcus 'Blackout' Chen",
+          "npcType": "person",
+          "position": { "x": 4, "y": 3 },
+          "spriteSheet": "villain",
+          "spriteTalk": "assets/characters/villain-talk.png",
+          "spriteConfig": {
+            "idleFrameStart": 0,
+            "idleFrameEnd": 3
+          },
+          "storyPath": "scenarios/m07_architects_gambit/ink/m07_crisis_infrastructure.json",
+          "currentKnot": "confrontation",
+          "behavior": {
+            "initiallyHidden": false
+          }
+        }
+        <% elsif crisis_choice == 'data' %>
+        {
+          "id": "specter_hacker",
+          "displayName": "Specter",
+          "npcType": "person",
+          "position": { "x": 3, "y": 3 },
+          "spriteSheet": "villain",
+          "spriteTalk": "assets/characters/villain-talk.png",
+          "spriteConfig": {
+            "idleFrameStart": 0,
+            "idleFrameEnd": 3
+          },
+          "storyPath": "scenarios/m07_architects_gambit/ink/m07_crisis_data_specter.json",
+          "currentKnot": "confrontation",
+          "behavior": {
+            "initiallyHidden": false
+          }
+        },
+        {
+          "id": "rachel_morrow",
+          "displayName": "Rachel Morrow",
+          "npcType": "person",
+          "position": { "x": 5, "y": 3 },
+          "spriteSheet": "hacker",
+          "spriteTalk": "assets/characters/hacker-talk.png",
+          "spriteConfig": {
+            "idleFrameStart": 20,
+            "idleFrameEnd": 23
+          },
+          "storyPath": "scenarios/m07_architects_gambit/ink/m07_crisis_data_rachel.json",
+          "currentKnot": "available",
+          "behavior": {
+            "initiallyHidden": false
+          }
+        }
+        <% elsif crisis_choice == 'supply_chain' %>
+        {
+          "id": "adrian_cross",
+          "displayName": "Adrian Cross",
+          "npcType": "person",
+          "position": { "x": 4, "y": 3 },
+          "spriteSheet": "hacker",
+          "spriteTalk": "assets/characters/hacker-talk.png",
+          "spriteConfig": {
+            "idleFrameStart": 20,
+            "idleFrameEnd": 23
+          },
+          "storyPath": "scenarios/m07_architects_gambit/ink/m07_crisis_supply_chain.json",
+          "currentKnot": "confrontation",
+          "behavior": {
+            "initiallyHidden": false
+          }
+        }
+        <% elsif crisis_choice == 'corporate' %>
+        {
+          "id": "victoria_v1per_zhang",
+          "displayName": "Victoria 'V1per' Zhang",
+          "npcType": "person",
+          "position": { "x": 3, "y": 3 },
+          "spriteSheet": "villain",
+          "spriteTalk": "assets/characters/villain-talk.png",
+          "spriteConfig": {
+            "idleFrameStart": 0,
+            "idleFrameEnd": 3
+          },
+          "storyPath": "scenarios/m07_architects_gambit/ink/m07_crisis_corporate_v1per.json",
+          "currentKnot": "confrontation",
+          "behavior": {
+            "initiallyHidden": false
+          }
+        },
+        {
+          "id": "marcus_shadow_chen",
+          "displayName": "Marcus 'Shadow' Chen",
+          "npcType": "person",
+          "position": { "x": 5, "y": 3 },
+          "spriteSheet": "villain",
+          "spriteTalk": "assets/characters/villain-talk.png",
+          "spriteConfig": {
+            "idleFrameStart": 0,
+            "idleFrameEnd": 3
+          },
+          "storyPath": "scenarios/m07_architects_gambit/ink/m07_crisis_corporate_shadow.json",
+          "currentKnot": "supporting",
+          "behavior": {
+            "initiallyHidden": false
+          }
+        }
+        <% else %>
+        {
+          "id": "placeholder_npc",
+          "displayName": "Crisis Terminal",
+          "npcType": "person",
+          "position": { "x": 4, "y": 3 },
+          "spriteSheet": "hacker",
+          "spriteTalk": "assets/characters/hacker-talk.png",
+          "spriteConfig": {
+            "idleFrameStart": 20,
+            "idleFrameEnd": 23
+          },
+          "storyPath": "scenarios/m07_architects_gambit/ink/m07_crisis_placeholder.json",
+          "currentKnot": "start",
+          "behavior": {
+            "initiallyHidden": false
+          }
+        }
+        <% end %>
+      ],
+      "objects": [
+        {
+          "id": "crisis_control_system",
+          "displayName": "<%= crisis_choice == 'infrastructure' ? 'Power Grid Control System' : crisis_choice == 'data' ? 'Election Security Database' : crisis_choice == 'supply_chain' ? 'Software Distribution Platform' : crisis_choice == 'corporate' ? 'Corporate Security Operations Center' : 'Crisis Control System' %>",
+          "position": { "x": 4, "y": 2 },
+          "spriteSheet": "objects",
+          "spriteIndex": 42,
+          "locked": true,
+          "interactable": true,
+          "observations": "<% if crisis_choice == 'infrastructure' %>PACIFIC NORTHWEST POWER GRID - SCADA ACCESS\n\nStatus: CRITICAL - Cascading failure sequence initiated\nAffected Systems: 47 substations, 8.4M people\nCritical Mass operatives detected: Marcus 'Blackout' Chen on-site\n\nVM intelligence required to deploy countermeasures.\nAll 4 flags must be submitted for full system access.\n<% elsif crisis_choice == 'data' %>FEDERAL ELECTION SECURITY DATABASE - DUAL THREAT\n\nThreat 1 (Specter): Data exfiltration - 187M voter records\nThreat 2 (Social Fabric): Disinformation campaign deployment\n\nYou must choose which threat to prioritize.\nVM intelligence provides shutdown codes for both systems.\n<% elsif crisis_choice == 'supply_chain' %>TECHFORGE SOFTWARE DISTRIBUTION PLATFORM\n\nStatus: Backdoor injection in progress\nAffected Systems: 47M endpoint systems\nSupply Chain Saboteurs operative: Adrian Cross (recruitable)\n\nLong-term consequences vs immediate casualties dilemma.\nVM intelligence required to neutralize backdoor deployment.\n<% elsif crisis_choice == 'corporate' %>TECHCORE CORPORATE SOC - MULTI-TARGET DEFENSE\n\nTargets: 12 Fortune 500 corporations\nThreat: 47 zero-day exploits ready for deployment\nDigital Vanguard + Zero Day Syndicate coordination\n\nVM intelligence provides exploit signatures for prevention.\n<% else %>Crisis control system awaiting configuration.<% end %>",
+          "unlockMechanism": {
+            "type": "requires_global_variable",
+            "variable": "all_flags_submitted",
+            "value": true
+          },
+          "behavior": {
+            "onUnlock": [
+              {
+                "type": "set_global_variable",
+                "variable": "crisis_neutralized",
+                "value": true
+              }
+            ]
+          }
+        },
+        {
+          "id": "video_feed_display",
+          "displayName": "<%= crisis_choice == 'infrastructure' ? 'Power Grid Facility Feed' : crisis_choice == 'data' ? 'Election Center Feeds' : crisis_choice == 'supply_chain' ? 'TechForge Facility Feed' : crisis_choice == 'corporate' ? 'Multi-Corporate Feeds' : 'Remote Facility Feeds' %>",
+          "position": { "x": 2, "y": 1 },
+          "spriteSheet": "objects",
+          "spriteIndex": 52,
+          "locked": false,
+          "interactable": true,
+          "observations": "<% if crisis_choice == 'infrastructure' %>Live video feed from Pacific Northwest Power Grid Control Facility.\n\nMarcus 'Blackout' Chen visible on multiple camera angles.\nCritical Mass operatives working on SCADA systems.\nTimer: <%= timer_minutes_remaining %>:00 remaining until cascading failure.\n<% elsif crisis_choice == 'data' %>Dual video feeds:\n\nFeed 1: Federal Election Security Database - Specter exfiltrating data\nFeed 2: Social Fabric disinformation servers - Rachel Morrow deploying content\n\nBoth attacks progressing simultaneously. Choose priority.\n<% elsif crisis_choice == 'supply_chain' %>Live feed from TechForge Software Distribution Platform.\n\nAdrian Cross coordinating backdoor injection across update servers.\nSupply Chain Saboteurs operatives staging malicious packages.\n47M systems at risk of compromise.\n<% elsif crisis_choice == 'corporate' %>Multiple feeds from 12 Fortune 500 corporate SOCs.\n\nVictoria 'V1per' Zhang coordinating zero-day deployment.\nMarcus 'Shadow' Chen managing exploit distribution.\n47 exploits ready for simultaneous launch.\n<% else %>Awaiting crisis selection.<% end %>",
+          "behavior": {}
+        },
+        {
+          "id": "crisis_timer",
+          "displayName": "Crisis Countdown Timer",
+          "position": { "x": 6, "y": 1 },
+          "spriteSheet": "objects",
+          "spriteIndex": 52,
+          "locked": false,
+          "interactable": true,
+          "observations": "CRISIS TIMER: <%= timer_minutes_remaining %>:00\n\nYour Operation: <%= crisis_choice.upcase %>\n\n<% if all_flags_submitted %>✓ VM intelligence extracted - countermeasures ready\n<% else %>○ VM challenges incomplete - limited options available\n<% end %>\n\n<% if crisis_neutralized %>✓ CRISIS NEUTRALIZED\n<% else %>○ Attack in progress\n<% end %>",
+          "behavior": {}
+        }
+      ],
+      "items": [],
+      "dialogue": {
+        "description": "<% if crisis_choice == 'infrastructure' %>Crisis Terminal - Infrastructure Collapse Response. You're directly interfacing with the Pacific Northwest Power Grid systems via remote access. Marcus 'Blackout' Chen's face appears on the video feeds from the facility. The SCADA control systems show cascading failures spreading across the grid. Every second counts.<% elsif crisis_choice == 'data' %>Crisis Terminal - Data Apocalypse Response. Twin video feeds show both threats simultaneously: Specter exfiltrating voter records, and Rachel Morrow deploying disinformation. You can't stop both perfectly—which do you prioritize?<% elsif crisis_choice == 'supply_chain' %>Crisis Terminal - Supply Chain Infection Response. Adrian Cross appears on the video feed, calmly explaining his philosophy as backdoors deploy across millions of systems. The moral weight is heavy: no immediate deaths, but massive long-term consequences. Was this the right choice?<% elsif crisis_choice == 'corporate' %>Crisis Terminal - Corporate Warfare Response. Video feeds show Victoria 'V1per' Zhang and Marcus 'Shadow' Chen coordinating the deployment of 47 zero-day exploits against Fortune 500 corporations. Billions in economic damage at stake. Did you choose corporate wealth over human lives elsewhere?<% else %>Crisis Terminal awaiting crisis selection.<% end %>",
+        "noPlayerDialogue": "This is your crisis. Stop the attack before time runs out."
       }
     },
 
