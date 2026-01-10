@@ -1,0 +1,95 @@
+{
+  "display_name": "The Architect's Gambit",
+  "description": "The Architect launches coordinated attacks on four simultaneous targets. Choose which operation to stop personally, knowing other SAFETYNET teams will handle the rest—but some will fail. First direct contact with The Architect reveals their philosophy and base location.",
+  "difficulty_level": 3,
+  "secgen_scenario": "putting_it_together",
+  "collection": "season_1",
+  "branching": true,
+  "branches": ["option_a_infrastructure", "option_b_data", "option_c_supply_chain", "option_d_corporate"],
+  "estimated_duration_minutes": 90,
+  "cybok": [
+    {
+      "ka": "SO",
+      "topic": "Security Operations & Incident Management",
+      "keywords": [
+        "Crisis response",
+        "Incident triage",
+        "Resource allocation under pressure",
+        "Coordinated threat response",
+        "Multi-team operations",
+        "Time-critical decision making"
+      ]
+    },
+    {
+      "ka": "SS",
+      "topic": "Systems Security",
+      "keywords": [
+        "Multi-vector attacks",
+        "Coordinated defense",
+        "NFS share exploitation",
+        "Netcat services",
+        "Privilege escalation",
+        "Multi-stage attack chains"
+      ]
+    },
+    {
+      "ka": "HF",
+      "topic": "Human Factors",
+      "keywords": [
+        "Professional judgment under pressure",
+        "Ethical decision making",
+        "Impossible choices",
+        "Moral complexity in security",
+        "Consequence evaluation",
+        "Leadership in crisis"
+      ]
+    },
+    {
+      "ka": "NS",
+      "topic": "Network Security",
+      "keywords": [
+        "Network file systems (NFS)",
+        "Service enumeration",
+        "Distributed systems access",
+        "Attack timeline discovery"
+      ]
+    },
+    {
+      "ka": "MAA",
+      "topic": "Malware & Attack Technologies",
+      "keywords": [
+        "Coordinated attacks",
+        "Multi-cell operations",
+        "Attack synchronization",
+        "Strategic targeting"
+      ]
+    },
+    {
+      "ka": "ISM",
+      "topic": "Infrastructure Security & Management",
+      "keywords": [
+        "Critical infrastructure protection (Option A)",
+        "ICS/SCADA security (Option A)",
+        "Power grid security (Option A)",
+        "Data center security (Option B)",
+        "Election security (Option B)",
+        "Supply chain security (Option C)",
+        "Software integrity (Option C)",
+        "Corporate security (Option D)",
+        "Enterprise defense (Option D)"
+      ]
+    }
+  ],
+  "prerequisites": ["m06_follow_the_money"],
+  "unlocks": ["m08_the_mole"],
+  "campaign_critical": true,
+  "narrative_weight": "high",
+  "consequences_persist": true,
+  "lore_reveals": [
+    "First direct contact with The Architect",
+    "The Architect's philosophy: 'Entropy is inevitable; I merely accelerate'",
+    "Tomb Gamma location discovered",
+    "SAFETYNET mole confirmed",
+    "The Architect's identity narrowed to 3 suspects"
+  ]
+}
