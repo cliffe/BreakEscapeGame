@@ -1,11 +1,19 @@
 // Mission 7: The Architect's Gambit - Agent 0x99 Phone Calls
 // Your SAFETYNET handler provides tactical support and mission guidance
 
-VAR contacted_0x99 = false
-VAR flags_submitted = 0
+// Global variables (synced with scenario.json.erb)
+VAR crisis_choice = ""
+VAR flag1_submitted = false
+VAR flag2_submitted = false
+VAR flag3_submitted = false
+VAR flag4_submitted = false
+VAR all_flags_submitted = false
 VAR crisis_neutralized = false
 VAR found_tomb_gamma = false
 VAR found_mole_evidence = false
+
+// Local variables for this conversation
+VAR contacted_0x99 = false
 VAR asked_about_architect_taunts = false
 
 === phone_0x99 ===
@@ -27,9 +35,9 @@ VAR asked_about_architect_taunts = false
 
     + [Request tactical guidance] -> tactical_support
     + [Ask about VM exploitation] -> vm_guidance
-    + {flags_submitted >= 1} [Ask about intelligence analysis] -> intel_analysis
-    + {asked_about_architect_taunts == false} [The Architect is sending me messages] -> architect_taunts
-    + {crisis_neutralized == true} [Attack neutralized - what's next?] -> post_neutralization
+    + {flag1_submitted} [Ask about intelligence analysis] -> intel_analysis
+    + {not asked_about_architect_taunts} [The Architect is sending me messages] -> architect_taunts
+    + {crisis_neutralized} [Attack neutralized - what's next?] -> post_neutralization
     + [That's all] -> END
 }
 
@@ -275,23 +283,23 @@ Submit each flag as you find it - we're analyzing the intelligence in real-time.
 === intel_analysis ===
 "Let me check what intelligence you've submitted so far..." #speaker:Agent 0x99
 
-{flags_submitted == 0:
+{not flag1_submitted:
     "No flags submitted yet. Get on that VM, 0x00. We need that intelligence to neutralize the attack."
 }
 
-{flags_submitted == 1:
+{flag1_submitted and not flag2_submitted:
     "One flag received. Analysis shows: {crisis_choice} attack timeline confirmed, target systems identified. Keep going."
 }
 
-{flags_submitted == 2:
+{flag1_submitted and flag2_submitted and not flag3_submitted:
     "Two flags. We've extracted partial shutdown codes. Need the remaining flags for complete neutralization capability."
 }
 
-{flags_submitted == 3:
+{flag1_submitted and flag2_submitted and flag3_submitted and not flag4_submitted:
     "Three flags submitted. Almost there. One more and you'll have everything needed to stop this."
 }
 
-{flags_submitted == 4:
+{all_flags_submitted:
     "All four flags received. Analysis complete. We have full shutdown codes, deactivation sequences, and intelligence on ENTROPY methods."
 
     "Outstanding work. Now use that intelligence to neutralize the threat."

@@ -1,9 +1,17 @@
 // Mission 7: The Architect's Gambit - Director Morgan
 // Supportive NPC who provides mission guidance and status updates
 
-VAR mission_started = false
-VAR flags_submitted = 0
+// Global variables (synced with scenario.json.erb)
+VAR crisis_choice = ""
+VAR flag1_submitted = false
+VAR flag2_submitted = false
+VAR flag3_submitted = false
+VAR flag4_submitted = false
+VAR all_flags_submitted = false
 VAR crisis_neutralized = false
+
+// Local variables for this conversation
+VAR mission_started = false
 VAR asked_about_other_teams = false
 VAR asked_about_architect = false
 VAR asked_about_mole = false
@@ -30,35 +38,35 @@ VAR asked_about_mole = false
     + [Request situation update] -> mission_status
     + [Ask about other SAFETYNET teams] -> other_teams_status
     + [Ask about The Architect] -> architect_discussion
-    + {flags_submitted >= 2} [Ask about intelligence findings] -> intelligence_discussion
-    + {crisis_neutralized == false} [Request tactical guidance] -> tactical_guidance
+    + {flag1_submitted and flag2_submitted} [Ask about intelligence findings] -> intelligence_discussion
+    + {not crisis_neutralized} [Request tactical guidance] -> tactical_guidance
     + [That's all for now] -> END
 }
 
 === mission_status ===
 She brings up your mission status display.
 
-{flags_submitted == 0:
+{not flag1_submitted and not flag2_submitted and not flag3_submitted and not flag4_submitted:
     "You haven't submitted any flags yet. Access the VM in the Server Room and begin exploitation. We need that intelligence to neutralize the attack." #speaker:Director Morgan
 }
 
-{flags_submitted == 1:
+{flag1_submitted and not flag2_submitted:
     "One flag submitted. Good progress, but we need all four to extract the shutdown codes. Keep pushing." #speaker:Director Morgan
 }
 
-{flags_submitted == 2:
+{flag1_submitted and flag2_submitted and not flag3_submitted:
     "Two flags down. You're halfway there. Clock is ticking, Agent." #speaker:Director Morgan
 }
 
-{flags_submitted == 3:
+{flag1_submitted and flag2_submitted and flag3_submitted and not flag4_submitted:
     "Three flags submitted. One more and you'll have everything you need to stop this. Final push." #speaker:Director Morgan
 }
 
-{flags_submitted == 4 and crisis_neutralized == false:
+{all_flags_submitted and not crisis_neutralized:
     "All flags submitted. Excellent work. Now use that intelligence to neutralize the threat. Get to the Crisis Terminal and stop this attack." #speaker:Director Morgan
 }
 
-{crisis_neutralized == true:
+{crisis_neutralized:
     "Crisis neutralized. Outstanding work, Agent. But the mission isn't over - search for intelligence about ENTROPY's broader operations." #speaker:Director Morgan
 }
 
@@ -220,43 +228,17 @@ She reviews your mission profile.
 "Tactical guidance for your operation:" #speaker:Director Morgan
 
 {crisis_choice == "infrastructure":
-    "**Priority:** Reach the SCADA control room before the timer expires.
-
-    **Key Intel:** Marcus Chen is a true believer. He won't surrender easily, but he's not suicidal. If you present evidence of civilian casualties, he might hesitate.
-
-    **VM Challenge:** Focus on extracting shutdown codes from the NFS shares. You'll need root access to disable the attack scripts.
-
-    **Warning:** Chen has backup operatives. Expect resistance, but avoid prolonged combat - you're on a clock."
-}
-
-{crisis_choice == "data":
-    "**Priority:** You're facing dual threats - data exfiltration AND disinformation deployment.
-
-    **Critical Choice:** You may not be able to stop both. If forced to choose, prioritize based on your assessment of long-term vs. short-term damage.
-
-    **Key Intel:** Rachel Morrow (Social Fabric) can be recruited. Show her evidence of ENTROPY's casualty projections - she thinks she's exposing corruption, not causing deaths.
-
-    **Warning:** Specter (Ghost Protocol) will escape. Don't waste time chasing them - Ghost Protocol always has exit strategies."
-}
-
-{crisis_choice == "supply_chain":
-    "**Priority:** Disable backdoor injection before software updates deploy.
-
-    **Key Intel:** Adrian Cross is philosophically opposed to supply chain vulnerabilities, not actually pro-murder. He's recruitable if shown casualty evidence.
-
-    **VM Challenge:** Focus on quarantining already-modified updates AND preventing future injections.
-
-    **Strategic Value:** If you recruit Adrian, he's valuable long-term - deep knowledge of supply chain attack methods."
-}
-
-{crisis_choice == "corporate":
-    "**Priority:** Deploy countermeasures to all 12 target corporations before zero-days deploy.
-
-    **Key Intel:** Victoria Zhang (Digital Vanguard) is ideologically motivated, Marcus Chen (Zero Day Syndicate) is mercenary. Exploit that difference.
-
-    **VM Challenge:** Extract countermeasure codes and deploy patches via the automated system.
-
-    **Warning:** Marcus will escape. Victoria is recruitable - show her the casualty projections from the other operations."
+    "Priority: Reach the SCADA control room before the timer expires. Key Intel: Marcus Chen is a true believer. He won't surrender easily, but he's not suicidal. If you present evidence of civilian casualties, he might hesitate. VM Challenge: Focus on extracting shutdown codes from the NFS shares. You'll need root access to disable the attack scripts. Warning: Chen has backup operatives. Expect resistance, but avoid prolonged combat - you're on a clock."
+- else:
+    {crisis_choice == "data":
+        "Priority: You're facing dual threats - data exfiltration AND disinformation deployment. Critical Choice: You may not be able to stop both. If forced to choose, prioritize based on your assessment of long-term vs. short-term damage. Key Intel: Rachel Morrow (Social Fabric) can be recruited. Show her evidence of ENTROPY's casualty projections - she thinks she's exposing corruption, not causing deaths. Warning: Specter (Ghost Protocol) will escape. Don't waste time chasing them - Ghost Protocol always has exit strategies."
+    - else:
+        {crisis_choice == "supply_chain":
+            "Priority: Disable backdoor injection before software updates deploy. Key Intel: Adrian Cross is philosophically opposed to supply chain vulnerabilities, not actually pro-murder. He's recruitable if shown casualty evidence. VM Challenge: Focus on quarantining already-modified updates AND preventing future injections. Strategic Value: If you recruit Adrian, he's valuable long-term - deep knowledge of supply chain attack methods."
+        - else:
+            "Priority: Deploy countermeasures to all 12 target corporations before zero-days deploy. Key Intel: Victoria Zhang (Digital Vanguard) is ideologically motivated, Marcus Chen (Zero Day Syndicate) is mercenary. Exploit that difference. VM Challenge: Extract countermeasure codes and deploy patches via the automated system. Warning: Marcus will escape. Victoria is recruitable - show her the casualty projections from the other operations."
+        }
+    }
 }
 
 "Good luck, Agent. You're our best operator for a reason."

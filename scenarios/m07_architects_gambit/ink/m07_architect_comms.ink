@@ -1,11 +1,15 @@
 // Mission 7: The Architect's Gambit - The Architect Communications
 // Time-based taunts from the mysterious ENTROPY mastermind
 
+// Global variables (synced with scenario.json.erb)
+VAR crisis_choice = ""
 VAR architect_t30_shown = false
 VAR architect_t20_shown = false
 VAR architect_t10_shown = false
 VAR architect_t05_shown = false
 VAR architect_t01_shown = false
+
+// Local variables for these communications
 VAR architect_success_shown = false
 VAR architect_failure_shown = false
 
@@ -236,59 +240,17 @@ Final message. One minute remaining.
 After you neutralize the attack, one final message arrives.
 
 {crisis_choice == "infrastructure":
-    "Congratulations. You saved 8.4 million people from a blackout. Zero casualties from power grid failure." #speaker:The Architect
-
-    "Meanwhile, at the targets you didn't choose:"
-
-    "* Corporate healthcare ransomware: 80-140 deaths from delayed care
-    * Social Fabric disinformation: Democratic trust damaged, civil unrest beginning
-    * Supply Chain: Prevented by Team Alpha
-
-    **Total casualties tonight: 80-140 deaths**
-
-    "You minimized death. Well done. But they still died. Was it worth it?"
-}
-
-{crisis_choice == "data":
-    "Impressive. You stopped both the data breach and the disinformation campaign. Democracy survives another day." #speaker:The Architect
-
-    "Meanwhile, at the targets you didn't choose:"
-
-    "* Infrastructure: 240-385 deaths from power grid blackout (Team Alpha failed)
-    * Corporate: Prevented by Team Bravo
-    * Supply Chain: Partial success by Team Charlie
-
-    **Total casualties tonight: 240-385 deaths**
-
-    "You saved democratic institutions. People died in the dark. Was that the right trade?"
-}
-
-{crisis_choice == "supply_chain":
-    "Well done. You prevented 47 million backdoor infections. Long-term national security preserved." #speaker:The Architect
-
-    "Meanwhile, at the targets you didn't choose:"
-
-    "* Infrastructure: Partial success by Team Bravo (80-120 deaths)
-    * Data: Full success by Team Alpha (zero casualties)
-    * Corporate: Healthcare ransomware deployed (80-140 deaths)
-
-    **Total casualties tonight: 160-260 deaths**
-
-    "You chose future security over present lives. They died while you prevented tomorrow's crisis. Utilitarian calculus."
-}
-
-{crisis_choice == "corporate":
-    "Outstanding. All 47 zero-days neutralized. $4.2 trillion in market value preserved." #speaker:The Architect
-
-    "Meanwhile, at the targets you didn't choose:"
-
-    "* Infrastructure: Full success by Team Alpha (zero casualties)
-    * Data: Both attacks succeeded (voter breach + disinformation, 20-40 deaths from civil unrest)
-    * Supply Chain: Partial success by Team Charlie
-
-    **Total casualties tonight: 20-40 deaths**
-
-    "You saved shareholder wealth. People died in civil unrest over a compromised election. What did you really protect?"
+    "Congratulations. You saved 8.4 million people from a blackout. Zero casualties from power grid failure. Meanwhile, at the targets you didn't choose: Corporate healthcare ransomware 80-140 deaths from delayed care, Social Fabric disinformation Democratic trust damaged, Supply Chain prevented by Team Alpha. Total casualties tonight: 80-140 deaths. You minimized death. Well done. But they still died. Was it worth it?" #speaker:The Architect
+- else:
+    {crisis_choice == "data":
+        "Impressive. You stopped both the data breach and the disinformation campaign. Democracy survives another day. Meanwhile, at the targets you didn't choose: Infrastructure 240-385 deaths from power grid blackout (Team Alpha failed), Corporate prevented by Team Bravo, Supply Chain partial success by Team Charlie. Total casualties tonight: 240-385 deaths. You saved democratic institutions. People died in the dark. Was that the right trade?" #speaker:The Architect
+    - else:
+        {crisis_choice == "supply_chain":
+            "Well done. You prevented 47 million backdoor infections. Long-term national security preserved. Meanwhile, at the targets you didn't choose: Infrastructure partial success by Team Bravo (80-120 deaths), Data full success by Team Alpha (zero casualties), Corporate healthcare ransomware deployed (80-140 deaths). Total casualties tonight: 160-260 deaths. You chose future security over present lives. They died while you prevented tomorrow's crisis. Utilitarian calculus." #speaker:The Architect
+        - else:
+            "Outstanding. All 47 zero-days neutralized. 4.2 trillion in market value preserved. Meanwhile, at the targets you didn't choose: Infrastructure full success by Team Alpha (zero casualties), Data both attacks succeeded (voter breach + disinformation, 20-40 deaths from civil unrest), Supply Chain partial success by Team Charlie. Total casualties tonight: 20-40 deaths. You saved shareholder wealth. People died in civil unrest over a compromised election. What did you really protect?" #speaker:The Architect
+        }
+    }
 }
 
 The message continues:
@@ -312,35 +274,17 @@ The timer hits zero. You failed to stop the attack in time.
 A final message from THE ARCHITECT arrives.
 
 {crisis_choice == "infrastructure":
-    "The grid is falling. Cascading failures across the Pacific Northwest. 8.4 million people in darkness." #speaker:The Architect
-
-    "Over the next 72 hours: 240-385 deaths. Hospital generators failing. Traffic accidents. Hypothermia."
-
-    "You tried. But entropy won."
-}
-
-{crisis_choice == "data":
-    "The data is gone. 187 million voter records exfiltrated. Disinformation deploying across all platforms." #speaker:The Architect
-
-    "Democracy is about to shatter. Civil unrest incoming. 20-40 deaths in the first week. Constitutional crisis unfolding."
-
-    "You failed to protect the foundation of your republic."
-}
-
-{crisis_choice == "supply_chain":
-    "The backdoors are deployed. 47 million systems infected. Hospitals, banks, government agencies - all compromised." #speaker:The Architect
-
-    "They won't know for 90 days. But when they discover it, the damage will be catastrophic. $240-420 billion over 10 years."
-
-    "You failed to prevent the largest supply chain attack in history."
-}
-
-{crisis_choice == "corporate":
-    "47 zero-days deployed simultaneously. Stock market crashing. Healthcare ransomware active. Banking systems freezing." #speaker:The Architect
-
-    "$4.2 trillion in value destroyed. 80-140 deaths from delayed medical care. 140,000+ job losses incoming."
-
-    "You failed to protect the economic foundation of your country."
+    "The grid is falling. Cascading failures across the Pacific Northwest. 8.4 million people in darkness. Over the next 72 hours: 240-385 deaths. Hospital generators failing. Traffic accidents. Hypothermia. You tried. But entropy won." #speaker:The Architect
+- else:
+    {crisis_choice == "data":
+        "The data is gone. 187 million voter records exfiltrated. Disinformation deploying across all platforms. Democracy is about to shatter. Civil unrest incoming. 20-40 deaths in the first week. Constitutional crisis unfolding. You failed to protect the foundation of your republic." #speaker:The Architect
+    - else:
+        {crisis_choice == "supply_chain":
+            "The backdoors are deployed. 47 million systems infected. Hospitals, banks, government agencies - all compromised. They won't know for 90 days. But when they discover it, the damage will be catastrophic. 240-420 billion over 10 years. You failed to prevent the largest supply chain attack in history." #speaker:The Architect
+        - else:
+            "47 zero-days deployed simultaneously. Stock market crashing. Healthcare ransomware active. Banking systems freezing. 4.2 trillion in value destroyed. 80-140 deaths from delayed medical care. 140,000+ job losses incoming. You failed to protect the economic foundation of your country." #speaker:The Architect
+        }
+    }
 }
 
 "And the other operations? Mixed results, as predicted. But YOUR failure made everything worse."

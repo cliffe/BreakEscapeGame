@@ -1,13 +1,17 @@
 // Mission 7: The Architect's Gambit - Closing Debrief
 // End-of-mission debrief reviewing all four operations and their outcomes
 
-VAR crisis_choice = ""  // Which operation player chose
-VAR player_success = false  // Did player succeed in their operation
+// Global variables (synced with scenario.json.erb)
+VAR crisis_choice = ""
+VAR crisis_neutralized = false
 VAR found_tomb_gamma = false
 VAR found_mole_evidence = false
 VAR total_casualties = 0
 VAR player_operation_casualties = 0
 VAR other_operations_casualties = 0
+
+// Use crisis_neutralized for player success
+VAR player_success = false
 
 === closing_debrief ===
 You're back at SAFETYNET Emergency Operations Center. The crisis room is quieter now, but the tension remains.
