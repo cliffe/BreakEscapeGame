@@ -1,0 +1,1094 @@
+<%
+# ============================================================================
+# MISSION 7: THE ARCHITECT'S GAMBIT - SCENARIO FILE
+# ============================================================================
+# Break Escape - Season 1: The Architect's Shadow
+#
+# This file defines the game world structure: rooms, NPCs, objects, items
+# For mission metadata (display name, CyBOK mappings, etc.), see mission.json
+#
+# SINGLE-LOCATION BRANCHING DESIGN:
+#   Emergency Briefing Room (choice presentation) →
+#   Main Operations Floor (central hub with 4 crisis zones) →
+#     Server Room (VM access - SecGen "Putting it together")
+#     Communications Center (The Architect's taunts)
+#     Intelligence Archive (Tomb Gamma discovery)
+#     Crisis Terminal (conditional based on crisis_choice variable)
+#   → Debrief Room (outcomes revealed)
+#
+# BRANCHING ARCHITECTURE:
+#   - Player chooses ONE of FOUR simultaneous crisis operations to handle
+#   - Choice sets globalVariable "crisis_choice" to:
+#     * "infrastructure" (Option A: Power grid attack)
+#     * "data" (Option B: Election security breach + disinformation)
+#     * "supply_chain" (Option C: Software supply chain backdoor)
+#     * "corporate" (Option D: Zero-day attacks on Fortune 500)
+#   - 6 rooms are SHARED across all branches
+#   - 1 room (Crisis Terminal) is CONDITIONAL based on choice
+#   - ENTROPY antagonists appear via video feeds (remote locations)
+#   - Other 3 SAFETYNET teams visible in background (ambient NPCs)
+#
+# VM INTEGRATION:
+#   - SecGen scenario: "Putting it together"
+#   - NFS shares, netcat, privilege escalation, multi-stage
+#   - 4 flags to submit (shared VM challenge pattern)
+#
+# TIMER MECHANIC:
+#   - 30-minute countdown (in-game time)
+#   - All crisis terminals show synchronized timer
+#   - The Architect taunts at specific timer milestones
+#
+# LORE REVEALS:
+#   - First direct contact with The Architect
+#   - The Architect's philosophy: "Entropy is inevitable; I merely accelerate"
+#   - Tomb Gamma location discovered (Montana wilderness coordinates)
+#   - SAFETYNET mole confirmed (leaked operation timing)
+#   - The Architect's identity narrowed to 3 suspects
+# ============================================================================
+
+# ERB Helper Methods
+require 'base64'
+
+def base64_encode(text)
+  Base64.strict_encode64(text)
+end
+
+# Narrative Content Variables
+
+# Emergency Briefing Content
+emergency_briefing_text = "CRITICAL ALERT - MULTIPLE SIMULTANEOUS ATTACKS DETECTED
+
+SAFETYNET EMERGENCY OPERATIONS CENTER
+Status: CODE RED - All hands mobilized
+
+Four coordinated ENTROPY operations launching simultaneously:
+
+OPERATION A - INFRASTRUCTURE COLLAPSE (Critical Mass)
+Target: Pacific Northwest Power Grid
+Threat: Cascading blackout affecting 8.4M people
+Casualties if successful: 240-385 deaths in 72 hours
+Time remaining: 30 minutes
+
+OPERATION B - DATA APOCALYPSE (Ghost Protocol + Social Fabric)
+Target: Federal Election Security Database
+Threat: 187M voter records + disinformation campaign
+Casualties if successful: 20-40 deaths from civil unrest
+Time remaining: 30 minutes
+
+OPERATION C - SUPPLY CHAIN INFECTION (Supply Chain Saboteurs)
+Target: TechForge Software Distribution Platform
+Threat: Backdoors in 47M systems nationwide
+Casualties if successful: Long-term espionage, $240-420B damage
+Time remaining: 30 minutes
+
+OPERATION D - CORPORATE WARFARE (Digital Vanguard + Zero Day Syndicate)
+Target: 12 Fortune 500 corporations via TechCore SOC
+Threat: 47 zero-day exploits deployed simultaneously
+Casualties if successful: 80-140 deaths, $280-420B economic damage
+Time remaining: 30 minutes
+
+SITUATION:
+- You will take direct control of ONE operation
+- SAFETYNET Teams Alpha, Bravo, Charlie, Delta handle the other three
+- All teams are skilled, but NOT all will succeed
+- Your choice determines which operation has the best chance
+
+This is The Architect's masterpiece. Choose wisely, Agent 0x00."
+
+# The Architect's Messages (timer-based, appear in Communications Center)
+architect_t30_message = "Agent 0x00. I've been watching your career with interest. Four simultaneous operations. Four impossible choices. Let's see if you're as capable as your reputation suggests."
+
+architect_t20_message = "You've chosen %{crisis_name}. Interesting. But tell me—do you know what's happening at the other three targets right now?"
+
+architect_t10_message = "The beauty of entropy is its inevitability. Even if you stop this, something else fails. Someone else dies. You can't win."
+
+architect_t05_message = "Your teams are skilled, Agent. But they're not you. Some will fail. The question is: did you choose correctly?"
+
+architect_t01_message = "Seconds remaining. Systems failing. Lives ending. All according to design."
+
+architect_success_message = "Impressive work, Agent 0x00. You saved many lives at your chosen target. But what about the operations you didn't choose? Let's review the casualties, shall we?"
+
+# Tomb Gamma Intelligence
+tomb_gamma_coordinates = "ENCRYPTED COMMUNICATION INTERCEPT
+
+From: [REDACTED]_cell_leader
+To: architect@entropy.onion
+Subject: Contingency extraction
+
+'If operations fail, all cell leaders extract to Tomb Gamma. The Professor will provide safe haven.'
+
+LOCATION ANALYSIS:
+- Tomb Gamma identified as abandoned Cold War bunker
+- Coordinates: 47.2382° N, 112.5156° W
+- Location: Montana wilderness, 40 miles from nearest town
+- Description: 'The Architect's workshop. Where entropy is refined.'
+- Assessment: High-priority target for Mission 8"
+
+# SAFETYNET Mole Evidence
+mole_evidence_text = "CRITICAL SECURITY BREACH - INTERNAL LEAK DETECTED
+
+Intercepted message from SAFETYNET internal server:
+
+FROM: [REDACTED]@safetynet.gov
+TO: architect@entropy.onion
+SUBJECT: Target assignments confirmed
+DATE: [2 hours before crisis]
+
+MESSAGE:
+'All four operations proceed simultaneously as planned.
+- Agent 0x00 deployed to: [PLAYER'S CHOICE]
+- Team Alpha handles: [OPERATION 1]
+- Team Bravo handles: [OPERATION 2]
+- Team Charlie handles: [OPERATION 3]
+
+30-minute window. You have your opening, Professor.'
+
+ANALYSIS:
+- Someone inside SAFETYNET leaked operation timing and agent assignments
+- The Architect knew exactly when we'd respond
+- Reference to 'Professor' - potential Architect codename
+- Mole has access to real-time operational data
+- Suspects narrowed to 3 individuals with appropriate clearance"
+%>
+{
+  "scenario_brief": "The Architect launches coordinated attacks on four simultaneous targets. You're in SAFETYNET's Emergency Operations Center and must choose which crisis to handle personally, knowing other teams will handle the rest—but some will fail. First direct contact with The Architect reveals their philosophy and base location.",
+
+  "objectives": [
+    {
+      "aimId": "respond_to_crisis",
+      "title": "Respond to Crisis Alert",
+      "description": "Receive emergency briefing and assess all four simultaneous operations",
+      "status": "active",
+      "order": 0,
+      "tasks": [
+        {
+          "taskId": "receive_emergency_briefing",
+          "title": "Receive emergency briefing from Agent 0x99",
+          "type": "npc_conversation",
+          "targetNPC": "opening_briefing",
+          "status": "active"
+        },
+        {
+          "taskId": "enter_emergency_briefing_room",
+          "title": "Enter Emergency Briefing Room",
+          "type": "enter_room",
+          "targetRoom": "emergency_briefing_room",
+          "status": "active"
+        },
+        {
+          "taskId": "review_all_operations",
+          "title": "Review all four crisis operations",
+          "type": "npc_conversation",
+          "targetNPC": "director_morgan",
+          "status": "locked"
+        }
+      ]
+    },
+    {
+      "aimId": "make_crisis_choice",
+      "title": "Choose Your Operation",
+      "description": "Decide which crisis you will handle personally",
+      "status": "locked",
+      "order": 1,
+      "tasks": [
+        {
+          "taskId": "choose_crisis_operation",
+          "title": "Choose which crisis terminal to take control of",
+          "type": "npc_conversation",
+          "targetNPC": "agent_0x99_choice",
+          "status": "locked"
+        },
+        {
+          "taskId": "access_operations_floor",
+          "title": "Enter Main Operations Floor",
+          "type": "enter_room",
+          "targetRoom": "operations_floor",
+          "status": "locked"
+        },
+        {
+          "taskId": "locate_crisis_terminal",
+          "title": "Locate your assigned crisis terminal",
+          "type": "enter_room",
+          "targetRoom": "crisis_terminal",
+          "status": "locked"
+        }
+      ]
+    },
+    {
+      "aimId": "gather_intelligence",
+      "title": "Gather Crisis Intelligence",
+      "description": "Access Server Room and complete VM challenges",
+      "status": "locked",
+      "order": 2,
+      "tasks": [
+        {
+          "taskId": "access_server_room",
+          "title": "Access SAFETYNET Server Room",
+          "type": "enter_room",
+          "targetRoom": "server_room",
+          "status": "locked"
+        },
+        {
+          "taskId": "access_vm_systems",
+          "title": "Access crisis VM systems",
+          "type": "unlock_object",
+          "targetObject": "vm_launcher_crisis",
+          "status": "locked"
+        },
+        {
+          "taskId": "submit_flag1",
+          "title": "Submit Flag 1: NFS share access",
+          "type": "submit_flags",
+          "status": "locked"
+        },
+        {
+          "taskId": "submit_flag2",
+          "title": "Submit Flag 2: Netcat C2 exploitation",
+          "type": "submit_flags",
+          "status": "locked"
+        },
+        {
+          "taskId": "submit_flag3",
+          "title": "Submit Flag 3: Privilege escalation",
+          "type": "submit_flags",
+          "status": "locked"
+        },
+        {
+          "taskId": "submit_flag4",
+          "title": "Submit Flag 4: Attack neutralization",
+          "type": "submit_flags",
+          "status": "locked"
+        }
+      ]
+    },
+    {
+      "aimId": "neutralize_attack",
+      "title": "Neutralize Your Crisis",
+      "description": "Stop the attack at your chosen crisis terminal",
+      "status": "locked",
+      "order": 3,
+      "tasks": [
+        {
+          "taskId": "deploy_countermeasures",
+          "title": "Deploy countermeasures using VM intelligence",
+          "type": "unlock_object",
+          "targetObject": "crisis_control_system",
+          "status": "locked"
+        },
+        {
+          "taskId": "confront_antagonist",
+          "title": "Confront ENTROPY cell leader",
+          "type": "npc_conversation",
+          "targetNPC": "crisis_antagonist",
+          "status": "locked"
+        },
+        {
+          "taskId": "disable_attack_before_timer",
+          "title": "Disable attack before timer expires",
+          "type": "unlock_object",
+          "targetObject": "attack_shutdown_system",
+          "status": "locked"
+        }
+      ]
+    },
+    {
+      "aimId": "discover_architect_intelligence",
+      "title": "Discover The Architect's Location",
+      "description": "Access Intelligence Archive and find Tomb Gamma",
+      "status": "locked",
+      "order": 4,
+      "tasks": [
+        {
+          "taskId": "access_intelligence_archive",
+          "title": "Access SAFETYNET Intelligence Archive",
+          "type": "enter_room",
+          "targetRoom": "intelligence_archive",
+          "status": "locked"
+        },
+        {
+          "taskId": "find_tomb_gamma_location",
+          "title": "Discover Tomb Gamma coordinates",
+          "type": "collect_items",
+          "targetItems": ["notes"],
+          "status": "locked"
+        },
+        {
+          "taskId": "find_mole_evidence",
+          "title": "Find evidence of SAFETYNET mole",
+          "type": "collect_items",
+          "targetItems": ["notes"],
+          "status": "locked"
+        }
+      ]
+    },
+    {
+      "aimId": "mission_debrief",
+      "title": "Mission Debrief",
+      "description": "Review outcomes of all four operations",
+      "status": "locked",
+      "order": 5,
+      "tasks": [
+        {
+          "taskId": "enter_debrief_room",
+          "title": "Enter Debrief Room",
+          "type": "enter_room",
+          "targetRoom": "debrief_room",
+          "status": "locked"
+        },
+        {
+          "taskId": "receive_outcome_report",
+          "title": "Receive outcome report from Director Morgan",
+          "type": "npc_conversation",
+          "targetNPC": "director_morgan_debrief",
+          "status": "locked"
+        },
+        {
+          "taskId": "review_casualties",
+          "title": "Review casualties across all operations",
+          "type": "npc_conversation",
+          "targetNPC": "agent_0x99_final",
+          "status": "locked"
+        }
+      ]
+    }
+  ],
+
+  "starting_items": [
+    {
+      "type": "phone",
+      "name": "Your Phone",
+      "takeable": true,
+      "phoneId": "player_phone",
+      "npcIds": ["agent_0x99_handler", "closing_debrief_trigger"],
+      "observations": "Your secure phone with encrypted connection to SAFETYNET Emergency Operations Center"
+    }
+  ],
+
+  "player": {
+    "id": "player",
+    "displayName": "Agent 0x00",
+    "spriteSheet": "hacker",
+    "spriteTalk": "assets/characters/hacker-talk.png",
+    "spriteConfig": {
+      "idleFrameStart": 20,
+      "idleFrameEnd": 23
+    }
+  },
+
+  "globalVariables": {
+    "player_name": "Agent 0x00",
+    "crisis_choice": "",
+    "crisis_choice_made": false,
+    "timer_started": false,
+    "timer_minutes_remaining": 30,
+    "mission_priority": "crisis_response",
+    "handler_trust": 65,
+    "objectives_completed": 0,
+    "lore_collected": 0,
+    "evidence_level": 0,
+
+    "flag1_submitted": false,
+    "flag2_submitted": false,
+    "flag3_submitted": false,
+    "flag4_submitted": false,
+    "all_flags_submitted": false,
+
+    "crisis_neutralized": false,
+    "attack_stopped": false,
+    "timer_expired": false,
+
+    "found_tomb_gamma": false,
+    "found_mole_evidence": false,
+    "contacted_architect": false,
+
+    "architect_messages_received": 0,
+    "architect_t30_shown": false,
+    "architect_t20_shown": false,
+    "architect_t10_shown": false,
+    "architect_t05_shown": false,
+    "architect_t01_shown": false,
+
+    "operation_a_outcome": "",
+    "operation_b_outcome": "",
+    "operation_c_outcome": "",
+    "operation_d_outcome": "",
+
+    "total_casualties": 0,
+    "player_operation_casualties": 0,
+    "other_operations_casualties": 0,
+
+    "antagonist_confronted": false,
+    "antagonist_outcome": "",
+    "antagonist_arrested": false,
+    "antagonist_recruited": false,
+    "antagonist_escaped": false,
+
+    "accessed_server_room": false,
+    "accessed_communications_center": false,
+    "accessed_intelligence_archive": false,
+    "accessed_crisis_terminal": false,
+
+    "director_morgan_met": false,
+    "tech_analyst_met": false,
+    "other_teams_observed": false,
+
+    "final_debrief_complete": false
+  },
+
+  "endGoal": "Choose which of four simultaneous ENTROPY attacks to stop personally while other SAFETYNET teams handle the rest. Complete VM challenges, neutralize your chosen crisis, discover The Architect's location (Tomb Gamma), and confront the reality that your choice determined who lived and who died. First direct contact with The Architect reveals their philosophy and masterplan.",
+
+  "rooms": {
+    "emergency_briefing_room": {
+      "type": "room_conference",
+      "connections": {
+        "south": "operations_floor"
+      },
+      "npcs": [
+        {
+          "id": "opening_briefing_npc",
+          "displayName": "Emergency Briefing",
+          "npcType": "person",
+          "position": { "x": 3, "y": 2 },
+          "spriteSheet": "hacker",
+          "spriteTalk": "assets/characters/hacker-talk.png",
+          "spriteConfig": {
+            "idleFrameStart": 20,
+            "idleFrameEnd": 23
+          },
+          "storyPath": "scenarios/m07_architects_gambit/ink/m07_opening_briefing.json",
+          "currentKnot": "start",
+          "behavior": {
+            "initiallyHidden": false
+          }
+        },
+        {
+          "id": "director_morgan",
+          "displayName": "Director Patricia Morgan",
+          "npcType": "person",
+          "position": { "x": 5, "y": 3 },
+          "spriteSheet": "business_person",
+          "spriteTalk": "assets/characters/business-talk.png",
+          "spriteConfig": {
+            "idleFrameStart": 0,
+            "idleFrameEnd": 3
+          },
+          "storyPath": "scenarios/m07_architects_gambit/ink/m07_director_morgan.json",
+          "currentKnot": "emergency_briefing",
+          "behavior": {
+            "initiallyHidden": false
+          }
+        },
+        {
+          "id": "agent_0x99_handler",
+          "displayName": "Agent 0x99 'Haxolottle'",
+          "npcType": "phone",
+          "storyPath": "scenarios/m07_architects_gambit/ink/m07_phone_agent_0x99.json",
+          "avatar": "assets/npc/avatars/npc_helper.png",
+          "phoneId": "player_phone",
+          "currentKnot": "start",
+          "timedMessages": [
+            {
+              "delay": 5000,
+              "message": "CODE RED! Four simultaneous attacks. The Architect's making their move. Get to Emergency Briefing NOW.",
+              "type": "text"
+            }
+          ],
+          "eventMappings": [
+            {
+              "eventPattern": "global_variable_changed:crisis_choice_made",
+              "targetKnot": "on_choice_made",
+              "condition": "value === true",
+              "onceOnly": true
+            },
+            {
+              "eventPattern": "global_variable_changed:flag1_submitted",
+              "targetKnot": "on_first_flag",
+              "condition": "value === true",
+              "onceOnly": true
+            },
+            {
+              "eventPattern": "global_variable_changed:all_flags_submitted",
+              "targetKnot": "on_all_flags_submitted",
+              "condition": "value === true",
+              "onceOnly": true
+            },
+            {
+              "eventPattern": "global_variable_changed:found_tomb_gamma",
+              "targetKnot": "on_tomb_gamma_found",
+              "condition": "value === true",
+              "onceOnly": true
+            },
+            {
+              "eventPattern": "global_variable_changed:crisis_neutralized",
+              "targetKnot": "on_crisis_stopped",
+              "condition": "value === true",
+              "onceOnly": true
+            }
+          ],
+          "behavior": {}
+        },
+        {
+          "id": "closing_debrief_trigger",
+          "displayName": "Final Debrief",
+          "npcType": "phone",
+          "storyPath": "scenarios/m07_architects_gambit/ink/m07_closing_debrief.json",
+          "avatar": "assets/npc/avatars/npc_helper.png",
+          "phoneId": "player_phone",
+          "currentKnot": "waiting",
+          "eventMappings": [
+            {
+              "eventPattern": "global_variable_changed:final_debrief_complete",
+              "targetKnot": "mission_complete",
+              "condition": "value === true",
+              "onceOnly": true
+            }
+          ],
+          "behavior": {}
+        }
+      ],
+      "objects": [
+        {
+          "id": "situation_display",
+          "displayName": "Emergency Situation Display",
+          "position": { "x": 6, "y": 1 },
+          "spriteSheet": "objects",
+          "spriteIndex": 45,
+          "locked": false,
+          "interactable": true,
+          "observations": "<%= emergency_briefing_text %>",
+          "behavior": {}
+        },
+        {
+          "id": "crisis_map",
+          "displayName": "National Crisis Map",
+          "position": { "x": 2, "y": 1 },
+          "spriteSheet": "objects",
+          "spriteIndex": 52,
+          "locked": false,
+          "interactable": true,
+          "observations": "Large display showing all four attack locations:\n• Pacific Northwest (Power Grid)\n• Washington D.C. Area (Election Security)\n• Austin, Texas (TechForge Supply Chain)\n• San Francisco (TechCore Corporate)\n\nAll attacks synchronized. Timer: 30:00 and counting down.",
+          "behavior": {}
+        }
+      ],
+      "items": [],
+      "dialogue": {
+        "description": "SAFETYNET Emergency Operations Center - Emergency Briefing Room. Director Morgan and Agent 0x99 are coordinating the crisis response. Large displays show all four simultaneous ENTROPY attacks in progress. The tension is palpable—every second counts.",
+        "noPlayerDialogue": "This is the most critical moment in SAFETYNET's history. Four simultaneous attacks. You must choose which one to handle personally."
+      }
+    },
+
+    "operations_floor": {
+      "type": "room_office",
+      "connections": {
+        "north": "emergency_briefing_room",
+        "west": "server_room",
+        "east": "communications_center",
+        "south": "intelligence_archive"
+      },
+      "npcs": [
+        {
+          "id": "team_alpha_lead",
+          "displayName": "Team Alpha Lead",
+          "npcType": "person",
+          "position": { "x": 2, "y": 2 },
+          "spriteSheet": "security_guard",
+          "spriteTalk": "assets/characters/security-talk.png",
+          "spriteConfig": {
+            "idleFrameStart": 0,
+            "idleFrameEnd": 3
+          },
+          "storyPath": "scenarios/m07_architects_gambit/ink/m07_team_alpha.json",
+          "currentKnot": "working",
+          "behavior": {
+            "initiallyHidden": false
+          }
+        },
+        {
+          "id": "team_bravo_lead",
+          "displayName": "Team Bravo Lead",
+          "npcType": "person",
+          "position": { "x": 4, "y": 2 },
+          "spriteSheet": "security_guard",
+          "spriteTalk": "assets/characters/security-talk.png",
+          "spriteConfig": {
+            "idleFrameStart": 0,
+            "idleFrameEnd": 3
+          },
+          "storyPath": "scenarios/m07_architects_gambit/ink/m07_team_bravo.json",
+          "currentKnot": "working",
+          "behavior": {
+            "initiallyHidden": false
+          }
+        },
+        {
+          "id": "team_charlie_lead",
+          "displayName": "Team Charlie Lead",
+          "npcType": "person",
+          "position": { "x": 6, "y": 2 },
+          "spriteSheet": "security_guard",
+          "spriteTalk": "assets/characters/security-talk.png",
+          "spriteConfig": {
+            "idleFrameStart": 0,
+            "idleFrameEnd": 3
+          },
+          "storyPath": "scenarios/m07_architects_gambit/ink/m07_team_charlie.json",
+          "currentKnot": "working",
+          "behavior": {
+            "initiallyHidden": false
+          }
+        },
+        {
+          "id": "team_delta_lead",
+          "displayName": "Team Delta Lead",
+          "npcType": "person",
+          "position": { "x": 8, "y": 2 },
+          "spriteSheet": "security_guard",
+          "spriteTalk": "assets/characters/security-talk.png",
+          "spriteConfig": {
+            "idleFrameStart": 0,
+            "idleFrameEnd": 3
+          },
+          "storyPath": "scenarios/m07_architects_gambit/ink/m07_team_delta.json",
+          "currentKnot": "working",
+          "behavior": {
+            "initiallyHidden": false
+          }
+        },
+        {
+          "id": "tech_analyst_chen",
+          "displayName": "Tech Analyst David Chen",
+          "npcType": "person",
+          "position": { "x": 5, "y": 5 },
+          "spriteSheet": "hacker",
+          "spriteTalk": "assets/characters/hacker-talk.png",
+          "spriteConfig": {
+            "idleFrameStart": 20,
+            "idleFrameEnd": 23
+          },
+          "storyPath": "scenarios/m07_architects_gambit/ink/m07_tech_analyst.json",
+          "currentKnot": "available",
+          "behavior": {
+            "initiallyHidden": false
+          }
+        }
+      ],
+      "objects": [
+        {
+          "id": "zone_a_terminal",
+          "displayName": "Zone A: Infrastructure Crisis Terminal",
+          "position": { "x": 2, "y": 1 },
+          "spriteSheet": "objects",
+          "spriteIndex": 45,
+          "locked": false,
+          "interactable": true,
+          "observations": "Crisis Terminal A - Infrastructure Collapse\nTarget: Pacific Northwest Power Grid\nStatus: ENTROPY operatives detected at facility\nTeam: Alpha handling\nTimer: <%= timer_minutes_remaining %>:00 remaining",
+          "behavior": {}
+        },
+        {
+          "id": "zone_b_terminal",
+          "displayName": "Zone B: Data Security Crisis Terminal",
+          "position": { "x": 4, "y": 1 },
+          "spriteSheet": "objects",
+          "spriteIndex": 45,
+          "locked": false,
+          "interactable": true,
+          "observations": "Crisis Terminal B - Data Apocalypse\nTarget: Federal Election Security Database\nStatus: Data exfiltration + disinformation in progress\nTeam: Bravo handling\nTimer: <%= timer_minutes_remaining %>:00 remaining",
+          "behavior": {}
+        },
+        {
+          "id": "zone_c_terminal",
+          "displayName": "Zone C: Supply Chain Crisis Terminal",
+          "position": { "x": 6, "y": 1 },
+          "spriteSheet": "objects",
+          "spriteIndex": 45,
+          "locked": false,
+          "interactable": true,
+          "observations": "Crisis Terminal C - Supply Chain Infection\nTarget: TechForge Software Distribution Platform\nStatus: Backdoor injection in progress\nTeam: Charlie handling\nTimer: <%= timer_minutes_remaining %>:00 remaining",
+          "behavior": {}
+        },
+        {
+          "id": "zone_d_terminal",
+          "displayName": "Zone D: Corporate Defense Crisis Terminal",
+          "position": { "x": 8, "y": 1 },
+          "spriteSheet": "objects",
+          "spriteIndex": 45,
+          "locked": false,
+          "interactable": true,
+          "observations": "Crisis Terminal D - Corporate Warfare\nTarget: 12 Fortune 500 corporations via TechCore SOC\nStatus: 47 zero-day exploits ready for deployment\nTeam: Delta handling\nTimer: <%= timer_minutes_remaining %>:00 remaining",
+          "behavior": {}
+        },
+        {
+          "id": "main_situation_board",
+          "displayName": "Main Situation Board",
+          "position": { "x": 5, "y": 3 },
+          "spriteSheet": "objects",
+          "spriteIndex": 52,
+          "locked": false,
+          "interactable": true,
+          "observations": "SIMULTANEOUS ATTACKS STATUS:\n\n<% if crisis_choice_made %>\nYour Operation: <%= crisis_choice.upcase %>\n<% else %>\n[Awaiting your choice]\n<% end %>\n\nAll Teams Status: ACTIVE\nCoordination: NOMINAL\nTimer: <%= timer_minutes_remaining %>:00\n\nNote: All teams are skilled, but success is not guaranteed. Your choice matters.",
+          "behavior": {}
+        }
+      ],
+      "items": [],
+      "dialogue": {
+        "description": "Main Operations Floor - SAFETYNET Emergency Operations Center. Four crisis response zones are visible, each with a dedicated SAFETYNET team working frantically. Tech Analyst David Chen is coordinating technical support. Large displays show all four attacks progressing simultaneously. The countdown timer is visible on every screen.",
+        "noPlayerDialogue": "Choose your crisis terminal and get to work. Lives depend on speed and precision."
+      }
+    },
+
+    "server_room": {
+      "type": "room_servers",
+      "connections": {
+        "east": "operations_floor"
+      },
+      "npcs": [],
+      "objects": [
+        {
+          "id": "vm_launcher_crisis",
+          "displayName": "Crisis Response VM System",
+          "position": { "x": 3, "y": 2 },
+          "spriteSheet": "objects",
+          "spriteIndex": 42,
+          "locked": false,
+          "interactable": true,
+          "observations": "SAFETYNET Crisis Response VM System\n\nAccess to ENTROPY attack infrastructure for analysis and countermeasure development.\n\nSecGen Scenario: 'Putting it together'\n- NFS share enumeration and exploitation\n- Netcat service discovery and C2 access\n- Privilege escalation techniques\n- Multi-stage attack neutralization\n\n4 flags to submit for complete intelligence extraction.",
+          "unlockMechanism": {
+            "type": "vm_launcher",
+            "vmConfig": {
+              "scenarioName": "putting_it_together",
+              "displayName": "Crisis Response Systems",
+              "description": "Access distributed attack systems using advanced techniques. Extract intelligence needed to neutralize the crisis.",
+              "flags": [
+                {
+                  "id": "flag1",
+                  "description": "NFS share access + attack timeline discovery",
+                  "hint": "Mount remote filesystems to find attack staging data",
+                  "points": 25,
+                  "globalVariableOnSubmit": "flag1_submitted"
+                },
+                {
+                  "id": "flag2",
+                  "description": "Netcat C2 access + shutdown codes",
+                  "hint": "Enumerate network services to find command & control channels",
+                  "points": 25,
+                  "globalVariableOnSubmit": "flag2_submitted"
+                },
+                {
+                  "id": "flag3",
+                  "description": "Privilege escalation + root access",
+                  "hint": "Exploit misconfigurations to gain administrative access",
+                  "points": 25,
+                  "globalVariableOnSubmit": "flag3_submitted"
+                },
+                {
+                  "id": "flag4",
+                  "description": "Attack neutralization complete",
+                  "hint": "Use extracted intelligence to disable attack systems",
+                  "points": 25,
+                  "globalVariableOnSubmit": "flag4_submitted"
+                }
+              ]
+            }
+          },
+          "behavior": {
+            "onUnlock": [
+              {
+                "type": "set_global_variable",
+                "variable": "accessed_server_room",
+                "value": true
+              }
+            ]
+          }
+        },
+        {
+          "id": "backup_terminal",
+          "displayName": "Backup Intelligence Terminal",
+          "position": { "x": 5, "y": 2 },
+          "spriteSheet": "objects",
+          "spriteIndex": 45,
+          "locked": false,
+          "interactable": true,
+          "observations": "Backup access to crisis intelligence systems.\n\nVM Progress:\n<% if flag1_submitted %>✓ Flag 1: NFS access achieved\n<% else %>○ Flag 1: Pending\n<% end %>\n<% if flag2_submitted %>✓ Flag 2: C2 compromised\n<% else %>○ Flag 2: Pending\n<% end %>\n<% if flag3_submitted %>✓ Flag 3: Root access gained\n<% else %>○ Flag 3: Pending\n<% end %>\n<% if flag4_submitted %>✓ Flag 4: Attack neutralization codes extracted\n<% else %>○ Flag 4: Pending\n<% end %>",
+          "behavior": {}
+        },
+        {
+          "id": "timer_display",
+          "displayName": "Crisis Timer Display",
+          "position": { "x": 4, "y": 1 },
+          "spriteSheet": "objects",
+          "spriteIndex": 52,
+          "locked": false,
+          "interactable": true,
+          "observations": "SYNCHRONIZED CRISIS TIMER\n\nTime Remaining: <%= timer_minutes_remaining %>:00\n\nAll four operations must be resolved before timer expires.\n\nYour operation: <% if crisis_choice_made %><%= crisis_choice.upcase %><% else %>[Not yet chosen]<% end %>",
+          "behavior": {}
+        }
+      ],
+      "items": [],
+      "dialogue": {
+        "description": "SAFETYNET Server Room - Emergency Operations Center. Secure server infrastructure for crisis response. The VM system provides access to ENTROPY attack systems for intelligence gathering and countermeasure development. The countdown timer is prominently displayed. Every second counts.",
+        "noPlayerDialogue": "Complete the VM challenges to extract intelligence needed for neutralizing the attack."
+      }
+    },
+
+    "communications_center": {
+      "type": "room_office",
+      "connections": {
+        "west": "operations_floor",
+        "south": "debrief_room"
+      },
+      "npcs": [
+        {
+          "id": "architect_comm_npc",
+          "displayName": "The Architect",
+          "npcType": "person",
+          "position": { "x": 4, "y": 3 },
+          "spriteSheet": "villain",
+          "spriteTalk": "assets/characters/villain-talk.png",
+          "spriteConfig": {
+            "idleFrameStart": 0,
+            "idleFrameEnd": 3
+          },
+          "storyPath": "scenarios/m07_architects_gambit/ink/m07_architect_comms.json",
+          "currentKnot": "first_contact",
+          "behavior": {
+            "initiallyHidden": false
+          }
+        }
+      ],
+      "objects": [
+        {
+          "id": "architect_message_terminal",
+          "displayName": "Intercepted Message Terminal",
+          "position": { "x": 3, "y": 2 },
+          "spriteSheet": "objects",
+          "spriteIndex": 45,
+          "locked": false,
+          "interactable": true,
+          "observations": "<% if contacted_architect %>\nTHE ARCHITECT - DIRECT COMMUNICATION\n\nMessage History:\n<% if architect_t30_shown %>\n[T-30:00] <%= architect_t30_message %>\n<% end %>\n<% if architect_t20_shown %>\n[T-20:00] <%= architect_t20_message %>\n<% end %>\n<% if architect_t10_shown %>\n[T-10:00] <%= architect_t10_message %>\n<% end %>\n<% if architect_t05_shown %>\n[T-05:00] <%= architect_t05_message %>\n<% end %>\n<% if architect_t01_shown %>\n[T-01:00] <%= architect_t01_message %>\n<% end %>\n<% if crisis_neutralized %>\n[POST-OP] <%= architect_success_message %>\n<% end %>\n<% else %>\nAwaiting first contact from The Architect...\n<% end %>",
+          "behavior": {
+            "onInteract": [
+              {
+                "type": "set_global_variable",
+                "variable": "contacted_architect",
+                "value": true
+              }
+            ]
+          }
+        },
+        {
+          "id": "entropy_intercept_system",
+          "displayName": "ENTROPY Communication Intercept System",
+          "position": { "x": 5, "y": 2 },
+          "spriteSheet": "objects",
+          "spriteIndex": 42,
+          "locked": false,
+          "interactable": true,
+          "observations": "ENCRYPTED ENTROPY CELL COMMUNICATIONS\n\nActive Channels:\n• Critical Mass → Architect: Operation Blackout status\n• Ghost Protocol → Architect: Data exfiltration progress\n• Social Fabric → Architect: Disinformation deployment ready\n• Supply Chain Saboteurs → Architect: Backdoor injection staging\n• Digital Vanguard → Architect: Zero-day exploit coordination\n• Zero Day Syndicate → Architect: Attack timing confirmed\n\nAll cells report to 'The Professor' at Tomb Gamma.\n\nArchitect's philosophy detected in multiple transmissions:\n'Entropy is inevitable. I merely accelerate the collapse.'",
+          "behavior": {}
+        },
+        {
+          "id": "architect_profile_board",
+          "displayName": "The Architect Profile Board",
+          "position": { "x": 2, "y": 1 },
+          "spriteSheet": "objects",
+          "spriteIndex": 52,
+          "locked": false,
+          "interactable": true,
+          "observations": "THE ARCHITECT - INTELLIGENCE PROFILE\n\nCodenames: 'The Professor', 'The Architect'\nConfirmed: Mastermind behind all ENTROPY operations\nFirst Contact: This mission (M7)\n\nKnown Attributes:\n• Deep knowledge of government security protocols\n• Access to SAFETYNET operational procedures\n• Sophisticated multi-cell coordination capability\n• Philosophy: 'Entropy as inevitable; acceleration of collapse'\n\nSuspects (based on access patterns):\n[CLASSIFIED - Intelligence Archive has full analysis]\n\nLocation: Tomb Gamma (coordinates in Intelligence Archive)\n\nThreat Level: CRITICAL",
+          "behavior": {}
+        }
+      ],
+      "items": [],
+      "dialogue": {
+        "description": "SAFETYNET Communications Center - Emergency Operations Center. This is where ENTROPY cell communications are intercepted and analyzed. The Architect's messages appear directly on the screens throughout the mission. For the first time, you're in direct contact with the mastermind behind all ENTROPY operations. Their presence is unsettling—they seem to know everything about SAFETYNET's operations.",
+        "noPlayerDialogue": "The Architect is watching. They're communicating directly with you. This is unprecedented."
+      }
+    },
+
+    "intelligence_archive": {
+      "type": "room_office",
+      "connections": {
+        "north": "operations_floor"
+      },
+      "npcs": [],
+      "objects": [
+        {
+          "id": "tomb_gamma_terminal",
+          "displayName": "Tomb Gamma Intelligence Terminal",
+          "position": { "x": 3, "y": 2 },
+          "spriteSheet": "objects",
+          "spriteIndex": 45,
+          "locked": false,
+          "interactable": true,
+          "observations": "<%= tomb_gamma_coordinates %>",
+          "behavior": {
+            "onInteract": [
+              {
+                "type": "set_global_variable",
+                "variable": "found_tomb_gamma",
+                "value": true
+              },
+              {
+                "type": "set_global_variable",
+                "variable": "lore_collected",
+                "operation": "increment",
+                "value": 1
+              }
+            ]
+          }
+        },
+        {
+          "id": "mole_evidence_terminal",
+          "displayName": "Internal Security Investigation Terminal",
+          "position": { "x": 5, "y": 2 },
+          "spriteSheet": "objects",
+          "spriteIndex": 45,
+          "locked": false,
+          "interactable": true,
+          "observations": "<%= mole_evidence_text %>",
+          "behavior": {
+            "onInteract": [
+              {
+                "type": "set_global_variable",
+                "variable": "found_mole_evidence",
+                "value": true
+              },
+              {
+                "type": "set_global_variable",
+                "variable": "lore_collected",
+                "operation": "increment",
+                "value": 1
+              }
+            ]
+          }
+        },
+        {
+          "id": "architect_suspect_board",
+          "displayName": "The Architect - Suspect Analysis Board",
+          "position": { "x": 4, "y": 1 },
+          "spriteSheet": "objects",
+          "spriteIndex": 52,
+          "locked": false,
+          "interactable": true,
+          "observations": "THE ARCHITECT - IDENTITY INVESTIGATION\n\nBased on mole evidence and operational patterns, suspects narrowed to 3 individuals:\n\nSUSPECT A: [REDACTED]\n- Senior SAFETYNET analyst\n- Access to all operational data\n- Background: Former NSA, deep technical expertise\n- Motive: Unknown\n- Probability: 35%\n\nSUSPECT B: [REDACTED]\n- SAFETYNET operations coordinator\n- Access to mission assignments and timing\n- Background: Military intelligence, strategic planning\n- Motive: Ideological disagreement with SAFETYNET methods?\n- Probability: 40%\n\nSUSPECT C: [REDACTED]\n- External contractor with high-level clearance\n- Access to communications and logistics\n- Background: Academic, published papers on systems theory and entropy\n- Motive: Philosophical? Personal vendetta?\n- Probability: 25%\n\nAll three have:\n• Required technical expertise\n• Access to SAFETYNET operational procedures\n• Knowledge of agent assignments and timing\n• Capability to coordinate multiple ENTROPY cells\n\nFurther investigation required. Mission 8 priority: Identify The Architect.",
+          "behavior": {}
+        }
+      ],
+      "items": [
+        {
+          "type": "notes",
+          "name": "Tomb Gamma Coordinates",
+          "takeable": true,
+          "observations": "Coordinates: 47.2382° N, 112.5156° W\nLocation: Montana wilderness\nDescription: Abandoned Cold War bunker\nCodename: Tomb Gamma\nPurpose: The Architect's base of operations",
+          "onPickup": [
+            {
+              "type": "set_global_variable",
+              "variable": "found_tomb_gamma",
+              "value": true
+            }
+          ]
+        },
+        {
+          "type": "notes",
+          "name": "SAFETYNET Mole Evidence",
+          "takeable": true,
+          "observations": "CRITICAL: Someone inside SAFETYNET leaked operation timing to The Architect.\nSuspects narrowed to 3 individuals.\nMission 8 will focus on identifying the mole.",
+          "onPickup": [
+            {
+              "type": "set_global_variable",
+              "variable": "found_mole_evidence",
+              "value": true
+            }
+          ]
+        }
+      ],
+      "dialogue": {
+        "description": "SAFETYNET Intelligence Archive - Emergency Operations Center. This secure archive contains the most sensitive intelligence on ENTROPY operations. Here you'll find the critical discoveries: Tomb Gamma's location (The Architect's base) and evidence of a mole within SAFETYNET who leaked operation timing. These are mission-critical intelligence for the Season 1 finale.",
+        "noPlayerDialogue": "This is where SAFETYNET keeps its most sensitive intelligence. The answers you seek are here."
+      }
+    },
+
+    "debrief_room": {
+      "type": "room_conference",
+      "connections": {
+        "north": "communications_center"
+      },
+      "npcs": [
+        {
+          "id": "director_morgan_debrief",
+          "displayName": "Director Patricia Morgan",
+          "npcType": "person",
+          "position": { "x": 4, "y": 2 },
+          "spriteSheet": "business_person",
+          "spriteTalk": "assets/characters/business-talk.png",
+          "spriteConfig": {
+            "idleFrameStart": 0,
+            "idleFrameEnd": 3
+          },
+          "storyPath": "scenarios/m07_architects_gambit/ink/m07_director_morgan.json",
+          "currentKnot": "debrief",
+          "behavior": {
+            "initiallyHidden": false
+          }
+        },
+        {
+          "id": "agent_0x99_debrief",
+          "displayName": "Agent 0x99 'Haxolottle'",
+          "npcType": "person",
+          "position": { "x": 3, "y": 3 },
+          "spriteSheet": "hacker",
+          "spriteTalk": "assets/characters/hacker-talk.png",
+          "spriteConfig": {
+            "idleFrameStart": 20,
+            "idleFrameEnd": 23
+          },
+          "storyPath": "scenarios/m07_architects_gambit/ink/m07_phone_agent_0x99.json",
+          "currentKnot": "final_debrief",
+          "behavior": {
+            "initiallyHidden": false
+          }
+        }
+      ],
+      "objects": [
+        {
+          "id": "outcomes_display",
+          "displayName": "Operations Outcome Display",
+          "position": { "x": 5, "y": 1 },
+          "spriteSheet": "objects",
+          "spriteIndex": 52,
+          "locked": false,
+          "interactable": true,
+          "observations": "SIMULTANEOUS OPERATIONS - FINAL OUTCOMES\n\n<% if crisis_choice == 'infrastructure' %>\n[YOUR OPERATION] Infrastructure Collapse: <%= operation_a_outcome %>\n[TEAM BRAVO] Data Apocalypse: PARTIAL SUCCESS (data secured, disinformation deployed)\n[TEAM CHARLIE] Supply Chain: FULL SUCCESS (backdoors prevented)\n[TEAM DELTA] Corporate Warfare: FAILURE (zero-days deployed, economic damage)\n<% elsif crisis_choice == 'data' %>\n[TEAM ALPHA] Infrastructure Collapse: FAILURE (blackout occurred, <%= player_operation_casualties %> casualties)\n[YOUR OPERATION] Data Apocalypse: <%= operation_b_outcome %>\n[TEAM CHARLIE] Supply Chain: PARTIAL SUCCESS (some backdoors deployed)\n[TEAM DELTA] Corporate Warfare: FULL SUCCESS (all exploits prevented)\n<% elsif crisis_choice == 'supply_chain' %>\n[TEAM ALPHA] Infrastructure Collapse: PARTIAL SUCCESS (limited blackout)\n[TEAM BRAVO] Data Apocalypse: FULL SUCCESS (both attacks prevented)\n[YOUR OPERATION] Supply Chain: <%= operation_c_outcome %>\n[TEAM DELTA] Corporate Warfare: FAILURE (major economic damage)\n<% elsif crisis_choice == 'corporate' %>\n[TEAM ALPHA] Infrastructure Collapse: FULL SUCCESS (no blackout)\n[TEAM BRAVO] Data Apocalypse: FAILURE (voter data stolen + unrest)\n[TEAM CHARLIE] Supply Chain: PARTIAL SUCCESS (some systems compromised)\n[YOUR OPERATION] Corporate Warfare: <%= operation_d_outcome %>\n<% else %>\n[ERROR: No crisis choice recorded]\n<% end %>\n\nTotal Casualties (all operations): <%= total_casualties %>\nYour Operation Casualties: <%= player_operation_casualties %>\nOther Operations Casualties: <%= other_operations_casualties %>\n\nThe Architect's Assessment: <%= architect_success_message %>",
+          "behavior": {}
+        },
+        {
+          "id": "casualty_report",
+          "displayName": "Casualty Report Terminal",
+          "position": { "x": 6, "y": 2 },
+          "spriteSheet": "objects",
+          "spriteIndex": 45,
+          "locked": false,
+          "interactable": true,
+          "observations": "CASUALTY ANALYSIS\n\nYour choice determined outcomes. All choices had consequences.\n\n<% if crisis_choice == 'infrastructure' %>\nYou chose to save immediate lives (power grid).\nOther operations had mixed success.\nDelta Team failed - corporate attacks caused economic devastation.\n<% elsif crisis_choice == 'data' %>\nYou chose to protect democratic integrity (elections).\nAlpha Team failed - power grid blackout caused <%= other_operations_casualties %> deaths.\n<% elsif crisis_choice == 'supply_chain' %>\nYou chose long-term national security (supply chain).\nBravo Team succeeded, but Delta failed - economic warfare succeeded.\n<% elsif crisis_choice == 'corporate' %>\nYou chose economic stability (corporations).\nAlpha Team succeeded, but Bravo failed - election chaos ensued.\n<% end %>\n\nThere was no perfect choice. Only consequences.\n\nTomb Gamma location discovered. Mission 8: Confront The Architect.",
+          "behavior": {}
+        },
+        {
+          "id": "mission_summary",
+          "displayName": "Mission Summary Board",
+          "position": { "x": 2, "y": 1 },
+          "spriteSheet": "objects",
+          "spriteIndex": 52,
+          "locked": false,
+          "interactable": true,
+          "observations": "MISSION 7 SUMMARY: THE ARCHITECT'S GAMBIT\n\nObjectives Status:\n<% if crisis_neutralized %>✓<% else %>✗<% end %> Crisis neutralized at your terminal\n<% if all_flags_submitted %>✓<% else %>✗<% end %> All VM flags submitted\n<% if found_tomb_gamma %>✓<% else %>✗<% end %> Tomb Gamma location discovered\n<% if found_mole_evidence %>✓<% else %>✗<% end %> SAFETYNET mole evidence found\n<% if contacted_architect %>✓<% else %>✗<% end %> Direct contact with The Architect\n\nKey Achievements:\n• First direct contact with The Architect\n• The Architect's philosophy revealed\n• Tomb Gamma coordinates obtained\n• SAFETYNET mole confirmed\n• The Architect's identity narrowed to 3 suspects\n\nMission Status: <% if crisis_neutralized && all_flags_submitted && found_tomb_gamma %>SUCCESS<% else %>PARTIAL<% end %>\n\nNext Mission: M8 - The Mole (Identify the traitor within SAFETYNET)",
+          "behavior": {}
+        }
+      ],
+      "items": [],
+      "dialogue": {
+        "description": "SAFETYNET Debrief Room - Emergency Operations Center. The crisis has passed. All four operations have concluded. Director Morgan and Agent 0x99 are here to review the outcomes. This is the moment of truth—you'll learn what happened at the operations you didn't choose. The weight of your decision is heavy. Lives were saved... and lives were lost. The Architect's gambit succeeded in part, regardless of your performance. But you discovered Tomb Gamma's location. The endgame approaches.",
+        "noPlayerDialogue": "The operations are complete. Time to face the consequences of your choice."
+      }
+    }
+  }
+}
