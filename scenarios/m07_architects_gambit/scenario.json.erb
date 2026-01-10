@@ -468,9 +468,11 @@ ANALYSIS:
 
   "endGoal": "Choose which of four simultaneous ENTROPY attacks to stop personally while other SAFETYNET teams handle the rest. Complete VM challenges, neutralize your chosen crisis, discover The Architect's location (Tomb Gamma), and confront the reality that your choice determined who lived and who died. First direct contact with The Architect reveals their philosophy and masterplan.",
 
+  "startRoom": "emergency_briefing_room",
+
   "rooms": {
     "emergency_briefing_room": {
-      "type": "room_conference",
+      "type": "room_office",
       "connections": {
         "south": "operations_floor"
       },
@@ -579,22 +581,28 @@ ANALYSIS:
       ],
       "objects": [
         {
+          "type": "pc",
+          "name": "Emergency Situation Display",
           "id": "situation_display",
           "displayName": "Emergency Situation Display",
           "position": { "x": 6, "y": 1 },
           "spriteSheet": "objects",
           "spriteIndex": 45,
+          "takeable": false,
           "locked": false,
           "interactable": true,
           "observations": <%= emergency_briefing_text.to_json %>,
           "behavior": {}
         },
         {
+          "type": "pc",
+          "name": "National Crisis Map",
           "id": "crisis_map",
           "displayName": "National Crisis Map",
           "position": { "x": 2, "y": 1 },
           "spriteSheet": "objects",
           "spriteIndex": 52,
+          "takeable": false,
           "locked": false,
           "interactable": true,
           "observations": "Large display showing all four attack locations:\n* Pacific Northwest (Power Grid)\n* Washington D.C. Area (Election Security)\n* Austin, Texas (TechForge Supply Chain)\n* San Francisco (TechCore Corporate)\n\nAll attacks synchronized. Timer: 30:00 and counting down.",
@@ -614,8 +622,7 @@ ANALYSIS:
         "north": "emergency_briefing_room",
         "west": "server_room",
         "east": "communications_center",
-        "south": "intelligence_archive",
-        "southeast": "crisis_terminal"
+        "south": "intelligence_archive"
       },
       "npcs": [
         {
@@ -706,55 +713,70 @@ ANALYSIS:
       ],
       "objects": [
         {
+          "type": "pc",
+          "name": "Zone A: Infrastructure Crisis Terminal",
           "id": "zone_a_terminal",
           "displayName": "Zone A: Infrastructure Crisis Terminal",
           "position": { "x": 2, "y": 1 },
           "spriteSheet": "objects",
           "spriteIndex": 45,
+          "takeable": false,
           "locked": false,
           "interactable": true,
           "observations": "Crisis Terminal A - Infrastructure Collapse\nTarget: Pacific Northwest Power Grid\nStatus: ENTROPY operatives detected at facility\nTeam: Alpha handling\nTimer: <%= timer_minutes_remaining %>:00 remaining",
           "behavior": {}
         },
         {
+          "type": "pc",
+          "name": "Zone B: Data Security Crisis Terminal",
           "id": "zone_b_terminal",
           "displayName": "Zone B: Data Security Crisis Terminal",
           "position": { "x": 4, "y": 1 },
           "spriteSheet": "objects",
           "spriteIndex": 45,
+          "takeable": false,
           "locked": false,
           "interactable": true,
           "observations": "Crisis Terminal B - Data Apocalypse\nTarget: Federal Election Security Database\nStatus: Data exfiltration + disinformation in progress\nTeam: Bravo handling\nTimer: <%= timer_minutes_remaining %>:00 remaining",
           "behavior": {}
         },
         {
+          "type": "pc",
+          "name": "Zone C: Supply Chain Crisis Terminal",
           "id": "zone_c_terminal",
           "displayName": "Zone C: Supply Chain Crisis Terminal",
           "position": { "x": 6, "y": 1 },
           "spriteSheet": "objects",
           "spriteIndex": 45,
+          "takeable": false,
           "locked": false,
           "interactable": true,
           "observations": "Crisis Terminal C - Supply Chain Infection\nTarget: TechForge Software Distribution Platform\nStatus: Backdoor injection in progress\nTeam: Charlie handling\nTimer: <%= timer_minutes_remaining %>:00 remaining",
           "behavior": {}
         },
         {
+          "type": "pc",
+          "name": "Zone D: Corporate Defense Crisis Terminal",
           "id": "zone_d_terminal",
           "displayName": "Zone D: Corporate Defense Crisis Terminal",
           "position": { "x": 8, "y": 1 },
           "spriteSheet": "objects",
           "spriteIndex": 45,
+          "takeable": false,
           "locked": false,
           "interactable": true,
           "observations": "Crisis Terminal D - Corporate Warfare\nTarget: 12 Fortune 500 corporations via TechCore SOC\nStatus: 47 zero-day exploits ready for deployment\nTeam: Delta handling\nTimer: <%= timer_minutes_remaining %>:00 remaining",
           "behavior": {}
         },
         {
+          "type": "pc",
+          "name": "Main Situation Board",
           "id": "main_situation_board",
           "displayName": "Main Situation Board",
           "position": { "x": 5, "y": 3 },
           "spriteSheet": "objects",
           "spriteIndex": 52,
+          "takeable": false,
           "locked": false,
           "interactable": true,
           "observations": "SIMULTANEOUS ATTACKS STATUS:\n\n<% if crisis_choice_made %>\nYour Operation: <%= crisis_choice.upcase %>\n<% else %>\n[Awaiting your choice]\n<% end %>\n\nAll Teams Status: ACTIVE\nCoordination: NOMINAL\nTimer: <%= timer_minutes_remaining %>:00\n\nNote: All teams are skilled, but success is not guaranteed. Your choice matters.",
@@ -776,11 +798,14 @@ ANALYSIS:
       "npcs": [],
       "objects": [
         {
+          "type": "pc",
+          "name": "Crisis Response VM System",
           "id": "vm_launcher_crisis",
           "displayName": "Crisis Response VM System",
           "position": { "x": 3, "y": 2 },
           "spriteSheet": "objects",
           "spriteIndex": 42,
+          "takeable": false,
           "locked": false,
           "interactable": true,
           "observations": "SAFETYNET Crisis Response VM System\n\nAccess to ENTROPY attack infrastructure for analysis and countermeasure development.\n\nSecGen Scenario: 'Putting it together'\n- NFS share enumeration and exploitation\n- Netcat service discovery and C2 access\n- Privilege escalation techniques\n- Multi-stage attack neutralization\n\n4 flags to submit for complete intelligence extraction.",
@@ -836,22 +861,28 @@ ANALYSIS:
           }
         },
         {
+          "type": "pc",
+          "name": "Backup Intelligence Terminal",
           "id": "backup_terminal",
           "displayName": "Backup Intelligence Terminal",
           "position": { "x": 5, "y": 2 },
           "spriteSheet": "objects",
           "spriteIndex": 45,
+          "takeable": false,
           "locked": false,
           "interactable": true,
           "observations": "Backup access to crisis intelligence systems.\n\nVM Progress:\n<% if flag1_submitted %>[X] Flag 1: NFS access achieved\n<% else %>○ Flag 1: Pending\n<% end %>\n<% if flag2_submitted %>[X] Flag 2: C2 compromised\n<% else %>○ Flag 2: Pending\n<% end %>\n<% if flag3_submitted %>[X] Flag 3: Root access gained\n<% else %>○ Flag 3: Pending\n<% end %>\n<% if flag4_submitted %>[X] Flag 4: Attack neutralization codes extracted\n<% else %>○ Flag 4: Pending\n<% end %>",
           "behavior": {}
         },
         {
+          "type": "pc",
+          "name": "Crisis Timer Display",
           "id": "timer_display",
           "displayName": "Crisis Timer Display",
           "position": { "x": 4, "y": 1 },
           "spriteSheet": "objects",
           "spriteIndex": 52,
+          "takeable": false,
           "locked": false,
           "interactable": true,
           "observations": "SYNCHRONIZED CRISIS TIMER\n\nTime Remaining: <%= timer_minutes_remaining %>:00\n\nAll four operations must be resolved before timer expires.\n\nYour operation: <% if crisis_choice_made %><%= crisis_choice.upcase %><% else %>[Not yet chosen]<% end %>",
@@ -869,6 +900,7 @@ ANALYSIS:
       "type": "room_office",
       "connections": {
         "west": "operations_floor",
+        "east": "crisis_terminal",
         "south": "debrief_room"
       },
       "npcs": [
@@ -892,11 +924,14 @@ ANALYSIS:
       ],
       "objects": [
         {
+          "type": "pc",
+          "name": "Intercepted Message Terminal",
           "id": "architect_message_terminal",
           "displayName": "Intercepted Message Terminal",
           "position": { "x": 3, "y": 2 },
           "spriteSheet": "objects",
           "spriteIndex": 45,
+          "takeable": false,
           "locked": false,
           "interactable": true,
           "observations": "<% if contacted_architect %>\nTHE ARCHITECT - DIRECT COMMUNICATION\n\nMessage History:\n<% if architect_t30_shown %>\n[T-30:00] <%= architect_t30_message %>\n<% end %>\n<% if architect_t20_shown %>\n[T-20:00] <%= architect_t20_message %>\n<% end %>\n<% if architect_t10_shown %>\n[T-10:00] <%= architect_t10_message %>\n<% end %>\n<% if architect_t05_shown %>\n[T-05:00] <%= architect_t05_message %>\n<% end %>\n<% if architect_t01_shown %>\n[T-01:00] <%= architect_t01_message %>\n<% end %>\n<% if crisis_neutralized %>\n[POST-OP] <%= architect_success_message %>\n<% end %>\n<% else %>\nAwaiting first contact from The Architect...\n<% end %>",
@@ -911,22 +946,28 @@ ANALYSIS:
           }
         },
         {
+          "type": "pc",
+          "name": "ENTROPY Communication Intercept System",
           "id": "entropy_intercept_system",
           "displayName": "ENTROPY Communication Intercept System",
           "position": { "x": 5, "y": 2 },
           "spriteSheet": "objects",
           "spriteIndex": 42,
+          "takeable": false,
           "locked": false,
           "interactable": true,
           "observations": "ENCRYPTED ENTROPY CELL COMMUNICATIONS\n\nActive Channels:\n* Critical Mass -> Architect: Operation Blackout status\n* Ghost Protocol -> Architect: Data exfiltration progress\n* Social Fabric -> Architect: Disinformation deployment ready\n* Supply Chain Saboteurs -> Architect: Backdoor injection staging\n* Digital Vanguard -> Architect: Zero-day exploit coordination\n* Zero Day Syndicate -> Architect: Attack timing confirmed\n\nAll cells report to 'The Professor' at Tomb Gamma.\n\nArchitect's philosophy detected in multiple transmissions:\n'Entropy is inevitable. I merely accelerate the collapse.'",
           "behavior": {}
         },
         {
+          "type": "pc",
+          "name": "The Architect Profile Board",
           "id": "architect_profile_board",
           "displayName": "The Architect Profile Board",
           "position": { "x": 2, "y": 1 },
           "spriteSheet": "objects",
           "spriteIndex": 52,
+          "takeable": false,
           "locked": false,
           "interactable": true,
           "observations": "THE ARCHITECT - INTELLIGENCE PROFILE\n\nCodenames: 'The Professor', 'The Architect'\nConfirmed: Mastermind behind all ENTROPY operations\nFirst Contact: This mission (M7)\n\nKnown Attributes:\n* Deep knowledge of government security protocols\n* Access to SAFETYNET operational procedures\n* Sophisticated multi-cell coordination capability\n* Philosophy: 'Entropy as inevitable; acceleration of collapse'\n\nSuspects (based on access patterns):\n[CLASSIFIED - Intelligence Archive has full analysis]\n\nLocation: Tomb Gamma (coordinates in Intelligence Archive)\n\nThreat Level: CRITICAL",
@@ -948,11 +989,14 @@ ANALYSIS:
       "npcs": [],
       "objects": [
         {
+          "type": "pc",
+          "name": "Tomb Gamma Intelligence Terminal",
           "id": "tomb_gamma_terminal",
           "displayName": "Tomb Gamma Intelligence Terminal",
           "position": { "x": 3, "y": 2 },
           "spriteSheet": "objects",
           "spriteIndex": 45,
+          "takeable": false,
           "locked": false,
           "interactable": true,
           "observations": <%= tomb_gamma_coordinates.to_json %>,
@@ -973,11 +1017,14 @@ ANALYSIS:
           }
         },
         {
+          "type": "pc",
+          "name": "Internal Security Investigation Terminal",
           "id": "mole_evidence_terminal",
           "displayName": "Internal Security Investigation Terminal",
           "position": { "x": 5, "y": 2 },
           "spriteSheet": "objects",
           "spriteIndex": 45,
+          "takeable": false,
           "locked": false,
           "interactable": true,
           "observations": <%= mole_evidence_text.to_json %>,
@@ -998,11 +1045,14 @@ ANALYSIS:
           }
         },
         {
+          "type": "pc",
+          "name": "The Architect - Suspect Analysis Board",
           "id": "architect_suspect_board",
           "displayName": "The Architect - Suspect Analysis Board",
           "position": { "x": 4, "y": 1 },
           "spriteSheet": "objects",
           "spriteIndex": 52,
+          "takeable": false,
           "locked": false,
           "interactable": true,
           "observations": "THE ARCHITECT - IDENTITY INVESTIGATION\n\nBased on mole evidence and operational patterns, suspects narrowed to 3 individuals:\n\nSUSPECT A: [REDACTED]\n- Senior SAFETYNET analyst\n- Access to all operational data\n- Background: Former NSA, deep technical expertise\n- Motive: Unknown\n- Probability: 35%\n\nSUSPECT B: [REDACTED]\n- SAFETYNET operations coordinator\n- Access to mission assignments and timing\n- Background: Military intelligence, strategic planning\n- Motive: Ideological disagreement with SAFETYNET methods?\n- Probability: 40%\n\nSUSPECT C: [REDACTED]\n- External contractor with high-level clearance\n- Access to communications and logistics\n- Background: Academic, published papers on systems theory and entropy\n- Motive: Philosophical? Personal vendetta?\n- Probability: 25%\n\nAll three have:\n* Required technical expertise\n* Access to SAFETYNET operational procedures\n* Knowledge of agent assignments and timing\n* Capability to coordinate multiple ENTROPY cells\n\nFurther investigation required. Mission 8 priority: Identify The Architect.",
@@ -1044,9 +1094,9 @@ ANALYSIS:
     },
 
     "crisis_terminal": {
-      "type": "<%= crisis_choice == 'infrastructure' ? 'room_control_center' : crisis_choice == 'data' ? 'room_servers' : crisis_choice == 'supply_chain' ? 'room_office' : crisis_choice == 'corporate' ? 'room_office' : 'room_office' %>",
+      "type": "room_office",
       "connections": {
-        "west": "operations_floor"
+        "west": "communications_center"
       },
       "npcs": [
         <% if crisis_choice == 'infrastructure' %>
@@ -1177,11 +1227,14 @@ ANALYSIS:
       ],
       "objects": [
         {
+          "type": "pc",
+          "name": "<%= crisis_choice == 'infrastructure' ? 'Power Grid Control System' : crisis_choice == 'data' ? 'Election Security Database' : crisis_choice == 'supply_chain' ? 'Software Distribution Platform' : crisis_choice == 'corporate' ? 'Corporate Security Operations Center' : 'Crisis Control System' %>",
           "id": "crisis_control_system",
           "displayName": "<%= crisis_choice == 'infrastructure' ? 'Power Grid Control System' : crisis_choice == 'data' ? 'Election Security Database' : crisis_choice == 'supply_chain' ? 'Software Distribution Platform' : crisis_choice == 'corporate' ? 'Corporate Security Operations Center' : 'Crisis Control System' %>",
           "position": { "x": 4, "y": 2 },
           "spriteSheet": "objects",
           "spriteIndex": 42,
+          "takeable": false,
           "locked": true,
           "interactable": true,
           "observations": "<% if crisis_choice == 'infrastructure' %>PACIFIC NORTHWEST POWER GRID - SCADA ACCESS\n\nStatus: CRITICAL - Cascading failure sequence initiated\nAffected Systems: 47 substations, 8.4M people\nCritical Mass operatives detected: Marcus 'Blackout' Chen on-site\n\nVM intelligence required to deploy countermeasures.\nAll 4 flags must be submitted for full system access.\n<% elsif crisis_choice == 'data' %>FEDERAL ELECTION SECURITY DATABASE - DUAL THREAT\n\nThreat 1 (Specter): Data exfiltration - 187M voter records\nThreat 2 (Social Fabric): Disinformation campaign deployment\n\nYou must choose which threat to prioritize.\nVM intelligence provides shutdown codes for both systems.\n<% elsif crisis_choice == 'supply_chain' %>TECHFORGE SOFTWARE DISTRIBUTION PLATFORM\n\nStatus: Backdoor injection in progress\nAffected Systems: 47M endpoint systems\nSupply Chain Saboteurs operative: Adrian Cross (recruitable)\n\nLong-term consequences vs immediate casualties dilemma.\nVM intelligence required to neutralize backdoor deployment.\n<% elsif crisis_choice == 'corporate' %>TECHCORE CORPORATE SOC - MULTI-TARGET DEFENSE\n\nTargets: 12 Fortune 500 corporations\nThreat: 47 zero-day exploits ready for deployment\nDigital Vanguard + Zero Day Syndicate coordination\n\nVM intelligence provides exploit signatures for prevention.\n<% else %>Crisis control system awaiting configuration.<% end %>",
@@ -1201,22 +1254,28 @@ ANALYSIS:
           }
         },
         {
+          "type": "pc",
+          "name": "<%= crisis_choice == 'infrastructure' ? 'Power Grid Facility Feed' : crisis_choice == 'data' ? 'Election Center Feeds' : crisis_choice == 'supply_chain' ? 'TechForge Facility Feed' : crisis_choice == 'corporate' ? 'Multi-Corporate Feeds' : 'Remote Facility Feeds' %>",
           "id": "video_feed_display",
           "displayName": "<%= crisis_choice == 'infrastructure' ? 'Power Grid Facility Feed' : crisis_choice == 'data' ? 'Election Center Feeds' : crisis_choice == 'supply_chain' ? 'TechForge Facility Feed' : crisis_choice == 'corporate' ? 'Multi-Corporate Feeds' : 'Remote Facility Feeds' %>",
           "position": { "x": 2, "y": 1 },
           "spriteSheet": "objects",
           "spriteIndex": 52,
+          "takeable": false,
           "locked": false,
           "interactable": true,
           "observations": "<% if crisis_choice == 'infrastructure' %>Live video feed from Pacific Northwest Power Grid Control Facility.\n\nMarcus 'Blackout' Chen visible on multiple camera angles.\nCritical Mass operatives working on SCADA systems.\nTimer: <%= timer_minutes_remaining %>:00 remaining until cascading failure.\n<% elsif crisis_choice == 'data' %>Dual video feeds:\n\nFeed 1: Federal Election Security Database - Specter exfiltrating data\nFeed 2: Social Fabric disinformation servers - Rachel Morrow deploying content\n\nBoth attacks progressing simultaneously. Choose priority.\n<% elsif crisis_choice == 'supply_chain' %>Live feed from TechForge Software Distribution Platform.\n\nAdrian Cross coordinating backdoor injection across update servers.\nSupply Chain Saboteurs operatives staging malicious packages.\n47M systems at risk of compromise.\n<% elsif crisis_choice == 'corporate' %>Multiple feeds from 12 Fortune 500 corporate SOCs.\n\nVictoria 'V1per' Zhang coordinating zero-day deployment.\nMarcus 'Shadow' Chen managing exploit distribution.\n47 exploits ready for simultaneous launch.\n<% else %>Awaiting crisis selection.<% end %>",
           "behavior": {}
         },
         {
+          "type": "pc",
+          "name": "Crisis Countdown Timer",
           "id": "crisis_timer",
           "displayName": "Crisis Countdown Timer",
           "position": { "x": 6, "y": 1 },
           "spriteSheet": "objects",
           "spriteIndex": 52,
+          "takeable": false,
           "locked": false,
           "interactable": true,
           "observations": "CRISIS TIMER: <%= timer_minutes_remaining %>:00\n\nYour Operation: <%= crisis_choice.upcase %>\n\n<% if all_flags_submitted %>[X] VM intelligence extracted - countermeasures ready\n<% else %>○ VM challenges incomplete - limited options available\n<% end %>\n\n<% if crisis_neutralized %>[X] CRISIS NEUTRALIZED\n<% else %>○ Attack in progress\n<% end %>",
@@ -1231,7 +1290,7 @@ ANALYSIS:
     },
 
     "debrief_room": {
-      "type": "room_conference",
+      "type": "room_office",
       "connections": {
         "north": "communications_center"
       },
@@ -1273,33 +1332,42 @@ ANALYSIS:
       ],
       "objects": [
         {
+          "type": "pc",
+          "name": "Operations Outcome Display",
           "id": "outcomes_display",
           "displayName": "Operations Outcome Display",
           "position": { "x": 5, "y": 1 },
           "spriteSheet": "objects",
           "spriteIndex": 52,
+          "takeable": false,
           "locked": false,
           "interactable": true,
           "observations": "SIMULTANEOUS OPERATIONS - FINAL OUTCOMES\n\n<% if crisis_choice == 'infrastructure' %>\n[YOUR OPERATION] Infrastructure Collapse: <%= operation_a_outcome %>\n[TEAM BRAVO] Data Apocalypse: PARTIAL SUCCESS (data secured, disinformation deployed)\n[TEAM CHARLIE] Supply Chain: FULL SUCCESS (backdoors prevented)\n[TEAM DELTA] Corporate Warfare: FAILURE (zero-days deployed, economic damage)\n<% elsif crisis_choice == 'data' %>\n[TEAM ALPHA] Infrastructure Collapse: FAILURE (blackout occurred, <%= player_operation_casualties %> casualties)\n[YOUR OPERATION] Data Apocalypse: <%= operation_b_outcome %>\n[TEAM CHARLIE] Supply Chain: PARTIAL SUCCESS (some backdoors deployed)\n[TEAM DELTA] Corporate Warfare: FULL SUCCESS (all exploits prevented)\n<% elsif crisis_choice == 'supply_chain' %>\n[TEAM ALPHA] Infrastructure Collapse: PARTIAL SUCCESS (limited blackout)\n[TEAM BRAVO] Data Apocalypse: FULL SUCCESS (both attacks prevented)\n[YOUR OPERATION] Supply Chain: <%= operation_c_outcome %>\n[TEAM DELTA] Corporate Warfare: FAILURE (major economic damage)\n<% elsif crisis_choice == 'corporate' %>\n[TEAM ALPHA] Infrastructure Collapse: FULL SUCCESS (no blackout)\n[TEAM BRAVO] Data Apocalypse: FAILURE (voter data stolen + unrest)\n[TEAM CHARLIE] Supply Chain: PARTIAL SUCCESS (some systems compromised)\n[YOUR OPERATION] Corporate Warfare: <%= operation_d_outcome %>\n<% else %>\n[ERROR: No crisis choice recorded]\n<% end %>\n\nTotal Casualties (all operations): <%= total_casualties %>\nYour Operation Casualties: <%= player_operation_casualties %>\nOther Operations Casualties: <%= other_operations_casualties %>\n\nThe Architect's Assessment: <%= architect_success_message %>",
           "behavior": {}
         },
         {
+          "type": "pc",
+          "name": "Casualty Report Terminal",
           "id": "casualty_report",
           "displayName": "Casualty Report Terminal",
           "position": { "x": 6, "y": 2 },
           "spriteSheet": "objects",
           "spriteIndex": 45,
+          "takeable": false,
           "locked": false,
           "interactable": true,
           "observations": "CASUALTY ANALYSIS\n\nYour choice determined outcomes. All choices had consequences.\n\n<% if crisis_choice == 'infrastructure' %>\nYou chose to save immediate lives (power grid).\nOther operations had mixed success.\nDelta Team failed - corporate attacks caused economic devastation.\n<% elsif crisis_choice == 'data' %>\nYou chose to protect democratic integrity (elections).\nAlpha Team failed - power grid blackout caused <%= other_operations_casualties %> deaths.\n<% elsif crisis_choice == 'supply_chain' %>\nYou chose long-term national security (supply chain).\nBravo Team succeeded, but Delta failed - economic warfare succeeded.\n<% elsif crisis_choice == 'corporate' %>\nYou chose economic stability (corporations).\nAlpha Team succeeded, but Bravo failed - election chaos ensued.\n<% end %>\n\nThere was no perfect choice. Only consequences.\n\nTomb Gamma location discovered. Mission 8: Confront The Architect.",
           "behavior": {}
         },
         {
+          "type": "pc",
+          "name": "Mission Summary Board",
           "id": "mission_summary",
           "displayName": "Mission Summary Board",
           "position": { "x": 2, "y": 1 },
           "spriteSheet": "objects",
           "spriteIndex": 52,
+          "takeable": false,
           "locked": false,
           "interactable": true,
           "observations": "MISSION 7 SUMMARY: THE ARCHITECT'S GAMBIT\n\nObjectives Status:\n<% if crisis_neutralized %>[X]<% else %>[ ]<% end %> Crisis neutralized at your terminal\n<% if all_flags_submitted %>[X]<% else %>[ ]<% end %> All VM flags submitted\n<% if found_tomb_gamma %>[X]<% else %>[ ]<% end %> Tomb Gamma location discovered\n<% if found_mole_evidence %>[X]<% else %>[ ]<% end %> SAFETYNET mole evidence found\n<% if contacted_architect %>[X]<% else %>[ ]<% end %> Direct contact with The Architect\n\nKey Achievements:\n* First direct contact with The Architect\n* The Architect's philosophy revealed\n* Tomb Gamma coordinates obtained\n* SAFETYNET mole confirmed\n* The Architect's identity narrowed to 3 suspects\n\nMission Status: <% if crisis_neutralized && all_flags_submitted && found_tomb_gamma %>SUCCESS<% else %>PARTIAL<% end %>\n\nNext Mission: M8 - The Mole (Identify the traitor within SAFETYNET)",
