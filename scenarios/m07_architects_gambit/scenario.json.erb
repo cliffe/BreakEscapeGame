@@ -8,13 +8,13 @@
 # For mission metadata (display name, CyBOK mappings, etc.), see mission.json
 #
 # SINGLE-LOCATION BRANCHING DESIGN:
-#   Emergency Briefing Room (choice presentation) →
-#   Main Operations Floor (central hub with 4 crisis zones) →
+#   Emergency Briefing Room (choice presentation) ->
+#   Main Operations Floor (central hub with 4 crisis zones) ->
 #     Server Room (VM access - SecGen "Putting it together")
 #     Communications Center (The Architect's taunts)
 #     Intelligence Archive (Tomb Gamma discovery)
 #     Crisis Terminal (conditional based on crisis_choice variable)
-#   → Debrief Room (outcomes revealed)
+#   -> Debrief Room (outcomes revealed)
 #
 # BRANCHING ARCHITECTURE:
 #   - Player chooses ONE of FOUR simultaneous crisis operations to handle
@@ -48,10 +48,41 @@
 
 # ERB Helper Methods
 require 'base64'
+require 'json'
 
 def base64_encode(text)
   Base64.strict_encode64(text)
 end
+
+def json_escape(text)
+  text.to_s.gsub('\\', '\\\\\\').gsub("\n", '\\n').gsub("\r", '\\r').gsub('"', '\\"')
+end
+
+# Default variable values for ERB rendering
+timer_minutes_remaining = 30  # Default timer value
+crisis_choice = ""            # Will be set by player choice
+crisis_choice_made = false
+flag1_submitted = false
+flag2_submitted = false
+flag3_submitted = false
+flag4_submitted = false
+all_flags_submitted = false
+crisis_neutralized = false
+contacted_architect = false
+architect_t30_shown = false
+architect_t20_shown = false
+architect_t10_shown = false
+architect_t05_shown = false
+architect_t01_shown = false
+found_tomb_gamma = false
+found_mole_evidence = false
+operation_a_outcome = ""
+operation_b_outcome = ""
+operation_c_outcome = ""
+operation_d_outcome = ""
+total_casualties = 0
+player_operation_casualties = 0
+other_operations_casualties = 0
 
 # Narrative Content Variables
 
@@ -98,7 +129,7 @@ This is The Architect's masterpiece. Choose wisely, Agent 0x00."
 # The Architect's Messages (timer-based, appear in Communications Center)
 architect_t30_message = "Agent 0x00. I've been watching your career with interest. Four simultaneous operations. Four impossible choices. Let's see if you're as capable as your reputation suggests."
 
-architect_t20_message = "You've chosen %{crisis_name}. Interesting. But tell me—do you know what's happening at the other three targets right now?"
+architect_t20_message = "You've chosen %{crisis_name}. Interesting. But tell me -- do you know what's happening at the other three targets right now?"
 
 architect_t10_message = "The beauty of entropy is its inevitability. Even if you stop this, something else fails. Someone else dies. You can't win."
 
@@ -119,7 +150,7 @@ Subject: Contingency extraction
 
 LOCATION ANALYSIS:
 - Tomb Gamma identified as abandoned Cold War bunker
-- Coordinates: 47.2382° N, 112.5156° W
+- Coordinates: 47.2382 degrees N, 112.5156 degrees W
 - Location: Montana wilderness, 40 miles from nearest town
 - Description: 'The Architect's workshop. Where entropy is refined.'
 - Assessment: High-priority target for Mission 8"
@@ -151,7 +182,7 @@ ANALYSIS:
 - Suspects narrowed to 3 individuals with appropriate clearance"
 %>
 {
-  "scenario_brief": "The Architect launches coordinated attacks on four simultaneous targets. You're in SAFETYNET's Emergency Operations Center and must choose which crisis to handle personally, knowing other teams will handle the rest—but some will fail. First direct contact with The Architect reveals their philosophy and base location.",
+  "scenario_brief": "The Architect launches coordinated attacks on four simultaneous targets. You're in SAFETYNET's Emergency Operations Center and must choose which crisis to handle personally, knowing other teams will handle the rest--but some will fail. First direct contact with The Architect reveals their philosophy and base location.",
 
   "objectives": [
     {
@@ -555,7 +586,7 @@ ANALYSIS:
           "spriteIndex": 45,
           "locked": false,
           "interactable": true,
-          "observations": "<%= emergency_briefing_text %>",
+          "observations": <%= emergency_briefing_text.to_json %>,
           "behavior": {}
         },
         {
@@ -566,13 +597,13 @@ ANALYSIS:
           "spriteIndex": 52,
           "locked": false,
           "interactable": true,
-          "observations": "Large display showing all four attack locations:\n• Pacific Northwest (Power Grid)\n• Washington D.C. Area (Election Security)\n• Austin, Texas (TechForge Supply Chain)\n• San Francisco (TechCore Corporate)\n\nAll attacks synchronized. Timer: 30:00 and counting down.",
+          "observations": "Large display showing all four attack locations:\n* Pacific Northwest (Power Grid)\n* Washington D.C. Area (Election Security)\n* Austin, Texas (TechForge Supply Chain)\n* San Francisco (TechCore Corporate)\n\nAll attacks synchronized. Timer: 30:00 and counting down.",
           "behavior": {}
         }
       ],
       "items": [],
       "dialogue": {
-        "description": "SAFETYNET Emergency Operations Center - Emergency Briefing Room. Director Morgan and Agent 0x99 are coordinating the crisis response. Large displays show all four simultaneous ENTROPY attacks in progress. The tension is palpable—every second counts.",
+        "description": "SAFETYNET Emergency Operations Center - Emergency Briefing Room. Director Morgan and Agent 0x99 are coordinating the crisis response. Large displays show all four simultaneous ENTROPY attacks in progress. The tension is palpable--every second counts.",
         "noPlayerDialogue": "This is the most critical moment in SAFETYNET's history. Four simultaneous attacks. You must choose which one to handle personally."
       }
     },
@@ -812,7 +843,7 @@ ANALYSIS:
           "spriteIndex": 45,
           "locked": false,
           "interactable": true,
-          "observations": "Backup access to crisis intelligence systems.\n\nVM Progress:\n<% if flag1_submitted %>✓ Flag 1: NFS access achieved\n<% else %>○ Flag 1: Pending\n<% end %>\n<% if flag2_submitted %>✓ Flag 2: C2 compromised\n<% else %>○ Flag 2: Pending\n<% end %>\n<% if flag3_submitted %>✓ Flag 3: Root access gained\n<% else %>○ Flag 3: Pending\n<% end %>\n<% if flag4_submitted %>✓ Flag 4: Attack neutralization codes extracted\n<% else %>○ Flag 4: Pending\n<% end %>",
+          "observations": "Backup access to crisis intelligence systems.\n\nVM Progress:\n<% if flag1_submitted %>[X] Flag 1: NFS access achieved\n<% else %>○ Flag 1: Pending\n<% end %>\n<% if flag2_submitted %>[X] Flag 2: C2 compromised\n<% else %>○ Flag 2: Pending\n<% end %>\n<% if flag3_submitted %>[X] Flag 3: Root access gained\n<% else %>○ Flag 3: Pending\n<% end %>\n<% if flag4_submitted %>[X] Flag 4: Attack neutralization codes extracted\n<% else %>○ Flag 4: Pending\n<% end %>",
           "behavior": {}
         },
         {
@@ -887,7 +918,7 @@ ANALYSIS:
           "spriteIndex": 42,
           "locked": false,
           "interactable": true,
-          "observations": "ENCRYPTED ENTROPY CELL COMMUNICATIONS\n\nActive Channels:\n• Critical Mass → Architect: Operation Blackout status\n• Ghost Protocol → Architect: Data exfiltration progress\n• Social Fabric → Architect: Disinformation deployment ready\n• Supply Chain Saboteurs → Architect: Backdoor injection staging\n• Digital Vanguard → Architect: Zero-day exploit coordination\n• Zero Day Syndicate → Architect: Attack timing confirmed\n\nAll cells report to 'The Professor' at Tomb Gamma.\n\nArchitect's philosophy detected in multiple transmissions:\n'Entropy is inevitable. I merely accelerate the collapse.'",
+          "observations": "ENCRYPTED ENTROPY CELL COMMUNICATIONS\n\nActive Channels:\n* Critical Mass -> Architect: Operation Blackout status\n* Ghost Protocol -> Architect: Data exfiltration progress\n* Social Fabric -> Architect: Disinformation deployment ready\n* Supply Chain Saboteurs -> Architect: Backdoor injection staging\n* Digital Vanguard -> Architect: Zero-day exploit coordination\n* Zero Day Syndicate -> Architect: Attack timing confirmed\n\nAll cells report to 'The Professor' at Tomb Gamma.\n\nArchitect's philosophy detected in multiple transmissions:\n'Entropy is inevitable. I merely accelerate the collapse.'",
           "behavior": {}
         },
         {
@@ -898,13 +929,13 @@ ANALYSIS:
           "spriteIndex": 52,
           "locked": false,
           "interactable": true,
-          "observations": "THE ARCHITECT - INTELLIGENCE PROFILE\n\nCodenames: 'The Professor', 'The Architect'\nConfirmed: Mastermind behind all ENTROPY operations\nFirst Contact: This mission (M7)\n\nKnown Attributes:\n• Deep knowledge of government security protocols\n• Access to SAFETYNET operational procedures\n• Sophisticated multi-cell coordination capability\n• Philosophy: 'Entropy as inevitable; acceleration of collapse'\n\nSuspects (based on access patterns):\n[CLASSIFIED - Intelligence Archive has full analysis]\n\nLocation: Tomb Gamma (coordinates in Intelligence Archive)\n\nThreat Level: CRITICAL",
+          "observations": "THE ARCHITECT - INTELLIGENCE PROFILE\n\nCodenames: 'The Professor', 'The Architect'\nConfirmed: Mastermind behind all ENTROPY operations\nFirst Contact: This mission (M7)\n\nKnown Attributes:\n* Deep knowledge of government security protocols\n* Access to SAFETYNET operational procedures\n* Sophisticated multi-cell coordination capability\n* Philosophy: 'Entropy as inevitable; acceleration of collapse'\n\nSuspects (based on access patterns):\n[CLASSIFIED - Intelligence Archive has full analysis]\n\nLocation: Tomb Gamma (coordinates in Intelligence Archive)\n\nThreat Level: CRITICAL",
           "behavior": {}
         }
       ],
       "items": [],
       "dialogue": {
-        "description": "SAFETYNET Communications Center - Emergency Operations Center. This is where ENTROPY cell communications are intercepted and analyzed. The Architect's messages appear directly on the screens throughout the mission. For the first time, you're in direct contact with the mastermind behind all ENTROPY operations. Their presence is unsettling—they seem to know everything about SAFETYNET's operations.",
+        "description": "SAFETYNET Communications Center - Emergency Operations Center. This is where ENTROPY cell communications are intercepted and analyzed. The Architect's messages appear directly on the screens throughout the mission. For the first time, you're in direct contact with the mastermind behind all ENTROPY operations. Their presence is unsettling--they seem to know everything about SAFETYNET's operations.",
         "noPlayerDialogue": "The Architect is watching. They're communicating directly with you. This is unprecedented."
       }
     },
@@ -924,7 +955,7 @@ ANALYSIS:
           "spriteIndex": 45,
           "locked": false,
           "interactable": true,
-          "observations": "<%= tomb_gamma_coordinates %>",
+          "observations": <%= tomb_gamma_coordinates.to_json %>,
           "behavior": {
             "onInteract": [
               {
@@ -949,7 +980,7 @@ ANALYSIS:
           "spriteIndex": 45,
           "locked": false,
           "interactable": true,
-          "observations": "<%= mole_evidence_text %>",
+          "observations": <%= mole_evidence_text.to_json %>,
           "behavior": {
             "onInteract": [
               {
@@ -974,7 +1005,7 @@ ANALYSIS:
           "spriteIndex": 52,
           "locked": false,
           "interactable": true,
-          "observations": "THE ARCHITECT - IDENTITY INVESTIGATION\n\nBased on mole evidence and operational patterns, suspects narrowed to 3 individuals:\n\nSUSPECT A: [REDACTED]\n- Senior SAFETYNET analyst\n- Access to all operational data\n- Background: Former NSA, deep technical expertise\n- Motive: Unknown\n- Probability: 35%\n\nSUSPECT B: [REDACTED]\n- SAFETYNET operations coordinator\n- Access to mission assignments and timing\n- Background: Military intelligence, strategic planning\n- Motive: Ideological disagreement with SAFETYNET methods?\n- Probability: 40%\n\nSUSPECT C: [REDACTED]\n- External contractor with high-level clearance\n- Access to communications and logistics\n- Background: Academic, published papers on systems theory and entropy\n- Motive: Philosophical? Personal vendetta?\n- Probability: 25%\n\nAll three have:\n• Required technical expertise\n• Access to SAFETYNET operational procedures\n• Knowledge of agent assignments and timing\n• Capability to coordinate multiple ENTROPY cells\n\nFurther investigation required. Mission 8 priority: Identify The Architect.",
+          "observations": "THE ARCHITECT - IDENTITY INVESTIGATION\n\nBased on mole evidence and operational patterns, suspects narrowed to 3 individuals:\n\nSUSPECT A: [REDACTED]\n- Senior SAFETYNET analyst\n- Access to all operational data\n- Background: Former NSA, deep technical expertise\n- Motive: Unknown\n- Probability: 35%\n\nSUSPECT B: [REDACTED]\n- SAFETYNET operations coordinator\n- Access to mission assignments and timing\n- Background: Military intelligence, strategic planning\n- Motive: Ideological disagreement with SAFETYNET methods?\n- Probability: 40%\n\nSUSPECT C: [REDACTED]\n- External contractor with high-level clearance\n- Access to communications and logistics\n- Background: Academic, published papers on systems theory and entropy\n- Motive: Philosophical? Personal vendetta?\n- Probability: 25%\n\nAll three have:\n* Required technical expertise\n* Access to SAFETYNET operational procedures\n* Knowledge of agent assignments and timing\n* Capability to coordinate multiple ENTROPY cells\n\nFurther investigation required. Mission 8 priority: Identify The Architect.",
           "behavior": {}
         }
       ],
@@ -983,7 +1014,7 @@ ANALYSIS:
           "type": "notes",
           "name": "Tomb Gamma Coordinates",
           "takeable": true,
-          "observations": "Coordinates: 47.2382° N, 112.5156° W\nLocation: Montana wilderness\nDescription: Abandoned Cold War bunker\nCodename: Tomb Gamma\nPurpose: The Architect's base of operations",
+          "observations": "Coordinates: 47.2382 degrees N, 112.5156 degrees W\nLocation: Montana wilderness\nDescription: Abandoned Cold War bunker\nCodename: Tomb Gamma\nPurpose: The Architect's base of operations",
           "onPickup": [
             {
               "type": "set_global_variable",
@@ -1188,13 +1219,13 @@ ANALYSIS:
           "spriteIndex": 52,
           "locked": false,
           "interactable": true,
-          "observations": "CRISIS TIMER: <%= timer_minutes_remaining %>:00\n\nYour Operation: <%= crisis_choice.upcase %>\n\n<% if all_flags_submitted %>✓ VM intelligence extracted - countermeasures ready\n<% else %>○ VM challenges incomplete - limited options available\n<% end %>\n\n<% if crisis_neutralized %>✓ CRISIS NEUTRALIZED\n<% else %>○ Attack in progress\n<% end %>",
+          "observations": "CRISIS TIMER: <%= timer_minutes_remaining %>:00\n\nYour Operation: <%= crisis_choice.upcase %>\n\n<% if all_flags_submitted %>[X] VM intelligence extracted - countermeasures ready\n<% else %>○ VM challenges incomplete - limited options available\n<% end %>\n\n<% if crisis_neutralized %>[X] CRISIS NEUTRALIZED\n<% else %>○ Attack in progress\n<% end %>",
           "behavior": {}
         }
       ],
       "items": [],
       "dialogue": {
-        "description": "<% if crisis_choice == 'infrastructure' %>Crisis Terminal - Infrastructure Collapse Response. You're directly interfacing with the Pacific Northwest Power Grid systems via remote access. Marcus 'Blackout' Chen's face appears on the video feeds from the facility. The SCADA control systems show cascading failures spreading across the grid. Every second counts.<% elsif crisis_choice == 'data' %>Crisis Terminal - Data Apocalypse Response. Twin video feeds show both threats simultaneously: Specter exfiltrating voter records, and Rachel Morrow deploying disinformation. You can't stop both perfectly—which do you prioritize?<% elsif crisis_choice == 'supply_chain' %>Crisis Terminal - Supply Chain Infection Response. Adrian Cross appears on the video feed, calmly explaining his philosophy as backdoors deploy across millions of systems. The moral weight is heavy: no immediate deaths, but massive long-term consequences. Was this the right choice?<% elsif crisis_choice == 'corporate' %>Crisis Terminal - Corporate Warfare Response. Video feeds show Victoria 'V1per' Zhang and Marcus 'Shadow' Chen coordinating the deployment of 47 zero-day exploits against Fortune 500 corporations. Billions in economic damage at stake. Did you choose corporate wealth over human lives elsewhere?<% else %>Crisis Terminal awaiting crisis selection.<% end %>",
+        "description": "<% if crisis_choice == 'infrastructure' %>Crisis Terminal - Infrastructure Collapse Response. You're directly interfacing with the Pacific Northwest Power Grid systems via remote access. Marcus 'Blackout' Chen's face appears on the video feeds from the facility. The SCADA control systems show cascading failures spreading across the grid. Every second counts.<% elsif crisis_choice == 'data' %>Crisis Terminal - Data Apocalypse Response. Twin video feeds show both threats simultaneously: Specter exfiltrating voter records, and Rachel Morrow deploying disinformation. You can't stop both perfectly--which do you prioritize?<% elsif crisis_choice == 'supply_chain' %>Crisis Terminal - Supply Chain Infection Response. Adrian Cross appears on the video feed, calmly explaining his philosophy as backdoors deploy across millions of systems. The moral weight is heavy: no immediate deaths, but massive long-term consequences. Was this the right choice?<% elsif crisis_choice == 'corporate' %>Crisis Terminal - Corporate Warfare Response. Video feeds show Victoria 'V1per' Zhang and Marcus 'Shadow' Chen coordinating the deployment of 47 zero-day exploits against Fortune 500 corporations. Billions in economic damage at stake. Did you choose corporate wealth over human lives elsewhere?<% else %>Crisis Terminal awaiting crisis selection.<% end %>",
         "noPlayerDialogue": "This is your crisis. Stop the attack before time runs out."
       }
     },
@@ -1271,13 +1302,13 @@ ANALYSIS:
           "spriteIndex": 52,
           "locked": false,
           "interactable": true,
-          "observations": "MISSION 7 SUMMARY: THE ARCHITECT'S GAMBIT\n\nObjectives Status:\n<% if crisis_neutralized %>✓<% else %>✗<% end %> Crisis neutralized at your terminal\n<% if all_flags_submitted %>✓<% else %>✗<% end %> All VM flags submitted\n<% if found_tomb_gamma %>✓<% else %>✗<% end %> Tomb Gamma location discovered\n<% if found_mole_evidence %>✓<% else %>✗<% end %> SAFETYNET mole evidence found\n<% if contacted_architect %>✓<% else %>✗<% end %> Direct contact with The Architect\n\nKey Achievements:\n• First direct contact with The Architect\n• The Architect's philosophy revealed\n• Tomb Gamma coordinates obtained\n• SAFETYNET mole confirmed\n• The Architect's identity narrowed to 3 suspects\n\nMission Status: <% if crisis_neutralized && all_flags_submitted && found_tomb_gamma %>SUCCESS<% else %>PARTIAL<% end %>\n\nNext Mission: M8 - The Mole (Identify the traitor within SAFETYNET)",
+          "observations": "MISSION 7 SUMMARY: THE ARCHITECT'S GAMBIT\n\nObjectives Status:\n<% if crisis_neutralized %>[X]<% else %>[ ]<% end %> Crisis neutralized at your terminal\n<% if all_flags_submitted %>[X]<% else %>[ ]<% end %> All VM flags submitted\n<% if found_tomb_gamma %>[X]<% else %>[ ]<% end %> Tomb Gamma location discovered\n<% if found_mole_evidence %>[X]<% else %>[ ]<% end %> SAFETYNET mole evidence found\n<% if contacted_architect %>[X]<% else %>[ ]<% end %> Direct contact with The Architect\n\nKey Achievements:\n* First direct contact with The Architect\n* The Architect's philosophy revealed\n* Tomb Gamma coordinates obtained\n* SAFETYNET mole confirmed\n* The Architect's identity narrowed to 3 suspects\n\nMission Status: <% if crisis_neutralized && all_flags_submitted && found_tomb_gamma %>SUCCESS<% else %>PARTIAL<% end %>\n\nNext Mission: M8 - The Mole (Identify the traitor within SAFETYNET)",
           "behavior": {}
         }
       ],
       "items": [],
       "dialogue": {
-        "description": "SAFETYNET Debrief Room - Emergency Operations Center. The crisis has passed. All four operations have concluded. Director Morgan and Agent 0x99 are here to review the outcomes. This is the moment of truth—you'll learn what happened at the operations you didn't choose. The weight of your decision is heavy. Lives were saved... and lives were lost. The Architect's gambit succeeded in part, regardless of your performance. But you discovered Tomb Gamma's location. The endgame approaches.",
+        "description": "SAFETYNET Debrief Room - Emergency Operations Center. The crisis has passed. All four operations have concluded. Director Morgan and Agent 0x99 are here to review the outcomes. This is the moment of truth--you'll learn what happened at the operations you didn't choose. The weight of your decision is heavy. Lives were saved... and lives were lost. The Architect's gambit succeeded in part, regardless of your performance. But you discovered Tomb Gamma's location. The endgame approaches.",
         "noPlayerDialogue": "The operations are complete. Time to face the consequences of your choice."
       }
     }
