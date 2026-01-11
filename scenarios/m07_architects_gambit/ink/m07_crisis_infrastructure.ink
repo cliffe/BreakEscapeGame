@@ -87,36 +87,26 @@ His voice hardens.
 
 === casualties_argument ===
 {showed_casualty_evidence == false:
-    He pulls up projections on a secondary screen.
-
-    "240 to 385 deaths over 72 hours. I know the numbers, Agent. I calculated them myself." #speaker:Marcus Chen
-
-    "120 to 180 hospital deaths from generator failures. 40 to 65 traffic fatalities. 80 to 140 exposure deaths from hypothermia."
+    He pulls up projections on a secondary screen. "240 to 385 deaths over 72 hours. I know the numbers, Agent. I calculated them myself. 120 to 180 hospital deaths from generator failures. 40 to 65 traffic fatalities. 80 to 140 exposure deaths from hypothermia." #speaker:Marcus Chen
 
     He meets your eyes.
 
-    "Every single one of those deaths is the government's fault. They had EIGHT YEARS to fix this. The blood is on THEIR hands, not mine."
+    "Every single one of those deaths is the government's fault. They had EIGHT YEARS to fix this. The blood is on THEIR hands, not mine." **T-MINUS 2:39**
 
-    **T-MINUS 2:39**
-
-    + [Show him evidence of other ENTROPY casualties] -> show_casualties
-    + [That's rationalizing murder] -> moral_condemnation
-    + [You're right about the vulnerabilities] -> acknowledge_validity
-}
-
-{showed_casualty_evidence == true:
+    * [Show him evidence of other ENTROPY casualties] -> show_casualties
+    * [That's rationalizing murder] -> moral_revelation
+    * [You're right about the vulnerabilities] -> acknowledge_validity
+- else:
     He's staring at the casualty projections you showed him from the other operations.
 
     His hands have stopped moving on the keyboard.
 
-    "This... this is all ENTROPY? Tonight?" #speaker:Marcus Chen
+    "This... this is all ENTROPY? Tonight?" #speaker:Marcus Chen **T-MINUS 2:12**
 
     ~ chen_hesitating = true
 
-    **T-MINUS 2:12**
-
-    + [You're part of something bigger than infrastructure] -> reveal_architect
-    + [You can still stop this] -> offer_redemption
+    * [You're part of something bigger than infrastructure] -> reveal_architect
+    * [You can still stop this] -> recruitment_attempt
 }
 
 === show_casualties ===
@@ -143,7 +133,7 @@ He trails off, looking at the casualty numbers.
 **T-MINUS 2:24**
 
 + [You were used. Help me stop this.] -> recruitment_attempt
-+ [Does this change anything?] -> test_resolve
++ [Does this change anything?] -> moral_revelation
 
 === terrorism_accusation ===
 "Terrorism? I prefer 'forceful penetration testing.'" #speaker:Marcus Chen
@@ -156,7 +146,7 @@ He's not joking.
 
 **T-MINUS 2:45**
 
-+ [This isn't teaching. It's murder.] -> moral_condemnation
++ [This isn't teaching. It's murder.] -> moral_revelation
 + [I understand your frustration] -> empathy_approach
 
 === alternative_approach ===
@@ -176,7 +166,7 @@ He gestures at the terminal.
 
 **T-MINUS 2:18**
 
-+ [That's not your choice to make] -> moral_condemnation
++ [That's not your choice to make] -> moral_revelation
 + [Show him the broader ENTROPY plan] -> show_casualties
 
 === empathy_approach ===
@@ -216,7 +206,7 @@ He looks at you seriously.
 
 **T-MINUS 1:52**
 
-+ {showed_casualty_evidence == true} [You're causing consequences across multiple targets] -> architect_reveal
++ {showed_casualty_evidence == true} [You're causing consequences across multiple targets] -> reveal_architect
 + [Let me help you find another way] -> final_recruitment_attempt
 + [Time's up, Chen. Shutdown codes. Now.] -> force_compliance
 
@@ -256,19 +246,17 @@ For the first time, he looks uncertain.
 + [Give me the shutdown codes or I take them by force] -> threat_escalation
 
 === recruitment_attempt ===
+{showed_casualty_evidence == true and chen_hesitating == true:
+    -> final_recruitment_attempt
+}
+
 {showed_casualty_evidence == false:
     "Recruitment? You think I'd work for the same government that ignored my warnings?" #speaker:Marcus Chen
 
-    "Not interested."
+    "Not interested." **T-MINUS 2:06**
 
-    **T-MINUS 2:06**
-
-    + [Show him the full ENTROPY casualty picture] -> show_casualties
-    + [This is your last chance] -> threat_escalation
-}
-
-{showed_casualty_evidence == true and chen_hesitating == true:
-    -> final_recruitment_attempt
+    * [Show him the full ENTROPY casualty picture] -> show_casualties
+    * [This is your last chance] -> threat_escalation
 }
 
 === final_recruitment_attempt ===
@@ -309,7 +297,7 @@ Marcus steps away from the terminal, hands raised.
 ~ chen_fate = "recruited"
 
 + [You have my word] -> recruitment_conclusion
-+ [You'll still face charges] -> qualified_recruitment
++ [You'll still face charges] -> recruitment_conclusion
 
 === honest_answer ===
 "At least you're honest." #speaker:Marcus Chen
@@ -423,7 +411,7 @@ His hand moves toward the keyboard. Hovering over a key sequence.
 
 + [You're bluffing] -> call_bluff
 + [Fine. Give me the codes and go] -> let_him_escape
-+ {showed_casualty_evidence == true} [You're not a mass murderer, Marcus] -> appeal_humanity
++ {showed_casualty_evidence == true} [You're not a mass murderer, Marcus] -> last_appeal
 + [Shoot him before he hits the key] -> shoot_chen
 
 === call_bluff ===
@@ -501,12 +489,10 @@ The grid is saved. But you had to kill him to do it.
 
     Marcus hesitates. His finger lifts slightly from the key.
 
-    "I don't want to be a mass murderer. I wanted to FIX things..." #speaker:Marcus Chen
+    "I don't want to be a mass murderer. I wanted to FIX things..." #speaker:Marcus Chen **T-MINUS 1:04**
 
-    **T-MINUS 1:04**
-
-    + [Then help me fix this] -> final_recruitment_attempt
-    + [Step away from the keyboard] -> compliance_granted
+    * [Then help me fix this] -> final_recruitment_attempt
+    * [Step away from the keyboard] -> compliance_granted
 }
 
 === acknowledge_validity ===

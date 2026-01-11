@@ -27,7 +27,7 @@ VAR asked_about_architect_taunts = false
     "The Architect is coordinating all four attacks. This is the most sophisticated ENTROPY operation we've ever seen."
 
     + [What do you need me to do?] -> mission_overview
-    + [Tell me about The Architect] -> architect_info
+    + [I'm ready. What's the mission?] -> mission_overview
 }
 
 {contacted_0x99 == true:
@@ -45,57 +45,17 @@ VAR asked_about_architect_taunts = false
 "Your mission is straightforward but time-critical:" #speaker:Agent 0x99
 
 {crisis_choice == "infrastructure":
-    "**OBJECTIVE:** Stop the power grid attack before cascading failures begin.
-
-    **KEY TASKS:**
-    1. Complete VM exploitation to extract shutdown codes
-    2. Submit all 4 flags - we need that intelligence
-    3. Reach the SCADA control room before timer expires
-    4. Confront Marcus Chen and disable the attack
-    5. Search for ENTROPY intelligence (Tomb Gamma location, mole evidence)
-
-    **PRIORITY:** Timer is everything. Don't get bogged down in combat - avoid or neutralize quickly."
-}
-
-{crisis_choice == "data":
-    "**OBJECTIVE:** Stop voter data breach AND disinformation campaign.
-
-    **KEY TASKS:**
-    1. Complete VM exploitation to extract shutdown codes
-    2. Submit all 4 flags - critical intelligence needed
-    3. Prioritize: breach OR disinformation (you may not stop both)
-    4. Confront Specter and Rachel Morrow
-    5. Search for ENTROPY intelligence
-
-    **WARNING:** Dual timers. If forced to choose, consider: data breach = long-term identity theft, disinformation = immediate democratic crisis."
-}
-
-{crisis_choice == "supply_chain":
-    "**OBJECTIVE:** Prevent backdoor injection into software updates.
-
-    **KEY TASKS:**
-    1. Complete VM exploitation to extract shutdown codes
-    2. Submit all 4 flags for intelligence
-    3. Disable injection system before updates deploy
-    4. Quarantine already-modified updates
-    5. Confront Adrian Cross (he's recruitable - show him casualty evidence)
-    6. Search for ENTROPY intelligence
-
-    **NOTE:** This has no immediate casualties but massive long-term consequences. Don't let that reduce your urgency."
-}
-
-{crisis_choice == "corporate":
-    "**OBJECTIVE:** Deploy countermeasures to 12 corporations before zero-day attacks.
-
-    **KEY TASKS:**
-    1. Complete VM exploitation to extract countermeasure codes
-    2. Submit all 4 flags for intelligence
-    3. Deploy emergency patches to all target corporations
-    4. Neutralize exploit staging systems
-    5. Confront Victoria Zhang and Marcus Chen
-    6. Search for ENTROPY intelligence
-
-    **TIP:** Victoria is recruitable. Marcus will escape - don't waste time chasing him."
+    "OBJECTIVE: Stop the power grid attack before cascading failures begin. KEY TASKS: Complete VM exploitation to extract shutdown codes, submit all 4 flags, reach the SCADA control room before timer expires, confront Marcus Chen and disable the attack, search for ENTROPY intelligence. PRIORITY: Timer is everything. Don't get bogged down in combat." #speaker:Agent 0x99
+- else:
+    {crisis_choice == "data":
+        "OBJECTIVE: Stop voter data breach AND disinformation campaign. KEY TASKS: Complete VM exploitation to extract shutdown codes, submit all 4 flags, prioritize breach OR disinformation (you may not stop both), confront Specter and Rachel Morrow, search for ENTROPY intelligence. WARNING: Dual timers. Data breach equals long-term identity theft, disinformation equals immediate democratic crisis." #speaker:Agent 0x99
+    - else:
+        {crisis_choice == "supply_chain":
+            "OBJECTIVE: Prevent backdoor injection into software updates. KEY TASKS: Complete VM exploitation, submit all 4 flags, disable injection system before updates deploy, quarantine already-modified updates, confront Adrian Cross (he's recruitable - show him casualty evidence), search for ENTROPY intelligence. NOTE: No immediate casualties but massive long-term consequences. Don't let that reduce urgency." #speaker:Agent 0x99
+        - else:
+            "OBJECTIVE: Deploy countermeasures to 12 corporations before zero-day attacks. KEY TASKS: Complete VM exploitation to extract countermeasure codes, submit all 4 flags, deploy emergency patches to all target corporations, neutralize exploit staging systems, confront Victoria Zhang and Marcus Chen, search for ENTROPY intelligence. TIP: Victoria is recruitable. Marcus will escape - don't waste time chasing him." #speaker:Agent 0x99
+        }
+    }
 }
 
 "You have 30 minutes. Clock started when you left the EOC."
@@ -107,19 +67,17 @@ VAR asked_about_architect_taunts = false
 "The other teams are engaged as we speak. Outcomes are unfolding exactly as Director Morgan predicted." #speaker:Agent 0x99
 
 {crisis_choice == "infrastructure":
-    "Team Alpha is handling supply chain - they'll succeed. Team Bravo on data - partial success expected, disinformation will deploy. Team Charlie on corporate - they're failing, healthcare ransomware is going live."
-}
-
-{crisis_choice == "data":
-    "Team Alpha on infrastructure - they're failing, blackout is happening. Team Bravo on corporate - full success, they're crushing it. Team Charlie on supply chain - partial, some backdoors getting through."
-}
-
-{crisis_choice == "supply_chain":
-    "Team Alpha on data - full success, both attacks stopped. Team Bravo on infrastructure - partial, some casualties occurring. Team Charlie on corporate - failing, economic damage mounting."
-}
-
-{crisis_choice == "corporate":
-    "Team Alpha on infrastructure - full success, blackout prevented. Team Bravo on data - catastrophic failure, both attacks succeeded. Team Charlie on supply chain - partial success."
+    "Team Alpha is handling supply chain - they'll succeed. Team Bravo on data - partial success expected, disinformation will deploy. Team Charlie on corporate - they're failing, healthcare ransomware is going live." #speaker:Agent 0x99
+- else:
+    {crisis_choice == "data":
+        "Team Alpha on infrastructure - they're failing, blackout is happening. Team Bravo on corporate - full success, they're crushing it. Team Charlie on supply chain - partial, some backdoors getting through." #speaker:Agent 0x99
+    - else:
+        {crisis_choice == "supply_chain":
+            "Team Alpha on data - full success, both attacks stopped. Team Bravo on infrastructure - partial, some casualties occurring. Team Charlie on corporate - failing, economic damage mounting." #speaker:Agent 0x99
+        - else:
+            "Team Alpha on infrastructure - full success, blackout prevented. Team Bravo on data - catastrophic failure, both attacks succeeded. Team Charlie on supply chain - partial success." #speaker:Agent 0x99
+        }
+    }
 }
 
 "Your choice determined who gets the best operator - you. Focus on winning YOUR operation. You can't help them now."
@@ -185,46 +143,17 @@ Submit each flag as you find it - we're analyzing the intelligence in real-time.
 
 === combat_guidance ===
 {crisis_choice == "infrastructure":
-    "Marcus Chen has backup operatives. Hostile NPCs you'll encounter:" #speaker:Agent 0x99
-
-    "* **Jake Morrison** (Security Guard) - Armed, aggressive, will attack on sight
-    * **Elena Rodriguez** (Engineer) - Non-violent, will flee if confronted
-    * **Thomas Park** (Maintenance) - Will sabotage backup power if you get close
-
-    **RECOMMENDATION:** Avoid prolonged combat. Neutralize quickly or bypass. You're on a clock."
-}
-
-{crisis_choice == "data":
-    "You're facing Ghost Protocol and Social Fabric operatives:" #speaker:Agent 0x99
-
-    "* **Specter** (Ghost Protocol) - Will escape no matter what, don't chase
-    * **Rachel Morrow** (Social Fabric) - Non-violent, uses hostages, RECRUITABLE
-    * **Marcus Webb** (Hacker) - Will shoot if cornered, technical expert
-    * **Sarah Kim** (Narrative Specialist) - Non-violent, emotionally vulnerable
-
-    **RECOMMENDATION:** Minimize violence, focus on recruitment. Rachel is valuable if turned."
-}
-
-{crisis_choice == "supply_chain":
-    "Supply Chain Saboteurs are primarily non-violent technicals:" #speaker:Agent 0x99
-
-    "* **Adrian Cross** (Leader) - Non-violent, prefers escape, RECRUITABLE
-    * **Elena Vasquez** (Code Signing) - Non-violent, will cooperate if Adrian is turned
-    * **James Park** (Security) - Armed, will shoot if exposed
-    * **Marcus Chen** (Engineer) - Will flee, technical knowledge useful
-
-    **RECOMMENDATION:** Prioritize recruitment over combat. Adrian is valuable long-term asset."
-}
-
-{crisis_choice == "corporate":
-    "You're facing two ENTROPY cells coordinating:" #speaker:Agent 0x99
-
-    "* **Victoria Zhang** (Digital Vanguard) - Armed, proficient, RECRUITABLE
-    * **Marcus 'Shadow' Chen** (Zero Day Syndicate) - Non-violent, will escape
-    * **Elena Rodriguez** (Hacker) - Non-violent, follows Victoria's lead
-    * **James Park** (Insider) - Unarmed, will flee
-
-    **RECOMMENDATION:** Focus on Victoria recruitment. Marcus always escapes - it's Zero Day Syndicate protocol."
+    "Marcus Chen has backup operatives. Hostile NPCs you'll encounter: **Jake Morrison** (Security Guard) - Armed, aggressive, will attack on sight, **Elena Rodriguez** (Engineer) - Non-violent, will flee if confronted, **Thomas Park** (Maintenance) - Will sabotage backup power if you get close. RECOMMENDATION: Avoid prolonged combat. Neutralize quickly or bypass. You're on a clock." #speaker:Agent 0x99
+- else:
+    {crisis_choice == "data":
+        "You're facing Ghost Protocol and Social Fabric operatives: **Specter** (Ghost Protocol) - Will escape no matter what, don't chase, **Rachel Morrow** (Social Fabric) - Non-violent, uses hostages, RECRUITABLE, **Marcus Webb** (Hacker) - Will shoot if cornered, technical expert, **Sarah Kim** (Narrative Specialist) - Non-violent, emotionally vulnerable. RECOMMENDATION: Minimize violence, focus on recruitment. Rachel is valuable if turned." #speaker:Agent 0x99
+    - else:
+        {crisis_choice == "supply_chain":
+            "Supply Chain Saboteurs are primarily non-violent technicals: **Adrian Cross** (Leader) - Non-violent, prefers escape, RECRUITABLE, **Elena Vasquez** (Code Signing) - Non-violent, will cooperate if Adrian is turned, **James Park** (Security) - Armed, will shoot if exposed, **Marcus Chen** (Engineer) - Will flee, technical knowledge useful. RECOMMENDATION: Prioritize recruitment over combat. Adrian is valuable long-term asset." #speaker:Agent 0x99
+        - else:
+            "You're facing two ENTROPY cells coordinating: **Victoria Zhang** (Digital Vanguard) - Armed, proficient, RECRUITABLE, **Marcus 'Shadow' Chen** (Zero Day Syndicate) - Non-violent, will escape, **Elena Rodriguez** (Hacker) - Non-violent, follows Victoria's lead, **James Park** (Insider) - Unarmed, will flee. RECOMMENDATION: Focus on Victoria recruitment. Marcus always escapes - it's Zero Day Syndicate protocol." #speaker:Agent 0x99
+        }
+    }
 }
 
 + [Understood] -> phone_0x99
@@ -264,18 +193,16 @@ Submit each flag as you find it - we're analyzing the intelligence in real-time.
 
 {crisis_choice == "infrastructure":
     "You chose to save 240-385 lives from the blackout. That's the right call. Focus on that."
-}
-
-{crisis_choice == "data":
-    "You chose to protect democratic institutions. That matters. Don't second-guess it now."
-}
-
-{crisis_choice == "supply_chain":
-    "You chose long-term security. 47 million future victims prevented. Own that choice."
-}
-
-{crisis_choice == "corporate":
-    "You chose economic stability. Millions of jobs protected. That's legitimate, don't let them make you feel guilty."
+- else:
+    {crisis_choice == "data":
+        "You chose to protect democratic institutions. That matters. Don't second-guess it now."
+    - else:
+        {crisis_choice == "supply_chain":
+            "You chose long-term security. 47 million future victims prevented. Own that choice."
+        - else:
+            "You chose economic stability. Millions of jobs protected. That's legitimate, don't let them make you feel guilty."
+        }
+    }
 }
 
 + [You're right. Staying focused.] -> phone_0x99

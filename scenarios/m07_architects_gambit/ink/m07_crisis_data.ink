@@ -49,8 +49,8 @@ Rachel looks conflicted.
 **Exfiltration: 89%**
 **Deployment: T-MINUS 28:47**
 
-+ [Rachel, this isn't exposing corruption - it's causing chaos.] -> rachel_moral_argument
-+ [Specter, you're stealing 187 million people's identities.] -> specter_accusation
++ [Rachel, this isn't exposing corruption - it's causing chaos.] -> rachel_casualties_argument
++ [Specter, you're stealing 187 million people's identities.] -> exfiltration_accusation
 + [I need to prioritize. Which threat first?] -> prioritization_choice
 
 === prioritization_choice ===
@@ -102,7 +102,7 @@ Specter continues working at the database.
 **Focus: DISINFORMATION**
 
 + [Disable the deployment system] -> disinformation_confrontation
-+ [Rachel, listen to me] -> rachel_recruitment_path
++ [Rachel, listen to me] -> rachel_recruitment_offer
 
 === attempt_both ===
 "Ambitious. But you're one person. We're two." #speaker:Specter
@@ -127,7 +127,7 @@ Specter watches, hands moving on a secondary keyboard.
 **Exfiltration: 93%**
 
 + [Use the shutdown codes from the VM] -> exfiltration_technical
-+ [Physically disconnect the servers] -> physical_approach_exfiltration
++ [Physically disconnect the servers] -> physical_interrupt
 + [Who are you really, Specter?] -> specter_identity_question
 
 === exfiltration_technical ===
@@ -187,9 +187,7 @@ Rachel is at the keyboard, timer counting down.
 }
 
 {showed_rachel_casualties == true:
-    "I already know The Architect's plan. That's why I'm hesitating." #speaker:Rachel Morrow
-
-    **T-MINUS 20:45**
+    "I already know The Architect's plan. That's why I'm hesitating." #speaker:Rachel Morrow **T-MINUS 20:45**
 
     + [Then help me stop this] -> rachel_cooperation
 }
@@ -481,13 +479,12 @@ Intercepted email:
 * Body: "0x00 to election security. Teams Alpha/Bravo/Charlie on other targets"
 
 {rachel_recruited == true:
-    **FOUND: Social Fabric Intelligence (from Rachel)**
-    * 47 Social Fabric cells nationwide
-    * Narrative deployment strategies
-    * The Architect's communication methods
-}
+    **FOUND: Social Fabric Intelligence (from Rachel)** 47 Social Fabric cells nationwide, Narrative deployment strategies, The Architect's communication methods
 
--> END
+    -> END
+- else:
+    -> END
+}
 
 === rachel_physical_confrontation ===
 You physically pull Rachel from the terminal.

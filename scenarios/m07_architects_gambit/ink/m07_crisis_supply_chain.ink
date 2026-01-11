@@ -167,15 +167,11 @@ He appreciates honesty.
 {showed_adrian_casualties == false:
     "Hospitals and banks should have better security. I'm proving they don't." #speaker:Adrian Cross
 
-    "If a few thousand get infected, maybe organizations will take supply chain security seriously."
-
-    **T-MINUS 3:42**
+    "If a few thousand get infected, maybe organizations will take supply chain security seriously." **T-MINUS 3:42**
 
     + [Show him the full ENTROPY casualty picture] -> show_casualties
     + [You're rationalizing mass harm.] -> moral_condemnation
-}
-
-{showed_adrian_casualties == true:
+- else:
     "I've seen the numbers. That's why I'm reconsidering." #speaker:Adrian Cross
 
     -> recruitment_offer
@@ -407,13 +403,11 @@ Intercepted email:
 * Subject: Simultaneous operations confirmed
 
 {adrian_recruited == true:
-    **FOUND: Supply Chain Saboteurs Intelligence (from Adrian)**
-    * Attack methodologies
-    * Code signing exploitation techniques
-    * TechForge infrastructure weaknesses
-    * Other potential supply chain targets
-}
+    **FOUND: Supply Chain Saboteurs Intelligence (from Adrian)** Attack methodologies, Code signing exploitation techniques, TechForge infrastructure weaknesses, Other potential supply chain targets
 
--> END
+    -> END
+- else:
+    -> END
+}
 
 -> END

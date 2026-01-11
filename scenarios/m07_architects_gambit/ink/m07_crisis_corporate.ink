@@ -383,7 +383,7 @@ Marcus: "Market volatility creates opportunity. I'm unconcerned." #speaker:Marcu
 **T-MINUS 3:27**
 
 + [Victoria, this isn't just punishing corporations - people lose jobs.] -> human_cost_argument
-+ [Marcus, economic collapse affects you too.] -> marcus_economic_argument
++ [Marcus, economic collapse affects you too.] -> economic_argument
 
 === human_cost_argument ===
 "140,000 people losing their jobs. Families losing homes. Retirements wiped out. Those aren't corporations - those are people." #speaker:You
@@ -517,13 +517,11 @@ Intercepted email:
 * Body: "0x00 to corporate warfare. Teams handle infrastructure/data/supply chain"
 
 {victoria_recruited == true:
-    **FOUND: Digital Vanguard Intelligence (from Victoria)**
-    * Cell structure and membership
-    * Corporate target assessments
-    * The Architect's coordination methods
-    * Future attack plans
-}
+    **FOUND: Digital Vanguard Intelligence (from Victoria)** Cell structure and membership, Corporate target assessments, The Architect's coordination methods, Future attack plans
 
--> END
+    -> END
+- else:
+    -> END
+}
 
 -> END
