@@ -1,0 +1,649 @@
+{
+  "name": "Mission 8: The Mole",
+  "description": "Someone inside SAFETYNET leaked Mission 7's operational details to ENTROPY. Return to headquarters to identify the traitor among your colleagues—before they can strike again.",
+  "author": "Break Escape Development Team",
+  "version": "1.0.0",
+
+  "globalVariables": {
+    "player_name": "Agent 0x00",
+    "mission_started": false,
+
+    "suspects_interviewed": 0,
+    "cipher_interviewed": false,
+    "phantom_interviewed": false,
+    "nightshade_interviewed": false,
+
+    "evidence_collected": 0,
+    "found_gitlist_vuln": false,
+    "found_leaked_creds": false,
+    "found_architect_comms": false,
+    "found_access_logs": false,
+    "found_nightshade_profile": false,
+    "found_database_catalog": false,
+    "found_deep_state_manual": false,
+
+    "flag1_submitted": false,
+    "flag2_submitted": false,
+    "flag3_submitted": false,
+    "flag4_submitted": false,
+    "all_flags_submitted": false,
+
+    "mole_identified": false,
+    "nightshade_confronted": false,
+    "nightshade_arrested": false,
+    "nightshade_triple_agent": false,
+
+    "tomb_gamma_location_known": false,
+    "database_theft_understood": false,
+    "safetynet_exposed": false,
+
+    "has_director_keycard": false,
+    "has_interrogation_key": false,
+    "has_lockpicks": false,
+    "has_rfid_cloner": false,
+
+    "mission_complete": false
+  },
+
+  "rooms": [
+    {
+      "id": "main_lobby",
+      "name": "Main Lobby",
+      "description": "The entrance to SAFETYNET headquarters feels different now. The usual buzz of confident activity has been replaced by tense silence. Security checkpoints are more thorough. Agents avoid eye contact. Everyone knows there's a traitor among them, and paranoia hangs heavy in the air.",
+      "image": "safetynet_lobby.png",
+      "playerStart": true,
+
+      "exits": {
+        "north": "director_office",
+        "east": "operations_floor",
+        "west": "cryptography_lab"
+      },
+
+      "npcs": [
+        {
+          "id": "receptionist_AI",
+          "name": "ATHENA",
+          "description": "SAFETYNET's AI receptionist, now running heightened security protocols.",
+          "sprite": "ai_receptionist",
+          "dialogue": "m08_receptionist_ai",
+          "behavior": {
+            "type": "stationary"
+          },
+          "timedConversation": {
+            "delay": 0,
+            "dialogue": "m08_opening_briefing",
+            "once": true
+          }
+        }
+      ],
+
+      "items": [
+        {
+          "id": "lobby_directory",
+          "name": "Digital Directory",
+          "description": "Interactive floor plan showing SAFETYNET headquarters layout. North: Director's Office. East: Operations Floor. West: Cryptography Lab.",
+          "type": "readable",
+          "canPickUp": false,
+          "content": "**SAFETYNET HEADQUARTERS - FLOOR PLAN**\\n\\nNORTH: Director's Office (Director Samantha Cross)\\nEAST: Operations Floor (Analyst stations)\\nWEST: Cryptography Lab (Secure communications)\\n\\nSECURITY STATUS: **HEIGHTENED** - Internal investigation in progress.\\nAll personnel must carry ID at all times."
+        },
+        {
+          "id": "security_notice",
+          "name": "Security Alert",
+          "description": "Digital notice board showing elevated security status.",
+          "type": "readable",
+          "canPickUp": false,
+          "content": "**SECURITY ALERT - LEVEL RED**\\n\\nEffective immediately: All classified systems require re-authentication. Report any suspicious activity to Director Cross. Do not discuss Mission 7 operations with unauthorized personnel.\\n\\n- SAFETYNET Security Division"
+        }
+      ],
+
+      "ambientSound": "headquarters_tense.ogg"
+    },
+
+    {
+      "id": "director_office",
+      "name": "Director's Office",
+      "description": "Director Samantha Cross's office is a study in controlled chaos. Wall screens display global threat maps. Case files cover her desk. This is the nerve center of SAFETYNET's operations—and now, the heart of a betrayal investigation.",
+      "image": "director_office.png",
+
+      "exits": {
+        "south": "main_lobby"
+      },
+
+      "npcs": [
+        {
+          "id": "director_cross",
+          "name": "Director Samantha Cross",
+          "description": "SAFETYNET Director. Mid-50s, steel-gray hair, sharp eyes that miss nothing. She's handled countless crises, but this betrayal cuts deep.",
+          "sprite": "director_cross",
+          "dialogue": "m08_director_cross",
+          "behavior": {
+            "type": "stationary",
+            "position": {"x": 500, "y": 300}
+          }
+        }
+      ],
+
+      "items": [
+        {
+          "id": "suspect_dossiers",
+          "name": "Suspect Dossiers",
+          "description": "Three personnel files marked 'INVESTIGATION - CONFIDENTIAL'. Agent 0x23 'Cipher', Agent 0x47 'Nightshade', Agent 0x88 'Phantom'.",
+          "type": "readable",
+          "canPickUp": true,
+          "content": "**INTERNAL INVESTIGATION - SUSPECTS**\\n\\n**Agent 0x23 'Cipher'** - Intelligence Analyst\\nAccess Level: HIGH - Cryptography, signals intelligence\\nBehavioral Analysis: Socially withdrawn, works unusual hours\\nNote: Brilliant but secretive. Currently working on classified project.\\n\\n**Agent 0x47 'Nightshade'** - Operations Specialist\\nAccess Level: MAXIMUM - Mission planning, operational security\\nBehavioral Analysis: Calm under pressure, ideologically committed\\nNote: Trained alongside Agent 0x00. Impeccable record.\\n\\n**Agent 0x88 'Phantom'** - Field Coordinator\\nAccess Level: HIGH - Team movements, tactical planning\\nBehavioral Analysis: Charismatic, well-connected, inquisitive\\nNote: Asks many questions. Frequent unexplained absences."
+        },
+        {
+          "id": "director_terminal",
+          "name": "Director's Terminal",
+          "description": "Secure terminal showing investigation parameters and preliminary findings.",
+          "type": "computer",
+          "canPickUp": false,
+          "locked": false,
+          "content": "**INVESTIGATION STATUS**\\n\\nMission 7 leak confirmed. ENTROPY had detailed knowledge of:\\n- Team assignments\\n- Response timelines\\n- Operational procedures\\n- Agent capabilities\\n\\nLeak source: Internal. Behavioral analysis identified 3 suspects.\\n\\n**PRIORITY:** Identify mole before further damage.\\n**AUTHORIZATION:** Agent 0x00 cleared for investigation."
+        }
+      ],
+
+      "containers": [
+        {
+          "id": "director_safe",
+          "name": "Director's Safe",
+          "description": "Biometric safe containing classified personnel files.",
+          "locked": true,
+          "lockType": "pin",
+          "lockCode": "2407",
+          "contents": [
+            {
+              "id": "nightshade_profile",
+              "name": "Nightshade's Psychological Profile",
+              "description": "Classified psychological evaluation of Agent 0x47.",
+              "type": "readable",
+              "canPickUp": true,
+              "content": "**CLASSIFIED - PSYCHOLOGICAL EVALUATION**\\n**Subject:** Agent 0x47 'Nightshade'\\n**Evaluator:** Dr. Sarah Chen, SAFETYNET Psychology Division\\n\\n**SUMMARY:** Subject demonstrates exceptional technical aptitude and operational planning skills. However, recent assessments show concerning ideological shifts.\\n\\n**RED FLAG:** Subject has expressed philosophical alignment with accelerationist theories. Believes 'entropy is inevitable' and questions value of defensive security posture.\\n\\n**RECOMMENDATION:** [REDACTED BY DIRECTOR CROSS]\\n**ACTION TAKEN:** None. Subject's performance exemplary.\\n\\n**EVALUATOR NOTE:** I strongly recommend closer monitoring. - Dr. Chen"
+            },
+            {
+              "id": "interrogation_key",
+              "name": "Interrogation Room Key",
+              "description": "Physical key to the secure interrogation facility.",
+              "type": "key",
+              "canPickUp": true,
+              "unlocks": ["interrogation_door"]
+            }
+          ]
+        }
+      ]
+    },
+
+    {
+      "id": "operations_floor",
+      "name": "Operations Floor",
+      "description": "The open workspace where SAFETYNET analysts coordinate global operations. Normally vibrant with collaboration, now agents work in isolated silence. Cipher sits at a workstation, surrounded by encrypted files and mathematical proofs.",
+      "image": "operations_floor.png",
+
+      "exits": {
+        "west": "main_lobby",
+        "north": "intel_analysis",
+        "east": "server_room",
+        "south": "security_archives"
+      },
+
+      "npcs": [
+        {
+          "id": "agent_cipher",
+          "name": "Agent 0x23 'Cipher'",
+          "description": "Intelligence analyst and cryptography expert. Brilliant but socially awkward. Currently a suspect in the mole investigation.",
+          "sprite": "agent_cipher",
+          "dialogue": "m08_suspect_cipher",
+          "behavior": {
+            "type": "stationary",
+            "position": {"x": 400, "y": 350}
+          }
+        },
+        {
+          "id": "analyst_background_1",
+          "name": "Junior Analyst",
+          "description": "A young analyst nervously monitoring threat feeds.",
+          "sprite": "analyst_generic",
+          "dialogue": "m08_background_analyst",
+          "behavior": {
+            "type": "stationary",
+            "position": {"x": 600, "y": 250}
+          }
+        }
+      ],
+
+      "items": [
+        {
+          "id": "cipher_workstation",
+          "name": "Cipher's Workstation",
+          "description": "Agent Cipher's desk, covered in cryptographic papers and multiple monitors showing encrypted data streams.",
+          "type": "computer",
+          "canPickUp": false,
+          "locked": true,
+          "lockType": "password",
+          "lockCode": "ENIGMA_2026",
+          "content": "**PROJECT: QUANTUM-RESISTANT ENCRYPTION**\\n\\n[Classified encryption research]\\n\\nCipher has been working on next-generation encryption algorithms. Files show extensive work during 'suspicious hours'—because this project is classified, not because Cipher is the mole.\\n\\nPersonal log: 'If only they knew I was working THIS hard to protect them...'"
+        },
+        {
+          "id": "operations_board",
+          "name": "Operations Status Board",
+          "description": "Digital board showing current SAFETYNET operations worldwide.",
+          "type": "readable",
+          "canPickUp": false,
+          "content": "**CURRENT OPERATIONS**\\n\\nMission 7 Aftermath: Damage assessment ongoing\\nTeam Alpha: Stand-down, debriefing\\nTeam Bravo: Stand-down, debriefing\\nTeam Charlie: Stand-down, debriefing\\n\\nINTERNAL INVESTIGATION: **ACTIVE**\\nAll non-essential operations suspended until mole identified."
+        }
+      ]
+    },
+
+    {
+      "id": "intel_analysis",
+      "name": "Intelligence Analysis Room",
+      "description": "Wall-sized screens display global intelligence feeds and tactical overlays. This is where SAFETYNET coordinates field operations. Agent Phantom manages tactical boards, tracking team movements across multiple operations.",
+      "image": "intel_analysis.png",
+
+      "exits": {
+        "south": "operations_floor"
+      },
+
+      "npcs": [
+        {
+          "id": "agent_phantom",
+          "name": "Agent 0x88 'Phantom'",
+          "description": "Field coordinator responsible for tactical planning and team movements. Charismatic and well-connected. Currently a suspect.",
+          "sprite": "agent_phantom",
+          "dialogue": "m08_suspect_phantom",
+          "behavior": {
+            "type": "stationary",
+            "position": {"x": 450, "y": 300}
+          }
+        }
+      ],
+
+      "items": [
+        {
+          "id": "tactical_board",
+          "name": "Mission 7 Tactical Board",
+          "description": "Board showing Mission 7's team assignments and timeline. Evidence of the leak's impact.",
+          "type": "readable",
+          "canPickUp": false,
+          "content": "**MISSION 7: THE ARCHITECT'S GAMBIT**\\n**STATUS:** PARTIAL SUCCESS\\n\\nTeam Assignments (AS LEAKED TO ENTROPY):\\n- Agent 0x00: [CLASSIFIED - Player's chosen operation]\\n- Team Alpha: [ALTERNATE TARGET]\\n- Team Bravo: [ALTERNATE TARGET]\\n- Team Charlie: [ALTERNATE TARGET]\\n\\nENTROPY knew our response plan. They adapted. Lives were lost because someone gave them this information.\\n\\n[Handwritten note]: 'How did they know?' - Phantom"
+        },
+        {
+          "id": "phantom_notes",
+          "name": "Phantom's Investigation Notes",
+          "description": "Personal notes showing Phantom has been conducting an unauthorized parallel investigation.",
+          "type": "readable",
+          "canPickUp": true,
+          "content": "**PERSONAL INVESTIGATION LOG**\\n\\nI know someone leaked M7. Director won't tell me suspects, but I'm narrowing it down:\\n\\n- Someone with access to mission planning\\n- Someone who knew team assignments before deployment\\n- Someone who could communicate with ENTROPY undetected\\n\\nI've been tracking server access logs. Pattern emerging around Cryptography Lab systems. Checking alibis for leak timeframe.\\n\\n[This explains Phantom's 'suspicious behavior' - unauthorized investigation]"
+        }
+      ]
+    },
+
+    {
+      "id": "server_room",
+      "name": "Server Room",
+      "description": "SAFETYNET's secure server facility. Rows of rack-mounted servers hum quietly. The GitList repository server sits in the corner—ironically vulnerable, hosting SAFETYNET's internal code and, unknowingly, evidence of the mole's activities.",
+      "image": "server_room.png",
+
+      "exits": {
+        "west": "operations_floor"
+      },
+
+      "locks": [
+        {
+          "id": "server_door",
+          "type": "rfid",
+          "description": "RFID-locked security door. Requires Director's keycard."
+        }
+      ],
+
+      "items": [
+        {
+          "id": "vm_terminal",
+          "name": "GitList Repository Server",
+          "description": "SAFETYNET's internal code repository. Contains commit history, configuration files, and... evidence.",
+          "type": "vm-launcher",
+          "canPickUp": false,
+          "vmConfig": {
+            "scenario": "such_a_git",
+            "difficulty": "intermediate",
+            "description": "Exploit GitList vulnerability to access SAFETYNET's internal repository and discover evidence of the leak."
+          }
+        },
+        {
+          "id": "flag_station",
+          "name": "Evidence Drop Site",
+          "description": "Secure terminal for submitting discovered evidence flags.",
+          "type": "flag-station",
+          "canPickUp": false,
+          "requiredFlags": ["flag1", "flag2", "flag3", "flag4"]
+        },
+        {
+          "id": "server_logs",
+          "name": "Server Access Logs",
+          "description": "Recent access logs showing unusual activity patterns.",
+          "type": "readable",
+          "canPickUp": true,
+          "content": "**SERVER ACCESS LOG - LAST 7 DAYS**\\n\\n[Normal access patterns]\\n[Normal access patterns]\\n\\n**ANOMALY DETECTED:**\\nUser: nightshade_ops\\nTimestamp: [2 DAYS BEFORE MISSION 7]\\nAction: Unusual file access - mission_planning/m07_operations.enc\\nDuration: 47 minutes (EXCESSIVE)\\nIP: Internal (Cryptography Lab terminal 03)\\n\\n[More normal access]\\n\\nNote: Nightshade's access timing matches ENTROPY leak window."
+        }
+      ]
+    },
+
+    {
+      "id": "security_archives",
+      "name": "Security Archives",
+      "description": "Climate-controlled vault storing physical backups and classified historical records. The irony isn't lost—SAFETYNET's security organization has archives about breaches, and now they're investigating their own.",
+      "image": "security_archives.png",
+
+      "exits": {
+        "north": "operations_floor"
+      },
+
+      "locks": [
+        {
+          "id": "archives_door",
+          "type": "password",
+          "lockCode": "TrustNoOne",
+          "description": "Password-protected archive entrance."
+        }
+      ],
+
+      "items": [
+        {
+          "id": "database_catalog",
+          "name": "Global Threat Database Catalog",
+          "description": "Index of SAFETYNET's comprehensive vulnerability database—the real target of Mission 7's coordinated attack.",
+          "type": "readable",
+          "canPickUp": true,
+          "content": "**SAFETYNET GLOBAL THREAT DATABASE**\\n**CLASSIFICATION: TOP SECRET**\\n\\nComplete catalog of known vulnerabilities worldwide:\\n- 47,239 zero-day exploits\\n- 12,847 unpatched critical vulnerabilities\\n- 8,923 infrastructure weaknesses\\n- 23,451 supply chain vectors\\n\\n**DATABASE STATUS: COMPROMISED**\\n\\nMission 7 analysis reveals: While we stopped chosen attack, The Architect's TRUE objective succeeded. During chaos, database was exfiltrated via backdoor.\\n\\n**IMPACT:** ENTROPY now possesses every known vulnerability. Potential for global catastrophe."
+        },
+        {
+          "id": "historical_leaks",
+          "name": "Historical Leak Investigations",
+          "description": "Past internal investigations into information security breaches.",
+          "type": "readable",
+          "canPickUp": false,
+          "content": "**PREVIOUS LEAK INVESTIGATIONS**\\n\\n2023: Financial data leak - External contractor (resolved)\\n2024: Mission timeline leak - Phishing attack (resolved)\\n2025: Minor operational details - Accidental disclosure (resolved)\\n\\n2026: Mission 7 comprehensive intelligence leak - **ACTIVE INVESTIGATION**\\n\\nPattern analysis: Previous leaks were accidents or external. This leak shows sophisticated internal actor with deep access and ideological motivation."
+        }
+      ]
+    },
+
+    {
+      "id": "cryptography_lab",
+      "name": "Cryptography Lab",
+      "description": "SAFETYNET's secure communications center. Encryption equipment lines the walls. CyberChef workstations for decoding intercepted messages. This is Nightshade's domain—and where evidence of ENTROPY communications might be found.",
+      "image": "cryptography_lab.png",
+
+      "exits": {
+        "east": "main_lobby",
+        "south": "interrogation_room",
+        "west": "break_room"
+      },
+
+      "npcs": [
+        {
+          "id": "agent_nightshade",
+          "name": "Agent 0x47 'Nightshade'",
+          "description": "Operations specialist and cryptography expert. Calm, professional, ideologically committed. You trained together. Now a suspect—and the mole.",
+          "sprite": "agent_nightshade",
+          "dialogue": "m08_suspect_nightshade",
+          "behavior": {
+            "type": "stationary",
+            "position": {"x": 400, "y": 300}
+          },
+          "eventMapping": [
+            {
+              "event": "global_variable_changed",
+              "variable": "all_flags_submitted",
+              "value": true,
+              "action": "start_conversation",
+              "dialogue": "m08_nightshade_revelation"
+            }
+          ]
+        }
+      ],
+
+      "items": [
+        {
+          "id": "cyberchef_workstation",
+          "name": "CyberChef Workstation",
+          "description": "Decoding and analysis station for encrypted communications.",
+          "type": "cyberchef",
+          "canPickUp": false
+        },
+        {
+          "id": "nightshade_desk",
+          "name": "Nightshade's Workstation",
+          "description": "Neat, organized desk. Too organized. No personal items. Professional to a fault.",
+          "type": "container",
+          "canPickUp": false,
+          "locked": false,
+          "contents": [
+            {
+              "id": "encrypted_file",
+              "name": "Encrypted File",
+              "description": "File labeled 'PERSONAL_BACKUP.enc'. Requires decoding.",
+              "type": "readable",
+              "canPickUp": true,
+              "encrypted": true,
+              "encryptionMethod": "base64_then_rot13",
+              "content": "**[DECODED] COMMUNICATION LOG**\\n\\nTO: architect@entropy.onion\\nFROM: nightshade_deep_state\\nSUBJECT: M7 Intelligence Package\\n\\nPackage delivered. Team assignments, response timeline, agent capabilities all confirmed. Your coordination of simultaneous operations proceeded as planned.\\n\\nTrue objective (database exfiltration) successful during chaos. They stopped one attack, never noticed the real theft.\\n\\nAwaiting next tasking. Entropy is inevitable.\\n\\n- Nightshade"
+            }
+          ]
+        },
+        {
+          "id": "philosophy_book",
+          "name": "Book: 'On Entropy and Inevitability'",
+          "description": "Well-worn book with highlighted passages about accelerationism and entropy.",
+          "type": "readable",
+          "canPickUp": true,
+          "content": "**[Highlighted passages]**\\n\\n'Order is a temporary anomaly. Entropy is the natural state. Those who fight against entropy merely delay the inevitable—and often make the collapse worse when it comes.'\\n\\n'True wisdom is accepting entropy and accelerating the transition, minimizing suffering by making the collapse swift rather than prolonged.'\\n\\n[Margin note in Nightshade's handwriting]: 'SAFETYNET fights entropy. But entropy always wins. I'm just being honest about it.'"
+        }
+      ]
+    },
+
+    {
+      "id": "interrogation_room",
+      "name": "Interrogation Room",
+      "description": "Stark, soundproofed room designed for difficult conversations. Recording equipment mounted on walls. A single table with two chairs. This is where truth gets extracted—and where you'll confront the mole.",
+      "image": "interrogation_room.png",
+
+      "exits": {
+        "north": "cryptography_lab"
+      },
+
+      "locks": [
+        {
+          "id": "interrogation_door",
+          "type": "key",
+          "description": "Locked interrogation room. Requires Director's authorization key.",
+          "keyId": "interrogation_key"
+        }
+      ],
+
+      "npcs": [
+        {
+          "id": "nightshade_confrontation",
+          "name": "Agent 0x47 'Nightshade'",
+          "description": "The mole, brought here for final confrontation. Calm, rational, unrepentant.",
+          "sprite": "agent_nightshade_confrontation",
+          "dialogue": "m08_nightshade_confrontation",
+          "behavior": {
+            "type": "stationary",
+            "position": {"x": 400, "y": 350}
+          },
+          "appearCondition": {
+            "variable": "all_flags_submitted",
+            "value": true
+          }
+        }
+      ],
+
+      "items": [
+        {
+          "id": "evidence_display",
+          "name": "Evidence Display System",
+          "description": "Digital system for presenting evidence during interrogation.",
+          "type": "computer",
+          "canPickUp": false,
+          "content": "**EVIDENCE AGAINST AGENT 0X47 'NIGHTSHADE'**\\n\\n1. Server access logs: Unusual file access before M7\\n2. Encrypted communications: Contact with architect@entropy.onion\\n3. Repository analysis: Leaked credentials tied to Nightshade's sessions\\n4. Psychological profile: Ideological alignment with ENTROPY philosophy\\n5. Timeline correlation: All leak events match Nightshade's access patterns\\n\\nCONCLUSION: Nightshade is the mole. Evidence is conclusive."
+        },
+        {
+          "id": "recording_system",
+          "name": "Recording Equipment",
+          "description": "Audio/visual recording system for interrogation documentation.",
+          "type": "readable",
+          "canPickUp": false,
+          "content": "[RECORDING ACTIVE]\\n\\nAll conversations in this room are recorded and encrypted. Evidence will be used in prosecution or, if turned, intelligence assessment."
+        }
+      ]
+    },
+
+    {
+      "id": "break_room",
+      "name": "Break Room",
+      "description": "Supposedly the one place agents can relax. Now it's where worried conversations happen in hushed tones. Coffee gets cold in forgotten cups. The paranoia has reached even here.",
+      "image": "break_room.png",
+
+      "exits": {
+        "east": "cryptography_lab"
+      },
+
+      "npcs": [
+        {
+          "id": "agent_0x99",
+          "name": "Agent 0x99 'Haxolottle'",
+          "description": "Your handler. Usually energetic and optimistic. Now subdued, troubled. Has worked with all three suspects for years. The betrayal hurts personally.",
+          "sprite": "agent_0x99_troubled",
+          "dialogue": "m08_agent_0x99",
+          "behavior": {
+            "type": "stationary",
+            "position": {"x": 350, "y": 300}
+          }
+        },
+        {
+          "id": "background_agent_2",
+          "name": "Off-Duty Agent",
+          "description": "An agent pretending to read, actually eavesdropping on conversations.",
+          "sprite": "agent_generic_2",
+          "dialogue": "m08_background_agent",
+          "behavior": {
+            "type": "stationary",
+            "position": {"x": 550, "y": 350}
+          }
+        }
+      ],
+
+      "items": [
+        {
+          "id": "password_sticky_note",
+          "name": "Post-It Note",
+          "description": "Sticky note on coffee machine with 'Archives backup: TrustNoOne' written on it. Classic security failure.",
+          "type": "readable",
+          "canPickUp": true,
+          "content": "Reminder: Security Archives backup password: TrustNoOne\\n\\n[The irony of writing down passwords in a security organization...]"
+        },
+        {
+          "id": "overheard_conversation",
+          "name": "Overheard Fragments",
+          "description": "Whispered conversation you can barely make out.",
+          "type": "readable",
+          "canPickUp": false,
+          "content": "[Whispered conversation between two agents]\\n\\n'...heard it was someone from Ops...'\\n'...no way, has to be Intel...'\\n'...Director's keeping it quiet...'\\n'...what if it's someone we work with every day...'\\n'...don't trust anyone...'\\n\\nParanoia spreads like wildfire."
+        },
+        {
+          "id": "deep_state_manual_fragment",
+          "name": "Printed Page",
+          "description": "Single page from a document, left in a recycling bin. Insider Threat Initiative recruitment material.",
+          "type": "readable",
+          "canPickUp": true,
+          "content": "**INSIDER THREAT INITIATIVE**\\n**'Deep State' Recruitment Program**\\n\\n[Fragment - Page 7]\\n\\n...ideal candidates show ideological alignment with accelerationist philosophy. Look for disillusionment with defensive security posture, belief that 'entropy is inevitable.'\\n\\nTarget intelligence agencies. Long-term placement preferred. Recruitment during training optimal—ideological formation period.\\n\\nCompensation: Not financial. Ideological converts serve willingly...\\n\\n[Rest of page torn off]"
+        },
+        {
+          "id": "timeline_reconstruction",
+          "name": "Timeline Notes",
+          "description": "Someone's been reconstructing the leak timeline. Helpful for evidence correlation.",
+          "type": "readable",
+          "canPickUp": true,
+          "content": "**LEAK TIMELINE RECONSTRUCTION**\\n\\n72 hours before M7: Mission planning finalized\\n68 hours before M7: Team assignments confirmed\\n48 hours before M7: ANOMALY - Unusual server access (Crypto Lab terminal)\\n47 hours before M7: ENTROPY coordination begins (intercepted chatter)\\n24 hours before M7: ENTROPY fully prepared for our response\\n0 hour: Mission 7 launches - ENTROPY already adapted\\n\\nConclusion: Leak occurred 48-47 hours before launch. Source had access to complete mission planning."
+        }
+      ]
+    }
+  ],
+
+  "objectives": [
+    {
+      "id": "interview_suspects",
+      "description": "Interview all three suspects: Cipher, Phantom, and Nightshade",
+      "required": true,
+      "completionVariable": "suspects_interviewed",
+      "completionValue": 3
+    },
+    {
+      "id": "gather_evidence",
+      "description": "Collect evidence from SAFETYNET systems",
+      "required": true,
+      "completionVariable": "evidence_collected",
+      "completionValue": 5
+    },
+    {
+      "id": "exploit_gitlist",
+      "description": "Submit all 4 flags from GitList server exploitation",
+      "required": true,
+      "completionVariable": "all_flags_submitted",
+      "completionValue": true
+    },
+    {
+      "id": "identify_mole",
+      "description": "Identify the traitor",
+      "required": true,
+      "completionVariable": "mole_identified",
+      "completionValue": true
+    },
+    {
+      "id": "confront_nightshade",
+      "description": "Confront Agent Nightshade in interrogation room",
+      "required": true,
+      "completionVariable": "nightshade_confronted",
+      "completionValue": true
+    },
+    {
+      "id": "obtain_tomb_gamma_location",
+      "description": "Obtain Tomb Gamma coordinates from Nightshade",
+      "required": false,
+      "completionVariable": "tomb_gamma_location_known",
+      "completionValue": true
+    },
+    {
+      "id": "understand_database_theft",
+      "description": "Discover The Architect's true objective in Mission 7",
+      "required": false,
+      "completionVariable": "database_theft_understood",
+      "completionValue": true
+    }
+  ],
+
+  "startingInventory": [
+    {
+      "id": "safetynet_badge",
+      "name": "SAFETYNET Badge",
+      "description": "Your agent credentials. Everyone's checking IDs obsessively now.",
+      "type": "readable"
+    },
+    {
+      "id": "secure_phone",
+      "name": "Secure Phone",
+      "description": "Encrypted communications device.",
+      "type": "phone",
+      "contacts": [
+        {
+          "name": "Agent 0x99",
+          "dialogue": "m08_phone_0x99"
+        },
+        {
+          "name": "Director Cross",
+          "dialogue": "m08_phone_director"
+        }
+      ]
+    }
+  ]
+}
