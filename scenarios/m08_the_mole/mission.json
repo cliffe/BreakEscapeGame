@@ -1,0 +1,242 @@
+{
+  "id": "m08_the_mole",
+  "title": "Mission 8: The Mole",
+  "subtitle": "Internal Investigation",
+  "description": "Someone inside SAFETYNET leaked Mission 7's operational details to ENTROPY. Return to headquarters to identify the traitor among your colleagues—before they can strike again.",
+  "difficulty": 2,
+  "tier": "Intermediate",
+  "estimatedDuration": "60-75 minutes",
+  "season": 1,
+  "episodeNumber": 8,
+  "requiredPrecedingMissions": [],
+  "recommendedPrecedingMissions": ["m07_architects_gambit"],
+  "campaignEnhanced": true,
+  "standalonePlayable": true,
+  "primaryCell": "Insider Threat Initiative",
+  "secondaryCells": [],
+  "location": "SAFETYNET Headquarters (The Citadel)",
+  "missionType": "Internal Investigation",
+  "narrativeThemes": [
+    "Betrayal",
+    "Paranoia",
+    "Trust vs. Suspicion",
+    "Internal Threats",
+    "Organizational Failure"
+  ],
+  "cybok": {
+    "primary": [
+      {
+        "area": "Human Factors",
+        "topics": [
+          "Insider threat psychology",
+          "Behavioral indicators",
+          "Social engineering within trusted environments",
+          "Trust exploitation"
+        ]
+      },
+      {
+        "area": "Security Operations",
+        "topics": [
+          "Internal threat hunting",
+          "Anomaly detection",
+          "Forensic timeline reconstruction",
+          "Evidence correlation"
+        ]
+      },
+      {
+        "area": "Software Security",
+        "topics": [
+          "Version control security (GitList)",
+          "Secret management failures",
+          "Configuration vulnerabilities",
+          "Credential leakage in repositories"
+        ]
+      }
+    ],
+    "secondary": [
+      {
+        "area": "Forensics",
+        "topics": [
+          "Digital evidence collection",
+          "Log analysis",
+          "Communication metadata",
+          "Timeline reconstruction"
+        ]
+      },
+      {
+        "area": "Applied Cryptography",
+        "topics": [
+          "Encrypted communication analysis",
+          "Decoding intercepted messages",
+          "Operational security failures"
+        ]
+      }
+    ]
+  },
+  "secgen": {
+    "scenario": "Such a git",
+    "vulnerabilities": [
+      "GitList CVE-2018-1000533 (directory traversal)",
+      "Leaked credentials in repository",
+      "Sudo misconfiguration",
+      "Access log analysis"
+    ],
+    "flags": 4,
+    "difficulty": "Intermediate",
+    "integrationMethod": "Dead drop system with evidence correlation"
+  },
+  "mechanics": {
+    "new": [
+      "Ally investigation system",
+      "Evidence timeline reconstruction",
+      "Internal security exploitation",
+      "Triple agent mechanics (conditional)",
+      "Non-hostile social engineering"
+    ],
+    "reinforced": [
+      "Lockpicking",
+      "RFID cloning",
+      "Social engineering (maximum emotional complexity)",
+      "Password cracking",
+      "CyberChef puzzles"
+    ]
+  },
+  "keyNPCs": [
+    {
+      "name": "Director Samantha Cross",
+      "role": "SAFETYNET Director",
+      "affiliation": "SAFETYNET",
+      "firstAppearance": true,
+      "significance": "Mission authority, organizational perspective"
+    },
+    {
+      "name": "Agent 0x99 'Haxolottle'",
+      "role": "Handler",
+      "affiliation": "SAFETYNET",
+      "recurring": true,
+      "significance": "Emotional devastation, personal connections to suspects"
+    },
+    {
+      "name": "Agent 0x47 'Nightshade'",
+      "role": "Operations Specialist / ENTROPY Mole",
+      "affiliation": "ENTROPY (Insider Threat Initiative)",
+      "significance": "The traitor, ideological convert, central antagonist"
+    },
+    {
+      "name": "Agent 0x23 'Cipher'",
+      "role": "Intelligence Analyst",
+      "affiliation": "SAFETYNET",
+      "significance": "Red herring suspect"
+    },
+    {
+      "name": "Agent 0x88 'Phantom'",
+      "role": "Field Coordinator",
+      "affiliation": "SAFETYNET",
+      "significance": "Red herring suspect"
+    }
+  ],
+  "moralChoices": [
+    {
+      "choicePoint": "Nightshade's Fate",
+      "options": [
+        {
+          "choice": "Arrest",
+          "consequence": "Justice served, no ongoing intelligence, morally clean",
+          "variable": "nightshade_arrested = true"
+        },
+        {
+          "choice": "Turn Triple Agent",
+          "consequence": "Intelligence access, risk of double-cross, moral compromise",
+          "variable": "nightshade_triple_agent = true"
+        }
+      ],
+      "impactOnFutureMissions": [
+        "m09_digital_archaeology",
+        "m10_final_cipher"
+      ]
+    },
+    {
+      "choicePoint": "Expose Internal Vulnerabilities",
+      "options": [
+        {
+          "choice": "Public Accountability",
+          "consequence": "Forces reform, damages reputation and operational security",
+          "variable": "safetynet_exposed = true"
+        },
+        {
+          "choice": "Quiet Fix",
+          "consequence": "Maintains operational security, no public accountability",
+          "variable": "safetynet_exposed = false"
+        }
+      ]
+    }
+  ],
+  "loreCollectibles": [
+    {
+      "name": "Insider Threat Initiative 'Deep State' Manual",
+      "location": "Nightshade's encrypted files",
+      "significance": "Systematic ENTROPY infiltration of government"
+    },
+    {
+      "name": "The Architect's Communication to Nightshade",
+      "location": "Decoded encrypted archive",
+      "significance": "The Architect's voice and personality revealed"
+    },
+    {
+      "name": "SAFETYNET's Global Threat Database Catalog",
+      "location": "Security Archives",
+      "significance": "Scope of what The Architect stole in M7"
+    },
+    {
+      "name": "Nightshade's Training Records",
+      "location": "Director's safe",
+      "significance": "SAFETYNET missed warning signs, organizational failure"
+    },
+    {
+      "name": "Tomb Gamma Coordinates",
+      "location": "Nightshade provides during interrogation",
+      "significance": "Sets up Mission 9 and Mission 10"
+    }
+  ],
+  "campaignConnections": {
+    "fromMission7": [
+      "Leak enabled The Architect's coordination",
+      "Failed operations partly due to Nightshade's intelligence",
+      "True objective (database theft) revealed"
+    ],
+    "toMission9": [
+      "Tomb Gamma location discovered",
+      "Nightshade's intel aids Tomb Beta exploration (if triple agent)",
+      "The Architect's identity narrowed"
+    ],
+    "toMission10": [
+      "Nightshade provides Tomb Gamma defensive layout (if triple agent)",
+      "SAFETYNET vulnerability status affects finale difficulty",
+      "Personal stakes: betrayal must be avenged"
+    ]
+  },
+  "successMetrics": {
+    "fullSuccess": [
+      "Mole identified with conclusive evidence",
+      "All 4 VM flags submitted",
+      "All 5 LORE collectibles found",
+      "Appropriate choice made for Nightshade",
+      "Tomb Gamma location secured"
+    ],
+    "partialSuccess": [
+      "Mole identified with some evidence gaps",
+      "2-3 VM flags submitted",
+      "Some LORE collectibles found",
+      "Nightshade handled but incomplete intelligence"
+    ],
+    "minimalSuccess": [
+      "Mole identified but rushed evidence",
+      "1-2 VM flags submitted",
+      "Limited LORE discovery",
+      "Poor confrontation outcome"
+    ]
+  },
+  "developmentStatus": "Initial Design",
+  "version": "0.1.0",
+  "lastUpdated": "2026-01-11"
+}
