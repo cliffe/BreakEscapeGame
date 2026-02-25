@@ -190,5 +190,98 @@ module BreakEscape
       get ink_game_url(@game), params: { npc: 'missing-npc' }
       assert_response :not_found
     end
+
+    # ─── Security: flag answers must never reach the client ──────────────────
+
+    SECRET_FLAGS = ["FLAG{s3cr3t_v4lu3}", "FLAG{4n0th3r_fl4g}"].freeze
+
+    def game_with_flag_objectives
+      Game.create!(
+        mission:       @mission,
+        player:        @player,
+        scenario_data: @game.scenario_data.merge(
+          "objectives" => [
+            {
+              "aimId" => "capture_flag",
+              "title" => "Capture the Flag",
+              "tasks" => [
+                {
+                  "taskId"      => "submit_flag_1",
+                  "type"        => "submit_flags",
+                  "title"       => "Submit the CTF flag",
+                  "targetFlags" => SECRET_FLAGS
+                }
+              ]
+            }
+          ]
+        ),
+        player_state: @game.player_state.dup
+      )
+    end
+
+    test "SECURITY: scenario endpoint does not expose targetFlags" do
+      game = game_with_flag_objectives
+      get scenario_game_url(game)
+      assert_response :success
+
+      body = response.body
+      SECRET_FLAGS.each do |flag|
+        assert_not body.include?(flag),
+          "SECURITY: scenario endpoint must not leak flag answer '#{flag}'"
+      end
+
+      json = JSON.parse(body)
+      json["objectives"]&.each do |aim|
+        aim["tasks"]&.each do |task|
+          assert_nil task["targetFlags"],
+            "targetFlags must be absent from /scenario response (task: #{task['taskId']})"
+        end
+      end
+    end
+
+    test "SECURITY: objectives endpoint does not expose targetFlags" do
+      game = game_with_flag_objectives
+      get objectives_game_url(game)
+      assert_response :success
+
+      body = response.body
+      SECRET_FLAGS.each do |flag|
+        assert_not body.include?(flag),
+          "SECURITY: objectives endpoint must not leak flag answer '#{flag}'"
+      end
+
+      json = JSON.parse(body)
+      json["objectives"]&.each do |aim|
+        aim["tasks"]&.each do |task|
+          assert_nil task["targetFlags"],
+            "targetFlags must be absent from /objectives response (task: #{task['taskId']})"
+        end
+      end
+    end
+
+    test "SECURITY: scenario endpoint strips targetFlags but preserves other task fields" do
+      game = game_with_flag_objectives
+      get scenario_game_url(game)
+      assert_response :success
+
+      json = JSON.parse(response.body)
+      task = json["objectives"]&.first&.dig("tasks", 0)
+      assert task, "Task should be present in objectives"
+      assert_equal "submit_flag_1", task["taskId"]
+      assert_equal "submit_flags",  task["type"]
+      assert_equal "Submit the CTF flag", task["title"]
+      assert_nil task["targetFlags"], "targetFlags must be stripped"
+    end
+
+    test "SECURITY: requires field is absent from scenario response for pin-locked rooms" do
+      get scenario_game_url(@game)
+      assert_response :success
+
+      json = JSON.parse(response.body)
+      office = json.dig("rooms", "office")
+      assert office, "Office room should be present in scenario"
+      assert_nil office["requires"],
+        "SECURITY: 'requires' (PIN answer) must not be sent to the client for pin-locked rooms"
+    end
   end
 end

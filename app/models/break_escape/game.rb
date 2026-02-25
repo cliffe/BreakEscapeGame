@@ -484,6 +484,10 @@ module BreakEscape
         end
       end
 
+      # Strip targetFlags from objectives — these are the expected flag answers and
+      # must never be sent to the client (they would trivially allow completion bypass).
+      filtered['objectives'] = filter_target_flags(filtered['objectives']) if filtered['objectives'].present?
+
       filtered
     end
 
@@ -816,7 +820,7 @@ module BreakEscape
     # Get current objectives state
     def objectives_state
       {
-        'objectives' => scenario_data['objectives'],
+        'objectives' => filter_target_flags(scenario_data['objectives']&.map(&:deep_dup)),
         'state' => player_state['objectivesState'] || {}
       }
     end
@@ -960,6 +964,23 @@ module BreakEscape
     # ==========================================
     # End Objectives System
     # ==========================================
+
+    # Strip targetFlags from every task in an objectives array.
+    # targetFlags are the expected flag answers used server-side for validation;
+    # they must never reach the client.
+    def filter_target_flags(objectives)
+      return objectives unless objectives.is_a?(Array)
+
+      objectives.map do |aim|
+        aim = aim.dup
+        aim['tasks'] = aim['tasks']&.map do |task|
+          task = task.dup
+          task.delete('targetFlags')
+          task
+        end
+        aim
+      end
+    end
 
     def filter_requires_and_contents_recursive(obj)
       case obj
