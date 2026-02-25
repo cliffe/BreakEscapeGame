@@ -837,11 +837,10 @@ module BreakEscape
     def check_container_unlocked(container_id, container_data)
       unlocked_list = @game.player_state['unlockedObjects'] || []
 
-      # Check multiple possible identifiers
+      # Only match by ID — never by name or type, which are non-unique and could
+      # grant access to all containers sharing a type/name string.
       unlocked_list.include?(container_id) ||
-      unlocked_list.include?(container_data['id']) ||
-      unlocked_list.include?(container_data['name']) ||
-      unlocked_list.include?(container_data['type'])
+      unlocked_list.include?(container_data['id'])
     end
 
     def filter_container_contents(container_data)

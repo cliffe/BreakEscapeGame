@@ -954,5 +954,77 @@ module BreakEscape
       assert_response :success,
         "Already-unlocked container should accept method='unlocked'"
     end
+
+    # =============================================================================
+    # SECURITY TESTS — CONTAINER ENDPOINT TYPE/NAME BYPASS (Bug fix regression)
+    # =============================================================================
+
+    test "SECURITY: container endpoint denies access when only a same-type container is unlocked" do
+      # Unlock safe_pin (type: "safe") via the correct PIN
+      post unlock_game_url(@game), params: {
+        targetType: 'object', targetId: 'safe_pin', attempt: '1234', method: 'pin'
+      }
+      assert_response :success
+
+      # Introduce a second safe-type container that has NOT been unlocked
+      @game.scenario_data['rooms']['lobby']['objects'] << {
+        'id'       => 'safe_pin_2',
+        'type'     => 'safe',
+        'name'     => 'Second PIN Safe',
+        'locked'   => true,
+        'lockType' => 'pin',
+        'requires' => '9999',
+        'contents' => [{ 'type' => 'document', 'name' => 'Top Secret' }]
+      }
+      @game.save!
+
+      # The second safe shares the type "safe" with the unlocked one —
+      # the type-bypass bug would have granted access here.
+      get "#{game_path(@game)}/container/safe_pin_2"
+      assert_response :forbidden,
+        "SECURITY: container with the same type as an unlocked container must NOT be accessible"
+    end
+
+    test "SECURITY: container endpoint denies access when a same-name container is unlocked" do
+      # Unlock cabinet_password (name: "Password Cabinet") via correct password
+      post unlock_game_url(@game), params: {
+        targetType: 'object', targetId: 'cabinet_password',
+        attempt: 'secret123', method: 'password'
+      }
+      assert_response :success
+
+      # A second container with the same display name but a different id/lock
+      @game.scenario_data['rooms']['lobby']['objects'] << {
+        'id'       => 'cabinet_password_2',
+        'type'     => 'cabinet',
+        'name'     => 'Password Cabinet',
+        'locked'   => true,
+        'lockType' => 'password',
+        'requires' => 'different_secret',
+        'contents' => [{ 'type' => 'key', 'name' => 'Spare Key' }]
+      }
+      @game.save!
+
+      get "#{game_path(@game)}/container/cabinet_password_2"
+      assert_response :forbidden,
+        "SECURITY: container with the same name as an unlocked container must NOT be accessible"
+    end
+
+    test "SECURITY: container endpoint grants access only to the specific unlocked container" do
+      # Unlock just safe_pin
+      post unlock_game_url(@game), params: {
+        targetType: 'object', targetId: 'safe_pin', attempt: '1234', method: 'pin'
+      }
+      assert_response :success
+
+      # The unlocked container is accessible
+      get "#{game_path(@game)}/container/safe_pin"
+      assert_response :success
+
+      # A completely different container (same type, different id) is not
+      get "#{game_path(@game)}/container/cabinet_password"
+      assert_response :forbidden,
+        "Only the specifically unlocked container should be accessible"
+    end
   end
 end
