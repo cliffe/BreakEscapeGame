@@ -887,23 +887,18 @@ module BreakEscape
       count >= (task['targetCount'] || 1)
     end
 
-    # Validate submit_flags tasks
-    # Checks that all targetFlags have been submitted
-    # If submittedFlags are provided in validation_data, use those (latest from client)
-    # Otherwise, use stored state from player_state
+    # Validate submit_flags tasks.
+    # submitted_flags_from_request MUST be provided — stored state is never used
+    # for validation to prevent pre-injection via update_task_progress.
     def validate_flag_submission(task, submitted_flags_from_request = nil)
       return false unless task['targetFlags'].is_a?(Array)
 
-      task_id = task['taskId']
+      # Require flags to be supplied in the request body; reject attempts that
+      # omit them (which would otherwise fall through to manipulable stored state).
+      return false unless submitted_flags_from_request.present?
 
-      # Use submittedFlags from request if provided (latest data), otherwise use stored state
-      if submitted_flags_from_request.present?
-        submitted = Array(submitted_flags_from_request)
-        Rails.logger.debug "[BreakEscape] Validating flags using request data: #{submitted.inspect}"
-      else
-        submitted = player_state.dig('objectivesState', 'tasks', task_id, 'submittedFlags') || []
-        Rails.logger.debug "[BreakEscape] Validating flags using stored state: #{submitted.inspect}"
-      end
+      submitted = Array(submitted_flags_from_request)
+      Rails.logger.debug "[BreakEscape] Validating flags using request data: #{submitted.inspect}"
 
       # Check that all targetFlags are in submittedFlags
       all_submitted = task['targetFlags'].all? { |target_flag| submitted.include?(target_flag) }

@@ -98,6 +98,73 @@ module BreakEscape
       assert_equal 'reception', @game.player_state['currentRoom']
     end
 
+    test "SECURITY: sync_state rejects teleport to locked room" do
+      # 'office' is locked and not in unlockedRooms; player is in 'reception'
+      put sync_state_game_url(@game), params: { currentRoom: 'office' }
+
+      assert_response :forbidden
+      json = JSON.parse(@response.body)
+      assert_equal false, json['success']
+      assert_match /locked room/i, json['message']
+
+      @game.reload
+      assert_equal 'reception', @game.player_state['currentRoom'],
+        "Player should still be in reception after rejected teleport"
+      assert_not_includes @game.player_state['unlockedRooms'], 'office'
+    end
+
+    test "SECURITY: submittedFlags pre-injection via update_task_progress is blocked" do
+      # Build a game that has a submit_flags objective task
+      target_flags = ["FLAG{s3cr3t_capture}"]
+      flagged_game = Game.create!(
+        mission: @mission,
+        player:  @player,
+        scenario_data: @game.scenario_data.merge(
+          "objectives" => [
+            {
+              "aimId" => "ctf",
+              "title" => "Capture the Flag",
+              "tasks" => [
+                {
+                  "taskId"      => "submit_flag_1",
+                  "type"        => "submit_flags",
+                  "title"       => "Submit the flag",
+                  "targetFlags" => target_flags
+                }
+              ]
+            }
+          ]
+        ),
+        player_state: @game.player_state.dup
+      )
+
+      # Step 1: Attacker pre-injects correct flags via update_task_progress
+      put update_task_progress_game_url(flagged_game, task_id: 'submit_flag_1'),
+          params: { progress: 1, submittedFlags: target_flags }
+      assert_response :success
+
+      # Verify flags are stored (the vector exists in the DB)
+      flagged_game.reload
+      stored_flags = flagged_game.player_state.dig('objectivesState', 'tasks', 'submit_flag_1', 'submittedFlags')
+      assert_equal target_flags, stored_flags, "Pre-condition: flags should be stored in state"
+
+      # Step 2: Attacker calls complete_task WITHOUT submittedFlags in the request body
+      # The fix ensures stored flags are NOT used — this must fail
+      post complete_task_game_url(flagged_game, task_id: 'submit_flag_1')
+
+      assert_response :unprocessable_entity,
+        "complete_task without submittedFlags in body must fail (pre-injected stored flags must not be used)"
+      json = JSON.parse(@response.body)
+      assert_equal false, json['success']
+      assert_match /flag/i, json['error']
+
+      # Confirm the task was NOT marked complete
+      flagged_game.reload
+      task_status = flagged_game.player_state.dig('objectivesState', 'tasks', 'submit_flag_1', 'status')
+      assert_not_equal 'completed', task_status,
+        "Task must remain incomplete when valid flags are omitted from the request body"
+    end
+
     test "unlock endpoint should reject invalid attempts" do
       post unlock_game_url(@game), params: {
         targetType: 'room',
