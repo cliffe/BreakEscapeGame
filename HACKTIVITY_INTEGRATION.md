@@ -240,11 +240,85 @@ rails db:migrate:status | grep break_escape
 - Uses Rails cache for temporary state
 - Database writes only on unlock/inventory changes
 
+## Content Security Policy (CSP) Configuration
+
+BreakEscape loads external libraries and uses inline scripts with nonces.
+When mounting the engine into Hacktivity you **must** extend the host CSP
+to allow the sources below, otherwise scripts, fonts, and the CyberChef
+iframe will be blocked.
+
+Add or extend a `content_security_policy` initializer in Hacktivity:
+
+```ruby
+# config/initializers/content_security_policy.rb  (in Hacktivity)
+Rails.application.configure do
+  config.content_security_policy do |policy|
+    # --- BreakEscape external script sources ---
+    # Phaser 3 + EasyStar.js
+    # Tippy.js + Popper.js
+    # WebFont Loader
+    policy.script_src *policy.script_src,
+      "https://cdn.jsdelivr.net",
+      "https://unpkg.com",
+      "https://ajax.googleapis.com"
+
+    # --- BreakEscape font sources ---
+    # Google Fonts stylesheet (loads as a <link>, but style-src covers @import)
+    policy.style_src *policy.style_src,
+      "https://fonts.googleapis.com"
+
+    # Google Fonts binary files + data URIs used by some icon sets
+    policy.font_src *policy.font_src,
+      "https://fonts.gstatic.com",
+      :data
+
+    # --- CyberChef iframe ---
+    # CyberChef is served from the engine's own /break_escape/assets/cyberchef/
+    # path, so 'self' is sufficient.  The iframe has its own browsing context;
+    # it does NOT inherit the parent page's nonce, so its internal scripts are
+    # governed by the iframe's own CSP (or lack thereof for same-origin content).
+    policy.frame_src *policy.frame_src, :self
+
+    # --- CyberChef Web Workers (Tesseract OCR, Forge prime worker) ---
+    # These run inside the CyberChef iframe context, so worker-src must also
+    # allow 'self' and blob: (workers are often created via blob URLs).
+    policy.worker_src *policy.worker_src, :self, "blob:"
+
+    # --- Nonce directives ---
+    # Ensure nonces are generated for both scripts and styles so that the
+    # engine's inline <script nonce="..."> and <style nonce="..."> tags work.
+  end
+
+  # Generate a fresh nonce per request and apply it to both script-src and
+  # style-src (BreakEscape uses nonces on inline <style> blocks too).
+  config.content_security_policy_nonce_generator = ->(request) { SecureRandom.base64(16) }
+  config.content_security_policy_nonce_directives = %w[script-src style-src]
+end
+```
+
+> **Note:** The `*policy.script_src` spread syntax preserves whatever
+> Hacktivity already has in that directive (e.g. `'self'`, `'nonce-...'`)
+> and appends only the new sources.  If Hacktivity's policy is built
+> incrementally you may need to adjust the syntax to match its pattern.
+
+### Why each source is needed
+
+| Source | Directive | Used by |
+|--------|-----------|---------|
+| `cdn.jsdelivr.net` | `script-src` | Phaser 3.60, EasyStar.js 0.4.4 |
+| `unpkg.com` | `script-src` | Tippy.js 6, Popper.js 2 |
+| `ajax.googleapis.com` | `script-src` | WebFont Loader 1.6 |
+| `fonts.googleapis.com` | `style-src` | Google Fonts CSS |
+| `fonts.gstatic.com` | `font-src` | Google Fonts binary files |
+| `data:` | `font-src` | Icon data URIs in CSS |
+| `'self'` | `frame-src` | CyberChef iframe (`/break_escape/assets/cyberchef/`) |
+| `'self'` + `blob:` | `worker-src` | CyberChef's Tesseract OCR and Forge prime workers |
+
 ## Security Notes
 
 1. **CSRF Protection**: All POST/PUT endpoints require valid CSRF tokens
 2. **Authorization**: Pundit policies enforce access control
-3. **XSS Prevention**: Content Security Policy enabled
+3. **XSS Prevention**: All inline scripts and styles use CSP nonces; `eval()` is not used; inline event handlers (`onclick`, `onerror`) are not used — see CSP section above for required host configuration
 4. **SQL Injection**: All queries use parameterized statements
 5. **Session Security**: Sessions tied to user authentication
 
