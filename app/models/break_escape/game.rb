@@ -1076,6 +1076,9 @@ module BreakEscape
       vm_set = ::VmSet.find_by(id: vm_set_id)
       return {} unless vm_set
 
+      # Eager-load associations to avoid N+1 queries
+      sec_gen_batch = vm_set.sec_gen_batch
+
       # Build context hash for ERB template
       {
         'vm_set_id' => vm_set.id,
@@ -1084,26 +1087,23 @@ module BreakEscape
             'id' => vm.id,
             'title' => vm.title,
             'ip' => vm.ip_address,
-            'enable_console' => vm.enable_console,
-            'event_id' => vm.event_id,
-            'sec_gen_batch_id' => vm.sec_gen_batch_id
+            'enable_console' => vm.respond_to?(:enable_console) ? vm.enable_console : false,
+            # event_id and sec_gen_batch_id come from the vm_set's batch, not the VM itself
+            'event_id' => sec_gen_batch.event_id,
+            'sec_gen_batch_id' => sec_gen_batch.id
           }
         end,
-        'flags' => extract_flags_from_vm_set(vm_set),
+        # flags_by_vm is a hash of vm_title => [flag_key, ...] used by flags_for_vm() in ERB templates
+        'flags_by_vm' => extract_flags_by_vm(vm_set),
         'hacktivity_mode' => true
       }
     end
 
-    # Extract flags from VM set's SecGenBatch
-    def extract_flags_from_vm_set(vm_set)
-      return [] unless vm_set.sec_gen_batch&.flags.present?
-
-      vm_set.sec_gen_batch.flags.map do |flag|
-        {
-          'id' => flag.id,
-          'value' => flag.flag,  # The actual flag string
-          'points' => flag.points
-        }
+    # Build a hash of vm_title => [flag_key, ...] for use in ERB scenario templates.
+    # In Hacktivity, flags belong to individual VMs (not to SecGenBatch).
+    def extract_flags_by_vm(vm_set)
+      vm_set.vms.each_with_object({}) do |vm, hash|
+        hash[vm.title] = vm.flags.map(&:flag_key)
       end
     end
 
@@ -1195,19 +1195,22 @@ module BreakEscape
     # Submit flag to Hacktivity's FlagService
     def submit_to_hacktivity(flag_key)
       return { success: false, message: 'FlagService not available' } unless defined?(::FlagService)
+      return { success: false, message: 'No VM set associated' } unless player_state['vm_set_id'].present?
+
+      vm_set = ::VmSet.find_by(id: player_state['vm_set_id'])
+      return { success: false, message: 'VM set not found' } unless vm_set
+
+      # Find the specific VM that owns this flag — FlagService.process_flag takes a VM, not a user
+      target_vm = vm_set.vms.find do |vm|
+        vm.flags.any? { |f| f.flag_key.downcase == flag_key.downcase }
+      end
+      return { success: false, message: 'Flag not found in VM set' } unless target_vm
 
       begin
-        # FlagService.process_flag requires: player, flag, flash
-        # We create a mock flash object since we're not in a controller context
+        # FlagService.process_flag(vm, submitted_flag, user, flash)
         mock_flash = {}
-
-        result = ::FlagService.process_flag(player, flag_key, mock_flash)
-
-        if result
-          { success: true, message: mock_flash[:notice] || 'Flag submitted to Hacktivity' }
-        else
-          { success: false, message: mock_flash[:alert] || 'Flag rejected by Hacktivity' }
-        end
+        ::FlagService.process_flag(target_vm, flag_key, vm_set.user || player, mock_flash)
+        { success: true, message: mock_flash[:notice] || 'Flag submitted to Hacktivity' }
       rescue StandardError => e
         Rails.logger.error "[BreakEscape] FlagService error: #{e.message}"
         { success: false, message: 'Error submitting flag to Hacktivity' }
