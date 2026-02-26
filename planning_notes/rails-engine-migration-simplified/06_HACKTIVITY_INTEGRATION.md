@@ -595,50 +595,82 @@ fetch('/break_escape/games/1/sync_state', {
 
 ## Phase 11: Configure Content Security Policy (CSP)
 
+> **See also:** `HACKTIVITY_INTEGRATION.md` in the engine root for the
+> canonical, up-to-date CSP reference with a full source table.
+
 ### Step 11.1: Check Hacktivity's CSP configuration
 
 **Location:** `/path/to/hacktivity/config/initializers/content_security_policy.rb`
 
-If CSP is enabled:
+Hacktivity likely already has a CSP initializer. BreakEscape needs additional
+sources appended to it — do **not** replace Hacktivity's existing directives.
+
+### Step 11.2: Add BreakEscape sources to Hacktivity's CSP
+
+Append the following inside (or alongside) Hacktivity's existing
+`config.content_security_policy` block:
 
 ```ruby
-Rails.application.config.content_security_policy do |policy|
-  policy.default_src :self, :https
-  policy.script_src  :self, :https
-  # ... other directives ...
+Rails.application.configure do
+  config.content_security_policy do |policy|
+    # BreakEscape external scripts: Phaser, EasyStar, Tippy.js, Popper, WebFont
+    policy.script_src *policy.script_src,
+      "https://cdn.jsdelivr.net",
+      "https://unpkg.com",
+      "https://ajax.googleapis.com"
+
+    # BreakEscape fonts: Google Fonts CSS + binaries
+    policy.style_src *policy.style_src, "https://fonts.googleapis.com"
+    policy.font_src  *policy.font_src,  "https://fonts.gstatic.com", :data
+
+    # CyberChef iframe (served from same origin /break_escape/assets/cyberchef/)
+    policy.frame_src *policy.frame_src, :self
+
+    # CyberChef Web Workers (Tesseract OCR, Forge prime — run inside the iframe)
+    policy.worker_src *policy.worker_src, :self, "blob:"
+  end
+
+  # Nonces must cover both script-src AND style-src.
+  # BreakEscape uses <style nonce="..."> blocks as well as <script nonce="...">.
+  config.content_security_policy_nonce_generator  = ->(_request) { SecureRandom.base64(16) }
+  config.content_security_policy_nonce_directives = %w[script-src style-src]
 end
 ```
 
-### Step 11.2: Enable nonces for BreakEscape
+**Why `unsafe_inline` is NOT needed:** All inline `<script>` and `<style>` blocks
+in BreakEscape views carry `nonce="<%= content_security_policy_nonce %>"`.
+Inline event handlers (`onclick`, `onerror`) have been removed from the engine.
+Do **not** add `:unsafe_inline` — it defeats nonce-based protection entirely.
 
-Update CSP to allow inline scripts with nonces:
-
-```ruby
-Rails.application.config.content_security_policy do |policy|
-  policy.default_src :self, :https
-  policy.script_src  :self, :https, :unsafe_inline if Rails.env.development?
-  policy.script_src  :self, :https
-
-  # Allow nonces for inline scripts
-  policy.script_src_elem :self, :https
-end
-
-Rails.application.config.content_security_policy_nonce_generator = ->(request) {
-  SecureRandom.base64(16)
-}
-
-Rails.application.config.content_security_policy_nonce_directives = %w[script-src]
-```
+**Why `style-src` needs to be in `nonce_directives`:** `games/new.html.erb` and
+`missions/index.html.erb` both have inline `<style nonce="...">` blocks. If
+`style-src` is not in `nonce_directives`, Rails won't inject the nonce and the
+styles will be blocked.
 
 ### Step 11.3: Verify nonces in BreakEscape views
 
-Check that BreakEscape views use nonces:
+All `<script>` and `<style>` tags in BreakEscape views use the Rails nonce helper:
 
 ```erb
-<%= javascript_tag nonce: true do %>
-  window.GAME_ID = <%= @game.id %>;
-<% end %>
+<script nonce="<%= content_security_policy_nonce %>"> ... </script>
+<style  nonce="<%= content_security_policy_nonce %>"> ... </style>
+<script type="module" src="..." nonce="<%= content_security_policy_nonce %>"></script>
 ```
+
+Confirm the rendered HTML contains `nonce="..."` attributes on every script/style tag.
+
+### Step 11.4: CSP source reference
+
+| Source | Directive | Needed for |
+|--------|-----------|------------|
+| `cdn.jsdelivr.net` | `script-src` | Phaser 3.60, EasyStar.js |
+| `unpkg.com` | `script-src` | Tippy.js 6, Popper.js 2 |
+| `ajax.googleapis.com` | `script-src` | WebFont Loader |
+| `fonts.googleapis.com` | `style-src` | Google Fonts CSS |
+| `fonts.gstatic.com` | `font-src` | Google Fonts binary files |
+| `data:` | `font-src` | Icon data URIs |
+| `'self'` | `frame-src` | CyberChef iframe |
+| `'self'` + `blob:` | `worker-src` | Tesseract/Forge workers inside CyberChef |
 
 ---
 
