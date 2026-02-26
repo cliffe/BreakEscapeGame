@@ -222,6 +222,50 @@ rails db:migrate:status | grep break_escape
 # Should show all migrations as "up"
 ```
 
+### Game screen is blank / Phaser never starts
+
+**Symptom**: Browser console shows `Refused to load the script 'https://cdn.jsdelivr.net/...'`
+or `Refused to execute inline script`.
+
+**Solution**: Hacktivity's CSP is blocking BreakEscape's scripts. Follow the **Content
+Security Policy (CSP) Configuration** section above and add the required sources.
+The most common causes:
+
+- `cdn.jsdelivr.net`, `unpkg.com`, or `ajax.googleapis.com` missing from `script-src`
+  → Phaser, EasyStar.js, Tippy.js, and the WebFont Loader all fail silently
+- `content_security_policy_nonce_directives` does not include `style-src`
+  → inline `<style nonce="...">` blocks on `games/new` and `missions/index` are blocked
+- Nonce generator not configured → every `<script nonce="...">` tag in BreakEscape
+  views renders with an empty nonce and is refused
+
+Open the browser DevTools → Console. Each CSP violation names the blocked URL or
+`"inline script"` / `"inline style"` and the directive that rejected it — use that
+to pinpoint which source or directive is missing.
+
+### Game fonts missing (Press Start 2P / VT323 render as fallback)
+
+**Symptom**: Pixel/retro fonts don't appear; text uses a generic sans-serif.
+
+**Solution**: Add Google Fonts to the CSP:
+
+```ruby
+policy.style_src *policy.style_src, "https://fonts.googleapis.com"
+policy.font_src  *policy.font_src,  "https://fonts.gstatic.com", :data
+```
+
+### CyberChef workstation iframe is blank
+
+**Symptom**: Clicking the Crypto Workstation opens the panel but it stays empty.
+
+**Solution**: Add frame and worker sources:
+
+```ruby
+policy.frame_src  *policy.frame_src,  :self
+policy.worker_src *policy.worker_src, :self, "blob:"
+```
+
+`blob:` is required for CyberChef's Tesseract OCR and Forge prime web workers.
+
 ## Performance Considerations
 
 ### JIT Ink Compilation

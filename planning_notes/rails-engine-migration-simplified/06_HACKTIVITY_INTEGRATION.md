@@ -810,6 +810,76 @@ Test:
 3. Test: `mission.generate_scenario_data` in console
 4. Ensure `before_create :generate_scenario_data` callback in Game model
 
+### Problem: Game screen is blank / Phaser never starts (CSP)
+
+**Symptom:** Browser console shows errors like:
+```
+Refused to load the script 'https://cdn.jsdelivr.net/npm/phaser@3.60.0/...'
+because it violates the following Content Security Policy directive: "script-src 'self'"
+```
+or
+```
+Refused to execute inline script because it violates the Content Security Policy directive
+```
+
+**Solution:** Follow Phase 11 above. Hacktivity's CSP must be extended with the
+BreakEscape sources. The most common causes:
+
+1. `cdn.jsdelivr.net` / `unpkg.com` / `ajax.googleapis.com` not in `script-src` →
+   Phaser, EasyStar, Tippy.js, WebFont Loader all fail to load
+2. `nonce_directives` only covers `script-src` but not `style-src` →
+   inline `<style nonce="...">` blocks on `games/new` and `missions/index` are blocked
+3. Nonce generator not configured at all → every inline `<script nonce="...">` fails
+
+To diagnose, open the browser DevTools → Console tab and look for `Refused to` messages.
+Each will name the blocked URL or "inline script"/"inline style" and the failing directive.
+
+### Problem: Game fonts render as fallback / pixel fonts missing (CSP)
+
+**Symptom:** Game text uses a generic sans-serif font instead of Press Start 2P / VT323.
+
+**Solution:** Add Google Fonts sources to the CSP:
+```ruby
+policy.style_src *policy.style_src, "https://fonts.googleapis.com"
+policy.font_src  *policy.font_src,  "https://fonts.gstatic.com", :data
+```
+
+### Problem: CyberChef workstation is blank (CSP)
+
+**Symptom:** Clicking the Crypto Workstation button opens the popup but the iframe is empty.
+
+**Solution:** Add `frame-src` and `worker-src` (see Phase 11):
+```ruby
+policy.frame_src   *policy.frame_src,   :self
+policy.worker_src  *policy.worker_src,  :self, "blob:"
+```
+
+### Problem: NPC conditions stop working after upgrade
+
+**Symptom:** NPCs don't react to events even though the scenario has `condition` strings
+in `eventMappings`. The browser console shows no errors.
+
+**Background:** The engine previously used `eval()` to evaluate condition strings such as
+`"value === true"`. This was replaced with `safeEvaluateCondition()` to comply with
+`unsafe-eval` CSP restrictions. The new evaluator supports the patterns used in all
+shipped scenarios but has a defined grammar — it does not execute arbitrary JS.
+
+**Supported condition formats:**
+- `value === true` / `value !== false` / `value >= 4` (and other comparison operators)
+- `name === 'some-string'`
+- `data.propertyName === 'literal'`
+- `data.propertyName && data.propertyName.includes('substring')`
+
+**Solution:** If a custom scenario uses a condition string outside these patterns,
+rewrite it as one of the above, or pass a function instead of a string:
+```json
+// String form (must match supported grammar)
+"condition": "value === true"
+
+// Function form — set this in Ruby before serving the scenario JSON,
+// or convert to a supported string expression
+```
+
 ---
 
 ## Verification Checklist
@@ -831,6 +901,10 @@ After integration, verify all these work:
 - [ ] Game state persists across page reloads
 - [ ] Authorization policies work (can't access other user's games)
 - [ ] CSRF protection works
+- [ ] **CSP: no `Refused to load` / `Refused to execute` errors in browser console**
+- [ ] **CSP: game fonts load correctly (Press Start 2P / VT323 visible)**
+- [ ] **CSP: CyberChef iframe loads and is functional**
+- [ ] **CSP: `nonce_directives` includes both `script-src` and `style-src`**
 - [ ] Tests pass: `rails test`
 - [ ] Database has 2 tables: `break_escape_missions`, `break_escape_games`
 - [ ] Polymorphic player works (User or DemoUser)
