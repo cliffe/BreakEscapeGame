@@ -16,7 +16,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Pixelify+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
 
   <%# Web Font Loader script to ensure fonts load properly %>
-  <script src="https://ajax.googleapis.com/ajax/libs/webfont/1.6.26/webfont.js"></script>
+  <script src="https://ajax.googleapis.com/ajax/libs/webfont/1.6.26/webfont.js" nonce="<%= content_security_policy_nonce %>"></script>
   <script nonce="<%= content_security_policy_nonce %>">
     WebFont.load({
       google: {
@@ -84,8 +84,8 @@
       <div class="laptop-screen">
         <div class="title-bar">
           <span>Crypto Workstation</span>
-          <button class="minigame-open-new-tab-button" onclick="openCryptoWorkstationInNewTab()" title="Open in new tab">↑</button>
-          <button class="minigame-close-button" onclick="closeLaptop()">×</button>
+          <button id="crypto-open-new-tab-btn" class="minigame-open-new-tab-button" title="Open in new tab">↑</button>
+          <button id="crypto-close-btn" class="minigame-close-button">×</button>
         </div>
         <div id="cyberchef-container">
           <iframe id="cyberchef-frame" src=""></iframe>
@@ -100,8 +100,8 @@
       <div class="laptop-screen">
         <div class="title-bar">
           <span>Lab Sheet</span>
-          <button class="minigame-open-new-tab-button" onclick="openLabWorkstationInNewTab()" title="Open in new tab">↑</button>
-          <button class="minigame-close-button" onclick="closeLabWorkstation()">×</button>
+          <button id="lab-open-new-tab-btn" class="minigame-open-new-tab-button" title="Open in new tab">↑</button>
+          <button id="lab-close-btn" class="minigame-close-button">×</button>
         </div>
         <div id="lab-container">
           <iframe id="lab-frame" src=""></iframe>
@@ -147,6 +147,18 @@
     };
     console.log('🔧 breakEscapeConfig initialized:', window.breakEscapeConfig);
     console.log('🎨 Player sprite from server:', window.breakEscapeConfig.playerSprite);
+
+    // Wire up workstation buttons without inline onclick (CSP: unsafe-inline blocked)
+    document.addEventListener('DOMContentLoaded', function() {
+      document.getElementById('crypto-open-new-tab-btn')
+        .addEventListener('click', function() { openCryptoWorkstationInNewTab(); });
+      document.getElementById('crypto-close-btn')
+        .addEventListener('click', function() { closeLaptop(); });
+      document.getElementById('lab-open-new-tab-btn')
+        .addEventListener('click', function() { openLabWorkstationInNewTab(); });
+      document.getElementById('lab-close-btn')
+        .addEventListener('click', function() { closeLabWorkstation(); });
+    });
   </script>
 
   <%# Load required libraries before the game module %>
@@ -163,7 +175,7 @@
   <% end %>
 
   <%# Mobile touch handling %>
-  <script>
+  <script nonce="<%= content_security_policy_nonce %>">
     // Allow zooming on mobile devices
     document.addEventListener('DOMContentLoaded', function() {
       // Prevent Phaser from capturing touch events that should be used for zooming

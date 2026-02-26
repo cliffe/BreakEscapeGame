@@ -65,8 +65,7 @@
                   <%= image_tag sprite_headshot_path(sprite),
                                 class: 'sprite-headshot',
                                 alt: sprite.humanize,
-                                loading: 'lazy',
-                                onerror: "this.onerror=null; this.style.display='none'; var n=this.nextElementSibling; if(n) n.classList.remove('headshot-fallback-hidden');" %>
+                                loading: 'lazy' %>
                   <span class="headshot-fallback headshot-fallback-hidden"><%= sprite.humanize %></span>
                 </div>
 
@@ -120,8 +119,10 @@
 
       initializeSpritePreview(sprites, selectedSprite);
 
+      const grid = document.getElementById('sprite-selection-grid');
+
       // Click on headshot selects radio and updates selected class
-      document.getElementById('sprite-selection-grid').addEventListener('click', function(e) {
+      grid.addEventListener('click', function(e) {
         const label = e.target.closest('label.sprite-card');
         if (!label) return;
         const radio = label.querySelector('input[type="radio"]');
@@ -132,6 +133,15 @@
           document.querySelectorAll('label.sprite-card').forEach(l => l.classList.remove('selected'));
           label.classList.add('selected');
         }
+      });
+
+      // Headshot image fallback (replaces inline onerror — CSP: unsafe-inline blocked)
+      grid.querySelectorAll('.sprite-headshot').forEach(function(img) {
+        img.addEventListener('error', function() {
+          this.style.display = 'none';
+          const n = this.nextElementSibling;
+          if (n) n.classList.remove('headshot-fallback-hidden');
+        });
       });
     });
   </script>

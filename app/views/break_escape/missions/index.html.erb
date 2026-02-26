@@ -6,8 +6,8 @@
   <%= csp_meta_tag %>
   <link rel="stylesheet" href="/break_escape/css/mission_index/application.css">
   <!-- Tippy.js for tooltips -->
-  <script src="https://unpkg.com/@popperjs/core@2"></script>
-  <script src="https://unpkg.com/tippy.js@6"></script>
+  <script src="https://unpkg.com/@popperjs/core@2" nonce="<%= content_security_policy_nonce %>"></script>
+  <script src="https://unpkg.com/tippy.js@6" nonce="<%= content_security_policy_nonce %>"></script>
   <style>
     body {
       font-family: Arial, sans-serif;
@@ -147,7 +147,7 @@
     </div>
   <% end %>
 
-  <script>
+  <script nonce="<%= content_security_policy_nonce %>">
     // Initialize Tippy.js tooltips
     document.addEventListener('DOMContentLoaded', function() {
       tippy('[data-tippy-content]', {

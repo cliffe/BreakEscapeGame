@@ -1,9 +1,9 @@
 <%# Player Preferences Modal - Rendered inline in game view %>
-<div id="player-preferences-modal" class="modal-overlay" style="display: none;" onclick="if(event.target === this) window.playerHUD.closePlayerPreferences()">
+<div id="player-preferences-modal" class="modal-overlay" style="display: none;">
   <div class="player-preferences-modal-content">
     <div class="modal-header">
       <h2>Character Configuration</h2>
-      <button class="modal-close-button" onclick="window.playerHUD.closePlayerPreferences()">×</button>
+      <button id="player-preferences-close-btn" class="modal-close-button">×</button>
     </div>
 
     <%= form_with model: @player_preference,
@@ -54,8 +54,7 @@
                   <%= image_tag sprite_headshot_path(sprite),
                                 class: 'sprite-headshot',
                                 alt: sprite.humanize,
-                                loading: 'lazy',
-                                onerror: "this.onerror=null; this.style.display='none'; var n=this.nextElementSibling; if(n) n.classList.remove('headshot-fallback-hidden');" %>
+                                loading: 'lazy' %>
                   <span class="headshot-fallback headshot-fallback-hidden"><%= sprite.humanize %></span>
                 </div>
 
@@ -76,7 +75,7 @@
       <!-- Submit Buttons -->
       <div class="form-actions modal-footer">
         <%= f.submit 'Save Configuration', class: 'btn btn-primary', id: 'save-preferences-btn' %>
-        <button type="button" class="btn btn-secondary" onclick="window.playerHUD.closePlayerPreferences()">Cancel</button>
+        <button type="button" id="player-preferences-cancel-btn" class="btn btn-secondary">Cancel</button>
       </div>
     <% end %>
   </div>
@@ -108,8 +107,37 @@
           label.classList.add('selected');
         }
       });
+
+      // Headshot image fallback (replaces inline onerror — CSP: unsafe-inline blocked)
+      grid.querySelectorAll('.sprite-headshot').forEach(function(img) {
+        img.addEventListener('error', function() {
+          this.style.display = 'none';
+          const n = this.nextElementSibling;
+          if (n) n.classList.remove('headshot-fallback-hidden');
+        });
+      });
     }
   };
+
+  // Close modal on overlay click or close/cancel buttons (replaces inline onclick — CSP: unsafe-inline blocked)
+  const modal = document.getElementById('player-preferences-modal');
+  if (modal) {
+    modal.addEventListener('click', function(e) {
+      if (e.target === modal && window.playerHUD) window.playerHUD.closePlayerPreferences();
+    });
+  }
+  const closeBtn = document.getElementById('player-preferences-close-btn');
+  if (closeBtn) {
+    closeBtn.addEventListener('click', function() {
+      if (window.playerHUD) window.playerHUD.closePlayerPreferences();
+    });
+  }
+  const cancelBtn = document.getElementById('player-preferences-cancel-btn');
+  if (cancelBtn) {
+    cancelBtn.addEventListener('click', function() {
+      if (window.playerHUD) window.playerHUD.closePlayerPreferences();
+    });
+  }
 
   // Handle ESC key to close modal
   document.addEventListener('keydown', function(e) {

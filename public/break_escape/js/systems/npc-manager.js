@@ -3,6 +3,76 @@
 // default export NPCManager
 import { isInLineOfSight, drawLOSCone, clearLOSCone, getNPCFacingDirection } from './npc-los.js';
 
+/**
+ * Safe condition evaluator — replaces eval() for CSP compliance (unsafe-eval blocked).
+ * Supports the condition patterns used in scenario eventMappings:
+ *   "value === true"
+ *   "value >= 4"
+ *   "data.prop === 'string'"
+ *   "data.prop && data.prop.includes('substring')"
+ */
+function safeEvaluateCondition(conditionStr, eventData) {
+  const value = eventData?.value;
+  const name  = eventData?.name;
+
+  // Helper: parse a RHS literal token into a JS value
+  function parseLiteral(token) {
+    const t = token.trim();
+    if (t === 'true')  return true;
+    if (t === 'false') return false;
+    if (t === 'null')  return null;
+    if (t === 'undefined') return undefined;
+    const n = Number(t);
+    if (!isNaN(n) && t !== '') return n;
+    const strMatch = t.match(/^['"](.*)['"]$/);
+    if (strMatch) return strMatch[1];
+    return t;
+  }
+
+  // Helper: resolve "value" or "data.prop" from eventData
+  function resolveLHS(token) {
+    const t = token.trim();
+    if (t === 'value') return value;
+    if (t === 'name')  return name;
+    const propMatch = t.match(/^data\.(\w+)$/);
+    if (propMatch) return eventData?.[propMatch[1]];
+    return undefined;
+  }
+
+  // Helper: apply a comparison operator
+  function applyOp(lhs, op, rhs) {
+    switch (op) {
+      case '===': return lhs === rhs;
+      case '!==': return lhs !== rhs;
+      case '>=':  return lhs >= rhs;
+      case '<=':  return lhs <= rhs;
+      case '>':   return lhs > rhs;
+      case '<':   return lhs < rhs;
+      default:    return false;
+    }
+  }
+
+  const s = conditionStr.trim();
+
+  // Pattern: "data.prop && data.prop.includes('substring')"
+  const andIncludesMatch = s.match(/^(data\.\w+)\s*&&\s*data\.(\w+)\.includes\(['"]([^'"]*)['"]\)$/);
+  if (andIncludesMatch) {
+    const lhs = resolveLHS(andIncludesMatch[1]);
+    return !!(lhs && typeof lhs === 'string' && lhs.includes(andIncludesMatch[3]));
+  }
+
+  // Pattern: "value OP literal"  or  "data.prop OP literal"
+  const compareMatch = s.match(/^(value|name|data\.\w+)\s*(===|!==|>=|<=|>|<)\s*(.+)$/);
+  if (compareMatch) {
+    const lhs = resolveLHS(compareMatch[1]);
+    const rhs = parseLiteral(compareMatch[3]);
+    return applyOp(lhs, compareMatch[2], rhs);
+  }
+
+  console.error(`❌ safeEvaluateCondition: unsupported condition format: "${conditionStr}"`);
+  return false;
+}
+
 export default class NPCManager {
   constructor(eventDispatcher, barkSystem = null) {
     this.eventDispatcher = eventDispatcher;
@@ -396,12 +466,9 @@ export default class NPCManager {
       if (typeof config.condition === 'function') {
         conditionMet = config.condition(eventData, npc);
       } else if (typeof config.condition === 'string') {
-        // Evaluate condition string as JavaScript
+        // Safely evaluate condition string without eval() (CSP: unsafe-eval is blocked)
         try {
-          const data = eventData; // Make 'data' available in eval scope
-          const value = eventData?.value; // Extract value for common pattern
-          const name = eventData?.name; // Extract name for common pattern
-          conditionMet = eval(config.condition);
+          conditionMet = safeEvaluateCondition(config.condition, eventData);
           console.log(`   Condition result: ${conditionMet}`);
         } catch (error) {
           console.error(`❌ Error evaluating condition: ${config.condition}`, error);
