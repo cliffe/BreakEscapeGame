@@ -42,8 +42,7 @@ export default class PersonChatPortraits {
         // Sprite info
         this.spriteSheet = null;
         this.frameIndex = null;
-        this.spriteTalkImage = null; // Single frame talk image (alternative to spriteSheet)
-        this.spriteTalkOpenImage = null; // Mouth-open variant for TTS animation
+        this.spriteTalkImage = null; // Loaded *_talk.png (single frame OR 2×2 spritesheet)
         this.useSpriteTalk = false; // Whether to use spriteTalk instead of spriteSheet
         this.flipped = false; // Whether to flip the sprite horizontally
         this.facingDirection = npc.id === 'player' ? 'right' : 'left';
@@ -51,6 +50,7 @@ export default class PersonChatPortraits {
         // TTS mouth animation
         this.ttsManager = null; // Set via setTTSManager() from the minigame
         this._loadingSpriteTalkImage = false; // Guard against duplicate loads
+        this._lastRenderedTalkFrame = -1;  // Sentinel – forces first render
         
         console.log(`🖼️ Portrait renderer created for NPC: ${npc.id}${background ? ` with background: ${background}` : ''}`);
     }
@@ -215,12 +215,14 @@ export default class PersonChatPortraits {
     }
 
     /**
-     * Unified animation loop that handles:
-     *   - Background parallax (runs for 2 s after speaker change)
-     *   - TTS mouth animation (runs while ttsManager.isPlaying() is true)
+     * Unified animation loop handling both background parallax and TTS mouth animation.
      *
-     * The loop stays alive while either condition is active, so mouth animation
-     * picks up automatically whenever TTS starts – even after parallax has ended.
+     * Parallax: re-renders for 2 s after speaker change.
+     * Mouth:    re-renders only when the active talk-sheet frame index changes
+     *           (~10 fps while speaking, one final render when speech stops).
+     *
+     * The loop polls cheaply at 60 fps while ttsManager is registered so it
+     * reacts immediately when TTS starts, without requiring an external trigger.
      * @private
      */
     _runAnimationLoop() {
@@ -234,16 +236,19 @@ export default class PersonChatPortraits {
 
             const elapsed = (Date.now() - this.parallaxStartTime) / 1000;
             const parallaxActive = !!this.backgroundImage && elapsed < PARALLAX_DURATION;
-            const mouthActive = !!this.ttsManager && !!this.spriteTalkOpenImage &&
-                                this.ttsManager.isPlaying();
 
-            // Only re-render when something actually changed
-            if (parallaxActive || mouthActive) {
+            // Mouth animation: only re-render when the frame index actually changes
+            // (frame changes at ~10 fps while speaking; once to frame 0 when it stops)
+            const currentFrame = this._getCurrentTalkFrame();
+            const frameChanged = this._isTalkSheet() &&
+                                 currentFrame !== this._lastRenderedTalkFrame;
+
+            if (parallaxActive || frameChanged) {
                 this.render();
+                this._lastRenderedTalkFrame = currentFrame;
             }
 
-            // Keep the loop alive while ttsManager is registered (cheap poll for TTS start)
-            // or while parallax is still running.
+            // Keep loop alive while ttsManager is set (cheap boolean poll) or parallax runs
             if (this.ttsManager || parallaxActive) {
                 this.animationFrameId = requestAnimationFrame(animate);
             } else {
@@ -293,13 +298,11 @@ export default class PersonChatPortraits {
             this.useSpriteTalk = true;
             // Clear spriteTalkImage on speaker change to ensure correct dimensions are calculated
             // This ensures background scale is recalculated for each speaker's sprite size
-            this.spriteTalkImage = null; // Will be loaded in render with correct dimensions
-            this.spriteTalkOpenImage = null; // Will be loaded below
+            this.spriteTalkImage = null; // Will be loaded lazily on first render
             this._loadingSpriteTalkImage = false; // Reset lazy-load flag
+            this._lastRenderedTalkFrame = -1;  // Force re-render after load
             // For NPCs with spriteTalk, flip the image to face right
             this.flipped = this.npc.id !== 'player';
-            // Try to load mouth-open variant for TTS animation
-            this._loadSpriteTalkOpen();
             return;
         }
         
@@ -338,48 +341,44 @@ export default class PersonChatPortraits {
     }
 
     /**
-     * Try to load an open-mouth portrait variant for TTS mouth animation.
-     * Checks npc.spriteTalkOpen first, then auto-derives from spriteTalk path by
-     * trying "_animation" and "_animated" suffixes.
+     * Returns true when the loaded spriteTalk image is a 2×2 spritesheet
+     * (256×256 or any larger even-square image).  Single-frame images (128×128
+     * or smaller) are treated as a static portrait without mouth animation.
      * @private
      */
-    _loadSpriteTalkOpen() {
-        const basePath = this.npc.spriteTalk;
-        if (!basePath) return;
+    _isTalkSheet() {
+        return !!this.spriteTalkImage &&
+               this.spriteTalkImage.width >= 256 &&
+               this.spriteTalkImage.width === this.spriteTalkImage.height &&
+               this.spriteTalkImage.width % 2 === 0;
+    }
 
-        // Build candidate paths to try in order
-        const candidates = [];
-        if (this.npc.spriteTalkOpen) {
-            candidates.push(this.npc.spriteTalkOpen);
-        } else {
-            // Auto-derive by inserting a suffix before the extension
-            const withoutExt = basePath.replace(/\.(png|gif)$/i, '');
-            const ext = (basePath.match(/\.(png|gif)$/i) || ['.png'])[0];
-            candidates.push(`${withoutExt}_animation${ext}`);
-            candidates.push(`${withoutExt}_animated${ext}`);
+    /**
+     * Returns the logical frame size of the spriteTalk image.
+     * For a 2×2 sheet this is half the image width; for a single frame it is the full width.
+     * @private
+     */
+    _getTalkFrameSize() {
+        if (!this.spriteTalkImage) return 0;
+        return this._isTalkSheet()
+            ? this.spriteTalkImage.width / 2
+            : this.spriteTalkImage.width;
+    }
+
+    /**
+     * Returns which frame of the 2×2 talk sheet to display this render cycle.
+     *   Frame 0 – closed mouth  (top-left)     → shown when silent
+     *   Frame 1 – open pose A   (top-right)     ┐
+     *   Frame 2 – open pose B   (bottom-left)   ├ cycle while speaking (~10 fps)
+     *   Frame 3 – open pose C   (bottom-right)  ┘
+     * @private
+     */
+    _getCurrentTalkFrame() {
+        if (!this._isTalkSheet()) return 0;
+        if (this.ttsManager?.isSpeaking()) {
+            return (Math.floor(Date.now() / 100) % 3) + 1; // 1 → 2 → 3 → 1 …
         }
-
-        const tryNext = (index) => {
-            if (index >= candidates.length) return;
-            const path = candidates[index];
-            if (path === basePath) { tryNext(index + 1); return; } // same as closed, skip
-
-            const img = new Image();
-            img.crossOrigin = 'anonymous';
-            img.onload = () => {
-                this.spriteTalkOpenImage = img;
-                console.log(`👄 Mouth-open image loaded: ${path}`);
-            };
-            img.onerror = () => tryNext(index + 1);
-
-            let src = path;
-            if (!src.startsWith('/') && !src.startsWith('http')) {
-                src = src.startsWith('assets/') ? `/break_escape/${src}` : `${ASSETS_PATH}/${src}`;
-            }
-            img.src = src;
-        };
-
-        tryNext(0);
+        return 0; // closed mouth
     }
 
     /**
@@ -629,48 +628,23 @@ export default class PersonChatPortraits {
     }
     
     /**
-     * Render the spriteTalk image (single frame portrait).
-     * When TTS audio is above the noise-gate threshold the mouth-open variant is
-     * shown instead of the default mouth-closed portrait, creating a simple but
-     * effective lip-sync effect driven purely by real audio amplitude.
+     * Render the spriteTalk portrait, selecting the correct frame from the 2×2
+     * spritesheet based on current TTS amplitude (noise-gate).
+     *
+     * If the loaded image is a 2×2 sheet (≥256×256 square):
+     *   - Frame 0 (top-left)  → closed mouth  – shown when TTS is silent
+     *   - Frames 1-3 cycle    → talking poses  – shown while TTS amplitude > threshold
+     * If the image is a single frame (< 256px), it is rendered as before.
      */
     renderSpriteTalkImage() {
         if (!this.ctx || !this.canvas) return;
 
-        // Determine which image to display based on TTS amplitude (noise gate)
-        const mouthOpen = !!this.spriteTalkOpenImage &&
-                          !!this.ttsManager &&
-                          this.ttsManager.isSpeaking();
-
-        // If mouth-open image is ready and TTS is speaking, render it immediately.
-        // We still ensure the closed-mouth image is loading in the background so
-        // it's available the moment TTS goes silent.
-        if (mouthOpen) {
-            if (!this.spriteTalkImage) {
-                this._startLoadingSpriteTalkImage(); // begin loading for later
-            }
-            const scale = this._calculateImageScale(this.spriteTalkOpenImage);
-            if (this.backgroundImage && scale) {
-                this.ctx.fillStyle = '#000';
-                this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
-                this.drawBackground(scale);
-            }
-            this.drawSpriteTalkImage(this.spriteTalkOpenImage);
+        if (!this.spriteTalkImage) {
+            this._startLoadingSpriteTalkImage();
             return;
         }
 
-        try {
-            // Load image if not already loaded
-            if (!this.spriteTalkImage) {
-                this._startLoadingSpriteTalkImage();
-            } else {
-                // Already loaded, draw it
-                this.drawSpriteTalkImage(this.spriteTalkImage);
-            }
-        } catch (error) {
-            console.error('❌ Error rendering spriteTalk image:', error);
-            this.renderPlaceholder();
-        }
+        this.drawSpriteTalkImage(this.spriteTalkImage, this._getCurrentTalkFrame());
     }
 
     /**
@@ -688,14 +662,10 @@ export default class PersonChatPortraits {
         img.onload = () => {
             this.spriteTalkImage = img;
             this._loadingSpriteTalkImage = false;
-            // Redraw with the newly loaded image
-            const scale = this.calculateSpriteTalkScale();
-            if (this.backgroundImage && scale) {
-                this.ctx.fillStyle = '#000';
-                this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
-                this.drawBackground(scale);
-            }
-            this.drawSpriteTalkImage(img);
+            this._lastRenderedTalkFrame = -1; // force next loop tick to re-render
+            // Trigger an immediate render so the portrait appears without waiting
+            // for the next animation loop tick
+            this.render();
         };
 
         img.onerror = () => {
@@ -714,76 +684,71 @@ export default class PersonChatPortraits {
     }
     
     /**
-     * Calculate the scale for spriteTalk image (same calculation used in drawSpriteTalkImage)
-     * @returns {number|null} The scale factor, or null if spriteTalk image not loaded
+     * Calculate contain-fit scale for the active talk frame against the canvas.
+     * For a 2×2 spritesheet the scale is based on the per-frame size (half width/height),
+     * keeping the rendered character the same size regardless of sheet dimensions.
+     * @returns {number|null}
      */
     calculateSpriteTalkScale() {
-        return this._calculateImageScale(this.spriteTalkImage);
+        const frameSize = this._getTalkFrameSize();
+        if (!frameSize || !this.canvas) return null;
+        return Math.min(this.canvas.width / frameSize, this.canvas.height / frameSize);
     }
 
     /**
-     * Calculate contain-fit scale for any loaded image against the current canvas.
-     * @param {HTMLImageElement|null} img
-     * @returns {number|null}
-     * @private
+     * Draw one frame of the spriteTalk image (or the whole image for single-frame portraits).
+     *
+     * For a 2×2 spritesheet the frame layout is:
+     *   col 0, row 0  →  frame 0 (top-left)
+     *   col 1, row 0  →  frame 1 (top-right)
+     *   col 0, row 1  →  frame 2 (bottom-left)
+     *   col 1, row 1  →  frame 3 (bottom-right)
+     *
+     * @param {HTMLImageElement} img        - The loaded spriteTalk image
+     * @param {number}           frameIndex - 0-3 for sheet; ignored for single-frame
      */
-    _calculateImageScale(img) {
-        if (!img || !this.canvas) return null;
-        return Math.min(this.canvas.width / img.width, this.canvas.height / img.height);
-    }
-    
-    /**
-     * Draw the spriteTalk image scaled to fill canvas
-     * @param {Image} img - The loaded image element
-     */
-    drawSpriteTalkImage(img) {
+    drawSpriteTalkImage(img, frameIndex = 0) {
         if (!this.ctx || !this.canvas) return;
-        
+
         try {
             const canvasWidth = this.canvas.width;
             const canvasHeight = this.canvas.height;
-            const imgWidth = img.width;
-            const imgHeight = img.height;
-            
-            // Calculate scaling to fit image within canvas while maintaining aspect ratio
-            // Use Math.min to ensure full sprite is visible (contain style, not cover)
-            let scaleX = canvasWidth / imgWidth;
-            let scaleY = canvasHeight / imgHeight;
-            let scale = Math.min(scaleX, scaleY); // Fit contain style - ensures full sprite visible
-            
-            // Calculate position to center the image
-            const scaledWidth = imgWidth * scale;
-            const scaledHeight = imgHeight * scale;
-            let x = (canvasWidth - scaledWidth) / 2;
+
+            // Determine source crop rectangle
+            let srcX, srcY, srcW, srcH;
+            if (this._isTalkSheet()) {
+                srcW = img.width / 2;
+                srcH = img.height / 2;
+                srcX = (frameIndex % 2) * srcW;         // col 0 or 1
+                srcY = Math.floor(frameIndex / 2) * srcH; // row 0 or 1
+            } else {
+                // Single-frame – use the whole image
+                srcX = 0; srcY = 0; srcW = img.width; srcH = img.height;
+            }
+
+            // Scale the frame to fit the canvas (contain style)
+            const scale = Math.min(canvasWidth / srcW, canvasHeight / srcH);
+            const scaledWidth = srcW * scale;
+            const scaledHeight = srcH * scale;
+
+            // Center, then shift 20% away from the direction the character faces
+            let x = (canvasWidth - scaledWidth) / 2 - canvasWidth * 0.2;
             const y = (canvasHeight - scaledHeight) / 2;
-            
-            // Shift sprite 20% away from the direction they're facing
-            // Shifting left works for both flipped and non-flipped due to coordinate transform
-            // NPCs (flipped) appear on right, Player (not flipped) appears on left
-            const shiftAmount = canvasWidth * 0.2;
-            x -= shiftAmount;
-            
-            // Draw image scaled to fill canvas with optional flip
+
             this.ctx.imageSmoothingEnabled = false;
-            
+
             if (this.flipped) {
-                // Save current state, flip horizontally, draw, restore
                 this.ctx.save();
                 this.ctx.translate(canvasWidth / 2, 0);
                 this.ctx.scale(-1, 1);
-                this.ctx.drawImage(
-                    img,
-                    x - canvasWidth / 2, y, // Destination position
-                    scaledWidth, scaledHeight // Destination size (scaled)
-                );
+                this.ctx.drawImage(img,
+                    srcX, srcY, srcW, srcH,                  // source crop
+                    x - canvasWidth / 2, y, scaledWidth, scaledHeight); // dest
                 this.ctx.restore();
             } else {
-                // Draw normally
-                this.ctx.drawImage(
-                    img,
-                    x, y, // Destination position
-                    scaledWidth, scaledHeight // Destination size (scaled)
-                );
+                this.ctx.drawImage(img,
+                    srcX, srcY, srcW, srcH,                  // source crop
+                    x, y, scaledWidth, scaledHeight);         // dest
             }
         } catch (error) {
             console.error('❌ Error drawing spriteTalk image:', error);
