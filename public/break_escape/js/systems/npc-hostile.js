@@ -140,6 +140,12 @@ function damageNPC(npcId, amount) {
 
     // Note: Item drops are synced to server in dropNPCItems via RoomStateSync
 
+    // Play KO sounds: Wilhelm scream then body fall thud
+    if (window.soundManager) {
+      window.soundManager.play('wilhelm_scream');
+      window.soundManager.play('body_fall', { delay: 400 });
+    }
+
     if (window.eventDispatcher) {
       window.eventDispatcher.emit(CombatEvents.NPC_KO, { npcId });
     }

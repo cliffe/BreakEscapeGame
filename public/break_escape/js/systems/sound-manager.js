@@ -81,6 +81,10 @@ class SoundManager {
         // Game-specific sounds
         this.scene.load.audio('chair_roll', 'sounds/chair_roll.mp3');
         this.scene.load.audio('message_received', 'sounds/message_received.mp3');
+
+        // Combat / KO sounds (CC0 public domain, source: bigsoundbank.com)
+        this.scene.load.audio('wilhelm_scream', 'sounds/wilhelm_scream.mp3');
+        this.scene.load.audio('body_fall', 'sounds/body_fall.mp3');
     }
 
     /**
@@ -111,7 +115,9 @@ class SoundManager {
             // UI reject
             'ui_reject',
             // Game sounds
-            'chair_roll', 'message_received'
+            'chair_roll', 'message_received',
+            // Combat / KO sounds
+            'wilhelm_scream', 'body_fall'
         ];
 
         for (const soundName of soundNames) {
@@ -132,7 +138,7 @@ class SoundManager {
         let category = 'effects';
         if (soundName.includes('ui_click') || soundName.includes('ui_confirm')) category = 'ui';
         else if (soundName.includes('ui_alert') || soundName.includes('ui_notification') || soundName.includes('ui_reject')) category = 'notifications';
-        else if (soundName.includes('lockpick') || soundName.includes('chair')) category = 'effects';
+        else if (soundName.includes('lockpick') || soundName.includes('chair') || soundName.includes('wilhelm') || soundName.includes('body_fall')) category = 'effects';
         else if (soundName.includes('item_interact') || soundName.includes('lock_interact') || soundName.includes('door_knock')) category = 'interactions';
         else if (soundName.includes('message_received')) category = 'notifications';
 
