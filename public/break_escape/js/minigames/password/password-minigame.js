@@ -459,6 +459,7 @@ export class PasswordMinigame extends MinigameScene {
     
     passwordCorrect() {
         this.cleanup();
+        if (window.playUISound) window.playUISound('confirm');
         this.showSuccess("Password accepted! Access granted.", true, 1000);
 
         // Set game result for the callback
@@ -474,6 +475,7 @@ export class PasswordMinigame extends MinigameScene {
         if (this.gameData.attempts >= this.gameData.maxAttempts) {
             this.passwordFailed();
         } else {
+            if (window.playUISound) window.playUISound('reject');
             this.showFailure(`Incorrect password. ${this.gameData.maxAttempts - this.gameData.attempts} attempts remaining.`, false, 1500);
             
             // Clear the password field
@@ -485,6 +487,7 @@ export class PasswordMinigame extends MinigameScene {
     
     passwordFailed() {
         this.cleanup();
+        if (window.playUISound) window.playUISound('reject');
         this.showFailure("Maximum attempts exceeded. Access denied.", true, 1500);
         
         this.gameResult = {

@@ -366,6 +366,7 @@ export class FlagStationMinigame extends MinigameScene {
             
             if (response.ok && data.success) {
                 // Success!
+                if (window.playUISound) window.playUISound('confirm');
                 this.showResult(resultEl, 'success', `✓ ${data.message || 'Flag accepted!'}`);
                 
                 // Add to history
@@ -408,6 +409,7 @@ export class FlagStationMinigame extends MinigameScene {
                 input.value = '';
                 
             } else {
+                if (window.playUISound) window.playUISound('reject');
                 this.showResult(resultEl, 'error', `✗ ${data.message || 'Invalid flag'}`);
             }
             

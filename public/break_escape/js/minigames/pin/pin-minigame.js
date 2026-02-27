@@ -221,7 +221,8 @@ export class PinMinigame extends MinigameScene {
         if (this.isLocked || this.currentInput.length >= this.pinLength) {
             return;
         }
-        
+
+        if (window.playUISound) window.playUISound('click');
         this.currentInput += number;
         this.updateDisplay();
         
@@ -235,7 +236,8 @@ export class PinMinigame extends MinigameScene {
         if (this.isLocked || this.currentInput.length === 0) {
             return;
         }
-        
+
+        if (window.playUISound) window.playUISound('click');
         this.currentInput = this.currentInput.slice(0, -1);
         this.updateDisplay();
     }
@@ -449,6 +451,7 @@ export class PinMinigame extends MinigameScene {
         this.displayElement.classList.add('success');
         this.displayElement.textContent = this.currentInput;
 
+        if (window.playUISound) window.playUISound('confirm');
         this.showSuccess('PIN Correct! Access Granted.', true, 2000);
 
         // Set game result
@@ -464,12 +467,13 @@ export class PinMinigame extends MinigameScene {
     handleFailure() {
         this.currentInput = '';
         this.updateDisplay();
-        
+
+        if (window.playUISound) window.playUISound('reject');
         if (this.attemptCount >= this.maxAttempts) {
             this.isLocked = true;
             this.displayElement.classList.add('locked');
             this.displayElement.textContent = 'LOCKED';
-            
+
             this.showFailure('Maximum attempts reached. System locked.', true, 3000);
             
             // Set game result

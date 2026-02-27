@@ -558,6 +558,7 @@ export class ContainerMinigame extends MinigameScene {
         
         // Add to inventory
         if (addToInventory(tempSprite)) {
+            if (window.playUISound) window.playUISound('item');
             // Remove from container display
             itemElement.parentElement.remove();
             
@@ -596,10 +597,11 @@ export class ContainerMinigame extends MinigameScene {
                 }
             }
         } else {
+            if (window.playUISound) window.playUISound('reject');
             this.showMessage(`Failed to add ${item.name} to inventory`, 'error');
         }
     }
-    
+
     takeContainer() {
         console.log('Taking container:', this.containerItem);
         

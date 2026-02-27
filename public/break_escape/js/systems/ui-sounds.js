@@ -61,12 +61,18 @@ export function playUISound(soundType = 'click') {
         case 'lock':
             soundManager.playLockInteract();
             break;
+        case 'objective_complete':
+            soundManager.play('ui_confirm');
+            break;
         default:
             // Try to play as-is
             soundManager.play(soundType);
             break;
     }
 }
+
+// Expose globally for use in non-module contexts (e.g., objectives-manager, minigames)
+window.playUISound = playUISound;
 
 /**
  * Attach notification sound to an element
