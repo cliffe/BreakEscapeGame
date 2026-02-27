@@ -17,6 +17,11 @@ class TTSManager {
         this.onEndedCallback = null;
         this.playing = false;
 
+        // Web Audio API for real-time amplitude analysis (mouth animation)
+        this._audioContext = null;
+        this._analyser = null;
+        this._amplitudeBuffer = null;
+
         this.audio.volume = this.volume;
         this.audio.addEventListener('ended', () => {
             this.playing = false;
@@ -41,6 +46,9 @@ class TTSManager {
 
         // Stop any current playback
         this.stop();
+
+        // Set up Web Audio API for amplitude analysis (lazy init, requires user gesture)
+        this._ensureAudioContext();
 
         try {
             const key = this._cacheKey(npcId, text);
@@ -86,6 +94,12 @@ class TTSManager {
             });
 
             this.playing = true;
+
+            // Resume AudioContext if suspended (required after browser autoplay policy)
+            if (this._audioContext && this._audioContext.state === 'suspended') {
+                this._audioContext.resume().catch(() => {});
+            }
+
             await this.audio.play();
 
             console.log(`[TTS] Playing for ${npcId}: "${text.substring(0, 40)}..." (${duration}ms)`);
@@ -175,6 +189,59 @@ class TTSManager {
         }
         this.preloadCache.clear();
         this.onEndedCallback = null;
+
+        if (this._audioContext) {
+            this._audioContext.close().catch(() => {});
+            this._audioContext = null;
+            this._analyser = null;
+            this._amplitudeBuffer = null;
+        }
+    }
+
+    /**
+     * Get current RMS amplitude of TTS audio (0.0 – 1.0).
+     * Returns 0 when not playing or Web Audio API is unavailable.
+     */
+    getAmplitude() {
+        if (!this._analyser || !this.playing) return 0;
+        this._analyser.getByteTimeDomainData(this._amplitudeBuffer);
+        let sum = 0;
+        const len = this._amplitudeBuffer.length;
+        for (let i = 0; i < len; i++) {
+            const v = (this._amplitudeBuffer[i] - 128) / 128;
+            sum += v * v;
+        }
+        return Math.sqrt(sum / len); // RMS amplitude
+    }
+
+    /**
+     * Returns true when TTS audio is above the noise-gate threshold.
+     * Only reflects TTS audio – game SFX routed through Phaser are unaffected.
+     * @param {number} threshold - Amplitude threshold (default 0.02)
+     */
+    isSpeaking(threshold = 0.02) {
+        return this.getAmplitude() > threshold;
+    }
+
+    /** @private */
+    _ensureAudioContext() {
+        if (this._audioContext) return;
+        try {
+            const AudioContext = window.AudioContext || window.webkitAudioContext;
+            if (!AudioContext) return;
+            this._audioContext = new AudioContext();
+            this._analyser = this._audioContext.createAnalyser();
+            this._analyser.fftSize = 256;
+            this._analyser.smoothingTimeConstant = 0.2; // Low smoothing for snappy noise gate
+            this._amplitudeBuffer = new Uint8Array(this._analyser.frequencyBinCount);
+            const source = this._audioContext.createMediaElementSource(this.audio);
+            source.connect(this._analyser);
+            this._analyser.connect(this._audioContext.destination);
+        } catch (e) {
+            console.warn('[TTS] Web Audio API unavailable, mouth animation disabled:', e.message);
+            this._audioContext = null;
+            this._analyser = null;
+        }
     }
 
     /** @private */

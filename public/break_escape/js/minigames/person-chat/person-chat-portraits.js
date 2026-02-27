@@ -43,9 +43,14 @@ export default class PersonChatPortraits {
         this.spriteSheet = null;
         this.frameIndex = null;
         this.spriteTalkImage = null; // Single frame talk image (alternative to spriteSheet)
+        this.spriteTalkOpenImage = null; // Mouth-open variant for TTS animation
         this.useSpriteTalk = false; // Whether to use spriteTalk instead of spriteSheet
         this.flipped = false; // Whether to flip the sprite horizontally
         this.facingDirection = npc.id === 'player' ? 'right' : 'left';
+
+        // TTS mouth animation
+        this.ttsManager = null; // Set via setTTSManager() from the minigame
+        this._loadingSpriteTalkImage = false; // Guard against duplicate loads
         
         console.log(`🖼️ Portrait renderer created for NPC: ${npc.id}${background ? ` with background: ${background}` : ''}`);
     }
@@ -200,37 +205,52 @@ export default class PersonChatPortraits {
     }
     
     /**
-     * Start parallax animation loop (stops after movement completes)
+     * Start the animation loop (handles both parallax and TTS mouth animation).
      */
     startParallaxAnimation() {
         if (this.animationFrameId) {
-            return; // Already animating
+            return; // Already running
         }
-        
-        const parallaxDuration = 2.0; // Duration of movement in seconds
-        
+        this._runAnimationLoop();
+    }
+
+    /**
+     * Unified animation loop that handles:
+     *   - Background parallax (runs for 2 s after speaker change)
+     *   - TTS mouth animation (runs while ttsManager.isPlaying() is true)
+     *
+     * The loop stays alive while either condition is active, so mouth animation
+     * picks up automatically whenever TTS starts – even after parallax has ended.
+     * @private
+     */
+    _runAnimationLoop() {
+        const PARALLAX_DURATION = 2.0; // seconds
+
         const animate = () => {
-            if (!this.canvas || !this.backgroundImage) {
+            if (!this.canvas) {
                 this.animationFrameId = null;
                 return;
             }
-            
-            const elapsed = (Date.now() - this.parallaxStartTime) / 1000; // Time in seconds
-            
-            // Re-render to update parallax position
-            // This will redraw both background (with parallax) and sprite
-            this.render();
-            
-            // Continue animation until movement is complete
-            if (elapsed < parallaxDuration) {
+
+            const elapsed = (Date.now() - this.parallaxStartTime) / 1000;
+            const parallaxActive = !!this.backgroundImage && elapsed < PARALLAX_DURATION;
+            const mouthActive = !!this.ttsManager && !!this.spriteTalkOpenImage &&
+                                this.ttsManager.isPlaying();
+
+            // Only re-render when something actually changed
+            if (parallaxActive || mouthActive) {
+                this.render();
+            }
+
+            // Keep the loop alive while ttsManager is registered (cheap poll for TTS start)
+            // or while parallax is still running.
+            if (this.ttsManager || parallaxActive) {
                 this.animationFrameId = requestAnimationFrame(animate);
             } else {
-                // Movement complete, stop animation loop
                 this.animationFrameId = null;
             }
         };
-        
-        // Start animation loop
+
         this.animationFrameId = requestAnimationFrame(animate);
     }
     
@@ -274,8 +294,12 @@ export default class PersonChatPortraits {
             // Clear spriteTalkImage on speaker change to ensure correct dimensions are calculated
             // This ensures background scale is recalculated for each speaker's sprite size
             this.spriteTalkImage = null; // Will be loaded in render with correct dimensions
+            this.spriteTalkOpenImage = null; // Will be loaded below
+            this._loadingSpriteTalkImage = false; // Reset lazy-load flag
             // For NPCs with spriteTalk, flip the image to face right
             this.flipped = this.npc.id !== 'player';
+            // Try to load mouth-open variant for TTS animation
+            this._loadSpriteTalkOpen();
             return;
         }
         
@@ -300,6 +324,64 @@ export default class PersonChatPortraits {
         }
     }
     
+    /**
+     * Register the TTSManager so mouth animation can be driven by real audio amplitude.
+     * Call this after portrait initialisation from the parent minigame.
+     * @param {TTSManager} manager
+     */
+    setTTSManager(manager) {
+        this.ttsManager = manager;
+        // Ensure the animation loop is running so it can pick up TTS starts
+        if (this.canvas && !this.animationFrameId) {
+            this._runAnimationLoop();
+        }
+    }
+
+    /**
+     * Try to load an open-mouth portrait variant for TTS mouth animation.
+     * Checks npc.spriteTalkOpen first, then auto-derives from spriteTalk path by
+     * trying "_animation" and "_animated" suffixes.
+     * @private
+     */
+    _loadSpriteTalkOpen() {
+        const basePath = this.npc.spriteTalk;
+        if (!basePath) return;
+
+        // Build candidate paths to try in order
+        const candidates = [];
+        if (this.npc.spriteTalkOpen) {
+            candidates.push(this.npc.spriteTalkOpen);
+        } else {
+            // Auto-derive by inserting a suffix before the extension
+            const withoutExt = basePath.replace(/\.(png|gif)$/i, '');
+            const ext = (basePath.match(/\.(png|gif)$/i) || ['.png'])[0];
+            candidates.push(`${withoutExt}_animation${ext}`);
+            candidates.push(`${withoutExt}_animated${ext}`);
+        }
+
+        const tryNext = (index) => {
+            if (index >= candidates.length) return;
+            const path = candidates[index];
+            if (path === basePath) { tryNext(index + 1); return; } // same as closed, skip
+
+            const img = new Image();
+            img.crossOrigin = 'anonymous';
+            img.onload = () => {
+                this.spriteTalkOpenImage = img;
+                console.log(`👄 Mouth-open image loaded: ${path}`);
+            };
+            img.onerror = () => tryNext(index + 1);
+
+            let src = path;
+            if (!src.startsWith('/') && !src.startsWith('http')) {
+                src = src.startsWith('assets/') ? `/break_escape/${src}` : `${ASSETS_PATH}/${src}`;
+            }
+            img.src = src;
+        };
+
+        tryNext(0);
+    }
+
     /**
      * Load background image if path is provided
      */
@@ -547,50 +629,40 @@ export default class PersonChatPortraits {
     }
     
     /**
-     * Render the spriteTalk image (single frame portrait)
-     * Loads the image from the NPC's spriteTalk property
+     * Render the spriteTalk image (single frame portrait).
+     * When TTS audio is above the noise-gate threshold the mouth-open variant is
+     * shown instead of the default mouth-closed portrait, creating a simple but
+     * effective lip-sync effect driven purely by real audio amplitude.
      */
     renderSpriteTalkImage() {
         if (!this.ctx || !this.canvas) return;
-        
+
+        // Determine which image to display based on TTS amplitude (noise gate)
+        const mouthOpen = !!this.spriteTalkOpenImage &&
+                          !!this.ttsManager &&
+                          this.ttsManager.isSpeaking();
+
+        // If mouth-open image is ready and TTS is speaking, render it immediately.
+        // We still ensure the closed-mouth image is loading in the background so
+        // it's available the moment TTS goes silent.
+        if (mouthOpen) {
+            if (!this.spriteTalkImage) {
+                this._startLoadingSpriteTalkImage(); // begin loading for later
+            }
+            const scale = this._calculateImageScale(this.spriteTalkOpenImage);
+            if (this.backgroundImage && scale) {
+                this.ctx.fillStyle = '#000';
+                this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
+                this.drawBackground(scale);
+            }
+            this.drawSpriteTalkImage(this.spriteTalkOpenImage);
+            return;
+        }
+
         try {
             // Load image if not already loaded
             if (!this.spriteTalkImage) {
-                const img = new Image();
-                img.crossOrigin = 'anonymous';
-                
-                img.onload = () => {
-                    // Store loaded image
-                    this.spriteTalkImage = img;
-                    // Recalculate scale now that image is loaded and redraw background
-                    const spriteTalkScale = this.calculateSpriteTalkScale();
-                    if (this.backgroundImage && spriteTalkScale) {
-                        // Clear and redraw background with correct scale
-                        this.ctx.fillStyle = '#000';
-                        this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
-                        this.drawBackground(spriteTalkScale);
-                    }
-                    this.drawSpriteTalkImage(img);
-                };
-                
-                img.onerror = () => {
-                    console.error(`❌ Failed to load spriteTalk image: ${this.npc.spriteTalk}`);
-                    this.renderPlaceholder();
-                };
-                
-                // Start loading image - resolve relative path to full URL
-                let imageSrc = this.npc.spriteTalk;
-                if (!imageSrc.startsWith('/') && !imageSrc.startsWith('http')) {
-                    // Relative path - prepend base path
-                    // If path starts with 'assets/', prepend /break_escape/
-                    // Otherwise, prepend ASSETS_PATH
-                    if (imageSrc.startsWith('assets/')) {
-                        imageSrc = `/break_escape/${imageSrc}`;
-                    } else {
-                        imageSrc = `${ASSETS_PATH}/${imageSrc}`;
-                    }
-                }
-                img.src = imageSrc;
+                this._startLoadingSpriteTalkImage();
             } else {
                 // Already loaded, draw it
                 this.drawSpriteTalkImage(this.spriteTalkImage);
@@ -600,24 +672,64 @@ export default class PersonChatPortraits {
             this.renderPlaceholder();
         }
     }
+
+    /**
+     * Begin loading the mouth-closed spriteTalk image (idempotent).
+     * Called lazily the first time it is needed.
+     * @private
+     */
+    _startLoadingSpriteTalkImage() {
+        if (this._loadingSpriteTalkImage) return; // already in flight
+        this._loadingSpriteTalkImage = true;
+
+        const img = new Image();
+        img.crossOrigin = 'anonymous';
+
+        img.onload = () => {
+            this.spriteTalkImage = img;
+            this._loadingSpriteTalkImage = false;
+            // Redraw with the newly loaded image
+            const scale = this.calculateSpriteTalkScale();
+            if (this.backgroundImage && scale) {
+                this.ctx.fillStyle = '#000';
+                this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
+                this.drawBackground(scale);
+            }
+            this.drawSpriteTalkImage(img);
+        };
+
+        img.onerror = () => {
+            this._loadingSpriteTalkImage = false;
+            console.error(`❌ Failed to load spriteTalk image: ${this.npc.spriteTalk}`);
+            this.renderPlaceholder();
+        };
+
+        let imageSrc = this.npc.spriteTalk;
+        if (!imageSrc.startsWith('/') && !imageSrc.startsWith('http')) {
+            imageSrc = imageSrc.startsWith('assets/')
+                ? `/break_escape/${imageSrc}`
+                : `${ASSETS_PATH}/${imageSrc}`;
+        }
+        img.src = imageSrc;
+    }
     
     /**
      * Calculate the scale for spriteTalk image (same calculation used in drawSpriteTalkImage)
      * @returns {number|null} The scale factor, or null if spriteTalk image not loaded
      */
     calculateSpriteTalkScale() {
-        if (!this.spriteTalkImage || !this.canvas) return null;
-        
-        const canvasWidth = this.canvas.width;
-        const canvasHeight = this.canvas.height;
-        const imgWidth = this.spriteTalkImage.width;
-        const imgHeight = this.spriteTalkImage.height;
-        
-        // Calculate scaling to fit image within canvas while maintaining aspect ratio
-        // Use Math.min to ensure full sprite is visible (contain style, not cover)
-        let scaleX = canvasWidth / imgWidth;
-        let scaleY = canvasHeight / imgHeight;
-        return Math.min(scaleX, scaleY); // Fit contain style - ensures full sprite visible
+        return this._calculateImageScale(this.spriteTalkImage);
+    }
+
+    /**
+     * Calculate contain-fit scale for any loaded image against the current canvas.
+     * @param {HTMLImageElement|null} img
+     * @returns {number|null}
+     * @private
+     */
+    _calculateImageScale(img) {
+        if (!img || !this.canvas) return null;
+        return Math.min(this.canvas.width / img.width, this.canvas.height / img.height);
     }
     
     /**

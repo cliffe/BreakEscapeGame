@@ -186,9 +186,16 @@ export class PersonChatMinigame extends MinigameScene {
             characters: this.characters,  // Pass multi-character support
             background: this.background   // Optional background image path
         }, this.npcManager);
-        
+
         this.ui.render();
-        
+
+        // Pass TTSManager to the portrait renderer so mouth animation can be
+        // driven by real audio amplitude (noise gate on TTS audio only –
+        // Phaser game sounds are routed through a separate system and unaffected).
+        if (this.ui.portraitRenderer) {
+            this.ui.portraitRenderer.setTTSManager(this.ttsManager);
+        }
+
         // Set up event listeners
         this.setupEventListeners();
         
