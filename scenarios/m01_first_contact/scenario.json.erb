@@ -305,6 +305,8 @@ password_hints = "Common passwords: Marketing123, Campaign2024, Viral_Dynamics_A
             "style": "Friendly, warm receptionist. Speak with a consistent Irish accent throughout — do not shift to any other accent. Use a warm, mid-range pitch. Speak naturally and helpfully.",
             "language": "en-GB"
           },
+          "globalVarOnKO": "sarah_ko",
+          "taskOnKO": "check_in_reception",
           "behavior": {
             "hostile": {
               "chaseSpeed": 100,
@@ -351,6 +353,46 @@ password_hints = "Common passwords: Marketing123, Campaign2024, Viral_Dynamics_A
             }
           ],
           "eventMappings": [
+            {
+              "eventPattern": "npc_attacked:sarah_martinez",
+              "targetKnot": "event_sarah_attacked",
+              "onceOnly": true,
+              "sendTimedMessage": {
+                "delay": 1500,
+                "message": "Unorthodox check-in. Her items will be on the floor when she goes down.",
+                "targetKnot": "event_sarah_attacked"
+              }
+            },
+            {
+              "eventPattern": "npc_ko:sarah_martinez",
+              "targetKnot": "event_sarah_ko",
+              "onceOnly": true,
+              "sendTimedMessage": {
+                "delay": 2000,
+                "message": "Check-in resolved. Sarah's key and badge are on the floor — she's got nothing to do with any of this.",
+                "targetKnot": "event_sarah_ko"
+              }
+            },
+            {
+              "eventPattern": "npc_attacked:maya_chen",
+              "targetKnot": "event_maya_attacked",
+              "onceOnly": true,
+              "sendTimedMessage": {
+                "delay": 1500,
+                "message": "That's the informant, Agent. She came to us.",
+                "targetKnot": "event_maya_attacked"
+              }
+            },
+            {
+              "eventPattern": "npc_ko:maya_chen",
+              "targetKnot": "event_maya_ko",
+              "onceOnly": true,
+              "sendTimedMessage": {
+                "delay": 2000,
+                "message": "We may never know what Maya had to tell us. She wasn't ENTROPY — she was trying to help.",
+                "targetKnot": "event_maya_ko"
+              }
+            },
             {
               "eventPattern": "npc_attacked:kevin_park",
               "targetKnot": "event_kevin_attacked",
@@ -865,7 +907,8 @@ password_hints = "Common passwords: Marketing123, Campaign2024, Viral_Dynamics_A
             "name": "Leda",
             "style": "Anxious, speaking in hushed tones. Speak with a consistent British Received Pronunciation accent throughout — do not shift to any other accent. Use a quiet, slightly higher-pitched voice. Nervous and concerned.",
             "language": "en-GB"
-          }
+          },
+          "globalVarOnKO": "maya_ko"
         }
       ],
       "objects": [
@@ -1085,6 +1128,8 @@ password_hints = "Common passwords: Marketing123, Campaign2024, Viral_Dynamics_A
     "kevin_choice": "",
     "kevin_protected": false,
     "kevin_ko": false,
+    "sarah_ko": false,
+    "maya_ko": false,
     
     "found_casualty_projections": false,
     "found_target_database": false,

@@ -33,6 +33,8 @@ VAR audit_wrong_answers = 0
 
 // NPC casualty tracking
 VAR kevin_ko = false
+VAR sarah_ko = false
+VAR maya_ko = false
 
 // ================================================
 // START: PHONE SUPPORT
@@ -525,6 +527,86 @@ Agent 0x99: Confrontation, silent extraction, or public exposure. Each has conse
     -> support_hub
 + [I'm ready to proceed]
     Agent 0x99: Good luck, {player_name}. You've got this.
+    #exit_conversation
+    -> support_hub
+
+// ================================================
+// EVENT: SARAH MARTINEZ ATTACKED / KO'D
+// ================================================
+
+=== event_sarah_attacked ===
+#speaker:agent_0x99
+
+Agent 0x99: Unorthodox approach to reception, {player_name}.
+
+Agent 0x99: Sarah's a civilian—nothing operational about her. Her items will be on the floor when she goes down. The visitor badge and the main office key.
+
+Agent 0x99: You've got the authority. Keep moving.
+
++ [Understood]
+    #exit_conversation
+    -> support_hub
++ [Needed the key. No time to explain.]
+    Agent 0x99: Fair enough. Get it done.
+    #exit_conversation
+    -> support_hub
+
+=== event_sarah_ko ===
+#speaker:agent_0x99
+
+Agent 0x99: Check-in resolved. Sarah's key and badge are on the floor—pick them up and proceed.
+
+Agent 0x99: For the record: Sarah Martinez has no connection to ENTROPY. She's the receptionist.
+
+Agent 0x99: Collateral noted. Keep the mission moving.
+
++ [Got it. Moving on.]
+    #exit_conversation
+    -> support_hub
++ [Wasn't ideal, but necessary.]
+    Agent 0x99: I know. Field decisions rarely are. Go.
+    #exit_conversation
+    -> support_hub
+
+// ================================================
+// EVENT: MAYA CHEN ATTACKED / KO'D
+// ================================================
+
+=== event_maya_attacked ===
+#speaker:agent_0x99
+
+Agent 0x99: {player_name}—that's the informant.
+
+Agent 0x99: Maya Chen is the one who contacted SAFETYNET. She's the reason we even know about Operation Shatter.
+
+Agent 0x99: You have the authority to make field calls. Just be aware of what you're losing.
+
++ [She's in my way right now.]
+    Agent 0x99: Noted. Your call. Whatever she knew about Shatter's inner workings goes with her if she goes down.
+    #exit_conversation
+    -> support_hub
++ [I know. Had to be done.]
+    Agent 0x99: Then do it and keep moving. But understand what that costs us.
+    #exit_conversation
+    -> support_hub
+
+=== event_maya_ko ===
+#speaker:agent_0x99
+
+Agent 0x99: We may never know what Maya had to tell us.
+
+Agent 0x99: Whatever she'd gathered on Operation Shatter's inner workings—the names, the connections, the parts we don't have yet—that intelligence is gone.
+
+Agent 0x99: Maya Chen was our contact, {player_name}. Not ENTROPY. She came to us because she trusted SAFETYNET.
+
+Agent 0x99: You had the authority. The mission can still succeed. But we lost something today.
+
++ [The mission comes first.]
+    Agent 0x99: It does. And it succeeded. Just... carry that one.
+    #exit_conversation
+    -> support_hub
++ [I know. I'm sorry.]
+    Agent 0x99: Honest answer. Focus on what's ahead—stop Operation Shatter. That's what Maya wanted.
     #exit_conversation
     -> support_hub
 

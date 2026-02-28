@@ -22,6 +22,8 @@ VAR kevin_protected = false       // Did player help Kevin?
 
 // NPC casualty tracking
 VAR kevin_ko = false              // Did player KO Kevin?
+VAR sarah_ko = false              // Did player KO Sarah?
+VAR maya_ko = false               // Did player KO Maya?
 
 // Security Audit Assessment
 VAR security_audit_completed = false    // Did player complete the security audit?
@@ -128,24 +130,35 @@ Agent 0x99: Next time, prioritize document recovery. Physical evidence is harder
 // ================================================
 
 === npc_interactions ===
+// Both informants removed
+{kevin_ko && maya_ko:
+    -> both_removed
+}
+// Maya removed (Kevin still operational)
+{maya_ko && talked_to_kevin:
+    -> kevin_helped_maya_removed
+}
+{maya_ko:
+    -> maya_removed_alone
+}
+// Kevin removed (Maya still operational or not talked to)
 {kevin_ko && talked_to_maya:
     -> worked_with_maya_kevin_removed
 }
-{kevin_ko && not talked_to_maya:
+{kevin_ko:
     -> kevin_removed_alone
 }
+// Normal paths
 {talked_to_kevin && talked_to_maya:
     -> worked_with_both
 }
-{talked_to_kevin && not talked_to_maya:
+{talked_to_kevin:
     -> worked_with_kevin
 }
-{not talked_to_kevin && talked_to_maya:
+{talked_to_maya:
     -> worked_with_maya
 }
-{not talked_to_kevin && not talked_to_maya:
-    -> worked_alone
-}
+-> worked_alone
 
 === worked_with_both ===
 Agent 0x99: I noticed you worked with both Kevin and Maya.
@@ -214,6 +227,54 @@ Agent 0x99: Post-operation check on Kevin's files confirms: no ENTROPY connectio
 Agent 0x99: You had the authority. The operation succeeded. I'm logging it as an operational casualty, not a failure of judgment.
 
 -> kevin_ko_discussion
+
+=== both_removed ===
+Agent 0x99: Both Kevin Park and Maya Chen were removed from the picture during the operation.
+
+Agent 0x99: I want to be direct with you: neither of them was ENTROPY. Kevin was an IT manager flagging concerns. Maya was our own informant—the one who brought us the lead on Operation Shatter in the first place.
+
+Agent 0x99: We lost whatever intelligence Maya had still to share. That's a real cost. ENTROPY's internal connections, the names she hadn't written down yet—gone.
+
+Agent 0x99: You had the authority to make those calls. The mission succeeded. But I'm noting it: two civilians removed, one of them our asset.
+
+-> kevin_ko_discussion
+
+=== kevin_helped_maya_removed ===
+Agent 0x99: Kevin gave you access—the IT contractor cover did its job.
+
+Agent 0x99: Maya Chen was removed during the operation.
+
+Agent 0x99: Maya was the one who contacted SAFETYNET. Whatever she'd gathered beyond what was already in her office—whatever she was still going to tell us—we won't get that now.
+
+Agent 0x99: She wasn't ENTROPY. She was trying to help. I'm logging it as an operational casualty.
+
++ [The mission still succeeded.]
+    Agent 0x99: It did. Derek's in custody. Operation Shatter is stopped.
+    Agent 0x99: Just remember what it cost. That's what makes you better at this.
+    -> kevin_frame_discussion
++ [I know. It wasn't ideal.]
+    Agent 0x99: Honest answer. Carry it. It'll make you sharper next time.
+    -> kevin_frame_discussion
+
+=== maya_removed_alone ===
+Agent 0x99: You ran this mostly solo.
+
+Agent 0x99: Maya Chen was removed during the operation.
+
+Agent 0x99: We may never know what Maya had to tell us. She'd been documenting everything about ENTROPY's operations at Viral Dynamics. The parts she hadn't written down yet—names, contacts, methods—that intelligence is gone.
+
+Agent 0x99: Maya wasn't ENTROPY. She was our informant. She trusted SAFETYNET enough to reach out, and that cost her.
+
+Agent 0x99: You had the authority. The operation succeeded. I'm noting the loss.
+
++ [Understood. The mission came first.]
+    Agent 0x99: And it did. Keep that in proportion—you stopped 85 people from dying.
+    Agent 0x99: But we lost Maya's intelligence. That gap shows up in the next mission.
+    -> kevin_frame_discussion
++ [It wasn't something I'm proud of.]
+    Agent 0x99: Good. The day you stop caring about that is the day I worry about you.
+    Agent 0x99: Focus ahead. Operation Shatter is stopped. That's what Maya wanted.
+    -> kevin_frame_discussion
 
 // ================================================
 // KEVIN KO DISCUSSION - When player removed Kevin
@@ -682,9 +743,17 @@ Agent 0x99: That's what SAFETYNET is for.
     [EVIDENCE: PARTIAL - Forensics team recovering additional files]
 }
 
-{maya_identity_protected:
+{sarah_ko:
+    [SARAH MARTINEZ: Removed by operative - No ENTROPY connection]
+}
+
+{maya_ko:
+    [MAYA CHEN: Removed by operative - Intelligence lost - No ENTROPY connection]
+}
+{not maya_ko && maya_identity_protected:
     [MAYA CHEN: Identity protected]
-- else:
+}
+{not maya_ko && not maya_identity_protected:
     [MAYA CHEN: Identity compromised - Under SAFETYNET protection]
 }
 

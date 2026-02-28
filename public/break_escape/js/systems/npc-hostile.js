@@ -159,6 +159,16 @@ function damageNPC(npcId, amount) {
       }
       console.log(`🌐 Set global variable ${npcRef.globalVarOnKO} = true (NPC ${npcId} KO'd)`);
     }
+
+    // If the NPC config declares a taskOnKO, auto-complete that task so the
+    // objective system doesn't get stuck waiting for a conversation that can't happen.
+    if (npcRef?.taskOnKO && window.eventDispatcher) {
+      window.eventDispatcher.emit('task_completed_by_npc', {
+        taskId: npcRef.taskOnKO,
+        npcId: npcId
+      });
+      console.log(`📋 Auto-completed task ${npcRef.taskOnKO} (NPC ${npcId} KO'd)`);
+    }
   }
 
   return true;
