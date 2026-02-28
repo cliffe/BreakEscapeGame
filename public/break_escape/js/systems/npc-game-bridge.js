@@ -235,6 +235,9 @@ export class NPCGameBridge {
         console.warn(`[NPCGameBridge] addToInventory returned false for ${item.type} from ${npcId} - may already be in inventory`);
       }
 
+      // Play item pickup sound (same as picking up world items or taking from containers)
+      if (window.playUISound) window.playUISound('item');
+
       // Remove from NPC's inventory (after server confirms)
       npc.itemsHeld.splice(itemIndex, 1);
 
