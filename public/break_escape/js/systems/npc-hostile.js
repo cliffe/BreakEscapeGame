@@ -142,6 +142,22 @@ function damageNPC(npcId, amount) {
 
     if (window.eventDispatcher) {
       window.eventDispatcher.emit(CombatEvents.NPC_KO, { npcId });
+      // Also emit a specific event for this NPC so scenario event mappings can target it directly
+      window.eventDispatcher.emit(`${CombatEvents.NPC_KO}:${npcId}`, { npcId });
+    }
+
+    // If the NPC config declares a globalVarOnKO, set that global variable now
+    // so the debrief and other systems can track it regardless of whether the
+    // player opens the agent 0x99 bark notification.
+    const npcRef = window.npcManager?.getNPC(npcId);
+    if (npcRef?.globalVarOnKO && window.gameState?.globalVariables) {
+      window.gameState.globalVariables[npcRef.globalVarOnKO] = true;
+      if (window.npcConversationStateManager) {
+        window.npcConversationStateManager.broadcastGlobalVariableChange(
+          npcRef.globalVarOnKO, true, 'npc_hostile_system'
+        );
+      }
+      console.log(`🌐 Set global variable ${npcRef.globalVarOnKO} = true (NPC ${npcId} KO'd)`);
     }
   }
 

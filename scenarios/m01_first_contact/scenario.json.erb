@@ -352,6 +352,26 @@ password_hints = "Common passwords: Marketing123, Campaign2024, Viral_Dynamics_A
           ],
           "eventMappings": [
             {
+              "eventPattern": "npc_attacked:kevin_park",
+              "targetKnot": "event_kevin_attacked",
+              "onceOnly": true,
+              "sendTimedMessage": {
+                "delay": 1500,
+                "message": "That's one way to get the lockpick. Remember to minimise casualties where you can.",
+                "targetKnot": "event_kevin_attacked"
+              }
+            },
+            {
+              "eventPattern": "npc_ko:kevin_park",
+              "targetKnot": "event_kevin_ko",
+              "onceOnly": true,
+              "sendTimedMessage": {
+                "delay": 2000,
+                "message": "Kevin's down. His items are on the floor. For the record — he's got nothing to do with ENTROPY.",
+                "targetKnot": "event_kevin_ko"
+              }
+            },
+            {
               "eventPattern": "door_unlock_attempt",
               "condition": "data.connectedRoom === 'derek_office'",
               "targetKnot": "event_derek_office_locked",
@@ -652,6 +672,7 @@ password_hints = "Common passwords: Marketing123, Campaign2024, Viral_Dynamics_A
             "style": "Enthusiastic, nerdy tech professional. Speak with a consistent Australian accent throughout — do not shift to any other accent. Use a slightly higher-pitched, energetic voice. Slightly anxious and overworked.",
             "language": "en-GB"
           },
+          "globalVarOnKO": "kevin_ko",
           "behavior": {
             "hostile": {
               "chaseSpeed": 145,
@@ -1057,12 +1078,13 @@ password_hints = "Common passwords: Marketing123, Campaign2024, Viral_Dynamics_A
     "player_name": "Agent 0x00",
     "mission_started": false,
     "agent_0x99_contacted": false,
-    
+
     "final_choice": "",
     "derek_confronted": false,
-    
+
     "kevin_choice": "",
     "kevin_protected": false,
+    "kevin_ko": false,
     
     "found_casualty_projections": false,
     "found_target_database": false,

@@ -295,6 +295,11 @@ export class PlayerCombat {
             console.log(`💢 Player attacked non-hostile NPC ${npcId} - converting to hostile!`);
             window.npcHostileSystem.setNPCHostile(npcId, true);
             // NPC behavior system automatically detects hostile state changes
+
+            // Emit specific event so handler NPCs (e.g. Agent 0x99) can react
+            if (window.eventDispatcher) {
+              window.eventDispatcher.emit(`npc_attacked:${npcId}`, { npcId, wasFriendly: true });
+            }
           }
 
           // Damage the NPC (now hostile or was already hostile)

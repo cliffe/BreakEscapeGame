@@ -20,6 +20,9 @@ VAR maya_identity_protected = true      // Did player protect Maya's identity
 VAR kevin_choice = ""             // warn, evidence, ignore
 VAR kevin_protected = false       // Did player help Kevin?
 
+// NPC casualty tracking
+VAR kevin_ko = false              // Did player KO Kevin?
+
 // Security Audit Assessment
 VAR security_audit_completed = false    // Did player complete the security audit?
 VAR audit_correct_answers = 0           // Number of correct security assessments
@@ -125,6 +128,12 @@ Agent 0x99: Next time, prioritize document recovery. Physical evidence is harder
 // ================================================
 
 === npc_interactions ===
+{kevin_ko && talked_to_maya:
+    -> worked_with_maya_kevin_removed
+}
+{kevin_ko && not talked_to_maya:
+    -> kevin_removed_alone
+}
 {talked_to_kevin && talked_to_maya:
     -> worked_with_both
 }
@@ -178,11 +187,62 @@ Agent 0x99: Sometimes that's the right call. Fewer people involved means fewer p
 
 -> kevin_frame_discussion
 
+=== worked_with_maya_kevin_removed ===
+Agent 0x99: You used Maya as your primary source. Good call—she knew exactly what was happening at Viral Dynamics.
+
+{maya_identity_protected:
+    Agent 0x99: Her identity stayed protected throughout. She can continue working without looking over her shoulder.
+- else:
+    Agent 0x99: Unfortunately Maya's identity came out during the operation. We're handling her protection.
+}
+
+Agent 0x99: Kevin Park was removed from the picture during the operation.
+
+Agent 0x99: I want to be clear about something: we ran Kevin's background after the fact. Nothing connects him to ENTROPY. He was the IT manager—doing his job, flagging concerns, following procedure.
+
+Agent 0x99: You had the authority to make that call. I'm noting it as an operational decision, not a failure.
+
+-> kevin_ko_discussion
+
+=== kevin_removed_alone ===
+Agent 0x99: You ran this operation without building rapport with either Kevin or Maya. Self-sufficient approach.
+
+Agent 0x99: Kevin Park was removed from the picture during the operation.
+
+Agent 0x99: Post-operation check on Kevin's files confirms: no ENTROPY connections. No hidden agenda. He was exactly what he appeared to be—an IT manager who'd been raising security concerns nobody would listen to.
+
+Agent 0x99: You had the authority. The operation succeeded. I'm logging it as an operational casualty, not a failure of judgment.
+
+-> kevin_ko_discussion
+
+// ================================================
+// KEVIN KO DISCUSSION - When player removed Kevin
+// ================================================
+
+=== kevin_ko_discussion ===
++ [He was in the way. Mission needed to proceed.]
+    Agent 0x99: And it did. Derek's in custody. Operation Shatter is stopped.
+    Agent 0x99: Kevin's collateral won't be on the official record as anything other than operational necessity.
+    -> security_audit_review
++ [I'd make the same call again.]
+    Agent 0x99: That's the mark of someone who can handle field work. You made a decision and owned it.
+    Agent 0x99: Just carry it with you. It'll make you better at this, not worse.
+    -> security_audit_review
++ [It wasn't my finest moment.]
+    Agent 0x99: Honest answer. Those are the calls that stay with you.
+    Agent 0x99: Kevin will be fine physically. And he'll never know how close he came to being caught in all of this.
+    Agent 0x99: You stopped something that would have killed 85 people. Keep that in perspective.
+    -> security_audit_review
+
 // ================================================
 // KEVIN FRAME-UP - Moral choice consequences
 // ================================================
 
 === kevin_frame_discussion ===
+{kevin_ko:
+    // Kevin was already removed — the frame-up scenario doesn't apply
+    -> security_audit_review
+}
 {kevin_choice == "":
     // Player didn't encounter the frame-up files
     -> security_audit_review
@@ -628,13 +688,16 @@ Agent 0x99: That's what SAFETYNET is for.
     [MAYA CHEN: Identity compromised - Under SAFETYNET protection]
 }
 
-{kevin_protected:
+{kevin_ko:
+    [KEVIN PARK: Removed by operative - Evidence confirms no ENTROPY connection]
+}
+{not kevin_ko && kevin_protected:
     [KEVIN PARK: Protected from frame-up - Career intact]
 }
-{kevin_choice == "ignore":
+{not kevin_ko && kevin_choice == "ignore":
     [KEVIN PARK: Arrested, later cleared - Traumatized but free]
 }
-{kevin_choice == "":
+{not kevin_ko && kevin_choice == "":
     [KEVIN PARK: Status unknown]
 }
 

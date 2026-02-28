@@ -31,6 +31,9 @@ VAR security_audit_completed = false
 VAR audit_correct_answers = 0
 VAR audit_wrong_answers = 0
 
+// NPC casualty tracking
+VAR kevin_ko = false
+
 // ================================================
 // START: PHONE SUPPORT
 // ================================================
@@ -298,7 +301,11 @@ Agent 0x99: Or there might be a spare key somewhere. Poke around the other offic
 === event_lockpick_acquired ===
 #speaker:agent_0x99
 
-Agent 0x99: I see Kevin gave you lockpicks. Smart social engineering.
+{kevin_ko:
+    Agent 0x99: Got the lockpick kit. Direct approach — Kevin wasn't going to hand them over like that.
+- else:
+    Agent 0x99: I see Kevin gave you lockpicks. Smart social engineering.
+}
 
 Agent 0x99: Practice on low-risk targets first. Storage closet, unlocked areas.
 
@@ -518,6 +525,50 @@ Agent 0x99: Confrontation, silent extraction, or public exposure. Each has conse
     -> support_hub
 + [I'm ready to proceed]
     Agent 0x99: Good luck, {player_name}. You've got this.
+    #exit_conversation
+    -> support_hub
+
+// ================================================
+// EVENT: FRIENDLY NPC ATTACKED (Kevin attacked by player)
+// ================================================
+
+=== event_kevin_attacked ===
+#speaker:agent_0x99
+
+Agent 0x99: That's one way to get the lockpick, {player_name}.
+
+Agent 0x99: You've got full operational authority—do whatever it takes to complete the mission. Just try to minimise collateral where you can.
+
+Agent 0x99: Kevin's items should drop when he goes down. Keep moving.
+
++ [Understood]
+    #exit_conversation
+    -> support_hub
++ [He's not ENTROPY. Just in the way.]
+    Agent 0x99: Correct. Kevin's clean. Innocent bystander in the wrong place. Happens in the field.
+    Agent 0x99: Get what you need and keep pushing.
+    #exit_conversation
+    -> support_hub
+
+// ================================================
+// EVENT: FRIENDLY NPC KO'D (Kevin knocked out)
+// ================================================
+
+=== event_kevin_ko ===
+#speaker:agent_0x99
+
+Agent 0x99: Kevin's down. His items are on the floor—pick them up and continue.
+
+Agent 0x99: For the record: nothing in Kevin's files connects him to ENTROPY. He was just the IT guy trying to do his job.
+
+Agent 0x99: You had the authority to make that call. The debrief will note it—but this isn't a reprimand.
+
++ [Mission comes first]
+    Agent 0x99: That's the job. Keep going.
+    #exit_conversation
+    -> support_hub
++ [I know. It wasn't ideal.]
+    Agent 0x99: No. But field decisions rarely are. You've got the lockpick and keycard now—use them.
     #exit_conversation
     -> support_hub
 
