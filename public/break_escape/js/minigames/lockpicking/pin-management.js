@@ -1018,12 +1018,7 @@ export class PinManagement {
                             pin.bindingHighlight.fillRect(-22.5, -110, 45, 140);
                             pin.container.addAt(pin.bindingHighlight, 0); // Add at beginning to appear behind pins
                         }
-                        // Only play binding sound when the highlight first becomes visible
-                        const wasBindingHidden = !pin.bindingHighlight.visible;
                         pin.bindingHighlight.setVisible(true);
-                        if (wasBindingHidden && this.parent.sounds.binding) {
-                            this.parent.sounds.binding.play();
-                        }
                     } else if (!pin.isSet) {
                         // Hide binding highlight for other pins
                         if (pin.bindingHighlight) {
