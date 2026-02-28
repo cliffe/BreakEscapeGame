@@ -253,14 +253,14 @@ export class PinManagement {
                 this.parent.gameState.mouseDown = true;
                 console.log('Pin interaction started');
                 
-                // Play click sound
+                // Play click sound with slight random pitch variation
                 if (this.parent.sounds.click) {
-                    this.parent.sounds.click.play();
+                    this.parent.sounds.click.play({ detune: Math.random() * 200 - 100 });
                     if (typeof navigator !== 'undefined' && navigator.vibrate) {
-                navigator.vibrate(50);
-            }
+                        navigator.vibrate(50);
+                    }
                 }
-                
+
                 // Hide labels on first pin click
                 if (!this.parent.pinClicked) {
                     this.parent.pinClicked = true;
@@ -377,12 +377,12 @@ export class PinManagement {
                         this.parent.lockState.currentPin = pin;
                         this.parent.gameState.mouseDown = true;
                         
-                        // Play click sound
+                        // Play click sound with slight random pitch variation
                         if (this.parent.sounds.click) {
-                            this.parent.sounds.click.play();
+                            this.parent.sounds.click.play({ detune: Math.random() * 200 - 100 });
                             if (typeof navigator !== 'undefined' && navigator.vibrate) {
-                navigator.vibrate(50);
-            }
+                                navigator.vibrate(50);
+                            }
                         }
                         
                         // Hide labels on first pin click
@@ -429,15 +429,17 @@ export class PinManagement {
                 
                 // Simulate tension wrench click
                 this.parent.lockState.tensionApplied = !this.parent.lockState.tensionApplied;
-                
-                // Play tension sound
-                if (this.parent.sounds.tension) {
-                    this.parent.sounds.tension.play();
-                    if (typeof navigator !== 'undefined' && navigator.vibrate) {
-                navigator.vibrate([200]);
-            }
+
+                // Play tension on apply, reset on release (not both)
+                if (this.parent.lockState.tensionApplied) {
+                    if (this.parent.sounds.tension) {
+                        this.parent.sounds.tension.play();
+                        if (typeof navigator !== 'undefined' && navigator.vibrate) {
+                            navigator.vibrate([200]);
+                        }
+                    }
                 }
-                
+
                 if (this.parent.lockState.tensionApplied) {
                     this.parent.wrenchGraphics.clear();
                     this.parent.wrenchGraphics.fillStyle(0x00ff00);
@@ -821,15 +823,14 @@ export class PinManagement {
             const wasHidden = !pin.shearHighlight.visible;
             pin.shearHighlight.setVisible(true);
             
-            // Play feedback when highlight first appears
+            // Play feedback when pin first reaches the shear line
+            // Use a quieter, lower-pitched version of the "set" sound as a hint
             if (wasHidden) {
-                if (this.parent.sounds.click) {
-                    this.parent.sounds.click.play();
+                if (this.parent.sounds.set) {
+                    this.parent.sounds.set.play({ volume: 0.35, rate: 0.7 });
                 }
                 if (typeof navigator !== 'undefined' && navigator.vibrate) {
-                    if (typeof navigator !== 'undefined' && navigator.vibrate) {
-                navigator.vibrate(100);
-            }
+                    navigator.vibrate(100);
                 }
             }
         } else {
@@ -1017,10 +1018,10 @@ export class PinManagement {
                             pin.bindingHighlight.fillRect(-22.5, -110, 45, 140);
                             pin.container.addAt(pin.bindingHighlight, 0); // Add at beginning to appear behind pins
                         }
+                        // Only play binding sound when the highlight first becomes visible
+                        const wasBindingHidden = !pin.bindingHighlight.visible;
                         pin.bindingHighlight.setVisible(true);
-                        
-                        // Play binding sound when highlighting next binding pin
-                        if (this.parent.sounds.binding) {
+                        if (wasBindingHidden && this.parent.sounds.binding) {
                             this.parent.sounds.binding.play();
                         }
                     } else if (!pin.isSet) {

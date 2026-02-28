@@ -80,15 +80,17 @@ export class LockGraphics {
         // Add click handler
         this.parent.tensionWrench.on('pointerdown', () => {
             this.parent.lockState.tensionApplied = !this.parent.lockState.tensionApplied;
-            
-            // Play tension sound
-            if (this.parent.sounds.tension) {
-                this.parent.sounds.tension.play();
-                if (typeof navigator !== 'undefined' && navigator.vibrate) {
-                    navigator.vibrate([50]);
+
+            if (this.parent.lockState.tensionApplied) {
+                // Play tension sound only when applying
+                if (this.parent.sounds.tension) {
+                    this.parent.sounds.tension.play();
+                    if (typeof navigator !== 'undefined' && navigator.vibrate) {
+                        navigator.vibrate([50]);
+                    }
                 }
             }
-            
+
             if (this.parent.lockState.tensionApplied) {
                 this.parent.wrenchGraphics.clear();
                 this.parent.wrenchGraphics.fillStyle(0x00ff00);
