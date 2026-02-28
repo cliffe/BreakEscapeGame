@@ -205,6 +205,12 @@ export class NPCCombat {
     }
     if (window.soundManager) {
       window.soundManager.play('hit_impact');
+      // Play gender-matched grunt for the player being hit
+      const playerSheet = window.breakEscapeConfig?.playerSprite
+        || window.gameScenario?.player?.spriteSheet
+        || 'male_hacker';
+      const isPlayerFemale = playerSheet.startsWith('female_');
+      window.soundManager.play(isPlayerFemale ? 'grunt_female' : 'grunt_male');
     }
 
     // Damage numbers

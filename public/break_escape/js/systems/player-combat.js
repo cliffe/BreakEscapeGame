@@ -548,6 +548,10 @@ export class PlayerCombat {
     }
     if (!isKO && window.soundManager) {
       window.soundManager.play('hit_impact');
+      // Play gender-matched grunt for the NPC being hit
+      const npcData = window.npcManager?.getNPC(npcId);
+      const isFemale = npcData?.spriteSheet?.startsWith('female_');
+      window.soundManager.play(isFemale ? 'grunt_female' : 'grunt_male');
     }
 
     // Damage numbers

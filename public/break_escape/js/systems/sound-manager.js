@@ -94,6 +94,10 @@ class SoundManager {
         // Punch swipe sounds (CC0 public domain, source: bigsoundbank.com)
         this.scene.load.audio('punch_swipe_jab', 'sounds/punch_swipe_jab.mp3');
         this.scene.load.audio('punch_swipe_cross', 'sounds/punch_swipe_cross.mp3');
+
+        // Hit grunt sounds (CC0 public domain, source: kenney.nl/assets/voiceover-pack-fighter)
+        this.scene.load.audio('grunt_male', 'sounds/grunt_male.ogg');
+        this.scene.load.audio('grunt_female', 'sounds/grunt_female.ogg');
     }
 
     /**
@@ -130,7 +134,9 @@ class SoundManager {
             // Interaction sounds
             'keypad_beep', 'hit_impact', 'card_scan',
             // Punch swipe sounds
-            'punch_swipe_jab', 'punch_swipe_cross'
+            'punch_swipe_jab', 'punch_swipe_cross',
+            // Hit grunt sounds
+            'grunt_male', 'grunt_female'
         ];
 
         for (const soundName of soundNames) {
@@ -151,7 +157,7 @@ class SoundManager {
         let category = 'effects';
         if (soundName.includes('ui_click') || soundName.includes('ui_confirm')) category = 'ui';
         else if (soundName.includes('ui_alert') || soundName.includes('ui_notification') || soundName.includes('ui_reject')) category = 'notifications';
-        else if (soundName.includes('lockpick') || soundName.includes('chair') || soundName.includes('wilhelm') || soundName.includes('body_fall') || soundName.includes('hit_impact') || soundName.includes('punch_swipe')) category = 'effects';
+        else if (soundName.includes('lockpick') || soundName.includes('chair') || soundName.includes('wilhelm') || soundName.includes('body_fall') || soundName.includes('hit_impact') || soundName.includes('punch_swipe') || soundName.includes('grunt_')) category = 'effects';
         else if (soundName.includes('keypad_beep') || soundName.includes('card_scan')) category = 'interactions';
         else if (soundName.includes('item_interact') || soundName.includes('lock_interact') || soundName.includes('door_knock')) category = 'interactions';
         else if (soundName.includes('message_received')) category = 'notifications';
