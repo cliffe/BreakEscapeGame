@@ -222,7 +222,7 @@ export class PinMinigame extends MinigameScene {
             return;
         }
 
-        if (window.playUISound) window.playUISound('click');
+        if (window.playUISound) window.playUISound('keypad');
         this.currentInput += number;
         this.updateDisplay();
         
@@ -237,7 +237,7 @@ export class PinMinigame extends MinigameScene {
             return;
         }
 
-        if (window.playUISound) window.playUISound('click');
+        if (window.playUISound) window.playUISound('keypad');
         this.currentInput = this.currentInput.slice(0, -1);
         this.updateDisplay();
     }

@@ -85,6 +85,11 @@ class SoundManager {
         // Combat / KO sounds (CC0 public domain, source: bigsoundbank.com)
         this.scene.load.audio('wilhelm_scream', 'sounds/wilhelm_scream.mp3');
         this.scene.load.audio('body_fall', 'sounds/body_fall.mp3');
+
+        // Interaction sounds (CC0 public domain, source: bigsoundbank.com)
+        this.scene.load.audio('keypad_beep', 'sounds/keypad_beep.mp3');
+        this.scene.load.audio('hit_impact', 'sounds/hit_impact.mp3');
+        this.scene.load.audio('card_scan', 'sounds/card_scan.mp3');
     }
 
     /**
@@ -117,7 +122,9 @@ class SoundManager {
             // Game sounds
             'chair_roll', 'message_received',
             // Combat / KO sounds
-            'wilhelm_scream', 'body_fall'
+            'wilhelm_scream', 'body_fall',
+            // Interaction sounds
+            'keypad_beep', 'hit_impact', 'card_scan'
         ];
 
         for (const soundName of soundNames) {
@@ -138,7 +145,8 @@ class SoundManager {
         let category = 'effects';
         if (soundName.includes('ui_click') || soundName.includes('ui_confirm')) category = 'ui';
         else if (soundName.includes('ui_alert') || soundName.includes('ui_notification') || soundName.includes('ui_reject')) category = 'notifications';
-        else if (soundName.includes('lockpick') || soundName.includes('chair') || soundName.includes('wilhelm') || soundName.includes('body_fall')) category = 'effects';
+        else if (soundName.includes('lockpick') || soundName.includes('chair') || soundName.includes('wilhelm') || soundName.includes('body_fall') || soundName.includes('hit_impact')) category = 'effects';
+        else if (soundName.includes('keypad_beep') || soundName.includes('card_scan')) category = 'interactions';
         else if (soundName.includes('item_interact') || soundName.includes('lock_interact') || soundName.includes('door_knock')) category = 'interactions';
         else if (soundName.includes('message_received')) category = 'notifications';
 

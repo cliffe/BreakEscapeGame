@@ -513,6 +513,7 @@ export class BluetoothScannerMinigame extends MinigameScene {
                     
                     // Mark as saved when expanded
                     if (!device.saved && deviceElement.classList.contains('expanded')) {
+                        if (window.playUISound) window.playUISound('card_scan');
                         device.saved = true;
                         this.updateBluetoothCount();
                         this.updateBluetoothPanel();

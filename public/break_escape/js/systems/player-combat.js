@@ -532,9 +532,12 @@ export class PlayerCombat {
       this.playHitAnimation(npcSprite, npcId);
     }
 
-    // Visual feedback
+    // Visual + audio feedback on hit
     if (npcSprite && window.spriteEffects) {
       window.spriteEffects.flashDamage(npcSprite);
+    }
+    if (!isKO && window.soundManager) {
+      window.soundManager.play('hit_impact');
     }
 
     // Damage numbers

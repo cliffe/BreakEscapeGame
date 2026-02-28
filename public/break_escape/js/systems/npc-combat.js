@@ -199,9 +199,12 @@ export class NPCCombat {
     // Play hit animation if available
     this.playHitAnimation(window.player);
 
-    // Visual feedback
+    // Visual + audio feedback on hit
     if (window.spriteEffects) {
       window.spriteEffects.flashDamage(window.player);
+    }
+    if (window.soundManager) {
+      window.soundManager.play('hit_impact');
     }
 
     // Damage numbers

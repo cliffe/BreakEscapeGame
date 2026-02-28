@@ -61,6 +61,15 @@ export function playUISound(soundType = 'click') {
         case 'lock':
             soundManager.playLockInteract();
             break;
+        case 'keypad':
+            soundManager.play('keypad_beep');
+            break;
+        case 'card_scan':
+            soundManager.play('card_scan');
+            break;
+        case 'hit':
+            soundManager.play('hit_impact');
+            break;
         case 'objective_complete':
             soundManager.play('ui_confirm');
             break;

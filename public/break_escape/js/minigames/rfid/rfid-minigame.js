@@ -103,6 +103,7 @@ export class RFIDMinigame extends MinigameScene {
         const isCorrect = !this.isLockingAttempt || this.requiredCardIds.includes(cardId);
 
         if (isCorrect) {
+            if (window.playUISound) window.playUISound('card_scan');
             this.animations.showTapSuccess();
             this.ui.showSuccess(this.isLockingAttempt ? 'Access Granted' : 'Card Read');
 
@@ -110,6 +111,7 @@ export class RFIDMinigame extends MinigameScene {
                 this.complete(true);
             }, 1500);
         } else {
+            if (window.playUISound) window.playUISound('reject');
             this.animations.showTapFailure();
             this.ui.showError('Access Denied');
 
@@ -137,6 +139,7 @@ export class RFIDMinigame extends MinigameScene {
 
         // If UID-only and door doesn't accept it, reject (only when attempting to unlock)
         if (this.isLockingAttempt && isUIDOnly && !this.acceptsUIDOnly) {
+            if (window.playUISound) window.playUISound('reject');
             this.animations.showEmulationFailure();
             this.ui.showError('Reader requires full authentication');
 
@@ -160,6 +163,7 @@ export class RFIDMinigame extends MinigameScene {
         }
 
         if (isCorrect) {
+            if (window.playUISound) window.playUISound('card_scan');
             this.animations.showEmulationSuccess();
             this.ui.showSuccess(this.isLockingAttempt ? 'Access Granted' : 'Card Emulated');
 
@@ -180,6 +184,7 @@ export class RFIDMinigame extends MinigameScene {
             }, 2000);
         } else if (this.isLockingAttempt) {
             // Only show "Access Denied" when actually trying to unlock a door
+            if (window.playUISound) window.playUISound('reject');
             this.animations.showEmulationFailure();
             this.ui.showError('Access Denied');
 
