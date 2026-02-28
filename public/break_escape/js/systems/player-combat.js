@@ -143,6 +143,12 @@ export class PlayerCombat {
       console.log(`  ✓ Found ${animKey}, playing...`);
       player.anims.play(animKey, true);
       animPlayed = true;
+
+      // Play swipe sound at the moment the arm swings
+      if (window.soundManager) {
+        const swipeSound = animationBase === 'lead-jab' ? 'punch_swipe_jab' : 'punch_swipe_cross';
+        window.soundManager.play(swipeSound);
+      }
       console.log(`  - After play: currentAnim=${player.anims.currentAnim?.key}, visible=${player.visible}, alpha=${player.alpha}`);
     }
     
@@ -186,6 +192,10 @@ export class PlayerCombat {
     } else {
       // Fallback: red tint + walk animation
       console.log(`⚠️ No punch animation found (tried ${animKey}), using fallback (red tint)`);
+      if (window.soundManager) {
+        const swipeSound = animationBase === 'lead-jab' ? 'punch_swipe_jab' : 'punch_swipe_cross';
+        window.soundManager.play(swipeSound);
+      }
       
       // Apply red tint
       if (window.spriteEffects) {
