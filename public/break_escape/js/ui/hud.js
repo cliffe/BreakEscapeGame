@@ -398,8 +398,8 @@ export class PlayerHUD {
     }
 
     // Play click sound (if available)
-    if (this.scene?.sound && this.scene.sound.get('ui-click')) {
-      this.scene.sound.play('ui-click', { volume: 0.3 });
+    if (window.playUISound) {
+      window.playUISound('click');
     }
   }
 
