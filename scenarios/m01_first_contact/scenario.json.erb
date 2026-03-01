@@ -160,7 +160,7 @@ password_hints = "Common passwords: Marketing123, Campaign2024, Viral_Dynamics_A
         {
           "taskId": "inform_safetynet_operation_shatter",
           "title": "Report Operation Shatter discovery to SAFETYNET",
-          "type": "phone_conversation",
+          "type": "npc_conversation",
           "targetNPC": "agent_0x99",
           "status": "locked"
         }
@@ -355,6 +355,7 @@ password_hints = "Common passwords: Marketing123, Campaign2024, Viral_Dynamics_A
           "eventMappings": [
             {
               "eventPattern": "npc_attacked:sarah_martinez",
+              "conversationMode": "phone-chat",
               "targetKnot": "event_sarah_attacked",
               "onceOnly": true,
               "sendTimedMessage": {
@@ -365,6 +366,7 @@ password_hints = "Common passwords: Marketing123, Campaign2024, Viral_Dynamics_A
             },
             {
               "eventPattern": "npc_ko:sarah_martinez",
+              "conversationMode": "phone-chat",
               "targetKnot": "event_sarah_ko",
               "onceOnly": true,
               "sendTimedMessage": {
@@ -375,6 +377,7 @@ password_hints = "Common passwords: Marketing123, Campaign2024, Viral_Dynamics_A
             },
             {
               "eventPattern": "npc_attacked:maya_chen",
+              "conversationMode": "phone-chat",
               "targetKnot": "event_maya_attacked",
               "onceOnly": true,
               "sendTimedMessage": {
@@ -385,6 +388,7 @@ password_hints = "Common passwords: Marketing123, Campaign2024, Viral_Dynamics_A
             },
             {
               "eventPattern": "npc_ko:maya_chen",
+              "conversationMode": "phone-chat",
               "targetKnot": "event_maya_ko",
               "onceOnly": true,
               "sendTimedMessage": {
@@ -395,6 +399,7 @@ password_hints = "Common passwords: Marketing123, Campaign2024, Viral_Dynamics_A
             },
             {
               "eventPattern": "npc_attacked:kevin_park",
+              "conversationMode": "phone-chat",
               "targetKnot": "event_kevin_attacked",
               "onceOnly": true,
               "sendTimedMessage": {
@@ -405,6 +410,7 @@ password_hints = "Common passwords: Marketing123, Campaign2024, Viral_Dynamics_A
             },
             {
               "eventPattern": "npc_ko:kevin_park",
+              "conversationMode": "phone-chat",
               "targetKnot": "event_kevin_ko",
               "onceOnly": true,
               "sendTimedMessage": {
@@ -416,6 +422,7 @@ password_hints = "Common passwords: Marketing123, Campaign2024, Viral_Dynamics_A
             {
               "eventPattern": "door_unlock_attempt",
               "condition": "data.connectedRoom === 'derek_office'",
+              "conversationMode": "phone-chat",
               "targetKnot": "event_derek_office_locked",
               "onceOnly": true,
               "sendTimedMessage": {
@@ -426,26 +433,31 @@ password_hints = "Common passwords: Marketing123, Campaign2024, Viral_Dynamics_A
             },
             {
               "eventPattern": "item_picked_up:lockpick",
+              "conversationMode": "phone-chat",
               "targetKnot": "event_lockpick_acquired",
               "onceOnly": true
             },
             {
               "eventPattern": "room_entered:server_room",
+              "conversationMode": "phone-chat",
               "targetKnot": "event_server_room_entered",
               "onceOnly": true
             },
             {
               "eventPattern": "room_entered:derek_office",
+              "conversationMode": "phone-chat",
               "targetKnot": "event_derek_office_entered",
               "onceOnly": true
             },
             {
               "eventPattern": "item_picked_up:contingency_files",
+              "conversationMode": "phone-chat",
               "targetKnot": "event_contingency_found",
               "onceOnly": true
             },
             {
               "eventPattern": "room_entered:testing",
+              "conversationMode": "phone-chat",
               "targetKnot": "closing_debrief",
               "onceOnly": true,
               "sendTimedMessage": {
@@ -456,6 +468,7 @@ password_hints = "Common passwords: Marketing123, Campaign2024, Viral_Dynamics_A
             },
             {
               "eventPattern": "global_variable_changed:derek_confronted",
+              "conversationMode": "phone-chat",
               "targetKnot": "closing_debrief",
               "condition": "value === true",
               "onceOnly": true,
