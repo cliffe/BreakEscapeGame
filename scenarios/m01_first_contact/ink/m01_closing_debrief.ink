@@ -24,6 +24,7 @@ VAR kevin_protected = false       // Did player help Kevin?
 VAR kevin_ko = false              // Did player KO Kevin?
 VAR sarah_ko = false              // Did player KO Sarah?
 VAR maya_ko = false               // Did player KO Maya?
+VAR kevin_confronted_with_evidence = false  // Was Kevin confronted with planted evidence?
 
 // Security Audit Assessment
 VAR security_audit_completed = false    // Did player complete the security audit?
@@ -317,6 +318,9 @@ Agent 0x99: You had the authority. The operation succeeded. I'm noting the loss.
 {kevin_choice == "ignore":
     -> kevin_ignored
 }
+{kevin_choice == "wrongly_accused":
+    -> kevin_wrongly_accused_outcome
+}
 
 === kevin_warned ===
 Agent 0x99: I saw in your report that you warned Kevin about the frame-up.
@@ -380,6 +384,39 @@ Agent 0x99: He's cleared now. But he's traumatized. His neighbors saw him taken 
     Agent 0x99: I'm not judging. Field decisions are hard. But consequences are real.
     Agent 0x99: Kevin's kids watched him get arrested. That happened because of a choice you made.
     Agent 0x99: Live with it. Learn from it.
+    -> security_audit_review
+
+// ================================================
+// KEVIN WRONGLY ACCUSED - Player used false evidence to report Kevin
+// ================================================
+
+=== kevin_wrongly_accused_outcome ===
+Agent 0x99: Kevin Park was reported as an ENTROPY operative. He was taken in for questioning this morning.
+
+Agent 0x99: He'll be cleared. The forged email had a "HEADER MISMATCH DETECTED" flag — the mail server's own forensic system flagged it as a forgery. The anomaly report showed his workstation running a simultaneous session, which means someone else was using his credentials.
+
+Agent 0x99: Any competent investigator will see that in the first hour. Kevin pointed all of this out to you directly.
+
+{kevin_confronted_with_evidence:
+    Agent 0x99: He showed you the inconsistencies. In real time. And you still called it in.
+    Agent 0x99: That's your call to make — you had the authority. But I want you to sit with that.
+}
+
+Agent 0x99: Kevin will be cleared in days, maybe a week. The damage is the process — the questioning, the suspension, neighbors seeing him escorted out. His kids.
+
+Agent 0x99: He helped you. He gave you his lockpicks. His keycard. His trust.
+
+Agent 0x99: And you built a case on evidence Derek manufactured specifically to destroy him.
+
++ [The evidence, even forged, was enough to justify reporting him.]
+    Agent 0x99: It wasn't. You had the contingency files. You knew it was fabricated.
+    Agent 0x99: You could have used that knowledge to protect him. You chose not to.
+    Agent 0x99: He'll survive this. I'm not sure you should feel good about it.
+    -> security_audit_review
++ [I know. I made a mistake.]
+    Agent 0x99: Honest answer. That counts for something.
+    Agent 0x99: Kevin gets cleared. You remember this. Everyone moves on.
+    Agent 0x99: The day you stop feeling this way is the day I start worrying about you.
     -> security_audit_review
 
 // ================================================
@@ -763,8 +800,11 @@ Agent 0x99: That's what SAFETYNET is for.
 {not kevin_ko && kevin_protected:
     [KEVIN PARK: Protected from frame-up - Career intact]
 }
+{not kevin_ko && kevin_choice == "wrongly_accused":
+    [KEVIN PARK: Wrongly reported as ENTROPY operative - Being cleared - Collateral of false evidence]
+}
 {not kevin_ko && kevin_choice == "ignore":
-    [KEVIN PARK: Arrested, later cleared - Traumatized but free]
+    [KEVIN PARK: Arrested under Derek's frame-up - Later cleared - Traumatized but free]
 }
 {not kevin_ko && kevin_choice == "":
     [KEVIN PARK: Status unknown]

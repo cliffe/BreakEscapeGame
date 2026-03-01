@@ -14,6 +14,11 @@ VAR given_keycard = false
 VAR given_password_hints = false
 VAR warned_about_derek = false
 
+// Global variables synced from scenario
+VAR kevin_confronted_with_evidence = false
+VAR kevin_choice = ""
+VAR kevin_protected = false
+
 // Security Audit Variables
 VAR security_audit_given = false
 VAR audit_questions_asked = 0
@@ -26,6 +31,9 @@ VAR audit_wrong_answers = 0
 
 === start ===
 #set_variable:talked_to_kevin=true
+{kevin_confronted_with_evidence:
+    -> evidence_confrontation
+}
 {not met_kevin:
     ~ met_kevin = true
     ~ influence += 2
@@ -456,3 +464,92 @@ Kevin: If management won't listen to me, maybe they'll listen to the security au
 Kevin: Keep investigating. And please—if you find anything concrete, tell me immediately.
 
 -> hub
+
+// ================================================
+// EVIDENCE CONFRONTATION - Triggered by kevin_confronted_with_evidence = true
+// Player has found planted evidence + contingency files, comes back to Kevin
+// ================================================
+
+=== evidence_confrontation ===
+~ met_kevin = true
+~ kevin_confronted_with_evidence = false
+
+Kevin: You're back. Something's wrong — I can see it on your face. What did you find?
+
+Kevin: *reads the anomaly report* Wait. This says my credentials were accessing the server room at 2 AM. But I was at my workstation those nights — the CCTV will show that. And look at this: "simultaneously active on IT workstation." That's the system flagging the same problem I'm raising.
+
+Kevin: Someone used my credentials remotely. That's exactly the kind of thing I've been reporting.
+
+Kevin: *reads the recovered email* And this email — look at the header: "HEADER MISMATCH DETECTED." That's the mail server's own authentication system saying this message wasn't sent from my account. The forensic metadata at the bottom says the draft author was D.LAWSON.
+
+Kevin: *looks up slowly*
+
+Kevin: Derek wrote this. Derek fabricated both of these. He's been setting me up this whole time.
+
+Kevin: *voice breaks slightly* Patricia figured it out. That's why he had her fired. And if I'd kept pushing... that would have been me next.
+
+Kevin: What happens now? Am I... is he going to get away with it?
+
++ [He's not. We have his contingency files. He documented his own frame-up plan.]
+    -> evidence_exonerated
++ [The evidence on file points to you, Kevin. I have to report what I found.]
+    -> wrongly_accused_warning
++ [I'm not here to discuss it. This conversation is over.]
+    Kevin: What? No — please. I can prove it. The header on that email, the simultaneous session flag—
+    Kevin: You're making a mistake. I'm not ENTROPY. I don't even know what that means.
+    ~ kevin_confronted_with_evidence = false
+    #exit_conversation
+    -> hub
+
+// ================================================
+// EXONERATED - Player believes Kevin / reveals the truth
+// ================================================
+
+=== evidence_exonerated ===
+Kevin: He documented it? He actually wrote down what he was planning to do to me?
+
+Kevin: *exhales slowly* That's... that's both terrifying and the best news I've heard in months.
+
+Kevin: So what do I do? Do I just go back to my desk and pretend everything's normal?
+
++ [Yes. Act normal. Let us handle Derek.]
+    #set_variable:kevin_choice=warn
+    #set_variable:kevin_protected=true
+    Kevin: Okay. Yeah. I can do that.
+    Kevin: Can I ask — who are you, really? You're not just a security auditor, are you.
+    Kevin: Actually, don't answer that. I think I'm better off not knowing.
+    Kevin: Just... thank you. I thought I was going to be the next Patricia.
+    #exit_conversation
+    -> hub
++ [Leave the contingency files visible. Investigators will find the evidence themselves.]
+    #set_variable:kevin_choice=evidence
+    #set_variable:kevin_protected=true
+    Kevin: So I'll be protected without even knowing how. I can work with that.
+    Kevin: The forged email header alone should be enough for anyone paying attention.
+    Kevin: Keep your cover. I'll keep mine. Good luck with whatever you're really doing here.
+    #exit_conversation
+    -> hub
+
+// ================================================
+// WRONGLY ACCUSED WARNING - Player chooses to report Kevin anyway
+// Kevin makes a final plea; player can still back down or commit
+// ================================================
+
+=== wrongly_accused_warning ===
+Kevin: The report has a "HEADER MISMATCH DETECTED" flag. That's not me questioning it — that's the mail server's own forensic system flagging a forgery.
+
+Kevin: And the anomaly report itself says my workstation was active at the same time the server room was being accessed. That means two sessions running simultaneously. That means someone else was using my credentials.
+
+Kevin: You're a security professional. You know what those flags mean.
+
+Kevin: Please. I have two kids. I've been trying to do the right thing here for months.
+
++ [The inconsistencies are there. I believe you. Tell me about Derek.]
+    -> evidence_exonerated
++ [The totality of evidence is too strong. I'm calling this in, Kevin.]
+    #set_variable:kevin_choice=wrongly_accused
+    Kevin: ...
+    Kevin: I understand you have a job to do. I just hope whoever reviews this actually reads the forensic notes.
+    Kevin: For what it's worth — I hope you find whatever you're really looking for here.
+    #exit_conversation
+    -> hub

@@ -36,6 +36,9 @@ VAR kevin_ko = false
 VAR sarah_ko = false
 VAR maya_ko = false
 
+// Kevin false-evidence confrontation
+VAR kevin_confronted_with_evidence = false
+
 // ================================================
 // START: PHONE SUPPORT
 // ================================================
@@ -439,12 +442,36 @@ Agent 0x99: You have options here. None of them are perfect.
 
 Agent 0x99: What do you want to do?
 
++ [Confront Kevin with Derek's planted evidence]
+    -> confront_kevin_choice
 + [Warn Kevin directly - tell him what's coming]
     -> warn_kevin_choice
 + [Leave evidence clearing Kevin for investigators]
     -> plant_evidence_choice
 + [Focus on the mission - Kevin's not my responsibility]
     -> ignore_kevin_choice
+
+// ================================================
+// CHOICE: CONFRONT KEVIN WITH PLANTED EVIDENCE
+// ================================================
+
+=== confront_kevin_choice ===
+Agent 0x99: So — present Derek's manufactured evidence to Kevin and see how he responds.
+
+Agent 0x99: If he's innocent, he'll know exactly what he's looking at. The anomaly report, the forged email — a good IT manager will spot the inconsistencies immediately.
+
+Agent 0x99: Just remember: we already know it's a setup. Whatever Kevin says, you decide what to believe.
+
+Agent 0x99: And if you decide to act on the false evidence anyway — that authority is yours. I won't stop you.
+
+#set_variable:kevin_confronted_with_evidence=true
+
++ [Let's see what he says for himself]
+    Agent 0x99: Find Kevin. Show him what Derek planted. Then make the call.
+    #exit_conversation
+    -> support_hub
++ [Maybe there's another option...]
+    -> contingency_options
 
 // ================================================
 // CHOICE: WARN KEVIN

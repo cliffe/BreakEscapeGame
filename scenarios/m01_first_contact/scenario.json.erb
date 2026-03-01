@@ -980,6 +980,22 @@ password_hints = "Common passwords: Marketing123, Campaign2024, Viral_Dynamics_A
           "contents": [
             {
               "type": "text_file",
+              "name": "IT Security Anomaly Report",
+              "takeable": true,
+              "readable": true,
+              "text": "═══════════════════════════════════════════════════════════\n   VIRAL DYNAMICS MEDIA - IT SECURITY ANOMALY REPORT\n   Reference: ITSA-2024-047  |  Auto-generated: AutoSec v2.1\n═══════════════════════════════════════════════════════════\n\nFLAGGED ACCOUNT: K.PARK (kevin_park@viraldynamics.com)\nPriority: HIGH\n\nANOMALOUS ACCESS EVENTS:\n\n  11:47 PM  SERVER_ROOM  [Keycard: KP-0094]\n  12:03 AM  SERVER_ROOM  [Keycard: KP-0094]\n  02:15 AM  BACKUP_SYSTEM via server terminal  [Session: KPARK_2]\n\nDATA TRANSFER DETECTED:\n  847 MB exported to external IP: 185.220.101.x (Tor exit node)\n  Transfer initiated from session KPARK_2\n\nSECURITY NOTE:\n  Primary K.PARK workstation session was simultaneously active\n  during events at 11:47 PM and 12:03 AM.\n  Possible credential delegation or shared access.\n\n[Filed for compliance review - awaiting IT Manager sign-off]\n[SIGN-OFF REQUIRED: K. Park ___________]",
+              "observations": "Auto-generated security report flagging Kevin Park's credentials for suspicious server access"
+            },
+            {
+              "type": "text_file",
+              "name": "Recovered Email - K.Park",
+              "takeable": true,
+              "readable": true,
+              "text": "═══════════════════════════════════════════════════════════\n   FORENSIC EMAIL RECOVERY - VIRAL DYNAMICS MAIL SERVER\n   Recovered from: Deleted Items / Overwritten Drafts\n═══════════════════════════════════════════════════════════\n\nFROM:    kevin_park@viraldynamics.com\n         [HEADER MISMATCH DETECTED - See forensic notes]\nTO:      secure-relay@zds-partners.net\nDATE:    [TIMESTAMP INCONSISTENT WITH MAIL SERVER LOGS]\nSUBJECT: access confirmed - phase 3\n\n> Access window arranged as discussed.\n> Server credentials attached (encrypted).\n> Logs will be clean by morning.\n> Keep this channel dark.\n>\n> - K.P.\n\n═══════════════════════════════════════════════════════════\nFORENSIC NOTES:\n  Header origin IP does not match K.Park's workstation.\n  Timestamp predates account session by 4 minutes.\n  Draft metadata shows author: D.LAWSON\n═══════════════════════════════════════════════════════════",
+              "observations": "Recovered email purportedly from Kevin Park to an external contact — forensic metadata flags inconsistencies"
+            },
+            {
+              "type": "text_file",
               "id": "contingency_files",
               "name": "CONTINGENCY - IT Audit Response",
               "takeable": false,
@@ -1128,6 +1144,7 @@ password_hints = "Common passwords: Marketing123, Campaign2024, Viral_Dynamics_A
     "kevin_choice": "",
     "kevin_protected": false,
     "kevin_ko": false,
+    "kevin_confronted_with_evidence": false,
     "sarah_ko": false,
     "maya_ko": false,
     
