@@ -1,5 +1,5 @@
 {
-  "scenario_brief": "Test Scenario: Table Items Feature\n\nDemonstrates both modes for placing items on tables via the scenario.\n\nMode A – dynamic table (sprite/coordinates specified):\n  A brand-new table sprite is created at the given position.\n  Items are spread evenly across its surface.\n\nMode B – Tiled table (no sprite/coordinates):\n  The nth 'table' object pairs with the nth table already in the Tiled map.\n  Items keep their Tiled pixel positions.\n\nLayout:\n  [CEO Office - room_ceo2]\n         ↑\n  [Office - room_office2]",
+  "scenario_brief": "Test Scenario: Table Items Feature\n\nDemonstrates placing notes and containers (bags with contents) on tables.\n\nTwo modes:\n  Mode B – no sprite/coords: pairs with the nth Tiled-map table in order.\n  Mode A – sprite and/or x/y set: creates a brand-new table at that position.\n\nIn both modes, items whose Tiled sprite is not from a table layer (e.g. bags,\nbriefcases) are repositioned so their bottom sits on the top half of the table.\n\nLayout:\n  [CEO Office - room_ceo2]\n         ↑\n  [Office - room_office2]",
   "startRoom": "office",
   "rooms": {
     "office": {
@@ -13,7 +13,7 @@
           "name": "Welcome Note",
           "takeable": true,
           "readable": true,
-          "text": "Table Items Test\n\nMode B (Tiled table): first two tables use existing Tiled positions.\nMode A (dynamic): the small desk near the door is created by the scenario.\n\nHead north to the CEO office."
+          "text": "Table Items Test\n\nThis room shows two table placements:\n\n1. Mode B (first Tiled desk): a laptop and a bag containing a document.\n   The bag is a container – open it to find what is inside.\n\n2. Mode A (dynamically created smalldesk at x=140 y=190): a PC terminal.\n\nHead north to the CEO office when you are done."
         },
         {
           "type": "table",
@@ -23,31 +23,24 @@
               "name": "Research Laptop",
               "takeable": false,
               "readable": true,
-              "text": "RESEARCH TERMINAL\n\nProject Alpha files detected.\nAccess code for CEO office: DELTA-7",
-              "observations": "A laptop sitting open on the desk, its screen glowing with research data."
+              "text": "RESEARCH TERMINAL\n\nProject Alpha files detected.\nCEO office PIN: 7749",
+              "observations": "A laptop sitting open on the desk."
             },
             {
-              "type": "notes",
-              "name": "Lab Notes",
-              "takeable": true,
-              "readable": true,
-              "text": "Lab Notes - Day 42\n\nExperiment results inconclusive.\nConsult CEO before proceeding with Phase 2.",
-              "observations": "A stack of handwritten notes beside the laptop."
-            }
-          ]
-        },
-        {
-          "type": "table",
-          "tableItems": [
-            {
-              "type": "phone",
-              "name": "Desk Phone",
+              "type": "bag",
+              "name": "Evidence Bag",
               "takeable": false,
-              "readable": true,
-              "voice": "You have one new message: 'The CEO wants to see the Phase 2 report immediately.'",
-              "sender": "Voicemail",
-              "timestamp": "09:12 AM",
-              "observations": "A desk phone with a blinking message light."
+              "observations": "A bag sitting on the desk. Something is inside.",
+              "contents": [
+                {
+                  "type": "notes",
+                  "name": "Lab Report",
+                  "takeable": true,
+                  "readable": true,
+                  "text": "Lab Report – Day 42\n\nUnauthorised access confirmed.\nContact the CEO immediately.",
+                  "observations": "A folded lab report tucked inside the bag."
+                }
+              ]
             }
           ]
         },
@@ -94,8 +87,8 @@
               "name": "Project Alpha Dossier",
               "takeable": true,
               "readable": true,
-              "text": "PROJECT ALPHA - CONFIDENTIAL\n\nPhase 1: Complete\nPhase 2: Awaiting final sign-off\nPhase 3: Classified\n\nAll personnel must obtain CEO clearance.",
-              "observations": "A thick dossier marked CONFIDENTIAL sitting on the CEO's desk.",
+              "text": "PROJECT ALPHA – CONFIDENTIAL\n\nPhase 1: Complete\nPhase 2: Awaiting final sign-off\nPhase 3: Classified",
+              "observations": "A dossier marked CONFIDENTIAL on the CEO's desk.",
               "important": true,
               "isEndGoal": true
             }
@@ -108,6 +101,22 @@
           "y": 80,
           "tableItems": [
             {
+              "type": "bag",
+              "name": "Courier Bag",
+              "takeable": false,
+              "observations": "A courier bag left on the second desk. Something is inside.",
+              "contents": [
+                {
+                  "type": "notes",
+                  "name": "Delivery Manifest",
+                  "takeable": true,
+                  "readable": true,
+                  "text": "DELIVERY MANIFEST\n\nItem: Prototype drive\nRecipient: CEO – eyes only\nStatus: Delivered 04:02 AM",
+                  "observations": "A delivery manifest folded inside the bag."
+                }
+              ]
+            },
+            {
               "type": "phone",
               "name": "CEO's Private Line",
               "takeable": false,
@@ -115,7 +124,7 @@
               "voice": "Encrypted voicemail. Decryption key required.",
               "sender": "Unknown",
               "timestamp": "04:02 AM",
-              "observations": "A dedicated private phone, separate from the main desk."
+              "observations": "A dedicated private phone on the second desk."
             }
           ]
         }

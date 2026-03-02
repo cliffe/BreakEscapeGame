@@ -1992,30 +1992,53 @@ export function createRoom(roomId, roomData, position) {
                     scenarioObj.tableItems.forEach((tableItemObj, itemIndex) => {
                         const tiledItem = itemPool.findMatchFor(tableItemObj);
                         let sprite;
+                        // True when the matched Tiled item lives in a table_items or
+                        // conditional_table_items layer and therefore already has a
+                        // designer-correct position relative to its table.
+                        let fromTableLayer = false;
 
                         if (tiledItem) {
                             const imageName = itemPool.getImageNameFromObject(tiledItem);
+                            const baseType = itemPool.extractBaseTypeFromImageName(imageName);
+                            fromTableLayer = (
+                                (itemPool.tableItemsByType[baseType]?.includes(tiledItem)) ||
+                                (itemPool.conditionalTableItemsByType[baseType]?.includes(tiledItem))
+                            );
                             sprite = createSpriteFromMatch(tiledItem, tableItemObj, position, roomId, index * 100 + itemIndex, map);
                             usedItems.add(imageName);
-                            usedItems.add(itemPool.extractBaseTypeFromImageName(imageName));
+                            usedItems.add(baseType);
                             itemPool.reserve(tiledItem);
-                            console.log(`Placed scenario table item: ${tableItemObj.type} using ${imageName}`);
+                            console.log(`Placed scenario table item: ${tableItemObj.type} using ${imageName} (fromTableLayer=${fromTableLayer})`);
                         } else {
-                            // No Tiled item found – fall back to random room position
+                            // No Tiled item found – fall back to random room position;
+                            // the repositioning below will move it onto the table.
                             sprite = createSpriteAtRandomPosition(tableItemObj, position, roomId, index * 100 + itemIndex, map);
-                            console.warn(`No Tiled item found for scenario table item type "${tableItemObj.type}", placed at random position`);
+                            console.warn(`No Tiled item found for scenario table item type "${tableItemObj.type}", will position on table surface`);
                         }
 
                         if (sprite) {
-                            // For dynamic tables the Tiled item positions are meaningless
-                            // (the table was placed at a custom location), so spread items
-                            // evenly across the table surface.
-                            if (group.isDynamic) {
+                            // Reposition the item so it sits visually ON the table surface when:
+                            //   • Mode A (dynamic table) – the table is at an arbitrary position
+                            //     so any Tiled item coordinates are for a different table.
+                            //   • Mode B (Tiled table) – only when the item did NOT come from a
+                            //     table_items / conditional_table_items layer (i.e. it is a floor
+                            //     item such as a bag or briefcase whose Tiled Y is on the floor).
+                            if (group.isDynamic || !fromTableLayer) {
                                 const tableSprite = group.table.sprite;
                                 const itemSlot  = itemIndex + 1;
                                 const slotCount = scenarioObj.tableItems.length + 1;
-                                sprite.x = Math.round(tableSprite.x + tableSprite.width  * (itemSlot / slotCount) - sprite.width  / 2);
-                                sprite.y = Math.round(tableSprite.y + tableSprite.height * 0.25);
+
+                                // Spread items evenly across the table width, centred on each slot.
+                                sprite.x = Math.round(
+                                    tableSprite.x + tableSprite.width * (itemSlot / slotCount) - sprite.width / 2
+                                );
+
+                                // Place the item so its BOTTOM sits on the top half of the table:
+                                //   target bottom Y  =  tableSprite.y + tableSprite.height * 0.5
+                                //   →  sprite.y       =  targetBottom - sprite.height
+                                // Clamped to tableSprite.y so a tall item never floats above the table.
+                                const targetBottomY = tableSprite.y + tableSprite.height * 0.5;
+                                sprite.y = Math.round(Math.max(tableSprite.y, targetBottomY - sprite.height));
                             }
 
                             // Depth will be recalculated by the final tableGroups pass
