@@ -348,12 +348,14 @@ function applyScenarioProperties(sprite, scenarioObj, roomId, index) {
     sprite.setInteractive({ useHandCursor: true });
     
     // Store all scenario properties for interaction system
-    // IMPORTANT: Skip 'texture' - it is a Phaser-internal property (TextureFrame object).
-    // Synced items from the server include texture as a plain string (e.g. 'id_badge').
-    // Overwriting sprite.texture with a string breaks sprite.texture.key, which the
-    // inventory system uses to build the icon image path.
+    // IMPORTANT: Skip Phaser-internal / placement-reserved properties:
+    //   'texture' – Phaser TextureFrame object; overwriting breaks sprite.texture.key.
+    //   'x' / 'y' – Phaser world position; scenario coordinates are applied separately
+    //               by the room-placement logic (room-relative or table-relative),
+    //               so copying them here would overwrite the correctly computed position.
+    //               The original values remain accessible via sprite.scenarioData.x/y.
     Object.keys(scenarioObj).forEach(key => {
-        if (key === 'texture') return;
+        if (key === 'texture' || key === 'x' || key === 'y') return;
         sprite[key] = scenarioObj[key];
     });
     
@@ -2017,14 +2019,24 @@ export function createRoom(roomId, roomData, position) {
                         }
 
                         if (sprite) {
-                            // Reposition the item so it sits visually ON the table surface when:
-                            //   • Mode A (dynamic table) – the table is at an arbitrary position
-                            //     so any Tiled item coordinates are for a different table.
-                            //   • Mode B (Tiled table) – only when the item did NOT come from a
-                            //     table_items / conditional_table_items layer (i.e. it is a floor
-                            //     item such as a bag or briefcase whose Tiled Y is on the floor).
-                            if (group.isDynamic || !fromTableLayer) {
-                                const tableSprite = group.table.sprite;
+                            const tableSprite = group.table.sprite;
+
+                            if (tableItemObj.x !== undefined || tableItemObj.y !== undefined) {
+                                // Explicit table-relative coordinates: place the item at the
+                                // given offset from the table's top-left corner.
+                                // The scenario author is responsible for keeping the item
+                                // within the table surface bounds.
+                                if (tableItemObj.x !== undefined) sprite.x = Math.round(tableSprite.x + tableItemObj.x);
+                                if (tableItemObj.y !== undefined) sprite.y = Math.round(tableSprite.y + tableItemObj.y);
+                            } else if (group.isDynamic || !fromTableLayer) {
+                                // Auto-position: reposition the item so it sits visually ON
+                                // the table surface when:
+                                //   • Mode A (dynamic table) – the table is at an arbitrary
+                                //     position, so any Tiled item coordinates are for a
+                                //     different table.
+                                //   • Mode B (Tiled table) – only when the item did NOT come
+                                //     from a table_items / conditional_table_items layer (i.e.
+                                //     a floor item such as a bag whose Tiled Y is on the floor).
                                 const itemSlot  = itemIndex + 1;
                                 const slotCount = scenarioObj.tableItems.length + 1;
 
@@ -2040,6 +2052,7 @@ export function createRoom(roomId, roomData, position) {
                                 const targetBottomY = tableSprite.y + tableSprite.height * 0.5;
                                 sprite.y = Math.round(Math.max(tableSprite.y, targetBottomY - sprite.height));
                             }
+                            // else: fromTableLayer && no explicit coords → keep Tiled position
 
                             // Depth will be recalculated by the final tableGroups pass
                             sprite.elevation = 0;
@@ -2088,14 +2101,19 @@ export function createRoom(roomId, roomData, position) {
                     
                     // Create sprite from matched item
                     sprite = createSpriteFromMatch(usedItem, scenarioObj, position, roomId, index, map);
-                    
+
                     console.log(`Created ${objType} using ${imageName}`);
-                    
+
                     // Track this item as used
                     usedItems.add(imageName);
                     usedItems.add(baseType);
                     itemPool.reserve(usedItem);
-                    
+
+                    // Override with explicit room-relative coordinates when specified.
+                    // Tiled designer positions are ignored for coordinates-specified items.
+                    if (scenarioObj.x !== undefined) sprite.x = Math.round(position.x + scenarioObj.x);
+                    if (scenarioObj.y !== undefined) sprite.y = Math.round(position.y + scenarioObj.y);
+
                     // If it's a table item, find the closest table and group it
                     if (isTableItem && tableObjects.length > 0) {
                         const closestTable = findClosestTable(sprite, tableObjects);
@@ -2122,6 +2140,10 @@ export function createRoom(roomId, roomData, position) {
                 } else {
                     // No matching item found, create at random position (existing fallback behavior)
                     sprite = createSpriteAtRandomPosition(scenarioObj, position, roomId, index, map);
+
+                    // Override with explicit room-relative coordinates when specified.
+                    if (scenarioObj.x !== undefined) sprite.x = Math.round(position.x + scenarioObj.x);
+                    if (scenarioObj.y !== undefined) sprite.y = Math.round(position.y + scenarioObj.y);
 
                     // Set depth and store
                     setDepthAndStore(sprite, position, roomId, false);

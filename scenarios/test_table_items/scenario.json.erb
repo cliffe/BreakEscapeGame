@@ -1,5 +1,5 @@
 {
-  "scenario_brief": "Test Scenario: Table Items Feature\n\nDemonstrates placing notes and containers (bags with contents) on tables.\n\nTwo modes:\n  Mode B – no sprite/coords: pairs with the nth Tiled-map table in order.\n  Mode A – sprite and/or x/y set: creates a brand-new table at that position.\n\nIn both modes, items whose Tiled sprite is not from a table layer (e.g. bags,\nbriefcases) are repositioned so their bottom sits on the top half of the table.\n\nLayout:\n  [CEO Office - room_ceo2]\n         ↑\n  [Office - room_office2]",
+  "scenario_brief": "Test Scenario: Explicit Item Coordinates\n\nDemonstrates specifying coordinates on any scenario item:\n\n  Floor items  –  x/y are room-relative pixel offsets from the room\n                   top-left corner.  Tiled designer positions are ignored.\n\n  Table items  –  x/y inside a tableItems entry are table-relative pixel\n                   offsets from the table sprite's top-left corner.\n                   This replaces the automatic even-spread positioning.\n\nLayout:\n  [CEO Office - room_ceo2]\n         ↑\n  [Office - room_office2] (start)",
   "startRoom": "office",
   "rooms": {
     "office": {
@@ -10,10 +10,64 @@
       "objects": [
         {
           "type": "notes",
-          "name": "Welcome Note",
+          "name": "Test Guide",
           "takeable": true,
           "readable": true,
-          "text": "Table Items Test\n\nThis room shows two table placements:\n\n1. Mode B (first Tiled desk): a laptop and a bag containing a document.\n   The bag is a container – open it to find what is inside.\n\n2. Mode A (dynamically created smalldesk at x=140 y=190): a PC terminal.\n\nHead north to the CEO office when you are done."
+          "text": "COORDINATE TEST – OFFICE ROOM\n\nFloor items with explicit room-relative coords:\n  • Safe (x=50, y=80)  – near the top-left area of the room.\n  • Keycard (x=160, y=240) – centre of the room floor.\n\nFirst desk (Tiled) – table-relative coords on tableItems:\n  • Note  at table (x=10, y=8)  – left of desk surface.\n  • Bag   at table (x=48, y=0)  – right of desk surface; open it.\n\nSecond desk (Tiled) – no coords; items auto-spread (default):\n  • Laptop and phone placed automatically.\n\nHead north for the CEO office test."
+        },
+        {
+          "type": "safe",
+          "name": "Floor Safe",
+          "x": 50,
+          "y": 80,
+          "takeable": false,
+          "locked": true,
+          "lockType": "pin",
+          "requires": "1234",
+          "observations": "A floor safe fixed to the wall at explicit room-relative position (50, 80).",
+          "contents": [
+            {
+              "type": "notes",
+              "name": "Safe Contents",
+              "takeable": true,
+              "readable": true,
+              "text": "SAFE CONTENTS\n\nYou cracked it.\nCEO office PIN: 7749",
+              "observations": "A note with the CEO office PIN."
+            }
+          ]
+        },
+        {
+          "type": "table",
+          "tableItems": [
+            {
+              "type": "notes",
+              "name": "Desk Memo",
+              "x": 10,
+              "y": 8,
+              "takeable": true,
+              "readable": true,
+              "text": "DESK MEMO\n\nThis note is at table-relative (x=10, y=8).\nThe desk is 78 px wide and 39 px tall, so this\nsits near the left edge of the desk surface.",
+              "observations": "A memo placed at the left of the desk surface (table-relative coords)."
+            },
+            {
+              "type": "bag",
+              "name": "Evidence Bag",
+              "x": 48,
+              "y": 0,
+              "takeable": false,
+              "observations": "A bag at table-relative (x=48, y=0) – right half of the desk. Open it.",
+              "contents": [
+                {
+                  "type": "notes",
+                  "name": "Lab Report",
+                  "takeable": true,
+                  "readable": true,
+                  "text": "LAB REPORT\n\nThis note was inside the bag on the desk.\nUnauthorised access confirmed.\nContact the CEO immediately.",
+                  "observations": "A folded lab report inside the bag."
+                }
+              ]
+            }
+          ]
         },
         {
           "type": "table",
@@ -23,40 +77,18 @@
               "name": "Research Laptop",
               "takeable": false,
               "readable": true,
-              "text": "RESEARCH TERMINAL\n\nProject Alpha files detected.\nCEO office PIN: 7749",
-              "observations": "A laptop sitting open on the desk."
+              "text": "RESEARCH TERMINAL\n\nAuto-spread positioning (no coords specified).",
+              "observations": "A laptop – auto-positioned on the second desk."
             },
             {
-              "type": "bag",
-              "name": "Evidence Bag",
-              "takeable": false,
-              "observations": "A bag sitting on the desk. Something is inside.",
-              "contents": [
-                {
-                  "type": "notes",
-                  "name": "Lab Report",
-                  "takeable": true,
-                  "readable": true,
-                  "text": "Lab Report – Day 42\n\nUnauthorised access confirmed.\nContact the CEO immediately.",
-                  "observations": "A folded lab report tucked inside the bag."
-                }
-              ]
-            }
-          ]
-        },
-        {
-          "type": "table",
-          "sprite": "smalldesk2",
-          "x": 140,
-          "y": 190,
-          "tableItems": [
-            {
-              "type": "pc",
-              "name": "Security Terminal",
+              "type": "phone",
+              "name": "Desk Phone",
               "takeable": false,
               "readable": true,
-              "text": "SECURITY SYSTEM\n\nMotion detected: Server room 03:47 AM\nAll logs backed up to offsite storage.",
-              "observations": "A security terminal on a small desk near the door."
+              "voice": "One message: 'CEO requests your report by noon.'",
+              "sender": "Reception",
+              "timestamp": "08:55 AM",
+              "observations": "A phone – auto-positioned on the second desk."
             }
           ]
         }
@@ -72,27 +104,11 @@
       },
       "objects": [
         {
-          "type": "table",
-          "tableItems": [
-            {
-              "type": "laptop",
-              "name": "CEO's Laptop",
-              "takeable": false,
-              "readable": true,
-              "text": "CEO PRIVATE TERMINAL\n\nPhase 2 approved. Deploy immediately.\n\n- CEO",
-              "observations": "An expensive laptop on the CEO's desk, lid half-open."
-            },
-            {
-              "type": "notes",
-              "name": "Project Alpha Dossier",
-              "takeable": true,
-              "readable": true,
-              "text": "PROJECT ALPHA – CONFIDENTIAL\n\nPhase 1: Complete\nPhase 2: Awaiting final sign-off\nPhase 3: Classified",
-              "observations": "A dossier marked CONFIDENTIAL on the CEO's desk.",
-              "important": true,
-              "isEndGoal": true
-            }
-          ]
+          "type": "notes",
+          "name": "CEO Test Guide",
+          "takeable": true,
+          "readable": true,
+          "text": "COORDINATE TEST – CEO ROOM\n\nDynamic desk (sprite=desk-ceo2, x=60, y=80) with table-relative coords:\n  • Laptop  at table (x=5,  y=5) – top-left of desk.\n  • Dossier at table (x=50, y=8) – right of desk surface."
         },
         {
           "type": "table",
@@ -101,30 +117,26 @@
           "y": 80,
           "tableItems": [
             {
-              "type": "bag",
-              "name": "Courier Bag",
-              "takeable": false,
-              "observations": "A courier bag left on the second desk. Something is inside.",
-              "contents": [
-                {
-                  "type": "notes",
-                  "name": "Delivery Manifest",
-                  "takeable": true,
-                  "readable": true,
-                  "text": "DELIVERY MANIFEST\n\nItem: Prototype drive\nRecipient: CEO – eyes only\nStatus: Delivered 04:02 AM",
-                  "observations": "A delivery manifest folded inside the bag."
-                }
-              ]
-            },
-            {
-              "type": "phone",
-              "name": "CEO's Private Line",
+              "type": "laptop",
+              "name": "CEO Laptop",
+              "x": 5,
+              "y": 5,
               "takeable": false,
               "readable": true,
-              "voice": "Encrypted voicemail. Decryption key required.",
-              "sender": "Unknown",
-              "timestamp": "04:02 AM",
-              "observations": "A dedicated private phone on the second desk."
+              "text": "CEO PRIVATE TERMINAL\n\nThis laptop is at table-relative (x=5, y=5) on a\ndynamically created desk placed at room-relative (x=60, y=80).\n\nPhase 2: Approved.",
+              "observations": "An expensive laptop, lid half-open (table-relative coords)."
+            },
+            {
+              "type": "notes",
+              "name": "Project Dossier",
+              "x": 50,
+              "y": 8,
+              "takeable": true,
+              "readable": true,
+              "text": "PROJECT ALPHA – CONFIDENTIAL\n\nThis dossier is at table-relative (x=50, y=8).\n\nPhase 1: Complete\nPhase 2: Approved\nPhase 3: Classified",
+              "observations": "A dossier at the right of the CEO desk (table-relative coords).",
+              "important": true,
+              "isEndGoal": true
             }
           ]
         }
