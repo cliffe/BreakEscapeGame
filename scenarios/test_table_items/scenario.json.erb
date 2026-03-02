@@ -1,5 +1,5 @@
 {
-  "scenario_brief": "Test Scenario: Table Items Feature\n\nDemonstrates defining items on tables directly in the scenario.\nEach room has tables and the scenario explicitly places items on them.\n\nLayout:\n  [CEO Office - room_ceo2]\n         ↑\n  [Office - room_office2]\n\nFeature being tested:\n  A scenario object with type 'table' and a 'tableItems' array assigns\n  specific items to the corresponding Tiled map table (matched by order).\n  Items are rendered on top of the table with correct z-ordering.",
+  "scenario_brief": "Test Scenario: Table Items Feature\n\nDemonstrates both modes for placing items on tables via the scenario.\n\nMode A – dynamic table (sprite/coordinates specified):\n  A brand-new table sprite is created at the given position.\n  Items are spread evenly across its surface.\n\nMode B – Tiled table (no sprite/coordinates):\n  The nth 'table' object pairs with the nth table already in the Tiled map.\n  Items keep their Tiled pixel positions.\n\nLayout:\n  [CEO Office - room_ceo2]\n         ↑\n  [Office - room_office2]",
   "startRoom": "office",
   "rooms": {
     "office": {
@@ -13,7 +13,7 @@
           "name": "Welcome Note",
           "takeable": true,
           "readable": true,
-          "text": "Table Items Test\n\nThe tables in this room have items placed on them via the scenario.\n\nFirst table (bottom-left): a laptop for research work.\nSecond table (top-left): notes with clues.\n\nHead north to the CEO office."
+          "text": "Table Items Test\n\nMode B (Tiled table): first two tables use existing Tiled positions.\nMode A (dynamic): the small desk near the door is created by the scenario.\n\nHead north to the CEO office."
         },
         {
           "type": "table",
@@ -50,6 +50,22 @@
               "observations": "A desk phone with a blinking message light."
             }
           ]
+        },
+        {
+          "type": "table",
+          "sprite": "smalldesk2",
+          "x": 140,
+          "y": 190,
+          "tableItems": [
+            {
+              "type": "pc",
+              "name": "Security Terminal",
+              "takeable": false,
+              "readable": true,
+              "text": "SECURITY SYSTEM\n\nMotion detected: Server room 03:47 AM\nAll logs backed up to offsite storage.",
+              "observations": "A security terminal on a small desk near the door."
+            }
+          ]
         }
       ]
     },
@@ -82,6 +98,24 @@
               "observations": "A thick dossier marked CONFIDENTIAL sitting on the CEO's desk.",
               "important": true,
               "isEndGoal": true
+            }
+          ]
+        },
+        {
+          "type": "table",
+          "sprite": "desk-ceo2",
+          "x": 60,
+          "y": 80,
+          "tableItems": [
+            {
+              "type": "phone",
+              "name": "CEO's Private Line",
+              "takeable": false,
+              "readable": true,
+              "voice": "Encrypted voicemail. Decryption key required.",
+              "sender": "Unknown",
+              "timestamp": "04:02 AM",
+              "observations": "A dedicated private phone, separate from the main desk."
             }
           ]
         }
