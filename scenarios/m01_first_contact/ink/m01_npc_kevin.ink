@@ -480,7 +480,7 @@ Kevin: *reads the anomaly report* Wait. This says my credentials were accessing 
 
 Kevin: Someone used my credentials remotely. That's exactly the kind of thing I've been reporting.
 
-Kevin: And this sign-off — "Authorised and escalated by D. Lawson." Derek filed the report *and* authorised it himself, about his own subordinate. That's not normal. Anomaly reports get escalated to HR or the Director of Operations, not signed off by the person who generated them.
+Kevin: And look at the submission line — "Filed by D. Lawson, Senior Marketing Manager — IT Manager sign-off bypassed." Derek is in Marketing. He has absolutely no business submitting IT security anomaly reports. And bypassing me? I'm the IT Manager. I should have been the first person to see this — that's literally my job.
 
 Kevin: *reads the recovered email* And this email — look at the header: "HEADER MISMATCH DETECTED." That's the mail server's own authentication system saying this message wasn't sent from my account. The forensic metadata at the bottom says the draft author was D.LAWSON.
 
