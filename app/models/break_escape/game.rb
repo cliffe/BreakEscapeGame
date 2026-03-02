@@ -980,9 +980,10 @@ module BreakEscape
         # Keep lockType - client needs it to show correct UI
         # Keep locked - client needs it to show lock status
 
-        # Recursively filter nested objects and NPCs
+        # Recursively filter nested objects, NPCs, and tableItems
         obj['objects']&.each { |o| filter_requires_and_contents_recursive(o) }
         obj['npcs']&.each { |n| filter_requires_and_contents_recursive(n) }
+        obj['tableItems']&.each { |t| filter_requires_and_contents_recursive(t) }
 
       when Array
         obj.each { |item| filter_requires_and_contents_recursive(item) }

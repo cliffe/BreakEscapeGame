@@ -1,0 +1,91 @@
+{
+  "scenario_brief": "Test Scenario: Table Items Feature\n\nDemonstrates defining items on tables directly in the scenario.\nEach room has tables and the scenario explicitly places items on them.\n\nLayout:\n  [CEO Office - room_ceo2]\n         ↑\n  [Office - room_office2]\n\nFeature being tested:\n  A scenario object with type 'table' and a 'tableItems' array assigns\n  specific items to the corresponding Tiled map table (matched by order).\n  Items are rendered on top of the table with correct z-ordering.",
+  "startRoom": "office",
+  "rooms": {
+    "office": {
+      "type": "room_office2",
+      "connections": {
+        "north": "ceo"
+      },
+      "objects": [
+        {
+          "type": "notes",
+          "name": "Welcome Note",
+          "takeable": true,
+          "readable": true,
+          "text": "Table Items Test\n\nThe tables in this room have items placed on them via the scenario.\n\nFirst table (bottom-left): a laptop for research work.\nSecond table (top-left): notes with clues.\n\nHead north to the CEO office."
+        },
+        {
+          "type": "table",
+          "tableItems": [
+            {
+              "type": "laptop",
+              "name": "Research Laptop",
+              "takeable": false,
+              "readable": true,
+              "text": "RESEARCH TERMINAL\n\nProject Alpha files detected.\nAccess code for CEO office: DELTA-7",
+              "observations": "A laptop sitting open on the desk, its screen glowing with research data."
+            },
+            {
+              "type": "notes",
+              "name": "Lab Notes",
+              "takeable": true,
+              "readable": true,
+              "text": "Lab Notes - Day 42\n\nExperiment results inconclusive.\nConsult CEO before proceeding with Phase 2.",
+              "observations": "A stack of handwritten notes beside the laptop."
+            }
+          ]
+        },
+        {
+          "type": "table",
+          "tableItems": [
+            {
+              "type": "phone",
+              "name": "Desk Phone",
+              "takeable": false,
+              "readable": true,
+              "voice": "You have one new message: 'The CEO wants to see the Phase 2 report immediately.'",
+              "sender": "Voicemail",
+              "timestamp": "09:12 AM",
+              "observations": "A desk phone with a blinking message light."
+            }
+          ]
+        }
+      ]
+    },
+    "ceo": {
+      "type": "room_ceo2",
+      "locked": true,
+      "lockType": "pin",
+      "requires": "7749",
+      "connections": {
+        "south": "office"
+      },
+      "objects": [
+        {
+          "type": "table",
+          "tableItems": [
+            {
+              "type": "laptop",
+              "name": "CEO's Laptop",
+              "takeable": false,
+              "readable": true,
+              "text": "CEO PRIVATE TERMINAL\n\nPhase 2 approved. Deploy immediately.\n\n- CEO",
+              "observations": "An expensive laptop on the CEO's desk, lid half-open."
+            },
+            {
+              "type": "notes",
+              "name": "Project Alpha Dossier",
+              "takeable": true,
+              "readable": true,
+              "text": "PROJECT ALPHA - CONFIDENTIAL\n\nPhase 1: Complete\nPhase 2: Awaiting final sign-off\nPhase 3: Classified\n\nAll personnel must obtain CEO clearance.",
+              "observations": "A thick dossier marked CONFIDENTIAL sitting on the CEO's desk.",
+              "important": true,
+              "isEndGoal": true
+            }
+          ]
+        }
+      ]
+    }
+  }
+}

@@ -1888,17 +1888,60 @@ export function createRoom(roomId, roomData, position) {
             if (!roomData.objects) {
                 return new Set();
             }
-            
+
             // 1. Initialize item pool with all available Tiled items
             const itemPool = new TiledItemPool(objectsByLayer, map); // Pass map here
             const usedItems = new Set();
-            
+
             console.log(`Processing ${roomData.objects.length} scenario objects for room ${roomId}`);
-            
+
+            // Track which Tiled table group to assign to next when scenario defines table objects
+            let scenarioTableIndex = 0;
+
             // 2. Process each scenario object
             roomData.objects.forEach((scenarioObj, index) => {
                 const objType = scenarioObj.type;
-            
+
+                // Handle table objects with explicit tableItems list.
+                // A scenario object with type "table" and a "tableItems" array assigns
+                // specific items to a physical table in the Tiled map (matched by order:
+                // the first such object gets the first table in the room, etc.).
+                if (objType === 'table' && Array.isArray(scenarioObj.tableItems)) {
+                    if (scenarioTableIndex < tableGroups.length) {
+                        const group = tableGroups[scenarioTableIndex];
+                        scenarioTableIndex++;
+                        console.log(`Assigning scenario tableItems to tableGroup[${scenarioTableIndex - 1}] (${scenarioObj.tableItems.length} items)`);
+
+                        scenarioObj.tableItems.forEach((tableItemObj, itemIndex) => {
+                            const tiledItem = itemPool.findMatchFor(tableItemObj);
+                            let sprite;
+
+                            if (tiledItem) {
+                                const imageName = itemPool.getImageNameFromObject(tiledItem);
+                                sprite = createSpriteFromMatch(tiledItem, tableItemObj, position, roomId, index * 100 + itemIndex, map);
+                                usedItems.add(imageName);
+                                usedItems.add(itemPool.extractBaseTypeFromImageName(imageName));
+                                itemPool.reserve(tiledItem);
+                                console.log(`Placed scenario table item: ${tableItemObj.type} using ${imageName}`);
+                            } else {
+                                // No Tiled item found – fall back to random room position
+                                sprite = createSpriteAtRandomPosition(tableItemObj, position, roomId, index * 100 + itemIndex, map);
+                                console.warn(`No Tiled item found for scenario table item type "${tableItemObj.type}", placed at random position`);
+                            }
+
+                            if (sprite) {
+                                // Depth will be recalculated by the final tableGroups pass below
+                                sprite.elevation = 0;
+                                group.items.push({ sprite, type: 'scenario_table_item' });
+                                rooms[roomId].objects[sprite.objectId] = sprite;
+                            }
+                        });
+                    } else {
+                        console.warn(`Scenario defines a table object but no matching Tiled table exists (scenarioTableIndex=${scenarioTableIndex}, tableGroups.length=${tableGroups.length})`);
+                    }
+                    return; // This object is fully handled; skip the regular item-pool path
+                }
+
                 let sprite = null;
                 let usedItem = null;
                 let isTableItem = false;
