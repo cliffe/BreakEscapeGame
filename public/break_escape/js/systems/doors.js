@@ -519,7 +519,13 @@ export function createDoorSpritesForRoom(roomId, position) {
 
         // Set up collision
         gameRef.physics.add.existing(doorSprite);
-        doorSprite.body.setSize(doorWidth, doorHeight);
+        if (!isSideDoor) {
+            // North/South doors: thin collision strip at bottom of sprite, matching wall profile
+            doorSprite.body.setSize(doorWidth, 8);
+            doorSprite.body.setOffset(0, doorHeight - 8);
+        } else {
+            doorSprite.body.setSize(doorWidth, doorHeight);
+        }
         doorSprite.body.setImmovable(true);
 
         // Add collision with player
