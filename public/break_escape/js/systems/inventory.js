@@ -1,6 +1,8 @@
 // Inventory System
 // Handles inventory management and display
 
+// IMPORTANT: version must match all other imports of rooms.js — mismatched ?v= strings
+// create separate module instances with separate rooms objects, causing state to diverge.
 import { rooms } from '../core/rooms.js?v=17';
 import InkEngine from './ink/ink-engine.js?v=1';
 import { CSRF_TOKEN } from '../config.js';

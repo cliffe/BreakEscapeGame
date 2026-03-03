@@ -1,3 +1,5 @@
+// IMPORTANT: version must match all other imports of rooms.js — mismatched ?v= strings
+// create separate module instances with separate rooms objects, causing state to diverge.
 import { initializeRooms, calculateWorldBounds, calculateRoomPositions, createRoom, revealRoom, updatePlayerRoom, rooms } from './rooms.js?v=17';
 import { createPlayer, updatePlayerMovement, movePlayerToPoint, facePlayerToward, player } from './player.js?v=18';
 import { initializePathfinder } from './pathfinding.js?v=7';
