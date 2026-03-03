@@ -1,7 +1,7 @@
 // Inventory System
 // Handles inventory management and display
 
-import { rooms } from '../core/rooms.js';
+import { rooms } from '../core/rooms.js?v=17';
 import InkEngine from './ink/ink-engine.js?v=1';
 import { CSRF_TOKEN } from '../config.js';
 
@@ -353,6 +353,9 @@ export async function addToInventory(sprite) {
             if (sprite.setVisible && typeof sprite.setVisible === 'function') {
                 sprite.setVisible(false);
             }
+            // Mark inactive so checkObjectInteractions won't re-create the proximity ghost
+            sprite.active = false;
+            sprite.isHighlighted = false;
             // Destroy proximity ghost on the sprite itself in case it differs from roomObj
             if (sprite.proximityGhost) {
                 sprite.proximityGhost.destroy();
@@ -443,6 +446,9 @@ export async function addToInventory(sprite) {
         if (sprite.setVisible && typeof sprite.setVisible === 'function') {
             sprite.setVisible(false);
         }
+        // Mark inactive so checkObjectInteractions won't re-create the proximity ghost
+        sprite.active = false;
+        sprite.isHighlighted = false;
         // Destroy proximity ghost on the sprite itself in case it differs from roomObj
         if (sprite.proximityGhost) {
             sprite.proximityGhost.destroy();
