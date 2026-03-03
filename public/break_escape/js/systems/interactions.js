@@ -986,6 +986,15 @@ export function handleObjectInteraction(sprite) {
         
         // For notes type objects, use the notes minigame
         if (data.type === 'notes' && data.text) {
+            // Emit event for readable notes items with an id so NPCs can react
+            if (data.id && window.eventDispatcher) {
+                window.eventDispatcher.emit(`item_read:${data.id}`, {
+                    itemType: data.type,
+                    itemName: data.name,
+                    itemId: data.id,
+                    roomId: window.currentPlayerRoom
+                });
+            }
             // Start the notes minigame
             if (window.startNotesMinigame) {
                 window.startNotesMinigame(sprite, data.text, data.observations);

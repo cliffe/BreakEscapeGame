@@ -8,6 +8,7 @@ VAR lockpick_hint_given = false
 VAR ssh_hint_given = false
 VAR linux_hint_given = false
 VAR sudo_hint_given = false
+VAR base64_hint_given = false
 VAR first_contact = true
 VAR operation_shatter_reported = false
 
@@ -92,6 +93,8 @@ Agent 0x99: What do you need help with?
     -> linux_help
 + {not sudo_hint_given} [Privilege escalation guidance]
     -> sudo_help
++ {not base64_hint_given} [Base64 and CyberChef — step-by-step guidance]
+    -> base64_cyberchef_help
 + [General mission advice]
     -> general_advice
 + [I'm good for now]
@@ -678,6 +681,93 @@ Agent 0x99: You had the authority to make that call. The debrief will note it—
     -> support_hub
 + [I know. It wasn't ideal.]
     Agent 0x99: No. But field decisions rarely are. You've got the lockpick and keycard now—use them.
+    #exit_conversation
+    -> support_hub
+
+// ================================================
+// EVENT: WHITEBOARD MESSAGE READ (Base64 encoded)
+// ================================================
+
+=== event_whiteboard_read ===
+#speaker:agent_0x99
+
+Agent 0x99: That message on Derek's whiteboard — it's Base64 encoded.
+
+Agent 0x99: Can't read it directly. You'll need to decode it first.
+
+Agent 0x99: Have a look around the office. Derek's a technical type — there should be something in that room you can use.
+
++ [I'll search the room]
+    #exit_conversation
+    -> support_hub
++ [Any hints on what to look for?]
+    Agent 0x99: A workstation, a laptop — any analysis tool. Cryptanalysis software is common in ops like this. It should be right there with you.
+    #exit_conversation
+    -> support_hub
+
+// ================================================
+// EVENT: CYBERCHEF WORKSTATION COLLECTED
+// ================================================
+
+=== event_cyberchef_collected ===
+#speaker:agent_0x99
+
+Agent 0x99: Good find. That's a CyberChef workstation — it's a cryptanalysis tool. You can use it to decode that message from Derek's whiteboard.
+
+Agent 0x99: CyberChef handles Base64, encoding schemes, ciphers — the works. It's exactly what you need here.
+
+Agent 0x99: Want me to walk you through it step by step?
+
++ [Yes, give me the steps]
+    -> base64_cyberchef_help
++ [I'll figure it out]
+    ~ base64_hint_given = true
+    Agent 0x99: Fair enough. If you get stuck, call back and I'll walk you through Base64 and CyberChef.
+    #exit_conversation
+    -> support_hub
+
+// ================================================
+// BASE64 AND CYBERCHEF STEP-BY-STEP HELP
+// ================================================
+
+=== base64_cyberchef_help ===
+~ base64_hint_given = true
+
+Agent 0x99: Right. Here's how to decode a Base64 message using CyberChef.
+
+Agent 0x99: Step one — open the CyberChef workstation from your inventory. It'll launch the interface.
+
++ [Done. What next?]
+    -> base64_step2
+
+=== base64_step2 ===
+Agent 0x99: Step two — you'll see an input area on the left. Paste the encoded string from Derek's whiteboard exactly as written. Every character matters.
+
++ [Got it. Then what?]
+    -> base64_step3
+
+=== base64_step3 ===
+Agent 0x99: Step three — in the "Operations" panel, search for "From Base64" and drag it into the Recipe column in the middle.
+
+Agent 0x99: CyberChef will decode it automatically. The result appears in the output panel on the right.
+
++ [What will it show?]
+    -> base64_step4
++ [That sounds straightforward]
+    -> base64_step4
+
+=== base64_step4 ===
+Agent 0x99: The decoded text — whatever Derek encoded in that message.
+
+Agent 0x99: Base64 is obfuscation, not encryption. It's not meant to be secure, just to obscure at a glance. Once decoded, you'll have the raw intelligence.
+
+Agent 0x99: If you hit any issues — wrong output, garbled text — double-check you copied the full string. A missing character breaks the whole decode.
+
++ [Thanks. I'll try it now.]
+    #exit_conversation
+    -> support_hub
++ [What if there are more encoded messages?]
+    Agent 0x99: Same process. CyberChef handles any Base64 string. Build up that habit — encoded messages are common ENTROPY tradecraft.
     #exit_conversation
     -> support_hub
 

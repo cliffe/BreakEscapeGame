@@ -456,6 +456,23 @@ password_hints = "Common passwords: Marketing123, Campaign2024, Viral_Dynamics_A
               "onceOnly": true
             },
             {
+              "eventPattern": "item_read:whiteboard_message",
+              "conversationMode": "phone-chat",
+              "targetKnot": "event_whiteboard_read",
+              "onceOnly": true,
+              "sendTimedMessage": {
+                "delay": 2000,
+                "message": "That message is encoded. Look around Derek's office — there should be something in here you can use to decode it.",
+                "targetKnot": "event_whiteboard_read"
+              }
+            },
+            {
+              "eventPattern": "item_picked_up:workstation",
+              "conversationMode": "phone-chat",
+              "targetKnot": "event_cyberchef_collected",
+              "onceOnly": true
+            },
+            {
               "eventPattern": "room_entered:testing",
               "conversationMode": "phone-chat",
               "targetKnot": "closing_debrief",
@@ -1020,12 +1037,14 @@ password_hints = "Common passwords: Marketing123, Campaign2024, Viral_Dynamics_A
         },
         {
           "type": "workstation",
-          "name": "Crypto Analysis Station",
+          "id": "cyberchef_workstation",
+          "name": "CyberChef Workstation",
           "takeable": true,
-          "observations": "A powerful workstation for cryptographic analysis"
+          "observations": "A powerful workstation for cryptographic analysis and data transformation"
          },
         {
           "type": "notes",
+          "id": "whiteboard_message",
           "name": "Whiteboard Message",
           "takeable": false,
           "readable": true,
