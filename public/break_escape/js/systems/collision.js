@@ -117,7 +117,7 @@ export function createWallCollisionBoxes(wallLayer, roomId, position) {
         tileCollisionBoxes.forEach(collisionBox => {
             collisionBox.setVisible(false);
             game.physics.add.existing(collisionBox, true);
-            
+
             // Wait for the next frame to ensure body is fully initialized
             game.time.delayedCall(0, () => {
                 if (collisionBox.body) {
@@ -125,11 +125,60 @@ export function createWallCollisionBoxes(wallLayer, roomId, position) {
                     collisionBox.body.immovable = true;
                 }
             });
-            
+
             collisionBoxes.push(collisionBox);
         });
     });
-    
+
+    // Fill gaps in the south wall to ensure complete coverage.
+    // Some room types (e.g., small_room_1x1gu) have no wall tiles in the
+    // middle of the bottom row, leaving the south edge without any collision.
+    const southRowY = map.height - 1;
+
+    // Collect x tile positions already covered by tile-based south-wall collision
+    const southCoveredX = new Set();
+    wallTiles.forEach(tile => {
+        if (tile.y === southRowY) {
+            southCoveredX.add(tile.x);
+        }
+    });
+
+    // Identify x tile positions occupied by an active south door sprite
+    const southDoorTileX = new Set();
+    if (room.doorSprites) {
+        room.doorSprites.forEach(sprite => {
+            const dir = sprite.doorInfo?.direction || sprite.doorProperties?.direction;
+            if (dir === 'south') {
+                const doorTileX = Math.floor((sprite.x - position.x) / TILE_SIZE);
+                southDoorTileX.add(doorTileX);
+            }
+        });
+    }
+
+    // Create collision boxes for uncovered, non-door south positions
+    for (let x = 0; x < map.width; x++) {
+        if (!southCoveredX.has(x) && !southDoorTileX.has(x)) {
+            const worldX = position.x + (x * TILE_SIZE);
+            const worldY = position.y + (southRowY * TILE_SIZE);
+            const collisionBox = game.add.rectangle(
+                worldX + TILE_SIZE / 2,
+                worldY + TILE_SIZE - 4, // 4px from south edge
+                TILE_SIZE,
+                8,
+                0x000000,
+                0
+            );
+            collisionBox.setVisible(false);
+            game.physics.add.existing(collisionBox, true);
+            game.time.delayedCall(0, () => {
+                if (collisionBox.body) {
+                    collisionBox.body.immovable = true;
+                }
+            });
+            collisionBoxes.push(collisionBox);
+        }
+    }
+
     console.log(`Created ${collisionBoxes.length} wall collision boxes for room ${roomId}`);
     
     // Add collision with player for all collision boxes
