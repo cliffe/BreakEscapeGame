@@ -20,7 +20,7 @@ jobs:
         env:
           BUNDLE_BUILD__SQLITE3: "--enable-system-libraries"
         with:
-          ruby-version: 2.7.8
+          ruby-version: 3.2
           bundler-cache: true
 
       - name: Lint code for consistent style
@@ -41,7 +41,7 @@ jobs:
         env:
           BUNDLE_BUILD__SQLITE3: "--enable-system-libraries"
         with:
-          ruby-version: 2.7.8
+          ruby-version: 3.2
           bundler-cache: true
 
       - name: Run tests
