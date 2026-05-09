@@ -16,9 +16,9 @@ Narrator: A paper chart hangs at the foot of the bed. The last manual observatio
 
 + [Step away]
     #exit_conversation
-    -> DONE
+    -> hub
 
 === hub ===
 + [Leave him to rest]
     #exit_conversation
-    -> DONE
+    -> hub

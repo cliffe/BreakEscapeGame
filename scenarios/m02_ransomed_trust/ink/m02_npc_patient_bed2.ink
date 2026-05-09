@@ -38,4 +38,4 @@ Mrs Hargreaves: That screen... told them if my heart was doing what it's suppose
 === hub ===
 + [Leave her to rest]
     #exit_conversation
-    -> DONE
+    -> hub

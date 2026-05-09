@@ -86,8 +86,8 @@ Receptionist: 47 patients on life support. The backup generators have maybe 12 h
     -> hub
 
 === hub ===
-+ {true} [Leave conversation]
++ [Leave conversation]
     #speaker:receptionist
     Receptionist: Good luck. We're all counting on you.
     #exit_conversation
-    -> DONE
+    -> hub

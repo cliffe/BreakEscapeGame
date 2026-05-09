@@ -2,9 +2,6 @@
 // SECURITY GUARD NPC - Mission 2: Ransomed Trust
 // Break Escape - St. Catherine's Hospital
 // ===========================================
-// Interactive guard with multiple confrontation options
-// Based on security-guard.ink with M2-specific context
-// ===========================================
 
 // Variables for tracking player choices and state
 VAR influence = 0
@@ -130,7 +127,7 @@ EXTERNAL player_name()
 + [End conversation]
     #exit_conversation
     Guard: Stay safe. This crisis has everyone on edge.
-    -> DONE
+    -> hub
 
 // ===========================================
 // LOCKPICK DETECTION EVENT
@@ -211,7 +208,7 @@ EXTERNAL player_name()
 
     #display:guard-hostile
     #exit_conversation
-    -> DONE
+    -> hub
 }
 
 === explain_emergency ===
@@ -237,7 +234,7 @@ EXTERNAL player_name()
 
     #display:guard-alert
     #exit_conversation
-    -> DONE
+    -> hub
 }
 
 === poor_excuse ===
@@ -272,7 +269,7 @@ Guard: That's the weakest excuse I've heard all week.
 
     #display:guard-arrest
     #exit_conversation
-    -> DONE
+    -> hub
 }
 
 // ===========================================
@@ -290,7 +287,7 @@ Guard: SECURITY! CODE VIOLATION IN ADMINISTRATIVE WING!
 #display:guard-aggressive
 #hostile:security_guard
 #exit_conversation
--> DONE
+-> hub
 
 === escalate_conflict ===
 #speaker:security_guard
@@ -303,7 +300,7 @@ Guard: LOCKDOWN! INTRUDER ALERT!
 #display:guard-alarm
 #hostile:security_guard
 #exit_conversation
--> DONE
+-> hub
 
 === attempt_fight ===
 #speaker:security_guard
@@ -442,7 +439,7 @@ Guard: Smart choice. Now get out of here before I change my mind about calling t
 
 #display:guard-wary
 #exit_conversation
--> DONE
+-> hub
 
 // ===========================================
 // DE-ESCALATION
@@ -457,7 +454,7 @@ Guard: Smart choice. Now get out of here before I change my mind about calling t
 
     #display:guard-neutral
     #exit_conversation
-    -> DONE
+    -> hub
 }
 
 {influence < 15:
@@ -467,7 +464,7 @@ Guard: Smart choice. Now get out of here before I change my mind about calling t
 
     #display:guard-watchful
     #exit_conversation
-    -> DONE
+    -> hub
 }
 
 // ===========================================
@@ -564,7 +561,7 @@ Guard: I don't like your attitude. You're on thin ice.
 
     #hostile:security_guard
     #exit_conversation
-    -> DONE
+    -> hub
 
 * [Try to physically intimidate the guard]
     -> attempt_fight
@@ -581,14 +578,17 @@ Guard: Hey! Server room access -- that's restricted to authorised IT personnel o
 * [Show ID badge]
     You: Security consultant. Dr. Kim authorised full access. I have the badge right here.
     Guard: *examines badge* ...fine. But I'm logging this. Stay visible.
-    -> DONE
+    #exit_conversation
+    -> hub
 
 * [Bluff with authority]
     You: I've been all over this building tonight. Dr. Kim's orders. Crisis response.
     Guard: Yeah, well. I'm watching.
-    -> DONE
+    #exit_conversation
+    -> hub
 
 * [Say nothing, walk past]
     ~ influence -= 10
     Guard: Hey! I said restricted! Don't make me follow you in there.
-    -> DONE
+    #exit_conversation
+    -> hub
