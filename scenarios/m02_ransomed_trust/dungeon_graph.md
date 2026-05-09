@@ -9,19 +9,19 @@ Infiltrate St. Catherine's Hospital to recover ransomware decryption keys before
 | Metric | Value |
 |---|---|
 | Story aims | 5 |
-| Total tasks | 17 (0 optional) |
+| Total tasks | 20 (3 optional) |
 | VM flag challenges | 4 |
 | Physical locks | 16 |
 | AND-gate convergences | 0 |
 | Rooms | 9 |
-| Puzzle graph nodes / edges | 53 / 59 |
-| Story graph nodes / edges | 5 / 0 |
+| Puzzle graph nodes / edges | 53 / 58 |
+| Story graph nodes / edges | 5 / 4 |
 
 ## Critical Path
 
-0 hops through story aims — minimum mandatory sequence to reach mission completion:
+3 hops through story aims — minimum mandatory sequence to reach mission completion:
 
-****
+**Infiltrate Hospital → Access IT Systems → Exploit ENTROPY's Backdoor → Restore Hospital Systems**
 
 ## How to Read These Diagrams
 
@@ -175,7 +175,6 @@ flowchart TD
   reception_lobby --> hallway_north
   reception_lobby --> hospital_ward
   it_department --> reception_lobby
-  it_department --> hallway_north
   it_department --> hallway_south
   server_room --> hallway_north
   emergency_equipment_storage --> hallway_south
@@ -224,8 +223,13 @@ flowchart TD
   aim_recover_offline_keys{{"Recover Offline Backup Keys"}}
   aim_restore_hospital_systems{{"Restore Hospital Systems"}}
 
+  aim_infiltrate_hospital -.-> aim_access_it_systems
+  aim_access_it_systems -.-> aim_exploit_entropy_backdoor
+  aim_access_it_systems -.-> aim_recover_offline_keys
+  aim_exploit_entropy_backdoor -.-> aim_restore_hospital_systems
 
-  class aim_infiltrate_hospital,aim_access_it_systems,aim_exploit_entropy_backdoor,aim_recover_offline_keys,aim_restore_hospital_systems aim
+  class aim_infiltrate_hospital,aim_access_it_systems,aim_exploit_entropy_backdoor,aim_restore_hospital_systems critical
+  class aim_recover_offline_keys aim
 ```
 
 ## Story + Puzzle (Integrated)
@@ -364,13 +368,16 @@ flowchart TD
   reception_lobby --> hallway_north
   reception_lobby --> hospital_ward
   it_department --> reception_lobby
-  it_department --> hallway_north
   it_department --> hallway_south
   server_room --> hallway_north
   emergency_equipment_storage --> hallway_south
   dr_kim_office --> reception_lobby
   dr_kim_office --> conference_room
   conference_room --> hallway_north
+  aim_infiltrate_hospital -.-> aim_access_it_systems
+  aim_access_it_systems -.-> aim_exploit_entropy_backdoor
+  aim_access_it_systems -.-> aim_recover_offline_keys
+  aim_exploit_entropy_backdoor -.-> aim_restore_hospital_systems
   reception_lobby -.-> aim_infiltrate_hospital
   hospital_ward -.-> aim_infiltrate_hospital
   door_server_room -.-> aim_access_it_systems
@@ -395,7 +402,8 @@ flowchart TD
   class action_talk_to_ward_nurse,action_social_engineer_marcus,action_meet_dr_kim action
   class vm_access_terminal,vmch_submit_ssh_flag,vmch_submit_proftpd_flag,vmch_submit_database_flag,vmch_submit_ghost_log_flag vm
   class vmfl_submit_ssh_flag,vmfl_submit_proftpd_flag,vmfl_submit_database_flag,vmfl_submit_ghost_log_flag flag
-  class aim_infiltrate_hospital,aim_access_it_systems,aim_exploit_entropy_backdoor,aim_recover_offline_keys,aim_restore_hospital_systems aim
+  class aim_infiltrate_hospital,aim_access_it_systems,aim_exploit_entropy_backdoor,aim_restore_hospital_systems critical
+  class aim_recover_offline_keys aim
 
   classDef optional stroke-dasharray:5 2
   class marcus_s_password_sticky_note,pin_cracker_device,dr_kim_s_desk_pin_clue optional
@@ -441,7 +449,6 @@ flowchart TD
   reception_lobby --> it_department
   reception_lobby --> dr_kim_office
   reception_lobby --> hospital_ward
-  it_department --> hallway_north
   it_department --> hallway_south
   server_room --> hallway_north
   emergency_equipment_storage --> hallway_south
@@ -530,16 +537,17 @@ flowchart TD
   rc_obj41_41{"Conference Table Budget Papers"}
   rc_obj42_42{"Conference Whiteboard"}
   rc_obj43_43{"Board Liability Email"}
-  rc_obj44_44{"Directional Signs"}
-  rc_npc_hospital_security_guard_45("Hospital Security Guard")
-  rc_obj46_46{"Guard's Station Log"}
-  rc_obj47_47{"Directional Signs"}
+  rc_obj44_44{"Ransomware Incorporated Proposal"}
+  rc_obj45_45{"Directional Signs"}
+  rc_npc_hospital_security_guard_46("Hospital Security Guard")
+  rc_obj47_47{"Guard's Station Log"}
+  rc_obj48_48{"Directional Signs"}
+  rc_obj49_49{"Nurse's Handwritten Note"}
 
   reception_lobby --> hallway_north
   reception_lobby --> it_department
   reception_lobby --> dr_kim_office
   reception_lobby --> hospital_ward
-  it_department --> hallway_north
   it_department --> hallway_south
   server_room --> hallway_north
   emergency_equipment_storage --> hallway_south
@@ -588,15 +596,17 @@ flowchart TD
   conference_room --> rc_obj41_41
   conference_room --> rc_obj42_42
   conference_room --> rc_obj43_43
-  hallway_north --> rc_obj44_44
-  hallway_north --> rc_npc_hospital_security_guard_45
-  rc_npc_hospital_security_guard_45 --> rc_obj46_46
-  hallway_south --> rc_obj47_47
+  conference_room --> rc_obj44_44
+  hallway_north --> rc_obj45_45
+  hallway_north --> rc_npc_hospital_security_guard_46
+  rc_npc_hospital_security_guard_46 --> rc_obj47_47
+  hallway_south --> rc_obj48_48
+  hallway_south --> rc_obj49_49
 
   class reception_lobby,hospital_ward,emergency_equipment_storage,conference_room,hallway_north,hallway_south room
   class it_department,server_room,dr_kim_office lock
-  class rc_obj1_1,rc_obj2_2,rc_ehr_terminal_ward_8,rc_obj9_9,rc_obj10_10,rc_infected_terminal_15,rc_password_sticky_note_16,rc_obj17_17,rc_obj19_19,rc_obj20_20,rc_obj21_21,rc_obj23_23,rc_vm_launcher_rooting_for_a_win_24,rc_flag_station_dropsite_25,rc_cyberchef_workstation_26,rc_hospital_recovery_console_27,rc_obj28_28,rc_obj29_29,rc_offline_backup_encryption_keys_31,rc_obj32_32,rc_obj33_33,rc_obj34_34,rc_obj35_35,rc_obj36_36,rc_obj38_38,rc_obj40_40,rc_obj41_41,rc_obj42_42,rc_obj43_43,rc_obj44_44,rc_obj46_46,rc_obj47_47 item
-  class rc_npc_agent_0x99_3,rc_npc_hospital_receptionist_4,rc_npc_agent_0x99_haxolottle_5,rc_npc_ghost_ransomware_incorporated_6,rc_npc_agent_0x99_7,rc_npc_ward_nurse_11,rc_npc_mr_okafor_bed_4_12,rc_npc_mrs_hargreaves_bed_2_13,rc_npc_ms_chen_bed_5_14,rc_npc_marcus_webb_22,rc_npc_dr_sarah_kim_39,rc_npc_hospital_security_guard_45 npc
+  class rc_obj1_1,rc_obj2_2,rc_ehr_terminal_ward_8,rc_obj9_9,rc_obj10_10,rc_infected_terminal_15,rc_password_sticky_note_16,rc_obj17_17,rc_obj19_19,rc_obj20_20,rc_obj21_21,rc_obj23_23,rc_vm_launcher_rooting_for_a_win_24,rc_flag_station_dropsite_25,rc_cyberchef_workstation_26,rc_hospital_recovery_console_27,rc_obj28_28,rc_obj29_29,rc_offline_backup_encryption_keys_31,rc_obj32_32,rc_obj33_33,rc_obj34_34,rc_obj35_35,rc_obj36_36,rc_obj38_38,rc_obj40_40,rc_obj41_41,rc_obj42_42,rc_obj43_43,rc_obj44_44,rc_obj45_45,rc_obj47_47,rc_obj48_48,rc_obj49_49 item
+  class rc_npc_agent_0x99_3,rc_npc_hospital_receptionist_4,rc_npc_agent_0x99_haxolottle_5,rc_npc_ghost_ransomware_incorporated_6,rc_npc_agent_0x99_7,rc_npc_ward_nurse_11,rc_npc_mr_okafor_bed_4_12,rc_npc_mrs_hargreaves_bed_2_13,rc_npc_ms_chen_bed_5_14,rc_npc_marcus_webb_22,rc_npc_dr_sarah_kim_39,rc_npc_hospital_security_guard_46 npc
   class rc_obj18_18,rc_emergency_storage_safe_30,rc_obj37_37 container
   class node_start start
 ```

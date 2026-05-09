@@ -112,7 +112,10 @@ Nurse: The board's talking about paying that ransom. I don't understand the poli
 
 Nurse: *looks at Bed One* Statistical risk goes up every hour. The registrar did the math. I told him I didn't want to hear the numbers.
 
+Nurse: The emergency equipment storage is at the end of the south corridor. That's where the backup kit is. Emergency override codes default to the hospital's founding year, as they always have.
+
 #complete_task:talk_to_ward_nurse
+#complete_task:gather_pin_clues
 
 * [I understand. I'll work as fast as I can.]
     You: I understand the stakes. I'm working as fast as I can.

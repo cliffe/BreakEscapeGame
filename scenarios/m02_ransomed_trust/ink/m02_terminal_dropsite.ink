@@ -19,6 +19,7 @@ EXTERNAL player_name()
 
 === start ===
 #speaker:computer
+#complete_task:decode_ransomware_note
 
 SAFETYNET DROP-SITE TERMINAL
 
