@@ -116,6 +116,8 @@ Marcus: May 17th, 2024. I sent a formal security advisory to Dr. Kim.
 
 Marcus: "ProFTPD 1.3.5 backdoor vulnerability. CRITICAL severity. Immediate patching required."
 
+Marcus: I sent her seven emails about this CVE. Seven. She always replied "noted" -- then approved another MRI.
+
 Marcus: She forwarded it to the board with a recommendation to defer.
 
 Marcus: $85,000 for server security, or $3.2 million for a new MRI. Guess which they chose.
@@ -330,5 +332,6 @@ Marcus: I have all the emails, all the documentation. They can't ignore it if it
 Marcus: Just... save those patients first. Then we'll worry about blame.
 
 #complete_task:promise_to_protect_marcus
+#set_global:marcus_protected:true
 
 -> hub
