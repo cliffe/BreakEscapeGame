@@ -36,7 +36,6 @@ We have an emergency situation at St. Catherine's Regional Medical Center.
 
 * [Express readiness]
     ~ handler_trust += 10
-    ~ player_approach = "confident"
     You: I'm ready. What's the mission?
     Agent 0x99: Good. Let's get straight to it.
     -> briefing_main
@@ -178,9 +177,7 @@ Agent 0x99: Staff is stressed, desperate. Use that. Build trust.
 
 Agent 0x99: Security is heightened. Guards patrolling. Stay low profile.
 
-Agent 0x99: Like an axolotl timing its movements--patience and observation.
-
-Agent 0x99: You'll need lockpicking, social engineering, maybe some technical exploitation.
+Agent 0x99: You'll need lockpicking, social engineering, and technical exploitation. Read the room as you go.
 
 + [I can handle it]
     -> mission_approach
@@ -228,16 +225,14 @@ Agent 0x99: How do you want to approach this?
 === final_instructions ===
 #speaker:agent_0x99
 
-Agent 0x99: Remember Field Operations Rule 7: "In crises, perfect is the enemy of good enough."
-
 {player_approach == "cautious":
-    Agent 0x99: Your careful approach serves you well. But speed matters here.
+    Agent 0x99: Methodical is good. But those patients don't have time for perfect. Good enough, fast, is what they need.
 }
 {player_approach == "aggressive":
-    Agent 0x99: Speed is good. But don't compromise the mission for it.
+    Agent 0x99: Speed is critical. Just don't let it make you careless -- ENTROPY leaves traces. Those traces matter long-term.
 }
 {player_approach == "adaptable":
-    Agent 0x99: Adaptability is your strength. Use it.
+    Agent 0x99: Good instinct. Situations like this don't hold still. Stay flexible.
 }
 
 Agent 0x99: You'll have comms support. Call if you need guidance.

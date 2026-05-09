@@ -16,7 +16,7 @@ VAR kim_access_given = false      // Has Kim authorized access and pointed playe
 
 // External variables (set by game)
 EXTERNAL player_name()
-EXTERNAL objectives_completed()
+VAR objectives_completed = 0
 
 // ===========================================
 // FIRST ENCOUNTER
@@ -25,13 +25,13 @@ EXTERNAL objectives_completed()
 === start ===
 #speaker:dr_kim
 
-{objectives_completed() == 0:
+{objectives_completed == 0:
     -> first_meeting
 }
-{objectives_completed() > 0 and objectives_completed() < 5:
+{objectives_completed > 0 and objectives_completed < 5:
     -> mid_mission_checkin
 }
-{objectives_completed() >= 5:
+{objectives_completed >= 5:
     -> late_mission_update
 }
 
@@ -219,13 +219,17 @@ Dr. Kim: Do whatever you need. Just save those patients.
 
 + [Leave conversation]
     #speaker:dr_kim
-    ~ kim_access_given = true
-    Dr. Kim: Find Marcus Webb in the IT department. He knows how they got in.
-    Dr. Kim: Good luck. We're counting on you.
-    #complete_task:meet_dr_kim
-    #unlock_task:talk_to_marcus
-    #unlock_task:obtain_password_hints
-    #unlock_aim:access_it_systems
+    {not kim_access_given:
+        ~ kim_access_given = true
+        Dr. Kim: Find Marcus Webb in the IT department. He knows how they got in.
+        Dr. Kim: Good luck. We're counting on you.
+        #complete_task:meet_dr_kim
+        #unlock_task:talk_to_marcus
+        #unlock_task:obtain_password_hints
+        #unlock_aim:access_it_systems
+    - else:
+        Dr. Kim: Keep going. We're counting on you.
+    }
     #exit_conversation
     -> DONE
 
@@ -238,10 +242,10 @@ Dr. Kim: Do whatever you need. Just save those patients.
 
 Dr. Kim: Any progress?
 
-{objectives_completed() >= 2:
+{objectives_completed >= 2:
     Dr. Kim: I see you're making headway. Thank you.
 }
-{objectives_completed() < 2:
+{objectives_completed < 2:
     Dr. Kim: Time's running out. Board votes in less than 2 hours now.
 }
 
@@ -271,11 +275,11 @@ Dr. Kim: Any progress?
 
 Dr. Kim: The board is meeting right now. Have you found the decryption keys?
 
-{objectives_completed() >= 6:
+{objectives_completed >= 6:
     Dr. Kim: I see you've made significant progress. What do I tell the board?
     -> ransom_decision_input
 }
-{objectives_completed() < 6:
+{objectives_completed < 6:
     Dr. Kim: We're running out of time. What should I tell them?
     -> ransom_decision_input
 }

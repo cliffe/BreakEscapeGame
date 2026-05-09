@@ -8,12 +8,13 @@
 VAR ghost_contacted_player = false
 VAR ghost_persuasion_attempted = false
 VAR player_confronted_ghost = false
-VAR ghost_unrepentant = true
+
+// Variables synced from globalVars by engine at call-open
+VAR ransom_decision_made = false
+VAR paid_ransom = false
 
 // External variables (set by game)
 EXTERNAL player_name()
-EXTERNAL objectives_completed()
-EXTERNAL paid_ransom()
 
 // ===========================================
 // INITIAL CONTACT (Mid-Mission)
@@ -30,11 +31,12 @@ EXTERNAL paid_ransom()
 
 [UNKNOWN CALLER]
 
-Voice (distorted): So. SAFETYNET sent someone. Predictable.
+Voice (distorted): SAFETYNET sent someone.
 
 Voice: I'm Ghost. Ransomware Incorporated. You're interfering with our operation.
 
 ~ ghost_contacted_player = true
+#set_global:ghost_contacted_player:true
 
 * [Who are you?]
     You: Ghost? Ransomware Incorporated? What do you want?
@@ -46,13 +48,13 @@ Voice: I'm Ghost. Ransomware Incorporated. You're interfering with our operation
 
 * [Stay silent]
     You: ...
-    Ghost: Strong, silent type. Fine. I'll talk.
+    Ghost: Fine. I'll talk.
     -> ghost_introduction
 
 === ghost_introduction ===
 #speaker:ghost
 
-Ghost: We're educators, not criminals. St. Catherine's ignored security warnings for six months.
+Ghost: We're not here for profit. St. Catherine's ignored security warnings for six months.
 
 Ghost: Marcus Webb's email, May 17th: "ProFTPD vulnerability, critical severity, immediate patching required."
 
@@ -69,13 +71,13 @@ Ghost: Hospital response: "Budget constraints. Defer to next fiscal year."
 === player_threatens ===
 #speaker:ghost
 
-Ghost: Patients dying? No. Patients at RISK. Calculated risk.
+Ghost: Patients dying? No. Patients at risk. Calculated risk.
 
 Ghost: 0.3% per hour fatality probability. 47 patients. 12-hour window.
 
 Ghost: 1-2 deaths if they pay immediately. 4-6 if they delay for manual recovery.
 
-Ghost: We didn't create that risk. St. Catherine's negligence did. We're just revealing consequences.
+Ghost: We didn't create that risk. St. Catherine's negligence did. We're revealing consequences.
 
 * [You calculated death probabilities?]
     You: You have spreadsheets of how many people will die?
@@ -92,7 +94,7 @@ Ghost: Of course I calculated probabilities. This is risk assessment, not reckle
 
 Ghost: St. Catherine's board never ran these numbers. They deferred $85K security spending for a $3.2M MRI.
 
-Ghost: THEY gambled with patient safety. We're just making the stakes visible.
+Ghost: They gambled with patient safety. We're making the stakes visible.
 
 * [You're rationalizing terrorism]
     You: This is terrorism, not education.
@@ -106,54 +108,39 @@ Ghost: THEY gambled with patient safety. We're just making the stakes visible.
 === ghost_justification ===
 #speaker:ghost
 
-Ghost: Justify? I don't need to justify. The math justifies itself.
+Ghost: Justify? The math justifies itself.
 
 Ghost: St. Catherine's ignored Marcus's warnings. They chose shiny equipment over patient data security.
 
-Ghost: Now they face consequences. Expensive, painful consequences they'll never forget.
+Ghost: Now they face consequences. Expensive, painful, unforgettable.
 
 -> ghost_philosophy
 
 === ghost_philosophy ===
 #speaker:ghost
 
-Ghost: Healthcare sector is systemically vulnerable. 214 hospitals we scanned. 147 have critical vulnerabilities.
+Ghost: Healthcare sector is systemically vulnerable. 214 hospitals scanned. 147 have critical vulnerabilities.
 
 Ghost: Traditional cybersecurity consultants charge millions for reports nobody reads.
 
 Ghost: We charge thousands for lessons nobody forgets.
 
-Ghost: After this, St. Catherine's will triple cybersecurity budgets. 40 other hospitals will too.
+Ghost: After this, St. Catherine's will triple cybersecurity budgets. Forty other hospitals will too.
 
-Ghost: Long-term? We'll prevent 200-600 deaths across 5 years. Statistical modeling confirms it.
+Ghost: Long-term -- we prevent hundreds of deaths across five years. The modelling holds every time I run it.
 
 * [You don't get to make that calculation]
     You: You don't get to decide whose lives are worth risking.
-    -> ghost_rejects_argument
+    Ghost: I didn't decide. St. Catherine's board decided when they cut the security budget.
+    Ghost: We're just the consequence they tried to ignore.
+    -> ransom_demand
 
 * [That's utilitarian logic]
     You: Utilitarian harm for long-term good. Slippery slope.
-    -> ghost_accepts_label
-
-=== ghost_rejects_argument ===
-#speaker:ghost
-
-Ghost: I didn't decide. St. Catherine's board decided when they cut security budgets.
-
-Ghost: We're just the consequence they tried to ignore.
-
--> ransom_demand
-
-=== ghost_accepts_label ===
-#speaker:ghost
-
-Ghost: Slippery slope? Perhaps. But someone has to force change.
-
-Ghost: The alternative is systemic negligence continues. More hospitals get attacked. More patients die.
-
-Ghost: We're harsh teachers. But institutional change requires pain.
-
--> ransom_demand
+    Ghost: Perhaps. But someone has to force change. Systemic negligence doesn't fix itself.
+    Ghost: The alternative is more hospitals get attacked. More patients die.
+    Ghost: We're harsh teachers. But institutional change requires pain.
+    -> ransom_demand
 
 // ===========================================
 // RANSOM DEMAND
@@ -164,13 +151,14 @@ Ghost: We're harsh teachers. But institutional change requires pain.
 
 Ghost: Here's what happens next.
 
-Ghost: Pay 2.5 BTC--$87,000. Systems restored in 2-4 hours. 1-2 patient deaths, statistical minimum.
+Ghost: Pay 2.5 BTC -- $87,000. Systems restored in 2-4 hours. 1-2 patient deaths, statistical minimum.
 
 Ghost: Don't pay. Manual recovery takes 12 hours. 4-6 patient deaths. Malpractice lawsuits. Hospital reputation destroyed.
 
 Ghost: Your choice, SAFETYNET.
 
 ~ ghost_persuasion_attempted = true
+#set_global:ghost_persuasion_attempted:true
 
 * [We'll recover independently]
     You: We're not funding terrorism. We'll recover independently.
@@ -191,7 +179,7 @@ Ghost: Your choice, SAFETYNET.
 
 Ghost: Independent recovery. 12 hours. 4-6 deaths.
 
-Ghost: Those deaths are on YOUR conscience, not ours.
+Ghost: Those deaths are on your conscience, not ours.
 
 Ghost: St. Catherine's negligence created this crisis. You could save them. You're choosing ideology over lives.
 
@@ -205,9 +193,7 @@ Ghost: Remember that when families ask why their loved ones died.
 
 Ghost: Trace me? Crypto Anarchists handle our payment infrastructure.
 
-Ghost: Monero mixing across 47 wallets. Multi-hop transaction routing. DarkCoin anonymization.
-
-Ghost: Even SAFETYNET forensics can't pierce that. Ghost Protocol guarantees it.
+Ghost: Monero mixing across 47 wallets. Multi-hop transaction routing. Ghost Protocol guarantees anonymity.
 
 Ghost: Good luck, agent. You'll need it.
 
@@ -223,7 +209,7 @@ Ghost: Good luck, agent. You'll need it.
 
 [ENCRYPTED CHANNEL - GHOST]
 
-{objectives_completed() >= 7:
+{ransom_decision_made:
     -> post_decision_contact
 - else:
     -> mid_mission_contact
@@ -234,9 +220,9 @@ Ghost: Good luck, agent. You'll need it.
 
 Ghost: Still working? Time's running out.
 
-Ghost: 47 patients. Backup power failing. Families watching monitors, praying.
+Ghost: 47 patients. Backup power failing. Families watching monitors.
 
-Ghost: $87,000 vs. human lives. Easy math.
+Ghost: $87,000 vs. human lives.
 
 * [You're trying to pressure me]
     You: This is psychological manipulation.
@@ -254,7 +240,7 @@ Ghost: $87,000 vs. human lives. Easy math.
 === post_decision_contact ===
 #speaker:ghost
 
-{paid_ransom():
+{paid_ransom:
     -> ransom_paid_response
 - else:
     -> ransom_refused_response
@@ -263,24 +249,23 @@ Ghost: $87,000 vs. human lives. Easy math.
 === ransom_paid_response ===
 #speaker:ghost
 
-Ghost: Smart choice. Decryption keys delivered. Systems restoring.
+Ghost: Decryption keys delivered. Systems restoring.
 
-Ghost: 1-2 patient deaths. Acceptable losses compared to the alternative.
+Ghost: St. Catherine's board approved a $250K security budget within 24 hours. More than triple what Marcus requested.
 
-Ghost: St. Catherine's will never ignore cybersecurity again. Board approved $250K security budget--triple the old allocation.
-
-Ghost: Lesson learned. Mission accomplished.
+Ghost: That's what this was for.
 
 * [You're still a terrorist]
     You: You killed people. That's terrorism.
-    Ghost: Pre-existing complications during system transition. Medical records confirm it.
-    Ghost: Statistically inevitable. Could have happened without our intervention.
+    Ghost: Pre-existing complications, accelerated by system downtime. Medical records confirm it.
+    Ghost: Those patients were already dying. We changed the timeline, not the outcome.
+    Ghost: I've reviewed every case. I know their names.
     -> ghost_final_statement
 
 * [This won't stop SAFETYNET]
     You: We're coming for you. ENTROPY won't last.
-    Ghost: Maybe. But how many hospitals will improve security before you find us?
-    Ghost: 40? 60? 100? Each one is lives saved long-term.
+    Ghost: Maybe. But how many hospitals improve security before you find us?
+    Ghost: Every one of them is lives saved long-term. That's the arithmetic.
     -> ghost_final_statement
 
 === ransom_refused_response ===
@@ -290,7 +275,7 @@ Ghost: Independent recovery. 4-6 patient deaths confirmed.
 
 Ghost: Ventilator complications. Dialysis failures. Cardiac arrests during extended downtime.
 
-Ghost: Those deaths are on YOUR conscience. You could have paid. You chose ideology.
+Ghost: Those deaths are on your conscience. You could have paid. You chose ideology.
 
 * [No. Those deaths are on YOU]
     You: YOU attacked the hospital. YOU encrypted patient records. This is YOUR fault.
@@ -307,7 +292,7 @@ Ghost: I accept operational responsibility. But St. Catherine's created the vuln
 
 Ghost: Six months of ignored warnings. Budget negligence. Institutional failure.
 
-Ghost: We exploited it. They enabled it. Share the blame.
+Ghost: We exploited it. They enabled it. The blame is shared whether you accept that or not.
 
 -> ghost_final_statement
 
@@ -316,11 +301,11 @@ Ghost: We exploited it. They enabled it. Share the blame.
 
 Ghost: $87,000 lost. Operational setback acknowledged.
 
-Ghost: But St. Catherine's board approved $400K emergency security budget--panic response.
+Ghost: But St. Catherine's board approved $400K emergency security budget -- panic response.
 
-Ghost: 40 hospitals implementing emergency upgrades. Sector-wide impact achieved.
+Ghost: Forty hospitals implementing emergency upgrades. Sector-wide impact achieved.
 
-Ghost: Educational outcome: Success. Worth the cost.
+Ghost: Educational outcome: success. Worth the cost.
 
 -> ghost_final_statement
 
@@ -335,16 +320,16 @@ Ghost: Here's what you need to understand, SAFETYNET.
 
 Ghost: I calculated the risks. I planned the operation. I accept the consequences.
 
-Ghost: If you arrest me, I'll go to prison. No resistance. No regret.
+Ghost: If you arrest me, I'll go to prison without resistance.
 
-Ghost: Because St. Catherine's will never ignore cybersecurity again. Neither will 40 other hospitals.
+Ghost: Because St. Catherine's will never ignore cybersecurity again. Neither will forty other hospitals.
 
-Ghost: That's worth it. That's the mission. That's ENTROPY's purpose.
+Ghost: That's worth it. That's the mission. That's what ENTROPY is for.
 
-* [You're insane]
-    You: You're a fanatic. Calculated harm is still harm.
-    Ghost: Fanaticism is believing despite evidence. I have spreadsheets, statistical models, outcome projections.
-    Ghost: This is evidence-based ideology.
+* [You're a fanatic]
+    You: Calculated harm is still harm. You're a fanatic.
+    Ghost: Fanaticism is believing despite evidence. I have statistical models, outcome projections, verified results.
+    Ghost: This is evidence-based ideology. There's a difference.
     -> ghost_disconnects
 
 * [We'll stop ENTROPY]
@@ -372,6 +357,7 @@ Ghost: The real enemy is institutional negligence. We're the symptom, not the di
 // ===========================================
 
 === end_contact ===
+#speaker:ghost
 
 Ghost: Time's running out. Choose wisely.
 
