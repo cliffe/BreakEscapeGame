@@ -194,27 +194,27 @@ Agent 0x99: We're not fighting random criminals. We're fighting true believers.
 FLAG SUBMISSION STATUS:
 
 [flag_ssh_submitted:
-    ✓ Flag 1: SSH Access - SUBMITTED
+    [x] Flag 1: SSH Access - SUBMITTED
 - else:
-    ✗ Flag 1: SSH Access - PENDING
+    [ ] Flag 1: SSH Access - PENDING
 ]
 
 [flag_proftpd_submitted:
-    ✓ Flag 2: ProFTPD Exploit - SUBMITTED
+    [x] Flag 2: ProFTPD Exploit - SUBMITTED
 - else:
-    ✗ Flag 2: ProFTPD Exploit - PENDING
+    [ ] Flag 2: ProFTPD Exploit - PENDING
 ]
 
 [flag_database_submitted:
-    ✓ Flag 3: Database Backup Located - SUBMITTED
+    [x] Flag 3: Database Backup Located - SUBMITTED
 - else:
-    ✗ Flag 3: Database Backup Located - PENDING
+    [ ] Flag 3: Database Backup Located - PENDING
 ]
 
 [flag_ghost_log_submitted:
-    ✓ Flag 4: Ghost's Operational Log - SUBMITTED
+    [x] Flag 4: Ghost's Operational Log - SUBMITTED
 - else:
-    ✗ Flag 4: Ghost's Operational Log - PENDING
+    [ ] Flag 4: Ghost's Operational Log - PENDING
 ]
 
 [flag_ssh_submitted and flag_proftpd_submitted and flag_database_submitted and flag_ghost_log_submitted:

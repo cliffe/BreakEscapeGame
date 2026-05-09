@@ -160,7 +160,7 @@ Marcus: But that takes time. 12 hours minimum. Patients at risk the whole time.
 === high_trust_help ===
 #speaker:marcus_webb
 ~ marcus_trusts_player = true
-
+#give_item:keycard
 Marcus: I trust you. You're here to actually fix this, not assign blame.
 
 Marcus: Here's my server room keycard. Full access.
@@ -169,7 +169,6 @@ Marcus: And... *pulls out sticky note* Common passwords employees used. Embarras
 
 Marcus: My daughter's name "Emma", hospital anniversary dates, that kind of thing.
 
-#give_item:server_room_keycard
 #complete_task:talk_to_marcus
 #complete_task:obtain_password_hints
 #unlock_task:access_server_room
@@ -181,7 +180,7 @@ Marcus: My daughter's name "Emma", hospital anniversary dates, that kind of thin
 === medium_trust_help ===
 #speaker:marcus_webb
 
-Marcus: Server room's locked. I can't just hand over my keycard—there are protocols.
+Marcus: Server room's locked. I can't just hand over my keycard--there are protocols.
 
 Marcus: But... *glances around* The lock isn't great. Standard pin tumbler.
 

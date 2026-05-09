@@ -72,33 +72,33 @@ DECISION REQUIRED: How should systems be recovered?
 OPTION 1: PAY RANSOM (2.5 BTC = $87,000 USD)
 
 Immediate Effects:
-  ✓ Decryption keys delivered within 30 minutes
-  ✓ Systems restored in 2-4 hours
-  ✓ Estimated patient deaths: 1-2 (0.6-1.2% statistical risk)
-  ✓ Hospital reputation preserved (quick resolution)
+  [x] Decryption keys delivered within 30 minutes
+  [x] Systems restored in 2-4 hours
+  [x] Estimated patient deaths: 1-2 (0.6-1.2% statistical risk)
+  [x] Hospital reputation preserved (quick resolution)
 
 Long-Term Consequences:
-  ✗ $87,000 funds ENTROPY's next operation
-  ✗ Crypto Anarchists launder funds (enables M6 operations)
-  ✗ Ransomware Incorporated validates "educational" methodology
-  ✗ Sets precedent: Healthcare sector pays ransoms
+  [ ] $87,000 funds ENTROPY's next operation
+  [ ] Crypto Anarchists launder funds (enables M6 operations)
+  [ ] Ransomware Incorporated validates "educational" methodology
+  [ ] Sets precedent: Healthcare sector pays ransoms
 
 ---
 
 OPTION 2: MANUAL RECOVERY (Use offline backup keys)
 
 Immediate Effects:
-  ✓ No ENTROPY funding
-  ✓ Offline keys allow system restoration
-  ✗ Manual recovery time: 12 hours minimum
-  ✗ Estimated patient deaths: 4-6 (3.6% statistical risk)
-  ✗ Higher malpractice lawsuit risk
+  [x] No ENTROPY funding
+  [x] Offline keys allow system restoration
+  [ ] Manual recovery time: 12 hours minimum
+  [ ] Estimated patient deaths: 4-6 (3.6% statistical risk)
+  [ ] Higher malpractice lawsuit risk
 
 Long-Term Consequences:
-  ✓ ENTROPY loses $87,000 operational funding
-  ✓ Demonstrates independent recovery possible
-  ✓ Reduces financial incentive for future attacks
-  ✓ St. Catherine's reputation damaged but security improved
+  [x] ENTROPY loses $87,000 operational funding
+  [x] Demonstrates independent recovery possible
+  [x] Reduces financial incentive for future attacks
+  [x] St. Catherine's reputation damaged but security improved
 
 ---
 
@@ -171,7 +171,7 @@ Utilitarian perspective: Pay ransom, save 47 lives today. Immediate harm reducti
 
 Consequentialist perspective: Don't pay, prevent $87K funding ENTROPY's next attack (200-600 potential lives saved long-term).
 
-Both choices have costs. Both choices save lives—just different timeframes.
+Both choices have costs. Both choices save lives--just different timeframes.
 
 ---
 
@@ -286,7 +286,7 @@ Ghost: "St. Catherine's will never ignore cybersecurity again. Lesson learned. M
 
 SYSTEMS RESTORING: ETA 2-4 hours
 
-Patient outcomes: 1-2 fatalities (cardiac arrest during system transition—pre-existing complications)
+Patient outcomes: 1-2 fatalities (cardiac arrest during system transition--pre-existing complications)
 
 Hospital board relieved. Dr. Kim grateful. Marcus still under review for termination.
 

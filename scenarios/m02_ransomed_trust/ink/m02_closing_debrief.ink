@@ -76,7 +76,7 @@ Agent 0x99: You exploited ENTROPY's backdoor, recovered decryption keys, and mad
     Agent 0x99: Your methodical approach paid off. Nothing was missed.
 }
 {player_approach == "aggressive":
-    Agent 0x99: You moved fast and got results. Time was critical—you delivered.
+    Agent 0x99: You moved fast and got results. Time was critical--you delivered.
 }
 {player_approach == "adaptable":
     Agent 0x99: Your adaptability was key. You read the situation perfectly.
@@ -132,7 +132,7 @@ Agent 0x99: Systems restored, but we missed critical intelligence and opportunit
 
 Agent 0x99: You chose to pay the ransom. Systems restored in 3 hours, 47 minutes.
 
-Agent 0x99: Patient outcomes: 2 fatalities. Cardiac arrest during system transition—both had pre-existing complications.
+Agent 0x99: Patient outcomes: 2 fatalities. Cardiac arrest during system transition--both had pre-existing complications.
 
 Agent 0x99: 45 patients survived. Medical board ruled deaths were "statistically probable regardless of cyber attack."
 
@@ -195,7 +195,7 @@ Agent 0x99: Yes. $87,000 to Ransomware Incorporated.
 
 Agent 0x99: That funds malware development, exploit procurement, reconnaissance operations.
 
-Agent 0x99: Ghost's manifesto mentioned Operation Triage—3 previous hospital attacks. All paid ransoms.
+Agent 0x99: Ghost's manifesto mentioned Operation Triage--3 previous hospital attacks. All paid ransoms.
 
 Agent 0x99: Total ENTROPY revenue from healthcare ransomware: $230,000+. Growing.
 
@@ -243,7 +243,7 @@ Agent 0x99: Ghost WANTS you to feel guilty. That's psychological warfare.
 
 Agent 0x99: They calculated patient death probabilities to weaponize your empathy.
 
-Agent 0x99: Don't let them win twice—once with the attack, again with guilt.
+Agent 0x99: Don't let them win twice--once with the attack, again with guilt.
 
 -> manual_recovery_vindication
 
@@ -335,7 +335,7 @@ Agent 0x99: Trade-off: Immediate harm to one hospital vs. sector-wide improvemen
 
 Agent 0x99: You kept St. Catherine's negligence confidential. Hospital board privately implemented security overhaul.
 
-Agent 0x99: Cybersecurity budget tripled. $250,000 annual allocation—up from $85K requested.
+Agent 0x99: Cybersecurity budget tripled. $250,000 annual allocation--up from $85K requested.
 
 Agent 0x99: St. Catherine's reputation intact. Public unaware of institutional failure.
 
@@ -542,7 +542,7 @@ Agent 0x99: That's all anyone can do. Best decision, available information, time
 
 Agent 0x99: ENTROPY creates impossible dilemmas on purpose. They want you paralyzed.
 
-Agent 0x99: You acted. You saved lives—just different timeframes depending on your choice.
+Agent 0x99: You acted. You saved lives--just different timeframes depending on your choice.
 
 -> mission_3_setup
 
@@ -591,7 +591,7 @@ Agent 0x99: Mission 3: Operation Cyber Arsenal. You'll infiltrate ZDS's operatio
 
 Agent 0x99: The Architect coordinates all six ENTROPY cells. We don't know who they are yet.
 
-Agent 0x99: But each mission reveals more. Social Fabric, Ransomware Inc—patterns emerging.
+Agent 0x99: But each mission reveals more. Social Fabric, Ransomware Inc--patterns emerging.
 
 Agent 0x99: Eventually, we'll have enough to identify them. Then we end this.
 

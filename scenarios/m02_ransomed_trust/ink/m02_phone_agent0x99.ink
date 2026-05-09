@@ -61,7 +61,7 @@ Agent 0x99: {player_name()}, checking in. How's it going?
 
 + [Report progress]
     You: I've met Dr. Kim and Marcus. Learning the situation.
-    Agent 0x99: Good. Build trust. They're stressed and desperate—that's leverage.
+    Agent 0x99: Good. Build trust. They're stressed and desperate--that's leverage.
     -> end_call
 
 + [End call]
@@ -77,7 +77,7 @@ Agent 0x99: {player_name()}, checking in. How's it going?
 }
 {objectives_completed() == 0:
     Agent 0x99: Start with Dr. Kim. Get authorization for IT access.
-    Agent 0x99: Then find Marcus Webb. He's guilty, stressed—perfect social engineering target.
+    Agent 0x99: Then find Marcus Webb. He's guilty, stressed--perfect social engineering target.
     -> end_call
 - else:
     Agent 0x99: You're doing fine. Trust your training.
@@ -89,7 +89,7 @@ Agent 0x99: {player_name()}, checking in. How's it going?
 
 Agent 0x99: Security is heightened. Guard patrols are on 60-second loops.
 
-Agent 0x99: Like an axolotl timing its movements to avoid predators—patience and observation.
+Agent 0x99: Like an axolotl timing its movements to avoid predators--patience and observation.
 
 Agent 0x99: Watch the pattern. Find the window. Move when they round the corner.
 
@@ -147,7 +147,7 @@ Agent 0x99: Marcus's server room keycard is ideal, but lockpicking works if he w
 }
 {objectives_completed() < 5:
     Agent 0x99: You're making progress. Stay focused on VM challenges.
-    Agent 0x99: ProFTPD exploitation is the key. CVE-2010-4652—backdoor vulnerability.
+    Agent 0x99: ProFTPD exploitation is the key. CVE-2010-4652--backdoor vulnerability.
     -> end_call
 - else:
     Agent 0x99: Trust your instincts. You've got this.
@@ -169,7 +169,7 @@ Agent 0x99: Try patterns: Emma2018, Hospital1987, StCatherines. People are predi
 === encoding_tutorial ===
 ~ tutorial_encoding_given = true
 
-Agent 0x99: Encoding vs. encryption—important distinction.
+Agent 0x99: Encoding vs. encryption--important distinction.
 
 Agent 0x99: Encoding transforms data for transmission. No secret key needed. Base64, ROT13, hex.
 
@@ -270,7 +270,7 @@ Agent 0x99: The ransom decision is yours. I can't make it for you.
 Agent 0x99: 47 lives today vs. ENTROPY funding for future attacks. Choose wisely.
 
 + [What would you do?]
-    Agent 0x99: I'd weigh immediate lives against long-term harm. Both choices save people—just different timeframes.
+    Agent 0x99: I'd weigh immediate lives against long-term harm. Both choices save people--just different timeframes.
     Agent 0x99: There's no perfect answer here. That's what makes it hard.
     -> late_mission_support
 
@@ -294,8 +294,8 @@ Agent 0x99: Utilitarian vs. consequentialist ethics. Immediate lives vs. long-te
     -> late_mission_support
 
 + [What about hospital exposure?]
-    Agent 0x99: Secondary decision. Expose negligence publicly—forces improvements, damages reputation.
-    Agent 0x99: Quiet resolution—protects reputation, risks repeat vulnerability.
+    Agent 0x99: Secondary decision. Expose negligence publicly--forces improvements, damages reputation.
+    Agent 0x99: Quiet resolution--protects reputation, risks repeat vulnerability.
     Agent 0x99: Again, no perfect answer.
     -> late_mission_support
 
@@ -331,7 +331,7 @@ Agent 0x99: Stay safe out there, {player_name()}.
 
 Agent 0x99: You've been spotted! Use your cover story or hide.
 
-Agent 0x99: Remember—you're an external security consultant. Legitimate access.
+Agent 0x99: Remember--you're an external security consultant. Legitimate access.
 
 #exit_conversation
 -> DONE
