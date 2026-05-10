@@ -108,7 +108,14 @@ recovery_instructions_encoded = rot13("FULL RECOVERY REQUIRES OFFLINE + ONLINE K
           { "text": "OFFLINE BACKUP KEYS RECOVERED — Full recovery pathway available",   "style": "entry", "condition": "globalVars.offline_keys_recovered" },
           { "text": "MARCUS WEBB: Vindicated — Career protected by agent documentation", "style": "entry", "condition": "globalVars.marcus_protected" },
           { "text": "MARCUS WEBB: Scapegoated — Position lost, career damaged",          "style": "entry", "condition": "!globalVars.marcus_protected" },
-          { "text": "GUARD NEUTRALIZED",                                   "style": "entry", "condition": "globalVars.guard_knocked_out" },
+          { "text": "ASSET #47 COOPERATING: Guard agreed to testify against ENTROPY in exchange for daughter's medical care", "style": "entry", "condition": "globalVars.guard_cooperating" },
+          { "text": "ASSET #47 NEUTRALIZED: Guard removed radio, agreed not to interfere with investigation", "style": "entry", "condition": "globalVars.guard_neutralized && !globalVars.guard_cooperating" },
+          { "text": "GUARD NEUTRALIZED (FORCE): Security guard knocked unconscious during confrontation", "style": "entry", "condition": "globalVars.guard_knocked_out && !globalVars.guard_cooperating && !globalVars.guard_neutralized" },
+          { "text": "" },
+          { "text": "── INTELLIGENCE GATHERED ──",                        "style": "section-header" },
+          { "text": "ENTROPY INSIDER EXPOSED: Security guard (Asset #47) identified as Ghost's operative", "style": "entry", "condition": "globalVars.guard_identity_exposed" },
+          { "text": "INSIDER THREAT MISSED: Post-mission analysis revealed security guard was ENTROPY Asset #47", "style": "warning", "condition": "!globalVars.guard_identity_exposed" },
+          { "text": "PIN CRACKER RECOVERED: ENTROPY equipment (Serial: RI-2024-0847) secured as evidence", "style": "entry", "condition": "globalVars.pin_cracker_obtained" },
           { "text": "" },
           { "text": "GHOST: At large...",                                  "style": "warning" },
           { "text": "ENTROPY: Still operational. Six cells remain.",       "style": "warning" }
@@ -233,7 +240,7 @@ recovery_instructions_encoded = rot13("FULL RECOVERY REQUIRES OFFLINE + ONLINE K
           "title": "Submit database backup flag",
           "type": "submit_flags",
           "status": "active",
-          "puzzle_graph_unlocks": "lock_emergency_storage_safe"
+          "puzzle_graph_unlocks": "server_maintenance_cabinet"
         },
         {
           "taskId": "submit_ghost_log_flag",
@@ -247,7 +254,7 @@ recovery_instructions_encoded = rot13("FULL RECOVERY REQUIRES OFFLINE + ONLINE K
     {
       "aimId": "recover_offline_keys",
       "title": "Recover Offline Backup Keys",
-      "description": "Find and crack the PIN safe for offline backup encryption keys",
+      "description": "Find the PIN cracker device and use it to access the emergency storage safe",
       "status": "locked",
       "order": 3,
       "unlockCondition": { "aimCompleted": "access_it_systems" },
@@ -260,17 +267,55 @@ recovery_instructions_encoded = rot13("FULL RECOVERY REQUIRES OFFLINE + ONLINE K
           "status": "active"
         },
         {
-          "taskId": "gather_pin_clues",
-          "title": "Find clues for the 4-digit safe PIN",
+          "taskId": "find_pin_cracker",
+          "title": "Find the PIN cracker device (check server room or investigate the guard)",
           "type": "manual",
           "status": "active"
         },
         {
           "taskId": "crack_safe_pin",
-          "title": "Crack the PIN safe (code: 1987)",
+          "title": "Use the PIN cracker to open the emergency storage safe",
           "type": "unlock_object",
           "targetObject": "emergency_storage_safe",
           "status": "active"
+        }
+      ]
+    },
+    {
+      "aimId": "investigate_insider",
+      "title": "Investigate ENTROPY Insider (Optional)",
+      "description": "Identify and expose the insider who helped Ghost infiltrate the hospital",
+      "status": "locked",
+      "order": 3,
+      "unlockCondition": { "aimCompleted": "infiltrate_hospital" },
+      "tasks": [
+        {
+          "taskId": "find_encrypted_schedule",
+          "title": "Find suspicious encrypted documents",
+          "type": "manual",
+          "status": "active",
+          "optional": true
+        },
+        {
+          "taskId": "decode_guard_evidence",
+          "title": "Decode the security schedule with CyberChef",
+          "type": "manual",
+          "status": "active",
+          "optional": true
+        },
+        {
+          "taskId": "locate_payment_proof",
+          "title": "Use the password to access the locked evidence cabinet",
+          "type": "manual",
+          "status": "active",
+          "optional": true
+        },
+        {
+          "taskId": "expose_guard",
+          "title": "Read the ENTROPY payment receipt to confirm the guard's identity",
+          "type": "manual",
+          "status": "active",
+          "optional": true
         }
       ]
     },
@@ -862,27 +907,31 @@ recovery_instructions_encoded = rot13("FULL RECOVERY REQUIRES OFFLINE + ONLINE K
           "takeable": false,
           "observations": "Secure terminal for submitting intercepted intelligence and VM flags",
           "acceptsVms": ["secgen_rooting_for_a_win"],
-          "flags": <%= flags_for_vm('secgen_rooting_for_a_win', ['flag{ssh_access_granted}', 'flag{proftpd_backdoor_exploited}', 'flag{database_backup_located}', 'flag{ghost_operational_log}']) %>,
+          "flags": ["secgen_rooting_for_a_win:flag_3", "secgen_rooting_for_a_win:flag_4", "secgen_rooting_for_a_win:flag_1", "secgen_rooting_for_a_win:flag_2"],
           "flagRewards": [
             {
-              "type": "emit_event",
-              "event_name": "ssh_flag_submitted",
-              "description": "SSH access flag submitted - server credentials intercepted"
+              "type": "set_global",
+              "key": "flag_ssh_submitted",
+              "value": true,
+              "description": "Server reconnaissance flag submitted (FTP anonymous access reveals server status)"
             },
             {
-              "type": "emit_event",
-              "event_name": "proftpd_flag_submitted",
-              "description": "ProFTPD exploitation flag submitted - shell access established"
+              "type": "set_global",
+              "key": "flag_proftpd_submitted",
+              "value": true,
+              "description": "Asset #47 operational instructions submitted (encoded FTP file reveals insider methodology)"
             },
             {
-              "type": "emit_event",
-              "event_name": "database_flag_submitted",
-              "description": "Database backup flag submitted - reveals offline key location"
+              "type": "set_global",
+              "key": "flag_database_submitted",
+              "value": true,
+              "description": "Marcus Webb's backup procedures submitted (SSH access, proves innocence and documents offline key location)"
             },
             {
-              "type": "emit_event",
-              "event_name": "ghost_log_flag_submitted",
-              "description": "Ghost's operational log submitted - LORE fragment unlocked"
+              "type": "set_global",
+              "key": "flag_ghost_log_submitted",
+              "value": true,
+              "description": "Ghost's equipment manifest submitted (root access via ProFTPD exploit - reveals PIN 4729 and Asset #47 identity)"
             }
           ]
         },
@@ -893,7 +942,57 @@ recovery_instructions_encoded = rot13("FULL RECOVERY REQUIRES OFFLINE + ONLINE K
           "takeable": false,
           "observations": "Encoding/decoding workstation with Base64, ROT13, and Hex tools. Use this to decode the ransomware messages you've found.",
           "puzzle_graph_role": "tool",
-          "puzzle_graph_note": "Portable CyberChef tool -- required to decode the Base64 ransomware note and ROT13 recovery instructions"
+          "puzzle_graph_unlocks": ["hospital_recovery_console", "guard_evidence_cabinet"],
+          "puzzle_graph_note": "Required to decode ROT13 recovery instructions and Base64 guard schedule"
+        },
+        {
+          "type": "container",
+          "id": "server_maintenance_cabinet",
+          "name": "Server Maintenance Cabinet",
+          "takeable": false,
+          "locked": true,
+          "observations": "Locked maintenance cabinet in rack 3. You need evidence of what's inside or proper authorization to access it.",
+          "unlockCondition": { "anyVariableTrue": ["flag_database_submitted", "guard_identity_exposed"] },
+          "contents": [
+            {
+              "type": "device",
+              "id": "entropy_pin_cracker",
+              "name": "ENTROPY PIN Cracker",
+              "takeable": true,
+              "readable": true,
+              "text": "// GHOST - RANSOMWARE INCORPORATED //\n\nPIN CRACKER v2.4\nAutomated 4-digit PIN brute-force device\n\nSerial: RI-2024-0847\nOperator: Asset #47 (Hospital Security)\nHandler: Ghost\n\nDeployment Log:\n- Week 3: Emergency storage safe reconnaissance\n  Safe PIN discovered: 4729\n- Week 6: Equipment concealment (this cabinet)\n\nStatus: Mission complete, equipment ready for recovery",
+              "observations": "ENTROPY equipment hidden by Ghost's insider asset. The device reveals the emergency storage safe PIN: 4729",
+              "onPickup": { "setVariable": { "pin_cracker_obtained": true } },
+              "puzzle_graph_role": "tool",
+              "puzzle_graph_unlocks": "lock_emergency_storage_safe",
+              "puzzle_graph_note": "Critical path item - only way to crack emergency storage safe PIN 4729"
+            }
+          ]
+        },
+        {
+          "type": "container",
+          "id": "guard_evidence_cabinet",
+          "name": "Server Access Log Cabinet",
+          "takeable": false,
+          "locked": true,
+          "lockType": "password",
+          "requires": "Asset47",
+          "observations": "File cabinet with keypad lock. Requires password.",
+          "contents": [
+            {
+              "type": "notes",
+              "id": "guard_entropy_payment_proof",
+              "name": "ENTROPY Payment Receipt",
+              "takeable": true,
+              "readable": true,
+              "text": "RANSOMWARE INCORPORATED - ASSET PAYMENT CONFIRMATION\n\nAsset ID: #47\nCover Identity: Hospital Security Guard (Night Shift)\nOperation: RANSOMED TRUST\nHandler: Ghost\n\nServices Rendered:\n- Physical access facilitation: $3,000\n- Network device placement (Week 1): $2,500\n- Emergency storage reconnaissance (Week 3): $2,000\n- Equipment concealment (Week 6): $1,200\n\nTotal Payment: $8,700 (10% of ransom)\nStatus: PAID via BTC mixer\nWallet: bc1q[redacted]\n\n[This document proves the hospital security guard is Ghost's insider]",
+              "observations": "Proof that the hospital security guard is an ENTROPY operative - Asset #47",
+              "onRead": { "setVariable": { "guard_identity_exposed": true } },
+              "puzzle_graph_role": "clue",
+              "puzzle_graph_reveals": "guard_is_entropy_asset_47",
+              "puzzle_graph_optional": true
+            }
+          ]
         },
         {
           "type": "backup_recovery",
@@ -995,8 +1094,8 @@ recovery_instructions_encoded = rot13("FULL RECOVERY REQUIRES OFFLINE + ONLINE K
           "takeable": false,
           "locked": true,
           "lockType": "pin",
-          "requires": "1987",
-          "observations": "4-digit electronic safe -- requires PIN code",
+          "requires": "4729",
+          "observations": "4-digit electronic safe -- requires PIN code. No clues visible.",
           "puzzle_graph_role": "lock",
           "puzzle_graph_aim": "recover_offline_keys",
           "contents": [
@@ -1011,17 +1110,6 @@ recovery_instructions_encoded = rot13("FULL RECOVERY REQUIRES OFFLINE + ONLINE K
               "puzzle_graph_unlocks": "hospital_recovery_console"
             }
           ]
-        },
-        {
-          "type": "notes",
-          "name": "PIN Cracker Device",
-          "takeable": true,
-          "readable": true,
-          "text": "PIN CRACKER DEVICE\n\nAutomated 4-digit PIN brute force tool\nEstimated time: 2 minutes\n\nUse if clues to safe PIN cannot be found",
-          "observations": "Fallback tool for PIN puzzle if clues were missed",
-          "puzzle_graph_role": "tool",
-          "puzzle_graph_unlocks": "lock_emergency_storage_safe",
-          "puzzle_graph_optional": true
         },
         {
           "type": "notes",
@@ -1197,6 +1285,19 @@ recovery_instructions_encoded = rot13("FULL RECOVERY REQUIRES OFFLINE + ONLINE K
           "currentKnot": "start",
           "puzzle_graph_role": "lock",
           "puzzle_graph_aim": "restore_hospital_systems"
+        },
+        {
+          "type": "notes",
+          "id": "guard_encrypted_schedule",
+          "name": "Printed Security Schedule",
+          "takeable": true,
+          "readable": true,
+          "text": "U0VDVVJJVFkgUk9UQVRJT04gLSBDT05GSURFTlRJQUwKCk5pZ2h0IFNoaWZ0IEFjY2VzcyBDb2RlOiBBc3NldDQ3CgpFcXVpcG1lbnQgU3RvcmFnZTogU2VydmVyIFJvb20sIFJhY2sgMwpGaWxlIENhYmluZXQ6IFBhc3N3b3JkLXByb3RlY3RlZCwgc2FtZSBjb2RlCgpEbyBOT1QgbGVhdmUgdGhpcyBkb2N1bWVudCB2aXNpYmxlLg==",
+          "observations": "Base64-encoded document - use CyberChef to decode. Appears to be a security schedule.",
+          "puzzle_graph_role": "clue",
+          "puzzle_graph_unlocks": "guard_evidence_cabinet",
+          "puzzle_graph_reveals": "password_for_guard_evidence_Asset47",
+          "puzzle_graph_optional": true
         }
       ]
     },
@@ -1355,6 +1456,11 @@ recovery_instructions_encoded = rot13("FULL RECOVERY REQUIRES OFFLINE + ONLINE K
     "guard_detections": 0,
     "guard_knocked_out": false,
     "attacked_guard": false,
+    "guard_identity_exposed": false,
+    "guard_cooperating": false,
+    "guard_neutralized": false,
+    "pin_cracker_obtained": false,
+    "guard_schedule_decoded": false,
     "objectives_completed": 0,
     "lore_collected": 0,
 
