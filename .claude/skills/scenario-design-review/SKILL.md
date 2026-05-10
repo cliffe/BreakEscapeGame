@@ -51,6 +51,7 @@ Walk the critical path from `startRoom` to the final objective:
 - Are clue notes/phones/files spread across rooms, or clustered in one place?
 - Are hints for codes/passwords placed in logically accessible locations before the lock that uses them?
 - Are there readable items that exist but appear to serve no puzzle purpose (no `puzzle_graph_unlocks`, no connection to any task)?
+- **Navigation-only items**: Are there notes/signs that only provide directional information (e.g. "Room A is north") with no puzzle value? These should be removed — the player can see room connections on the map.
 
 ### 2c. Educational coverage
 
@@ -83,6 +84,9 @@ Beyond what the validator checks mechanically:
 - Are the major lock–key relationships represented in `puzzle_graph_unlocks` annotations, or is the graph sparse?
 - Do `puzzle_graph_actions` nodes exist for the key NPC conversations that gate progress?
 - Does the Integrated Graph (as described in the README) have bridge edges between puzzle nodes and story aims, or are the two layers disconnected?
+- **Starting items**: If the scenario has `startItemsInInventory` with `puzzle_graph_unlocks` (e.g. a lockpick that opens doors), do these items appear in the Puzzle Graph as nodes sourced from the starting room? Missing starting items break the dependency chain — the graph shows locks with no visible way to open them.
+- **VM challenge connections**: If the scenario has VM challenges (vm-launcher objects and submit_flags tasks), is there a connection chain in the Puzzle Graph from `lock_vm_launcher_*` → `vm_access_terminal` (or equivalent) → first VM challenge node (`vmch_*`)? Disconnected VM challenges appear as isolated subgraphs.
+- **Backwards edges**: In the Puzzle Graph, check for edges flowing FROM locked rooms back TO the starting room or unlocked areas (e.g. `it_department --> reception_lobby` when `it_department` is locked). These create layout problems and suggest the graph generator didn't skip connections from locked sources. The correct pattern is: unlocked room → door lock → locked room (forward only).
 
 Note: the validator already flags missing `puzzle_graph_unlocks` on clue items inside locked containers and on `submit_flags` tasks with `onComplete`. Focus here on whether the *overall graph tells the right story* at a design level.
 

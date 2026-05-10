@@ -205,6 +205,17 @@ def walk_objects(objects, source_id, rooms)
   end
 end
 
+# ---------------------------------------------------------------------------
+# Process startItemsInInventory (player's starting items)
+# These items are available from the start, sourced from the starting room
+# ---------------------------------------------------------------------------
+start_room = scenario['startRoom'] || scenario.dig('player', 'startRoom')
+starting_items = scenario['startItemsInInventory'] || []
+if starting_items.any? { |i| i['puzzle_graph_unlocks'] || i['puzzle_graph_role'] }
+  add_node(start_room, room_label(start_room, rooms[start_room]), 'room') if rooms.key?(start_room)
+  walk_objects(starting_items, start_room, rooms)
+end
+
 # Walk all rooms: objects then NPC itemsHeld
 rooms.each do |room_id, room|
   # Ensure room node exists when objects are found in it
@@ -301,19 +312,42 @@ prev_flag_id     = nil
 end
 
 # Connect VM launcher lock node to first VM challenge
-vm_lock_id = 'lock_vm_launcher_intro_linux'
-if $nodes.key?(vm_lock_id)
-  # Override label now we know intent
-  $nodes[vm_lock_id][:label] = "VM Access Terminal<br/>SSH credentials needed"
-  add_edge(vm_lock_id, vm_challenge_ids.first) if vm_challenge_ids.any?
+# Find any vm-launcher object in the scenario
+vm_launcher_id = nil
+vm_launcher_name = nil
+vm_launcher_room_id = nil
 
-  # Anchor to the room containing the physical vm-launcher object
-  rooms.each do |room_id, room|
-    if (room['objects'] || []).any? { |o| o['id'] == 'vm_launcher_intro_linux' }
-      add_node(room_id, room_label(room_id, room), 'room')
-      add_edge(room_id, vm_lock_id)
+rooms.each do |room_id, room|
+  (room['objects'] || []).each do |obj|
+    if obj['type'] == 'vm-launcher' && obj['id']
+      vm_launcher_id = obj['id']
+      vm_launcher_name = obj['name'] || obj['id'].tr('_', ' ').split.map(&:capitalize).join(' ')
+      vm_launcher_room_id = room_id
       break
     end
+  end
+  break if vm_launcher_id
+end
+
+if vm_launcher_id && vm_challenge_ids.any?
+  vm_lock_id = "lock_#{vm_launcher_id}"
+  vm_node_id = nid(vm_launcher_name)
+  
+  # Connect lock → vm-launcher → first challenge
+  if $nodes.key?(vm_lock_id) && $nodes.key?(vm_node_id)
+    add_edge(vm_lock_id, vm_node_id)
+    add_edge(vm_node_id, vm_challenge_ids.first)
+  elsif $nodes.key?(vm_node_id)
+    # No lock node, just connect vm-launcher directly to challenges
+    add_edge(vm_node_id, vm_challenge_ids.first)
+  end
+  
+  # Anchor the lock to its room if not already connected
+  if vm_launcher_room_id && $nodes.key?(vm_lock_id)
+    add_node(vm_launcher_room_id, room_label(vm_launcher_room_id, rooms[vm_launcher_room_id]), 'room')
+    # Only add edge if it doesn't already exist (room might already reference the vm-launcher via puzzle_graph_role)
+    existing_edge = $edges.any? { |e| e[:from] == vm_launcher_room_id && (e[:to] == vm_lock_id || e[:to] == vm_node_id) }
+    add_edge(vm_launcher_room_id, vm_lock_id) unless existing_edge
   end
 end
 
@@ -329,8 +363,8 @@ rooms.each do |room_id, room|
 
   (room['connections'] || {}).each_value do |dest|
     Array(dest).each do |dest_id|
-      # Locked destination — access already shown via key/puzzle chain
-      next if rooms.dig(dest_id, 'locked')
+      # Locked source or destination — access already shown via key/puzzle chain
+      next if room['locked'] || rooms.dig(dest_id, 'locked')
 
       pair_key = [room_id, dest_id].sort.join('|')
       next if seen_room_pairs.include?(pair_key)
@@ -638,8 +672,6 @@ end
 def js_escape_mermaid(src)
   src.gsub('`') { '\`' }.gsub('${') { '\${' }
 end
-
-start_room = scenario['startRoom'] || scenario.dig('player', 'startRoom')
 
 mermaid_puzzle     = emit_mermaid_diagram($nodes,     $edges,     start_node: start_room)
 mermaid_story      = emit_mermaid_diagram(aim_nodes,  aim_edges,  critical_set: critical_set)
