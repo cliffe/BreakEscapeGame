@@ -439,6 +439,7 @@ end
 3. **XSS Prevention**: All inline scripts and styles use CSP nonces; `eval()` is not used; inline event handlers (`onclick`, `onerror`) are not used — see CSP section above for required host configuration
 4. **SQL Injection**: All queries use parameterized statements
 5. **Session Security**: Sessions tied to user authentication
+6. **VM Console Access**: Console access is blocked until the player reaches the terminal in-game. The `vm_panel` endpoint enforces that the room containing the VM launcher is unlocked in the player's game state before enabling console access. Admins and account managers bypass this check. This prevents players from skipping game narrative and directly accessing VM consoles.
 
 ## Monitoring
 
