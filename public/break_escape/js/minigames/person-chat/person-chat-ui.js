@@ -144,7 +144,10 @@ export default class PersonChatUI {
         // Continue button
         const continueButton = document.createElement('button');
         continueButton.className = 'person-chat-continue-button';
-        continueButton.textContent = 'Skip';
+        continueButton.innerHTML = `
+          <span class="person-chat-continue-label">Skip</span>
+          <span class="person-chat-continue-hint">[SPACE]</span>
+        `;
         continueButton.id = 'continue-button';
         continueButton.style.display = 'inline-block'; // Always visible (hidden only when choices shown)
         
