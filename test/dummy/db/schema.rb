@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2026_03_30_000002) do
+ActiveRecord::Schema[7.1].define(version: 2026_05_12_192421) do
   create_table "break_escape_cyboks", force: :cascade do |t|
     t.string "ka"
     t.string "topic"
@@ -48,7 +48,7 @@ ActiveRecord::Schema[7.1].define(version: 2026_03_30_000002) do
     t.integer "tasks_completed", default: 0
     t.bigint "vm_set_id"
     t.index ["mission_id"], name: "index_break_escape_games_on_mission_id"
-    t.index ["player_type", "player_id", "mission_id"], name: "idx_break_escape_games_one_active_per_player_mission", unique: true, where: "status = 'in_progress'"
+    t.index ["player_type", "player_id", "mission_id"], name: "idx_break_escape_games_one_active_per_player_mission", where: "status = 'in_progress'"
     t.index ["player_type", "player_id", "mission_id"], name: "index_games_on_player_and_mission_non_unique"
     t.index ["player_type", "player_id"], name: "index_break_escape_games_on_player"
     t.index ["status"], name: "index_break_escape_games_on_status"

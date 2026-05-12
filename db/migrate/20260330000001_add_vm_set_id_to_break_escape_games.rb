@@ -21,10 +21,10 @@ class AddVmSetIdToBreakEscapeGames < ActiveRecord::Migration[7.0]
       end
     end
 
-    # Race-condition guard: only one in_progress game per player+mission
+    # Non-unique index for performance when querying active games
+    # Allows multiple games per player+mission (needed to restart missions)
     add_index :break_escape_games,
               [:player_type, :player_id, :mission_id],
-              unique: true,
               where: "status = 'in_progress'",
               name: 'idx_break_escape_games_one_active_per_player_mission'
 
