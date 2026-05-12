@@ -332,7 +332,7 @@ end
 if vm_launcher_id && vm_challenge_ids.any?
   vm_lock_id = "lock_#{vm_launcher_id}"
   vm_node_id = nid(vm_launcher_name)
-  
+
   # Connect lock → vm-launcher → first challenge
   if $nodes.key?(vm_lock_id) && $nodes.key?(vm_node_id)
     add_edge(vm_lock_id, vm_node_id)
@@ -341,7 +341,7 @@ if vm_launcher_id && vm_challenge_ids.any?
     # No lock node, just connect vm-launcher directly to challenges
     add_edge(vm_node_id, vm_challenge_ids.first)
   end
-  
+
   # Anchor the lock to its room if not already connected
   if vm_launcher_room_id && $nodes.key?(vm_lock_id)
     add_node(vm_launcher_room_id, room_label(vm_launcher_room_id, rooms[vm_launcher_room_id]), 'room')
