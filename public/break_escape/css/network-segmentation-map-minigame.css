@@ -35,7 +35,7 @@
 }
 
 .nsm-status-badge {
-    font-family: 'VT323', monospace;
+    font-family: 'GNF', monospace;
     font-size: 18px;
     color: #ff4444;
     border: 1px solid #ff4444;
@@ -117,7 +117,7 @@
 }
 
 .nsm-device {
-    font-family: 'VT323', monospace;
+    font-family: 'GNF', monospace;
     font-size: 15px;
     color: #cccccc;
     background: rgba(255,255,255,0.05);
@@ -167,7 +167,7 @@
     padding: 14px;
     overflow-y: auto;
     flex: 1;
-    font-family: 'VT323', monospace;
+    font-family: 'GNF', monospace;
     font-size: 17px;
 }
 
@@ -275,7 +275,7 @@
     display: flex;
     align-items: center;
     gap: 8px;
-    font-family: 'VT323', monospace;
+    font-family: 'GNF', monospace;
     font-size: 18px;
     color: #888899;
 }
@@ -387,7 +387,7 @@
 }
 
 .nsm-modal-body {
-    font-family: 'VT323', monospace;
+    font-family: 'GNF', monospace;
     font-size: 20px;
     color: #cccccc;
     line-height: 1.6;

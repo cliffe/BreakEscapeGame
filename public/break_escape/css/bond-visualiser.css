@@ -124,7 +124,7 @@
 
 #bond-vis-overlay .bv-status-block {
   text-align: right;
-  font-family: 'VT323', monospace;
+  font-family: 'GNF', monospace;
   font-size: 14px;
 }
 
@@ -202,7 +202,7 @@
 #bond-vis-overlay .bv-stat-row {
   display: flex;
   justify-content: space-between;
-  font-family: 'VT323', monospace;
+  font-family: 'GNF', monospace;
   font-size: 13px;
   color: var(--bv-green);
   padding: 1px 0;
@@ -231,7 +231,7 @@
 #bond-vis-overlay .bv-log-scroll {
   flex: 1;
   overflow: hidden;
-  font-family: 'VT323', monospace;
+  font-family: 'GNF', monospace;
   font-size: 11px;
   line-height: 1.5;
   color: rgba(0,255,65,0.6);
@@ -327,7 +327,7 @@
 }
 
 #bond-vis-overlay .bv-track-info {
-  font-family: 'VT323', monospace;
+  font-family: 'GNF', monospace;
   font-size: 14px;
   color: var(--bv-gold);
   flex: 1;
@@ -357,7 +357,7 @@
 }
 
 #bond-vis-overlay .bv-ticker {
-  font-family: 'VT323', monospace;
+  font-family: 'GNF', monospace;
   font-size: 12px;
   overflow: hidden;
   flex: 1;
@@ -419,7 +419,7 @@
 }
 
 .bv-cr-line {
-  font-family: 'VT323', monospace;
+  font-family: 'GNF', monospace;
   letter-spacing: 0.12em;
   line-height: 1;
 }

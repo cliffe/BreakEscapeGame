@@ -159,7 +159,7 @@
 }
 
 .sdm-strip-text {
-    font-family: 'VT323', monospace;
+    font-family: 'GNF', monospace;
     font-size: 17px;
     color: #1a1008;
     line-height: 1.3;
@@ -206,7 +206,7 @@
     background: #081808;
     border-bottom: 2px solid #2a3a5a;
     color: #c8ffcc;
-    font-family: 'VT323', monospace;
+    font-family: 'GNF', monospace;
     font-size: 16px;
     line-height: 1.4;
     flex-shrink: 0;

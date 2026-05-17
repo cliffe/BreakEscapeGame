@@ -95,7 +95,7 @@
 /* ── Countdown timer ─────────────────────────────────────── */
 
 .da-timer {
-    font-family: 'VT323', monospace;
+    font-family: 'GNF', monospace;
     font-size: 38px;
     color: #ffd27f;
     min-width: 90px;
@@ -183,7 +183,7 @@
 /* ── PIN dot display ─────────────────────────────────────── */
 
 .da-display {
-    font-family: 'VT323', monospace;
+    font-family: 'GNF', monospace;
     font-size: 32px;
     color: #00e5ff;
     background: #070d1a;
@@ -318,7 +318,7 @@
 }
 
 .da-status-text {
-    font-family: 'VT323', monospace;
+    font-family: 'GNF', monospace;
     font-size: 22px;
     color: #6a82aa;
 }

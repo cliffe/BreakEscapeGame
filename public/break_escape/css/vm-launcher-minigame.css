@@ -4,7 +4,7 @@
 
 .vm-launcher {
     padding: 15px;
-    font-family: 'VT323', 'Courier New', monospace;
+    font-family: 'GNF', 'Courier New', monospace;
     max-height: 400px;
     overflow-y: auto;
 }

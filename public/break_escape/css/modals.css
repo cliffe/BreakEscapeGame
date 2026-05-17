@@ -39,7 +39,7 @@
 
 #password-modal-input {
     font-size: 20px;
-    font-family: 'VT323', monospace;
+    font-family: 'GNF', monospace;
     padding: 8px 12px;
     /* border-radius: 4px; */
     border: 1px solid #444;
@@ -68,7 +68,7 @@
 
 .password-modal-checkbox-label {
     font-size: 18px;
-    font-family: 'VT323', monospace;
+    font-family: 'GNF', monospace;
     color: #aaa;
     cursor: pointer;
 }
@@ -136,7 +136,7 @@
 }
 
 .modal-body {
-    font-family: 'VT323', monospace;
+    font-family: 'GNF', monospace;
     font-size: 18px;
     line-height: 1.4;
     margin-bottom: 16px;

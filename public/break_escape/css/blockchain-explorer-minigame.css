@@ -53,7 +53,7 @@
 }
 
 .bce-title-icon {
-    font-family: 'VT323', monospace;
+    font-family: 'GNF', monospace;
     font-size: 22px;
     color: #58a6ff;
     line-height: 1;
@@ -67,7 +67,7 @@
 }
 
 .bce-case-ref {
-    font-family: 'VT323', monospace;
+    font-family: 'GNF', monospace;
     font-size: 15px;
     color: #8b949e;
     letter-spacing: 1px;
@@ -207,7 +207,7 @@
     fill: #3d444d;
 }
 .bce-gn-id {
-    font-family: 'VT323', monospace;
+    font-family: 'GNF', monospace;
     font-size: 17px;
     fill: #8b949e;
 }
@@ -222,7 +222,7 @@
 .bce-gnode-active .bce-gn-type { fill: #8b949e !important; }
 
 .bce-gn-sublabel {
-    font-family: 'VT323', monospace;
+    font-family: 'GNF', monospace;
     font-size: 18px;
     fill: #4a5568;
 }
@@ -253,7 +253,7 @@
 }
 
 .bce-view-icon {
-    font-family: 'VT323', monospace;
+    font-family: 'GNF', monospace;
     font-size: 26px;
     color: #58a6ff;
     line-height: 1;
@@ -289,14 +289,14 @@
 }
 
 .bce-meta-value {
-    font-family: 'VT323', monospace;
+    font-family: 'GNF', monospace;
     font-size: 17px;
     color: #c9d1d9;
     line-height: 1;
 }
 
 .bce-meta-subtle {
-    font-family: 'VT323', monospace;
+    font-family: 'GNF', monospace;
     font-size: 14px;
     color: #6a7280;
     line-height: 1;
@@ -342,7 +342,7 @@
 }
 
 .bce-io-empty {
-    font-family: 'VT323', monospace;
+    font-family: 'GNF', monospace;
     font-size: 14px;
     color: #8b949e;
     padding: 6px 0;
@@ -358,7 +358,7 @@
     padding: 0;
     text-align: left;
     color: #4a8fd6;
-    font-family: 'VT323', monospace;
+    font-family: 'GNF', monospace;
     font-size: 17px;
     line-height: 1;
     white-space: nowrap;
@@ -383,7 +383,7 @@
 /* ── Amounts ───────────────────────────────────────────────── */
 
 .bce-amount {
-    font-family: 'VT323', monospace;
+    font-family: 'GNF', monospace;
     font-size: 17px;
     line-height: 1;
     flex-shrink: 0;
@@ -409,7 +409,7 @@
 .bce-badge-out    { background: #2b0d0d; color: #f85149; border: 1px solid #4a1a1a; }
 
 .bce-tx-time {
-    font-family: 'VT323', monospace;
+    font-family: 'GNF', monospace;
     font-size: 14px;
     color: #6a7280;
     flex-shrink: 0;
@@ -438,7 +438,7 @@
 }
 
 .bce-no-intel {
-    font-family: 'VT323', monospace;
+    font-family: 'GNF', monospace;
     font-size: 14px;
     color: #3d444d;
     padding: 8px 0 4px;
@@ -455,7 +455,7 @@
 .bce-callout-threat .bce-callout-title { color: #e05252; }
 
 .bce-callout-body {
-    font-family: 'VT323', monospace;
+    font-family: 'GNF', monospace;
     font-size: 15px;
     line-height: 1.5;
 }
@@ -520,7 +520,7 @@
 }
 
 .bce-status-icon {
-    font-family: 'VT323', monospace;
+    font-family: 'GNF', monospace;
     font-size: 16px;
     line-height: 1;
 }

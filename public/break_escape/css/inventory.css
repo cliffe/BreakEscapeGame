@@ -10,7 +10,7 @@
     align-items: center;
     padding: 0 20px;
     z-index: 1000;
-    font-family: 'VT323';
+    font-family: 'GNF';
 }
 
 #inventory-container::-webkit-scrollbar {

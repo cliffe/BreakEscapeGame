@@ -95,7 +95,7 @@
 }
 
 .ip-rx-dose-value {
-    font-family: 'VT323', monospace;
+    font-family: 'GNF', monospace;
     font-size: 30px;
     color: #1a1a1a;
     line-height: 1;
@@ -144,7 +144,7 @@
 .ip-pump-screen {
     background: #0a1a0a;
     color: #00e060;
-    font-family: 'VT323', monospace;
+    font-family: 'GNF', monospace;
     font-size: 16px;
     line-height: 1.4;
     border: 2px solid #1a3a1a;
@@ -317,7 +317,7 @@
 
 .ip-modal-dose {
     color: #ff4444;
-    font-family: 'VT323', monospace;
+    font-family: 'GNF', monospace;
     font-size: 52px;
     line-height: 1;
     margin-bottom: 8px;
