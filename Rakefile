@@ -17,7 +17,7 @@ task :test do
   puts "Please use: bundle exec rails test"
   puts "Or use:     bundle exec rake app:test"
   puts ("=" * 80) + "\n"
-  # Optional: You could trigger the actual test here, but signposting is safer 
+  # Optional: You could trigger the actual test here, but signposting is safer
   # to prevent confusion about environment loading.
 end
 
