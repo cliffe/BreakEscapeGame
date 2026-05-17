@@ -109,11 +109,10 @@ rails test
 
 See `HACKTIVITY_INTEGRATION.md` for integration guide.
 
-## Recent Scenario Updates (April 2026)
+## Acknowledgments
 
-- `scenarios/sis01_healthcare` remediation pass completed for task wiring and governance/regulatory dialogue alignment.
-- Added two temporary object sprites to clear validator-invalid missing assets:
-  - `public/break_escape/assets/objects/vpn_log_terminal.png`
-  - `public/break_escape/assets/objects/drug_library_terminal.png`
-- Both placeholders are quick copies from `pc.png` and are tracked for replacement in `scenarios/sis01_healthcare/TODO.md`.
-- Current validator status for `sis01_healthcare`: no blocking invalid errors; remaining output is recommendations/suggestions only.
+Many thanks to everyone who has contributed to the project. Please refer to the [GitHub history](https://github.com/cliffe/BreakEscape/graphs/contributors).
+
+- This project is supported by a Cyber Security Body of Knowledge (CyBOK) resources around CyBOK 1.1 grant (2023-2024).
+- This project is supported by a Cyber Security Body of Knowledge (CyBOK) resources around CyBOK 1.1 grant (2024-2025).
+- This project is supported by a Cyber Security Body of Knowledge (CyBOK) resources around Security-Informed Safety grant (2025-2026).
