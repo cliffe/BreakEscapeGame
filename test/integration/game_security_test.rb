@@ -289,6 +289,480 @@ module BreakEscape
       assert_equal "completed", task_status
     end
 
+    # =========================================================================
+    # complete_task — unlock_object validation
+    # =========================================================================
+
+    test "SECURITY: complete_task rejects unlock_object task when object is still locked" do
+      setup_unlock_object_task
+
+      post complete_task_game_url(@game, task_id: "task_unlock_safe")
+
+      json = JSON.parse(response.body)
+      assert_equal false, json["success"],
+        "SECURITY FAIL: unlock_object task was completed without the object being unlocked"
+
+      @game.reload
+      task_status = @game.player_state.dig("objectivesState", "tasks", "task_unlock_safe", "status")
+      assert_not_equal "completed", task_status,
+        "Task must not be marked completed when the target object is still locked"
+    end
+
+    test "SECURITY: complete_task accepts unlock_object task when object is genuinely unlocked" do
+      setup_unlock_object_task
+      @game.player_state["unlockedObjects"] << "lobby_safe"
+      @game.save!
+
+      post complete_task_game_url(@game, task_id: "task_unlock_safe")
+
+      json = JSON.parse(response.body)
+      assert json["success"],
+        "Task should complete when the target object is genuinely unlocked"
+
+      @game.reload
+      task_status = @game.player_state.dig("objectivesState", "tasks", "task_unlock_safe", "status")
+      assert_equal "completed", task_status
+    end
+
+    # =========================================================================
+    # complete_task — collect_items validation
+    # =========================================================================
+
+    test "SECURITY: complete_task rejects collect_items task with insufficient items" do
+      setup_collect_task
+
+      # Player has 0 items, needs 3
+      post complete_task_game_url(@game, task_id: "task_collect"),
+           params: { currentCount: 0 }
+
+      json = JSON.parse(response.body)
+      assert_equal false, json["success"],
+        "SECURITY FAIL: collect_items task was completed without sufficient items"
+
+      @game.reload
+      task_status = @game.player_state.dig("objectivesState", "tasks", "task_collect", "status")
+      assert_not_equal "completed", task_status
+    end
+
+    test "SECURITY WARNING: collect_items with targetItemIds also trusts currentCount (scoring vulnerability)" do
+      setup_collect_task_with_specific_items
+
+      # SECURITY ISSUE: Even with specific targetItemIds, server trusts client currentCount
+      # This bypasses server-side inventory validation (see game.rb:1035-1040)
+      @game.player_state["inventory"] = []
+      @game.save!
+
+      post complete_task_game_url(@game, task_id: "task_collect_specific"),
+           params: { currentCount: 2 }
+
+      json = JSON.parse(response.body)
+      assert json["success"],
+        "CURRENT BEHAVIOR: All collect_items tasks trust currentCount (lines before item validation)"
+
+      # RECOMMENDATION: For scoring, either:
+      # 1. Don't use collect_items tasks in score calculation
+      # 2. Fix validation to only trust currentCount when targetItems/targetItemIds NOT specified
+      # 3. Weight collect_items tasks very low (exploitable)
+    end
+
+    test "NOTE: complete_task trusts currentCount for generic collect_items tasks (documented behavior for notes)" do
+      setup_collect_task
+
+      # This is INTENTIONAL behavior - client-trusted count for notes-type items
+      # See game.rb:1035-1040 - handles async inventory race conditions
+      @game.player_state["inventory"] = []
+      @game.save!
+
+      post complete_task_game_url(@game, task_id: "task_collect"),
+           params: { currentCount: 3 }
+
+      json = JSON.parse(response.body)
+      assert json["success"],
+        "Generic collect_items tasks trust client currentCount (documented behavior)"
+
+      @game.reload
+      task_status = @game.player_state.dig("objectivesState", "tasks", "task_collect", "status")
+      assert_equal "completed", task_status,
+        "NOTE: This creates a scoring security concern - generic collect tasks can be spoofed"
+    end
+
+    test "SECURITY: complete_task accepts collect_items task when enough items collected" do
+      setup_collect_task
+
+      # Give player 3 items
+      @game.player_state["inventory"] = [
+        { "id" => "item1", "type" => "evidence" },
+        { "id" => "item2", "type" => "evidence" },
+        { "id" => "item3", "type" => "evidence" }
+      ]
+      @game.save!
+
+      post complete_task_game_url(@game, task_id: "task_collect"),
+           params: { currentCount: 3 }
+
+      json = JSON.parse(response.body)
+      assert json["success"],
+        "Task should complete when enough items are collected"
+
+      @game.reload
+      task_status = @game.player_state.dig("objectivesState", "tasks", "task_collect", "status")
+      assert_equal "completed", task_status
+    end
+
+    # =========================================================================
+    # complete_task — submit_flags validation
+    # =========================================================================
+
+    test "SECURITY: complete_task rejects submit_flags task with no flags submitted" do
+      setup_submit_flags_task
+
+      post complete_task_game_url(@game, task_id: "task_flags"),
+           params: { submittedFlags: [] }
+
+      json = JSON.parse(response.body)
+      assert_equal false, json["success"],
+        "SECURITY FAIL: submit_flags task was completed without any flags"
+
+      @game.reload
+      task_status = @game.player_state.dig("objectivesState", "tasks", "task_flags", "status")
+      assert_not_equal "completed", task_status
+    end
+
+    test "SECURITY: complete_task rejects submit_flags task with partial flags" do
+      setup_submit_flags_task
+
+      # Only submit 2 of 3 required flags
+      post complete_task_game_url(@game, task_id: "task_flags"),
+           params: { submittedFlags: ["flag_admin", "flag_database"] }
+
+      json = JSON.parse(response.body)
+      assert_equal false, json["success"],
+        "SECURITY FAIL: submit_flags task completed with only partial flags"
+
+      @game.reload
+      task_status = @game.player_state.dig("objectivesState", "tasks", "task_flags", "status")
+      assert_not_equal "completed", task_status
+    end
+
+    test "SECURITY: complete_task rejects submit_flags task without submittedFlags parameter" do
+      setup_submit_flags_task
+
+      # Attempt completion without submittedFlags in request body
+      post complete_task_game_url(@game, task_id: "task_flags")
+
+      json = JSON.parse(response.body)
+      assert_equal false, json["success"],
+        "SECURITY FAIL: submit_flags task completed without submittedFlags parameter"
+    end
+
+    test "SECURITY: complete_task accepts submit_flags task when all flags submitted" do
+      setup_submit_flags_task
+
+      post complete_task_game_url(@game, task_id: "task_flags"),
+           params: { submittedFlags: ["flag_admin", "flag_database", "flag_network"] }
+
+      json = JSON.parse(response.body)
+      assert json["success"],
+        "Task should complete when all required flags are submitted"
+
+      @game.reload
+      task_status = @game.player_state.dig("objectivesState", "tasks", "task_flags", "status")
+      assert_equal "completed", task_status
+    end
+
+    test "SECURITY: complete_task ignores pre-stored flags in player_state for submit_flags task" do
+      setup_submit_flags_task
+
+      # Pre-store flags in player_state (attacker pre-injection attempt)
+      @game.player_state["objectivesState"]["tasks"]["task_flags"]["submittedFlags"] =
+        ["flag_admin", "flag_database", "flag_network"]
+      @game.save!
+
+      # Attempt completion without flags in request body
+      post complete_task_game_url(@game, task_id: "task_flags")
+
+      json = JSON.parse(response.body)
+      assert_equal false, json["success"],
+        "SECURITY FAIL: complete_task used pre-stored flags instead of requiring them in request"
+    end
+
+    # =========================================================================
+    # complete_task — npc_conversation validation
+    # =========================================================================
+
+    test "SECURITY: complete_task rejects npc_conversation task when NPC not encountered" do
+      setup_npc_conversation_task
+
+      post complete_task_game_url(@game, task_id: "task_talk_guard")
+
+      json = JSON.parse(response.body)
+      assert_equal false, json["success"],
+        "SECURITY FAIL: npc_conversation task completed without encountering NPC"
+
+      @game.reload
+      task_status = @game.player_state.dig("objectivesState", "tasks", "task_talk_guard", "status")
+      assert_not_equal "completed", task_status
+    end
+
+    test "SECURITY: complete_task accepts npc_conversation task when NPC encountered" do
+      setup_npc_conversation_task
+      @game.player_state["encounteredNPCs"] << "guard"
+      @game.save!
+
+      post complete_task_game_url(@game, task_id: "task_talk_guard")
+
+      json = JSON.parse(response.body)
+      assert json["success"],
+        "Task should complete when NPC has been encountered"
+
+      @game.reload
+      task_status = @game.player_state.dig("objectivesState", "tasks", "task_talk_guard", "status")
+      assert_equal "completed", task_status
+    end
+
+    # =========================================================================
+    # complete_task — enter_room (client-trusted)
+    # =========================================================================
+
+    test "SECURITY: complete_task accepts enter_room task (client-trusted validation)" do
+      setup_enter_room_task
+
+      post complete_task_game_url(@game, task_id: "task_enter_office")
+
+      json = JSON.parse(response.body)
+      assert json["success"],
+        "enter_room task should complete (client-trusted, low-stakes)"
+
+      @game.reload
+      task_status = @game.player_state.dig("objectivesState", "tasks", "task_enter_office", "status")
+      assert_equal "completed", task_status
+    end
+
+    # =========================================================================
+    # complete_task — custom (no validation)
+    # =========================================================================
+
+    test "SECURITY: complete_task accepts custom task (no server validation)" do
+      setup_custom_task
+
+      post complete_task_game_url(@game, task_id: "task_custom")
+
+      json = JSON.parse(response.body)
+      assert json["success"],
+        "custom task should complete without validation (Ink-driven)"
+
+      @game.reload
+      task_status = @game.player_state.dig("objectivesState", "tasks", "task_custom", "status")
+      assert_equal "completed", task_status
+    end
+
+    # =========================================================================
+    # complete_task — negative cases
+    # =========================================================================
+
+    test "SECURITY: complete_task rejects non-existent task ID" do
+      setup_collect_task
+
+      post complete_task_game_url(@game, task_id: "nonexistent_task")
+
+      json = JSON.parse(response.body)
+      assert_equal false, json["success"],
+        "SECURITY FAIL: non-existent task was marked complete"
+      assert_match /not found/i, json["error"]
+    end
+
+    test "SECURITY: complete_task increments tasks_completed counter" do
+      setup_collect_task
+      @game.player_state["inventory"] = [
+        { "id" => "item1" }, { "id" => "item2" }, { "id" => "item3" }
+      ]
+      @game.save!
+
+      initial_count = @game.tasks_completed || 0
+
+      post complete_task_game_url(@game, task_id: "task_collect"),
+           params: { currentCount: 3 }
+
+      @game.reload
+      assert_equal initial_count + 1, @game.tasks_completed,
+        "tasks_completed counter should increment"
+    end
+
+    test "SECURITY: complete_task triggers aim completion when all tasks done" do
+      setup_multi_task_aim
+      @game.player_state["unlockedRooms"] << "locked_office"
+      @game.player_state["inventory"] = [{ "id" => "item1" }]
+      @game.save!
+
+      initial_aims_count = @game.objectives_completed || 0
+
+      # Complete first task
+      post complete_task_game_url(@game, task_id: "task_unlock"),
+           params: {}
+
+      @game.reload
+      assert_equal initial_aims_count, @game.objectives_completed,
+        "Aim should not complete yet"
+
+      # Complete second task
+      post complete_task_game_url(@game, task_id: "task_collect_one"),
+           params: { currentCount: 1 }
+
+      @game.reload
+      assert_equal initial_aims_count + 1, @game.objectives_completed,
+        "Aim should complete when all tasks done"
+
+      aim_status = @game.player_state.dig("objectivesState", "aims", "aim_multi", "status")
+      assert_equal "completed", aim_status
+    end
+
+    # =========================================================================
+    # SCORING SECURITY TESTS
+    # =========================================================================
+
+    test "SECURITY: task-based scoring validates server-side for submit_flags tasks" do
+      setup_submit_flags_task
+
+      # Try to complete without submitting flags
+      post complete_task_game_url(@game, task_id: "task_flags"),
+           params: {}
+
+      json = JSON.parse(response.body)
+      assert_equal false, json["success"],
+        "SCORING: submit_flags task should not complete without flags parameter"
+
+      @game.reload
+      assert_equal 0, @game.tasks_completed,
+        "SCORING: tasks_completed counter should not increment without validation"
+    end
+
+    test "SECURITY: task-based scoring validates server-side for unlock tasks" do
+      setup_unlock_room_task
+
+      # Try to complete without unlocking room
+      post complete_task_game_url(@game, task_id: "task_unlock")
+
+      json = JSON.parse(response.body)
+      assert_equal false, json["success"],
+        "SCORING: unlock_room task should not complete without actual unlock"
+
+      @game.reload
+      assert_equal 0, @game.tasks_completed,
+        "SCORING: tasks_completed counter should not increment without validation"
+    end
+
+    test "SECURITY: task-based scoring increments tasks_completed on valid completion" do
+      setup_unlock_room_task
+      @game.player_state["unlockedRooms"] << "locked_office"
+      @game.save!
+
+      initial_count = @game.tasks_completed || 0
+
+      post complete_task_game_url(@game, task_id: "task_unlock")
+
+      @game.reload
+      assert_equal initial_count + 1, @game.tasks_completed,
+        "SCORING: tasks_completed should increment after valid task completion"
+    end
+
+    test "SECURITY: task-based scoring increments objectives_completed on aim completion" do
+      setup_unlock_room_task
+      @game.player_state["unlockedRooms"] << "locked_office"
+      @game.save!
+
+      initial_count = @game.objectives_completed || 0
+
+      post complete_task_game_url(@game, task_id: "task_unlock")
+
+      @game.reload
+      assert_equal initial_count + 1, @game.objectives_completed,
+        "SCORING: objectives_completed should increment when aim completes"
+    end
+
+    test "SECURITY WARNING: collect_items with client count is exploitable for scoring" do
+      # This documents the KNOWN vulnerability - see todo_itinerary_count_validation_fix.md
+      setup_collect_task
+
+      # Player has no items but claims to have 3
+      @game.player_state["inventory"] = []
+      @game.save!
+
+      post complete_task_game_url(@game, task_id: "task_collect"),
+           params: { currentCount: 3 }
+
+      json = JSON.parse(response.body)
+      assert json["success"],
+        "KNOWN ISSUE: collect_items tasks trust client currentCount (see todo_itinerary_count_validation_fix.md)"
+
+      @game.reload
+      assert_equal 1, @game.tasks_completed,
+        "WARNING: This task type is EXPLOITABLE for scoring - recommend using flags scoring for competitive events"
+    end
+
+    test "SECURITY: enter_room tasks are client-trusted (document for scoring)" do
+      setup_enter_room_task
+
+      # No server-side validation for enter_room
+      post complete_task_game_url(@game, task_id: "task_enter_office")
+
+      json = JSON.parse(response.body)
+      assert json["success"],
+        "DOCUMENTED: enter_room tasks are client-trusted (low-stakes)"
+
+      @game.reload
+      assert_equal 1, @game.tasks_completed,
+        "NOTE: enter_room tasks should be weighted lower in scoring calculations"
+    end
+
+    test "SECURITY: custom tasks have no validation (document for scoring)" do
+      setup_custom_task
+
+      # No server-side validation for custom tasks
+      post complete_task_game_url(@game, task_id: "task_custom")
+
+      json = JSON.parse(response.body)
+      assert json["success"],
+        "DOCUMENTED: custom tasks have no server validation (Ink-driven)"
+
+      @game.reload
+      assert_equal 1, @game.tasks_completed,
+        "NOTE: custom tasks should be excluded from scoring or weighted very low"
+    end
+
+    test "SECURITY: multiple task completions increment counter correctly" do
+      setup_multi_task_aim
+      @game.player_state["unlockedRooms"] << "locked_office"
+      @game.player_state["inventory"] = [{ "id" => "item1" }]
+      @game.save!
+
+      # Complete two tasks
+      post complete_task_game_url(@game, task_id: "task_unlock")
+      post complete_task_game_url(@game, task_id: "task_collect_one"),
+           params: { currentCount: 1 }
+
+      @game.reload
+      assert_equal 2, @game.tasks_completed,
+        "SCORING: tasks_completed should accurately count completed tasks"
+    end
+
+    test "SECURITY: cannot complete same task twice to inflate score" do
+      setup_unlock_room_task
+      @game.player_state["unlockedRooms"] << "locked_office"
+      @game.save!
+
+      # Complete task once
+      post complete_task_game_url(@game, task_id: "task_unlock")
+      @game.reload
+      first_count = @game.tasks_completed
+
+      # Try to complete same task again
+      post complete_task_game_url(@game, task_id: "task_unlock")
+      @game.reload
+
+      assert_equal first_count, @game.tasks_completed,
+        "SECURITY: tasks_completed should not increment for already-completed task"
+    end
+
     private
 
     # ── Scenario data ─────────────────────────────────────────────────────────
@@ -362,6 +836,26 @@ module BreakEscape
       @game.save!
     end
 
+    # Set up a collect_items task with specific targetItemIds (server-validated)
+    def setup_collect_task_with_specific_items
+      @game.scenario_data["objectives"] = [{
+        "aimId" => "aim_specific",
+        "title" => "Collect specific documents",
+        "tasks" => [{
+          "taskId"        => "task_collect_specific",
+          "type"          => "collect_items",
+          "title"         => "Collect 2 specific documents",
+          "targetCount"   => 2,
+          "targetItemIds" => ["secret_doc", "classified"]
+        }]
+      }]
+      @game.player_state["objectivesState"] = {
+        "aims"  => { "aim_specific" => { "status" => "active" } },
+        "tasks" => { "task_collect_specific" => { "status" => "active" } }
+      }
+      @game.save!
+    end
+
     # Set up an unlock_room task targeting locked_office
     def setup_unlock_room_task
       @game.scenario_data["objectives"] = [{
@@ -377,6 +871,130 @@ module BreakEscape
       @game.player_state["objectivesState"] = {
         "aims"  => { "aim_office" => { "status" => "active" } },
         "tasks" => { "task_unlock" => { "status" => "active", "progress" => 0 } }
+      }
+      @game.save!
+    end
+
+    # Set up an unlock_object task targeting lobby_safe
+    def setup_unlock_object_task
+      @game.scenario_data["objectives"] = [{
+        "aimId" => "aim_safe",
+        "title" => "Open the safe",
+        "tasks" => [{
+          "taskId"       => "task_unlock_safe",
+          "type"         => "unlock_object",
+          "title"        => "Unlock the lobby safe",
+          "targetObject" => "lobby_safe"
+        }]
+      }]
+      @game.player_state["objectivesState"] = {
+        "aims"  => { "aim_safe" => { "status" => "active" } },
+        "tasks" => { "task_unlock_safe" => { "status" => "active" } }
+      }
+      @game.save!
+    end
+
+    # Set up a submit_flags task requiring 3 flags
+    def setup_submit_flags_task
+      @game.scenario_data["objectives"] = [{
+        "aimId" => "aim_flags",
+        "title" => "Capture all flags",
+        "tasks" => [{
+          "taskId"      => "task_flags",
+          "type"        => "submit_flags",
+          "title"       => "Submit all 3 flags",
+          "targetFlags" => ["flag_admin", "flag_database", "flag_network"]
+        }]
+      }]
+      @game.player_state["objectivesState"] = {
+        "aims"  => { "aim_flags" => { "status" => "active" } },
+        "tasks" => { "task_flags" => { "status" => "active", "submittedFlags" => [] } }
+      }
+      @game.save!
+    end
+
+    # Set up an npc_conversation task
+    def setup_npc_conversation_task
+      @game.scenario_data["objectives"] = [{
+        "aimId" => "aim_intel",
+        "title" => "Gather intelligence",
+        "tasks" => [{
+          "taskId"    => "task_talk_guard",
+          "type"      => "npc_conversation",
+          "title"     => "Talk to the guard",
+          "targetNPC" => "guard"
+        }]
+      }]
+      @game.player_state["objectivesState"] = {
+        "aims"  => { "aim_intel" => { "status" => "active" } },
+        "tasks" => { "task_talk_guard" => { "status" => "active" } }
+      }
+      @game.save!
+    end
+
+    # Set up an enter_room task
+    def setup_enter_room_task
+      @game.scenario_data["objectives"] = [{
+        "aimId" => "aim_explore",
+        "title" => "Explore the office",
+        "tasks" => [{
+          "taskId"     => "task_enter_office",
+          "type"       => "enter_room",
+          "title"      => "Enter the office",
+          "targetRoom" => "locked_office"
+        }]
+      }]
+      @game.player_state["objectivesState"] = {
+        "aims"  => { "aim_explore" => { "status" => "active" } },
+        "tasks" => { "task_enter_office" => { "status" => "active" } }
+      }
+      @game.save!
+    end
+
+    # Set up a custom task
+    def setup_custom_task
+      @game.scenario_data["objectives"] = [{
+        "aimId" => "aim_story",
+        "title" => "Progress the story",
+        "tasks" => [{
+          "taskId" => "task_custom",
+          "type"   => "custom",
+          "title"  => "Complete story event"
+        }]
+      }]
+      @game.player_state["objectivesState"] = {
+        "aims"  => { "aim_story" => { "status" => "active" } },
+        "tasks" => { "task_custom" => { "status" => "active" } }
+      }
+      @game.save!
+    end
+
+    # Set up an aim with multiple tasks to test aim completion
+    def setup_multi_task_aim
+      @game.scenario_data["objectives"] = [{
+        "aimId" => "aim_multi",
+        "title" => "Complete multiple objectives",
+        "tasks" => [
+          {
+            "taskId"     => "task_unlock",
+            "type"       => "unlock_room",
+            "title"      => "Unlock the office",
+            "targetRoom" => "locked_office"
+          },
+          {
+            "taskId"      => "task_collect_one",
+            "type"        => "collect_items",
+            "title"       => "Collect 1 item",
+            "maxProgress" => 1
+          }
+        ]
+      }]
+      @game.player_state["objectivesState"] = {
+        "aims"  => { "aim_multi" => { "status" => "active" } },
+        "tasks" => {
+          "task_unlock" => { "status" => "active" },
+          "task_collect_one" => { "status" => "active", "progress" => 0 }
+        }
       }
       @game.save!
     end
