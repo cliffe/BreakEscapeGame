@@ -77,6 +77,7 @@ import { initializePlayerEffects, createPlayerBumpEffect, createPlantBumpEffect 
 import { initializeCollision, createWallCollisionBoxes, removeTilesUnderDoor, removeWallTilesForDoorInRoom, removeWallTilesAtWorldPosition } from '../systems/collision.js';
 import { NPCPathfindingManager } from '../systems/npc-pathfinding.js?v=20';
 import NPCSpriteManager from '../systems/npc-sprites.js?v=3';
+import { resolveObjectField } from '../utils/conditional-text.js';
 
 export let rooms = {};
 export let currentRoom = '';
@@ -505,22 +506,35 @@ function createSpriteFromMatch(tiledItem, scenarioObj, position, roomId, index, 
     const imageName = getImageNameFromObjectWithMap(tiledItem, map);
     // Scenario may override the texture with an explicit sprite key (e.g. "vm-launcher-kali").
     // Position still comes from the Tiled item; only the visual is swapped.
-    const textureKey = scenarioObj.sprite || imageName;
+    // spriteVariants can further override the texture based on current global variable state.
+    const baseKey = scenarioObj.sprite || imageName;
+    const resolvedKey = resolveObjectField(scenarioObj, 'sprite', baseKey);
 
-    // Create sprite at Tiled position with proper coordinate conversion
-    // (Tiled Y is top-left, we use bottom-left for isometric perspective)
+    // Always create with the base key (guaranteed loaded via Tiled preload).
+    // If a spriteVariant resolves to a different key at load time, swap it on-demand below.
     const sprite = gameRef.add.sprite(
         Math.round(position.x + tiledItem.x),
         Math.round(position.y + tiledItem.y - tiledItem.height),
-        textureKey
+        baseKey
     );
-    
+
     // Apply Tiled visual properties (rotation, flipping, etc.)
     applyTiledProperties(sprite, tiledItem);
-    
+
     // Apply scenario properties (name, type, interactive data)
     applyScenarioProperties(sprite, scenarioObj, roomId, index);
-    
+
+    // Apply the resolved variant texture at load time if it differs from base
+    if (resolvedKey !== baseKey) {
+        if (!gameRef.textures.exists(resolvedKey)) {
+            gameRef.load.image(resolvedKey, `objects/${resolvedKey}.png`);
+            gameRef.load.once('complete', () => sprite.setTexture(resolvedKey));
+            gameRef.load.start();
+        } else {
+            sprite.setTexture(resolvedKey);
+        }
+    }
+
     return sprite;
 }
 
@@ -558,7 +572,10 @@ function createSpriteAtRandomPosition(scenarioObj, position, roomId, index, map)
 
     // Get sprite texture dimensions to calculate proper placement
     let spriteHeight = TILE_SIZE;  // fallback to 1 tile if texture not found
-    const textureKey = scenarioObj.sprite || scenarioObj.type;
+    const baseKey = scenarioObj.sprite || scenarioObj.type;
+    const resolvedKey = resolveObjectField(scenarioObj, 'sprite', baseKey);
+    // Use resolved key for dimension lookup when it's already loaded, otherwise fall back to base
+    const textureKey = gameRef?.textures?.exists(resolvedKey) ? resolvedKey : baseKey;
 
     if (gameRef && gameRef.textures && gameRef.textures.exists(textureKey)) {
         const texture = gameRef.textures.get(textureKey);
@@ -621,7 +638,8 @@ function createSpriteAtRandomPosition(scenarioObj, position, roomId, index, map)
         attempts++;
     } while (attempts < maxAttempts && isPositionOverlapping(randomX, randomY, roomId, TILE_SIZE));
 
-    const sprite = gameRef.add.sprite(Math.round(randomX), Math.round(randomY), scenarioObj.sprite || scenarioObj.type);
+    // Always create with base key (guaranteed loaded); apply resolved variant on-demand below
+    const sprite = gameRef.add.sprite(Math.round(randomX), Math.round(randomY), baseKey);
 
     console.log(`Created ${scenarioObj.type} at random position (sprite height: ${spriteHeight}px) - no matching item found (attempts: ${attempts})`);
 
@@ -629,7 +647,58 @@ function createSpriteAtRandomPosition(scenarioObj, position, roomId, index, map)
     sprite.setOrigin(0, 0);
     applyScenarioProperties(sprite, scenarioObj, roomId, index);
 
+    // Apply the resolved variant texture at load time if it differs from base
+    if (resolvedKey !== baseKey) {
+        if (!gameRef.textures.exists(resolvedKey)) {
+            gameRef.load.image(resolvedKey, `objects/${resolvedKey}.png`);
+            gameRef.load.once('complete', () => sprite.setTexture(resolvedKey));
+            gameRef.load.start();
+        } else {
+            sprite.setTexture(resolvedKey);
+        }
+    }
+
     return sprite;
+}
+
+/**
+ * Register global_variable_changed listeners to live-update a sprite's texture
+ * when its spriteVariants conditions change. Called after sprite is stored in rooms[].
+ */
+function registerSpriteVariantListeners(sprite, scenarioObj, roomId) {
+    if (!Array.isArray(scenarioObj.spriteVariants) || scenarioObj.spriteVariants.length === 0) return;
+
+    // Extract all globalVar names referenced across all condition strings
+    const watchedVars = new Set();
+    for (const variant of scenarioObj.spriteVariants) {
+        if (variant.condition) {
+            for (const m of variant.condition.matchAll(/globalVars\.(\w+)/g)) {
+                watchedVars.add(m[1]);
+            }
+        }
+    }
+
+    const baseKey = scenarioObj.sprite || scenarioObj.type;
+    const objectId = sprite.objectId;
+
+    console.log('[spriteVariant] registering listener for', objectId, [...watchedVars]);
+    console.log('[spriteVariant] rooms entry at registration:', rooms[roomId]?.objects[objectId]);
+
+    for (const varName of watchedVars) {
+        window.eventDispatcher?.on(`global_variable_changed:${varName}`, () => {
+            const obj = rooms[roomId]?.objects[objectId];
+            const newKey = resolveObjectField(scenarioObj, 'sprite', baseKey);
+            console.log('[spriteVariant] event fired for', objectId, 'new texture:', newKey);
+            if (!obj || obj.texture?.key === newKey) return;
+            if (!gameRef.textures.exists(newKey)) {
+                gameRef.load.image(newKey, `objects/${newKey}.png`);
+                gameRef.load.once('complete', () => obj.setTexture(newKey));
+                gameRef.load.start();
+            } else {
+                obj.setTexture(newKey);
+            }
+        });
+    }
 }
 
 // ===== END: ITEM POOL MANAGEMENT (PHASE 2 IMPROVEMENTS) =====
@@ -2222,8 +2291,9 @@ export function createRoom(roomId, roomData, position) {
                     } else {
                         // Set depth and store for non-table items
                         setDepthAndStore(sprite, position, roomId, false, scenarioObj);
+                        registerSpriteVariantListeners(sprite, scenarioObj, roomId);
                     }
-                    
+
                 } else {
                     // No matching item found, create at random position (existing fallback behavior)
                     sprite = createSpriteAtRandomPosition(scenarioObj, position, roomId, index, map);
@@ -2235,6 +2305,7 @@ export function createRoom(roomId, roomData, position) {
 
                     // Set depth and store
                     setDepthAndStore(sprite, position, roomId, false, scenarioObj);
+                    registerSpriteVariantListeners(sprite, scenarioObj, roomId);
                 }
             });
             

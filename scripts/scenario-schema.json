@@ -654,6 +654,19 @@
             "additionalProperties": false
           }
         },
+        "spriteVariants": {
+          "type": "array",
+          "description": "Optional runtime sprite variants resolved in order by condition against globalVars. Overrides the default sprite texture when a condition matches.",
+          "items": {
+            "type": "object",
+            "required": ["condition", "value"],
+            "properties": {
+              "condition": { "type": "string" },
+              "value": { "type": "string" }
+            },
+            "additionalProperties": false
+          }
+        },
         "text": { "type": "string" },
         "textVariants": {
           "type": "array",
