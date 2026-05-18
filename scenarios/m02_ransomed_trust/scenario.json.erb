@@ -457,6 +457,7 @@ recovery_instructions_encoded = rot13("FULL RECOVERY REQUIRES OFFLINE + ONLINE K
             {
               "eventPattern": "task_completed:meet_dr_kim",
               "onceOnly": true,
+              "setGlobal": { "dr_kim_met": true },
               "sendTimedMessage": { "delay": 1500, "message": "Good. Kim's authorized you. Your next contact is Marcus Webb -- IT department, east of reception. He knows exactly how they got in." }
             },
             {
@@ -1345,6 +1346,7 @@ recovery_instructions_encoded = rot13("FULL RECOVERY REQUIRES OFFLINE + ONLINE K
     "briefing_played": false,
     "mission_started": false,
     "agent_0x99_contacted": false,
+    "dr_kim_met": false,
 
     "paid_ransom": false,
     "exposed_hospital": false,
