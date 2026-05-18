@@ -179,7 +179,7 @@ Dr. Kim: Do whatever you need. Just save those patients.
 
 #complete_task:meet_dr_kim
 #unlock_aim:access_it_systems
-#give_item:hospital_admin_access_badge
+#give_item:id_badge
 
 -> hub
 

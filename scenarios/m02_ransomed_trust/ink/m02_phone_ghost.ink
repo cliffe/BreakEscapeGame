@@ -164,7 +164,7 @@ Ghost: We're harsh teachers. But institutional change requires pain.
 
 Ghost: Here's what happens next.
 
-Ghost: Pay 2.5 BTC—$87,000. Systems restored in 2-4 hours. 1-2 patient deaths, statistical minimum.
+Ghost: Pay 2.5 BTC--$87,000. Systems restored in 2-4 hours. 1-2 patient deaths, statistical minimum.
 
 Ghost: Don't pay. Manual recovery takes 12 hours. 4-6 patient deaths. Malpractice lawsuits. Hospital reputation destroyed.
 
@@ -267,7 +267,7 @@ Ghost: Smart choice. Decryption keys delivered. Systems restoring.
 
 Ghost: 1-2 patient deaths. Acceptable losses compared to the alternative.
 
-Ghost: St. Catherine's will never ignore cybersecurity again. Board approved $250K security budget—triple the old allocation.
+Ghost: St. Catherine's will never ignore cybersecurity again. Board approved $250K security budget--triple the old allocation.
 
 Ghost: Lesson learned. Mission accomplished.
 
@@ -316,7 +316,7 @@ Ghost: We exploited it. They enabled it. Share the blame.
 
 Ghost: $87,000 lost. Operational setback acknowledged.
 
-Ghost: But St. Catherine's board approved $400K emergency security budget—panic response.
+Ghost: But St. Catherine's board approved $400K emergency security budget--panic response.
 
 Ghost: 40 hospitals implementing emergency upgrades. Sector-wide impact achieved.
 

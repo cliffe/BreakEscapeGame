@@ -48,7 +48,7 @@ We have an emergency situation at St. Catherine's Regional Medical Center.
 === briefing_main ===
 #speaker:agent_0x99
 
-Agent 0x99: Hospital ransomware attack. ENTROPY signature detected—Ransomware Incorporated.
+Agent 0x99: Hospital ransomware attack. ENTROPY signature detected--Ransomware Incorporated.
 
 Agent 0x99: 47 patients on life support. Backup power holds 12 hours.
 
@@ -66,7 +66,7 @@ Agent 0x99: If systems aren't restored... the math gets ugly.
     -> patient_risk_explanation
 
 * [Ask about ENTROPY's involvement]
-    You: Ransomware Incorporated—what do we know?
+    You: Ransomware Incorporated--what do we know?
     -> entropy_explanation
 
 === timeline_explanation ===
@@ -108,7 +108,7 @@ Agent 0x99: If we hit 12 hours... 4-6 expected fatalities. Those are real people
 === ransom_preliminary_discussion ===
 #speaker:agent_0x99
 
-Agent 0x99: Yes. Ransom payment gets decryption keys immediately—maybe 1-2 patient deaths.
+Agent 0x99: Yes. Ransom payment gets decryption keys immediately--maybe 1-2 patient deaths.
 
 Agent 0x99: But that's $87,000 funding ENTROPY's next attack.
 
@@ -123,7 +123,7 @@ Agent 0x99: This won't be a simple mission, agent.
 
 Agent 0x99: Ransomware Incorporated. They believe suffering "teaches resilience."
 
-Agent 0x99: Not profit-motivated—ideologically driven. They calculate harm.
+Agent 0x99: Not profit-motivated--ideologically driven. They calculate harm.
 
 Agent 0x99: Ghost's their operative. Cold, methodical. No remorse.
 
@@ -145,11 +145,11 @@ Agent 0x99: Ghost's their operative. Cold, methodical. No remorse.
 
 Agent 0x99: Your objectives:
 
-Agent 0x99: One—infiltrate St. Catherine's as external security consultant.
+Agent 0x99: One--infiltrate St. Catherine's as external security consultant.
 
-Agent 0x99: Two—access hospital's IT systems, identify attack vector.
+Agent 0x99: Two--access hospital's IT systems, identify attack vector.
 
-Agent 0x99: Three—exploit ENTROPY's backdoor on backup server, recover decryption keys.
+Agent 0x99: Three--exploit ENTROPY's backdoor on backup server, recover decryption keys.
 
 * [What's my cover story?]
     -> cover_story
@@ -178,7 +178,7 @@ Agent 0x99: Staff is stressed, desperate. Use that. Build trust.
 
 Agent 0x99: Security is heightened. Guards patrolling. Stay low profile.
 
-Agent 0x99: Like an axolotl timing its movements—patience and observation.
+Agent 0x99: Like an axolotl timing its movements--patience and observation.
 
 Agent 0x99: You'll need lockpicking, social engineering, maybe some technical exploitation.
 
@@ -205,7 +205,7 @@ Agent 0x99: How do you want to approach this?
     ~ mission_priority = "thoroughness"
     You: I'll be careful. Thorough investigation is key.
     Agent 0x99: Smart. Document everything. Build a complete picture.
-    Agent 0x99: But remember—47 patients, 12-hour window. Thorough doesn't mean slow.
+    Agent 0x99: But remember--47 patients, 12-hour window. Thorough doesn't mean slow.
     -> final_instructions
 
 + [Fast and direct]
@@ -216,7 +216,7 @@ Agent 0x99: How do you want to approach this?
     Agent 0x99: ENTROPY leaves traces. Those traces help us stop them permanently.
     -> final_instructions
 
-+ [Adaptable—assess on site]
++ [Adaptable--assess on site]
     ~ player_approach = "adaptable"
     ~ mission_priority = "stealth"
     You: I'll read the situation and adapt as needed.
@@ -259,7 +259,7 @@ Agent 0x99: Good luck, {player_name()}.
 Agent 0x99: 47 lives. 12 hours. SAFETYNET is counting on you.
 
 {knows_full_stakes:
-    Agent 0x99: And remember—those patient deaths? They're on ENTROPY, not you.
+    Agent 0x99: And remember--those patient deaths? They're on ENTROPY, not you.
     Agent 0x99: Do your best. That's all anyone can ask.
 }
 

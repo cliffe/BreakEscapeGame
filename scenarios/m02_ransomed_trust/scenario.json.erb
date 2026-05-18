@@ -15,11 +15,14 @@
 # - Guard patrol timing (60-second predictable loop)
 # - PIN safe cracking (4-digit puzzle)
 # - Moral dilemma interface (ransom decision)
+# - Ransomware display minigame (infected terminals)
+# - Backup recovery minigame (restore hospital systems)
 #
 # ROOM LAYOUT:
-#   Reception → IT Department (locked-easy) → Server Room (locked-medium-hard)
-#   Reception → Dr. Kim's Office → Conference Room
-#   Hallways connect: North (Reception ↔ Server Room) / South (IT ↔ Emergency Storage)
+#   Hospital Ward (south of Reception) - narrative stakes room
+#   Reception <-> IT Department (locked-easy) <-> Server Room (locked-rfid)
+#   Reception <-> Dr. Kim's Office <-> Conference Room
+#   Hallways connect: North (Reception <-> Server Room) / South (IT <-> Emergency Storage)
 #   Emergency Equipment Storage (PIN safe with offline backup keys)
 # ============================================================================
 
@@ -30,13 +33,19 @@ def base64_encode(text)
   Base64.strict_encode64(text)
 end
 
+def rot13(text)
+  text.tr('A-Za-z', 'N-ZA-Mn-za-m')
+end
+
 # Narrative Content Variables
 ransomware_note = "YOUR PATIENT RECORDS ARE ENCRYPTED. 47 PATIENTS ON LIFE SUPPORT. 12 HOURS OF BACKUP POWER. PAY 2.5 BTC OR WATCH THEM DIE. - RANSOMWARE INCORPORATED"
 
 marcus_warning_email = "From: Marcus Webb\nTo: Dr. Sarah Kim\nDate: May 17, 2024\nSubject: URGENT - ProFTPD Vulnerability CVE-2010-4652\n\nDr. Kim,\n\nOur backup server is running ProFTPD 1.3.5, which has a critical backdoor vulnerability (CVE-2010-4652). Attackers can gain remote code execution.\n\nI recommend immediate patching and $85,000 budget for server security upgrade.\n\nPlease escalate to board.\n\n-Marcus"
+
+recovery_instructions_encoded = rot13("FULL RECOVERY REQUIRES OFFLINE + ONLINE KEYS--12-HOUR PROCESS IF MANUAL, INSTANT IF RANSOM PAID.")
 %>
 {
-  "scenario_brief": "Infiltrate St. Catherine's Hospital to recover ransomware decryption keys before 47 patients on life support die. ENTROPY's Ransomware Incorporated has calculated patient death probabilities—recover keys before backup power fails.",
+  "scenario_brief": "Infiltrate St. Catherine's Hospital to recover ransomware decryption keys before 47 patients on life support die. ENTROPY's Ransomware Incorporated has calculated patient death probabilities--recover keys before backup power fails.",
 
   "objectives": [
     {
@@ -51,6 +60,13 @@ marcus_warning_email = "From: Marcus Webb\nTo: Dr. Sarah Kim\nDate: May 17, 2024
           "title": "Arrive at hospital reception",
           "type": "enter_room",
           "targetRoom": "reception_lobby",
+          "status": "active"
+        },
+        {
+          "taskId": "assess_the_ward",
+          "title": "Assess the patient ward to understand the stakes",
+          "type": "enter_room",
+          "targetRoom": "hospital_ward",
           "status": "active"
         },
         {
@@ -79,14 +95,13 @@ marcus_warning_email = "From: Marcus Webb\nTo: Dr. Sarah Kim\nDate: May 17, 2024
         {
           "taskId": "obtain_password_hints",
           "title": "Gather SSH password hints from Marcus",
-          "type": "collect_items",
-          "targetItems": ["password_sticky_note"],
+          "type": "manual",
           "status": "locked"
         },
         {
           "taskId": "decode_ransomware_note",
           "title": "Decode Base64 ransomware message",
-          "type": "custom",
+          "type": "manual",
           "status": "locked"
         },
         {
@@ -109,25 +124,29 @@ marcus_warning_email = "From: Marcus Webb\nTo: Dr. Sarah Kim\nDate: May 17, 2024
           "taskId": "submit_ssh_flag",
           "title": "Submit SSH access flag",
           "type": "submit_flags",
-          "status": "locked"
+          "status": "locked",
+          "puzzle_graph_unlocks": "proftpd_exploitation_unlocked"
         },
         {
           "taskId": "submit_proftpd_flag",
           "title": "Submit ProFTPD exploitation flag",
           "type": "submit_flags",
-          "status": "locked"
+          "status": "locked",
+          "puzzle_graph_unlocks": "database_backup_accessible"
         },
         {
           "taskId": "submit_database_flag",
           "title": "Submit database backup flag",
           "type": "submit_flags",
-          "status": "locked"
+          "status": "locked",
+          "puzzle_graph_unlocks": "lock_emergency_storage_safe"
         },
         {
           "taskId": "submit_ghost_log_flag",
           "title": "Submit Ghost's operational log flag",
           "type": "submit_flags",
-          "status": "locked"
+          "status": "locked",
+          "puzzle_graph_unlocks": "ghost_lore_unlocked"
         }
       ]
     },
@@ -148,7 +167,7 @@ marcus_warning_email = "From: Marcus Webb\nTo: Dr. Sarah Kim\nDate: May 17, 2024
         {
           "taskId": "gather_pin_clues",
           "title": "Find clues for 4-digit safe PIN",
-          "type": "custom",
+          "type": "manual",
           "status": "locked"
         },
         {
@@ -161,22 +180,28 @@ marcus_warning_email = "From: Marcus Webb\nTo: Dr. Sarah Kim\nDate: May 17, 2024
       ]
     },
     {
-      "aimId": "make_critical_decisions",
-      "title": "Make Critical Decisions",
-      "description": "Decide how to recover hospital systems and handle the crisis",
+      "aimId": "restore_hospital_systems",
+      "title": "Restore Hospital Systems",
+      "description": "Initiate backup recovery and decide how to handle the crisis",
       "status": "locked",
       "order": 4,
       "tasks": [
         {
+          "taskId": "initiate_backup_recovery",
+          "title": "Choose a backup restore method",
+          "type": "manual",
+          "status": "locked"
+        },
+        {
           "taskId": "make_ransom_decision",
           "title": "Decide on ransom payment",
-          "type": "custom",
+          "type": "manual",
           "status": "locked"
         },
         {
           "taskId": "decide_hospital_exposure",
           "title": "Decide whether to expose hospital negligence",
-          "type": "custom",
+          "type": "manual",
           "status": "locked"
         }
       ]
@@ -198,7 +223,9 @@ marcus_warning_email = "From: Marcus Webb\nTo: Dr. Sarah Kim\nDate: May 17, 2024
       "type": "lockpick",
       "name": "Lock Pick Kit",
       "takeable": true,
-      "observations": "Professional lock picking kit for bypassing physical locks"
+      "observations": "Professional lock picking kit for bypassing physical locks",
+      "puzzle_graph_role": "tool",
+      "puzzle_graph_unlocks": ["it_department", "dr_kim_office", "IT Filing Cabinet"]
     }
   ],
 
@@ -218,12 +245,14 @@ marcus_warning_email = "From: Marcus Webb\nTo: Dr. Sarah Kim\nDate: May 17, 2024
       "type": "room_reception",
       "dimensions": {
         "width": 15,
-        "height": 12
+        "height": 10
       },
+      "door_sign": "Reception",
       "connections": {
         "north": "hallway_north",
         "east": "it_department",
-        "west": "dr_kim_office"
+        "west": "dr_kim_office",
+        "south": "hospital_ward"
       },
       "npcs": [
         {
@@ -238,10 +267,13 @@ marcus_warning_email = "From: Marcus Webb\nTo: Dr. Sarah Kim\nDate: May 17, 2024
           },
           "storyPath": "scenarios/m02_ransomed_trust/ink/m02_opening_briefing.json",
           "currentKnot": "start",
+          "behavior": { "initiallyHidden": true },
           "timedConversation": {
             "delay": 0,
             "targetKnot": "start",
-            "background": "assets/backgrounds/hq1.png"
+            "background": "assets/backgrounds/hq1.png",
+            "skipIfGlobal": "briefing_played",
+            "setGlobalOnStart": "briefing_played"
           }
         },
         {
@@ -255,8 +287,15 @@ marcus_warning_email = "From: Marcus Webb\nTo: Dr. Sarah Kim\nDate: May 17, 2024
             "idleFrameStart": 20,
             "idleFrameEnd": 23
           },
-          "interactionType": "simple_dialogue",
-          "dialogue": "Welcome to St. Catherine's. Dr. Kim is expecting you in the Administrative Wing."
+          "storyPath": "scenarios/m02_ransomed_trust/ink/m02_npc_receptionist.json",
+          "currentKnot": "start",
+          "voice": {
+            "name": "Kore",
+            "style": "Stressed but professional hospital receptionist. Speak with a calm, measured tone despite the crisis around her.",
+            "language": "en-GB"
+          },
+          "globalVarOnKO": "receptionist_ko",
+          "observations": "The receptionist looks stressed but is maintaining professionalism"
         },
         {
           "id": "agent_0x99",
@@ -270,25 +309,33 @@ marcus_warning_email = "From: Marcus Webb\nTo: Dr. Sarah Kim\nDate: May 17, 2024
             {
               "delay": 3000,
               "message": "Hospital ransomware. 47 patients on life support. We have 12 hours. Message me if you need guidance.",
-              "type": "text"
+              "type": "text",
+              "waitForEvent": "conversation_closed:opening_briefing_cutscene"
             }
           ],
           "eventMappings": [
             {
+              "eventPattern": "room_entered:hospital_ward",
+              "onceOnly": true,
+              "sendTimedMessage": { "delay": 1500, "message": "Those are the patients at risk. Real people. Let's get them their systems back." }
+            },
+            {
               "eventPattern": "room_entered:server_room",
-              "targetKnot": "event_server_room_entered",
-              "onceOnly": true
+              "onceOnly": true,
+              "sendTimedMessage": { "delay": 1000, "message": "Server room. This is the heart of it. VM terminal for exploitation, drop-site for flag submission. Use both." }
             },
             {
               "eventPattern": "item_picked_up:offline_backup_encryption_keys",
-              "targetKnot": "event_offline_keys_found",
-              "onceOnly": true
+              "onceOnly": true,
+              "setGlobal": { "offline_keys_recovered": true },
+              "sendTimedMessage": { "delay": 1000, "message": "The offline backup encryption keys. Those are your alternative to paying the ransom. Good work." }
             },
             {
               "eventPattern": "global_variable_changed:ransom_decision_made",
-              "targetKnot": "event_ransom_decision_made",
               "condition": "value === true",
-              "onceOnly": true
+              "onceOnly": true,
+              "setGlobal": { "ransom_decision_acknowledged": true },
+              "sendTimedMessage": { "delay": 2000, "message": "Decision logged. Whatever the board chooses, you've done your part." }
             }
           ]
         },
@@ -303,7 +350,7 @@ marcus_warning_email = "From: Marcus Webb\nTo: Dr. Sarah Kim\nDate: May 17, 2024
           "eventMappings": [
             {
               "eventPattern": "task_completed:submit_database_flag",
-              "targetKnot": "initial_contact",
+              "sendTimedMessage": { "delay": 2000, "message": "You found the backup. Impressive. My offer still stands -- pay and end this now." },
               "onceOnly": true
             }
           ]
@@ -319,9 +366,10 @@ marcus_warning_email = "From: Marcus Webb\nTo: Dr. Sarah Kim\nDate: May 17, 2024
           "eventMappings": [
             {
               "eventPattern": "global_variable_changed:mission_complete",
-              "targetKnot": "start",
               "condition": "value === true",
-              "onceOnly": true
+              "onceOnly": true,
+              "setGlobal": { "debrief_ready": true },
+              "sendTimedMessage": { "delay": 3000, "message": "Mission complete. Tap to open your debrief summary." }
             }
           ]
         }
@@ -341,7 +389,147 @@ marcus_warning_email = "From: Marcus Webb\nTo: Dr. Sarah Kim\nDate: May 17, 2024
           "takeable": false,
           "readable": true,
           "text": "ST. CATHERINE'S REGIONAL MEDICAL CENTER\n\nFounded 1987\n\nServing the community for over 35 years with compassion and excellence",
-          "observations": "Bronze plaque showing hospital founding year: 1987"
+          "observations": "Bronze plaque showing hospital founding year: 1987",
+          "puzzle_graph_role": "clue",
+          "puzzle_graph_unlocks": "lock_emergency_storage_safe",
+          "puzzle_graph_reveals": "hospital_founding_year_1987_is_the_safe_pin"
+        }
+      ]
+    },
+
+    "hospital_ward": {
+      "type": "room_hospital_ward",
+      "door_sign": "Patient Ward",
+      "connections": {
+        "north": "reception_lobby"
+      },
+      "npcs": [
+        {
+          "id": "ward_nurse",
+          "displayName": "Ward Nurse",
+          "npcType": "person",
+          "position": { "x": 16, "y": 4 },
+          "spriteSheet": "female_nurse1",
+          "spriteTalk": "assets/characters/female_nurse1_headshot.png",
+          "spriteConfig": { "idleFrameRate": 6, "walkFrameRate": 10 },
+          "storyPath": "scenarios/m02_ransomed_trust/ink/m02_npc_ward_nurse.json",
+          "currentKnot": "start",
+          "voice": {
+            "name": "Kore",
+            "style": "Exhausted but professional NHS nurse. Quiet, controlled urgency. Genuinely worried about her patients.",
+            "language": "en-GB"
+          },
+          "globalVarOnKO": "ward_nurse_ko",
+          "observations": "A nurse moving between beds, checking paper charts since the electronic systems are down",
+          "puzzle_graph_actions": [
+            { "id": "talk_to_ward_nurse", "label": "Hear from the ward nurse about patient risk", "unlocks_aim": "infiltrate_hospital" }
+          ]
+        },
+        {
+          "id": "patient_bed4",
+          "displayName": "Mr Okafor (Bed 4)",
+          "npcType": "person",
+          "position": { "x": 3.088, "y": 8.396 },
+          "spriteSheet": "bed4",
+          "spriteConfig": { "idleFrame": 0 },
+          "storyPath": "scenarios/m02_ransomed_trust/ink/m02_npc_patient_bed4.json",
+          "currentKnot": "start",
+          "voice": {
+            "name": "Charon",
+            "style": "Elderly cardiac patient on a ventilator. Speaks very little. Weak and breathless.",
+            "language": "en-GB"
+          },
+          "behavior": {
+            "facePlayer": false,
+            "staticSprite": true,
+            "immovable": true,
+            "collisionBox": "bottom_half"
+          },
+          "observations": "An elderly patient in Bed 4. Connected to a ventilator that is still running. The monitoring screen above his bed is dark -- replaced by a paper chart clipped to the foot of the bed."
+        },
+        {
+          "id": "patient_bed2",
+          "displayName": "Mrs Hargreaves (Bed 2)",
+          "npcType": "person",
+          "position": { "x": 8.078, "y": 3 },
+          "spriteSheet": "bed2",
+          "spriteConfig": { "idleFrame": 0 },
+          "storyPath": "scenarios/m02_ransomed_trust/ink/m02_npc_patient_bed2.json",
+          "currentKnot": "start",
+          "voice": {
+            "name": "Leda",
+            "style": "A patient on ECMO life support. Speaks only in fragments, very quietly. She is dependent on the machine beside her.",
+            "language": "en-GB"
+          },
+          "behavior": {
+            "facePlayer": false,
+            "staticSprite": true,
+            "immovable": true,
+            "collisionBox": "bottom_half"
+          },
+          "observations": "Mrs Hargreaves in Bed 2 -- on ECMO life support. The machine beside her still runs on backup power, but the central monitoring that would alert staff to problems is offline."
+        },
+        {
+          "id": "patient_bed5",
+          "displayName": "Ms Chen (Bed 5)",
+          "npcType": "person",
+          "position": { "x": 7.708, "y": 8.333 },
+          "spriteSheet": "bed5",
+          "spriteConfig": { "idleFrame": 0 },
+          "storyPath": "scenarios/m02_ransomed_trust/ink/m02_npc_patient_bed5.json",
+          "currentKnot": "start",
+          "voice": {
+            "name": "Kore",
+            "style": "A post-surgical patient who is alert and quietly watching the ward. Calm but clearly worried.",
+            "language": "en-GB"
+          },
+          "behavior": {
+            "facePlayer": false,
+            "staticSprite": true,
+            "immovable": true,
+            "collisionBox": "bottom_half"
+          },
+          "observations": "Ms Chen in Bed 5. Post-op, alert, watching what's happening around her in the ward with quiet concern."
+        }
+      ],
+      "objects": [
+        {
+          "type": "pc",
+          "id": "ehr_terminal_ward",
+          "name": "EHR Terminal (Offline)",
+          "takeable": false,
+          "locked": true,
+          "lockType": "ransomware_display",
+          "observations": "The bedside EHR terminal that should show patient vitals and medication records. The screen shows a ransom note on a black background instead. All six beds are running on paper charts.",
+          "puzzle_graph_role": "lock",
+          "puzzle_graph_aim": "infiltrate_hospital",
+          "minigameData": {
+            "organisation": "St. Catherine's Regional Medical Center",
+            "encryptedSystems": "47 life-support patients | EHR terminals | Patient monitoring | Medication records",
+            "ransomAmount": "$87,000",
+            "ransomBitcoin": "2.5 BTC",
+            "walletAddress": "bc1q7cyrfmckn2ewz5m78ts6jt9lcfhfwcvzefm27k",
+            "timerHours": 12,
+            "groupName": "Ransomware Incorporated",
+            "supportPortal": "ransom1nc0rp0rated.onion"
+          }
+        },
+        {
+          "type": "notes",
+          "name": "Paper Patient Chart - Bed 3",
+          "takeable": false,
+          "readable": true,
+          "text": "PATIENT: M. Okafor, DOB: 1944-03-15\nWARD: St. Catherine's - Bed 3\nCONDITION: ECMO (heart-lung bypass)\nBACKUP POWER: Active\n\nNURSE NOTE: Electronic monitoring offline. Manual obs every 15 minutes. Patient stable but ECMO requires constant monitoring. Do NOT leave unsupervised.\n\nFAMILY: Daughter calling every hour. Please update when you can.",
+          "observations": "Paper chart pinned to the bed frame -- nurses are working without electronic support"
+        },
+        {
+          "type": "notes",
+          "name": "Emergency Ops Board",
+          "takeable": false,
+          "readable": true,
+          "text": "EMERGENCY OPERATIONS -- CURRENT STATUS\n\nPatients on backup power: 47\n  - Ventilators: 23\n  - ECMO (heart-lung support): 12\n  - Dialysis: 12\n\nBackup generator time remaining: 12 HRS\nStatistical fatality risk: 0.3% per hour\n\nALL STAFF: Paper MAR charts only. No electronic prescribing until systems restored.",
+          "observations": "Whiteboard showing patient status -- 47 people depending on backup power",
+          "observationDisplay": "gameDisplay"
         }
       ]
     },
@@ -349,7 +537,7 @@ marcus_warning_email = "From: Marcus Webb\nTo: Dr. Sarah Kim\nDate: May 17, 2024
     "it_department": {
       "type": "room_office",
       "dimensions": {
-        "width": 12,
+        "width": 10,
         "height": 10
       },
       "locked": true,
@@ -357,9 +545,10 @@ marcus_warning_email = "From: Marcus Webb\nTo: Dr. Sarah Kim\nDate: May 17, 2024
       "requires": "it_door_lock",
       "keyPins": [35, 45, 25, 55],
       "difficulty": "easy",
+      "door_sign": "IT Department",
       "connections": {
         "west": "reception_lobby",
-        "east": "server_room",
+        "north": "hallway_north",
         "south": "hallway_south"
       },
       "npcs": [
@@ -375,13 +564,26 @@ marcus_warning_email = "From: Marcus Webb\nTo: Dr. Sarah Kim\nDate: May 17, 2024
           },
           "storyPath": "scenarios/m02_ransomed_trust/ink/m02_npc_marcus_webb.json",
           "currentKnot": "start",
+          "voice": {
+            "name": "Charon",
+            "style": "Stressed, guilt-ridden IT administrator. Australian accent. Genuinely competent but ignored by management. Mix of guilt and frustration.",
+            "language": "en-AU"
+          },
+          "globalVarOnKO": "marcus_ko",
+          "taskOnKO": "talk_to_marcus",
+          "observations": "Marcus Webb sits at his desk, staring at a screen full of error messages. He looks like he hasn't slept.",
+          "puzzle_graph_actions": [
+            { "id": "social_engineer_marcus", "label": "Social engineer Marcus for server room keycard + SSH passwords", "unlocks_aim": "access_it_systems" }
+          ],
           "itemsHeld": [
             {
               "type": "keycard",
               "name": "Server Room Keycard",
               "takeable": true,
               "key_id": "server_room_keycard",
-              "observations": "Marcus's keycard for server room access"
+              "observations": "Marcus's RFID keycard for server room access",
+              "puzzle_graph_role": "key",
+              "puzzle_graph_unlocks": "server_room"
             }
           ]
         }
@@ -389,19 +591,38 @@ marcus_warning_email = "From: Marcus Webb\nTo: Dr. Sarah Kim\nDate: May 17, 2024
       "objects": [
         {
           "type": "pc",
+          "id": "infected_terminal",
           "name": "Infected Terminal",
           "takeable": false,
-          "readable": true,
-          "text": "<%= base64_encode(ransomware_note) %>",
-          "observations": "Terminal with ransomware splash screen - Base64 encoded message"
+          "locked": true,
+          "lockType": "ransomware_display",
+          "observations": "The workstation displays a ransomware splash screen. The text scrolls: 'YOUR FILES ARE ENCRYPTED'. A Bitcoin wallet address and countdown timer flash in red.",
+          "onRead": { "setVariable": { "decoded_ransomware_note": true } },
+          "puzzle_graph_role": "clue",
+          "puzzle_graph_reveals": "ransomware_group_identity_and_ransom_demand",
+          "minigameData": {
+            "organisation": "St. Catherine's Regional Medical Center",
+            "encryptedSystems": "Patient records | Backup server | All workstations",
+            "ransomAmount": "$87,000",
+            "ransomBitcoin": "2.5 BTC",
+            "walletAddress": "bc1q7cyrfmckn2ewz5m78ts6jt9lcfhfwcvzefm27k",
+            "timerHours": 12,
+            "groupName": "Ransomware Incorporated",
+            "supportPortal": "ransom1nc0rp0rated.onion"
+          }
         },
         {
           "type": "notes",
           "name": "Marcus's Password Sticky Note",
+          "id": "password_sticky_note",
           "takeable": true,
           "readable": true,
           "text": "Common passwords (embarrassing...):\nEmma2018\nHospital1987\nStCatherines\n\n(Need to improve password policy!)",
-          "observations": "Password hints for SSH access - Marcus's shortcuts"
+          "observations": "Password hints for SSH access -- Marcus's shortcuts",
+          "puzzle_graph_role": "clue",
+          "puzzle_graph_unlocks": "vm_launcher_rooting_for_a_win",
+          "puzzle_graph_reveals": "ssh_password_candidates_for_backup_server",
+          "puzzle_graph_optional": true
         },
         {
           "type": "notes",
@@ -409,7 +630,9 @@ marcus_warning_email = "From: Marcus Webb\nTo: Dr. Sarah Kim\nDate: May 17, 2024
           "takeable": true,
           "readable": true,
           "text": "Photo of young girl with birthday cake.\nHandwritten on back: 'Emma - 7th birthday! 05/17/2018'",
-          "observations": "Marcus's daughter Emma - birthday 2018 (red herring for PIN puzzle)"
+          "observations": "Marcus's daughter Emma - birthday 2018 (check if relevant to the PIN puzzle)",
+          "puzzle_graph_role": "clue",
+          "puzzle_graph_reveals": "red_herring_emma_birthday_not_the_safe_pin"
         },
         {
           "type": "safe",
@@ -419,7 +642,7 @@ marcus_warning_email = "From: Marcus Webb\nTo: Dr. Sarah Kim\nDate: May 17, 2024
           "lockType": "key",
           "keyPins": [30, 40, 50, 60],
           "difficulty": "easy",
-          "observations": "4-drawer filing cabinet with lockpicking mechanism",
+          "observations": "4-drawer filing cabinet with a key lock",
           "contents": [
             {
               "type": "notes",
@@ -427,14 +650,16 @@ marcus_warning_email = "From: Marcus Webb\nTo: Dr. Sarah Kim\nDate: May 17, 2024
               "takeable": true,
               "readable": true,
               "text": <%= marcus_warning_email.to_json %>,
-              "observations": "Email proving Marcus warned Dr. Kim 6 months ago about vulnerability"
+              "observations": "Email proving Marcus warned Dr. Kim 6 months ago about the vulnerability",
+              "puzzle_graph_role": "clue",
+              "puzzle_graph_reveals": "institutional_negligence_evidence_marcus_warned_them"
             },
             {
               "type": "notes",
               "name": "CryptoSecure Recovery Services Document",
               "takeable": true,
               "readable": true,
-              "text": "CRYPTOSECURE RECOVERY SERVICES\nCryptocurrency-Based Data Recovery Specialists\n\nCLIENT TESTIMONIAL LOG - OPERATION TRIAGE\nQ1-Q2 2024 OPERATIONS\n\n[Previous hospital attacks documented]\n[LORE Fragment - Ransomware Inc. front company]\n\n[Full content would be the complete LORE fragment from planning docs]",
+              "text": "CRYPTOSECURE RECOVERY SERVICES\nCryptocurrency-Based Data Recovery Specialists\n\nCLIENT TESTIMONIAL LOG - OPERATION TRIAGE\nQ1-Q2 2024 OPERATIONS\n\nHospital victims who paid ransom, then used our 'legitimate' recovery portal.\nWe handle both sides: we encrypt, you pay, we decrypt.\n\n[LORE: Ransomware Inc. front company -- same group operates both sides of the ransom process]",
               "observations": "LORE Fragment: Ransomware Incorporated's legitimate front company",
               "onPickup": { "setVariable": { "lore_cryptosecure_found": true } }
             }
@@ -446,7 +671,10 @@ marcus_warning_email = "From: Marcus Webb\nTo: Dr. Sarah Kim\nDate: May 17, 2024
           "takeable": false,
           "readable": true,
           "text": "HOSPITAL NETWORK DIAGRAM\n\nBackup Server:\n- ProFTPD 1.3.5\n- Port 21 (FTP)\n- IP: 192.168.100.50\n- Status: VULNERABLE (CVE-2010-4652)\n\nMarcus's note: 'WARNED THEM 6 MONTHS AGO!!!'",
-          "observations": "Network diagram showing vulnerable ProFTPD server"
+          "observations": "Network diagram showing the vulnerable ProFTPD backup server",
+          "puzzle_graph_role": "clue",
+          "puzzle_graph_unlocks": "vm_launcher_rooting_for_a_win",
+          "puzzle_graph_reveals": "proftpd_exploit_path_cve_2010_4652"
         }
       ]
     },
@@ -455,15 +683,15 @@ marcus_warning_email = "From: Marcus Webb\nTo: Dr. Sarah Kim\nDate: May 17, 2024
       "type": "room_servers",
       "dimensions": {
         "width": 10,
-        "height": 8
+        "height": 10
       },
       "locked": true,
       "lockType": "rfid",
       "requires": "server_room_keycard",
       "difficulty": "medium",
+      "door_sign": "Server Room",
       "connections": {
-        "west": "it_department",
-        "north": "hallway_north"
+        "west": "hallway_north"
       },
       "npcs": [],
       "objects": [
@@ -472,9 +700,11 @@ marcus_warning_email = "From: Marcus Webb\nTo: Dr. Sarah Kim\nDate: May 17, 2024
           "id": "vm_launcher_rooting_for_a_win",
           "name": "VM Access Terminal",
           "takeable": false,
-          "observations": "Terminal providing SSH access to hospital backup server for investigation",
+          "observations": "Terminal providing SSH access to the hospital backup server for investigation",
           "hacktivityMode": <%= vm_context && vm_context['hacktivity_mode'] ? 'true' : 'false' %>,
-          "vm": <%= vm_object('secgen_rooting_for_a_win', {"id":1,"title":"Hospital Backup Server","ip":"192.168.100.50","enable_console":true}) %>
+          "vm": <%= vm_object('secgen_rooting_for_a_win', {"id":1,"title":"Hospital Backup Server","ip":"192.168.100.50","enable_console":true}) %>,
+          "puzzle_graph_role": "vm",
+          "puzzle_graph_aim": "exploit_entropy_backdoor"
         },
         {
           "type": "flag-station",
@@ -508,22 +738,77 @@ marcus_warning_email = "From: Marcus Webb\nTo: Dr. Sarah Kim\nDate: May 17, 2024
           ]
         },
         {
-          "type": "pc",
+          "type": "workstation",
           "id": "cyberchef_workstation",
           "name": "CyberChef Workstation",
           "takeable": false,
-          "storyPath": "scenarios/m02_ransomed_trust/ink/m02_terminal_cyberchef.json",
-          "currentKnot": "start",
-          "observations": "Encoding/decoding workstation with Base64, ROT13, and Hex tools"
+          "observations": "Encoding/decoding workstation with Base64, ROT13, and Hex tools. Use this to decode the ransomware messages you've found.",
+          "puzzle_graph_role": "tool",
+          "puzzle_graph_note": "Portable CyberChef tool -- required to decode the Base64 ransomware note and ROT13 recovery instructions"
         },
         {
-          "type": "pc",
-          "id": "ransom_interface_terminal",
-          "name": "Hospital Recovery Interface",
+          "type": "backup_recovery",
+          "id": "hospital_recovery_console",
+          "name": "Hospital Recovery Console",
           "takeable": false,
-          "storyPath": "scenarios/m02_ransomed_trust/ink/m02_terminal_ransom_interface.json",
-          "currentKnot": "start",
-          "observations": "Terminal for making critical ransom payment decision"
+          "observations": "The system recovery console. This is where you initiate the backup restoration process. Choose your recovery source carefully -- the wrong choice could mean reinfection.",
+          "puzzle_graph_role": "lock",
+          "puzzle_graph_aim": "restore_hospital_systems",
+          "minigameData": {
+            "backupRecoverySources": [
+              {
+                "id": "ransom_payment",
+                "name": "Ransom Payment (Ghost's Decryption)",
+                "status": "AVAILABLE -- 30 MINUTES",
+                "etaLabel": "30 minutes",
+                "marker": "!",
+                "statusTone": "warning",
+                "bannerTone": "warning",
+                "bannerText": "WARNING: FUNDING ENTROPY DIRECTLY",
+                "icon": "[BTC]",
+                "bullets": [
+                  "Recovery time: 30 minutes (instant decryption key delivery).",
+                  "Patient risk: Minimal -- systems restored before backup power fails.",
+                  "Cost: $87,000 to Ransomware Incorporated funds future attacks.",
+                  "Intelligence value: Ghost escapes -- no trail, no arrest, no deterrent."
+                ]
+              },
+              {
+                "id": "offline_keys_only",
+                "name": "Offline Backup Keys (Physical Safe)",
+                "status": "AVAILABLE IF SAFE CRACKED",
+                "etaLabel": "12 hours manual restore",
+                "marker": "~",
+                "statusTone": "warning",
+                "bannerTone": "warning",
+                "bannerText": "CAUTION: LONG RESTORATION WINDOW",
+                "icon": "[KEY]",
+                "bullets": [
+                  "Recovery time: 12 hours -- manual restoration of encrypted patient records.",
+                  "Patient risk: Statistical -- 0.3% fatality per hour on life support.",
+                  "Cost: $0 to ENTROPY -- denies ransom funding for future operations.",
+                  "Prerequisite: Offline backup keys must be recovered from PIN safe first."
+                ]
+              },
+              {
+                "id": "combined_recovery",
+                "name": "Combined Recovery (VM Keys + Physical Keys)",
+                "status": "OPTIMAL -- REQUIRES BOTH KEY TYPES",
+                "etaLabel": "4 hours",
+                "marker": "OK",
+                "statusTone": "safe",
+                "bannerTone": "safe",
+                "bannerText": "RECOMMENDED: FASTEST INDEPENDENT RECOVERY",
+                "icon": "[+]",
+                "bullets": [
+                  "Recovery time: 4 hours -- both key types accelerate decryption significantly.",
+                  "Patient risk: Low -- well within backup power window.",
+                  "Cost: $0 to ENTROPY -- no ransom payment required.",
+                  "Prerequisite: Both VM exploitation flags AND offline backup keys required."
+                ]
+              }
+            ]
+          }
         },
         {
           "type": "notes",
@@ -531,17 +816,24 @@ marcus_warning_email = "From: Marcus Webb\nTo: Dr. Sarah Kim\nDate: May 17, 2024
           "takeable": false,
           "readable": true,
           "text": "EMERGENCY POWER STATUS\n\nBackup Generator: ACTIVE\nTime Remaining: 12 HOURS\n\nCritical Systems on Backup:\n- 47 Life Support Patients\n- Emergency Lighting\n- Core Medical Equipment\n\nWARNING: Systems will fail when backup power depletes",
-          "observations": "LED panel showing time pressure - 12-hour window"
+          "observations": "LED panel showing time pressure -- 12-hour window"
+        },
+        {
+          "type": "notes",
+          "name": "Recovery Instructions (Encoded)",
+          "takeable": true,
+          "readable": true,
+          "text": "<%= recovery_instructions_encoded %>\n\n(ROT13 encoded -- use the CyberChef workstation to decode)",
+          "observations": "Encoded note taped to the server rack -- ROT13 cipher",
+          "puzzle_graph_role": "clue",
+          "puzzle_graph_reveals": "recovery_requires_both_key_types_and_ransom_vs_manual_tradeoff"
         }
       ]
     },
 
     "emergency_equipment_storage": {
-      "type": "small_room_1x1gu",
-      "dimensions": {
-        "width": 8,
-        "height": 8
-      },
+      "type": "small_room_storage_1x1gu",
+      "door_sign": "Emergency Storage",
       "connections": {
         "north": "hallway_south"
       },
@@ -555,14 +847,19 @@ marcus_warning_email = "From: Marcus Webb\nTo: Dr. Sarah Kim\nDate: May 17, 2024
           "locked": true,
           "lockType": "pin",
           "requires": "1987",
-          "observations": "4-digit electronic safe - requires PIN code (hospital founding year)",
+          "observations": "4-digit electronic safe -- requires PIN code",
+          "puzzle_graph_role": "lock",
+          "puzzle_graph_aim": "recover_offline_keys",
           "contents": [
             {
               "type": "notes",
               "name": "Offline Backup Encryption Keys",
+              "id": "offline_backup_encryption_keys",
               "takeable": true,
-              "observations": "USB drive with offline backup decryption keys - critical for recovery",
-              "onPickup": { "setVariable": { "offline_keys_recovered": true } }
+              "observations": "USB drive with offline backup decryption keys -- critical for recovery without paying ransom",
+              "onPickup": { "setVariable": { "offline_keys_recovered": true } },
+              "puzzle_graph_role": "key",
+              "puzzle_graph_unlocks": "hospital_recovery_console"
             }
           ]
         },
@@ -572,7 +869,10 @@ marcus_warning_email = "From: Marcus Webb\nTo: Dr. Sarah Kim\nDate: May 17, 2024
           "takeable": true,
           "readable": true,
           "text": "PIN CRACKER DEVICE\n\nAutomated 4-digit PIN brute force tool\nEstimated time: 2 minutes\n\nUse if clues to safe PIN cannot be found",
-          "observations": "Fallback tool for PIN puzzle if clues missed"
+          "observations": "Fallback tool for PIN puzzle if clues were missed",
+          "puzzle_graph_role": "tool",
+          "puzzle_graph_unlocks": "lock_emergency_storage_safe",
+          "puzzle_graph_optional": true
         },
         {
           "type": "notes",
@@ -588,7 +888,7 @@ marcus_warning_email = "From: Marcus Webb\nTo: Dr. Sarah Kim\nDate: May 17, 2024
     "dr_kim_office": {
       "type": "room_office",
       "dimensions": {
-        "width": 12,
+        "width": 10,
         "height": 10
       },
       "locked": true,
@@ -596,6 +896,7 @@ marcus_warning_email = "From: Marcus Webb\nTo: Dr. Sarah Kim\nDate: May 17, 2024
       "requires": "admin_office_lock",
       "keyPins": [40, 50, 30, 60],
       "difficulty": "medium",
+      "door_sign": "CTO Office",
       "connections": {
         "east": "reception_lobby",
         "south": "conference_room"
@@ -613,7 +914,26 @@ marcus_warning_email = "From: Marcus Webb\nTo: Dr. Sarah Kim\nDate: May 17, 2024
             "idleFrameEnd": 23
           },
           "storyPath": "scenarios/m02_ransomed_trust/ink/m02_npc_sarah_kim.json",
-          "currentKnot": "start"
+          "currentKnot": "start",
+          "voice": {
+            "name": "Aoede",
+            "style": "Senior hospital executive under extreme pressure. Authoritative but clearly guilty and frightened. British RP accent.",
+            "language": "en-GB"
+          },
+          "globalVarOnKO": "dr_kim_ko",
+          "taskOnKO": "meet_dr_kim",
+          "observations": "Dr. Kim is pacing behind her desk, phone in hand. She looks relieved to see you.",
+          "puzzle_graph_actions": [
+            { "id": "meet_dr_kim", "label": "Meet Dr. Kim and receive mission authorization", "unlocks_aim": "access_it_systems" }
+          ],
+          "itemsHeld": [
+            {
+              "type": "id_badge",
+              "name": "Hospital Admin Access Badge",
+              "takeable": true,
+              "observations": "Dr. Kim's authorization badge -- grants access to administrative areas"
+            }
+          ]
         }
       ],
       "objects": [
@@ -623,7 +943,11 @@ marcus_warning_email = "From: Marcus Webb\nTo: Dr. Sarah Kim\nDate: May 17, 2024
           "takeable": true,
           "readable": true,
           "text": "Sticky note on Dr. Kim's desk:\n\n'Safe combination: founding year (for emergency access)'",
-          "observations": "PIN safe clue - references hospital founding year"
+          "observations": "PIN safe clue -- references hospital founding year",
+          "puzzle_graph_role": "clue",
+          "puzzle_graph_unlocks": "lock_emergency_storage_safe",
+          "puzzle_graph_reveals": "safe_pin_is_the_hospital_founding_year",
+          "puzzle_graph_optional": true
         },
         {
           "type": "notes",
@@ -631,7 +955,7 @@ marcus_warning_email = "From: Marcus Webb\nTo: Dr. Sarah Kim\nDate: May 17, 2024
           "takeable": true,
           "readable": true,
           "text": "FY2024 BUDGET REPORT\n\nIT Security Upgrade (Marcus Webb request): $85,000 - DEFERRED\nReason: Budget constraints, defer to next fiscal year\n\nMRI Equipment Purchase: $3,200,000 - APPROVED\nBoard vote: 7-2 in favor\n\nDr. Kim's note: 'We chose shiny technology over cybersecurity. I was wrong.'",
-          "observations": "Evidence of institutional negligence - budget cuts created vulnerability"
+          "observations": "Evidence of institutional negligence -- budget cuts created vulnerability"
         },
         {
           "type": "notes",
@@ -639,7 +963,8 @@ marcus_warning_email = "From: Marcus Webb\nTo: Dr. Sarah Kim\nDate: May 17, 2024
           "takeable": true,
           "readable": true,
           "text": "CRITICAL PATIENT STATUS REPORT\n\n47 patients on life support:\n- 23 ventilators\n- 12 ECMO (heart-lung support)\n- 12 dialysis\n\nBackup power: 12 hours remaining\nStatistical risk: 0.3% per hour fatality probability\n\nDr. Kim's note: 'These are real people. Families. We can't let them die.'",
-          "observations": "Reinforces stakes - 47 real patients at risk"
+          "observations": "Reinforces the stakes -- 47 real patients at risk",
+          "observationDisplay": "gameDisplay"
         },
         {
           "type": "safe",
@@ -648,16 +973,18 @@ marcus_warning_email = "From: Marcus Webb\nTo: Dr. Sarah Kim\nDate: May 17, 2024
           "locked": true,
           "lockType": "pin",
           "requires": "1987",
-          "observations": "Executive safe behind framed certificate - same PIN as emergency storage (1987)",
+          "observations": "Executive safe behind a framed certificate -- same PIN as the emergency storage",
           "contents": [
             {
               "type": "notes",
               "name": "Zero Day Syndicate Invoice",
               "takeable": true,
               "readable": true,
-              "text": "ZERO DAY SYNDICATE - INVOICE #ZDS-2024-0847\n\nCLIENT: Ransomware Incorporated (Ghost)\nPROJECT: Healthcare Sector Exploit Package\nTARGET: St. Catherine's Regional Medical\n\nDELIVERABLES:\n- ProFTPD 1.3.5 Exploit: $25,000\n- Reconnaissance (214 hospitals): $15,000\n- Target Selection Consultation: $10,000\n- Deployment Guide: $5,000\n\nTOTAL: $55,000 (15% ENTROPY discount applied)\n\nARCHITECT APPROVAL: CONFIRMED\n\n[LORE Fragment - ZDS coordination, M3 setup]\n\n[Full content would be complete LORE fragment from planning docs]",
-              "observations": "LORE Fragment: Zero Day Syndicate sold exploit to Ransomware Inc.",
-              "onPickup": { "setVariable": { "lore_zds_invoice_found": true } }
+              "text": "ZERO DAY SYNDICATE - INVOICE #ZDS-2024-0847\n\nCLIENT: Ransomware Incorporated (Ghost)\nPROJECT: Healthcare Sector Exploit Package\nTARGET: St. Catherine's Regional Medical\n\nDELIVERABLES:\n- ProFTPD 1.3.5 Exploit: $25,000\n- Reconnaissance (214 hospitals): $15,000\n- Target Selection Consultation: $10,000\n- Deployment Guide: $5,000\n\nTOTAL: $55,000 (15% ENTROPY discount applied)\n\nARCHITECT APPROVAL: CONFIRMED\n\n[LORE: Zero Day Syndicate sold this exploit to Ghost specifically targeting St. Catherine's because of Marcus's documented warnings -- 'maximum educational impact'. The Architect personally approved the operation.]",
+              "observations": "LORE Fragment: Zero Day Syndicate sold the ProFTPD exploit to Ransomware Inc. -- and The Architect approved it",
+              "onPickup": { "setVariable": { "lore_zds_invoice_found": true } },
+              "puzzle_graph_role": "clue",
+              "puzzle_graph_reveals": "entropy_cells_coordinating_zero_day_sold_exploit_architect_approved"
             }
           ]
         }
@@ -665,11 +992,12 @@ marcus_warning_email = "From: Marcus Webb\nTo: Dr. Sarah Kim\nDate: May 17, 2024
     },
 
     "conference_room": {
-      "type": "room_office",
+      "type": "room_meeting",
       "dimensions": {
         "width": 10,
-        "height": 12
+        "height": 10
       },
+      "door_sign": "Conference Room",
       "connections": {
         "north": "dr_kim_office",
         "east": "hallway_north"
@@ -682,15 +1010,24 @@ marcus_warning_email = "From: Marcus Webb\nTo: Dr. Sarah Kim\nDate: May 17, 2024
           "takeable": false,
           "readable": true,
           "text": "BUDGET MEETING MINUTES - MARCH 2024\n\nIT Security Upgrade Proposal:\nMarcus Webb presented $85,000 server security upgrade.\nBoard decision: DEFER to next fiscal year.\n\nRationale: 'Cybersecurity is important, but patient care technology takes priority. The MRI will save lives today.'",
-          "observations": "Budget meeting notes showing decision-making process"
+          "observations": "Budget meeting notes showing the decision-making process"
         },
         {
           "type": "notes",
           "name": "Conference Whiteboard",
           "takeable": false,
           "readable": true,
-          "text": "FY2024 BUDGET ALLOCATION\n\nIT Security: $85K → $50K (CUT 40%)\nMRI Equipment: $3.2M (APPROVED)\n\nBoard priorities: Patient care equipment > Infrastructure security",
-          "observations": "Whiteboard showing budget cuts that enabled ransomware attack"
+          "text": "FY2024 BUDGET ALLOCATION\n\nIT Security: $85K --> $50K (CUT 40%)\nMRI Equipment: $3.2M (APPROVED)\n\nBoard priorities: Patient care equipment > Infrastructure security",
+          "observations": "Whiteboard showing budget cuts that enabled the ransomware attack"
+        },
+        {
+          "type": "notes",
+          "name": "Board Liability Email",
+          "takeable": true,
+          "readable": true,
+          "text": "FROM: Hospital Board Chair\nTO: Legal Department\nRE: Incident Liability\n\nMarcus Webb's warnings are documented. We need to reframe this as his implementation failure, not our budget decision. Prepare termination paperwork and non-disparagement agreement.\n\n[This is stamped CONFIDENTIAL]",
+          "observations": "Damning email -- the board plans to blame Marcus and cover up their budget decision",
+          "onPickup": { "setVariable": { "board_coverup_email_found": true } }
         }
       ]
     },
@@ -699,8 +1036,9 @@ marcus_warning_email = "From: Marcus Webb\nTo: Dr. Sarah Kim\nDate: May 17, 2024
       "type": "hall_1x2gu",
       "dimensions": {
         "width": 20,
-        "height": 4
+        "height": 6
       },
+      "door_sign": "North Corridor",
       "connections": {
         "south": "reception_lobby",
         "west": "conference_room",
@@ -720,17 +1058,23 @@ marcus_warning_email = "From: Marcus Webb\nTo: Dr. Sarah Kim\nDate: May 17, 2024
           },
           "storyPath": "scenarios/m02_ransomed_trust/ink/m02_npc_security_guard.json",
           "currentKnot": "start",
+          "voice": {
+            "name": "Enceladus",
+            "style": "Authoritative hospital security guard. No-nonsense, by the book. Suspicious of strangers during the crisis.",
+            "language": "en-GB"
+          },
+          "globalVarOnKO": "guard_knocked_out",
           "behavior": {
             "patrol": {
               "enabled": true,
-              "route": [
-                { "x": 3, "y": 2 },
+              "waypoints": [
+                { "x": 3, "y": 2, "dwellTime": 2000 },
                 { "x": 10, "y": 2 },
-                { "x": 17, "y": 2 },
+                { "x": 17, "y": 2, "dwellTime": 2000 },
                 { "x": 10, "y": 2 }
               ],
               "speed": 40,
-              "pauseTime": 20
+              "loop": true
             }
           },
           "los": {
@@ -744,10 +1088,21 @@ marcus_warning_email = "From: Marcus Webb\nTo: Dr. Sarah Kim\nDate: May 17, 2024
               "eventPattern": "lockpick_used_in_view",
               "targetKnot": "on_lockpick_used",
               "conversationMode": "person-chat",
-              "cooldown": 0
+              "background": "assets/backgrounds/hospital1.png",
+              "onceOnly": false,
+              "cooldown": 30000
             }
           ],
-          "_comment": "Interactive guard with combat options - patrols hallway, can be fought, knocked out, or persuaded"
+          "itemsHeld": [
+            {
+              "type": "notes",
+              "name": "Guard's Station Log",
+              "takeable": true,
+              "readable": true,
+              "text": "SECURITY LOG - TODAY\n\n09:12 - External security consultant arrived (Dr. Kim authorized)\n09:20 - All non-critical systems confirmed offline\n10:05 - Perimeter secured, IT access restricted\n\nNOTE: Unauthorized access to server room is a fireable offense.",
+              "observations": "The guard's station log -- useful context"
+            }
+          ]
         }
       ],
       "objects": [
@@ -756,7 +1111,7 @@ marcus_warning_email = "From: Marcus Webb\nTo: Dr. Sarah Kim\nDate: May 17, 2024
           "name": "Directional Signs",
           "takeable": false,
           "readable": true,
-          "text": "← Administration | Server Room → | IT Department ↓",
+          "text": "<-- Administration | Server Room --> | IT Department (below)",
           "observations": "Hospital corridor directional signage"
         }
       ]
@@ -766,8 +1121,9 @@ marcus_warning_email = "From: Marcus Webb\nTo: Dr. Sarah Kim\nDate: May 17, 2024
       "type": "hall_1x2gu",
       "dimensions": {
         "width": 20,
-        "height": 4
+        "height": 6
       },
+      "door_sign": "South Corridor",
       "connections": {
         "north": "it_department",
         "south": "emergency_equipment_storage"
@@ -779,7 +1135,7 @@ marcus_warning_email = "From: Marcus Webb\nTo: Dr. Sarah Kim\nDate: May 17, 2024
           "name": "Directional Signs",
           "takeable": false,
           "readable": true,
-          "text": "IT Department ↑ | Emergency Storage ↓",
+          "text": "IT Department (above) | Emergency Storage (below)",
           "observations": "Hospital corridor directional signage"
         }
       ]
@@ -788,6 +1144,7 @@ marcus_warning_email = "From: Marcus Webb\nTo: Dr. Sarah Kim\nDate: May 17, 2024
 
   "globalVariables": {
     "player_name": "Agent 0x00",
+    "briefing_played": false,
     "mission_started": false,
     "agent_0x99_contacted": false,
 
@@ -820,6 +1177,7 @@ marcus_warning_email = "From: Marcus Webb\nTo: Dr. Sarah Kim\nDate: May 17, 2024
     "lore_cryptosecure_found": false,
     "lore_ghosts_manifesto_found": false,
     "lore_zds_invoice_found": false,
+    "board_coverup_email_found": false,
 
     "pin_attempts": 0,
     "decoded_ransomware_note": false,
@@ -829,6 +1187,18 @@ marcus_warning_email = "From: Marcus Webb\nTo: Dr. Sarah Kim\nDate: May 17, 2024
     "guard_knocked_out": false,
     "attacked_guard": false,
     "objectives_completed": 0,
-    "lore_collected": 0
+    "lore_collected": 0,
+
+    "backup_recovery_source": "",
+    "recovery_eta_hours": 0,
+    "backup_restore_initiated": false,
+
+    "receptionist_ko": false,
+    "marcus_ko": false,
+    "dr_kim_ko": false,
+    "ward_nurse_ko": false,
+
+    "debrief_ready": false,
+    "ransom_decision_acknowledged": false
   }
 }

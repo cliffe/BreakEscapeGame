@@ -409,8 +409,6 @@ You grab a fire extinguisher from the wall mount.
     #display:guard-unconscious
     #complete_task:neutralize_guard
     #set_global:attacked_guard:true
-    #give_item:fire_extinguisher
-
     The guard is unconscious. Work fast.
 
     #exit_conversation

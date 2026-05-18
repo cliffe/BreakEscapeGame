@@ -150,7 +150,7 @@
             "aimsCompleted": {
               "type": "array",
               "items": { "type": "string" },
-              "description": "Array variant of aimCompleted — unlocks when ALL listed aims are completed"
+              "description": "Array variant of aimCompleted -- unlocks when ALL listed aims are completed"
             }
           }
         },
@@ -285,7 +285,7 @@
         },
         "ambientVolume": {
           "type": "number",
-          "description": "Volume for ambient sound (0.0–1.0)",
+          "description": "Volume for ambient sound (0.0-1.0)",
           "minimum": 0,
           "maximum": 1
         },
@@ -354,7 +354,7 @@
             },
             "immovable": {
               "type": "boolean",
-              "description": "If true, sets Phaser.Physics.Arcade.Components.Immovable on the NPC body — the NPC cannot be pushed by player or other collision forces. Use for stationary bed/chair NPCs."
+              "description": "If true, sets Phaser.Physics.Arcade.Components.Immovable on the NPC body -- the NPC cannot be pushed by player or other collision forces. Use for stationary bed/chair NPCs."
             },
             "hostile": {
               "description": "Hostile configuration. Set to true (boolean) for default settings, or an object with chaseSpeed/attackDamage/pauseToAttack for custom values.",
@@ -373,7 +373,7 @@
             "collisionBox": {
               "type": "string",
               "enum": ["bottom_half"],
-              "description": "Shrinks the physics body for static-sprite NPCs. 'bottom_half' restricts collision to the lower half of the sprite — useful for tall prop-style NPCs where only the base should be solid."
+              "description": "Shrinks the physics body for static-sprite NPCs. 'bottom_half' restricts collision to the lower half of the sprite -- useful for tall prop-style NPCs where only the base should be solid."
             },
             "patrol": {
               "type": "object",
@@ -428,7 +428,7 @@
         },
         "disableClose": {
           "type": "boolean",
-          "description": "If true, hides the close button and suppresses Esc for this NPC's conversation/minigame — for forced cutscene-style interactions the player cannot skip."
+          "description": "If true, hides the close button and suppresses Esc for this NPC's conversation/minigame -- for forced cutscene-style interactions the player cannot skip."
         },
         "los": {
           "type": "object",
@@ -493,7 +493,7 @@
             },
             "skipIfGlobal": {
               "type": "string",
-              "description": "Name of a global variable — if true, skip this conversation. Prevents briefing replay on resume. See m01_first_contact for usage."
+              "description": "Name of a global variable -- if true, skip this conversation. Prevents briefing replay on resume. See m01_first_contact for usage."
             },
             "setGlobalOnStart": {
               "type": "string",
@@ -546,7 +546,7 @@
         },
         "patrolOverride": {
           "type": "object",
-          "description": "Override current patrol — NPC walks directly to targetTile",
+          "description": "Override current patrol -- NPC walks directly to targetTile",
           "required": ["targetTile"],
           "properties": {
             "targetTile": {
