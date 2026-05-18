@@ -139,8 +139,8 @@ Nurse: The emergency equipment storage is at the end of the south corridor. That
 + {not nurse_spoke_about_manual} [Ask how they're managing]
     -> discuss_manual_work
 
-+ {true} [Leave her to her work]
++ [Leave her to her work]
     #speaker:ward_nurse
     Nurse: Please hurry.
     #exit_conversation
-    -> DONE
+    -> hub

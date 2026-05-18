@@ -231,7 +231,7 @@ Dr. Kim: Do whatever you need. Just save those patients.
         Dr. Kim: Keep going. We're counting on you.
     }
     #exit_conversation
-    -> DONE
+    -> hub
 
 // ===========================================
 // MID-MISSION CHECK-IN
@@ -264,7 +264,7 @@ Dr. Kim: Any progress?
     You: I need to keep working.
     Dr. Kim: Of course. Go.
     #exit_conversation
-    -> DONE
+    -> hub
 
 // ===========================================
 // LATE MISSION UPDATE
@@ -306,4 +306,4 @@ Dr. Kim: The board is meeting right now. Have you found the decryption keys?
 
 + [Continue mission]
     #exit_conversation
-    -> DONE
+    -> hub

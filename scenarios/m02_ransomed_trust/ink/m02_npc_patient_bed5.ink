@@ -43,4 +43,4 @@ Ms Chen: I didn't know you had to worry about that sort of thing in a hospital.
 
 + [Leave her to rest]
     #exit_conversation
-    -> DONE
+    -> hub

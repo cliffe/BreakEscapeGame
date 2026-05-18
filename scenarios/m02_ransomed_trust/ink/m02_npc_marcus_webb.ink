@@ -27,7 +27,7 @@ EXTERNAL player_name()
 {marcus_defensive:
     Marcus: I don't have time for this. Systems are down.
     #exit_conversation
-    -> DONE
+    -> hub
 }
 
 Marcus: I TOLD them six months ago about CVE-2010-4652!
@@ -270,7 +270,7 @@ Marcus: It's locked, but if you can open it... that's my vindication.
         Marcus: Yeah. Go fix things.
     }
     #exit_conversation
-    -> DONE
+    -> hub
 
 === discuss_vulnerability ===
 #speaker:marcus_webb
