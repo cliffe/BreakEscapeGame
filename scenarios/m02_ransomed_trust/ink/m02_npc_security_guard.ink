@@ -11,7 +11,6 @@ VAR warned_player = false
 VAR player_attacked_guard = false
 VAR guard_knocked_out = false
 VAR player_has_id_badge = false
-VAR guard_identity_exposed = false
 
 // External variables (set by game)
 EXTERNAL player_name()
@@ -124,9 +123,6 @@ EXTERNAL player_name()
 
 + {caught_lockpicking} [Explain the lockpicking situation]
     -> explain_lockpick_again
-
-+ {guard_identity_exposed && !guard_knocked_out} [Confront the guard about being Asset #47]
-    -> confront_entropy_agent
 
 + [End conversation]
     #exit_conversation
@@ -596,92 +592,3 @@ Guard: Hey! Server room access -- that's restricted to authorised IT personnel o
     Guard: Hey! I said restricted! Don't make me follow you in there.
     #exit_conversation
     -> hub
-
-// ===========================================
-// ENTROPY INSIDER CONFRONTATION
-// ===========================================
-
-=== confront_entropy_agent ===
-#speaker:player
-You: I found the payment receipt in the server room. "Asset #47" — that's you, isn't it?
-
-#speaker:security_guard
-{influence >= 40:
-    -> guard_confession
-- else:
-    -> guard_denial
-}
-
-= guard_confession
-Guard: *freezes, hand moving toward radio*
-Guard: How did you... who are you working for?
-Guard: You don't understand. They have my daughter. Medical bills I can't pay.
-Guard: Ghost said $8,700 would cover her treatment. I just had to look the other way.
-
-+ [You still betrayed 47 patients on life support]
-    -> guilt_trip
-+ [Ghost used you. ENTROPY doesn't care about your daughter]
-    -> sympathy_approach
-+ [I'm taking you down]
-    -> arrest_attempt
-
-= guard_denial
-Guard: That's insane. You're accusing me of terrorism?
-Guard: SECURITY BREACH! ALL UNITS TO NORTH CORRIDOR!
-#hostile:security_guard
-#set_global:guard_identity_exposed:true
-#exit_conversation
--> DONE
-
-= guilt_trip
-Guard: I know! You think I don't know that?
-Guard: Every night I see their faces. But my daughter—
-Guard: I can't lose her. I already lost her mother to cancer.
-~ influence -= 20
--> confrontation_aftermath
-
-= sympathy_approach
-You: Ghost doesn't care about you or your daughter. You're a loose end.
-You: Once this is over, you think ENTROPY will let you walk away?
-Guard: *looks shaken*
-Guard: I... I didn't think about that.
-~ influence += 10
--> confrontation_aftermath
-
-= arrest_attempt
-Guard: You're not taking me anywhere!
-#hostile:security_guard
-#set_global:guard_identity_exposed:true
-#exit_conversation
--> DONE
-
-= confrontation_aftermath
-Guard: What do you want from me?
-
-+ [Help me stop Ghost. Testify.]
-    -> guard_cooperates
-+ [Step aside and don't interfere]
-    -> guard_stands_down
-+ [Attack while they're vulnerable]
-    -> attempt_fight
-
-= guard_cooperates
-Guard: Fine. I'll testify. But you have to promise— my daughter's treatment.
-Guard: I have files. Ghost's communications. The network device access codes.
-~ influence += 30
-#complete_task:expose_guard
-#set_global:guard_cooperating:true
-You: I'll make sure she gets care. But you're going to face justice.
-Guard: *nods* I know. At least I can live with myself.
-#exit_conversation
--> DONE
-
-= guard_stands_down
-Guard: *steps back, removes radio battery*
-Guard: I won't stop you. But I can't help either.
-Guard: Just... finish this before Ghost finds out I'm compromised.
-~ influence += 15
-#complete_task:expose_guard
-#set_global:guard_neutralized:true
-#exit_conversation
--> DONE
