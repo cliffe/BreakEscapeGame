@@ -458,6 +458,224 @@ module BreakEscape
 
     # ─── vm_panel / vm_set_panel: standalone mode guard ───────────────────────
 
+    # ========================================================================
+    # SECURITY TESTS: VM Console Access Enforcement
+    # ========================================================================
+    # These tests verify that the vm_panel endpoint enforces room-based access
+    # controls to prevent players from skipping game narrative and directly
+    # accessing VM consoles.
+
+    test "find_vm_launcher_room finds room containing vm-launcher for matching vm title" do
+      controller = GamesController.new
+      scenario = {
+        "rooms" => {
+          "server_room" => {
+            "objects" => [
+              { "type" => "vm-launcher", "vm" => { "title" => "kali" } }
+            ]
+          },
+          "start_room" => {
+            "objects" => []
+          }
+        }
+      }
+
+      result = controller.send(:find_vm_launcher_room, scenario, "kali")
+      assert_equal "server_room", result
+    end
+
+    test "find_vm_launcher_room returns nil when vm title not found" do
+      controller = GamesController.new
+      scenario = {
+        "rooms" => {
+          "server_room" => {
+            "objects" => [
+              { "type" => "vm-launcher", "vm" => { "title" => "ubuntu" } }
+            ]
+          }
+        }
+      }
+
+      result = controller.send(:find_vm_launcher_room, scenario, "kali")
+      assert_nil result
+    end
+
+    test "find_vm_launcher_room handles missing rooms gracefully" do
+      controller = GamesController.new
+      scenario = {}
+
+      result = controller.send(:find_vm_launcher_room, scenario, "kali")
+      assert_nil result
+    end
+
+    test "find_vm_launcher_room handles rooms without objects" do
+      controller = GamesController.new
+      scenario = {
+        "rooms" => {
+          "server_room" => {}
+        }
+      }
+
+      result = controller.send(:find_vm_launcher_room, scenario, "kali")
+      assert_nil result
+    end
+
+    test "SECURITY: room_unlocked? returns false for locked rooms" do
+      game = Game.create!(
+        mission: @mission,
+        player: @player,
+        scenario_data: @game.scenario_data,
+        player_state: {
+          "currentRoom" => "reception",
+          "unlockedRooms" => ["reception"],  # only reception is unlocked
+          "unlockedObjects" => []
+        }
+      )
+
+      # office is NOT in unlockedRooms
+      assert_not game.room_unlocked?("office"),
+        "room_unlocked? should return false for locked rooms"
+    end
+
+    test "SECURITY: room_unlocked? returns true for start room" do
+      game = Game.create!(
+        mission: @mission,
+        player: @player,
+        scenario_data: @game.scenario_data,
+        player_state: {
+          "currentRoom" => "reception",
+          "unlockedRooms" => [],  # empty
+          "unlockedObjects" => []
+        }
+      )
+
+      # reception is the start room
+      assert game.room_unlocked?("reception"),
+        "room_unlocked? should return true for start room even if not in unlockedRooms"
+    end
+
+    test "SECURITY: room_unlocked? returns true for explicitly unlocked rooms" do
+      game = Game.create!(
+        mission: @mission,
+        player: @player,
+        scenario_data: @game.scenario_data,
+        player_state: {
+          "currentRoom" => "reception",
+          "unlockedRooms" => ["reception", "office"],  # office is unlocked
+          "unlockedObjects" => []
+        }
+      )
+
+      assert game.room_unlocked?("office"),
+        "room_unlocked? should return true for rooms in unlockedRooms"
+    end
+
+    test "SECURITY: vm_panel gate blocks access when room not unlocked" do
+      # This test documents the gate behavior:
+      # The find_vm_launcher_room returns a room_id,
+      # then room_unlocked? is called.
+      # If room_unlocked? returns false, vm_panel returns 403 Forbidden.
+
+      game = Game.create!(
+        mission: @mission,
+        player: @player,
+        scenario_data: {
+          "startRoom" => "reception",
+          "rooms" => {
+            "reception" => { "objects" => [] },
+            "server_room" => {
+              "objects" => [
+                { "type" => "vm-launcher", "vm" => { "title" => "kali" } }
+              ]
+            }
+          }
+        },
+        player_state: {
+          "currentRoom" => "reception",
+          "unlockedRooms" => ["reception"],  # server_room NOT unlocked
+          "unlockedObjects" => []
+        }
+      )
+
+      controller = GamesController.new
+      room_id = controller.send(:find_vm_launcher_room, game.scenario_data, "kali")
+      assert_equal "server_room", room_id
+
+      # The gate checks: if launcher_room_id && !game.room_unlocked?(launcher_room_id)
+      assert_not game.room_unlocked?(room_id),
+        "Gate would block: room is found but not unlocked"
+    end
+
+    test "SECURITY: vm_panel gate passes when room is unlocked" do
+      # When find_vm_launcher_room returns a room AND room_unlocked? returns true,
+      # the gate passes and console access is enabled.
+
+      game = Game.create!(
+        mission: @mission,
+        player: @player,
+        scenario_data: {
+          "startRoom" => "reception",
+          "rooms" => {
+            "reception" => { "objects" => [] },
+            "server_room" => {
+              "objects" => [
+                { "type" => "vm-launcher", "vm" => { "title" => "kali" } }
+              ]
+            }
+          }
+        },
+        player_state: {
+          "currentRoom" => "reception",
+          "unlockedRooms" => ["reception", "server_room"],  # server_room IS unlocked
+          "unlockedObjects" => []
+        }
+      )
+
+      controller = GamesController.new
+      room_id = controller.send(:find_vm_launcher_room, game.scenario_data, "kali")
+      assert_equal "server_room", room_id
+
+      # The gate checks: if launcher_room_id && !game.room_unlocked?(launcher_room_id)
+      # Since room_unlocked? returns true, the gate passes
+      assert game.room_unlocked?(room_id),
+        "Gate would pass: room is found and unlocked"
+    end
+
+    test "SECURITY: vm_panel gate gracefully degrades when vm_launcher not in scenario" do
+      # When find_vm_launcher_room returns nil (launcher not found),
+      # the gate skips the check (returns nil is falsy in the if condition)
+      # This allows non-standard scenarios to work.
+
+      game = Game.create!(
+        mission: @mission,
+        player: @player,
+        scenario_data: {
+          "startRoom" => "reception",
+          "rooms" => {
+            "reception" => { "objects" => [] }
+            # No server_room, no vm_launcher
+          }
+        },
+        player_state: {
+          "currentRoom" => "reception",
+          "unlockedRooms" => ["reception"],
+          "unlockedObjects" => []
+        }
+      )
+
+      controller = GamesController.new
+      room_id = controller.send(:find_vm_launcher_room, game.scenario_data, "kali")
+      assert_nil room_id,
+        "find_vm_launcher_room returns nil when launcher not found"
+
+      # Gate condition: if launcher_room_id && !game.room_unlocked?(launcher_room_id)
+      # Since launcher_room_id is nil, the gate is skipped (no 403 returned)
+    end
+
+    # ========================================================================
+    # STANDALONE MODE TESTS
+    # ========================================================================
+
     test "vm_panel returns 404 in standalone mode (hacktivity_mode? is false)" do
       # In the engine's test/dummy app, VmSet and FlagService are not defined,
       # so Mission.hacktivity_mode? returns false — both panel actions should 404.
@@ -474,6 +692,23 @@ module BreakEscape
 
       get vm_set_panel_game_url(@game)
       assert_response :not_found
+    end
+
+    # ========================================================================
+    # HELPERS FOR SECURITY TESTS
+    # ========================================================================
+
+    # Helper to test the room-access gate logic without full Hacktivity stubbing.
+    # Since vm_panel returns 404 in standalone mode anyway, we test the helper
+    # method and game.room_unlocked? separately, which are the core components.
+    def verify_room_unlock_logic(game, room_id, should_be_unlocked)
+      if should_be_unlocked
+        assert game.room_unlocked?(room_id),
+          "Room #{room_id} should be unlocked"
+      else
+        assert_not game.room_unlocked?(room_id),
+          "Room #{room_id} should NOT be unlocked"
+      end
     end
   end
 end

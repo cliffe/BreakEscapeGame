@@ -54,7 +54,7 @@
 
 .notification-message {
     font-size: 20px;
-    font-family: 'VT323', monospace;
+    font-family: 'GNF', monospace;
     line-height: 1.4;
 }
 
@@ -102,7 +102,7 @@
 }
 
 .game-confirm-message {
-    font-family: 'VT323', monospace;
+    font-family: 'GNF', monospace;
     font-size: 22px;
     color: #e0e0e0;
     line-height: 1.5;
@@ -163,7 +163,7 @@
 }
 
 .game-display-body {
-    font-family: 'VT323', monospace;
+    font-family: 'GNF', monospace;
     font-size: 22px;
     color: #e0e0e0;
     line-height: 1.5;

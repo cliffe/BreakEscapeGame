@@ -76,7 +76,7 @@
 }
 
 .siem-clock {
-    font-family: 'VT323', monospace;
+    font-family: 'GNF', monospace;
     font-size: 32px;
     color: #ffd27f;
     margin-right: 64px;
@@ -182,7 +182,7 @@
 .siem-queue-text,
 .siem-queue-count,
 .siem-status-bar {
-    font-family: 'VT323', monospace;
+    font-family: 'GNF', monospace;
 }
 
 .siem-time,
@@ -441,7 +441,7 @@
 }
 
 .siem-alert-score-value {
-    font-family: 'VT323', monospace;
+    font-family: 'GNF', monospace;
     font-size: 24px;
     color: #00ff41;
 }
@@ -456,7 +456,7 @@
 }
 
 .siem-sources-empty {
-    font-family: 'VT323', monospace;
+    font-family: 'GNF', monospace;
     font-size: 12px;
     color: #6e7583;
     text-align: center;
@@ -501,7 +501,7 @@
 }
 
 .siem-source-count {
-    font-family: 'VT323', monospace;
+    font-family: 'GNF', monospace;
     font-size: 10px;
     color: #00ffff;
     text-align: right;

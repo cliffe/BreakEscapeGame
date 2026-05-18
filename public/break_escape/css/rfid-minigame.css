@@ -73,7 +73,7 @@
     padding: 20px;
     display: flex;
     flex-direction: column;
-    font-family: 'VT323', monospace;
+    font-family: 'GNF', monospace;
 }
 
 /* Header */
@@ -91,13 +91,13 @@
     font-weight: bold;
     color: white;
     letter-spacing: 2px;
-    font-family: 'VT323', monospace;
+    font-family: 'GNF', monospace;
 }
 
 .flipper-battery {
     font-size: 16px;
     color: white;
-    font-family: 'VT323', monospace;
+    font-family: 'GNF', monospace;
 }
 
 /* Screen */
@@ -113,7 +113,7 @@
     box-shadow: inset 0 2px 10px rgba(0, 0, 0, 0.5);
     display: flex;
     flex-direction: column;
-    font-family: 'VT323', monospace;
+    font-family: 'GNF', monospace;
 }
 
 /* Breadcrumb */
@@ -122,7 +122,7 @@
     color: #FFA500;
     margin-bottom: 15px;
     font-weight: bold;
-    font-family: 'VT323', monospace;
+    font-family: 'GNF', monospace;
 }
 
 /* Menu */
@@ -139,7 +139,7 @@
     cursor: pointer;
     transition: background 0.2s;
     user-select: none;
-    font-family: 'VT323', monospace;
+    font-family: 'GNF', monospace;
     font-size: 16px;
 }
 
@@ -153,7 +153,7 @@
     color: white;
     margin: 10px 0;
     text-align: center;
-    font-family: 'VT323', monospace;
+    font-family: 'GNF', monospace;
     font-size: 16px;
 }
 
@@ -162,7 +162,7 @@
     margin: 10px 0;
     text-align: center;
     font-size: 14px;
-    font-family: 'VT323', monospace;
+    font-family: 'GNF', monospace;
 }
 
 /* Card List */
@@ -182,7 +182,7 @@
     color: #FFA500;
     margin: 10px 0;
     text-align: center;
-    font-family: 'VT323', monospace;
+    font-family: 'GNF', monospace;
 }
 
 /* Card Data */
@@ -193,7 +193,7 @@
     margin: 15px 0;
     font-size: 15px;
     line-height: 1.8;
-    font-family: 'VT323', monospace;
+    font-family: 'GNF', monospace;
 }
 
 .flipper-card-data div {
@@ -218,7 +218,7 @@
     font-weight: bold;
     cursor: pointer;
     transition: all 0.1s;
-    font-family: 'VT323', monospace;
+    font-family: 'GNF', monospace;
 }
 
 .flipper-button:hover {
@@ -242,7 +242,7 @@
     cursor: pointer;
     text-align: center;
     user-select: none;
-    font-family: 'VT323', monospace;
+    font-family: 'GNF', monospace;
     font-size: 16px;
 }
 
@@ -335,7 +335,7 @@
     margin: 15px 0;
     font-weight: bold;
     animation: blink 1s infinite;
-    font-family: 'VT323', monospace;
+    font-family: 'GNF', monospace;
 }
 
 @keyframes blink {
@@ -375,7 +375,7 @@
 .flipper-error-message {
     font-size: 20px;
     font-weight: bold;
-    font-family: 'VT323', monospace;
+    font-family: 'GNF', monospace;
 }
 
 .flipper-success-message {
@@ -446,7 +446,7 @@
     font-size: 16px;
     font-weight: bold;
     color: white;
-    font-family: 'VT323', monospace;
+    font-family: 'GNF', monospace;
 }
 
 .protocol-meta {
@@ -455,7 +455,7 @@
     align-items: center;
     font-size: 14px;
     color: #AAA;
-    font-family: 'VT323', monospace;
+    font-family: 'GNF', monospace;
 }
 
 .security-badge {
@@ -463,7 +463,7 @@
     border: 2px solid rgba(0, 0, 0, 0.3);
     font-size: 13px;
     font-weight: bold;
-    font-family: 'VT323', monospace;
+    font-family: 'GNF', monospace;
 }
 
 .security-badge.security-low {
@@ -495,14 +495,14 @@
     font-size: 14px;
     margin-top: 10px;
     color: #FFA500;
-    font-family: 'VT323', monospace;
+    font-family: 'GNF', monospace;
 }
 
 #attack-percentage {
     font-size: 18px;
     font-weight: bold;
     color: white;
-    font-family: 'VT323', monospace;
+    font-family: 'GNF', monospace;
 }
 
 #attack-progress-bar {

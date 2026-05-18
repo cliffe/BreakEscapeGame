@@ -61,7 +61,6 @@ class CreateBreakEscapeGames < ActiveRecord::Migration[7.0]
 
     add_index :break_escape_games,
               [:player_type, :player_id, :mission_id],
-              unique: true,
               name: 'index_games_on_player_and_mission'
 
     # GIN indexes only available in PostgreSQL

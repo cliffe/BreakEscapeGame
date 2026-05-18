@@ -10,7 +10,7 @@
   max-height: 60vh;
   background: rgba(0, 0, 0, 0.85);
   border: 2px solid #444;
-  font-family: 'VT323', monospace;
+  font-family: 'GNF', monospace;
   z-index: 1500;
   overflow: hidden;
   transition: max-height 0.3s ease;
@@ -42,7 +42,6 @@
 .objectives-title {
   color: #fff;
   font-size: 18px;
-  font-weight: bold;
 }
 
 .objectives-controls {

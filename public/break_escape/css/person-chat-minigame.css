@@ -249,9 +249,19 @@
     font-size: 18px;
     font-weight: bold;
     cursor: pointer;
-    text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
     transition: all 0.1s ease;
     flex: 0 0 auto;
+}
+
+.person-chat-continue-hint {
+    font-size: 11px;
+    font-weight: normal;
+    color: rgba(78, 255, 74, 0.6);
+    letter-spacing: 0.05em;
 }
 
 .person-chat-continue-button:hover {

@@ -78,6 +78,12 @@ Navigate to: `https://your-hacktivity.com/break_escape/`
 
 You should see the mission selection screen.
 
+### 9. Configure Asset Serving (Production Only)
+
+**Development (puma)**: Skip this step. Rails controller handles assets fine.
+
+**Production (nginx + Passenger)**: See **Production Deployment** section below for critical nginx configuration. This is essential for performance and scalability in Proxmox.
+
 ## Configuration Options
 
 ### Environment Variables
@@ -157,12 +163,147 @@ Once mounted, these endpoints are available:
 
 ## Asset Serving
 
-Static game assets are served from `public/break_escape/`:
+Static game assets are located in `public/break_escape/`:
 - JavaScript: `public/break_escape/js/`
 - CSS: `public/break_escape/css/`
 - Images: `public/break_escape/assets/`
+- CyberChef workstation: `public/break_escape/assets/cyberchef/`
 
-These are served by the engine's static file middleware.
+BreakEscape serves these through a lightweight controller (`StaticFilesController`). This is **acceptable for development (puma)** but requires special configuration for production (nginx + Passenger).
+
+## Production Deployment (Proxmox / nginx + Passenger)
+
+### Asset Serving Configuration — CRITICAL FOR PERFORMANCE
+
+BreakEscape's static assets are served through a Rails controller, which is **fine for development (puma)** but **not suitable for production** without proper nginx configuration. Each static asset request (CSS, JS, images) ties up a Ruby process, limiting scalability.
+
+#### Option 1: nginx Direct Serving (Recommended)
+
+Configure nginx to serve BreakEscape assets directly, bypassing Rails entirely:
+
+```nginx
+# In your nginx server block (usually in /etc/nginx/sites-available/hacktivity)
+
+# Serve BreakEscape static assets directly via nginx
+location ~ ^/break_escape/(css|js|assets|stylesheets)/ {
+  # Point to the actual BreakEscape gem directory
+  # Adjust path based on where the gem is installed
+  alias /path/to/BreakEscape/public/break_escape/;
+  
+  # Cache versioned assets aggressively (1 year)
+  expires 1y;
+  add_header Cache-Control "public, immutable";
+  add_header X-Content-Type-Options "nosniff";
+  
+  # Enable gzip compression for text assets
+  gzip on;
+  gzip_types text/css application/javascript image/svg+xml;
+  gzip_min_length 1024;
+  
+  # Suppress access logs (frequent, not important)
+  access_log off;
+  
+  # Don't pass to Passenger
+  break;
+}
+
+# Serve CyberChef HTML file with shorter cache
+location ~ ^/break_escape/.*\.html$ {
+  alias /path/to/BreakEscape/public/break_escape/;
+  expires 1h;
+  add_header Cache-Control "public";
+  access_log off;
+  break;
+}
+
+# All other /break_escape/* routes go to Passenger
+location /break_escape/ {
+  passenger_pass http://passenger_app;
+  passenger_set_header X-Real-IP $remote_addr;
+  passenger_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+  passenger_set_header X-Forwarded-Proto $scheme;
+  passenger_set_header Host $host;
+}
+```
+
+**Finding the BreakEscape gem path:**
+```bash
+# In Hacktivity directory
+bundle show break_escape
+# Output: /path/to/BreakEscape
+```
+
+After updating nginx config:
+```bash
+sudo nginx -t           # Test syntax
+sudo systemctl reload nginx
+```
+
+**Benefits**:
+- Assets served at line-rate (no Ruby process overhead)
+- Browser caching via ETags and Cache-Control headers
+- Automatic gzip compression
+- Scales to thousands of concurrent users
+- Reduces Passenger memory footprint
+
+#### Option 2: Rails Controller Serving (Development/Small Scale)
+
+If nginx configuration isn't available, the Rails controller approach works but has limitations:
+- One Ruby process per asset request
+- No aggressive caching
+- Higher latency
+- Lower concurrent user capacity
+
+The `StaticFilesController` in BreakEscape handles this, but you must monitor:
+```bash
+# Watch Passenger process count/memory
+passenger-status
+```
+
+If you see many idle processes or memory creep, switch to nginx direct serving.
+
+### Pre-deployment Checklist
+
+- [ ] **Asset path verified**: Confirm `public/break_escape/` exists and contains CSS, JS, assets directories
+- [ ] **nginx configured** (if using production): Test syntax with `nginx -t`
+- [ ] **CSP configured**: BreakEscape sources added to Hacktivity's CSP initializer
+- [ ] **Gemfile locked**: Run `bundle install` and commit Gemfile.lock
+- [ ] **Migrations applied**: `rails break_escape:install:migrations && rails db:migrate`
+- [ ] **Ink scenarios compiled** (optional, improves startup): See Performance section below
+- [ ] **TTS cache present**: Verify `tts_cache/` directory has pre-generated MP3 files
+
+### Pre-compilation and Caching
+
+For optimal production performance:
+
+```bash
+# Pre-compile Ink scripts during deployment (reduces first-request latency)
+cd BreakEscape
+bundle exec rake break_escape:compile_ink_scenarios
+cd ..
+
+# Verify migrations are applied
+rails db:migrate:status | grep break_escape
+
+# Restart application
+touch tmp/restart.txt  # Passenger
+# or
+systemctl restart puma  # Puma
+```
+
+### Monitoring in Production
+
+Set up alerts for:
+- **Passenger process count**: If consistently high, assets may be tying up processes
+- **Rails request latency**: Spike in latency → potential asset bottleneck
+- **Database connection pool**: Monitor for exhaustion
+
+Check logs for asset-serving errors:
+```bash
+tail -f log/production.log | grep "break_escape"
+```
+
+---
 
 ## Troubleshooting
 
@@ -187,13 +328,27 @@ end
 
 ### Asset 404s (CSS/JS not loading)
 
-**Solution**: Check that `public/break_escape/` directory exists and contains game files
+**Solution**: Check multiple things depending on your setup.
 
+**Step 1: Verify files exist in the gem**
 ```bash
-ls public/break_escape/js/
-ls public/break_escape/css/
-ls public/break_escape/assets/
+# Find the gem location
+gem_path=$(bundle show break_escape)
+ls $gem_path/public/break_escape/js/
+ls $gem_path/public/break_escape/css/
+ls $gem_path/public/break_escape/assets/
 ```
+
+**Step 2: If using nginx direct serving (production)**
+- Verify the `alias` path in nginx config points to the correct gem location
+- Test: `curl -I https://your-site.com/break_escape/css/main.css` should return 200
+- Check nginx error log: `sudo tail -f /var/log/nginx/error.log`
+- Verify nginx syntax: `sudo nginx -t`
+
+**Step 3: If using Rails controller serving (development)**
+- Verify routes are mounted: `rails routes | grep break_escape`
+- Check controller is accessible: `curl -I http://localhost:3000/break_escape/css/main.css` should return 200
+- Check Rails logs for routing errors
 
 ### Ink compilation errors
 
@@ -342,11 +497,20 @@ ruby scripts/tts_cache_cleanup_phone.rb --delete
 
 ## Performance Considerations
 
+### Asset Serving (Critical)
+See **Production Deployment** section above. nginx direct serving is **strongly recommended** for production (Proxmox).
+
 ### JIT Ink Compilation
 - First NPC interaction compiles `.ink` → `.json` (~300ms)
 - Subsequent interactions use cached JSON (~10ms)
 - Compiled files persist across restarts
-- Production: Pre-compile all .ink files during deployment
+
+**Production optimization**:
+```bash
+# Pre-compile all Ink files during deployment to warm the cache
+rake break_escape:compile_ink_scenarios
+```
+This moves the 300ms cost from first user interaction to deployment time.
 
 ### Scenario Generation
 - ERB templates render on game creation (~50ms)
@@ -357,6 +521,11 @@ ruby scripts/tts_cache_cleanup_phone.rb --delete
 - Periodic sync every 30 seconds (configurable)
 - Uses Rails cache for temporary state
 - Database writes only on unlock/inventory changes
+
+### TTS Audio Serving
+- All audio pre-cached in `tts_cache/` directory
+- Served via authenticated controller (prevents bypass)
+- No API calls to Gemini at runtime
 
 ## Content Security Policy (CSP) Configuration
 
@@ -372,65 +541,40 @@ Add or extend a `content_security_policy` initializer in Hacktivity:
 Rails.application.configure do
   config.content_security_policy do |policy|
     # --- BreakEscape external script sources ---
-    # Phaser 3 + EasyStar.js
-    # Tippy.js + Popper.js
-    # WebFont Loader
     policy.script_src *policy.script_src,
-      "https://cdn.jsdelivr.net",
-      "https://unpkg.com",
-      "https://ajax.googleapis.com"
+      "https://cdn.jsdelivr.net",    # Phaser 3, EasyStar.js
+      "https://unpkg.com"             # Tippy.js, Popper.js (mission selector)
 
-    # --- BreakEscape font sources ---
-    # Google Fonts stylesheet (loads as a <link>, but style-src covers @import)
-    policy.style_src *policy.style_src,
-      "https://fonts.googleapis.com"
-
-    # Google Fonts binary files + data URIs used by some icon sets
-    policy.font_src *policy.font_src,
-      "https://fonts.gstatic.com",
-      :data
-
-    # --- CyberChef iframe ---
-    # CyberChef is served from the engine's own /break_escape/assets/cyberchef/
-    # path, so 'self' is sufficient.  The iframe has its own browsing context;
-    # it does NOT inherit the parent page's nonce, so its internal scripts are
-    # governed by the iframe's own CSP (or lack thereof for same-origin content).
-    policy.frame_src *policy.frame_src, :self
-
-    # --- CyberChef Web Workers (Tesseract OCR, Forge prime worker) ---
-    # These run inside the CyberChef iframe context, so worker-src must also
-    # allow 'self' and blob: (workers are often created via blob URLs).
+    # --- BreakEscape Web Workers ---
+    # CyberChef iframe uses blob-based workers (Tesseract OCR, Forge prime)
     policy.worker_src *policy.worker_src, :self, "blob:"
 
     # --- Nonce directives ---
-    # Ensure nonces are generated for both scripts and styles so that the
-    # engine's inline <script nonce="..."> and <style nonce="..."> tags work.
+    # Ensure nonces are generated for scripts so that BreakEscape's
+    # inline <script nonce="..."> tags work.
   end
 
-  # Generate a fresh nonce per request and apply it to both script-src and
-  # style-src (BreakEscape uses nonces on inline <style> blocks too).
+  # Generate a fresh nonce per request for script-src
   config.content_security_policy_nonce_generator = ->(request) { SecureRandom.base64(16) }
-  config.content_security_policy_nonce_directives = %w[script-src style-src]
+  config.content_security_policy_nonce_directives = %w[script-src]
 end
 ```
 
-> **Note:** The `*policy.script_src` spread syntax preserves whatever
-> Hacktivity already has in that directive (e.g. `'self'`, `'nonce-...'`)
-> and appends only the new sources.  If Hacktivity's policy is built
-> incrementally you may need to adjust the syntax to match its pattern.
+> **Note:** Google Fonts (`fonts.googleapis.com`, `fonts.gstatic.com`) are already loaded
+> via `<link>` tags in BreakEscape views and are covered by Hacktivity's existing
+> `:https` directives in `style-src` and `font-src` — no additional CSP entries needed.
+>
+> The `*policy.script_src` spread syntax preserves whatever Hacktivity already has
+> in that directive (e.g. `'self'`, `'nonce-...'`) and appends only the new sources.
 
-### Why each source is needed
+### Sources required for BreakEscape
 
 | Source | Directive | Used by |
 |--------|-----------|---------|
-| `cdn.jsdelivr.net` | `script-src` | Phaser 3.60, EasyStar.js 0.4.4 |
-| `unpkg.com` | `script-src` | Tippy.js 6, Popper.js 2 |
-| `ajax.googleapis.com` | `script-src` | WebFont Loader 1.6 |
-| `fonts.googleapis.com` | `style-src` | Google Fonts CSS |
-| `fonts.gstatic.com` | `font-src` | Google Fonts binary files |
-| `data:` | `font-src` | Icon data URIs in CSS |
-| `'self'` | `frame-src` | CyberChef iframe (`/break_escape/assets/cyberchef/`) |
-| `'self'` + `blob:` | `worker-src` | CyberChef's Tesseract OCR and Forge prime workers |
+| `cdn.jsdelivr.net` | `script-src` | Phaser 3.60, EasyStar.js 0.4.4 (game client) |
+| `unpkg.com` | `script-src` | Tippy.js 6, Popper.js 2 (mission selector tooltips) |
+| `'self'` | `worker-src` | CyberChef iframe (same-origin) |
+| `blob:` | `worker-src` | CyberChef's Tesseract OCR and Forge prime workers |
 
 ## Security Notes
 
@@ -439,6 +583,7 @@ end
 3. **XSS Prevention**: All inline scripts and styles use CSP nonces; `eval()` is not used; inline event handlers (`onclick`, `onerror`) are not used — see CSP section above for required host configuration
 4. **SQL Injection**: All queries use parameterized statements
 5. **Session Security**: Sessions tied to user authentication
+6. **VM Console Access**: Console access is blocked until the player reaches the terminal in-game. The `vm_panel` endpoint enforces that the room containing the VM launcher is unlocked in the player's game state before enabling console access. Admins and account managers bypass this check. This prevents players from skipping game narrative and directly accessing VM consoles.
 
 ## Monitoring
 

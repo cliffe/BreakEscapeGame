@@ -132,7 +132,7 @@
     border: 2px solid;
     display: inline-flex;
     justify-self: start;
-    font-family: 'VT323', monospace;
+    font-family: 'GNF', monospace;
     font-size: 22px;
     letter-spacing: 0.5px;
     padding: 1px 8px;
@@ -159,7 +159,7 @@
 }
 
 .backup-recovery-eta {
-    font-family: 'VT323', monospace;
+    font-family: 'GNF', monospace;
     font-size: 23px;
     color: var(--mg07-muted);
     align-self: start;
@@ -183,7 +183,7 @@
 
 .backup-recovery-panel-banner {
     border: 2px solid;
-    font-family: 'VT323', monospace;
+    font-family: 'GNF', monospace;
     font-size: 23px;
     line-height: 1.2;
     padding: 6px 8px;
@@ -215,7 +215,7 @@
 }
 
 .backup-recovery-panel-bullets li {
-    font-family: 'VT323', monospace;
+    font-family: 'GNF', monospace;
     font-size: 23px;
     line-height: 1.15;
     color: #d9e4ea;

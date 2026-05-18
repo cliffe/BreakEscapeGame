@@ -102,7 +102,7 @@
 }
 
 .ap-status {
-    font-family: 'VT323', monospace;
+    font-family: 'GNF', monospace;
     font-size: 16px;
     transition: fill 0.4s ease;
 }

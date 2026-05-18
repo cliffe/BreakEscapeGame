@@ -916,6 +916,17 @@ module BreakEscape
       # Race guard: only unlock console if the game is still in_progress.
       return head :not_found unless @game.reload.status == 'in_progress'
 
+      # Gate: verify the player has reached the room containing this terminal in-game.
+      # Admins and account managers bypass this check.
+      unless current_player.admin? || current_player.account_manager?
+        launcher_room_id = find_vm_launcher_room(@game.scenario_data, vm.title)
+        if launcher_room_id && !@game.room_unlocked?(launcher_room_id)
+          Rails.logger.warn "[BreakEscape] vm_panel blocked: #{current_player.id} " \
+                            "attempted VM #{vm.title} without unlocking #{launcher_room_id}"
+          return head :forbidden
+        end
+      end
+
       # Player has reached this VM terminal legitimately in-game. Unlock console access.
       vm.update_column(:enable_console, true)
 
@@ -936,6 +947,17 @@ module BreakEscape
     end
 
     private
+
+    def find_vm_launcher_room(scenario_data, vm_title)
+      # Returns the room_id containing a vm-launcher object for vm_title, or nil if not found.
+      # If nil is returned (non-standard scenario structure), the gate is skipped.
+      (scenario_data['rooms'] || {}).each do |room_id, room_data|
+        (room_data['objects'] || []).each do |obj|
+          return room_id if obj['type'] == 'vm-launcher' && obj.dig('vm', 'title') == vm_title
+        end
+      end
+      nil
+    end
 
     def set_game
       @game = Game.find(params[:id])

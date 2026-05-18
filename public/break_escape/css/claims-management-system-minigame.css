@@ -40,7 +40,7 @@
 
 .cms-subtitle {
     margin-top: 8px;
-    font-family: 'VT323', monospace;
+    font-family: 'GNF', monospace;
     font-size: 22px;
     color: #97b0d7;
 }
@@ -129,7 +129,7 @@
     display: flex;
     flex-direction: column;
     gap: 4px;
-    font-family: 'VT323', monospace;
+    font-family: 'GNF', monospace;
 }
 
 .cms-nav-button:hover,
@@ -186,7 +186,7 @@
 }
 
 .cms-summary-value {
-    font-family: 'VT323', monospace;
+    font-family: 'GNF', monospace;
     font-size: 24px;
     line-height: 1;
     color: #e5edff;
@@ -226,7 +226,7 @@
     display: flex;
     flex-direction: column;
     gap: 10px;
-    font-family: 'VT323', monospace;
+    font-family: 'GNF', monospace;
     font-size: 27px;
     line-height: 1.32;
     color: #d5e2ff;
@@ -247,7 +247,7 @@
 
 .cms-context p {
     margin: 0;
-    font-family: 'VT323', monospace;
+    font-family: 'GNF', monospace;
     font-size: 25px;
     line-height: 1.24;
     color: #c8d8f8;
@@ -260,7 +260,7 @@
     display: flex;
     flex-direction: column;
     gap: 8px;
-    font-family: 'VT323', monospace;
+    font-family: 'GNF', monospace;
     font-size: 23px;
     line-height: 1.22;
     color: #a8c4ee;
@@ -327,7 +327,7 @@
     background: #111a2d;
     color: #d5e2ff;
     padding: 16px;
-    font-family: 'VT323', monospace;
+    font-family: 'GNF', monospace;
     font-size: 24px;
 }
 

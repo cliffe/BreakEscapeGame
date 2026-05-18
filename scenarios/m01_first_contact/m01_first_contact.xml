@@ -70,11 +70,37 @@ Chapter 1 "An Overview of Computer Security": Bishop, M. (2005), Introduction to
           <value>derek</value>
         </input>
         <input into="password">
-          <generator type="random_word_generator">
-            <input into="wordlist">
-              <value>top-20-common-SSH-passwords</value>
+          <encoder type="string_selector">
+            <input into="strings_to_encode">
+              <value>Derek0419</value>
+              <value>Derek_0419</value>
+              <value>0419Derek</value>
+              <value>April19Derek</value>
+              <value>ViralDynamics</value>
+              <value>ViralMedia2024</value>
+              <value>Marketing2024</value>
+              <value>Campaign2024</value>
+              <value>SocialFabric2024</value>
+              <value>Viral_Dynamics_Admin</value>
+              <value>ViralAdmin0419</value>
+              <value>OperationShatter</value>
+              <value>OpShatter2024</value>
+              <value>Entropy2024</value>
+              <value>ZDS_Partner</value>
+              <value>TrustIsLie</value>
+              <value>VerifyEverything</value>
+              <value>FilingCabinet0419</value>
+              <value>Inevitable</value>
+              <value>TheArchitect</value>
+              <value>PatriciaKnew</value>
+              <value>Misinformation</value>
+              <value>NetworkSegment</value>
+              <value>SafetyNet</value>
+              <value>Derek_Marketing</value>
+              <value>0419Marketing</value>
+              <value>Architect0419</value>
             </input>
-          </generator>
+          </encoder>
         </input>
         <input into="super_user">
           <value>true</value>

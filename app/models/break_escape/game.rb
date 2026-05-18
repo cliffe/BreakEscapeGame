@@ -20,6 +20,7 @@ module BreakEscape
     before_create :generate_scenario_data
     before_create :initialize_player_state
     before_create :set_started_at
+    before_create :set_scoring_totals
     after_commit :fire_completion_callback, if: :status_previously_changed_to_completed?
 
     # Returns true if the game has meaningful progress beyond the initial state
@@ -28,6 +29,43 @@ module BreakEscape
       unlocked = player_state['unlockedRooms'] || []
       encountered = player_state['encounteredNPCs'] || []
       unlocked.length > 1 || encountered.any? || player_state['objectivesState'].present?
+    end
+
+    # Check if mission is completed
+    def mission_completed?
+      status == 'completed'
+    end
+
+    # Calculate task-based score (task completion scoring method)
+    def calculate_task_score
+      return 100.0 if mission_completed?
+      return 0.0 if total_tasks.zero?
+
+      task_score = (tasks_completed.to_f / total_tasks) * 70
+      aim_score = total_aims.positive? ? (objectives_completed.to_f / total_aims) * 30 : 0
+
+      task_score + aim_score
+    end
+
+    # Get score based on game_slot scoring method (if available)
+    def calculate_score
+      return 100.0 if mission_completed?
+
+      # Try to get scoring method from game_slot if available
+      scoring_method = game_slot&.scoring_method
+
+      case scoring_method
+      when 'flags'
+        # Use VM set score directly
+        vm_set&.score || 0.0
+      when 'task_completion', nil
+        # Default to task-based scoring
+        calculate_task_score
+      else
+        # Fallback for unknown methods
+        Rails.logger.warn "Unknown scoring_method: #{scoring_method}"
+        calculate_task_score
+      end
     end
 
     # Resets player_state to initial values, preserving mission context (VM/flags)
@@ -1293,6 +1331,17 @@ module BreakEscape
 
     def set_started_at
       self.started_at ||= Time.current
+    end
+
+    def set_scoring_totals
+      return unless scenario_data.present?
+
+      objectives = scenario_data['objectives'] || []
+
+      self.total_tasks = objectives.sum { |aim| (aim['tasks'] || []).size }
+      self.total_aims = objectives.size
+
+      Rails.logger.info "Game #{id}: Set total_tasks=#{total_tasks}, total_aims=#{total_aims}"
     end
 
     # Build VM context from player_state vm_set_id (Hacktivity mode only)
