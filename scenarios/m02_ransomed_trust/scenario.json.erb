@@ -353,44 +353,6 @@ recovery_instructions_encoded = rot13("FULL RECOVERY REQUIRES OFFLINE + ONLINE K
       },
       "npcs": [
         {
-          "id": "ghost_intercept",
-          "displayName": "Ghost",
-          "npcType": "person",
-          "position": { "x": -10, "y": -10 },
-          "spriteSheet": "hacker-red",
-          "spriteTalk": "assets/characters/hacker-red-talk.png",
-          "spriteConfig": {
-            "idleFrameStart": 20,
-            "idleFrameEnd": 23
-          },
-          "storyPath": "scenarios/m02_ransomed_trust/ink/m02_ghost_hijack.json",
-          "currentKnot": "on_proftpd_exploited",
-          "behavior": { "initiallyHidden": true },
-          "eventMappings": [
-            {
-              "eventPattern": "task_completed:submit_proftpd_flag",
-              "targetKnot": "on_proftpd_exploited",
-              "conversationMode": "person-chat",
-              "background": "assets/backgrounds/hq1.png",
-              "onceOnly": true
-            },
-            {
-              "eventPattern": "task_completed:submit_database_flag",
-              "targetKnot": "on_backup_located",
-              "conversationMode": "person-chat",
-              "background": "assets/backgrounds/hq1.png",
-              "onceOnly": true
-            },
-            {
-              "eventPattern": "task_completed:initiate_backup_recovery",
-              "targetKnot": "on_recovery_console",
-              "conversationMode": "person-chat",
-              "background": "assets/backgrounds/hq1.png",
-              "onceOnly": true
-            }
-          ]
-        },
-        {
           "id": "opening_briefing_cutscene",
           "displayName": "Agent 0x99",
           "npcType": "person",
@@ -508,9 +470,22 @@ recovery_instructions_encoded = rot13("FULL RECOVERY REQUIRES OFFLINE + ONLINE K
               "targetKnot": "start"
             },
             {
+              "eventPattern": "task_completed:submit_proftpd_flag",
+              "onceOnly": true,
+              "conversationMode": "phone-chat",
+              "targetKnot": "on_proftpd_exploited"
+            },
+            {
               "eventPattern": "task_completed:submit_database_flag",
               "onceOnly": true,
-              "sendTimedMessage": { "delay": 2000, "message": "You found the backup. My offer still stands." }
+              "conversationMode": "phone-chat",
+              "targetKnot": "on_backup_located"
+            },
+            {
+              "eventPattern": "task_completed:initiate_backup_recovery",
+              "onceOnly": true,
+              "conversationMode": "phone-chat",
+              "targetKnot": "on_recovery_console"
             },
             {
               "eventPattern": "item_picked_up:offline_backup_encryption_keys",
