@@ -266,7 +266,7 @@ def check_unknown_fields(json_data)
   known_npc_fields = %w[
     id displayName npcType position spriteSheet spriteTalk spriteConfig
     voice behavior globalVarOnKO taskOnKO storyPath currentKnot avatar
-    phoneId unlockable externalVariables persistentVariables
+    phoneId phoneTheme unlockable externalVariables persistentVariables
     timedMessages timedConversation eventMappings itemsHeld puzzle_graph_actions
     observations disableClose los _comment
   ]
@@ -1306,15 +1306,18 @@ def check_common_issues(json_data, valid_item_types = nil)
 
                 # Phone NPC event mapping anti-patterns
                 if npc['npcType'] == 'phone'
-                  # targetKnot does NOT work for phone NPCs after the first conversation.
-                  # After the first open, storyState is restored and currentKnot is bypassed entirely.
-                  if mapping['targetKnot']
-                    issues << "❌ INVALID: '#{mapping_path}' is a phone NPC event mapping with 'targetKnot' — this does NOT work after the first conversation. Once a storyState is saved, targetKnot is ignored on reopen. Correct pattern: use 'setGlobal' to set a flag, then add a conditional hub option in the Ink story: '+ {flag_var} [Ask about it] -> knot'. Also add 'sendTimedMessage' to notify the player that new content is available."
+                  phone_chat_trigger = mapping['conversationMode'] == 'phone-chat' && mapping['targetKnot']
+
+                  # conversationMode: "phone-chat" + targetKnot is the supported phone-terminal trigger pattern.
+                  # Any other conversationMode on a phone NPC is not supported.
+                  if mapping['conversationMode'] && mapping['conversationMode'] != 'phone-chat'
+                    issues << "❌ INVALID: '#{mapping_path}' is a phone NPC event mapping with 'conversationMode: \"#{mapping['conversationMode']}\"' — this field is not used for phone NPCs and has no effect. Remove it."
                   end
 
-                  # conversationMode is silently ignored for phone NPCs
-                  if mapping['conversationMode']
-                    issues << "❌ INVALID: '#{mapping_path}' is a phone NPC event mapping with 'conversationMode: \"#{mapping['conversationMode']}\"' — this field is not used for phone NPCs and has no effect. Remove it."
+                  # targetKnot without conversationMode: "phone-chat" does NOT work after the first conversation.
+                  # After the first open, storyState is restored and currentKnot is bypassed entirely.
+                  if mapping['targetKnot'] && !phone_chat_trigger
+                    issues << "❌ INVALID: '#{mapping_path}' is a phone NPC event mapping with 'targetKnot' — this does NOT work after the first conversation. Once a storyState is saved, targetKnot is ignored on reopen. Correct pattern: use 'setGlobal' to set a flag, then add a conditional hub option in the Ink story: '+ {flag_var} [Ask about it] -> knot'. Also add 'sendTimedMessage' to notify the player that new content is available."
                   end
 
                   # targetKnot inside sendTimedMessage is not used either
@@ -1322,8 +1325,9 @@ def check_common_issues(json_data, valid_item_types = nil)
                     issues << "❌ INVALID: '#{mapping_path}/sendTimedMessage' has a 'targetKnot' field — targetKnot inside sendTimedMessage is not used for phone NPCs and will be silently ignored. Remove it. To surface a new dialogue option, use 'setGlobal' on the event mapping and add a conditional hub choice in the Ink story."
                   end
 
-                  # Event mappings that produce no visible effect are likely broken/incomplete
-                  has_effect = mapping['setGlobal'] || mapping['sendTimedMessage'] ||
+                  # Event mappings that produce no visible effect are likely broken/incomplete.
+                  # phone-chat trigger mappings are self-evidently visible (they open the chat), so skip that check.
+                  has_effect = phone_chat_trigger || mapping['setGlobal'] || mapping['sendTimedMessage'] ||
                                mapping['completeTask'] || mapping['unlockTask'] || mapping['unlockAim']
                   unless has_effect
                     issues << "⚠️ WARNING: '#{mapping_path}' is a phone NPC event mapping with no visible effect (no setGlobal, sendTimedMessage, completeTask, unlockTask, or unlockAim). Use 'sendTimedMessage' to notify the player, and 'setGlobal' to flag that a new hub option is available. Example: { \"eventPattern\": \"...\", \"onceOnly\": true, \"setGlobal\": { \"flag_var\": true }, \"sendTimedMessage\": { \"delay\": 1000, \"message\": \"...\" } }"

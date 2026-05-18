@@ -313,7 +313,7 @@ recovery_instructions_encoded = rot13("FULL RECOVERY REQUIRES OFFLINE + ONLINE K
       "name": "Your Phone",
       "takeable": true,
       "phoneId": "player_phone",
-      "npcIds": ["agent_0x99", "ghost"],
+      "npcIds": ["agent_0x99"],
       "observations": "Your secure phone with encrypted connection to SAFETYNET"
     },
     {
@@ -493,30 +493,29 @@ recovery_instructions_encoded = rot13("FULL RECOVERY REQUIRES OFFLINE + ONLINE K
         },
         {
           "id": "ghost",
-          "displayName": "Ghost (Ransomware Incorporated)",
+          "displayName": "Ghost",
           "npcType": "phone",
+          "phoneTheme": "terminal",
           "storyPath": "scenarios/m02_ransomed_trust/ink/m02_phone_ghost.json",
           "avatar": "assets/npc/avatars/npc_hacker.png",
-          "phoneId": "player_phone",
-          "currentKnot": "initial_contact",
-          "timedMessages": [
-            {
-              "delay": 30000,
-              "message": "SAFETYNET. I know you're here. I know why you came. Before you do anything else -- open this channel. You should hear what you're actually dealing with.",
-              "type": "text",
-              "waitForEvent": "conversation_closed:opening_briefing_cutscene"
-            }
-          ],
+          "phoneId": "ghost_terminal",
+          "currentKnot": "start",
           "eventMappings": [
             {
+              "eventPattern": "item_picked_up:ghost_terminal_device",
+              "onceOnly": true,
+              "conversationMode": "phone-chat",
+              "targetKnot": "start"
+            },
+            {
               "eventPattern": "task_completed:submit_database_flag",
-              "sendTimedMessage": { "delay": 2000, "message": "You found the backup. Impressive. My offer still stands -- pay and end this now." },
-              "onceOnly": true
+              "onceOnly": true,
+              "sendTimedMessage": { "delay": 2000, "message": "You found the backup. My offer still stands." }
             },
             {
               "eventPattern": "item_picked_up:offline_backup_encryption_keys",
               "onceOnly": true,
-              "sendTimedMessage": { "delay": 3000, "message": "You found the physical backup. Clever. My offer still stands -- 30 minutes to full recovery versus however long your manual restore takes. Think about the patients." }
+              "sendTimedMessage": { "delay": 3000, "message": "You found the physical keys. Clever. 30 minutes to full recovery versus however long your manual restore takes. The patients are waiting." }
             }
           ]
         },
@@ -839,6 +838,17 @@ recovery_instructions_encoded = rot13("FULL RECOVERY REQUIRES OFFLINE + ONLINE K
           "puzzle_graph_role": "clue",
           "puzzle_graph_unlocks": "vm_launcher_rooting_for_a_win",
           "puzzle_graph_reveals": "proftpd_exploit_path_cve_2010_4652"
+        },
+        {
+          "type": "phone",
+          "id": "ghost_terminal_device",
+          "name": "Planted Network Device",
+          "takeable": true,
+          "phoneId": "ghost_terminal",
+          "npcIds": ["ghost"],
+          "observations": "A compact wireless bridge — not hospital equipment. Someone attached this to the LAN before the attack. A text interface is blinking on the screen.",
+          "puzzle_graph_role": "clue",
+          "puzzle_graph_reveals": "ghost_planted_physical_foothold_six_weeks_before_attack"
         }
       ]
     },

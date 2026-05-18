@@ -453,6 +453,11 @@
         "currentKnot": { "type": "string" },
         "avatar": { "type": "string" },
         "phoneId": { "type": "string" },
+        "phoneTheme": {
+          "type": "string",
+          "enum": ["terminal"],
+          "description": "Optional visual theme for the phone-chat minigame. 'terminal' uses a black-screen CRT aesthetic with phosphor green text."
+        },
         "unlockable": {
           "type": "array",
           "items": { "type": "string" }
@@ -536,8 +541,8 @@
         "targetKnot": { "type": "string" },
         "conversationMode": {
           "type": "string",
-          "enum": ["person-chat"],
-          "description": "Trigger a person-chat cutscene. Requires targetKnot."
+          "enum": ["person-chat", "phone-chat"],
+          "description": "Trigger a cutscene. 'person-chat' opens a full-screen overlay. 'phone-chat' opens the phone-chat minigame. Both require targetKnot."
         },
         "background": { "type": "string" },
         "disableClose": {

@@ -21,34 +21,39 @@ EXTERNAL player_name()
 // ===========================================
 
 === start ===
-#speaker:ghost
 
 {ghost_contacted_player:
     -> return_contact
 }
 
-[ENCRYPTED CHANNEL ESTABLISHED]
+> DEVICE ACTIVE
+> NETWORK BRIDGE: ST. CATHERINE'S LAN -- [REDACTED]
+> CONTACT: GHOST
 
-[UNKNOWN CALLER]
+#speaker:ghost
 
-Voice (distorted): SAFETYNET sent someone.
+Ghost: You found it.
 
-Voice: I'm Ghost. Ransomware Incorporated. You're interfering with our operation.
+Ghost: Installed during a fire drill, six weeks ago. Been sitting on your LAN since October.
+
+Ghost: SAFETYNET sent one person. I planned for a team.
 
 ~ ghost_contacted_player = true
 #set_global:ghost_contacted_player:true
 
 * [Who are you?]
-    You: Ghost? Ransomware Incorporated? What do you want?
+    You: Ghost. Who are you, really?
+    Ghost: Someone who spent fourteen months preparing for tonight.
+    Ghost: Ransomware Incorporated. You know what we did. Ask me why.
     -> ghost_introduction
 
-* [Threaten Ghost]
-    You: You're attacking a hospital. Patients are dying.
+* [You attacked a hospital]
+    You: You encrypted patient records. People are on life support.
     -> player_threatens
 
 * [Stay silent]
     You: ...
-    Ghost: Fine. I'll talk.
+    Ghost: Fine. I'll explain.
     -> ghost_introduction
 
 === ghost_introduction ===
