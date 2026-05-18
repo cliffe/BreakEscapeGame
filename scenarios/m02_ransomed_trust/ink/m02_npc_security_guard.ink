@@ -568,3 +568,27 @@ Guard: I don't like your attitude. You're on thin ice.
 
 * [Try to physically intimidate the guard]
     -> attempt_fight
+
+// ===========================================
+// SERVER ROOM ACCESS EVENT
+// ===========================================
+
+=== on_server_room_access ===
+#speaker:security_guard
+
+Guard: Hey! Server room access -- that's restricted to authorised IT personnel only.
+
+* [Show ID badge]
+    You: Security consultant. Dr. Kim authorised full access. I have the badge right here.
+    Guard: *examines badge* ...fine. But I'm logging this. Stay visible.
+    -> DONE
+
+* [Bluff with authority]
+    You: I've been all over this building tonight. Dr. Kim's orders. Crisis response.
+    Guard: Yeah, well. I'm watching.
+    -> DONE
+
+* [Say nothing, walk past]
+    ~ influence -= 10
+    Guard: Hey! I said restricted! Don't make me follow you in there.
+    -> DONE

@@ -129,6 +129,7 @@ Dr. Kim: But he warned us. He did everything right.
     ~ player_warned_kim = true
     Dr. Kim: Thank you. He deserves better than this.
     #complete_task:learn_about_scapegoating
+    #set_global:marcus_protected:true
     -> hub
 
 * [Stay neutral]
@@ -213,6 +214,7 @@ Dr. Kim: Do whatever you need. Just save those patients.
     ~ player_warned_kim = true
     Dr. Kim: Thank you. He deserves better.
     #complete_task:learn_about_scapegoating
+    #set_global:marcus_protected:true
     -> hub
 
 + [Leave conversation]

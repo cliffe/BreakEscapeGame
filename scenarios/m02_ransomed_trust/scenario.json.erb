@@ -47,6 +47,76 @@ recovery_instructions_encoded = rot13("FULL RECOVERY REQUIRES OFFLINE + ONLINE K
 {
   "scenario_brief": "Infiltrate St. Catherine's Hospital to recover ransomware decryption keys before 47 patients on life support die. ENTROPY's Ransomware Incorporated has calculated patient death probabilities--recover keys before backup power fails.",
 
+  "music": {
+    "events": [
+      {
+        "trigger": "game_loaded",
+        "condition": "!globalVars.briefing_played",
+        "playlist": "cutscene",
+        "fade": false
+      },
+      {
+        "trigger": "game_loaded",
+        "condition": "globalVars.briefing_played === true",
+        "playlist": "hospital-crisis",
+        "fade": false
+      },
+      {
+        "trigger": "conversation_closed:opening_briefing_cutscene",
+        "playlist": "hospital-crisis",
+        "fade": true
+      },
+      {
+        "trigger": "npc_hostile_state_changed",
+        "condition": "isHostile === true",
+        "playlist": "threat",
+        "fade": true
+      },
+      {
+        "trigger": "all_hostiles_ko",
+        "playlist": "hospital-crisis",
+        "fade": true
+      },
+      {
+        "trigger": "global_variable_changed:mission_complete",
+        "condition": "value === true",
+        "playlist": "spy-action",
+        "fade": true
+      },
+      {
+        "trigger": "conversation_closed:closing_debrief_trigger",
+        "playlist": "victory",
+        "track": "Flatline Averted",
+        "autoStop": true,
+        "disableClose": true,
+        "fade": true,
+        "credits": [
+          { "text": "MISSION COMPLETE",                                    "style": "title" },
+          { "text": "RANSOMED TRUST",                                      "style": "subtitle" },
+          { "text": "" },
+          { "text": "ST. CATHERINE'S HOSPITAL: SYSTEMS RESTORED",         "style": "entry" },
+          { "text": "PATIENT DEATHS: 2 (cardiac complications during system transition)", "style": "entry", "condition": "globalVars.paid_ransom" },
+          { "text": "PATIENT DEATHS: 4-6 (extended downtime — manual recovery)",          "style": "entry", "condition": "!globalVars.paid_ransom" },
+          { "text": "" },
+          { "text": "── DECISION ──",                                      "style": "section-header" },
+          { "text": "RANSOM PAID: $87,000 to Ransomware Incorporated — ENTROPY funded",   "style": "entry", "condition": "globalVars.paid_ransom" },
+          { "text": "RANSOM REFUSED: Offline backup keys used — ENTROPY denied funding",  "style": "entry", "condition": "!globalVars.paid_ransom" },
+          { "text": "HOSPITAL EXPOSED: Negligence made public — sector-wide security improvements forced", "style": "entry", "condition": "globalVars.exposed_hospital" },
+          { "text": "QUIET RESOLUTION: Negligence kept confidential — St. Catherine's reputation intact",  "style": "entry", "condition": "!globalVars.exposed_hospital" },
+          { "text": "" },
+          { "text": "── PERSONNEL ──",                                     "style": "section-header" },
+          { "text": "OFFLINE BACKUP KEYS RECOVERED — Full recovery pathway available",   "style": "entry", "condition": "globalVars.offline_keys_recovered" },
+          { "text": "MARCUS WEBB: Vindicated — Career protected by agent documentation", "style": "entry", "condition": "globalVars.marcus_protected" },
+          { "text": "MARCUS WEBB: Scapegoated — Position lost, career damaged",          "style": "entry", "condition": "!globalVars.marcus_protected" },
+          { "text": "GUARD NEUTRALIZED",                                   "style": "entry", "condition": "globalVars.guard_knocked_out" },
+          { "text": "" },
+          { "text": "GHOST: At large...",                                  "style": "warning" },
+          { "text": "ENTROPY: Still operational. Six cells remain.",       "style": "warning" }
+        ]
+      }
+    ]
+  },
+
   "objectives": [
     {
       "aimId": "infiltrate_hospital",
@@ -367,6 +437,12 @@ recovery_instructions_encoded = rot13("FULL RECOVERY REQUIRES OFFLINE + ONLINE K
               "onceOnly": true,
               "setGlobal": { "ransom_decision_acknowledged": true },
               "sendTimedMessage": { "delay": 2000, "message": "Decision logged. Whatever the board chooses, you've done your part." }
+            },
+            {
+              "eventPattern": "global_variable_changed:board_coverup_email_found",
+              "condition": "value === true",
+              "onceOnly": true,
+              "sendTimedMessage": { "delay": 2000, "message": "That email is damning. The board was planning to scapegoat Marcus before the ink was even dry. Talk to Dr. Kim -- she needs to know what her board has decided to do." }
             }
           ]
         },
@@ -378,6 +454,14 @@ recovery_instructions_encoded = rot13("FULL RECOVERY REQUIRES OFFLINE + ONLINE K
           "avatar": "assets/npc/avatars/npc_hacker.png",
           "phoneId": "player_phone",
           "currentKnot": "initial_contact",
+          "timedMessages": [
+            {
+              "delay": 30000,
+              "message": "SAFETYNET. I know you're here. I know why you came. Before you do anything else -- open this channel. You should hear what you're actually dealing with.",
+              "type": "text",
+              "waitForEvent": "conversation_closed:opening_briefing_cutscene"
+            }
+          ],
           "eventMappings": [
             {
               "eventPattern": "task_completed:submit_database_flag",
@@ -388,6 +472,11 @@ recovery_instructions_encoded = rot13("FULL RECOVERY REQUIRES OFFLINE + ONLINE K
               "eventPattern": "item_picked_up:offline_backup_encryption_keys",
               "onceOnly": true,
               "sendTimedMessage": { "delay": 3000, "message": "You found the physical backup. Clever. My offer still stands -- 30 minutes to full recovery versus however long your manual restore takes. Think about the patients." }
+            },
+            {
+              "eventPattern": "task_completed:initiate_backup_recovery",
+              "onceOnly": true,
+              "sendTimedMessage": { "delay": 2000, "message": "You're looking at the recovery console right now. Aren't you. Let me make this simple: pay us, and this ends in 30 minutes. Refuse, and those patients have 12 hours. You know the math." }
             }
           ]
         },
@@ -1019,6 +1108,7 @@ recovery_instructions_encoded = rot13("FULL RECOVERY REQUIRES OFFLINE + ONLINE K
               "observations": "LORE Fragment: Zero Day Syndicate sold the ProFTPD exploit to Ransomware Inc. -- and The Architect approved it",
               "onPickup": { "setVariable": { "lore_zds_invoice_found": true } },
               "puzzle_graph_role": "clue",
+              "puzzle_graph_aim": "exploit_entropy_backdoor",
               "puzzle_graph_reveals": "entropy_cells_coordinating_zero_day_sold_exploit_architect_approved"
             }
           ]
@@ -1134,6 +1224,13 @@ recovery_instructions_encoded = rot13("FULL RECOVERY REQUIRES OFFLINE + ONLINE K
               "background": "assets/backgrounds/hospital1.png",
               "onceOnly": false,
               "cooldown": 30000
+            },
+            {
+              "eventPattern": "room_entered:server_room",
+              "targetKnot": "on_server_room_access",
+              "conversationMode": "person-chat",
+              "background": "assets/backgrounds/hospital1.png",
+              "onceOnly": true
             }
           ],
           "itemsHeld": [
