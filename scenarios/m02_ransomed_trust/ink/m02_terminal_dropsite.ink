@@ -31,16 +31,16 @@ Submit flags to unlock analysis and resources.
 
 === main_menu ===
 
-+ [not flag_ssh_submitted] Submit Flag 1SSH Access
++ {not flag_ssh_submitted} [Submit Flag 1: SSH Access]
     -> submit_flag_ssh
 
-+ [not flag_proftpd_submitted] Submit Flag 2ProFTPD Exploit
++ {not flag_proftpd_submitted} [Submit Flag 2: ProFTPD Exploit]
     -> submit_flag_proftpd
 
-+ [not flag_database_submitted] Submit Flag 3Database Backup
++ {not flag_database_submitted} [Submit Flag 3: Database Backup]
     -> submit_flag_database
 
-+ [not flag_ghost_log_submitted] Submit Flag 4Ghost Log
++ {not flag_ghost_log_submitted} [Submit Flag 4: Ghost Log]
     -> submit_flag_ghost_log
 
 + [View submission status]
