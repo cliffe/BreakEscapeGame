@@ -35,6 +35,7 @@ Critical Decision Point: Decryption Key Recovery
 
 === interface_main ===
 #speaker:computer
+#complete_task:initiate_backup_recovery
 
 CURRENT STATUS:
 
@@ -426,8 +427,7 @@ MISSION OBJECTIVES COMPLETE
 
 Return to SAFETYNET HQ for debriefing.
 
-#complete_aim:resolve_ransomware_crisis
-#unlock_aim:mission_debrief
+#set_global:mission_complete:true
 
 + [Continue to debrief]
     #exit_conversation

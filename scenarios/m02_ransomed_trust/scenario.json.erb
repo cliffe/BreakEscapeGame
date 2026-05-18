@@ -70,6 +70,14 @@ recovery_instructions_encoded = rot13("FULL RECOVERY REQUIRES OFFLINE + ONLINE K
           "status": "active"
         },
         {
+          "taskId": "talk_to_ward_nurse",
+          "title": "Speak to the ward nurse about patient risk",
+          "type": "npc_conversation",
+          "targetNPC": "ward_nurse",
+          "status": "active",
+          "optional": true
+        },
+        {
           "taskId": "meet_dr_kim",
           "title": "Meet Dr. Sarah Kim (Hospital CTO)",
           "type": "npc_conversation",
@@ -82,6 +90,26 @@ recovery_instructions_encoded = rot13("FULL RECOVERY REQUIRES OFFLINE + ONLINE K
           "type": "npc_conversation",
           "targetNPC": "marcus_webb",
           "status": "locked"
+        },
+        {
+          "taskId": "obtain_password_hints",
+          "title": "Gather SSH password hints from Marcus",
+          "type": "manual",
+          "status": "locked"
+        },
+        {
+          "taskId": "neutralize_guard",
+          "title": "Deal with the security guard in the north corridor",
+          "type": "manual",
+          "status": "active",
+          "optional": true
+        },
+        {
+          "taskId": "learn_about_scapegoating",
+          "title": "Learn about the plan to scapegoat Marcus",
+          "type": "manual",
+          "status": "active",
+          "optional": true
         }
       ]
     },
@@ -91,25 +119,20 @@ recovery_instructions_encoded = rot13("FULL RECOVERY REQUIRES OFFLINE + ONLINE K
       "description": "Gain access to hospital's IT infrastructure and server room",
       "status": "locked",
       "order": 1,
+      "unlockCondition": { "aimCompleted": "infiltrate_hospital" },
       "tasks": [
         {
-          "taskId": "obtain_password_hints",
-          "title": "Gather SSH password hints from Marcus",
-          "type": "manual",
-          "status": "locked"
-        },
-        {
           "taskId": "decode_ransomware_note",
-          "title": "Decode Base64 ransomware message",
+          "title": "Decode the ransomware note using CyberChef",
           "type": "manual",
-          "status": "locked"
+          "status": "active"
         },
         {
           "taskId": "access_server_room",
           "title": "Access the server room",
           "type": "enter_room",
           "targetRoom": "server_room",
-          "status": "locked"
+          "status": "active"
         }
       ]
     },
@@ -119,33 +142,34 @@ recovery_instructions_encoded = rot13("FULL RECOVERY REQUIRES OFFLINE + ONLINE K
       "description": "Use ProFTPD vulnerability to access encrypted backups",
       "status": "locked",
       "order": 2,
+      "unlockCondition": { "aimCompleted": "access_it_systems" },
       "tasks": [
         {
           "taskId": "submit_ssh_flag",
           "title": "Submit SSH access flag",
           "type": "submit_flags",
-          "status": "locked",
+          "status": "active",
           "puzzle_graph_unlocks": "proftpd_exploitation_unlocked"
         },
         {
           "taskId": "submit_proftpd_flag",
           "title": "Submit ProFTPD exploitation flag",
           "type": "submit_flags",
-          "status": "locked",
+          "status": "active",
           "puzzle_graph_unlocks": "database_backup_accessible"
         },
         {
           "taskId": "submit_database_flag",
           "title": "Submit database backup flag",
           "type": "submit_flags",
-          "status": "locked",
+          "status": "active",
           "puzzle_graph_unlocks": "lock_emergency_storage_safe"
         },
         {
           "taskId": "submit_ghost_log_flag",
           "title": "Submit Ghost's operational log flag",
           "type": "submit_flags",
-          "status": "locked",
+          "status": "active",
           "puzzle_graph_unlocks": "ghost_lore_unlocked"
         }
       ]
@@ -153,29 +177,30 @@ recovery_instructions_encoded = rot13("FULL RECOVERY REQUIRES OFFLINE + ONLINE K
     {
       "aimId": "recover_offline_keys",
       "title": "Recover Offline Backup Keys",
-      "description": "Find and crack PIN safe for offline backup encryption keys",
+      "description": "Find and crack the PIN safe for offline backup encryption keys",
       "status": "locked",
       "order": 3,
+      "unlockCondition": { "aimCompleted": "access_it_systems" },
       "tasks": [
         {
           "taskId": "locate_safe",
-          "title": "Locate PIN safe in Emergency Equipment Storage",
+          "title": "Locate the PIN safe in Emergency Equipment Storage",
           "type": "enter_room",
           "targetRoom": "emergency_equipment_storage",
-          "status": "locked"
+          "status": "active"
         },
         {
           "taskId": "gather_pin_clues",
-          "title": "Find clues for 4-digit safe PIN",
+          "title": "Find clues for the 4-digit safe PIN",
           "type": "manual",
-          "status": "locked"
+          "status": "active"
         },
         {
           "taskId": "crack_safe_pin",
-          "title": "Crack PIN safe (code: 1987)",
+          "title": "Crack the PIN safe (code: 1987)",
           "type": "unlock_object",
           "targetObject": "emergency_storage_safe",
-          "status": "locked"
+          "status": "active"
         }
       ]
     },
@@ -185,24 +210,25 @@ recovery_instructions_encoded = rot13("FULL RECOVERY REQUIRES OFFLINE + ONLINE K
       "description": "Initiate backup recovery and decide how to handle the crisis",
       "status": "locked",
       "order": 4,
+      "unlockCondition": { "aimCompleted": "exploit_entropy_backdoor" },
       "tasks": [
         {
           "taskId": "initiate_backup_recovery",
-          "title": "Choose a backup restore method",
+          "title": "Open the Hospital Recovery Console and choose a restore method",
           "type": "manual",
-          "status": "locked"
+          "status": "active"
         },
         {
           "taskId": "make_ransom_decision",
           "title": "Decide on ransom payment",
           "type": "manual",
-          "status": "locked"
+          "status": "active"
         },
         {
           "taskId": "decide_hospital_exposure",
           "title": "Decide whether to expose hospital negligence",
           "type": "manual",
-          "status": "locked"
+          "status": "active"
         }
       ]
     }
@@ -320,6 +346,11 @@ recovery_instructions_encoded = rot13("FULL RECOVERY REQUIRES OFFLINE + ONLINE K
               "sendTimedMessage": { "delay": 1500, "message": "Those are the patients at risk. Real people. Let's get them their systems back." }
             },
             {
+              "eventPattern": "task_completed:meet_dr_kim",
+              "onceOnly": true,
+              "sendTimedMessage": { "delay": 1500, "message": "Good. Kim's authorized you. Your next contact is Marcus Webb -- IT department, east of reception. He knows exactly how they got in." }
+            },
+            {
               "eventPattern": "room_entered:server_room",
               "onceOnly": true,
               "sendTimedMessage": { "delay": 1000, "message": "Server room. This is the heart of it. VM terminal for exploitation, drop-site for flag submission. Use both." }
@@ -328,7 +359,7 @@ recovery_instructions_encoded = rot13("FULL RECOVERY REQUIRES OFFLINE + ONLINE K
               "eventPattern": "item_picked_up:offline_backup_encryption_keys",
               "onceOnly": true,
               "setGlobal": { "offline_keys_recovered": true },
-              "sendTimedMessage": { "delay": 1000, "message": "The offline backup encryption keys. Those are your alternative to paying the ransom. Good work." }
+              "sendTimedMessage": { "delay": 1000, "message": "The offline backup encryption keys. Those are your alternative to paying the ransom. Now get to the recovery console in the server room -- that's the last step." }
             },
             {
               "eventPattern": "global_variable_changed:ransom_decision_made",
@@ -352,6 +383,11 @@ recovery_instructions_encoded = rot13("FULL RECOVERY REQUIRES OFFLINE + ONLINE K
               "eventPattern": "task_completed:submit_database_flag",
               "sendTimedMessage": { "delay": 2000, "message": "You found the backup. Impressive. My offer still stands -- pay and end this now." },
               "onceOnly": true
+            },
+            {
+              "eventPattern": "item_picked_up:offline_backup_encryption_keys",
+              "onceOnly": true,
+              "sendTimedMessage": { "delay": 3000, "message": "You found the physical backup. Clever. My offer still stands -- 30 minutes to full recovery versus however long your manual restore takes. Think about the patients." }
             }
           ]
         },
@@ -548,7 +584,6 @@ recovery_instructions_encoded = rot13("FULL RECOVERY REQUIRES OFFLINE + ONLINE K
       "door_sign": "IT Department",
       "connections": {
         "west": "reception_lobby",
-        "north": "hallway_north",
         "south": "hallway_south"
       },
       "npcs": [
@@ -1028,6 +1063,14 @@ recovery_instructions_encoded = rot13("FULL RECOVERY REQUIRES OFFLINE + ONLINE K
           "text": "FROM: Hospital Board Chair\nTO: Legal Department\nRE: Incident Liability\n\nMarcus Webb's warnings are documented. We need to reframe this as his implementation failure, not our budget decision. Prepare termination paperwork and non-disparagement agreement.\n\n[This is stamped CONFIDENTIAL]",
           "observations": "Damning email -- the board plans to blame Marcus and cover up their budget decision",
           "onPickup": { "setVariable": { "board_coverup_email_found": true } }
+        },
+        {
+          "type": "notes",
+          "name": "Ransomware Incorporated Proposal",
+          "takeable": false,
+          "readable": true,
+          "text": "ZERO DAY SYNDICATE -- AFFILIATE PROGRAMME\n\nTarget: St. Catherine's Regional Medical Center\nOperator: Ghost (Ransomware Incorporated)\nAttack vector: ProFTPD CVE-2010-4652 (unpatched since 2020)\n\nRansom: $87,000 (2.5 BTC)\nSyndicate cut: 30%\nOperator cut: 70%\n\nNOTE: Hospital has deferred all security upgrades. Unpatched systems confirmed. Success probability: 94%.\n\nThis document was printed from an encrypted channel -- someone inside this hospital is an ENTROPY affiliate.",
+          "observations": "A printed briefing document -- someone was feeding ENTROPY information about the hospital's vulnerabilities"
         }
       ]
     },
@@ -1137,6 +1180,14 @@ recovery_instructions_encoded = rot13("FULL RECOVERY REQUIRES OFFLINE + ONLINE K
           "readable": true,
           "text": "IT Department (above) | Emergency Storage (below)",
           "observations": "Hospital corridor directional signage"
+        },
+        {
+          "type": "notes",
+          "name": "Nurse's Handwritten Note",
+          "takeable": false,
+          "readable": true,
+          "text": "Emergency kit -- storage room at end of corridor.\n\nPIN reset to hospital default after last fire drill. Ask Facilities if you need it. (They won't be available today.)\n\n-- S.H.",
+          "observations": "A handwritten note pinned to the corridor wall -- mentions a PIN and the emergency storage room"
         }
       ]
     }

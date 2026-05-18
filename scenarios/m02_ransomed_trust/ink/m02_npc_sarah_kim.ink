@@ -12,6 +12,7 @@ VAR topic_marcus = false          // Discussed Marcus Webb
 VAR topic_ransom_vote = false     // Discussed board ransom vote
 VAR topic_budget = false          // Discussed budget cuts
 VAR player_warned_kim = false     // Player warned Kim about scapegoating Marcus
+VAR kim_access_given = false      // Has Kim authorized access and pointed player to Marcus?
 
 // External variables (set by game)
 EXTERNAL player_name()
@@ -172,12 +173,17 @@ Dr. Kim: But... we'd be funding terrorists. Criminals. What do I tell them?
 
 === grant_access ===
 #speaker:dr_kim
+~ kim_access_given = true
 
 Dr. Kim: I'm authorizing full access. IT Department, server room, administrative records.
+
+Dr. Kim: Find Marcus Webb in the IT department -- east corridor. He's been there all night and knows exactly how they got in.
 
 Dr. Kim: Do whatever you need. Just save those patients.
 
 #complete_task:meet_dr_kim
+#unlock_task:talk_to_marcus
+#unlock_task:obtain_password_hints
 #unlock_aim:access_it_systems
 #give_item:id_badge
 
@@ -211,7 +217,13 @@ Dr. Kim: Do whatever you need. Just save those patients.
 
 + [Leave conversation]
     #speaker:dr_kim
+    ~ kim_access_given = true
+    Dr. Kim: Find Marcus Webb in the IT department. He knows how they got in.
     Dr. Kim: Good luck. We're counting on you.
+    #complete_task:meet_dr_kim
+    #unlock_task:talk_to_marcus
+    #unlock_task:obtain_password_hints
+    #unlock_aim:access_it_systems
     #exit_conversation
     -> DONE
 
