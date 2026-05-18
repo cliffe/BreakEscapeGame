@@ -296,8 +296,9 @@ recovery_instructions_encoded = rot13("FULL RECOVERY REQUIRES OFFLINE + ONLINE K
         },
         {
           "taskId": "decide_hospital_exposure",
-          "title": "Decide whether to expose hospital negligence",
-          "type": "manual",
+          "title": "Use the press terminal in the conference room to decide on public disclosure",
+          "type": "unlock_object",
+          "targetObject": "press_terminal",
           "status": "active"
         }
       ]
@@ -351,6 +352,44 @@ recovery_instructions_encoded = rot13("FULL RECOVERY REQUIRES OFFLINE + ONLINE K
         "south": "hospital_ward"
       },
       "npcs": [
+        {
+          "id": "ghost_intercept",
+          "displayName": "Ghost",
+          "npcType": "person",
+          "position": { "x": -10, "y": -10 },
+          "spriteSheet": "hacker-red",
+          "spriteTalk": "assets/characters/hacker-red-talk.png",
+          "spriteConfig": {
+            "idleFrameStart": 20,
+            "idleFrameEnd": 23
+          },
+          "storyPath": "scenarios/m02_ransomed_trust/ink/m02_ghost_hijack.json",
+          "currentKnot": "on_proftpd_exploited",
+          "behavior": { "initiallyHidden": true },
+          "eventMappings": [
+            {
+              "eventPattern": "task_completed:submit_proftpd_flag",
+              "targetKnot": "on_proftpd_exploited",
+              "conversationMode": "person-chat",
+              "background": "assets/backgrounds/hq1.png",
+              "onceOnly": true
+            },
+            {
+              "eventPattern": "task_completed:submit_database_flag",
+              "targetKnot": "on_backup_located",
+              "conversationMode": "person-chat",
+              "background": "assets/backgrounds/hq1.png",
+              "onceOnly": true
+            },
+            {
+              "eventPattern": "task_completed:initiate_backup_recovery",
+              "targetKnot": "on_recovery_console",
+              "conversationMode": "person-chat",
+              "background": "assets/backgrounds/hq1.png",
+              "onceOnly": true
+            }
+          ]
+        },
         {
           "id": "opening_briefing_cutscene",
           "displayName": "Agent 0x99",
@@ -443,6 +482,11 @@ recovery_instructions_encoded = rot13("FULL RECOVERY REQUIRES OFFLINE + ONLINE K
               "condition": "value === true",
               "onceOnly": true,
               "sendTimedMessage": { "delay": 2000, "message": "That email is damning. The board was planning to scapegoat Marcus before the ink was even dry. Talk to Dr. Kim -- she needs to know what her board has decided to do." }
+            },
+            {
+              "eventPattern": "task_completed:make_ransom_decision",
+              "onceOnly": true,
+              "sendTimedMessage": { "delay": 3000, "message": "Recovery decision logged. One more thing before this is over -- the conference room has a hospital communications terminal. The evidence you found tonight. What you do with it is your call." }
             }
           ]
         },
@@ -472,11 +516,6 @@ recovery_instructions_encoded = rot13("FULL RECOVERY REQUIRES OFFLINE + ONLINE K
               "eventPattern": "item_picked_up:offline_backup_encryption_keys",
               "onceOnly": true,
               "sendTimedMessage": { "delay": 3000, "message": "You found the physical backup. Clever. My offer still stands -- 30 minutes to full recovery versus however long your manual restore takes. Think about the patients." }
-            },
-            {
-              "eventPattern": "task_completed:initiate_backup_recovery",
-              "onceOnly": true,
-              "sendTimedMessage": { "delay": 2000, "message": "You're looking at the recovery console right now. Aren't you. Let me make this simple: pay us, and this ends in 30 minutes. Refuse, and those patients have 12 hours. You know the math." }
             }
           ]
         },
@@ -1161,6 +1200,17 @@ recovery_instructions_encoded = rot13("FULL RECOVERY REQUIRES OFFLINE + ONLINE K
           "readable": true,
           "text": "ZERO DAY SYNDICATE -- AFFILIATE PROGRAMME\n\nTarget: St. Catherine's Regional Medical Center\nOperator: Ghost (Ransomware Incorporated)\nAttack vector: ProFTPD CVE-2010-4652 (unpatched since 2020)\n\nRansom: $87,000 (2.5 BTC)\nSyndicate cut: 30%\nOperator cut: 70%\n\nNOTE: Hospital has deferred all security upgrades. Unpatched systems confirmed. Success probability: 94%.\n\nThis document was printed from an encrypted channel -- someone inside this hospital is an ENTROPY affiliate.",
           "observations": "A printed briefing document -- someone was feeding ENTROPY information about the hospital's vulnerabilities"
+        },
+        {
+          "type": "workstation",
+          "id": "press_terminal",
+          "name": "Hospital Communications Terminal",
+          "takeable": false,
+          "observations": "Secure outgoing relay connected to regional press networks. A system for transmitting official hospital communications to media contacts. The indicator light is green -- it's active.",
+          "storyPath": "scenarios/m02_ransomed_trust/ink/m02_object_press_terminal.json",
+          "currentKnot": "start",
+          "puzzle_graph_role": "lock",
+          "puzzle_graph_aim": "restore_hospital_systems"
         }
       ]
     },
@@ -1300,6 +1350,7 @@ recovery_instructions_encoded = rot13("FULL RECOVERY REQUIRES OFFLINE + ONLINE K
     "exposed_hospital": false,
     "marcus_protected": false,
     "kim_guilt_revealed": false,
+    "ghost_deal_accepted": false,
 
     "marcus_influence": 0,
     "marcus_defensive": false,

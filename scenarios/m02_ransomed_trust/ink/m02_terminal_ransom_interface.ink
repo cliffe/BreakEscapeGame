@@ -294,7 +294,7 @@ Hospital board relieved. Dr. Kim grateful. Marcus still under review for termina
 #complete_task:make_ransom_decision
 #set_global:paid_ransom:true
 
--> secondary_decision
+-> ransom_complete_handoff
 
 === confirm_manual_recovery ===
 #speaker:computer
@@ -341,95 +341,26 @@ BUT: $87,000 denied to ENTROPY. Ransomware Incorporated loses operational fundin
 #complete_task:make_ransom_decision
 #set_global:paid_ransom:false
 
--> secondary_decision
+-> ransom_complete_handoff
 
 // ===========================================
-// SECONDARY DECISION: HOSPITAL EXPOSURE
+// HANDOFF TO PRESS TERMINAL
 // ===========================================
 
-=== secondary_decision ===
+=== ransom_complete_handoff ===
 #speaker:computer
 
-SECONDARY DECISION: Hospital Security Negligence
+DECISION LOGGED.
 
-Evidence recovered:
-- Marcus's ignored security warnings (6 months)
-- Budget cuts: $85K security deferred, $3.2M MRI approved
-- Dr. Kim's recommendation to defer cybersecurity spending
-- Board approval of negligent priorities
+One action remains.
 
-Should this evidence be made public?
+The conference room — west of reception, south of Dr. Kim's office — has a hospital communications terminal.
 
-+ [Expose hospital publicly (force security improvements)]
-    -> expose_hospital
+What you do with the evidence you've found tonight determines the complete record of this crisis.
 
-+ [Quiet resolution (protect hospital reputation)]
-    -> quiet_resolution
+Find the terminal. Make your decision.
 
-=== expose_hospital ===
-#speaker:computer
-~ exposed_hospital = true
-
-Evidence leaked to media: Hospital negligence, ignored IT warnings, budget mismanagement.
-
-Public outcry. Congressional hearings on healthcare cybersecurity.
-
-St. Catherine's reputation damaged. Dr. Kim resigns. Marcus vindicated publicly.
-
-BUT: 40+ hospitals implement emergency security upgrades (sector-wide improvement).
-
-Future healthcare attacks less likely. ENTROPY's "educational impact" backfires.
-
-#complete_task:decide_hospital_exposure
-#set_global:exposed_hospital:true
-
--> mission_complete
-
-=== quiet_resolution ===
-#speaker:computer
-~ exposed_hospital = false
-
-Evidence kept confidential. Hospital board privately implements security overhaul.
-
-Marcus promoted to Director of Cybersecurity (tripled budget). Dr. Kim retains position.
-
-Public unaware of negligence. St. Catherine's reputation intact.
-
-BUT: Other hospitals unaware of risks. Sector-wide vulnerabilities persist.
-
-#complete_task:decide_hospital_exposure
-#set_global:exposed_hospital:false
-
--> mission_complete
-
-// ===========================================
-// MISSION COMPLETE
-// ===========================================
-
-=== mission_complete ===
-#speaker:computer
-
-MISSION OBJECTIVES COMPLETE
-
-{paid_ransom:
-    Ransom paid: Systems restored, minimal patient deaths, ENTROPY funded
-}
-{not paid_ransom:
-    Manual recovery: Higher patient deaths, ENTROPY denied funding
-}
-
-{exposed_hospital:
-    Hospital exposed: Reputation damaged, sector-wide security improved
-}
-{not exposed_hospital:
-    Quiet resolution: Reputation intact, sector vulnerabilities persist
-}
-
-Return to SAFETYNET HQ for debriefing.
-
-#set_global:mission_complete:true
-
-+ [Continue to debrief]
++ [Continue]
     #exit_conversation
     -> DONE
 
@@ -445,7 +376,7 @@ DECISION ALREADY FINALIZED
     Manual recovery in progress. 12-hour timeline.
 }
 
-Proceed to mission debrief.
+One action remains: find the hospital communications terminal in the conference room.
 
 #exit_conversation
 -> DONE
