@@ -55,6 +55,25 @@ export class VmLauncherMinigame extends MinigameScene {
             if (this.showPostit && this.postitNote) {
                 const postit = document.createElement('div');
                 postit.className = 'postit-note';
+                // Overlay on top of the iframe in the bottom-left corner
+                postit.style.cssText = `
+                    position: absolute;
+                    bottom: 20px;
+                    left: 20px;
+                    z-index: 15;
+                    background: #ffff88;
+                    border: 1px solid #ddd;
+                    padding: 15px;
+                    box-shadow: 2px 2px 8px rgba(0,0,0,0.3);
+                    transform: rotate(-2deg);
+                    font-family: 'Pixelify Sans', 'Comic Sans MS', cursive;
+                    font-size: 18px;
+                    color: #333;
+                    max-width: 200px;
+                    word-wrap: break-word;
+                    white-space: pre-line;
+                    pointer-events: none;
+                `;
                 postit.textContent = this.postitNote;
                 this.gameContainer.appendChild(postit);
             }
