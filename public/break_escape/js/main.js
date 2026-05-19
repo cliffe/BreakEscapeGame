@@ -350,8 +350,16 @@ function initializeGame() {
     setTimeout(setupPixelArt, 100);
 }
 
-// Initialize when DOM is ready
-document.addEventListener('DOMContentLoaded', initializeGame);
+// Guard: do not initialise the game when this page is loaded inside an iframe.
+// This can happen if the vm_panel redirect chain accidentally loads the game's own
+// show page into the vm-launcher's iframe, causing a second Phaser instance to start
+// inside the overlay. Skipping here prevents that silent double-init.
+if (window.self !== window.top) {
+    console.warn('[BreakEscape] Game page loaded inside an iframe — skipping initialisation.');
+} else {
+    // Initialize when DOM is ready
+    document.addEventListener('DOMContentLoaded', initializeGame);
 
-// Export for global access
-window.initializeGame = initializeGame; 
+    // Export for global access
+    window.initializeGame = initializeGame;
+}

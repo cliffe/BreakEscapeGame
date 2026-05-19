@@ -74,11 +74,13 @@ module BreakEscape
     end
 
     def vm_panel?
-      record.player == user && record.status == 'in_progress'
+      (record.player == user || user&.admin? || user&.account_manager?) &&
+        record.status == 'in_progress'
     end
 
     def vm_set_panel?
-      record.player == user && record.status == 'in_progress'
+      (record.player == user || user&.admin? || user&.account_manager?) &&
+        record.status == 'in_progress'
     end
 
     class Scope < Scope

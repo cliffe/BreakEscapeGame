@@ -22,6 +22,7 @@ module BreakEscape
     before_create :set_started_at
     before_create :set_scoring_totals
     after_commit :fire_completion_callback, if: :status_previously_changed_to_completed?
+    after_commit :fire_completion_callback, if: :task_progress_previously_changed?
 
     # Returns true if the game has meaningful progress beyond the initial state
     def has_progress?
@@ -74,6 +75,9 @@ module BreakEscape
       new_state = player_state.slice(*preserved_keys)
       self.player_state = new_state
       initialize_player_state
+      self.tasks_completed = 0
+      self.objectives_completed = 0
+      self.score = 0
       save!
     end
 
@@ -404,6 +408,12 @@ module BreakEscape
 
     def status_previously_changed_to_completed?
       saved_change_to_status?(to: 'completed')
+    end
+
+    def task_progress_previously_changed?
+      return false if saved_change_to_status?(to: 'completed')
+
+      saved_change_to_tasks_completed? || saved_change_to_objectives_completed?
     end
 
     def fire_completion_callback

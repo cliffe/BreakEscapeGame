@@ -1,17 +1,9 @@
 class FixUniqueGameConstraint < ActiveRecord::Migration[7.0]
   def up
-    # Try multiple approaches to remove the unique index:
-    # 1. Drop it by the expected name
+    # Drop the unique index if it exists
     execute 'DROP INDEX IF EXISTS index_games_on_player_and_mission;'
 
-    # 2. Try without the IF EXISTS in case it's not recognized
-    begin
-      execute 'DROP INDEX index_games_on_player_and_mission;'
-    rescue
-      # Index might not exist or name might be different
-    end
-
-    # 3. Add a non-unique index with the same columns
+    # Add a non-unique index with the same columns
     begin
       add_index :break_escape_games,
                 [:player_type, :player_id, :mission_id],

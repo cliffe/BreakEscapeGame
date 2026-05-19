@@ -16,24 +16,35 @@ export class VmLauncherMinigame extends MinigameScene {
         this.hacktivityMode = params.hacktivityMode || false;
         this.isLaunching = false;
         this.vmPanelUrl = window.breakEscapeConfig?.vmPanelUrl || null;
+        this.postitNote = params.postitNote || '';
+        this.showPostit = params.showPostit || false;
     }
-    
+
     init() {
         this.params.title = this.params.title || 'VM Console Access';
         this.params.cancelText = 'Close';
         super.init();
+
+        // Add notebook button to minigame controls if postit note exists
+        if (this.controlsElement && this.showPostit && this.postitNote) {
+            const notebookBtn = document.createElement('button');
+            notebookBtn.className = 'minigame-button';
+            notebookBtn.id = 'minigame-notebook-postit';
+            notebookBtn.innerHTML = '<img src="/break_escape/assets/icons/notes-sm.png" alt="Notepad" class="icon-small"> Add to Notepad';
+            this.controlsElement.insertBefore(notebookBtn, this.controlsElement.firstChild);
+        }
+
         this.buildUI();
     }
     
     buildUI() {
-        // In Hacktivity mode, load Hacktivity's VM page in an iframe.
-        // The engine's vm_panel endpoint redirects to the correct Hacktivity VM URL,
-        // so Bootstrap, jQuery, and ActionCable (including VNC) all work natively.
+        // Re-enabled: root causes fixed — user_not_authorized now uses root_path (not
+        // request.referrer), vm_panel? policy includes admin check, and main.js has an
+        // iframe guard preventing re-initialisation if the game page ever loads in a frame.
         if (this.hacktivityMode && this.vmPanelUrl) {
             const iframeSrc = this.vm?.title
                 ? `${this.vmPanelUrl}?vm_title=${encodeURIComponent(this.vm.title)}`
                 : this.vmPanelUrl;
-
             const launcher = document.createElement('div');
             launcher.className = 'vm-launcher vm-launcher-iframe';
             const iframe = document.createElement('iframe');
@@ -41,6 +52,12 @@ export class VmLauncherMinigame extends MinigameScene {
             iframe.title = 'VM Controls';
             launcher.appendChild(iframe);
             this.gameContainer.appendChild(launcher);
+            if (this.showPostit && this.postitNote) {
+                const postit = document.createElement('div');
+                postit.className = 'postit-note';
+                postit.textContent = this.postitNote;
+                this.gameContainer.appendChild(postit);
+            }
             return;
         }
 
@@ -224,7 +241,23 @@ export class VmLauncherMinigame extends MinigameScene {
                 color: #ffaa00;
                 margin-bottom: 15px;
             }
-            
+
+            .vm-launcher-iframe {
+                padding: 0;
+                height: 100%;
+                display: flex;
+                flex-direction: column;
+            }
+
+            .vm-launcher-iframe iframe {
+                flex: 1;
+                width: 1024px;
+                height: 80vh;
+                min-height: 768px;
+                border: none;
+                background: #000;
+            }
+
             .standalone-instructions {
                 background: #1a1a1a;
                 border: 1px solid #333;
@@ -291,6 +324,15 @@ export class VmLauncherMinigame extends MinigameScene {
         }
         
         this.gameContainer.appendChild(launcher);
+
+        // Postit note
+        if (this.showPostit && this.postitNote) {
+            const postit = document.createElement('div');
+            postit.className = 'postit-note';
+            postit.textContent = this.postitNote;
+            this.gameContainer.appendChild(postit);
+        }
+
         this.attachEventHandlers();
     }
     
@@ -322,7 +364,7 @@ export class VmLauncherMinigame extends MinigameScene {
 
         if (this.hacktivityMode) {
             html += `
-                click the console button, and follow the instructions.</p>
+                click the console button below to open your VM in a new tab.</p>
             `;
         } else {
             html += `
@@ -345,15 +387,26 @@ export class VmLauncherMinigame extends MinigameScene {
             </div>
         `;
         
-        if (this.hacktivityMode) {
+        if (this.hacktivityMode && this.vmPanelUrl) {
+            const consoleSrc = this.vm?.title
+                ? `${this.vmPanelUrl}?vm_title=${encodeURIComponent(this.vm.title)}`
+                : this.vmPanelUrl;
             html += `
                 <div class="vm-actions">
-                    <button class="vm-action-btn" id="launch-console-btn">
-                        Open Console: ${this.escapeHtml(this.vm.title)}
-                    </button>
+                    <a class="vm-action-btn" href="${this.escapeHtml(consoleSrc)}" target="_blank" rel="noopener noreferrer">
+                        Open VM Console: ${this.escapeHtml(this.vm.title)}
+                    </a>
                 </div>
-                <div class="launch-status" id="launch-status"></div>
             `;
+            // DISABLED: ActionCable SPICE download approach — preserved for re-enablement.
+            // html += `
+            //     <div class="vm-actions">
+            //         <button class="vm-action-btn" id="launch-console-btn">
+            //             Open Console: ${this.escapeHtml(this.vm.title)}
+            //         </button>
+            //     </div>
+            //     <div class="launch-status" id="launch-status"></div>
+            // `;
         } else if (this.vm.ip) {
             // Standalone mode: show connection instructions
             html += `
@@ -372,61 +425,91 @@ export class VmLauncherMinigame extends MinigameScene {
 
     
     attachEventHandlers() {
-        // Launch button (Hacktivity mode only)
-        const launchBtn = this.gameContainer.querySelector('#launch-console-btn');
-        if (launchBtn) {
-            this.addEventListener(launchBtn, 'click', () => this.launchConsole());
+        const notebookBtn = document.getElementById('minigame-notebook-postit');
+        if (notebookBtn) {
+            this.addEventListener(notebookBtn, 'click', () => this.addPostitToNotebook());
         }
+        // DISABLED: ActionCable launch button handler preserved below for re-enablement.
+        // const launchBtn = this.gameContainer.querySelector('#launch-console-btn');
+        // if (launchBtn) {
+        //     this.addEventListener(launchBtn, 'click', () => this.launchConsole());
+        // }
     }
-    
-    async launchConsole() {
-        if (!this.vm || this.isLaunching) return;
-        
-        this.isLaunching = true;
-        const launchBtn = this.gameContainer.querySelector('#launch-console-btn');
-        const statusEl = this.gameContainer.querySelector('#launch-status');
-        const vmCard = this.gameContainer.querySelector('.vm-card');
-        
-        launchBtn.disabled = true;
-        launchBtn.classList.add('launching');
-        launchBtn.textContent = 'Connecting...';
-        vmCard.classList.add('launching');
-        statusEl.className = 'launch-status loading';
-        statusEl.textContent = 'Requesting console file...';
-        
-        try {
-            if (window.hacktivityCable) {
-                // Use ActionCable integration
-                const result = await window.hacktivityCable.requestConsoleFile(
-                    this.vm.id,
-                    this.vm.event_id
-                );
-                
-                if (result.success) {
-                    window.hacktivityCable.downloadConsoleFile({
-                        filename: result.filename,
-                        content: result.content,
-                        contentType: result.contentType
-                    });
-                    
-                    statusEl.className = 'launch-status success';
-                    statusEl.textContent = '✓ Console file downloaded! Open it with a SPICE viewer.';
+
+    addPostitToNotebook() {
+        if (!this.postitNote || this.postitNote.trim() === '') {
+            this.showFailure("No postit note to add.", false, 2000);
+            return;
+        }
+
+        const deviceName = this.params.title || this.vm?.title || 'VM Terminal';
+        const notebookTitle = `Postit Note - ${deviceName}`;
+        let notebookContent = `Postit Note:\n${'-'.repeat(20)}\n\n${this.postitNote}`;
+        notebookContent += `\n\n${'='.repeat(20)}\nVM TERMINAL: ${deviceName}\n${'='.repeat(20)}`;
+        notebookContent += `\nDate: ${new Date().toLocaleString()}`;
+
+        if (window.startNotesMinigame) {
+            const postitItem = {
+                scenarioData: {
+                    type: 'postit_note',
+                    name: notebookTitle,
+                    text: notebookContent,
+                    observations: 'Postit note found on VM terminal.',
+                    important: true
                 }
-            } else {
-                throw new Error('ActionCable not available');
-            }
-        } catch (error) {
-            console.error('[VmLauncher] Launch failed:', error);
-            statusEl.className = 'launch-status error';
-            statusEl.textContent = `✗ Failed: ${error.message}`;
-        } finally {
-            this.isLaunching = false;
-            launchBtn.disabled = false;
-            launchBtn.classList.remove('launching');
-            launchBtn.textContent = `Open Console: ${this.vm.title}`;
-            vmCard.classList.remove('launching');
+            };
+            window.startNotesMinigame(postitItem, notebookContent, 'Postit note found on VM terminal.', null, false, false);
+            this.showSuccess("Added postit note to notepad", false, 2000);
+        } else {
+            this.showFailure("Notepad not available", false, 2000);
         }
     }
+
+    // DISABLED: launchConsole preserved for re-enablement once ActionCable
+    // SPICE download approach is re-integrated.
+    //
+    // async launchConsole() {
+    //     if (!this.vm || this.isLaunching) return;
+    //     this.isLaunching = true;
+    //     const launchBtn = this.gameContainer.querySelector('#launch-console-btn');
+    //     const statusEl = this.gameContainer.querySelector('#launch-status');
+    //     const vmCard = this.gameContainer.querySelector('.vm-card');
+    //     launchBtn.disabled = true;
+    //     launchBtn.classList.add('launching');
+    //     launchBtn.textContent = 'Connecting...';
+    //     vmCard.classList.add('launching');
+    //     statusEl.className = 'launch-status loading';
+    //     statusEl.textContent = 'Requesting console file...';
+    //     try {
+    //         if (window.hacktivityCable) {
+    //             const result = await window.hacktivityCable.requestConsoleFile(
+    //                 this.vm.id,
+    //                 this.vm.event_id
+    //             );
+    //             if (result.success) {
+    //                 window.hacktivityCable.downloadConsoleFile({
+    //                     filename: result.filename,
+    //                     content: result.content,
+    //                     contentType: result.contentType
+    //                 });
+    //                 statusEl.className = 'launch-status success';
+    //                 statusEl.textContent = '✓ Console file downloaded! Open it with a SPICE viewer.';
+    //             }
+    //         } else {
+    //             throw new Error('ActionCable not available');
+    //         }
+    //     } catch (error) {
+    //         console.error('[VmLauncher] Launch failed:', error);
+    //         statusEl.className = 'launch-status error';
+    //         statusEl.textContent = `✗ Failed: ${error.message}`;
+    //     } finally {
+    //         this.isLaunching = false;
+    //         launchBtn.disabled = false;
+    //         launchBtn.classList.remove('launching');
+    //         launchBtn.textContent = `Open Console: ${this.vm.title}`;
+    //         vmCard.classList.remove('launching');
+    //     }
+    // }
     
     escapeHtml(str) {
         const div = document.createElement('div');

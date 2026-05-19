@@ -28,8 +28,14 @@ module BreakEscape
     private
 
     def user_not_authorized
-      flash[:alert] = "You are not authorized to perform this action."
-      redirect_to(request.referrer || root_path)
+      # Do NOT redirect to request.referrer — when this handler fires inside an
+      # iframe (e.g. the vm_panel endpoint), the referrer is the game's own show
+      # page, which would cause the game to reload inside the iframe.
+      respond_to do |format|
+        format.html { redirect_to root_path, alert: 'You are not authorized to perform this action.' }
+        format.json { render json: { error: 'Not authorized' }, status: :forbidden }
+        format.any  { head :forbidden }
+      end
     end
   end
 end

@@ -2,16 +2,15 @@
 // Handles player creation, movement, and animation
 
 // Player management system
-import { 
-    MOVEMENT_SPEED, 
+import {
+    MOVEMENT_SPEED,
     RUN_SPEED_MULTIPLIER,
     RUN_ANIMATION_MULTIPLIER,
-    ARRIVAL_THRESHOLD, 
-    ROOM_CHECK_THRESHOLD, 
+    ARRIVAL_THRESHOLD,
+    ROOM_CHECK_THRESHOLD,
     CLICK_INDICATOR_SIZE,
     CLICK_INDICATOR_DURATION,
-    SPRITE_PADDING_BOTTOM_ATLAS,
-    SPRITE_PADDING_BOTTOM_LEGACY
+    SPRITE_PADDING_BOTTOM_ATLAS
 } from '../utils/constants.js?v=9';
 
 export let player = null;
@@ -140,24 +139,8 @@ export async function updatePlayerSprite(newSpriteKey) {
     const currentDirection = player.direction || 'down';
     const wasMoving = player.isMoving;
     
-    // Detect if new sprite is atlas or legacy
-    const frames = gameRef.textures.get(newSpriteKey).getFrameNames();
-    const isAtlas = frames.length > 0 && typeof frames[0] === 'string' && 
-                   (frames[0].includes('breathing-idle') || frames[0].includes('walk_') || frames[0].includes('_frame_'));
-    
-    // Update collision box for new sprite type
-    if (isAtlas) {
-        player.body.setSize(18, 10);
-        player.body.setOffset(31, 66);
-        console.log('🎮 Updated collision box for atlas sprite (80x80)');
-    } else {
-        player.body.setSize(15, 10);
-        player.body.setOffset(25, 50);
-        console.log('🎮 Updated collision box for legacy sprite (64x64)');
-    }
-    
-    // Store the atlas flag on player
-    player.isAtlas = isAtlas;
+    player.body.setSize(18, 10);
+    player.body.setOffset(31, 66);
     
     // Update scenario reference BEFORE recreating animations so createPlayerAnimations() uses the new sprite
     if (window.gameScenario?.player) {
@@ -189,14 +172,10 @@ export async function updatePlayerSprite(newSpriteKey) {
     console.log('🗑️ Removed old animations');
     
     // Change the texture of the existing sprite
-    let initialFrame;
-    if (isAtlas) {
-        const breathingIdleFrames = frames.filter(f => f.startsWith('breathing-idle_south_frame_'));
-        initialFrame = breathingIdleFrames.length > 0 ? breathingIdleFrames[0] : frames[0];
-    } else {
-        initialFrame = 20;
-    }
-    
+    const frames = gameRef.textures.get(newSpriteKey).getFrameNames();
+    const breathingIdleFrames = frames.filter(f => f.startsWith('breathing-idle_south_frame_'));
+    const initialFrame = breathingIdleFrames.length > 0 ? breathingIdleFrames[0] : frames[0];
+
     player.setTexture(newSpriteKey, initialFrame);
     
     // Recreate animations for the new sprite (now reads updated scenario)
@@ -223,62 +202,30 @@ export function createPlayer(gameInstance) {
     const startRoomPosition = getStartingRoomCenter(startRoomId);
     
     // Get player sprite - prioritize saved preference over scenario default
-    const playerSprite = window.breakEscapeConfig?.playerSprite || window.gameScenario?.player?.spriteSheet || 'male_hacker';
-    const source = window.breakEscapeConfig?.playerSprite ? 'saved preference' : (window.gameScenario?.player ? 'scenario' : 'default');
-    console.log(`🎮 Loading player sprite: ${playerSprite} (from ${source})`);
-    
+    const playerSprite = window.breakEscapeConfig?.playerSprite || window.gameScenario?.player?.spriteSheet || 'male_hacker_hood';
+    const hasExplicitSprite = !!(window.breakEscapeConfig?.playerSprite || window.gameScenario?.player?.spriteSheet);
+    console.log(`🎮 Loading player sprite: ${playerSprite}`);
+
     // Update scenario to match saved preference
     if (window.gameScenario?.player && window.breakEscapeConfig?.playerSprite) {
         window.gameScenario.player.spriteSheet = window.breakEscapeConfig.playerSprite;
     }
-    
-    // Check if this is an atlas sprite (has named frames) or legacy (numbered frames)
+
+    // Find initial frame (first breathing-idle_south frame)
     const texture = gameInstance.textures.get(playerSprite);
     const frames = texture ? texture.getFrameNames() : [];
-    
-    // More robust atlas detection
-    let isAtlas = false;
-    if (frames.length > 0) {
-        const firstFrame = frames[0];
-        isAtlas = typeof firstFrame === 'string' && 
-                 (firstFrame.includes('breathing-idle') || 
-                  firstFrame.includes('walk_') || 
-                  firstFrame.includes('_frame_'));
-    }
-    
-    console.log(`🔍 Player sprite ${playerSprite}: ${frames.length} frames, first: "${frames[0]}", isAtlas: ${isAtlas}`);
-    
-    // Create player sprite with appropriate initial frame
-    let initialFrame;
-    if (isAtlas) {
-        // Find first breathing-idle_south frame
-        const breathingIdleFrames = frames.filter(f => f.startsWith('breathing-idle_south_frame_'));
-        initialFrame = breathingIdleFrames.length > 0 ? breathingIdleFrames[0] : frames[0];
-    } else {
-        initialFrame = 20; // Legacy default
-    }
+    const breathingIdleFrames = frames.filter(f => f.startsWith('breathing-idle_south_frame_'));
+    const initialFrame = breathingIdleFrames.length > 0 ? breathingIdleFrames[0] : frames[0];
+
     player = gameInstance.add.sprite(startRoomPosition.x, startRoomPosition.y, playerSprite, initialFrame);
     gameInstance.physics.add.existing(player);
-    
-    // Store atlas detection flag for depth calculations
-    player.isAtlas = isAtlas;
-    
+
     // Keep the character at original size
     player.setScale(1);
-    
-    // Set smaller collision box at the feet
-    // Atlas sprites (80x80) vs Legacy sprites (64x64) have different offsets
-    if (isAtlas) {
-        // 80x80 sprite - collision box at feet
-        player.body.setSize(18, 10);
-        player.body.setOffset(31, 66); // Center horizontally (80-18)/2=31, feet at bottom 80-14=66
-        console.log('🎮 Player using atlas sprite (80x80) with adjusted collision box');
-    } else {
-        // 64x64 sprite - legacy collision box
-        player.body.setSize(15, 10);
-        player.body.setOffset(25, 50); // Legacy offset for 64px sprite
-        console.log('🎮 Player using legacy sprite (64x64) with standard collision box');
-    }
+
+    // Collision box at feet (80x80 atlas sprites)
+    player.body.setSize(18, 10);
+    player.body.setOffset(31, 66);
     
     player.body.setCollideWorldBounds(true);
     player.body.setBounce(0);
@@ -307,7 +254,17 @@ export function createPlayer(gameInstance) {
     
     // Setup keyboard input listeners
     setupKeyboardInput();
-    
+
+    // If no sprite was configured, open character selection so the player can choose
+    if (!hasExplicitSprite) {
+        gameInstance.time.delayedCall(500, () => {
+            const hud = window.gameHUD;
+            if (hud && typeof hud.openPlayerPreferences === 'function') {
+                hud.openPlayerPreferences();
+            }
+        });
+    }
+
     return player;
 }
 
@@ -514,31 +471,8 @@ function updateAnimationSpeed(isRunning) {
 }
 
 function createPlayerAnimations() {
-    const playerSprite = window.gameScenario?.player?.spriteSheet || 'hacker';
-    
-    // Check if this is an atlas sprite (has named frames) or legacy (numbered frames)
-    const texture = gameRef.textures.get(playerSprite);
-    const frames = texture ? texture.getFrameNames() : [];
-    
-    // More robust atlas detection
-    let isAtlas = false;
-    if (frames.length > 0) {
-        const firstFrame = frames[0];
-        isAtlas = typeof firstFrame === 'string' && 
-                 (firstFrame.includes('breathing-idle') || 
-                  firstFrame.includes('walk_') || 
-                  firstFrame.includes('_frame_'));
-    }
-    
-    console.log(`🔍 Player sprite ${playerSprite}: ${frames.length} frames, first: "${frames[0]}", isAtlas: ${isAtlas}`);
-    
-    if (isAtlas) {
-        console.log(`🎮 Player using atlas sprite: ${playerSprite}`);
-        createAtlasPlayerAnimations(playerSprite);
-    } else {
-        console.log(`🎮 Player using legacy sprite: ${playerSprite}`);
-        createLegacyPlayerAnimations(playerSprite);
-    }
+    const playerSprite = window.gameScenario?.player?.spriteSheet || 'male_hacker_hood';
+    createAtlasPlayerAnimations(playerSprite);
 }
 
 function createAtlasPlayerAnimations(spriteSheet) {
@@ -681,95 +615,6 @@ function createAtlasPlayerAnimations(spriteSheet) {
     }
 }
 
-function createLegacyPlayerAnimations(spriteSheet) {
-    // Create walking animations with correct frame numbers from original
-    gameRef.anims.create({
-        key: 'walk-right',
-        frames: gameRef.anims.generateFrameNumbers(spriteSheet, { start: 1, end: 4 }),
-        frameRate: 8,
-        repeat: -1
-    });
-    
-    gameRef.anims.create({
-        key: 'walk-down',
-        frames: gameRef.anims.generateFrameNumbers(spriteSheet, { start: 6, end: 9 }),
-        frameRate: 8,
-        repeat: -1
-    });
-    
-    gameRef.anims.create({
-        key: 'walk-up',
-        frames: gameRef.anims.generateFrameNumbers(spriteSheet, { start: 11, end: 14 }),
-        frameRate: 8,
-        repeat: -1
-    });
-    
-    gameRef.anims.create({
-        key: 'walk-up-right',
-        frames: gameRef.anims.generateFrameNumbers(spriteSheet, { start: 16, end: 19 }),
-        frameRate: 8,
-        repeat: -1
-    });
-    
-    gameRef.anims.create({
-        key: 'walk-down-right',
-        frames: gameRef.anims.generateFrameNumbers(spriteSheet, { start: 21, end: 24 }),
-        frameRate: 8,
-        repeat: -1
-    });
-    
-    // Create idle frames (first frame of each row) with correct frame numbers
-    gameRef.anims.create({
-        key: 'idle-right',
-        frames: [{ key: spriteSheet, frame: 0 }],
-        frameRate: 1
-    });
-    
-    gameRef.anims.create({
-        key: 'idle-down',
-        frames: [{ key: spriteSheet, frame: 5 }],
-        frameRate: 1
-    });
-    
-    gameRef.anims.create({
-        key: 'idle-up',
-        frames: [{ key: spriteSheet, frame: 10 }],
-        frameRate: 1
-    });
-    
-    gameRef.anims.create({
-        key: 'idle-up-right',
-        frames: [{ key: spriteSheet, frame: 15 }],
-        frameRate: 1
-    });
-    
-    gameRef.anims.create({
-        key: 'idle-down-right',
-        frames: [{ key: spriteSheet, frame: 20 }],
-        frameRate: 1
-    });
-    
-    // Create left-facing idle animations (same frames as right, but sprite will be flipped)
-    gameRef.anims.create({
-        key: 'idle-left',
-        frames: [{ key: spriteSheet, frame: 0 }],
-        frameRate: 1
-    });
-    
-    gameRef.anims.create({
-        key: 'idle-down-left',
-        frames: [{ key: spriteSheet, frame: 20 }],
-        frameRate: 1
-    });
-    
-    gameRef.anims.create({
-        key: 'idle-up-left',
-        frames: [{ key: spriteSheet, frame: 15 }],
-        frameRate: 1
-    });
-
-    console.log(`✅ Player legacy animations created for ${spriteSheet}`);
-}
 
 /**
  * Draw a fading visual overlay showing the raw EasyStar path (grey nodes)
@@ -1000,10 +845,8 @@ export function facePlayerToward(targetX, targetY) {
 
 function updatePlayerDepth(x, y) {
     // Get the bottom of the player sprite, accounting for padding
-    // Atlas sprites (80x80) have 16px padding at bottom, legacy sprites (64x64) have minimal padding
-    // Use actual y parameter so depth follows visual position (including during death animations)
     const spriteCenterToBottom = (player.height * player.scaleY) / 2;
-    const paddingOffset = player.isAtlas ? SPRITE_PADDING_BOTTOM_ATLAS : SPRITE_PADDING_BOTTOM_LEGACY;
+    const paddingOffset = SPRITE_PADDING_BOTTOM_ATLAS;
     const playerBottomY = y + spriteCenterToBottom - paddingOffset;
     
     // Simple depth calculation: world Y position + layer offset

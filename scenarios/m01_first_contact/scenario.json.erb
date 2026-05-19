@@ -1830,7 +1830,9 @@ password_hints = "Common passwords: Marketing123, Campaign2024, Viral_Dynamics_A
           "takeable": false,
           "observations": "Terminal connected to the Social Fabric attack server — ENTROPY's live Operation Shatter infrastructure. The derek account is accessible via SSH brute force. Once in, escalate to the shatter account for the archive key.",
           "hacktivityMode": <%= vm_context && vm_context['hacktivity_mode'] ? 'true' : 'false' %>,
-          "vm": <%= vm_object('intro_to_linux_security_lab', {"id":1,"title":"kali","ip":"192.168.100.50","enable_console":true}) %>
+          "vm": <%= vm_object('intro_to_linux_security_lab', {"id":1,"title":"kali","ip":"192.168.100.50","enable_console":true}) %>,
+          "showPostit": true,
+          "postitNote": "user: kali\npassword: kali"
         },
         {
           "type": "flag-station",

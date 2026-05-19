@@ -896,6 +896,9 @@ module BreakEscape
     # Redirects to the Hacktivity individual VM show page for the named VM in this game's VmSet,
     # with ?embedded=1 so Hacktivity's application layout hides navigation and footer.
     def vm_panel
+      Rails.logger.info "[BreakEscape] vm_panel: player=#{current_player.class}##{current_player&.id} " \
+                        "game_player=#{@game.player_type}##{@game.player_id} " \
+                        "status=#{@game.status} vm_set_id=#{@game.vm_set_id}"
       authorize @game if defined?(Pundit)
       return head :not_found unless BreakEscape::Mission.hacktivity_mode? && @game.vm_set_id
 
