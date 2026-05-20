@@ -38,17 +38,17 @@
     {
       "ka": "HF",
       "topic": "Human Factors",
-      "keywords": ["Social engineering", "Trust building", "Information gathering", "Ethical dilemmas", "Crisis decision-making"]
+      "keywords": ["Social engineering"]
     },
     {
       "ka": "CPS",
       "topic": "Physical Security",
-      "keywords": ["Physical access control", "RFID access systems", "PIN code systems"]
+      "keywords": ["Physical access control", "RFID access systems"]
     },
     {
       "ka": "AAA",
       "topic": "Authentication",
-      "keywords": ["Access control bypass", "RFID authentication", "PIN-based authentication"]
+      "keywords": ["Access control bypass", "RFID authentication"]
     }
   ]
 }

@@ -1,6 +1,6 @@
 Knowledge Area (top level)
 -Topics (level2)
---Indicative Material (level3)
+--Indicative Material/keywords (level3)
 
 KA0 INT
 CyBOK Introduction
