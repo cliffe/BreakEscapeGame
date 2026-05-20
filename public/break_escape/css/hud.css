@@ -410,3 +410,123 @@
         opacity: 0.6;
     }
 }
+
+/* =====================================================
+   VM Controls Widget — HUD button + overlay iframe
+   ===================================================== */
+
+/* Make the music anchor a flex row so VM + music buttons sit side by side */
+#music-widget-btn-anchor {
+    display: flex;
+    flex-direction: row;
+    gap: 8px;
+    align-items: flex-start;
+}
+
+/* VM Controls HUD button — matches music button dimensions and style */
+.vm-controls-hud-btn {
+    width: 58px;
+    height: 58px;
+    background: rgba(20, 20, 20, 0.7);
+    border: 2px solid #444466;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease, transform 0.1s ease;
+    user-select: none;
+}
+
+.vm-controls-hud-btn:active {
+    transform: translateY(1px);
+}
+
+/* Activation state indicators */
+.vm-controls-hud-btn.vm-activated {
+    border-color: #00cc44;
+    box-shadow: 0 0 8px rgba(0, 200, 68, 0.5);
+}
+
+.vm-controls-hud-btn.vm-deactivated {
+    border-color: #cc2200;
+    box-shadow: 0 0 8px rgba(200, 34, 0, 0.4);
+}
+
+.vm-controls-hud-btn:hover,
+.vm-controls-hud-btn.panel-open {
+    filter: brightness(1.25);
+}
+
+/* vm-launcher.png is 28×23px — render at 2× for pixel-art crispness */
+.vm-controls-btn-icon {
+    display: block;
+    width: 56px;
+    height: 46px;
+    image-rendering: pixelated;
+    image-rendering: crisp-edges;
+    pointer-events: none;
+}
+
+/* Overlay backdrop */
+#vm-controls-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.75);
+    z-index: 2000;
+    align-items: center;
+    justify-content: center;
+}
+
+#vm-controls-overlay.visible {
+    display: flex;
+}
+
+/* Modal container */
+#vm-controls-modal {
+    display: flex;
+    flex-direction: column;
+    width: 90%;
+    max-width: 900px;
+    height: 80vh;
+    max-height: 700px;
+    background: #1a1a2e;
+    border: 2px solid #444466;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.8);
+}
+
+/* Modal title bar */
+#vm-controls-modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 8px 14px;
+    background: #16213e;
+    border-bottom: 1px solid #444466;
+    color: #ccccdd;
+    font-family: 'Press Start 2P', 'Courier New', monospace;
+    font-size: 11px;
+    flex-shrink: 0;
+}
+
+#vm-controls-close-btn {
+    background: none;
+    border: none;
+    color: #ccccdd;
+    cursor: pointer;
+    font-size: 16px;
+    line-height: 1;
+    padding: 2px 6px;
+}
+
+#vm-controls-close-btn:hover {
+    color: #ffffff;
+}
+
+/* Iframe fills remaining modal height */
+#vm-controls-iframe {
+    flex: 1;
+    width: 100%;
+    border: none;
+    background: #ffffff;
+}

@@ -38,6 +38,7 @@ import { StateSync } from './state-sync.js';
 import MusicController from './music/music-controller.js';
 import { wirePhaserGameSoundToBreakEscape } from './music/phaser-audio-bus.js';
 import { createMusicWidget } from './music/music-widget.js';
+import { createVmControlsWidget } from './ui/vm-controls-widget.js';
 
 // Global game variables
 window.game = null;
@@ -156,6 +157,9 @@ function initializeGame() {
 
     // Mount music widget — retries internally until #player-hud-buttons is ready
     window.musicWidget = createMusicWidget();
+
+    // Mount VM controls widget — only renders when vmSetPanelUrl is set (VM-backed missions)
+    window.vmControlsWidget = createVmControlsWidget();
 
     // Calculate optimal integer scale factor for current browser window
     const calculateOptimalScale = () => {

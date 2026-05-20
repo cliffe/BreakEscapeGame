@@ -147,6 +147,28 @@
   <%# Popup Overlay %>
   <div class="popup-overlay"></div>
 
+  <%
+    # Compute the embedded VM set panel URL directly so the JS widget can load it
+    # without an intermediate redirect (which has fragile guard conditions).
+    _vm_set_panel_url = ''
+    _vm_set_activated = false
+    if BreakEscape::Mission.hacktivity_mode?
+      _vm_set_id = (@game.vm_set_id.presence ||
+                    (@game.player_state.is_a?(Hash) && @game.player_state['vm_set_id']))&.to_i
+      if _vm_set_id.to_i > 0
+        _vm_set = defined?(::VmSet) ? ::VmSet.find_by(id: _vm_set_id) : nil
+        if _vm_set&.sec_gen_batch&.event
+          _vm_set_panel_url = Rails.application.routes.url_helpers.event_sec_gen_batch_vm_set_path(
+            _vm_set.sec_gen_batch.event,
+            _vm_set.sec_gen_batch,
+            _vm_set,
+            embedded: 1
+          )
+          _vm_set_activated = _vm_set.activated
+        end
+      end
+    end
+  %>
   <%# Bootstrap configuration for client %>
   <script nonce="<%= content_security_policy_nonce %>">
     window.breakEscapeConfig = {
@@ -160,7 +182,8 @@
       hasProgress: <%= @game.has_progress? ? 'true' : 'false' %>,
       hasSiblings: <%= (@mission_sessions.length > 1) ? 'true' : 'false' %>,
       vmPanelUrl: '<%= BreakEscape::Mission.hacktivity_mode? ? vm_panel_game_path(@game) : '' %>',
-      vmSetPanelUrl: '<%= BreakEscape::Mission.hacktivity_mode? ? vm_set_panel_game_path(@game) : '' %>',
+      vmSetPanelUrl: '<%= _vm_set_panel_url %>',
+      vmSetActivated: <%= _vm_set_activated ? 'true' : 'false' %>,
       vmActivationMode: '<%= BreakEscape::Mission.hacktivity_mode? ? @game.mission.vm_activation_mode.to_s : '' %>'
     };
     console.log('🔧 breakEscapeConfig initialized:', window.breakEscapeConfig);

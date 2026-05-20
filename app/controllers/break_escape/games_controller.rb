@@ -943,10 +943,25 @@ module BreakEscape
     end
 
     # GET /games/:id/vm_set_panel
-    # Placeholder: body added in Phase 4.4.3. Route declared here to avoid ERB NoMethodError.
+    # Redirects to the Hacktivity VmSet#show page for this game's assigned VM set,
+    # with ?embedded=1 so Hacktivity hides navigation and footer.
     def vm_set_panel
-      return head :not_found unless BreakEscape::Mission.hacktivity_mode?
-      head :not_found
+      return head :not_found unless BreakEscape::Mission.hacktivity_mode? && @game.vm_set_id
+
+      vm_set = defined?(::VmSet) ? ::VmSet.find_by(id: @game.vm_set_id) : nil
+      return head :not_found unless vm_set&.sec_gen_batch&.event
+
+      return head :not_found unless @game.reload.status == 'in_progress'
+
+      batch = vm_set.sec_gen_batch
+      event = batch.event
+
+      redirect_to Rails.application.routes.url_helpers.event_sec_gen_batch_vm_set_path(
+        event,
+        batch,
+        vm_set,
+        embedded: 1
+      )
     end
 
     private
