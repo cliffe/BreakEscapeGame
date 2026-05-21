@@ -1,6 +1,8 @@
 module BreakEscape
   class MissionsController < ApplicationController
     def index
+      authorize Mission, :index? if defined?(Pundit)
+
       missions = if defined?(Pundit)
                     policy_scope(Mission)
       else

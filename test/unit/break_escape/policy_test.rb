@@ -193,9 +193,27 @@ module BreakEscape
       @unpublished = break_escape_missions(:unpublished)
     end
 
-    test "anyone can index missions" do
+    test "anyone can index missions in standalone mode" do
       assert MissionPolicy.new(@player, @published).index?
       assert MissionPolicy.new(nil,     @published).index?
+    end
+
+    test "index? returns false for regular player in mounted mode" do
+      original = BreakEscape.configuration.standalone_mode
+      BreakEscape.configuration.standalone_mode = false
+      assert_not MissionPolicy.new(@player, @published).index?
+    ensure
+      BreakEscape.configuration.standalone_mode = original
+    end
+
+    test "index? returns true for admin in mounted mode" do
+      original = BreakEscape.configuration.standalone_mode
+      BreakEscape.configuration.standalone_mode = false
+      @player.update!(role: 'admin')
+      assert MissionPolicy.new(@player, @published).index?
+    ensure
+      BreakEscape.configuration.standalone_mode = original
+      @player.update!(role: 'user')
     end
 
     test "published mission is visible to regular users" do
