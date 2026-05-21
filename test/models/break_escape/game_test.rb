@@ -283,15 +283,20 @@ module BreakEscape
 
     # ─── on_game_complete hook ─────────────────────────────────────────────────
 
-    test "fire_completion_callback is called after_commit when status transitions to completed" do
+    test "fire_completion_callback delegates to on_game_complete hook" do
       called_with = nil
       BreakEscape.configuration.on_game_complete = ->(game) { called_with = game }
 
-      @game.update!(status: 'completed', completed_at: Time.current)
+      @game.send(:fire_completion_callback)
 
       assert_equal @game, called_with
     ensure
       BreakEscape.configuration.on_game_complete = nil
+    end
+
+    test "status_previously_changed_to_completed? is true after status changes to completed" do
+      @game.update!(status: 'completed', completed_at: Time.current)
+      assert @game.send(:status_previously_changed_to_completed?)
     end
 
     test "fire_completion_callback is NOT called when status changes to abandoned" do

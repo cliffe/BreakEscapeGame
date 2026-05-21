@@ -260,14 +260,7 @@ module BreakEscape
 
     test "vm_panel? returns true for admin regardless of ownership" do
       @other.update!(role: 'admin')
-      # Admin bypasses via ApplicationPolicy#admin? — show? returns true for admin,
-      # but vm_panel? checks ownership+status directly, so admin will be false here
-      # unless ApplicationPolicy provides an override. Per plan: "Admins bypass via
-      # the existing admin? check in ApplicationPolicy." — vm_panel? does NOT use show?
-      # so admin gets the same ownership check. This is intentional per the spec.
-      # (The plan says "admin? check in ApplicationPolicy" but vm_panel? is a custom method.)
-      # Reflect actual policy behaviour: admin is NOT the record.player, so returns false.
-      assert_not GamePolicy.new(@other, @game).vm_panel?
+      assert GamePolicy.new(@other, @game).vm_panel?
     ensure
       @other.update!(role: 'user')
     end
