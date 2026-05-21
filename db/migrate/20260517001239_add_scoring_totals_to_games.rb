@@ -1,4 +1,4 @@
-class AddScoringTotalsToGames < ActiveRecord::Migration[7.1]
+class AddScoringTotalsToGames < ActiveRecord::Migration[7.0]
   def change
     add_column :break_escape_games, :total_tasks, :integer, default: 0, null: false
     add_column :break_escape_games, :total_aims, :integer, default: 0, null: false

@@ -101,9 +101,32 @@ Player state stored in JSONB column:
 
 ## Testing
 
+### CI
+
+Tests run automatically on GitHub Actions. The committed `Gemfile.lock` pins the exact gem versions used.
+
+### Locally with network access
+
 ```bash
-rails test
+bundle install
+bundle exec rails db:create db:migrate RAILS_ENV=test
+bundle exec rails test
 ```
+
+### Locally without network access
+
+The engine ships with a `bin/setup` script that bootstraps the bundle from a sibling Hacktivity checkout (which already has all the required gems vendored):
+
+```bash
+# From the BreakEscape root — Hacktivity must be at ../Hacktivity
+bin/setup
+bundle exec rails test
+
+# If Hacktivity is elsewhere, set HACKTIVITY_DIR:
+HACKTIVITY_DIR=/path/to/Hacktivity bin/setup
+```
+
+`bin/setup` copies the resolved `.gem` files into `vendor/cache/` and runs `bundle install --local`. The `vendor/cache/` and `vendor/bundle/` directories are gitignored; only `Gemfile.lock` is committed.
 
 ## Documentation
 

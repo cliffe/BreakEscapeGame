@@ -1,5 +1,6 @@
 # Bundle
 vendor/bundle/
+vendor/cache/
 .bundle/
 
 # IDE

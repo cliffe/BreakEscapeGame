@@ -1,4 +1,4 @@
-class BackfillGameScoringTotals < ActiveRecord::Migration[7.1]
+class BackfillGameScoringTotals < ActiveRecord::Migration[7.0]
   def up
     # Only backfill for games with scenario data
     BreakEscape::Game.find_each do |game|
