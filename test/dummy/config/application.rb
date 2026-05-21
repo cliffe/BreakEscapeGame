@@ -13,11 +13,6 @@ module Dummy
     # For compatibility with applications that use this config
     config.action_controller.include_all_helpers = false
 
-    # Please, add to the `ignore` list any other `lib` subdirectories that do
-    # not contain `.rb` files, or that should not be reloaded or eager loaded.
-    # Common ones are `templates`, `generators`, or `middleware`, for example.
-    config.autoload_lib(ignore: %w[assets tasks])
-
     # Load engine migrations
     config.paths['db/migrate'] << File.expand_path('../../../../db/migrate', __dir__)
 

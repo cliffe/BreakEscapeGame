@@ -15,7 +15,7 @@ module BreakEscape
       has_many :game_slots,
                class_name: '::GameSlot',
                foreign_key: :break_escape_mission_id,
-               dependent: :nullify
+               dependent: :destroy
     end
 
     VM_ACTIVATION_MODES = %w[eager lazy].freeze
