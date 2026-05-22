@@ -1,4 +1,4 @@
-import { API_BASE, CSRF_TOKEN } from './config.js';
+import { getApiBase, getCsrfToken } from './config.js';
 
 /**
  * API Client for BreakEscape server communication
@@ -8,7 +8,7 @@ export class ApiClient {
    * GET request
    */
   static async get(endpoint) {
-    const response = await fetch(`${API_BASE}${endpoint}`, {
+    const response = await fetch(`${getApiBase()}${endpoint}`, {
       method: 'GET',
       credentials: 'same-origin',
       headers: {
@@ -27,13 +27,13 @@ export class ApiClient {
    * POST request
    */
   static async post(endpoint, data = {}) {
-    const response = await fetch(`${API_BASE}${endpoint}`, {
+    const response = await fetch(`${getApiBase()}${endpoint}`, {
       method: 'POST',
       credentials: 'same-origin',
       headers: {
         'Content-Type': 'application/json',
         'Accept': 'application/json',
-        'X-CSRF-Token': CSRF_TOKEN
+        'X-CSRF-Token': getCsrfToken()
       },
       body: JSON.stringify(data)
     });
@@ -50,13 +50,13 @@ export class ApiClient {
    * PUT request
    */
   static async put(endpoint, data = {}) {
-    const response = await fetch(`${API_BASE}${endpoint}`, {
+    const response = await fetch(`${getApiBase()}${endpoint}`, {
       method: 'PUT',
       credentials: 'same-origin',
       headers: {
         'Content-Type': 'application/json',
         'Accept': 'application/json',
-        'X-CSRF-Token': CSRF_TOKEN
+        'X-CSRF-Token': getCsrfToken()
       },
       body: JSON.stringify(data)
     });
@@ -118,12 +118,12 @@ export class ApiClient {
    */
   static async getTTS(npcId, text) {
     try {
-      const response = await fetch(`${API_BASE}/tts`, {
+      const response = await fetch(`${getApiBase()}/tts`, {
         method: 'POST',
         credentials: 'same-origin',
         headers: {
           'Content-Type': 'application/json',
-          'X-CSRF-Token': CSRF_TOKEN
+          'X-CSRF-Token': getCsrfToken()
         },
         body: JSON.stringify({ npc_id: npcId, text: text })
       });

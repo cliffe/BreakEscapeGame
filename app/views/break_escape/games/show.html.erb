@@ -164,7 +164,8 @@
             _vm_set,
             embedded: 1
           )
-          _vm_set_activated = _vm_set.activated
+          _vm_set_activated       = _vm_set.activated
+          _vm_set_activated_until = _vm_set.activated_until
         end
       end
     end
@@ -184,6 +185,7 @@
       vmPanelUrl: '<%= BreakEscape::Mission.hacktivity_mode? ? vm_panel_game_path(@game) : '' %>',
       vmSetPanelUrl: '<%= _vm_set_panel_url %>',
       vmSetActivated: <%= _vm_set_activated ? 'true' : 'false' %>,
+      vmSetActivatedUntil: <%= raw(_vm_set_activated_until&.iso8601.to_json) %>,
       vmActivationMode: '<%= BreakEscape::Mission.hacktivity_mode? ? @game.mission.vm_activation_mode.to_s : '' %>'
     };
     console.log('🔧 breakEscapeConfig initialized:', window.breakEscapeConfig);

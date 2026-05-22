@@ -1,12 +1,25 @@
 // API configuration from server
-export const GAME_ID = window.breakEscapeConfig?.gameId;
-export const API_BASE = window.breakEscapeConfig?.apiBasePath || '';
+// GAME_ID and ASSETS_PATH are stable after page load — read once.
+export const GAME_ID     = window.breakEscapeConfig?.gameId;
 export const ASSETS_PATH = window.breakEscapeConfig?.assetsPath || '/break_escape/assets';
 
-// CSRF Token - Try multiple sources (in order of preference)
-export const CSRF_TOKEN =
-  window.breakEscapeConfig?.csrfToken ||  // From config object (if set in view)
-  document.querySelector('meta[name="csrf-token"]')?.content;  // From meta tag (Hacktivity layout)
+// API_BASE and CSRF_TOKEN are read lazily so they always reflect the live
+// window.breakEscapeConfig value, even if the module was evaluated before the
+// inline config script ran (e.g. cached module in some browsers).
+export function getApiBase() {
+  return window.breakEscapeConfig?.apiBasePath || '';
+}
+export function getCsrfToken() {
+  return window.breakEscapeConfig?.csrfToken ||
+         document.querySelector('meta[name="csrf-token"]')?.content;
+}
+
+// Keep named exports for backwards-compatibility with any direct imports.
+// These resolve once at module-evaluation time; prefer getApiBase()/getCsrfToken()
+// for call-site use.
+export const API_BASE   = window.breakEscapeConfig?.apiBasePath || '';
+export const CSRF_TOKEN = window.breakEscapeConfig?.csrfToken ||
+                          document.querySelector('meta[name="csrf-token"]')?.content;
 
 // Verify critical config loaded
 if (!GAME_ID) {
