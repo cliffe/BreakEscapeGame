@@ -426,14 +426,14 @@
 /* VM Controls HUD button — matches music button dimensions and style */
 .vm-controls-hud-btn {
     width: 58px;
-    min-height: 58px;
+    height: 58px;
     background: rgba(20, 20, 20, 0.7);
     border: 2px solid #444466;
     cursor: pointer;
     display: flex;
-    flex-direction: column;
     align-items: center;
     justify-content: center;
+    position: relative;
     transition: border-color 0.2s ease, box-shadow 0.2s ease, transform 0.1s ease;
     user-select: none;
 }
@@ -468,25 +468,23 @@
     pointer-events: none;
 }
 
-.vm-controls-hud-btn.has-countdown .vm-controls-btn-icon {
-    height: 36px;
-}
-
 .vm-countdown {
-    display: block;
-    font-size: 9px;
+    position: absolute;
+    bottom: 3px;
+    left: 0;
+    right: 0;
+    font-size: 11px;
     line-height: 1;
-    color: #cccccc;
+    color: #ffffff;
     text-align: center;
     letter-spacing: 0.05em;
     pointer-events: none;
-    height: 0;
-    overflow: hidden;
+    text-shadow: 0 0 3px rgba(0, 0, 0, 0.9), 0 0 6px rgba(0, 0, 0, 0.7);
+    display: none;
 }
 
 .vm-controls-hud-btn.has-countdown .vm-countdown {
-    height: auto;
-    padding-bottom: 3px;
+    display: block;
 }
 
 /* Overlay backdrop */
