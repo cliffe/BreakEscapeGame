@@ -130,7 +130,7 @@ export class VmControlsWidget {
             this._countdownInterval = null;
         }
         if (!this._activatedUntil) {
-            this._setCountdownText('');
+            this._setCountdownText(this._activated ? '' : 'VMs Down');
             return;
         }
         this._tickCountdown();
@@ -140,16 +140,18 @@ export class VmControlsWidget {
     _tickCountdown() {
         const remaining = this._activatedUntil - Date.now();
         if (remaining <= 0) {
-            this._setCountdownText('');
             clearInterval(this._countdownInterval);
             this._countdownInterval = null;
+            this._activated = false;
+            this._applyActivationState();
+            this._setCountdownText('VMs Down');
             return;
         }
         const h = Math.floor(remaining / 3600000);
         const m = Math.floor((remaining % 3600000) / 60000);
         const s = Math.floor((remaining % 60000) / 1000);
-        const text = h > 0
-            ? `${h}h ${m}m`
+        const text = h > 0 || m >= 10
+            ? `${h > 0 ? h + 'h ' : ''}${m}m`
             : `${m}m ${s}s`;
         this._setCountdownText(text);
     }

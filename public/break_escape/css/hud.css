@@ -473,7 +473,8 @@
     bottom: 3px;
     left: 0;
     right: 0;
-    font-size: 11px;
+    font-family: 'GNF';
+    font-size: 14px;
     line-height: 1;
     color: #ffffff;
     text-align: center;
