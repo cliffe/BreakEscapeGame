@@ -187,7 +187,8 @@
       vmSetActivated: <%= _vm_set_activated ? 'true' : 'false' %>,
       vmSetActivatedUntil: <%= raw(_vm_set_activated_until&.iso8601.to_json) %>,
       vmActivationMode: '<%= BreakEscape::Mission.hacktivity_mode? ? @game.mission.vm_activation_mode.to_s : '' %>',
-      missionConcludedAt: <%= raw(@game.mission_concluded_at&.iso8601.to_json) %>
+      missionConcludedAt: <%= raw(@game.mission_concluded_at&.iso8601.to_json) %>,
+      missionId: <%= @game.mission_id %>
     };
     console.log('🔧 breakEscapeConfig initialized:', window.breakEscapeConfig);
     console.log('🎨 Player sprite from server:', window.breakEscapeConfig.playerSprite);
@@ -203,6 +204,41 @@
       document.getElementById('lab-close-btn')
         .addEventListener('click', function() { closeLabWorkstation(); });
     });
+  </script>
+
+  <%# Tab lifecycle: signals liveness to the Hacktivity parent page and
+      listens for a cross-tab close command from Abandon / Reset / Restart. %>
+  <script nonce="<%= content_security_policy_nonce %>">
+    (function () {
+      var cfg       = window.breakEscapeConfig;
+      var missionId = cfg && cfg.missionId;
+      if (!missionId) return;
+
+      var aliveKey = 'be_alive_' + missionId;
+      var closeKey = 'be_close_' + missionId;
+
+      // Name this window so the parent can focus it with window.open('', name)
+      window.name = 'be_game_' + missionId;
+
+      // Write initial heartbeat, refresh every 5 s
+      function beat() { try { localStorage.setItem(aliveKey, Date.now()); } catch (e) {} }
+      beat();
+      var hb = setInterval(beat, 5000);
+
+      // Remove the heartbeat on close so the parent reverts to "Continue" immediately
+      window.addEventListener('beforeunload', function () {
+        clearInterval(hb);
+        try { localStorage.removeItem(aliveKey); } catch (e) {}
+      });
+
+      // Listen for a close command written by the parent (Abandon / Reset / Restart)
+      window.addEventListener('storage', function (e) {
+        if (e.key === closeKey && e.newValue) {
+          try { localStorage.removeItem(closeKey); } catch (ex) {}
+          window.close();
+        }
+      });
+    }());
   </script>
 
   <%# Load required libraries before the game module %>

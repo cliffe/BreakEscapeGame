@@ -223,14 +223,12 @@ export function showEndScreen(opts = {}) {
     btn.onmouseover = () => { btn.style.background = '#555'; btn.style.borderColor = '#aaa'; };
     btn.onmouseout  = () => { btn.style.background = '#333'; btn.style.borderColor = '#666'; };
     btn.onclick = () => {
-        // Hacktivity: game is opened in a new tab from the event/game-slot page.
-        // Close the game tab and return focus to the opener (game slot) tab.
-        if (window.breakEscapeConfig?.hacktivityMode && window.opener && !window.opener.closed) {
-            window.opener.focus();
-            window.close();
-        } else {
-            window.location.href = '/break_escape/missions';
+        // Always close the game tab. In Hacktivity mode, also restore focus to the opener.
+        // In standalone mode window.close() works when the tab was opened via a link.
+        if (window.breakEscapeConfig?.hacktivityMode) {
+            window.opener?.focus();
         }
+        window.close();
     };
 
     overlay.appendChild(titleEl);
