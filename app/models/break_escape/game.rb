@@ -23,6 +23,7 @@ module BreakEscape
     before_create :set_scoring_totals
     after_commit :fire_completion_callback, if: :status_previously_changed_to_completed?
     after_commit :fire_completion_callback, if: :task_progress_previously_changed?
+    after_commit :fire_completion_callback, if: :mission_conclusion_previously_changed?
 
     # Returns true if the game has meaningful progress beyond the initial state
     def has_progress?
@@ -34,12 +35,11 @@ module BreakEscape
 
     # Check if mission is completed
     def mission_completed?
-      status == 'completed'
+      status == 'completed' || mission_concluded_at.present?
     end
 
     # Calculate task-based score (task completion scoring method)
     def calculate_task_score
-      return 100.0 if mission_completed?
       return 0.0 if total_tasks.zero?
 
       task_score = (tasks_completed.to_f / total_tasks) * 70
@@ -50,8 +50,6 @@ module BreakEscape
 
     # Get score based on game_slot scoring method (if available)
     def calculate_score
-      return 100.0 if mission_completed?
-
       # Try to get scoring method from game_slot if available
       scoring_method = game_slot&.scoring_method
 
@@ -412,8 +410,19 @@ module BreakEscape
 
     def task_progress_previously_changed?
       return false if saved_change_to_status?(to: 'completed')
+      # Use saved_changes.key? rather than the auto-generated predicate so this
+      # works even before the mission_concluded_at migration has been applied.
+      return false if saved_changes.key?('mission_concluded_at')
 
       saved_change_to_tasks_completed? || saved_change_to_objectives_completed?
+    end
+
+    def mission_conclusion_previously_changed?
+      # Guard: when status also changed to completed in the same save, let
+      # status_previously_changed_to_completed? own the callback to avoid double-fire.
+      return false if saved_change_to_status?(to: 'completed')
+
+      saved_changes.key?('mission_concluded_at') && mission_concluded_at.present?
     end
 
     def fire_completion_callback
@@ -943,6 +952,10 @@ module BreakEscape
         # Custom tasks are completed via ink tags - no validation needed
       end
 
+      # Capture before any completion side-effects so we can report whether this
+      # save is the one that first triggers mission conclusion.
+      was_concluded_before = mission_concluded_at.nil?
+
       # Mark task complete
       player_state['objectivesState']['tasks'][task_id] = {
         'status' => 'completed',
@@ -952,14 +965,20 @@ module BreakEscape
       # Process onComplete actions
       process_task_completion(task)
 
-      # Check if aim is now complete
-      check_aim_completion(task['aimId'])
+      # Check if aim is now complete (may set mission_concluded_at)
+      # Returns false when a missionConclusion aim's requiresCompleted gate is unmet
+      conclusion_result = check_aim_completion(task['aimId'])
 
       # Update statistics
       self.tasks_completed = (self.tasks_completed || 0) + 1
+      self.score = calculate_task_score.round
 
       save!
-      { success: true, taskId: task_id }
+
+      mission_just_concluded = was_concluded_before && mission_concluded_at.present?
+      response = { success: true, taskId: task_id, missionConcluded: mission_just_concluded }
+      response[:warning] = 'Complete required objectives first to conclude the mission.' if conclusion_result == false
+      response
     end
 
     # Update task progress (for collect_items and submit_flags tasks)
@@ -1064,6 +1083,30 @@ module BreakEscape
     end
 
     private
+
+    # Set mission_concluded_at when a missionConclusion aim completes, and
+    # transition the game to completed status so Hacktivity shows it as done
+    # and GameCompletionScoringJob can record completed_flags_date.
+    # Called from check_aim_completion — does NOT call save! (caller is responsible).
+    # Also acts as a backstop for paths that bypass complete_task! (e.g. process_flag_task_completions!).
+    def check_mission_conclusion(aim)
+      return unless aim['missionConclusion']
+      return unless mission_concluded_at.nil?
+
+      required_task_ids = Array(aim['requiresCompleted'])
+      if required_task_ids.any?
+        unmet = required_task_ids.reject do |req_id|
+          player_state.dig('objectivesState', 'tasks', req_id, 'status') == 'completed'
+        end
+        return false if unmet.any?  # gate blocked
+      end
+
+      now = Time.current
+      self.mission_concluded_at = now
+      self.status               = 'completed'
+      self.completed_at         = now
+      true  # concluded
+    end
 
     # Find a task in scenario objectives by taskId
     def find_task_in_scenario(task_id)
@@ -1188,6 +1231,7 @@ module BreakEscape
           'completedAt' => Time.current.iso8601
         }
         self.objectives_completed = (self.objectives_completed || 0) + 1
+        check_mission_conclusion(aim)  # returns true (concluded), false (gate blocked), nil (not a conclusion aim)
       end
     end
 

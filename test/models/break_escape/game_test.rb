@@ -340,4 +340,128 @@ module BreakEscape
       end
     end
   end
+
+  # ---------------------------------------------------------------------------
+  # Mission Conclusion
+  # ---------------------------------------------------------------------------
+  class MissionConclusionTest < ActiveSupport::TestCase
+    CONCLUSION_SCENARIO = {
+      "startRoom" => "room1",
+      "rooms" => {},
+      "objectives" => [
+        {
+          "aimId" => "setup_aim",
+          "title" => "Setup",
+          "status" => "active",
+          "order" => 0,
+          "tasks" => [
+            { "taskId" => "setup_task", "title" => "Setup", "type" => "custom", "status" => "active" }
+          ]
+        },
+        {
+          "aimId" => "conclusion_aim",
+          "title" => "Conclude",
+          "status" => "active",
+          "order" => 1,
+          "missionConclusion" => true,
+          "requiresCompleted" => ["setup_task"],
+          "conclusionScreen" => { "type" => "end_screen" },
+          "tasks" => [
+            { "taskId" => "conclusion_task", "title" => "Conclude", "type" => "custom", "status" => "active" }
+          ]
+        }
+      ]
+    }.freeze
+
+    setup do
+      @mission = break_escape_missions(:ceo_exfil)
+      @player  = break_escape_demo_users(:test_user)
+      @game = BreakEscape::Game.create!(
+        mission: @mission,
+        player: @player,
+        scenario_data: CONCLUSION_SCENARIO.deep_dup,
+        player_state: {
+          "currentRoom" => "room1",
+          "unlockedRooms" => ["room1"],
+          "unlockedObjects" => [],
+          "inventory" => [],
+          "encounteredNPCs" => [],
+          "globalVariables" => {},
+          "biometricSamples" => [],
+          "biometricUnlocks" => [],
+          "bluetoothDevices" => [],
+          "notes" => [],
+          "health" => 100
+        }
+      )
+    end
+
+    # T1: completing the conclusion aim writes mission_concluded_at
+    test "completing conclusion aim sets mission_concluded_at" do
+      @game.complete_task!('setup_task')
+      assert_nil @game.mission_concluded_at, "should not be set before conclusion aim"
+
+      result = @game.complete_task!('conclusion_task')
+      assert result[:success]
+      assert result[:missionConcluded]
+      assert_not_nil @game.mission_concluded_at
+    end
+
+    # T2: completing a non-conclusion aim does not set mission_concluded_at
+    test "completing non-conclusion aim does not set mission_concluded_at" do
+      @game.complete_task!('setup_task')
+      assert_nil @game.mission_concluded_at
+    end
+
+    # T3: check_mission_conclusion is idempotent
+    test "mission_concluded_at is not changed on a second completion" do
+      @game.complete_task!('setup_task')
+      @game.complete_task!('conclusion_task')
+      first_ts = @game.mission_concluded_at
+
+      sleep(0.01) # ensure a different timestamp would be generated
+      @game.complete_task!('conclusion_task') # already completed — no-op
+      assert_equal first_ts, @game.reload.mission_concluded_at
+    end
+
+    # T4: score is raw formula, never forced to 100
+    test "score is raw task/aim formula, not forced to 100" do
+      # Only complete 1 of 2 tasks (setup_task only)
+      @game.complete_task!('setup_task')
+      # Use calculate_task_score directly — calculate_score may delegate to game_slot
+      # (Hacktivity association) which is not available in standalone engine tests.
+      score = @game.calculate_task_score
+      assert score < 100.0, "Score should be < 100 when not all tasks completed; got #{score}"
+      assert score > 0.0,   "Score should be > 0 when some tasks completed; got #{score}"
+    end
+
+    # T5: requiresCompleted gate blocks conclusion when prerequisites not met,
+    # but the task itself still completes successfully
+    test "conclusion task is rejected when requiresCompleted not satisfied" do
+      result = @game.complete_task!('conclusion_task')
+      assert_equal true, result[:success], "Task should succeed even when conclusion gate is blocked"
+      assert_equal false, result[:missionConcluded], "Mission should not be concluded when gate is unmet"
+      assert result[:warning].present?, "Response should include a warning when conclusion gate is blocked"
+    end
+
+    # T6: warning message is present (not an error) when gate is blocked
+    test "rejection response includes error message" do
+      result = @game.complete_task!('conclusion_task')
+      assert result[:warning].present?
+      assert_nil result[:error]
+    end
+
+    # T7: conclusion task succeeds when prerequisites ARE met
+    test "conclusion task succeeds when requiresCompleted are all satisfied" do
+      @game.complete_task!('setup_task')
+      result = @game.complete_task!('conclusion_task')
+      assert result[:success]
+    end
+
+    # T8: mission_concluded_at is written only after prerequisites are satisfied
+    test "mission_concluded_at not set if requiresCompleted not satisfied" do
+      @game.complete_task!('conclusion_task') # blocked by guard
+      assert_nil @game.reload.mission_concluded_at
+    end
+  end
 end

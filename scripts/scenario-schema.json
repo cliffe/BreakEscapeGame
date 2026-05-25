@@ -154,6 +154,32 @@
             }
           }
         },
+        "missionConclusion": {
+          "type": "boolean",
+          "description": "When true, completing this aim records mission_concluded_at on the server. At most one aim per scenario should have this flag."
+        },
+        "requiresCompleted": {
+          "type": "array",
+          "items": { "type": "string" },
+          "description": "Server-side gate: task IDs that must already be completed before mission_concluded_at is written. Prevents conclusion being recorded if prerequisite tasks were bypassed."
+        },
+        "conclusionScreen": {
+          "type": "object",
+          "description": "Defines which overlay to show when the mission concludes. Used on first completion (if not already shown by triggerOnInteract) and on reload.",
+          "properties": {
+            "type": {
+              "type": "string",
+              "enum": ["end_screen", "bond_visualiser"],
+              "description": "end_screen: shows the standard mission complete overlay. bond_visualiser: opens the fullscreen SAFETYNET audio visualiser."
+            },
+            "bondVisualiserOpts": {
+              "type": "object",
+              "description": "Options forwarded to BondVisualiser.open() when type is bond_visualiser.",
+              "additionalProperties": true
+            }
+          },
+          "required": ["type"]
+        },
         "tasks": {
           "type": "array",
           "items": { "$ref": "#/definitions/task" }

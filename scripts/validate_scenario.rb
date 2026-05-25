@@ -877,10 +877,28 @@ def check_common_issues(json_data, valid_item_types = nil)
     global_variables_defined.merge(json_data['globalVariables'].keys)
   end
 
-  # Collect all valid task IDs from objectives (for taskOnKO cross-reference)
+  # Collect all valid task IDs from objectives (for taskOnKO and requiresCompleted cross-reference)
   all_task_ids = Set.new
   json_data['objectives']&.each do |obj|
     obj['tasks']&.each { |t| all_task_ids.add(t['taskId']) if t['taskId'] }
+  end
+
+  # Validate missionConclusion / requiresCompleted / conclusionScreen on aims
+  mission_conclusion_aims = json_data['objectives']&.select { |a| a['missionConclusion'] } || []
+  if mission_conclusion_aims.size > 1
+    issues << "❌ ERROR: Multiple aims have missionConclusion:true (#{mission_conclusion_aims.map { |a| a['aimId'] }.join(', ')}). At most one aim per scenario may be the conclusion aim."
+  end
+  json_data['objectives']&.each do |aim|
+    aim_path = "objectives/#{aim['aimId']}"
+    next unless aim['missionConclusion']
+    if aim['conclusionScreen'].nil?
+      issues << "⚠️ WARNING: #{aim_path} has missionConclusion:true but no conclusionScreen — the player will see no end-of-mission overlay."
+    end
+    (aim['requiresCompleted'] || []).each do |task_id|
+      unless all_task_ids.include?(task_id)
+        issues << "❌ ERROR: #{aim_path} requiresCompleted references unknown taskId '#{task_id}'."
+      end
+    end
   end
 
   # Collect targetGroup values from tasks (for collection_group cross-reference)

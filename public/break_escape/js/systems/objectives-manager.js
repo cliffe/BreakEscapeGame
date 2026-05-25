@@ -509,10 +509,28 @@ export class ObjectivesManager {
       if (!response.success) {
         console.warn(`⚠️ Server rejected task completion: ${response.error}`);
         task.status = 'active'; // Revert on server rejection
+        if (window.gameAlert) {
+          window.gameAlert(response.error || 'Not yet…', 'warning', 'Objective Blocked');
+        }
         return;
+      }
+
+      // Server confirmed conclusion — trigger end screen if configured
+      if (response.missionConcluded) {
+        const aim = this.aimIndex[task.aimId];
+        this.handleMissionConcluded(aim);
+      } else if (response.warning) {
+        // Gate blocked conclusion — inform the player but keep the task completed
+        console.warn(`⚠️ Mission conclusion blocked: ${response.warning}`);
+        if (window.gameAlert) {
+          window.gameAlert(response.warning, 'warning', 'Not Yet…');
+        }
       }
     } catch (error) {
       console.error('Failed to sync task completion with server:', error);
+      if (window.gameAlert) {
+        window.gameAlert('Could not sync progress. Please try again.', 'error', 'Sync Error');
+      }
       // Continue with client-side update anyway for UX
     }
 
@@ -817,7 +835,41 @@ export class ObjectivesManager {
   }
   
   // === UI Notifications ===
-  
+
+  /**
+   * Handle mission conclusion: emit event and trigger end screen if configured on the aim.
+   * Called when the server confirms missionConcluded:true in a complete_task response,
+   * and also from main.js on reload when breakEscapeConfig.missionConcludedAt is set.
+   * @param {Object} aim - The aim object with missionConclusion:true
+   */
+  handleMissionConcluded(aim) {
+    if (!aim) return;
+
+    console.log(`🏁 Mission concluded via aim: ${aim.aimId}`);
+
+    // Emit event for any listeners (music system, analytics, etc.)
+    this.eventDispatcher.emit('mission_concluded', { aimId: aim.aimId, aim });
+
+    const screen = aim.conclusionScreen;
+    if (!screen) return;
+
+    if (screen.type === 'end_screen') {
+      // Trigger the generic end-screen overlay
+      if (window.showEndScreen) {
+        window.showEndScreen(screen);
+      } else {
+        console.warn('[ObjectivesManager] window.showEndScreen is not defined');
+      }
+    } else if (screen.type === 'bond_visualiser') {
+      // Open the fullscreen bond visualiser (used for mission credits / victory sequence)
+      if (window.BondVisualiser) {
+        window.BondVisualiser.open(screen.bondVisualiserOpts || {});
+      } else {
+        console.warn('[ObjectivesManager] window.BondVisualiser is not defined');
+      }
+    }
+  }
+
   showTaskCompleteNotification(task) {
     if (window.playUISound) {
       window.playUISound('objective_complete');

@@ -147,6 +147,19 @@ function initializeGame() {
     console.log('📋 Initializing objectives manager...');
     window.objectivesManager = getObjectivesManager(window.eventDispatcher);
     console.log('✅ Objectives manager initialized');
+
+    // Reload handler: if this game was already concluded, replay the conclusion screen
+    // once the scene is fully loaded and objectives are available.
+    if (window.breakEscapeConfig?.missionConcludedAt) {
+        window.eventDispatcher.once('game_loaded', () => {
+            const scenario = window.gameScenario;
+            if (!scenario?.objectives) return;
+            const conclusionAim = scenario.objectives.find(a => a.missionConclusion);
+            if (!conclusionAim || !window.objectivesManager) return;
+            console.log('🔁 Replaying mission conclusion screen on reload');
+            window.objectivesManager.handleMissionConcluded(conclusionAim);
+        });
+    }
     
     // Make lockpicking function available globally
     window.startLockpickingMinigame = startLockpickingMinigame;

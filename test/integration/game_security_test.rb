@@ -999,4 +999,104 @@ module BreakEscape
       @game.save!
     end
   end
+
+  # =========================================================================
+  # Mission Conclusion — server-side requiresCompleted gate
+  # =========================================================================
+  class MissionConclusionSecurityTest < ActionDispatch::IntegrationTest
+    include Engine.routes.url_helpers
+
+    PLAYER_STATE = {
+      "currentRoom"      => "lobby",
+      "unlockedRooms"    => ["lobby"],
+      "unlockedObjects"  => [],
+      "inventory"        => [],
+      "encounteredNPCs"  => [],
+      "globalVariables"  => {},
+      "biometricSamples" => [],
+      "biometricUnlocks" => [],
+      "bluetoothDevices" => [],
+      "notes"            => [],
+      "health"           => 100
+    }.freeze
+
+    CONCLUSION_SCENARIO = {
+      "startRoom" => "lobby",
+      "rooms" => { "lobby" => { "locked" => false, "connections" => {}, "objects" => [] } },
+      "objectives" => [
+        {
+          "aimId" => "prerequisite_aim",
+          "title" => "Do the prep work",
+          "status" => "active",
+          "order" => 0,
+          "tasks" => [
+            { "taskId" => "npc_prep_task", "title" => "Meet the handler",
+              "type" => "npc_conversation", "targetNPC" => "handler_npc", "status" => "active" }
+          ]
+        },
+        {
+          "aimId" => "conclusion_aim",
+          "title" => "Close the mission",
+          "status" => "active",
+          "order" => 1,
+          "missionConclusion" => true,
+          "requiresCompleted" => ["npc_prep_task"],
+          "conclusionScreen" => { "type" => "end_screen" },
+          "tasks" => [
+            { "taskId" => "close_task", "title" => "Close", "type" => "custom", "status" => "active" }
+          ]
+        }
+      ]
+    }.freeze
+
+    setup do
+      @mission = break_escape_missions(:ceo_exfil)
+      @player  = break_escape_demo_users(:test_user)
+      @game = BreakEscape::Game.create!(
+        mission:       @mission,
+        player:        @player,
+        scenario_data: CONCLUSION_SCENARIO.deep_dup,
+        player_state:  PLAYER_STATE.deep_dup
+      )
+    end
+
+    # T5: requiresCompleted gate blocks conclusion but task still succeeds
+    test "SECURITY: conclusion task blocked when requiresCompleted not satisfied" do
+      post complete_task_game_url(@game, task_id: 'close_task')
+      assert_response :success
+      json = JSON.parse(response.body)
+      assert_equal true,  json['success']
+      assert_equal false, json['missionConcluded']
+      assert json['warning'].present?, "Response should include a warning when conclusion gate is blocked"
+    end
+
+    # T6: warning message is present in HTTP response body (not an error)
+    test "SECURITY: rejection response includes human-readable error message" do
+      post complete_task_game_url(@game, task_id: 'close_task')
+      assert_response :success
+      json = JSON.parse(response.body)
+      assert json['warning'].present?
+      assert_nil json['error']
+    end
+
+    # T7: conclusion task succeeds once prerequisites are met
+    test "conclusion task succeeds when requiresCompleted are all completed" do
+      # Satisfy the prerequisite by recording NPC encounter then completing task
+      @game.player_state['encounteredNPCs'] << 'handler_npc'
+      @game.save!
+      post complete_task_game_url(@game, task_id: 'npc_prep_task')
+      assert_response :success
+
+      post complete_task_game_url(@game, task_id: 'close_task')
+      assert_response :success
+      json = JSON.parse(response.body)
+      assert json['success']
+    end
+
+    # T8: mission_concluded_at not written until prerequisites satisfied
+    test "SECURITY: mission_concluded_at is nil when requiresCompleted gate fails" do
+      post complete_task_game_url(@game, task_id: 'close_task')
+      assert_nil @game.reload.mission_concluded_at
+    end
+  end
 end

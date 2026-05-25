@@ -1032,6 +1032,52 @@ Aims can be locked until prerequisites are met:
 
 ---
 
+### Mission Conclusion
+
+Mark exactly **one** aim as the mission-conclusion aim with `missionConclusion: true`. When that aim is completed the server writes `mission_concluded_at` (a one-time timestamp — idempotent on repeat calls) and returns `missionConcluded: true` in the API response. The client then triggers the configured `conclusionScreen`.
+
+#### `missionConclusion`
+
+```json
+"missionConclusion": true
+```
+
+Set on the final aim. At most one aim per scenario may carry this flag. The validator errors if more than one aim has it.
+
+#### `requiresCompleted`
+
+```json
+"requiresCompleted": ["inform_safetynet_operation_shatter", "deactivate_launch"]
+```
+
+Server-side prerequisite guard. The server refuses to write `mission_concluded_at` unless every listed task ID is already completed. This prevents a player bypassing earlier tasks and claiming mission completion via a race condition or tampered request. Listed task IDs must exist in the scenario (the validator errors if they do not).
+
+This is a **soft-lock**: the tasks in the conclusion aim itself remain freely completable regardless of the guard. The guard only blocks `mission_concluded_at` from being written.
+
+#### `conclusionScreen`
+
+Defines which overlay the client shows when the conclusion is confirmed by the server, and which overlay to re-show if the player reloads the page after concluding.
+
+| `type` | Behaviour |
+|---|---|
+| `end_screen` | Shows the standard mission-complete overlay (`window.showEndScreen`). |
+| `bond_visualiser` | Opens the fullscreen SAFETYNET audio visualiser (`window.BondVisualiser.open()`). |
+
+```json
+"conclusionScreen": { "type": "end_screen" }
+"conclusionScreen": { "type": "bond_visualiser" }
+```
+
+For `bond_visualiser` the credits sequence and victory music are normally wired through the music event system (e.g. a `conversation_closed:closing_debrief_person` trigger). `conclusionScreen` is only used on page reload to re-open the visualiser without replaying the conversation chain.
+
+The validator warns if `missionConclusion: true` is present but `conclusionScreen` is absent.
+
+#### Score and `missionConclusion`
+
+Scores are computed as a raw formula: `(tasks_completed / total_tasks) × 70 + (aims_completed / total_aims) × 30`. The conclusion flag does **not** force the score to 100 %. A player who concludes the mission having skipped optional tasks will receive a proportional score.
+
+---
+
 ## Global Variables
 
 Declare all variables in `globalVariables` at the scenario root. Referenced in Ink stories, event conditions, and `onRead`/`onPickup`/`onInteract` handlers.
