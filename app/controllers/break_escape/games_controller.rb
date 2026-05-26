@@ -781,6 +781,13 @@ module BreakEscape
 
       if result[:success]
         Rails.logger.info "[BreakEscape] Task completed: #{task_id}"
+        if (cb = BreakEscape.configuration&.on_task_complete)
+          begin
+            cb.call(@game)
+          rescue => e
+            Rails.logger.error "[BreakEscape] on_task_complete hook raised: #{e.class}: #{e.message}"
+          end
+        end
         render json: result
       else
         Rails.logger.warn "[BreakEscape] Task completion failed: #{task_id} - #{result[:error]}"

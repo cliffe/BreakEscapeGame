@@ -16,13 +16,14 @@ module BreakEscape
   end
 
   class Configuration
-    attr_accessor :standalone_mode, :demo_user_handle, :on_game_complete, :on_flag_submit
+    attr_accessor :standalone_mode, :demo_user_handle, :on_game_complete, :on_flag_submit, :on_task_complete
 
     def initialize
-      @standalone_mode = false
+      @standalone_mode  = false
       @demo_user_handle = 'demo_player'
       @on_game_complete = nil  # callable: ->(game) { ... }, or nil
       @on_flag_submit   = nil  # callable: ->(game, flag_key, vm_id) { ... }, or nil
+      @on_task_complete = nil  # callable: ->(game) { ... }, or nil — fires after any task is successfully completed
     end
   end
 end
