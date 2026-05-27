@@ -10,7 +10,7 @@ author: "SAFETYNET Documentation"
 
 Field guides are **contextual training documents** delivered by Agent 0x99 when players discover key intelligence or reach decision points. They provide tactical knowledge without spoiling the mission.
 
-**Design Principle**: Agent 0x99 observes your discovery, explains why the information matters for *this* operation, then provides a focused field guide extract with just enough knowledge to succeed.
+**Design Principle**: Agent 0x99 observes your discovery, reminds you what you are trying to achieve right now, then provides a focused field guide extract with all technical knowledge needed to solve the challenge yourself.
 
 ---
 
@@ -24,6 +24,7 @@ Every field guide follows this three-part structure:
 
 **What to include**:
 - What the player just discovered or is about to attempt
+- A concise reminder of the current objective (what they are aiming to achieve)
 - Why it matters for the current objective
 - How it connects to the broader operation
 - Encouragement to use the guide without spoiling outcomes
@@ -32,7 +33,7 @@ Every field guide follows this three-part structure:
 - Exact usernames/passwords for this operation
 - Specific IP addresses or system names from the scenario
 - The exact steps the player will take
-- Outcomes or results they can expect
+- Narrative reveals, plot twists, or guaranteed mission outcomes
 
 **Tone**: Direct, urgent, mentor-like. Agent 0x99 is watching and providing support.
 
@@ -44,9 +45,10 @@ You've found [what they discovered]. This is your way into [the objective].
 
 [Explain why it matters]
 
-I've attached a field guide on [topic]. It covers the fundamentals and common patterns 
-you'll encounter. The specific details of your target will vary, but the principles 
-are universal. Once you've reviewed it, you'll know exactly what to do.
+I've attached a field guide on [topic]. It covers the full technical workflow,
+common failure modes, and troubleshooting steps you'll need.
+Target details will vary, but the method is transferable.
+You've chosen extra support - use it, then execute.
 
 — 0x99
 ```
@@ -146,9 +148,11 @@ Field guides **must be adapted from existing training materials** in the codebas
 
 - **Concepts**: What is SSH? How does Hydra work?
 - **Generic procedures**: How to run commands, general syntax
+- **Complete technical workflow**: Enough detail that a player can solve the challenge by applying the guide
 - **Common vulnerabilities**: Typical patterns (weak passwords, sudo misconfig, etc.)
 - **Troubleshooting**: What to do when something fails
 - **Reference materials**: Tables, syntax examples, command flags
+- **Objective reminders**: Short context cues about what success for the current phase looks like
 
 ### ❌ Don't Provide
 
@@ -158,12 +162,15 @@ Field guides **must be adapted from existing training materials** in the codebas
 - **Expected outcomes**: Don't tell them "you'll find a file called..."
 - **Exact command templates**: Don't give: `hydra -l derek -P [file] 172.22.1.100 ssh`
   - Instead give: `hydra -l [username] -P [wordlist] [target-ip] ssh`
+- **Worked mission paths**: Don't provide end-to-end walkthroughs that mirror this mission's exact sequence
+- **Simulated mission outputs**: Avoid examples that imply specific discovered files, credentials, or encoded values from the live scenario
 
 ### 🤔 Use Judgment
 
 - **Vulnerability types**: OK to mention ("SSH services often have weak passwords")
 - **Attack vectors**: OK to explain (how Hydra works, what it does)
-- **Specific attack**: Not OK (don't describe THIS attack's exact path)
+- **Specific attack path**: Not OK (don't reveal THIS mission's exact answer chain)
+- **Current mission aim**: OK (remind what the player is trying to achieve in this phase)
 
 ---
 
@@ -215,6 +222,33 @@ Field guides **must be adapted from existing training materials** in the codebas
   - `[wordlist]` = File with password attempts
   - `[target-ip]` = Remote system IP
   - `-t 4` = Use 4 parallel connections
+
+### Example Hygiene Rules
+
+- Prefer neutral placeholders over narrative specifics: `[target_user]`, `[interesting_file]`, `[sensitive_dir]`
+- Never include operation-specific identifiers in examples (account names, filenames, hostnames, decoded values)
+- Show command shape and decision points, not guaranteed results
+- If showing output, keep it generic and non-deterministic
+
+Good:
+```bash
+grep -r "config\|key\|deploy" /home/[target_user]/
+```
+
+Avoid:
+```bash
+grep -r "archive" /home/shatter/
+/home/shatter/archive_key: ZQ...
+```
+
+### Multi-Guide Consistency
+
+When multiple guides cover one mission phase (for example access then escalation):
+
+- Keep abstraction level consistent across guides
+- Avoid one guide being generic while another becomes a walkthrough
+- Keep the flow order aligned to player execution order
+- Repeat only critical commands; move extra detail to reference sections
 
 ---
 
@@ -387,10 +421,13 @@ In `scenario.json.erb`:
 Before marking a field guide complete:
 
 - [ ] Handler note is under 6 sentences and explains the "why"
+- [ ] Handler note reminds the player of the current aim without revealing narrative outcomes
 - [ ] Handler note doesn't give away the specific solution
 - [ ] Field guide uses only generic examples (no scenario-specific details)
-- [ ] Guide teaches the concept thoroughly enough to complete the mission
+- [ ] No worked mission path or output that reveals specific target artifacts
+- [ ] Guide provides complete technical knowledge needed to complete the challenge by application
 - [ ] Code examples use placeholders (`[username]`, `[target]`, etc.)
+- [ ] If multiple related guides exist, abstraction level and tone are consistent
 - [ ] Troubleshooting section covers likely failure points
 - [ ] Source material is credited
 - [ ] Total length is 2-4 pages (reference, not textbook)

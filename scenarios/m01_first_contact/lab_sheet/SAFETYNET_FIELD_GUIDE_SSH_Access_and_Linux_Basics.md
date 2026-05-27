@@ -9,11 +9,13 @@ license: "CC BY-SA 4.0"
 
 # Handler Note — Agent HaX
 
-You've found a password list. That's your way in.
+You've found a password list. That's one piece of the access chain.
 
-Once you're on the Kali system, you'll need two things: first, the ability to test those passwords against SSH and gain access to the target system. Second, the knowledge to navigate the Linux filesystem and locate the intelligence you're after. I've combined both into a single field guide—they're learned and used in sequence during the same phase of the operation.
+Your immediate objective is to gain remote access, move through the target filesystem efficiently, and recover operationally useful intel.
 
-Study the quick reference first. The rest gives you context and problem-solving tools. You've got everything you need to get inside and find what you're looking for.
+The next phase usually has two friction points: getting valid SSH access, then moving through Linux directories fast enough to find useful intel. This guide covers both in operational order.
+
+Start with the quick reference, then work the procedure sections. The target details will vary, but the method holds.
 
 — HaX
 
@@ -32,6 +34,8 @@ Once you have credentials from Hydra, you use SSH to actually connect and access
 ---
 
 ## Quick Reference
+
+Use this section as your rapid execution checklist: validate connectivity, run credential testing, then confirm access before moving into filesystem exploration.
 
 ### Command Structure
 
@@ -83,9 +87,9 @@ A wordlist is a file containing passwords, one per line. Hydra tests each passwo
 | 100,000+ | Hours | Comprehensive but slow |
 
 **Where to find wordlists**:
-- System wordlists: `/usr/share/wordlists/` (on Linux/Kali)
-- Well-known lists: `rockyou.txt`, common-credentials lists, etc.
-- Create custom lists based on intelligence about the target
+- System wordlists already present on the attack VM (for example under `/usr/share/wordlists/`)
+- Mission-derived custom lists built from names, dates, and terms you've already discovered
+- Short, targeted lists first; expand only if needed
 
 ### The Attack Process
 
@@ -145,6 +149,24 @@ Write down that password. It's your key.
 
 **Error (connection refused)** — The target isn't reachable or SSH isn't running. Verify with ping/nc.
 
+#### Step 5: Connect with SSH
+
+Once Hydra finds credentials, connect to the host:
+
+```bash
+ssh [username]@[target-ip]
+```
+
+Then verify where you landed:
+
+```bash
+whoami
+hostname
+pwd
+```
+
+If those checks look right, continue to Part B for navigation and file discovery.
+
 ### Common Patterns in Target Environments
 
 Real-world password practices follow predictable patterns:
@@ -184,7 +206,7 @@ Shows your current location in the filesystem:
 
 ```bash
 pwd
-# Output: /home/derek
+# Output: /home/[username]
 ```
 
 **When to use**: Whenever you're unsure where you are. It's safe and harmless.
@@ -201,10 +223,10 @@ ls
 # Detailed listing with permissions and timestamps
 ls -la
 # Output: 
-# drwxr-xr-x  2 derek derek   4096 May 18 10:23 directory1
-# -rw-r--r--  1 derek derek    234 May 18 10:22 file1.txt
-# -rw-r--r--  1 derek derek   1024 May 18 10:21 file2.txt
-# drwxr-xr-x  2 derek derek   4096 May 18 10:20 .hidden_directory
+# drwxr-xr-x  2 user1 user1   4096 May 18 10:23 directory1
+# -rw-r--r--  1 user1 user1    234 May 18 10:22 file1.txt
+# -rw-r--r--  1 user1 user1   1024 May 18 10:21 file2.txt
+# drwxr-xr-x  2 user1 user1   4096 May 18 10:20 .hidden_directory
 ```
 
 **Useful flags**:
@@ -258,7 +280,7 @@ Find lines matching a pattern in files:
 grep "password" config.txt
 
 # Search recursively in all files under a directory
-grep -r "password" /home/derek/
+grep -r "password" /home/[username]/
 
 # Case-insensitive search
 grep -i "PASSWORD" config.txt
@@ -317,71 +339,15 @@ r-- others can read only
 
 ---
 
-## SSH: Connecting After Hydra Finds Credentials
-
-Once Hydra finds the correct password, connect with SSH:
-
-```bash
-ssh [username]@[target-ip]
-```
-
-You'll be prompted for the password. Enter the password Hydra found.
-
-```bash
-[username]@[target-ip]'s password: [paste password]
-```
-
-**Success**: You're now logged into the remote system. Your prompt will show:
-```
-[username]@[remote-hostname]:~$
-```
-
-### Verify Your Access
-
-Confirm you're on the correct system:
-
-```bash
-whoami           # Should show your username
-hostname         # Should show the remote system name
-pwd              # Should show /home/[username]
-```
-
-### Navigating the Remote System
-
-Now that you're inside, explore:
-
-```bash
-# See what's in your home directory
-ls -la
-
-# Look for interesting directories or files
-ls -la /home/
-
-# Search for files with specific names
-grep -r "flag" /home/[username]/
-grep -r "key\|config\|note" /home/[username]/
-
-# Check file contents
-cat [filename]
-```
-
-### Exiting SSH
-
-When you're done:
-
-```bash
-exit
-```
-
-Or press **Ctrl+D**
-
----
-
 ## Performance & Troubleshooting
+
+If something fails, treat it as a signal about your assumptions (target, username, wordlist, or command syntax). Work each check in order and you will recover momentum quickly.
 
 ### Hydra Attacks Taking Too Long
 
-**Problem**: More than 5 minutes for a 1,000-password list suggests poor timing.
+**Problem**: The attack feels slow or stalls on the current list.
+
+In real operations, timing varies with network quality, target policy, and list size. In this training mission, sustained slowness usually means your username/list choice needs adjustment.
 
 **Solutions**:
 1. **Increase threads** — Change `-t 4` to `-t 8` for faster parallel testing
@@ -493,23 +459,23 @@ man [command]
 
 ## The Sequence in Practice
 
-**Phase 1**: You're on Kali with a password list
+**Phase 1**: You have a target username and candidate password list
 ```bash
-hydra -l derek -P passwords.txt 192.168.1.100 -t 4 ssh
-# [Result: derek / password123]
+hydra -l [username] -P [wordlist].txt [target-ip] -t 4 ssh
+# [Result: valid login/password pair]
 ```
 
 **Phase 2**: You now have credentials. Connect.
 ```bash
-ssh derek@192.168.1.100
-# [Prompt for password, enter the one from Hydra]
+ssh [username]@[target-ip]
+# [Prompt for password, enter discovered credential]
 ```
 
 **Phase 3**: You're inside. Explore.
 ```bash
 pwd                    # Confirm location
 ls -la                 # See what's here
-grep -r "flag" /home/  # Search for intelligence
+grep -r "key\|config\|note" /home/[username]/
 cat [filename]         # Read files you find
 ```
 

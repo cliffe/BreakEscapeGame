@@ -9,11 +9,13 @@ license: "CC BY-SA 4.0"
 
 # Handler Note — Agent HaX
 
-You're inside, but you've hit a wall. Some files aren't accessible from your current account. That's not a dead end—it's an escalation opportunity.
+You're inside, but permissions are now the main barrier.
 
-Linux systems often have misconfigured privilege controls. Accounts that shouldn't have elevated access sometimes do. I've put together a guide on privilege escalation via sudo—how to identify what you can access, how to execute commands as other users, and how to move laterally within the system.
+Your immediate objective is to reach restricted data needed for the mission by moving into the account context that can access it.
 
-The intelligence you need might be owned by another account. This guide shows you how to reach it.
+That's normal. Linux accounts are segmented by design, and progress often depends on what sudo rights are available from your current context.
+
+This guide gives you the escalation workflow: enumerate sudo rights, test access safely, then pivot to the account that can reach the data you need.
 
 — HaX
 
@@ -33,6 +35,8 @@ Unlike switching to a completely different user account, sudo lets you run indiv
 
 ## Quick Reference
 
+Use this section to execute in sequence: enumerate permissions first, choose the least intrusive access path that works, and only escalate further if required.
+
 ### Basic Sudo Syntax
 
 ```bash
@@ -44,7 +48,7 @@ sudo [options] [command]
 | Option | What It Does | Example |
 |--------|--------------|---------|
 | `-l` | List what you can do with sudo | `sudo -l` |
-| `-u [user]` | Run command as specific user | `sudo -u shatter cat /home/shatter/flag` |
+| `-u [user]` | Run command as specific user | `sudo -u [user] cat /home/[user]/important_note` |
 | `-i` | Login shell (become the user fully) | `sudo -i` (become root) |
 | `-s` | Non-login shell as the user | `sudo -s /bin/bash` |
 
@@ -87,6 +91,8 @@ User user1 may run the following commands on desktop:
     (shatter) NOPASSWD: /bin/bash
     (root) /usr/bin/cat
 ```
+
+Formatting may differ by system (line wrapping, spacing, ordering). Focus on target user, allowed command, and whether `NOPASSWD` appears.
 
 Breaking this down:
 - `(ALL) ALL` — Can run anything as any user (dangerous misconfiguration)
@@ -157,15 +163,15 @@ id              # Shows detailed user/group info
 
 **Example**:
 ```bash
-# Current: derek@desktop:~$
-derek@desktop:~$ sudo -u shatter /bin/bash
+# Current: user1@desktop:~$
+user1@desktop:~$ sudo -u target_user /bin/bash
 
-# Now you're shatter
-shatter@desktop:~$ whoami
-shatter
-shatter@desktop:~$ pwd
-/home/shatter
-shatter@desktop:~$ ls -la
+# Now you're target_user
+target_user@desktop:~$ whoami
+target_user
+target_user@desktop:~$ pwd
+/home/target_user
+target_user@desktop:~$ ls -la
 ```
 
 ### Method 3: Root Access (Most Dangerous)
@@ -220,20 +226,20 @@ sudo -u [user] ls -la /home/[user]/
 sudo -u [user] ls -la /home/[user]/*
 
 # Search for specific content
-sudo -u [user] grep -r "flag\|key\|password\|secret" /home/[user]/
+sudo -u [user] grep -r "config\|deploy\|key\|password" /home/[user]/
 ```
 
 ### Reading Files Safely
 
 ```bash
 # Read a single file
-sudo cat /home/[user]/flag
+sudo cat /home/[user]/important_note
 
 # Read multiple files
 sudo cat /home/[user]/file1 /home/[user]/file2
 
 # Use grep to extract specific lines
-sudo grep "important" /home/[user]/deployment_notes
+sudo grep "important" /home/[user]/config.txt
 
 # Count lines or get file info
 sudo wc -l /home/[user]/config
@@ -302,6 +308,8 @@ If the script is writable or calls other programs, you might leverage it.
 ---
 
 ## Troubleshooting
+
+Escalation setbacks are common. Use this section to diagnose access failures systematically so you keep control of the workflow instead of guessing.
 
 ### "User is not in the sudoers file"
 
@@ -393,7 +401,7 @@ This is why they're vulnerable to compromise. This is your opportunity.
 
 Once escalated, prioritize finding:
 1. **Configuration files** — Often contain credentials, server addresses, deployment info
-2. **Flag files** — Explicit markers (flag, key, archive_key)
+2. **Key mission artifacts** — Files that contain keys, credentials, or access data
 3. **Deployment notes** — Operational planning documents
 4. **Scripts and automation** — Reveal what the system does
 
@@ -408,44 +416,43 @@ Once escalated, prioritize finding:
 
 ## The Escalation Sequence in Practice
 
-**Scenario**: You're logged in as derek, need to read shatter's files.
+**Scenario**: You're logged in as a lower-privileged user and need access to another account's files.
 
 ### Step 1: Check Your Permissions
 ```bash
-derek@desktop:~$ sudo -l
-User derek may run the following commands on desktop:
-    (shatter) NOPASSWD: /bin/bash
-    (shatter) /usr/bin/cat
+user1@desktop:~$ sudo -l
+User user1 may run the following commands on desktop:
+    (target_user) NOPASSWD: /bin/bash
+    (target_user) /usr/bin/cat
 ```
 
 ### Step 2: Try Direct File Read (If Allowed)
 ```bash
-derek@desktop:~$ sudo cat /home/shatter/flag
-[File contents appear — no password prompt because of NOPASSWD]
+user1@desktop:~$ sudo cat /home/target_user/important_note
+[File contents appear if command is permitted]
 ```
 
 ### Step 3: If You Need to Explore More, Get a Shell
 ```bash
-derek@desktop:~$ sudo -u shatter /bin/bash
-shatter@desktop:~$ whoami
-shatter
-shatter@desktop:~$ ls -la
+user1@desktop:~$ sudo -u target_user /bin/bash
+target_user@desktop:~$ whoami
+target_user
+target_user@desktop:~$ ls -la
 ```
 
 ### Step 4: Search for and Read Files
 ```bash
-shatter@desktop:~$ grep -r "archive" /home/shatter/
-/home/shatter/archive_key: ZQ...
+target_user@desktop:~$ grep -r "deploy\|config\|key" /home/target_user/
 
-shatter@desktop:~$ cat /home/shatter/archive_key
-[Encoded key appears]
+target_user@desktop:~$ cat /home/target_user/[interesting_file]
+[Review output and identify useful intel]
 ```
 
 ### Step 5: Exit and Return to Original User
 ```bash
-shatter@desktop:~$ exit
-derek@desktop:~$ whoami
-derek
+target_user@desktop:~$ exit
+user1@desktop:~$ whoami
+user1
 ```
 
 ---

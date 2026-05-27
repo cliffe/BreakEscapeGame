@@ -23,7 +23,7 @@ Field guides now follow the **SAFETYNET Field Guide Style Guide** (`docs/FIELD_G
 | Guide | Purpose | Delivered When |
 |-------|---------|-----------------|
 | `SAFETYNET_FIELD_GUIDE_SSH_Access_and_Linux_Basics.md` | SSH credential testing with Hydra + Linux filesystem navigation | After player finds password list |
-| `SAFETYNET_FIELD_GUIDE_Privilege_Escalation.md` | Sudo and privilege escalation via sudo | When player encounters permission denied or needs elevated access |
+| `SAFETYNET_FIELD_GUIDE_Privilege_Escalation.md` | Sudo and privilege escalation via sudo | After SSH access is confirmed |
 
 ## Archive
 
@@ -56,6 +56,7 @@ Field guides now follow the **SAFETYNET Field Guide Style Guide** (`docs/FIELD_G
 3. Adapt content from existing training materials
 4. Generic examples, not scenario-specific details
 5. Test that guide + discovery = mission completion
+6. Keep example flows generic; avoid mission-specific worked paths
 
 ## Integration Points
 
@@ -105,10 +106,11 @@ Field guides now follow the **SAFETYNET Field Guide Style Guide** (`docs/FIELD_G
 
 Before considering a field guide complete:
 
-- ✅ Handler note explains the mission context (not spoiling solution)
+- ✅ Handler note explains mission context and reminds the player's current aim (without narrative spoilers)
 - ✅ Information is neither too vague nor too specific
-- ✅ Player can complete mission with just this guide + discovery
+- ✅ Technical sections provide enough detail for player success through application
 - ✅ Examples are generic (no scenario-specific names/IPs)
+- ✅ Worked examples do not reveal mission-specific filenames, account names, or exact outputs
 - ✅ Troubleshooting covers likely failure points
 - ✅ Source material is credited
 - ✅ Tone is consistent (professional, direct, helpful)
