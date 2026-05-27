@@ -90,7 +90,7 @@ export async function processGameActionTags(tags, ui) {
                     
                 case 'give_item':
                     if (param) {
-                        const [itemType] = param.split('|').map(s => s.trim());
+                        const [itemType, itemSelector] = param.split(/[|:]/).map(s => s.trim());
                         const npcId = window.currentConversationNPCId;
                         
                         if (!npcId) {
@@ -103,7 +103,7 @@ export async function processGameActionTags(tags, ui) {
                         // processed sequentially, preventing concurrent server writes
                         // that cause SQLite "database busy" errors.
                         result.message = `📦 Receiving: ${itemType}`;
-                        const giveResult = await window.NPCGameBridge.giveItem(npcId, itemType);
+                        const giveResult = await window.NPCGameBridge.giveItem(npcId, itemType, itemSelector || null);
                         if (giveResult.success) {
                             console.log('✅ Item given and server inventory synced:', giveResult);
                             if (ui) ui.showNotification(`📦 Received: ${giveResult.item.name}`, 'success');

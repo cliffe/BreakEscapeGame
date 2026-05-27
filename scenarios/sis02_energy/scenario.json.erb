@@ -1255,6 +1255,16 @@ require 'base64'
               "value": "The thermometer dial reads: 51°C\n\nThe analogue thermometer confirms a physical thermal anomaly that cannot be explained by the SCADA readout."
             }
           ],
+          "spriteVariants": [
+            {
+              "condition": "globalVars.esd_activated",
+              "value": "thermometer_low"
+            },
+            {
+              "condition": "globalVars.anomaly_detected",
+              "value": "thermometer_high"
+            }
+          ],
           "triggerOnInteract": [
             { "type": "set_global", "key": "anomaly_detected", "value": true }
           ]

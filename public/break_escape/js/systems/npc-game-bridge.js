@@ -171,7 +171,7 @@ export class NPCGameBridge {
    * @param {string} itemType - Type of item to give (optional - gives first if null)
    * @returns {Object} Result with success status
    */
-  async giveItem(npcId, itemType = null) {
+  async giveItem(npcId, itemType = null, itemSelector = null) {
     if (!npcId) {
       const result = { success: false, error: 'No npcId provided' };
       this._logAction('giveItem', { npcId, itemType }, result);
@@ -182,24 +182,37 @@ export class NPCGameBridge {
     const npc = window.npcManager?.getNPC(npcId);
     if (!npc) {
       const result = { success: false, error: `NPC ${npcId} not found` };
-      this._logAction('giveItem', { npcId, itemType }, result);
+      this._logAction('giveItem', { npcId, itemType, itemSelector }, result);
       return result;
     }
 
     if (!npc.itemsHeld || npc.itemsHeld.length === 0) {
       const result = { success: false, error: `NPC ${npcId} has no items to give` };
-      this._logAction('giveItem', { npcId, itemType }, result);
+      this._logAction('giveItem', { npcId, itemType, itemSelector }, result);
       return result;
     }
 
     // Find item in NPC's inventory
     let itemIndex = -1;
     if (itemType) {
-      // Find first item matching type
-      itemIndex = npc.itemsHeld.findIndex(item => item.type === itemType);
+      // Find the first item matching type and, if provided, selector.
+      itemIndex = npc.itemsHeld.findIndex(item => {
+        if (item.type !== itemType) {
+          return false;
+        }
+
+        if (!itemSelector) {
+          return true;
+        }
+
+        const selector = itemSelector.toLowerCase();
+        return [item.id, item.key_id, item.name].some(value =>
+          value && String(value).toLowerCase() === selector
+        );
+      });
       if (itemIndex === -1) {
-        const result = { success: false, error: `NPC ${npcId} doesn't have ${itemType}` };
-        this._logAction('giveItem', { npcId, itemType }, result);
+        const result = { success: false, error: `NPC ${npcId} doesn't have ${itemType}${itemSelector ? ` (${itemSelector})` : ''}` };
+        this._logAction('giveItem', { npcId, itemType, itemSelector }, result);
         return result;
       }
     } else {
@@ -247,11 +260,11 @@ export class NPCGameBridge {
       }
 
       const result = { success: true, item, npcId };
-      this._logAction('giveItem', { npcId, itemType }, result);
+      this._logAction('giveItem', { npcId, itemType, itemSelector }, result);
       return result;
     } catch (error) {
       const result = { success: false, error: error.message };
-      this._logAction('giveItem', { npcId, itemType }, result);
+      this._logAction('giveItem', { npcId, itemType, itemSelector }, result);
       return result;
     }
   }
@@ -744,7 +757,7 @@ if (typeof window !== 'undefined') {
   
   // Register convenience methods globally for Ink
   window.npcUnlockDoor = (roomId) => bridge.unlockDoor(roomId);
-  window.npcGiveItem = (npcId, itemType) => bridge.giveItem(npcId, itemType);
+  window.npcGiveItem = (npcId, itemType, itemSelector) => bridge.giveItem(npcId, itemType, itemSelector);
   window.npcShowInventory = (npcId, filterTypes) => bridge.showNPCInventory(npcId, filterTypes);
   window.npcSetObjective = (text) => bridge.setObjective(text);
   window.npcRevealSecret = (secretId, data) => bridge.revealSecret(secretId, data);

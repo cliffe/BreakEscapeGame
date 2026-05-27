@@ -33,7 +33,7 @@ password_hints = "Common passwords: Marketing123, Campaign2024, Viral_Dynamics_A
 %>
 {
   "flags": {
-    "desktop": <%= vm_flags_json('desktop') %>
+    "shatter_server": <%= vm_flags_json('shatter_server') %>
   },
 
   "narrator": {
@@ -586,6 +586,24 @@ password_hints = "Common passwords: Marketing123, Campaign2024, Viral_Dynamics_A
             "style": "Intelligence handler speaking over a secure phone line. Speak with a consistent British Received Pronunciation accent throughout — do not shift to any other accent. Use a steady, mid-range pitch. Speak quickly with urgency, as if time is short.",
             "language": "en-GB"
           },
+          "itemsHeld": [
+            {
+              "type": "lab-workstation",
+              "id": "safetynet_field_guide_ssh_basics",
+              "name": "SAFETYNET Field Guide: SSH Access and Linux Basics",
+              "takeable": true,
+              "labUrl": "https://cliffe.github.io/HacktivityLabSheets/labs/m01_first_contact/safetynet-field-guide-ssh-access-and-linux-basics/",
+              "observations": "Field guide to Linux commands, SSH bruteforce, and filesystem navigation"
+            },
+            {
+              "type": "lab-workstation",
+              "id": "safetynet_field_guide_priv_escalation",
+              "name": "SAFETYNET Field Guide: Privilege Escalation via Sudo",
+              "takeable": true,
+              "labUrl": "https://cliffe.github.io/HacktivityLabSheets/labs/m01_first_contact/safetynet-field-guide-privilege-escalation/",
+              "observations": "Field guide to sudo permissions, privilege escalation tactics, and moving laterally within Linux systems"
+            },
+          ],
           "timedMessages": [
             {
               "delay": 3000,
@@ -704,9 +722,30 @@ password_hints = "Common passwords: Marketing123, Campaign2024, Viral_Dynamics_A
               "eventPattern": "item_picked_up:notes",
               "condition": "data.itemName === 'My Passwords'",
               "onceOnly": true,
+              "setGlobal": { "password_list_found": true },
               "sendTimedMessage": {
                 "delay": 1500,
-                "message": "Derek's password list. 🦎 Save those to a file on the Kali — one password per line — then feed it to Hydra with `-P passwords.txt`. That's your wordlist for the SSH brute force."
+                "message": "Derek's password list. 🦎 Save those to a file on the Kali — one password per line — then feed it to Hydra with `-P passwords.txt`. That's your wordlist for the SSH brute force. I can upload a Linux and SSH field guide if you want it."
+              }
+            },
+            {
+              "eventPattern": "global_variable_changed:password_list_found",
+              "condition": "value === true",
+              "onceOnly": true,
+              "setGlobal": { "field_guide_offered": true },
+              "sendTimedMessage": {
+                "delay": 3000,
+                "message": "This password list could be useful when you get to the server room. I've put together a field guide on Linux commands, SSH bruteforce, and filesystem navigation. It should help you move faster once you're inside their Kali system. Let me know if you want it."
+              }
+            },
+            {
+              "eventPattern": "global_variable_changed:ssh_flag_submitted",
+              "condition": "value === true",
+              "onceOnly": true,
+              "setGlobal": { "priv_esc_guide_offered": true },
+              "sendTimedMessage": {
+                "delay": 2000,
+                "message": "You have SSH access. 🦎 I’ve pushed the privilege escalation guide to your terminal — check sudo permissions and move into the target account from there."
               }
             },
             {
@@ -1136,7 +1175,7 @@ password_hints = "Common passwords: Marketing123, Campaign2024, Viral_Dynamics_A
               "puzzle_graph_unlocks": "vm_launcher_intro_linux",
               "puzzle_graph_reveals": "derek_ssh_password",
               "text": "Derek0419\nDerek_0419\n0419Derek\nApril19Derek\nViralDynamics\nViralMedia2024\nMarketing2024\nCampaign2024\nSocialFabric2024\nViral_Dynamics_Admin\nViralAdmin0419\nOperationShatter\nOpShatter2024\nEntropy2024\nZDS_Partner\nTrustIsLie\nVerifyEverything\nFilingCabinet0419\nInevitable\nTheArchitect\nPatriciaKnew\nMisinformation\nNetworkSegment\nSafetyNet\nDerek_Marketing\n0419Marketing\nArchitect0419",
-              "observations": "A printed list of Dereks passwords"
+              "observations": "A printed list of Derek's passwords for the shatter_server (172.16.0.2). Username: derek. Connect via SSH to test credentials."
             }
           ]
         },
@@ -1212,8 +1251,8 @@ password_hints = "Common passwords: Marketing123, Campaign2024, Viral_Dynamics_A
               "name": "ENTROPY Launch Device",
               "takeable": true,
               "observations": "A ruggedised tactical device. Screen: OPERATION SHATTER — ARMED. T-72 HOURS TO LAUNCH WINDOW.",
-              "acceptsVms": ["desktop"],
-              "flags": ["desktop:flag_3"],
+              "acceptsVms": ["shatter_server"],
+              "flags": ["shatter_server:flag_3"],
               "flagRewards": [
                 { "type": "set_global", "key": "launch_code_submitted", "value": true }
               ],
@@ -1831,7 +1870,7 @@ password_hints = "Common passwords: Marketing123, Campaign2024, Viral_Dynamics_A
           "name": "VM Access Terminal",
           "sprite": "vm-launcher-kali",
           "takeable": false,
-          "observations": "Terminal connected to the Social Fabric attack server — ENTROPY's live Operation Shatter infrastructure. The derek account is accessible via SSH brute force. Once in, escalate to the shatter account for the archive key.",
+          "observations": "Terminal connected to shatter_server (172.16.0.2) — ENTROPY's live Operation Shatter infrastructure. The derek account is accessible via SSH brute force. Once in, escalate to the shatter account for the archive key.",
           "hacktivityMode": <%= vm_context && vm_context['hacktivity_mode'] ? 'true' : 'false' %>,
           "vm": <%= vm_object('intro_to_linux_security_lab', {"id":1,"title":"kali","ip":"192.168.100.50","enable_console":true}) %>,
           "showPostit": true,
@@ -1843,8 +1882,8 @@ password_hints = "Common passwords: Marketing123, Campaign2024, Viral_Dynamics_A
           "name": "SAFETYNET Drop-Site Terminal",
           "takeable": false,
           "observations": "Secure terminal for submitting intercepted intelligence and VM flags",
-          "acceptsVms": ["desktop"],
-          "flags": ["desktop:flag_2", "desktop:flag_4"],
+          "acceptsVms": ["shatter_server"],
+          "flags": ["shatter_server:flag_2", "shatter_server:flag_4"],
           "flagRewards": [
             {
               "type": "set_global",
@@ -1867,9 +1906,9 @@ password_hints = "Common passwords: Marketing123, Campaign2024, Viral_Dynamics_A
           "takeable": false,
           "locked": true,
           "lockType": "flag",
-          "requires": "desktop:flag_1",
-          "puzzle_graph_note": "Unlocked by VM flag desktop:flag_1 (SSH brute force into derek account using passwords wordlist)",
-          "observations": "A ruggedised encrypted drive in a reinforced case. Stamped: ENTROPY — EYES ONLY. Submit the archive decryption key from derek's account to unlock it.",
+          "requires": "shatter_server:flag_1",
+          "puzzle_graph_note": "Unlocked by VM flag shatter_server:flag_1 (SSH brute force into derek account using passwords wordlist)",
+          "observations": "A ruggedised encrypted drive in a reinforced case. Stamped: ENTROPY — EYES ONLY. The decryption key is stored on shatter_server (172.16.0.2) in derek's account. Submit it here to unlock.",
           "flagRewards": [
             {
               "type": "set_global",
@@ -1970,6 +2009,14 @@ password_hints = "Common passwords: Marketing123, Campaign2024, Viral_Dynamics_A
     "linux_flag_submitted": false,
     "sudo_flag_submitted": false,
     "navigation_flag_submitted": false,
+
+    "password_list_found": false,
+    "field_guide_offered": false,
+    "field_guide_requested": false,
+    "field_guide_received": false,
+    "priv_esc_guide_offered": false,
+    "priv_esc_guide_hint_given": false,
+    "priv_esc_guide_requested": false,
 
     "launch_code_submitted": false,
     "player_aborted_attack": false,
