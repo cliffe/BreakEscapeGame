@@ -210,15 +210,15 @@
       listens for a cross-tab close command from Abandon / Reset / Restart. %>
   <script nonce="<%= content_security_policy_nonce %>">
     (function () {
-      var cfg       = window.breakEscapeConfig;
-      var missionId = cfg && cfg.missionId;
-      if (!missionId) return;
+      var cfg    = window.breakEscapeConfig;
+      var gameId = cfg && cfg.gameId;
+      if (!gameId) return;
 
-      var aliveKey = 'be_alive_' + missionId;
-      var closeKey = 'be_close_' + missionId;
+      var aliveKey = 'be_alive_' + gameId;
+      var closeKey = 'be_close_' + gameId;
 
       // Name this window so the parent can focus it with window.open('', name)
-      window.name = 'be_game_' + missionId;
+      window.name = 'be_game_' + gameId;
 
       // Write initial heartbeat, refresh every 5 s
       function beat() { try { localStorage.setItem(aliveKey, Date.now()); } catch (e) {} }

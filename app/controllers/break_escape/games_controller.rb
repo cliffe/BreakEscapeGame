@@ -90,11 +90,6 @@ module BreakEscape
         initial_player_state['standalone_flags'] = flags
       end
 
-      # Abandon any existing in_progress game before creating a new one.
-      # The unique partial index allows only one in_progress game per player+mission.
-      Game.where(player: current_player, mission: @mission, status: 'in_progress')
-          .update_all(status: 'abandoned')
-
       # CRITICAL: Set player_state BEFORE save! so callbacks can read vm_set_id
       # Callback order is:
       # 1. before_create :generate_scenario_data_with_context (reads player_state['vm_set_id'])
