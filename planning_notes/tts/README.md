@@ -216,6 +216,42 @@ if (this.ttsManager) { this.ttsManager.stop(); this.ttsManager.destroy(); }
 
 ---
 
+---
+
+## Running the TTS Batch Generator
+
+The rake task must be run from the **Hacktivity host Rails app** (not the engine root), because the engine itself has no Gemfile of its own. Use the launcher script:
+
+```bash
+# One scenario
+./scripts/tts_batch.sh m02_ransomed_trust
+
+# All scenarios
+./scripts/tts_batch.sh
+
+# Cache statistics
+./scripts/tts_batch.sh cache_stats
+
+# Clear cache
+./scripts/tts_batch.sh clear_cache
+```
+
+Or invoke directly from the Hacktivity directory:
+
+```bash
+cd /home/cliffe/Files/Projects/Code/Hacktivity
+bundle exec rake break_escape:tts:batch_generate[m02_ransomed_trust]
+bundle exec rake break_escape:tts:batch_generate          # all
+bundle exec rake break_escape:tts:cache_stats
+```
+
+**Notes:**
+- Requires `GEMINI_API_KEY` set in the Hacktivity app environment (or exported in your shell).
+- Rate-limit failures retry automatically; re-run the same command to fill in missed lines — cached files are skipped.
+- Cache lives at `tts_cache/` in the BreakEscape engine root.
+
+---
+
 ### Phase 3: Testing & Verification
 
 #### 3.1 Prerequisites
