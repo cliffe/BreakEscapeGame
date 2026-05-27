@@ -9,6 +9,7 @@ VAR ssh_hint_given = false
 VAR linux_hint_given = false
 VAR sudo_hint_given = false
 VAR cyberchef_hint_given = false
+VAR cyberchef_guide_hint_given = false
 VAR field_guide_hint_given = false
 VAR first_contact = true
 VAR operation_shatter_reported = false
@@ -63,10 +64,12 @@ VAR server_room_entered = false
 VAR derek_office_entered = false
 VAR whiteboard_cipher_seen = false
 VAR password_list_found = false
+VAR cyberchef_guide_offered = false
 VAR field_guide_offered = false
 VAR priv_esc_guide_offered = false
 VAR priv_esc_guide_hint_given = false
 VAR priv_esc_guide_requested = false
+VAR cyberchef_guide_requested = false
 
 // ================================================
 // START: PHONE SUPPORT
@@ -114,6 +117,8 @@ VAR priv_esc_guide_requested = false
     -> sudo_help
 + {whiteboard_cipher_seen and not cyberchef_hint_given} [How do I decode these notes?]
     -> cyberchef_help
++ {cyberchef_guide_offered and not cyberchef_guide_hint_given} [Send me the CyberChef decoding guide]
+    -> request_cyberchef_guide
 + {field_guide_offered and not field_guide_hint_given} [I'd like that ops manual you mentioned]
     -> request_field_guide
 + {priv_esc_guide_offered and not priv_esc_guide_hint_given} [I need the privilege escalation guide]
@@ -270,6 +275,22 @@ Read it when you hit the wall on the remote system.
     -> support_hub
 + [Understood]
     Stay sharp. The next step is always the one that gets you closer to the archive.
+    -> support_hub
+
+=== request_cyberchef_guide ===
+~ cyberchef_guide_hint_given = true
+#set_variable:cyberchef_guide_requested:true
+#give_item:lab-workstation:safetynet_field_guide_encoding_decoding_cyberchef
+
+I'm uploading the CyberChef decoding guide now.
+
+Use it when a note looks like Base64 or a shift cipher. Start with the pattern, not the tool, and you'll waste less time.
+
++ [Thanks, I'll use it]
+    Good. Decode carefully, then move.
+    -> support_hub
++ [Understood]
+    Keep it simple: identify, decode, verify.
     -> support_hub
 
 // ================================================

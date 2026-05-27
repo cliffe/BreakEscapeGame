@@ -12,6 +12,9 @@ VAR hint_vm_given = false
 VAR hint_encoding_given = false
 VAR hint_pin_given = false
 VAR hint_ransom_given = false
+VAR scanning_guide_hint_given = false
+VAR vulnerability_guide_hint_given = false
+VAR exploitation_guide_hint_given = false
 VAR ghost_reaction_discussed = false
 VAR ghost_deal_discussed = false
 VAR board_email_discussed = false
@@ -25,6 +28,9 @@ VAR flag_proftpd_submitted = false
 VAR flag_database_submitted = false
 VAR flag_ghost_log_submitted = false
 VAR offline_keys_recovered = false
+VAR scanning_guide_offered = false
+VAR vulnerability_guide_offered = false
+VAR exploitation_guide_offered = false
 VAR board_coverup_email_found = false
 VAR ransom_decision_made = false
 VAR ghost_deal_accepted = false
@@ -94,9 +100,21 @@ Agent 0x99: Start with Dr. Kim -- CTO, west of reception. She has the authority 
 + {dr_kim_met and not flag_ssh_submitted and not hint_password_given} [Tips for getting Marcus to cooperate]
     -> hint_password
 
+// Optional field guide: scanning/recon
++ {scanning_guide_offered and not scanning_guide_hint_given} [Send the scanning field guide]
+    -> request_scanning_guide
+
 // VM phase: ProFTPD
 + {flag_ssh_submitted and not flag_proftpd_submitted and not hint_vm_given} [ProFTPD exploitation help]
     -> hint_vm
+
+// Optional field guide: vulnerability triage
++ {vulnerability_guide_offered and not vulnerability_guide_hint_given} [Send the vulnerability analysis field guide]
+    -> request_vulnerability_guide
+
+// Optional field guide: exploitation workflow
++ {exploitation_guide_offered and not exploitation_guide_hint_given} [Send the ProFTPD exploitation field guide]
+    -> request_exploitation_guide
 
 // Encoding/decoding (useful throughout VM phase)
 + {flag_ssh_submitted and not hint_encoding_given} [Encoding and decoding help]
@@ -286,6 +304,48 @@ Agent 0x99: The exploit gets you root on the backup server. From there, navigate
     -> support_hub
 
 + [Got it]
+    -> support_hub
+
+=== request_scanning_guide ===
+#speaker:agent_0x99
+~ scanning_guide_hint_given = true
+#set_variable:scanning_guide_requested:true
+#give_item:lab-workstation:m02_scanning_field_guide
+
+Agent 0x99: Uploading the recon guide now.
+
+Agent 0x99: Use it to map live hosts, enumerate services, and confirm the backup server attack surface before you commit to exploitation.
+
++ [Received]
+    Agent 0x99: Good. Fast reconnaissance, clean notes, then strike.
+    -> support_hub
+
+=== request_vulnerability_guide ===
+#speaker:agent_0x99
+~ vulnerability_guide_hint_given = true
+#set_variable:vulnerability_guide_requested:true
+#give_item:lab-workstation:m02_vulnerability_field_guide
+
+Agent 0x99: Sending vulnerability analysis guide.
+
+Agent 0x99: You already have access. Now classify exposed services, match likely weakness classes, and avoid wasting time on dead paths.
+
++ [Got it]
+    Agent 0x99: Exactly. Prioritize what is exploitable now, not everything that looks noisy.
+    -> support_hub
+
+=== request_exploitation_guide ===
+#speaker:agent_0x99
+~ exploitation_guide_hint_given = true
+#set_variable:exploitation_guide_requested:true
+#give_item:lab-workstation:m02_exploitation_field_guide
+
+Agent 0x99: ProFTPD exploitation workflow uploaded.
+
+Agent 0x99: It covers Metasploit module selection, payload/listener alignment, and post-exploitation checks so you can execute without guesswork.
+
++ [Thanks, I needed this]
+    Agent 0x99: Use it, adapt to what the target gives you, and keep momentum.
     -> support_hub
 
 === hint_encoding ===

@@ -24,6 +24,7 @@ Field guides now follow the **SAFETYNET Field Guide Style Guide** (`docs/FIELD_G
 |-------|---------|-----------------|
 | `SAFETYNET_FIELD_GUIDE_SSH_Access_and_Linux_Basics.md` | SSH credential testing with Hydra + Linux filesystem navigation | After player finds password list |
 | `SAFETYNET_FIELD_GUIDE_Privilege_Escalation.md` | Sudo and privilege escalation via sudo | After SSH access is confirmed |
+| `SAFETYNET_FIELD_GUIDE_Encoding_and_Decoding_with_CyberChef.md` | Rapid identification and decoding of Base64/ROT13 notes with CyberChef | When encoded notes become relevant |
 
 ## Archive
 
