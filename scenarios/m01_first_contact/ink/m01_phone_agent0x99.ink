@@ -9,6 +9,7 @@ VAR ssh_hint_given = false
 VAR linux_hint_given = false
 VAR sudo_hint_given = false
 VAR cyberchef_hint_given = false
+VAR field_guide_hint_given = false
 VAR first_contact = true
 VAR operation_shatter_reported = false
 
@@ -61,6 +62,11 @@ VAR has_lockpick = false
 VAR server_room_entered = false
 VAR derek_office_entered = false
 VAR whiteboard_cipher_seen = false
+VAR password_list_found = false
+VAR field_guide_offered = false
+VAR priv_esc_guide_offered = false
+VAR priv_esc_guide_hint_given = false
+VAR priv_esc_guide_requested = false
 
 // ================================================
 // START: PHONE SUPPORT
@@ -108,6 +114,10 @@ VAR whiteboard_cipher_seen = false
     -> sudo_help
 + {whiteboard_cipher_seen and not cyberchef_hint_given} [How do I decode these notes?]
     -> cyberchef_help
++ {field_guide_offered and not field_guide_hint_given} [I'd like that ops manual you mentioned]
+    -> request_field_guide
++ {priv_esc_guide_offered and not priv_esc_guide_hint_given} [I need the privilege escalation guide]
+    -> request_priv_esc_guide
 + [General mission advice]
     -> general_advice
 + [I'm good for now]
@@ -216,6 +226,50 @@ For the one where the letters look scrambled but word lengths are right — that
     -> support_hub
 + [What do the decoded messages tell me?]
     You'll know when you see them. Decode first, questions after.
+    -> support_hub
+
+// ================================================
+// FIELD GUIDE REQUEST
+// ================================================
+
+=== request_field_guide ===
+~ field_guide_hint_given = true
+#set_variable:field_guide_requested:true
+#give_item:lab-workstation:safetynet_field_guide_ssh_basics
+
+I'm uploading the SSH and Linux basics manual to your secure terminal right now.
+
+You've got Linux fundamentals, SSH bruteforce with Hydra, and the filesystem navigation you need once you're inside their Kali system.
+
+The manual is in your inventory—reference it whenever you need it.
+
++ [Thanks, this will help]
+    Good luck in there. Call if you hit anything unexpected.
+    -> support_hub
++ [I appreciate the support]
+    That's what I'm here for. Now go dark and finish this.
+    -> support_hub
+
+// ================================================
+// PRIVILEGE ESCALATION GUIDE REQUEST
+// ================================================
+
+=== request_priv_esc_guide ===
+~ priv_esc_guide_hint_given = true
+#set_variable:priv_esc_guide_requested:true
+#give_item:lab-workstation:safetynet_field_guide_priv_escalation
+
+I've uploaded the privilege escalation guide to your secure terminal.
+
+Once you've got SSH access, use it to check sudo permissions and move into the target account cleanly.
+
+Read it when you hit the wall on the remote system.
+
++ [Thanks, I'll use it]
+    Good. Keep pressure on the target account and call if you need a steer.
+    -> support_hub
++ [Understood]
+    Stay sharp. The next step is always the one that gets you closer to the archive.
     -> support_hub
 
 // ================================================
