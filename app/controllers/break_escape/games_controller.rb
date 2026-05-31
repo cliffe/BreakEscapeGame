@@ -126,6 +126,15 @@ module BreakEscape
       @player_preference = current_player_preference || create_default_preference
       @available_sprites = PlayerPreference::AVAILABLE_SPRITES
 
+      # Guard: player must have selected a valid sprite before entering the game
+      if !@player_preference.sprite_selected?
+        flash[:alert] = 'Please select your character before starting.'
+        redirect_to configuration_path(game_id: @game.id) and return
+      elsif !@player_preference.sprite_valid_for_scenario?(@game.scenario_data)
+        flash[:alert] = 'Your selected character is not available for this mission. Please choose another.'
+        redirect_to configuration_path(game_id: @game.id) and return
+      end
+
       # All game sessions for this player + mission, ordered oldest first
       @mission_sessions = Game.where(player: current_player, mission: @mission)
                               .order(:created_at)
