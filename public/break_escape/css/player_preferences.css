@@ -1,5 +1,17 @@
 /* Player Preferences Configuration Screen */
 
+body {
+  font-family: 'GNF', monospace;
+  font-weight: normal;
+  font-size: 1.2em;
+  background: #1a1a1a;
+  color: #00ff00;
+  margin: 0;
+  padding: 20px 0;
+  font-smooth: never;
+  -webkit-font-smoothing: none;
+}
+
 .configuration-container {
   max-width: 1200px;
   margin: 0 auto;
@@ -14,6 +26,7 @@ h1 {
   font-size: 32px;
   margin-bottom: 20px;
   text-transform: uppercase;
+  font-family: 'Press Start 2P', monospace;
 }
 
 .config-prompt {
@@ -21,14 +34,14 @@ h1 {
   background: #fff3cd;
   border: 2px solid #ffc107;
   margin-bottom: 20px;
-  font-weight: bold;
+  font-weight: normal;
   color: #000;
   text-align: center;
 }
 
 .selection-required {
   color: #ff4444;
-  font-weight: bold;
+  font-weight: normal;
   margin: 8px 0;
   text-align: center;
 }
@@ -42,7 +55,7 @@ h1 {
 .form-group label {
   display: block;
   color: #00ff00;
-  font-weight: bold;
+  font-weight: normal;
   margin-bottom: 8px;
   font-size: 18px;
 }
@@ -55,7 +68,7 @@ h1 {
   border: 2px solid #00ff00;
   background: #1a1a1a;
   color: #00ff00;
-  font-family: 'Pixelify Sans', monospace;
+  font-family: 'GNF', monospace;
 }
 
 .form-control:focus {
@@ -236,12 +249,12 @@ h1 {
   padding: 12px 24px;
   cursor: pointer;
   background: #1a1a1a;
-  font-weight: bold;
+  font-weight: normal;
   font-size: 16px;
   text-decoration: none;
   display: inline-block;
   transition: background-color 0.2s, color 0.2s;
-  font-family: 'Pixelify Sans', Arial, sans-serif;
+  font-family: 'GNF', monospace;
   text-transform: uppercase;
 }
 
@@ -369,7 +382,7 @@ h1 {
   color: #00ff00;
   font-size: 24px;
   text-transform: uppercase;
-  font-family: 'Pixelify Sans', Arial, sans-serif;
+  font-family: 'GNF', monospace;
 }
 
 .modal-close-button {
@@ -406,8 +419,8 @@ h1 {
 .player-preferences-modal-content .btn {
   padding: 10px 20px;
   font-size: 14px;
-  font-family: 'Pixelify Sans', Arial, sans-serif;
-  font-weight: bold;
+  font-family: 'GNF', monospace;
+  font-weight: normal;
   border: 2px solid;
   cursor: pointer;
   text-transform: uppercase;
