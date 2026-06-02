@@ -40,7 +40,7 @@
 }
 
 .hud-button:active {
-  transform: translateY(1px);
+  transform: translateY(2px);
 }
 
 /* Avatar Button */
@@ -203,7 +203,7 @@
     min-width: 64px;
     height: 64px;
     margin: 0 5px;
-    border: 1px solid rgba(255, 255, 255, 0.3);
+    border: 2px solid rgba(255, 255, 255, 0.3);
     display: flex;
     justify-content: center;
     align-items: center;
@@ -295,7 +295,7 @@
     text-overflow: ellipsis;
 
     background: rgba(0, 0, 0, 0.72);
-    border: 1px solid rgba(255, 255, 255, 0.18);
+    border: 2px solid rgba(255, 255, 255, 0.18);
     padding: 5px 12px;
 
     opacity: 0;
@@ -439,7 +439,7 @@
 }
 
 .vm-controls-hud-btn:active {
-    transform: translateY(1px);
+    transform: translateY(2px);
 }
 
 /* Activation state indicators */
@@ -523,7 +523,7 @@
     align-items: center;
     padding: 8px 14px;
     background: #16213e;
-    border-bottom: 1px solid #444466;
+    border-bottom: 2px solid #444466;
     color: #ccccdd;
     font-family: 'Press Start 2P', 'Courier New', monospace;
     font-size: 11px;

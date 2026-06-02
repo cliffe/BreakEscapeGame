@@ -344,6 +344,7 @@ export default class NPCBarkSystem {
     this.container.appendChild(el);
     this.activeBarkCount++;
     this._updateClearAllButton();
+    this._trimBarkStackToFit();
 
     // Handle clicks - either custom handler or auto-open phone
     if (typeof payload.onClick === 'function') {
@@ -390,6 +391,25 @@ export default class NPCBarkSystem {
 
   _clearAllBarks() {
     Array.from(this.container.querySelectorAll('.npc-bark')).forEach(el => this._removeBark(el));
+  }
+
+  _trimBarkStackToFit() {
+    requestAnimationFrame(() => {
+      // 80px bottom offset + 20px breathing room before the top of the screen
+      const maxHeight = window.innerHeight - 100;
+      const overflow = this.container.offsetHeight - maxHeight;
+      if (overflow <= 0) return;
+
+      // Oldest barks are first in DOM; always preserve at least the newest one
+      const barks = Array.from(this.container.querySelectorAll('.npc-bark'));
+      const candidates = barks.slice(0, -1);
+      let freed = 0;
+      for (const el of candidates) {
+        if (freed >= overflow) break;
+        freed += el.offsetHeight + 8; // 8px matches the container gap
+        this._removeBark(el);
+      }
+    });
   }
 
   /**
