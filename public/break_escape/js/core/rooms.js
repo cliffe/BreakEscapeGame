@@ -2228,8 +2228,15 @@ export function createRoom(roomId, roomData, position) {
                 }
                 
                 // Find matching Tiled item using centralized pool matching
-                // Use positionAsType if specified, otherwise use object's own type
-                usedItem = itemPool.findMatchFor(scenarioObj, positionAsType);
+                // Priority: positionAsType > sprite name > object's own type
+                if (positionAsType) {
+                    usedItem = itemPool.findMatchFor(scenarioObj, positionAsType);
+                } else if (scenarioObj.sprite && typeof scenarioObj.sprite === 'string') {
+                    usedItem = itemPool.findMatchFor(scenarioObj, scenarioObj.sprite)
+                             || itemPool.findMatchFor(scenarioObj, null);
+                } else {
+                    usedItem = itemPool.findMatchFor(scenarioObj, null);
+                }
                 
                 if (usedItem) {
                     // Check which layer this item came from to determine if it's a table item
