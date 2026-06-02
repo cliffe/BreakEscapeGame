@@ -28,6 +28,8 @@ export default class NPCBarkSystem {
     // Barks deferred while a person-chat conversation is open
     this.deferredBarkQueue = [];
     this.isDrainingDeferred = false;
+
+    this.clearAllButton = null;
   }
 
   init() {
@@ -42,6 +44,14 @@ export default class NPCBarkSystem {
     
     // Preload bark notification sound
     this.loadBarkSound();
+
+    // "Clear all" button — lives above the bark stack, hidden until barks exist
+    this.clearAllButton = document.createElement('button');
+    this.clearAllButton.className = 'npc-bark-clear-all';
+    this.clearAllButton.textContent = 'Clear all';
+    this.clearAllButton.style.display = 'none';
+    this.clearAllButton.addEventListener('click', () => this._clearAllBarks());
+    this.container.prepend(this.clearAllButton);
   }
 
   /**
@@ -151,11 +161,10 @@ export default class NPCBarkSystem {
     while (this.deferredBarkQueue.length > 0) {
       const payload = this.deferredBarkQueue.shift();
       const ttsPromise = await this._renderBark(payload);
-      // Wait for both TTS audio and visual display to complete before next bark
-      const duration = ('duration' in payload) ? payload.duration : 5000;
+      // Wait for TTS to finish (or a short minimum) before showing the next deferred bark
       await Promise.all([
         ttsPromise || Promise.resolve(),
-        new Promise(resolve => setTimeout(resolve, duration + 350)) // +350 for slide-out
+        new Promise(resolve => setTimeout(resolve, 1200))
       ]);
     }
 
@@ -319,10 +328,23 @@ export default class NPCBarkSystem {
     textSpan.textContent = `${displayName}: ${text}`;
     el.appendChild(textSpan);
 
-    // Add to DOM (single operation)
+    // Dismiss (×) button
+    const dismissBtn = document.createElement('button');
+    dismissBtn.className = 'npc-bark-dismiss';
+    dismissBtn.textContent = '×';
+    dismissBtn.addEventListener('click', e => {
+      e.stopPropagation();
+      this._removeBark(el);
+    });
+    el.appendChild(dismissBtn);
+
+    // Swipe-to-dismiss (before click handlers so capture listener fires first)
+    this._addSwipeGesture(el);
+
     this.container.appendChild(el);
     this.activeBarkCount++;
-        
+    this._updateClearAllButton();
+
     // Handle clicks - either custom handler or auto-open phone
     if (typeof payload.onClick === 'function') {
       el.addEventListener('click', () => payload.onClick(el));
@@ -330,15 +352,9 @@ export default class NPCBarkSystem {
       // Default: clicking bark opens phone chat with this NPC
       el.addEventListener('click', () => {
         this.openPhoneChat(payload);
-        // Remove bark when clicked
         this._removeBark(el);
       });
     }
-
-    // Auto-remove after duration
-    setTimeout(() => {
-      this._removeBark(el);
-    }, duration);
 
     return ttsPromise;
   }
@@ -348,19 +364,103 @@ export default class NPCBarkSystem {
    */
   _removeBark(el) {
     if (!el || !el.parentNode) return;
-    
-    // Fade out animation
-    el.style.animation = 'bark-slide-out 0.3s ease-out';
-    setTimeout(() => {
-      if (el.parentNode) {
-        el.parentNode.removeChild(el);
-      }
+
+    const finish = () => {
+      if (el.parentNode) el.parentNode.removeChild(el);
       this.activeBarkCount--;
-      // Process next bark in queue if any
-      if (this.barkQueue.length > 0) {
-        this._processBarkQueue();
+      this._updateClearAllButton();
+      if (this.barkQueue.length > 0) this._processBarkQueue();
+    };
+
+    // If already invisible (swiped away), remove immediately without re-animating
+    if (el.style.opacity === '0') {
+      finish();
+      return;
+    }
+
+    el.style.animation = 'bark-slide-out 0.3s ease-out';
+    setTimeout(finish, 300);
+  }
+
+  _updateClearAllButton() {
+    if (!this.clearAllButton) return;
+    const hasBarks = this.container.querySelectorAll('.npc-bark').length > 0;
+    this.clearAllButton.style.display = hasBarks ? 'block' : 'none';
+  }
+
+  _clearAllBarks() {
+    Array.from(this.container.querySelectorAll('.npc-bark')).forEach(el => this._removeBark(el));
+  }
+
+  /**
+   * Add swipe-to-dismiss gesture to a bark element.
+   * Swiping left or right past a threshold dismisses it; releasing short snaps it back.
+   */
+  _addSwipeGesture(el) {
+    let startX = null;
+    let startY = null;
+    let isDragging = false;
+    let hasSwiped = false;
+    const SWIPE_THRESHOLD = 80;
+    const MAX_VERTICAL = 50;
+
+    // Capture-phase click interceptor: cancel click if the pointer was dragged
+    el.addEventListener('click', e => {
+      if (hasSwiped) { e.stopImmediatePropagation(); hasSwiped = false; }
+    }, true);
+
+    const onStart = (clientX, clientY) => {
+      startX = clientX;
+      startY = clientY;
+      isDragging = true;
+      hasSwiped = false;
+      el.style.transition = 'none';
+    };
+
+    const onMove = (clientX, clientY) => {
+      if (!isDragging || startX === null) return;
+      if (Math.abs(clientY - startY) > MAX_VERTICAL) { isDragging = false; return; }
+      const dx = clientX - startX;
+      if (Math.abs(dx) > 5) hasSwiped = true;
+      el.style.transform = `translateX(${dx}px)`;
+      el.style.opacity = String(Math.max(0, 1 - Math.abs(dx) / SWIPE_THRESHOLD));
+    };
+
+    const onEnd = (clientX) => {
+      if (!isDragging) return;
+      isDragging = false;
+      const dx = clientX - startX;
+      startX = null;
+      if (Math.abs(dx) >= SWIPE_THRESHOLD) {
+        hasSwiped = true;
+        const dir = dx > 0 ? 1 : -1;
+        el.style.transition = 'transform 0.2s ease-out, opacity 0.2s ease-out';
+        el.style.transform = `translateX(${dir * 300}px)`;
+        el.style.opacity = '0';
+        setTimeout(() => this._removeBark(el), 200);
+      } else {
+        hasSwiped = false;
+        el.style.transition = 'transform 0.3s ease-out, opacity 0.3s ease-out';
+        el.style.transform = '';
+        el.style.opacity = '';
       }
-    }, 300);
+    };
+
+    el.addEventListener('touchstart', e => onStart(e.changedTouches[0].clientX, e.changedTouches[0].clientY), { passive: true });
+    el.addEventListener('touchmove',  e => onMove(e.changedTouches[0].clientX,  e.changedTouches[0].clientY), { passive: true });
+    el.addEventListener('touchend',   e => onEnd(e.changedTouches[0].clientX));
+
+    el.addEventListener('mousedown', e => {
+      onStart(e.clientX, e.clientY);
+      const onMouseMove = ev => onMove(ev.clientX, ev.clientY);
+      const onMouseUp   = ev => {
+        onEnd(ev.clientX);
+        document.removeEventListener('mousemove', onMouseMove);
+        document.removeEventListener('mouseup',   onMouseUp);
+      };
+      document.addEventListener('mousemove', onMouseMove);
+      document.addEventListener('mouseup',   onMouseUp);
+    });
   }
   
   async openPhoneChat(payload) {

@@ -55,6 +55,46 @@
   flex: 1;
 }
 
+/* Dismiss (×) button on each bark */
+.npc-bark-dismiss {
+  flex-shrink: 0;
+  background: none;
+  border: none;
+  color: #000;
+  font-size: 20px;
+  font-family: 'GNF', monospace;
+  line-height: 1;
+  padding: 0 0 0 6px;
+  cursor: pointer;
+  opacity: 0.5;
+  pointer-events: auto;
+}
+
+.npc-bark-dismiss:hover {
+  opacity: 1;
+}
+
+/* "Clear all" button — sits at the visual top of the bark stack */
+.npc-bark-clear-all {
+  pointer-events: auto;
+  background: #222;
+  color: #5fcf69;
+  border: 2px solid #000;
+  font-family: 'GNF', monospace;
+  font-size: 14px;
+  padding: 5px 10px;
+  cursor: pointer;
+  box-shadow: 2px 2px 0 rgba(0, 0, 0, 0.4);
+  transition: transform 0.1s, box-shadow 0.1s, background 0.1s;
+  align-self: flex-start;
+}
+
+.npc-bark-clear-all:hover {
+  background: #333;
+  transform: translate(-2px, -2px);
+  box-shadow: 4px 4px 0 rgba(0, 0, 0, 0.4);
+}
+
 @keyframes bark-slide-up {
   from {
     transform: translateY(20px);

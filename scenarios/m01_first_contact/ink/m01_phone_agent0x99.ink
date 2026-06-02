@@ -99,6 +99,10 @@ VAR cyberchef_guide_requested = false
 === support_hub ===
 #speaker:agent_0x99
 
++ {field_guide_offered and not field_guide_hint_given} [I'd like that ops manual]
+    -> request_field_guide
++ {priv_esc_guide_offered and not priv_esc_guide_hint_given} [I need the privilege escalation guide]
+    -> request_priv_esc_guide
 + {entropy_reveal_read and (player_aborted_attack or player_launched_attack)} [Operation Shatter resolved — I'm ready for debrief]
     -> closing_debrief
 + {(entropy_reveal_read or (talked_to_maya and discussed_operation)) and not operation_shatter_reported} [I discovered what ENTROPY is planning - Operation Shatter]
@@ -119,10 +123,6 @@ VAR cyberchef_guide_requested = false
     -> cyberchef_help
 + {cyberchef_guide_offered and not cyberchef_guide_hint_given} [Send me the CyberChef decoding guide]
     -> request_cyberchef_guide
-+ {field_guide_offered and not field_guide_hint_given} [I'd like that ops manual you mentioned]
-    -> request_field_guide
-+ {priv_esc_guide_offered and not priv_esc_guide_hint_given} [I need the privilege escalation guide]
-    -> request_priv_esc_guide
 + [General mission advice]
     -> general_advice
 + [I'm good for now]
@@ -220,13 +220,13 @@ Command: sudo -u otherusername bash gives you a shell as that user.
 === cyberchef_help ===
 ~ cyberchef_hint_given = true
 
-You've found encoded notes. Both can be decoded in CyberChef — it's on the Kali desktop.
+You've found encoded notes. Both can be decoded in CyberChef — or using the commandline tools on the Kali desktop.
 
-For the base64 one: drag "From Base64" into the recipe. Paste the text and it decodes instantly.
+If you have found a CyberChef workstation. For the base64 one: drag "From Base64" into the recipe. Paste the text and it decodes instantly.
 
-For the one where the letters look scrambled but word lengths are right — that's ROT13. Drag "ROT13" into the recipe.
+For the one where the letters look scrambled but word lengths are right — that could be ROT13. Drag "ROT13" into the recipe.
 
-+ [Got it — CyberChef on the Kali]
++ [Got it — CyberChef or Kali]
     Exactly. Good hunting.
     -> support_hub
 + [What do the decoded messages tell me?]
