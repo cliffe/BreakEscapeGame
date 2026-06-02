@@ -473,6 +473,13 @@ export class FlagStationMinigame extends MinigameScene {
                 if (response.rewards?.length > 0) {
                     this.processRewardEvents(response.rewards);
                 }
+                if ((response.completedTasks?.length > 0 || response.updatedTasks?.length > 0) && window.eventDispatcher) {
+                    window.eventDispatcher.emit('flag_tasks_updated', {
+                        flagId:         null,
+                        completedTasks: response.completedTasks || [],
+                        updatedTasks:   response.updatedTasks   || []
+                    });
+                }
                 this.showResult(resultEl, 'success', '✓ Access granted. Unlocking...');
                 setTimeout(() => {
                     this.gameResult = { serverResponse: response };
@@ -732,6 +739,13 @@ export class FlagStationMinigame extends MinigameScene {
                             <span>Event triggered</span>
                         </div>
                     `;
+                case 'hint':
+                    return reward.message ? `
+                        <div class="reward-item">
+                            <span class="reward-icon">💡</span>
+                            <span>${this.escapeHtml(reward.message)}</span>
+                        </div>
+                    ` : '';
                 default:
                     return '';
             }

@@ -347,7 +347,7 @@ password_hints = "Common passwords: Marketing123, Campaign2024, Viral_Dynamics_A
           "taskId": "submit_ssh_flag",
           "title": "Unlock the ENTROPY encrypted archive",
           "type": "submit_flags",
-          "targetFlags": ["desktop-flag1"],
+          "targetFlags": ["shatter_server:flag_1"],
           "targetCount": 1,
           "currentCount": 0,
           "status": "active",
@@ -359,7 +359,7 @@ password_hints = "Common passwords: Marketing123, Campaign2024, Viral_Dynamics_A
           "taskId": "submit_linux_flag",
           "title": "Submit directory traversal evidence",
           "type": "submit_flags",
-          "targetFlags": ["desktop-flag1"],
+          "targetFlags": ["shatter_server-flag1"],
           "targetCount": 1,
           "currentCount": 0,
           "status": "active",
@@ -369,7 +369,7 @@ password_hints = "Common passwords: Marketing123, Campaign2024, Viral_Dynamics_A
           "taskId": "submit_sudo_flag",
           "title": "Submit encoded deployment intelligence",
           "type": "submit_flags",
-          "targetFlags": ["desktop-flag2"],
+          "targetFlags": ["shatter_server-flag2"],
           "targetCount": 1,
           "currentCount": 0,
           "status": "active",
@@ -1909,6 +1909,10 @@ password_hints = "Common passwords: Marketing123, Campaign2024, Viral_Dynamics_A
           "observations": "Secure terminal for submitting intercepted intelligence and VM flags",
           "acceptsVms": ["shatter_server"],
           "flags": ["shatter_server:flag_2", "shatter_server:flag_4"],
+          "hintOnlyFlags": {
+            "shatter_server:flag_1": "Decryption Key validated — this key unlocks the ENTROPY encrypted archive in the server room.",
+            "shatter_server:flag_3": "Launch authorization code validated — enter it into the ENTROPY launch device."
+          },
           "flagRewards": [
             {
               "type": "set_global",
@@ -1932,6 +1936,7 @@ password_hints = "Common passwords: Marketing123, Campaign2024, Viral_Dynamics_A
           "locked": true,
           "lockType": "flag",
           "requires": "shatter_server:flag_1",
+          "completesTask": "submit_ssh_flag",
           "puzzle_graph_note": "Unlocked by VM flag shatter_server:flag_1 (SSH brute force into derek account using passwords wordlist)",
           "observations": "A ruggedised encrypted drive in a reinforced case. Stamped: ENTROPY — EYES ONLY. The decryption key is stored on shatter_server (172.16.0.2) in derek's account. Submit it here to unlock.",
           "flagRewards": [

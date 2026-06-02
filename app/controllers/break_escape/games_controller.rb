@@ -684,13 +684,28 @@ module BreakEscape
             response[:contents] = object_data['contents']
           end
 
-          # If this was a flag-unlock, process flagRewards so set_global etc. propagate to client
+          # If this was a flag-unlock: submit to Hacktivity, process rewards, complete linked task
           if method == 'flag' && attempt.present?
+            # Submit flag to Hacktivity and mark in submitted_flags (ignore if already submitted)
+            @game.submit_flag(attempt)
+
             rewards = find_flag_rewards(attempt)
             unless rewards.empty?
               reward_results = process_flag_rewards(attempt, rewards)
               response[:rewards] = reward_results
             end
+
+            # Complete any task declared on the flag-locked object
+            completed_tasks = []
+            if object_data && (task_id = object_data['completesTask'])
+              # Use the flag ref directly ("vm:flag_N") as the submitted identifier —
+              # avoids collision with station-position-based flag_ids ("vm-flagN").
+              flag_ref    = object_data['requires'] || ''
+              task_result = @game.complete_task!(task_id, { submittedFlags: [flag_ref] })
+              completed_tasks << task_id if task_result[:success]
+            end
+            response[:completedTasks] = completed_tasks
+            response[:updatedTasks]   = []
           end
 
           render json: response
@@ -832,6 +847,28 @@ module BreakEscape
 
       unless flag_key.present?
         return render json: { success: false, message: 'No flag provided' }, status: :bad_request
+      end
+
+      # hintOnlyFlags: flags listed on a station that should be validated but NOT submitted —
+      # used when a flag is "used elsewhere" (e.g. archive key or launch code) and the station
+      # just wants to tell the player that without consuming the flag or scoring it in Hacktivity.
+      if station_id.present?
+        hint_message = find_hint_only_message(flag_key, station_id)
+        if hint_message
+          valid_flags = @game.send(:extract_valid_flags_from_scenario)
+          if valid_flags.any? { |f| f.downcase == flag_key.downcase }
+            return render json: {
+              success: true,
+              message: 'Flag recognised',
+              flag: flag_key,
+              flagId: nil,
+              vmId: nil,
+              rewards: [{ 'type' => 'hint', 'message' => hint_message }],
+              completedTasks: [],
+              updatedTasks: []
+            }
+          end
+        end
       end
 
       # If the client reports which station the player is at, ensure the submitted flag
@@ -1616,7 +1653,7 @@ module BreakEscape
         when 'emit_event'
           results << process_event_reward(reward, flag_key)
 
-        when 'set_global', 'unlock_object'
+        when 'set_global', 'unlock_object', 'hint'
           # Client-side-only rewards — forward as-is so processRewardEvents() can handle them
           results << reward
 
@@ -1740,6 +1777,24 @@ module BreakEscape
       return nil unless ref_or_value.is_a?(String)
       return @game.resolve_flag_ref(ref_or_value) if ref_or_value.match?(/\A[^:]+:flag_\d+\z/)
       ref_or_value
+    end
+
+    # Check whether a flag matches a hintOnlyFlags entry on the station identified by station_id.
+    # Returns the hint message string if matched, nil otherwise.
+    def find_hint_only_message(flag_key, station_id)
+      @game.scenario_data['rooms']&.each do |_room_id, room|
+        room['objects']&.each do |obj|
+          next unless obj['type'] == 'flag-station'
+          next unless (obj['id'] || obj['name']) == station_id
+          next unless obj['hintOnlyFlags'].is_a?(Hash)
+
+          obj['hintOnlyFlags'].each do |flag_ref, hint_message|
+            resolved = resolve_flag_value(flag_ref)
+            return hint_message if resolved&.downcase == flag_key.downcase
+          end
+        end
+      end
+      nil
     end
 
     def find_flag_station_for_flag(flag_key)

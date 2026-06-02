@@ -13,6 +13,7 @@
  *   unlock_object  { objectId }      — unlocks a world object (+ optional server persist)
  *   unlock_door    { room_id }       — adds room_id to gameState.unlockedRooms
  *   give_item      { item }          — adds an item sprite to the player inventory
+ *   hint           { message, title? } — shows an informational alert to the player
  *
  * @param {Array}  actions            Array of action descriptor objects.
  * @param {Object} [opts]
@@ -75,6 +76,13 @@ export function applyActions(actions, { source = 'scenario', gameId = null } = {
                         window.gameState.unlockedRooms.push(action.room_id);
                     }
                     window.eventDispatcher?.emit('door_unlocked', { roomId: action.room_id, source });
+                }
+                break;
+
+            case 'hint':
+                if (action.message) {
+                    window.gameAlert?.(action.message, 'info', action.title || 'Intelligence Received');
+                    console.log('[applyActions] hint:', action.message);
                 }
                 break;
 
