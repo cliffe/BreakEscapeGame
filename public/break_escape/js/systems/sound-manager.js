@@ -103,9 +103,11 @@ class SoundManager {
         this.scene.load.audio('punch_swipe_jab', 'sounds/punch_swipe_jab.mp3');
         this.scene.load.audio('punch_swipe_cross', 'sounds/punch_swipe_cross.mp3');
 
-        // Hit grunt sounds (CC0 public domain, source: kenney.nl/assets/voiceover-pack-fighter)
-        this.scene.load.audio('grunt_male', 'sounds/grunt_male.ogg');
-        this.scene.load.audio('grunt_female', 'sounds/grunt_female.ogg');
+        // Hit grunt sounds (CC0 public domain, source: freesound.org)
+        this.scene.load.audio('grunt_male_soft',    'sounds/grunt_male_soft.mp3');
+        this.scene.load.audio('grunt_male_heavy',   'sounds/grunt_male_heavy.mp3');
+        this.scene.load.audio('grunt_female_soft',  'sounds/grunt_female_soft.mp3');
+        this.scene.load.audio('grunt_female_heavy', 'sounds/grunt_female_heavy.mp3');
 
         // Ambient room sounds (CC0 public domain, source: bigsoundbank.com)
         this.scene.load.audio('server_room_ventilation', 'sounds/server_room_ventilation.mp3');
@@ -147,7 +149,7 @@ class SoundManager {
             // Punch swipe sounds
             'punch_swipe_jab', 'punch_swipe_cross',
             // Hit grunt sounds
-            'grunt_male', 'grunt_female',
+            'grunt_male_soft', 'grunt_male_heavy', 'grunt_female_soft', 'grunt_female_heavy',
             // Ambient room sounds
             'server_room_ventilation'
         ];

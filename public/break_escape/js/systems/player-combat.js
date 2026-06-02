@@ -561,7 +561,11 @@ export class PlayerCombat {
       // Play gender-matched grunt for the NPC being hit
       const npcData = window.npcManager?.getNPC(npcId);
       const isFemale = npcData?.spriteSheet?.startsWith('female_');
-      window.soundManager.play(isFemale ? 'grunt_female' : 'grunt_male');
+      const isHeavyHit = damage > 5;
+      const gruntKey = isFemale
+        ? (isHeavyHit ? 'grunt_female_heavy' : 'grunt_female_soft')
+        : (isHeavyHit ? 'grunt_male_heavy'   : 'grunt_male_soft');
+      window.soundManager.play(gruntKey);
     }
 
     // Damage numbers

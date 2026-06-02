@@ -210,7 +210,13 @@ export class NPCCombat {
         || window.gameScenario?.player?.spriteSheet
         || 'male_hacker';
       const isPlayerFemale = playerSheet.startsWith('female_');
-      window.soundManager.play(isPlayerFemale ? 'grunt_female' : 'grunt_male');
+      const hpAfter = window.playerHealth?.getHP() ?? Infinity;
+      const maxHP   = window.playerHealth?.getMaxHP() ?? 100;
+      const isHeavyHit = damage > 5 || hpAfter / maxHP <= 0.25;
+      const gruntKey = isPlayerFemale
+        ? (isHeavyHit ? 'grunt_female_heavy' : 'grunt_female_soft')
+        : (isHeavyHit ? 'grunt_male_heavy'   : 'grunt_male_soft');
+      window.soundManager.play(gruntKey);
     }
 
     // Damage numbers
