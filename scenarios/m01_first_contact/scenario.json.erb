@@ -596,7 +596,7 @@ password_hints = "Common passwords: Marketing123, Campaign2024, Viral_Dynamics_A
           "itemsHeld": [
             {
               "type": "lab-workstation",
-              "id": "safetynet_field_guide_ssh_basics",
+              "key_id": "safetynet_field_guide_ssh_basics",
               "name": "SAFETYNET Field Guide: SSH Access and Linux Basics",
               "takeable": true,
               "labUrl": "https://cliffe.github.io/HacktivityLabSheets/labs/m01_first_contact/safetynet-field-guide-ssh-access-and-linux-basics/",
@@ -604,11 +604,19 @@ password_hints = "Common passwords: Marketing123, Campaign2024, Viral_Dynamics_A
             },
             {
               "type": "lab-workstation",
-              "id": "safetynet_field_guide_priv_escalation",
+              "key_id": "safetynet_field_guide_priv_escalation",
               "name": "SAFETYNET Field Guide: Privilege Escalation via Sudo",
               "takeable": true,
               "labUrl": "https://cliffe.github.io/HacktivityLabSheets/labs/m01_first_contact/safetynet-field-guide-privilege-escalation/",
               "observations": "Field guide to sudo permissions, privilege escalation tactics, and moving laterally within Linux systems"
+            },
+            {
+              "type": "lab-workstation",
+              "key_id": "safetynet_field_guide_encoding_decoding_cyberchef",
+              "name": "SAFETYNET Field Guide: Encoding and Decoding with CyberChef",
+              "takeable": true,
+              "labUrl": "https://cliffe.github.io/HacktivityLabSheets/labs/m01_first_contact/safetynet-field-guide-encoding-and-decoding-with-cyberchef/",
+              "observations": "Field guide to identifying Base64 and ROT13 encoded notes and decoding them with CyberChef"
             }
           ],
           "timedMessages": [
@@ -771,6 +779,16 @@ password_hints = "Common passwords: Marketing123, Campaign2024, Viral_Dynamics_A
               "sendTimedMessage": {
                 "delay": 1000,
                 "message": "You're in. Check his files carefully — framing evidence, operational plans, anything about a safe combination."
+              }
+            },
+            {
+              "eventPattern": "global_variable_changed:whiteboard_cipher_seen",
+              "condition": "value === true",
+              "onceOnly": true,
+              "setGlobal": { "cyberchef_guide_offered": true },
+              "sendTimedMessage": {
+                "delay": 1500,
+                "message": "Those notes are encoded, and now you've got a proper lead. I can upload a CyberChef field guide for Base64 and ROT13 if you want a faster decode workflow."
               }
             },
             {
@@ -2024,6 +2042,9 @@ password_hints = "Common passwords: Marketing123, Campaign2024, Viral_Dynamics_A
     "priv_esc_guide_offered": false,
     "priv_esc_guide_hint_given": false,
     "priv_esc_guide_requested": false,
+    "cyberchef_guide_offered": false,
+    "cyberchef_guide_hint_given": false,
+    "cyberchef_guide_requested": false,
 
     "launch_code_submitted": false,
     "player_aborted_attack": false,

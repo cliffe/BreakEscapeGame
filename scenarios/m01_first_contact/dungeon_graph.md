@@ -14,7 +14,7 @@ Infiltrate Viral Dynamics Media to investigate suspected ENTROPY operations. Gat
 | Physical locks | 13 |
 | AND-gate convergences | 3 |
 | Rooms | 13 |
-| Puzzle graph nodes / edges | 50 / 67 |
+| Puzzle graph nodes / edges | 50 / 61 |
 | Story graph nodes / edges | 11 / 11 |
 
 ## Critical Path
@@ -86,7 +86,7 @@ flowchart TD
   storage_closet("Storage")
   lock_derek_storage_safe["Derek's Safe<br/>PIN lock"]
   my_passwords{"My Passwords"}
-  lock_vm_launcher_intro_linux["VM Access Terminal<br/>SSH credentials needed"]
+  lock_vm_launcher_intro_linux["Vm Launcher Intro Linux"]
   maintenance_log_backup{"Maintenance Log (Backup)"}
   break_room("Break Room")
   anniversary_card{"Anniversary Card"}
@@ -115,9 +115,9 @@ flowchart TD
   vmfl_submit_linux_flag{"Linux Flag"}
   vmch_submit_sudo_flag["Submit encoded deployment intelligence"]
   vmfl_submit_sudo_flag{"Sudo Flag"}
-  hallway_west("Hallway West")
   hallway_east("Hallway East")
   conference_room("Conference Room")
+  hallway_west("Hallway West")
   maya_office("Maya Chen — Research")
 
   door_main_office_area --> main_office_area
@@ -174,22 +174,16 @@ flowchart TD
   vmfl_submit_ssh_flag -.-> vmch_submit_linux_flag
   vmch_submit_sudo_flag --> vmfl_submit_sudo_flag
   vmfl_submit_linux_flag -.-> vmch_submit_sudo_flag
-  lock_vm_launcher_intro_linux --> vmch_submit_ssh_flag
   server_room --> lock_vm_launcher_intro_linux
-  main_office_area --> reception_area
-  main_office_area --> hallway_west
-  main_office_area --> hallway_east
-  main_office_area --> break_room
   storage_closet --> hallway_east
   break_room --> conference_room
   hallway_west --> manager_office
   hallway_west --> kevin_office
   hallway_west --> hallway_east
   hallway_east --> maya_office
-  derek_office --> hallway_east
 
   class door_main_office_area,door_it_room,door_derek_office,door_server_room,lock_main_filing_cabinet,lock_derek_storage_safe,lock_vm_launcher_intro_linux,lock_derek_computer,lock_derek_cabinet,lock_patricia_briefcase,lock_kevin_s_workstation,lock_derek_personal_safe,lock_entropy_encrypted_archive lock
-  class main_office_area,it_room,derek_office,server_room,reception_area,storage_closet,break_room,manager_office,kevin_office,hallway_west,hallway_east,conference_room,maya_office room
+  class main_office_area,it_room,derek_office,server_room,reception_area,storage_closet,break_room,manager_office,kevin_office,hallway_east,conference_room,hallway_west,maya_office room
   class reception_desk_phone,maintenance_checklist,my_passwords,maintenance_log_backup,anniversary_card,cyberchef_workstation,out_of_office_note,personal_notes_safe,encoded_note_1,encoded_note_2 item
   class npc_sarah_o_brien,main_office_key,npc_kevin_park,lock_pick_kit,server_room_keycard,derek_s_office_key key
   class andgate1,andgate2 gate
@@ -293,7 +287,7 @@ flowchart TD
   storage_closet("Storage")
   lock_derek_storage_safe["Derek's Safe<br/>PIN lock"]
   my_passwords{"My Passwords"}
-  lock_vm_launcher_intro_linux["VM Access Terminal<br/>SSH credentials needed"]
+  lock_vm_launcher_intro_linux["Vm Launcher Intro Linux"]
   maintenance_log_backup{"Maintenance Log (Backup)"}
   break_room("Break Room")
   anniversary_card{"Anniversary Card"}
@@ -322,9 +316,9 @@ flowchart TD
   vmfl_submit_linux_flag{"Linux Flag"}
   vmch_submit_sudo_flag["Submit encoded deployment intelligence"]
   vmfl_submit_sudo_flag{"Sudo Flag"}
-  hallway_west("Hallway West")
   hallway_east("Hallway East")
   conference_room("Conference Room")
+  hallway_west("Hallway West")
   maya_office("Maya Chen — Research")
   aim_establish_access{{"Establish Access"}}
   aim_survey_offices{{"Survey the Scene"}}
@@ -392,19 +386,13 @@ flowchart TD
   vmfl_submit_ssh_flag -.-> vmch_submit_linux_flag
   vmch_submit_sudo_flag --> vmfl_submit_sudo_flag
   vmfl_submit_linux_flag -.-> vmch_submit_sudo_flag
-  lock_vm_launcher_intro_linux --> vmch_submit_ssh_flag
   server_room --> lock_vm_launcher_intro_linux
-  main_office_area --> reception_area
-  main_office_area --> hallway_west
-  main_office_area --> hallway_east
-  main_office_area --> break_room
   storage_closet --> hallway_east
   break_room --> conference_room
   hallway_west --> manager_office
   hallway_west --> kevin_office
   hallway_west --> hallway_east
   hallway_east --> maya_office
-  derek_office --> hallway_east
   aim_establish_access -.-> aim_survey_offices
   aim_survey_offices -.-> aim_build_the_case
   aim_build_the_case -.-> aim_search_derek_office
@@ -436,7 +424,7 @@ flowchart TD
   lock_entropy_encrypted_archive -.-> aim_decrypt_entropy_intel
 
   class door_main_office_area,door_it_room,door_derek_office,door_server_room,lock_main_filing_cabinet,lock_derek_storage_safe,lock_vm_launcher_intro_linux,lock_derek_computer,lock_derek_cabinet,lock_patricia_briefcase,lock_kevin_s_workstation,lock_derek_personal_safe,lock_entropy_encrypted_archive lock
-  class main_office_area,it_room,derek_office,server_room,reception_area,storage_closet,break_room,manager_office,kevin_office,hallway_west,hallway_east,conference_room,maya_office room
+  class main_office_area,it_room,derek_office,server_room,reception_area,storage_closet,break_room,manager_office,kevin_office,hallway_east,conference_room,hallway_west,maya_office room
   class reception_desk_phone,maintenance_checklist,my_passwords,maintenance_log_backup,anniversary_card,cyberchef_workstation,out_of_office_note,personal_notes_safe,encoded_note_1,encoded_note_2 item
   class npc_sarah_o_brien,main_office_key,npc_kevin_park,lock_pick_kit,server_room_keycard,derek_s_office_key key
   class andgate1,andgate2 gate
@@ -554,75 +542,78 @@ flowchart TD
   rc_obj6_6{"Visitor Badge"}
   rc_obj7_7{"Main Office Key"}
   rc_npc_agent_hax_8("Agent HaX")
-  rc_npc_agent_hax_9("Agent HaX")
-  rc_obj10_10[["Main Filing Cabinet"]]
-  rc_obj11_11{"Pencil Cup"}
-  rc_obj12_12{"Stapler"}
-  rc_obj13_13{"Pen Set"}
-  rc_obj14_14{"Viral Dynamics Business Outline"}
-  rc_obj15_15{"Office Chalkboard"}
-  rc_obj16_16{"Office Chalkboard"}
-  rc_obj17_17[["Office Recycling Bin"]]
-  rc_obj18_18{"Maintenance Checklist"}
-  rc_derek_storage_safe_19[["Derek's Safe"]]
-  rc_obj20_20{"Storage Receipt"}
-  rc_obj21_21{"My Passwords"}
-  rc_obj22_22{"Maintenance Log (Backup)"}
-  rc_obj23_23{"Office Gossip"}
-  rc_obj24_24{"Break Room Calendar"}
-  rc_obj25_25[["Recycling Bin"]]
-  rc_obj26_26{"Anniversary Card"}
-  rc_obj27_27{"Coffee Shop Receipt"}
-  rc_obj28_28{"Sticky Note on Fridge"}
-  rc_npc_derek_lawson_29("Derek Lawson")
-  rc_obj30_30{"ENTROPY Launch Device"}
-  rc_obj31_31{"Meeting Calendar"}
-  rc_obj32_32[["Paper Bin"]]
-  rc_obj33_33{"ZDS Meeting Notes"}
-  rc_obj34_34{"Campaign Timeline"}
-  rc_obj35_35[["IT Monitoring Station"]]
-  rc_obj36_36{"Server Access Log"}
-  rc_obj37_37{"IT Security Concerns"}
-  rc_npc_kevin_park_38("Kevin Park")
-  rc_obj39_39{"Lock Pick Kit"}
-  rc_obj40_40{"Server Room Keycard"}
-  rc_obj41_41{"Lock Pick Instructions"}
-  rc_patricia_briefcase_42[["Patricia's Briefcase"]]
-  rc_obj43_43{"Derek's Office Key"}
-  rc_obj44_44{"Patricia's Investigation Notes"}
-  rc_cyberchef_workstation_45{"CyberChef Workstation"}
-  rc_obj46_46{"Patricia's Note — CyberChef"}
-  rc_obj47_47{"ENTROPY Infiltration Timeline"}
-  rc_patricia_desk_phone_48{"Patricia's Desk Phone"}
-  rc_obj49_49{"Termination Letter"}
-  rc_obj50_50[["Kevin's Workstation"]]
-  rc_obj51_51{"Server Access Log"}
-  rc_obj52_52{"Draft Email (Unsent)"}
-  rc_obj53_53{"Out of Office Note"}
-  rc_obj54_54{"IT Incident Log"}
-  rc_obj55_55{"Disinformation Research"}
-  rc_obj56_56{"SAFETYNET Contact"}
-  rc_npc_maya_chen_57("Maya Chen")
-  rc_derek_computer_58[["Derek's Computer"]]
-  rc_obj59_59{"IT Security Anomaly Report"}
-  rc_obj60_60{"Recovered Email - K.Park"}
-  rc_obj61_61{"Personal Notes - Safe"}
-  rc_contingency_files_62{"CONTINGENCY - IT Audit Response"}
-  rc_obj63_63{"Encoded Note (1)"}
-  rc_obj64_64{"Encoded Note (2)"}
-  rc_derek_personal_safe_65[["Derek's Personal Safe"]]
-  rc_obj66_66{"The Architect's Letter"}
-  rc_derek_cabinet_67[["Derek's Filing Cabinet"]]
-  rc_obj68_68{"Operation Shatter Casualty Projections"}
-  rc_obj69_69{"Social Fabric Manifesto"}
-  rc_obj70_70{"Campaign Materials"}
-  rc_obj71_71{"Derek's Calendar"}
-  rc_vm_launcher_intro_linux_72{"VM Access Terminal"}
-  rc_flag_station_dropsite_73{"SAFETYNET Drop-Site Terminal"}
-  rc_entropy_encrypted_archive_74[["ENTROPY Encrypted Archive"]]
-  rc_obj75_75{"Operation Shatter: Architect's Authorization"}
-  rc_obj76_76{"ENTROPY Network Architecture"}
-  rc_obj77_77{"Operation Shatter Target Database"}
+  rc_obj9_9{"SAFETYNET Field Guide: SSH Access and Linux Basics"}
+  rc_obj10_10{"SAFETYNET Field Guide: Privilege Escalation via Sudo"}
+  rc_obj11_11{"SAFETYNET Field Guide: Encoding and Decoding with CyberChef"}
+  rc_npc_agent_hax_12("Agent HaX")
+  rc_obj13_13[["Main Filing Cabinet"]]
+  rc_obj14_14{"Pencil Cup"}
+  rc_obj15_15{"Stapler"}
+  rc_obj16_16{"Pen Set"}
+  rc_obj17_17{"Viral Dynamics Business Outline"}
+  rc_obj18_18{"Office Chalkboard"}
+  rc_obj19_19{"Office Chalkboard"}
+  rc_obj20_20[["Office Recycling Bin"]]
+  rc_obj21_21{"Maintenance Checklist"}
+  rc_derek_storage_safe_22[["Derek's Safe"]]
+  rc_obj23_23{"Storage Receipt"}
+  rc_obj24_24{"My Passwords"}
+  rc_obj25_25{"Maintenance Log (Backup)"}
+  rc_obj26_26{"Office Gossip"}
+  rc_obj27_27{"Break Room Calendar"}
+  rc_obj28_28[["Recycling Bin"]]
+  rc_obj29_29{"Anniversary Card"}
+  rc_obj30_30{"Coffee Shop Receipt"}
+  rc_obj31_31{"Sticky Note on Fridge"}
+  rc_npc_derek_lawson_32("Derek Lawson")
+  rc_obj33_33{"ENTROPY Launch Device"}
+  rc_obj34_34{"Meeting Calendar"}
+  rc_obj35_35[["Paper Bin"]]
+  rc_obj36_36{"ZDS Meeting Notes"}
+  rc_obj37_37{"Campaign Timeline"}
+  rc_obj38_38[["IT Monitoring Station"]]
+  rc_obj39_39{"Server Access Log"}
+  rc_obj40_40{"IT Security Concerns"}
+  rc_npc_kevin_park_41("Kevin Park")
+  rc_obj42_42{"Lock Pick Kit"}
+  rc_obj43_43{"Server Room Keycard"}
+  rc_obj44_44{"Lock Pick Instructions"}
+  rc_patricia_briefcase_45[["Patricia's Briefcase"]]
+  rc_obj46_46{"Derek's Office Key"}
+  rc_obj47_47{"Patricia's Investigation Notes"}
+  rc_cyberchef_workstation_48{"CyberChef Workstation"}
+  rc_obj49_49{"Patricia's Note — CyberChef"}
+  rc_obj50_50{"ENTROPY Infiltration Timeline"}
+  rc_patricia_desk_phone_51{"Patricia's Desk Phone"}
+  rc_obj52_52{"Termination Letter"}
+  rc_obj53_53[["Kevin's Workstation"]]
+  rc_obj54_54{"Server Access Log"}
+  rc_obj55_55{"Draft Email (Unsent)"}
+  rc_obj56_56{"Out of Office Note"}
+  rc_obj57_57{"IT Incident Log"}
+  rc_obj58_58{"Disinformation Research"}
+  rc_obj59_59{"SAFETYNET Contact"}
+  rc_npc_maya_chen_60("Maya Chen")
+  rc_derek_computer_61[["Derek's Computer"]]
+  rc_obj62_62{"IT Security Anomaly Report"}
+  rc_obj63_63{"Recovered Email - K.Park"}
+  rc_obj64_64{"Personal Notes - Safe"}
+  rc_contingency_files_65{"CONTINGENCY - IT Audit Response"}
+  rc_obj66_66{"Encoded Note (1)"}
+  rc_obj67_67{"Encoded Note (2)"}
+  rc_derek_personal_safe_68[["Derek's Personal Safe"]]
+  rc_obj69_69{"The Architect's Letter"}
+  rc_derek_cabinet_70[["Derek's Filing Cabinet"]]
+  rc_obj71_71{"Operation Shatter Casualty Projections"}
+  rc_obj72_72{"Social Fabric Manifesto"}
+  rc_obj73_73{"Campaign Materials"}
+  rc_obj74_74{"Derek's Calendar"}
+  rc_vm_launcher_intro_linux_75{"VM Access Terminal"}
+  rc_flag_station_dropsite_76{"SAFETYNET Drop-Site Terminal"}
+  rc_entropy_encrypted_archive_77[["ENTROPY Encrypted Archive"]]
+  rc_obj78_78{"Operation Shatter: Architect's Authorization"}
+  rc_obj79_79{"ENTROPY Network Architecture"}
+  rc_obj80_80{"Operation Shatter Target Database"}
 
   reception_area --> main_office_area
   main_office_area --> hallway_west
@@ -645,80 +636,83 @@ flowchart TD
   rc_npc_sarah_o_brien_5 --> rc_obj6_6
   rc_npc_sarah_o_brien_5 --> rc_obj7_7
   reception_area --> rc_npc_agent_hax_8
-  reception_area --> rc_npc_agent_hax_9
-  main_office_area --> rc_obj10_10
-  rc_obj10_10 --> rc_obj11_11
-  rc_obj10_10 --> rc_obj12_12
-  rc_obj10_10 --> rc_obj13_13
-  rc_obj10_10 --> rc_obj14_14
-  main_office_area --> rc_obj15_15
-  main_office_area --> rc_obj16_16
-  main_office_area --> rc_obj17_17
-  rc_obj17_17 --> rc_obj18_18
-  storage_closet --> rc_derek_storage_safe_19
-  rc_derek_storage_safe_19 --> rc_obj20_20
-  rc_derek_storage_safe_19 --> rc_obj21_21
-  storage_closet --> rc_obj22_22
-  break_room --> rc_obj23_23
-  break_room --> rc_obj24_24
-  break_room --> rc_obj25_25
-  rc_obj25_25 --> rc_obj26_26
-  rc_obj25_25 --> rc_obj27_27
-  rc_obj25_25 --> rc_obj28_28
-  break_room --> rc_npc_derek_lawson_29
-  rc_npc_derek_lawson_29 --> rc_obj30_30
-  conference_room --> rc_obj31_31
-  conference_room --> rc_obj32_32
-  rc_obj32_32 --> rc_obj33_33
-  rc_obj32_32 --> rc_obj34_34
-  it_room --> rc_obj35_35
+  rc_npc_agent_hax_8 --> rc_obj9_9
+  rc_npc_agent_hax_8 --> rc_obj10_10
+  rc_npc_agent_hax_8 --> rc_obj11_11
+  reception_area --> rc_npc_agent_hax_12
+  main_office_area --> rc_obj13_13
+  rc_obj13_13 --> rc_obj14_14
+  rc_obj13_13 --> rc_obj15_15
+  rc_obj13_13 --> rc_obj16_16
+  rc_obj13_13 --> rc_obj17_17
+  main_office_area --> rc_obj18_18
+  main_office_area --> rc_obj19_19
+  main_office_area --> rc_obj20_20
+  rc_obj20_20 --> rc_obj21_21
+  storage_closet --> rc_derek_storage_safe_22
+  rc_derek_storage_safe_22 --> rc_obj23_23
+  rc_derek_storage_safe_22 --> rc_obj24_24
+  storage_closet --> rc_obj25_25
+  break_room --> rc_obj26_26
+  break_room --> rc_obj27_27
+  break_room --> rc_obj28_28
+  rc_obj28_28 --> rc_obj29_29
+  rc_obj28_28 --> rc_obj30_30
+  rc_obj28_28 --> rc_obj31_31
+  break_room --> rc_npc_derek_lawson_32
+  rc_npc_derek_lawson_32 --> rc_obj33_33
+  conference_room --> rc_obj34_34
+  conference_room --> rc_obj35_35
   rc_obj35_35 --> rc_obj36_36
-  it_room --> rc_obj37_37
-  it_room --> rc_npc_kevin_park_38
-  rc_npc_kevin_park_38 --> rc_obj39_39
-  rc_npc_kevin_park_38 --> rc_obj40_40
-  rc_npc_kevin_park_38 --> rc_obj41_41
-  manager_office --> rc_patricia_briefcase_42
-  rc_patricia_briefcase_42 --> rc_obj43_43
-  rc_patricia_briefcase_42 --> rc_obj44_44
-  rc_patricia_briefcase_42 --> rc_cyberchef_workstation_45
-  rc_patricia_briefcase_42 --> rc_obj46_46
-  rc_patricia_briefcase_42 --> rc_obj47_47
-  manager_office --> rc_patricia_desk_phone_48
-  manager_office --> rc_obj49_49
-  kevin_office --> rc_obj50_50
-  rc_obj50_50 --> rc_obj51_51
-  rc_obj50_50 --> rc_obj52_52
+  rc_obj35_35 --> rc_obj37_37
+  it_room --> rc_obj38_38
+  rc_obj38_38 --> rc_obj39_39
+  it_room --> rc_obj40_40
+  it_room --> rc_npc_kevin_park_41
+  rc_npc_kevin_park_41 --> rc_obj42_42
+  rc_npc_kevin_park_41 --> rc_obj43_43
+  rc_npc_kevin_park_41 --> rc_obj44_44
+  manager_office --> rc_patricia_briefcase_45
+  rc_patricia_briefcase_45 --> rc_obj46_46
+  rc_patricia_briefcase_45 --> rc_obj47_47
+  rc_patricia_briefcase_45 --> rc_cyberchef_workstation_48
+  rc_patricia_briefcase_45 --> rc_obj49_49
+  rc_patricia_briefcase_45 --> rc_obj50_50
+  manager_office --> rc_patricia_desk_phone_51
+  manager_office --> rc_obj52_52
   kevin_office --> rc_obj53_53
-  kevin_office --> rc_obj54_54
-  maya_office --> rc_obj55_55
-  maya_office --> rc_obj56_56
-  maya_office --> rc_npc_maya_chen_57
-  derek_office --> rc_derek_computer_58
-  rc_derek_computer_58 --> rc_obj59_59
-  rc_derek_computer_58 --> rc_obj60_60
-  rc_derek_computer_58 --> rc_obj61_61
-  rc_derek_computer_58 --> rc_contingency_files_62
-  derek_office --> rc_obj63_63
-  derek_office --> rc_obj64_64
-  derek_office --> rc_derek_personal_safe_65
-  rc_derek_personal_safe_65 --> rc_obj66_66
-  derek_office --> rc_derek_cabinet_67
-  rc_derek_cabinet_67 --> rc_obj68_68
-  rc_derek_cabinet_67 --> rc_obj69_69
-  rc_derek_cabinet_67 --> rc_obj70_70
-  derek_office --> rc_obj71_71
-  server_room --> rc_vm_launcher_intro_linux_72
-  server_room --> rc_flag_station_dropsite_73
-  server_room --> rc_entropy_encrypted_archive_74
-  rc_entropy_encrypted_archive_74 --> rc_obj75_75
-  rc_entropy_encrypted_archive_74 --> rc_obj76_76
-  rc_entropy_encrypted_archive_74 --> rc_obj77_77
+  rc_obj53_53 --> rc_obj54_54
+  rc_obj53_53 --> rc_obj55_55
+  kevin_office --> rc_obj56_56
+  kevin_office --> rc_obj57_57
+  maya_office --> rc_obj58_58
+  maya_office --> rc_obj59_59
+  maya_office --> rc_npc_maya_chen_60
+  derek_office --> rc_derek_computer_61
+  rc_derek_computer_61 --> rc_obj62_62
+  rc_derek_computer_61 --> rc_obj63_63
+  rc_derek_computer_61 --> rc_obj64_64
+  rc_derek_computer_61 --> rc_contingency_files_65
+  derek_office --> rc_obj66_66
+  derek_office --> rc_obj67_67
+  derek_office --> rc_derek_personal_safe_68
+  rc_derek_personal_safe_68 --> rc_obj69_69
+  derek_office --> rc_derek_cabinet_70
+  rc_derek_cabinet_70 --> rc_obj71_71
+  rc_derek_cabinet_70 --> rc_obj72_72
+  rc_derek_cabinet_70 --> rc_obj73_73
+  derek_office --> rc_obj74_74
+  server_room --> rc_vm_launcher_intro_linux_75
+  server_room --> rc_flag_station_dropsite_76
+  server_room --> rc_entropy_encrypted_archive_77
+  rc_entropy_encrypted_archive_77 --> rc_obj78_78
+  rc_entropy_encrypted_archive_77 --> rc_obj79_79
+  rc_entropy_encrypted_archive_77 --> rc_obj80_80
 
   class reception_area,storage_closet,break_room,conference_room,hallway_west,hallway_east,manager_office,kevin_office,maya_office room
   class main_office_area,it_room,derek_office,server_room lock
-  class rc_reception_desk_phone_1,rc_obj2_2,rc_obj3_3,rc_obj6_6,rc_obj7_7,rc_obj11_11,rc_obj12_12,rc_obj13_13,rc_obj14_14,rc_obj15_15,rc_obj16_16,rc_obj18_18,rc_obj20_20,rc_obj21_21,rc_obj22_22,rc_obj23_23,rc_obj24_24,rc_obj26_26,rc_obj27_27,rc_obj28_28,rc_obj30_30,rc_obj31_31,rc_obj33_33,rc_obj34_34,rc_obj36_36,rc_obj37_37,rc_obj39_39,rc_obj40_40,rc_obj41_41,rc_obj43_43,rc_obj44_44,rc_cyberchef_workstation_45,rc_obj46_46,rc_obj47_47,rc_patricia_desk_phone_48,rc_obj49_49,rc_obj51_51,rc_obj52_52,rc_obj53_53,rc_obj54_54,rc_obj55_55,rc_obj56_56,rc_obj59_59,rc_obj60_60,rc_obj61_61,rc_contingency_files_62,rc_obj63_63,rc_obj64_64,rc_obj66_66,rc_obj68_68,rc_obj69_69,rc_obj70_70,rc_obj71_71,rc_vm_launcher_intro_linux_72,rc_flag_station_dropsite_73,rc_obj75_75,rc_obj76_76,rc_obj77_77 item
-  class rc_npc_agent_hax_4,rc_npc_sarah_o_brien_5,rc_npc_agent_hax_8,rc_npc_agent_hax_9,rc_npc_derek_lawson_29,rc_npc_kevin_park_38,rc_npc_maya_chen_57 npc
-  class rc_obj10_10,rc_obj17_17,rc_derek_storage_safe_19,rc_obj25_25,rc_obj32_32,rc_obj35_35,rc_patricia_briefcase_42,rc_obj50_50,rc_derek_computer_58,rc_derek_personal_safe_65,rc_derek_cabinet_67,rc_entropy_encrypted_archive_74 container
+  class rc_reception_desk_phone_1,rc_obj2_2,rc_obj3_3,rc_obj6_6,rc_obj7_7,rc_obj9_9,rc_obj10_10,rc_obj11_11,rc_obj14_14,rc_obj15_15,rc_obj16_16,rc_obj17_17,rc_obj18_18,rc_obj19_19,rc_obj21_21,rc_obj23_23,rc_obj24_24,rc_obj25_25,rc_obj26_26,rc_obj27_27,rc_obj29_29,rc_obj30_30,rc_obj31_31,rc_obj33_33,rc_obj34_34,rc_obj36_36,rc_obj37_37,rc_obj39_39,rc_obj40_40,rc_obj42_42,rc_obj43_43,rc_obj44_44,rc_obj46_46,rc_obj47_47,rc_cyberchef_workstation_48,rc_obj49_49,rc_obj50_50,rc_patricia_desk_phone_51,rc_obj52_52,rc_obj54_54,rc_obj55_55,rc_obj56_56,rc_obj57_57,rc_obj58_58,rc_obj59_59,rc_obj62_62,rc_obj63_63,rc_obj64_64,rc_contingency_files_65,rc_obj66_66,rc_obj67_67,rc_obj69_69,rc_obj71_71,rc_obj72_72,rc_obj73_73,rc_obj74_74,rc_vm_launcher_intro_linux_75,rc_flag_station_dropsite_76,rc_obj78_78,rc_obj79_79,rc_obj80_80 item
+  class rc_npc_agent_hax_4,rc_npc_sarah_o_brien_5,rc_npc_agent_hax_8,rc_npc_agent_hax_12,rc_npc_derek_lawson_32,rc_npc_kevin_park_41,rc_npc_maya_chen_60 npc
+  class rc_obj13_13,rc_obj20_20,rc_derek_storage_safe_22,rc_obj28_28,rc_obj35_35,rc_obj38_38,rc_patricia_briefcase_45,rc_obj53_53,rc_derek_computer_61,rc_derek_personal_safe_68,rc_derek_cabinet_70,rc_entropy_encrypted_archive_77 container
   class node_start start
 ```

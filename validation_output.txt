@@ -165,6 +165,16 @@ ERROR: Invalid JSON after ERB processing: 451: unexpected token at '],
               "eventPattern": "global_variable_changed:whiteboard_cipher_seen",
               "condition": "value === true",
               "onceOnly": true,
+              "setGlobal": { "cyberchef_guide_offered": true },
+              "sendTimedMessage": {
+                "delay": 1500,
+                "message": "Those notes are encoded, and now you've got a proper lead. I can upload a CyberChef field guide for Base64 and ROT13 if you want a faster decode workflow."
+              }
+            },
+            {
+              "eventPattern": "global_variable_changed:whiteboard_cipher_seen",
+              "condition": "value === true",
+              "onceOnly": true,
               "completeTask": "decode_derek_notes"
             },
             {
@@ -1267,7 +1277,9 @@ ERROR: Invalid JSON after ERB processing: 451: unexpected token at '],
           "takeable": false,
           "observations": "Terminal connected to shatter_server (172.16.0.2) — ENTROPY's live Operation Shatter infrastructure. The derek account is accessible via SSH brute force. Once in, escalate to the shatter account for the archive key.",
           "hacktivityMode": false,
-          "vm": {"id":1,"title":"kali","ip":"192.168.100.50","enable_console":true}
+          "vm": {"id":1,"title":"kali","ip":"192.168.100.50","enable_console":true},
+          "showPostit": true,
+          "postitNote": "user: kali\npassword: kali"
         },
         {
           "type": "flag-station",
@@ -1410,6 +1422,9 @@ ERROR: Invalid JSON after ERB processing: 451: unexpected token at '],
     "priv_esc_guide_offered": false,
     "priv_esc_guide_hint_given": false,
     "priv_esc_guide_requested": false,
+    "cyberchef_guide_offered": false,
+    "cyberchef_guide_hint_given": false,
+    "cyberchef_guide_requested": false,
 
     "launch_code_submitted": false,
     "player_aborted_attack": false,
@@ -1848,6 +1863,9 @@ Generated JSON:
       "status": "locked",
       "unlockCondition": { "aimsCompleted": ["return_intel", "deactivate_the_launch"] },
       "order": 9,
+      "missionConclusion": true,
+      "requiresCompleted": ["inform_safetynet_operation_shatter", "deactivate_launch"],
+      "conclusionScreen": { "type": "bond_visualiser" },
       "tasks": [
         {
           "taskId": "use_launch_device",
@@ -1991,6 +2009,14 @@ Generated JSON:
               "takeable": true,
               "labUrl": "https://cliffe.github.io/HacktivityLabSheets/labs/m01_first_contact/safetynet-field-guide-privilege-escalation/",
               "observations": "Field guide to sudo permissions, privilege escalation tactics, and moving laterally within Linux systems"
+            },
+            {
+              "type": "lab-workstation",
+              "id": "safetynet_field_guide_encoding_decoding_cyberchef",
+              "name": "SAFETYNET Field Guide: Encoding and Decoding with CyberChef",
+              "takeable": true,
+              "labUrl": "https://cliffe.github.io/HacktivityLabSheets/labs/m01_first_contact/safetynet-field-guide-encoding-and-decoding-with-cyberchef/",
+              "observations": "Field guide to identifying Base64 and ROT13 encoded notes and decoding them with CyberChef"
             },
           ],
           "timedMessages": [
@@ -2153,6 +2179,16 @@ Generated JSON:
               "sendTimedMessage": {
                 "delay": 1000,
                 "message": "You're in. Check his files carefully — framing evidence, operational plans, anything about a safe combination."
+              }
+            },
+            {
+              "eventPattern": "global_variable_changed:whiteboard_cipher_seen",
+              "condition": "value === true",
+              "onceOnly": true,
+              "setGlobal": { "cyberchef_guide_offered": true },
+              "sendTimedMessage": {
+                "delay": 1500,
+                "message": "Those notes are encoded, and now you've got a proper lead. I can upload a CyberChef field guide for Base64 and ROT13 if you want a faster decode workflow."
               }
             },
             {
@@ -3261,7 +3297,9 @@ Generated JSON:
           "takeable": false,
           "observations": "Terminal connected to shatter_server (172.16.0.2) — ENTROPY's live Operation Shatter infrastructure. The derek account is accessible via SSH brute force. Once in, escalate to the shatter account for the archive key.",
           "hacktivityMode": false,
-          "vm": {"id":1,"title":"kali","ip":"192.168.100.50","enable_console":true}
+          "vm": {"id":1,"title":"kali","ip":"192.168.100.50","enable_console":true},
+          "showPostit": true,
+          "postitNote": "user: kali\npassword: kali"
         },
         {
           "type": "flag-station",
@@ -3404,6 +3442,9 @@ Generated JSON:
     "priv_esc_guide_offered": false,
     "priv_esc_guide_hint_given": false,
     "priv_esc_guide_requested": false,
+    "cyberchef_guide_offered": false,
+    "cyberchef_guide_hint_given": false,
+    "cyberchef_guide_requested": false,
 
     "launch_code_submitted": false,
     "player_aborted_attack": false,
@@ -3419,6 +3460,6 @@ Using schema: /home/cliffe/Files/Projects/Code/BreakEscape/BreakEscape/scripts/s
 Checking scenario directory structure...
 ✓ Directory structure is valid
 
-Loaded 348 valid item types from assets/objects/
+Loaded 349 valid item types from assets/objects/
 
 Rendering ERB template...

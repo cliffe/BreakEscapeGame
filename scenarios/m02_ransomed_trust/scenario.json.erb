@@ -402,6 +402,32 @@ recovery_instructions_encoded = rot13("FULL RECOVERY REQUIRES OFFLINE + ONLINE K
           "avatar": "assets/npc/avatars/npc_helper.png",
           "phoneId": "player_phone",
           "currentKnot": "first_call",
+          "itemsHeld": [
+            {
+              "type": "lab-workstation",
+              "key_id": "m02_scanning_field_guide",
+              "name": "SAFETYNET Field Guide: Reconnaissance and Network Mapping",
+              "takeable": true,
+              "labUrl": "https://cliffe.github.io/HacktivityLabSheets/labs/m02_ransomed_trust/safetynet-field-guide-reconnaissance-and-network-mapping/",
+              "observations": "Practical reference for host discovery, service enumeration, and scan interpretation under pressure"
+            },
+            {
+              "type": "lab-workstation",
+              "key_id": "m02_vulnerability_field_guide",
+              "name": "SAFETYNET Field Guide: Vulnerability Analysis and Attack Surface",
+              "takeable": true,
+              "labUrl": "https://cliffe.github.io/HacktivityLabSheets/labs/m02_ransomed_trust/safetynet-field-guide-vulnerability-analysis-and-attack-surface/",
+              "observations": "Reference for triaging exposed services and matching weaknesses to safe exploit paths"
+            },
+            {
+              "type": "lab-workstation",
+              "key_id": "m02_exploitation_field_guide",
+              "name": "SAFETYNET Field Guide: ProFTPD Exploitation Workflow",
+              "takeable": true,
+              "labUrl": "https://cliffe.github.io/HacktivityLabSheets/labs/m02_ransomed_trust/safetynet-field-guide-proftpd-exploitation-workflow/",
+              "observations": "Stepwise workflow for Metasploit exploitation, handler setup, and controlled post-exploitation"
+            }
+          ],
           "timedMessages": [
             {
               "delay": 3000,
@@ -426,6 +452,24 @@ recovery_instructions_encoded = rot13("FULL RECOVERY REQUIRES OFFLINE + ONLINE K
               "eventPattern": "room_entered:server_room",
               "onceOnly": true,
               "sendTimedMessage": { "delay": 1000, "message": "Server room. This is the heart of it. VM terminal for exploitation, drop-site for flag submission. Use both." }
+            },
+            {
+              "eventPattern": "task_completed:access_server_room",
+              "onceOnly": true,
+              "setGlobal": { "scanning_guide_offered": true },
+              "sendTimedMessage": { "delay": 1800, "message": "Before you go hot on this box, I can send a scanning and recon field guide -- fast host/service triage and how to avoid blind spots." }
+            },
+            {
+              "eventPattern": "task_completed:submit_ssh_flag",
+              "onceOnly": true,
+              "setGlobal": { "vulnerability_guide_offered": true },
+              "sendTimedMessage": { "delay": 1800, "message": "SSH foothold confirmed. I can send a vulnerability analysis guide for attack-surface triage before you commit to the exploit chain." }
+            },
+            {
+              "eventPattern": "task_completed:submit_ssh_flag",
+              "onceOnly": true,
+              "setGlobal": { "exploitation_guide_offered": true },
+              "sendTimedMessage": { "delay": 4200, "message": "I also have a dedicated ProFTPD exploitation guide -- Metasploit workflow, handler setup, and failure recovery. Ask if you want it." }
             },
             {
               "eventPattern": "item_picked_up:offline_backup_encryption_keys",
@@ -1351,6 +1395,13 @@ recovery_instructions_encoded = rot13("FULL RECOVERY REQUIRES OFFLINE + ONLINE K
     "flag_proftpd_submitted": false,
     "flag_database_submitted": false,
     "flag_ghost_log_submitted": false,
+
+    "scanning_guide_offered": false,
+    "scanning_guide_requested": false,
+    "vulnerability_guide_offered": false,
+    "vulnerability_guide_requested": false,
+    "exploitation_guide_offered": false,
+    "exploitation_guide_requested": false,
 
     "ghost_contacted_player": false,
     "ghost_persuasion_attempted": false,

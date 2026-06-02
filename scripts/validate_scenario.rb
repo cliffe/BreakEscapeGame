@@ -470,8 +470,9 @@ def check_ink_files(json_data, base_dir, scenario_dir = nil)
     room['npcs']&.each_with_index do |npc, idx|
       if npc['storyPath']
         path = "rooms/#{room_id}/npcs[#{idx}]"
+        items_held = npc['itemsHeld'] || []
         items_held_types = (npc['itemsHeld'] || []).map { |item| item['type'] }.compact
-        ink_files_to_check.add({ path: path, storyPath: npc['storyPath'], items_held_types: items_held_types })
+        ink_files_to_check.add({ path: path, storyPath: npc['storyPath'], items_held_types: items_held_types, items_held: items_held })
       end
     end
   end
@@ -556,15 +557,33 @@ def check_ink_files(json_data, base_dir, scenario_dir = nil)
         # Cross-reference: every #give_item:type used in this file must match an item
         # in the NPC's itemsHeld array. If not, the give will silently fail at runtime.
         items_held_types = entry[:items_held_types] || []
+        items_held = entry[:items_held] || []
         ink_lines.each_with_index do |line, i|
           stripped = line.strip
           next unless stripped.start_with?('#give_item:')
 
-          item_type = stripped.sub(/^#give_item:/, '').strip
-          unless items_held_types.include?(item_type)
-            issues << "❌ INVALID: '#{source_ink_path}' line #{i + 1}: '#give_item:#{item_type}' but " \
-                      "NPC '#{npc_path}' has no item with type '#{item_type}' in itemsHeld. " \
-                      "Add { \"type\": \"#{item_type}\", ... } to the NPC's itemsHeld array in the scenario JSON."
+          item_spec = stripped.sub(/^#give_item:/, '').strip
+          item_type, item_selector = item_spec.split(/[|:]/, 2).map(&:strip)
+
+          if item_selector.nil? || item_selector.empty?
+            unless items_held_types.include?(item_type)
+              issues << "❌ INVALID: '#{source_ink_path}' line #{i + 1}: '#give_item:#{item_spec}' but " \
+                        "NPC '#{npc_path}' has no item with type '#{item_type}' in itemsHeld. " \
+                        "Add { \"type\": \"#{item_type}\", ... } to the NPC's itemsHeld array in the scenario JSON."
+            end
+          else
+            matches_selector = items_held.any? do |item|
+              next false unless item['type'] == item_type
+
+              candidates = [item['id'], item['key_id'], item['name']].compact.map(&:to_s)
+              candidates.include?(item_selector)
+            end
+
+            unless matches_selector
+              issues << "❌ INVALID: '#{source_ink_path}' line #{i + 1}: '#give_item:#{item_spec}' but " \
+                        "NPC '#{npc_path}' has no itemsHeld entry matching type '#{item_type}' and selector '#{item_selector}' " \
+                        "(selector checks id, key_id, or name)."
+            end
           end
         end
       rescue => e
