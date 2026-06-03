@@ -1895,7 +1895,7 @@ password_hints = "Common passwords: Marketing123, Campaign2024, Viral_Dynamics_A
           "name": "VM Access Terminal",
           "sprite": "vm-launcher-kali",
           "takeable": false,
-          "observations": "Terminal connected to shatter_server (172.16.0.2) — ENTROPY's live Operation Shatter infrastructure. The derek account is accessible via SSH brute force. Once in, escalate to the shatter account for the archive key.",
+          "observations": "A Kali Linux system IT have prepared for your security audit.",
           "hacktivityMode": <%= vm_context && vm_context['hacktivity_mode'] ? 'true' : 'false' %>,
           "vm": <%= vm_object('intro_to_linux_security_lab', {"id":1,"title":"kali","ip":"192.168.100.50","enable_console":true}) %>,
           "showPostit": true,
@@ -1906,7 +1906,7 @@ password_hints = "Common passwords: Marketing123, Campaign2024, Viral_Dynamics_A
           "id": "flag_station_dropsite",
           "name": "SAFETYNET Drop-Site Terminal",
           "takeable": false,
-          "observations": "Secure terminal for submitting intercepted intelligence and VM flags",
+          "observations": "Secure SAFETYNET terminal for submitting intercepted intelligence and VM flags",
           "acceptsVms": ["shatter_server"],
           "flags": ["shatter_server:flag_2", "shatter_server:flag_4"],
           "hintOnlyFlags": {

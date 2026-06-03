@@ -873,7 +873,9 @@ export function handleObjectInteraction(sprite) {
                 title: sprite.scenarioData.name || 'VM Console Access',
                 vm: vm,
                 hacktivityMode: hacktivityMode,
-                stationId: sprite.scenarioData.id || sprite.objectId
+                stationId: sprite.scenarioData.id || sprite.objectId,
+                showPostit: sprite.scenarioData.showPostit || false,
+                postitNote: sprite.scenarioData.postitNote || ''
             });
             return;
         }
