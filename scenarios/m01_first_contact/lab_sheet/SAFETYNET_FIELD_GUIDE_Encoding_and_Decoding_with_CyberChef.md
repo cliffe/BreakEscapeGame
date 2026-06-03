@@ -59,10 +59,20 @@ If uncertain, test both methods in CyberChef. Confirm output quality before usin
 - Input: encoded string
 - Expected result: clear text, credentials, hints, or numeric values
 
+Kali alternative:
+```bash
+echo "TWVldCBhdCB0aGUgc2VydmVyIHJvb20=" | base64 -d
+```
+
 ### Recipe for ROT13
 - Operation: `ROT13`
 - Input: scrambled sentence-like text
 - Expected result: readable sentence with intact punctuation/spacing
+
+Kali alternative:
+```bash
+echo "Qrexr vf gur yrny" | tr 'A-Za-z' 'N-ZA-Mn-za-m'
+```
 
 ---
 

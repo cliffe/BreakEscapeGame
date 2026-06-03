@@ -617,6 +617,14 @@ password_hints = "Common passwords: Marketing123, Campaign2024, Viral_Dynamics_A
               "takeable": true,
               "labUrl": "https://cliffe.github.io/HacktivityLabSheets/labs/m01_first_contact/safetynet-field-guide-encoding-and-decoding-with-cyberchef/",
               "observations": "Field guide to identifying Base64 and ROT13 encoded notes and decoding them with CyberChef"
+            },
+            {
+              "type": "lab-workstation",
+              "key_id": "safetynet_field_guide_lockpicking",
+              "name": "SAFETYNET Field Guide: Lockpicking",
+              "takeable": true,
+              "labUrl": "https://cliffe.github.io/HacktivityLabSheets/labs/m01_first_contact/safetynet-field-guide-lockpicking/",
+              "observations": "Field guide to pin tumbler lock picking — tension application, pin setting, and technique for security testing"
             }
           ],
           "timedMessages": [
@@ -698,10 +706,10 @@ password_hints = "Common passwords: Marketing123, Campaign2024, Viral_Dynamics_A
             {
               "eventPattern": "item_picked_up:lockpick",
               "onceOnly": true,
-              "setGlobal": { "has_lockpick": true },
+              "setGlobal": { "has_lockpick": true, "lockpicking_guide_offered": true },
               "sendTimedMessage": {
                 "delay": 1000,
-                "message": "Lockpick acquired. 🦎 Take a look around — any locked doors or containers you haven't been able to open? That key won't fit everything."
+                "message": "Lockpick acquired. 🦎 Take a look around — any locked doors or containers you haven't been able to open? That key won't fit everything. Message me if you want the lockpicking field guide."
               }
             },
             {
@@ -782,8 +790,17 @@ password_hints = "Common passwords: Marketing123, Campaign2024, Viral_Dynamics_A
               }
             },
             {
+              "eventPattern": "item_picked_up:cyberchef_workstation",
+              "onceOnly": true,
+              "setGlobal": { "cyberchef_guide_offered": true },
+              "sendTimedMessage": {
+                "delay": 1500,
+                "message": "Patricia's CyberChef workstation — good find. I can upload a field guide for Base64 and ROT13 decoding if you want it. Message me when you're ready."
+              }
+            },
+            {
               "eventPattern": "global_variable_changed:whiteboard_cipher_seen",
-              "condition": "value === true",
+              "condition": "value === true && !globalVars.cyberchef_guide_offered",
               "onceOnly": true,
               "setGlobal": { "cyberchef_guide_offered": true },
               "sendTimedMessage": {
@@ -1571,7 +1588,7 @@ password_hints = "Common passwords: Marketing123, Campaign2024, Viral_Dynamics_A
               "name": "Patricia's Note — CyberChef",
               "takeable": true,
               "readable": true,
-              "text": "PATRICIA'S NOTES — ENCODING METHODS\n\nI found evidence Derek is obfuscating messages using two very basic schemes: Base64 and ROT13. He leaves encoded notes around, probably thinking no one will notice.\n\n─────────────────────────────────\nBASE64\n─────────────────────────────────\nBase64 converts text to a string of letters, numbers, + and /.\nIt almost always ends in = or ==.\n\nExample:\n  Plain:   Meet at the server room\n  Base64:  TWVldCBhdCB0aGUgc2VydmVyIHJvb20=\n\nAnother:\n  Plain:   1337\n  Base64:  MTMzNw==\n\nTo decode: open CyberChef, drag in 'From Base64', paste the text.\n\n─────────────────────────────────\nROT13\n─────────────────────────────────\nROT13 shifts every letter 13 places. A→N, B→O, etc.\nSpaces and punctuation stay the same, so word lengths are preserved.\n\nExample:\n  Plain:   Derek is the leak\n  ROT13:   Qrexr vf gur yrny\n\nAnother:\n  Plain:   Filing cabinet pin is 0419\n  ROT13:   Svyvat pnovarg cva vf 0419\n\nTo decode: open CyberChef, drag in 'ROT13', paste the text.\n\n─────────────────────────────────\nTIP: If it ends in = — try Base64 first.\nIf the words look scrambled but the lengths match — try ROT13.\n─────────────────────────────────",
+              "text": "PATRICIA'S NOTES — ENCODING METHODS\n\nI found evidence Derek is obfuscating messages using two very basic schemes: Base64 and ROT13. He leaves encoded notes around, probably thinking no one will notice.\n\n─────────────────────────────────\nBASE64\n─────────────────────────────────\nBase64 converts text to a string of letters, numbers, + and /.\nIt almost always ends in = or ==.\n\nExample:\n  Plain:   Meet at the server room\n  Base64:  TWVldCBhdCB0aGUgc2VydmVyIHJvb20=\n\nAnother:\n  Plain:   1337\n  Base64:  MTMzNw==\n\nTo decode: open CyberChef, drag in 'From Base64', paste the text.\nOr on Kali terminal:\n  echo \"MTMzNw==\" | base64 -d\n\n─────────────────────────────────\nROT13\n─────────────────────────────────\nROT13 shifts every letter 13 places. A→N, B→O, etc.\nSpaces and punctuation stay the same, so word lengths are preserved.\n\nExample:\n  Plain:   Derek is the leak\n  ROT13:   Qrexr vf gur yrny\n\nAnother:\n  Plain:   Filing cabinet pin is 0419\n  ROT13:   Svyvat pnovarg cva vf 0419\n\nTo decode: open CyberChef, drag in 'ROT13', paste the text.\nOr on Kali terminal:\n  echo \"Svyvat pnovarg cva vf 0419\" | tr 'A-Za-z' 'N-ZA-Mn-za-m'\n\n─────────────────────────────────\nTIP: If it ends in = — try Base64 first.\nIf the words look scrambled but the lengths match — try ROT13.\n─────────────────────────────────",
               "observations": "Patricia's handwritten notes on the encoding methods Derek uses"
             },
             {
@@ -2049,6 +2066,10 @@ password_hints = "Common passwords: Marketing123, Campaign2024, Viral_Dynamics_A
     "navigation_flag_submitted": false,
 
     "password_list_found": false,
+    "lockpicking_guide_offered": false,
+    "lockpicking_guide_requested": false,
+    "lockpicking_guide_hint_given": false,
+
     "field_guide_offered": false,
     "field_guide_requested": false,
     "field_guide_received": false,

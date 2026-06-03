@@ -11,6 +11,7 @@ VAR sudo_hint_given = false
 VAR cyberchef_hint_given = false
 VAR cyberchef_guide_hint_given = false
 VAR field_guide_hint_given = false
+VAR lockpicking_guide_hint_given = false
 VAR first_contact = true
 VAR operation_shatter_reported = false
 
@@ -70,6 +71,7 @@ VAR priv_esc_guide_offered = false
 VAR priv_esc_guide_hint_given = false
 VAR priv_esc_guide_requested = false
 VAR cyberchef_guide_requested = false
+VAR lockpicking_guide_offered = false
 
 // ================================================
 // START: PHONE SUPPORT
@@ -99,6 +101,8 @@ VAR cyberchef_guide_requested = false
 === support_hub ===
 #speaker:agent_0x99
 
++ {lockpicking_guide_offered and not lockpicking_guide_hint_given} [Send me the lockpicking field guide]
+    -> request_lockpicking_guide
 + {field_guide_offered and not field_guide_hint_given} [I'd like that ops manual]
     -> request_field_guide
 + {priv_esc_guide_offered and not priv_esc_guide_hint_given} [I need the privilege escalation guide]
@@ -231,6 +235,26 @@ For the one where the letters look scrambled but word lengths are right — that
     -> support_hub
 + [What do the decoded messages tell me?]
     You'll know when you see them. Decode first, questions after.
+    -> support_hub
+
+// ================================================
+// LOCKPICKING GUIDE REQUEST
+// ================================================
+
+=== request_lockpicking_guide ===
+~ lockpicking_guide_hint_given = true
+#set_variable:lockpicking_guide_requested:true
+#give_item:lab-workstation:safetynet_field_guide_lockpicking
+
+I've uploaded the lockpicking field guide to your secure terminal.
+
+Covers pin tumbler mechanics, tension control, and how to read pin feedback. Light pressure — if you're forcing it, ease off.
+
++ [Thanks, I'll use it]
+    Good. Work the pins one at a time. Call if you get stuck.
+    -> support_hub
++ [Understood]
+    The guide covers the rest. Patience is the technique.
     -> support_hub
 
 // ================================================
