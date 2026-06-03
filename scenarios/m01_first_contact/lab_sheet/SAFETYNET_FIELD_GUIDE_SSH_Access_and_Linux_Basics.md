@@ -109,7 +109,9 @@ Output should show the port is open and responding.
 
 #### Step 2: Prepare Your Wordlist
 
-Create or locate a file with one password per line:
+Create or locate a file with one password per line.
+
+> **[GAMEPLAY NOTE]** You can paste text into the Kali VM using the **clipboard panel**. Click the clipboard icon in the VNC toolbar (top of the VM window) to open it. Paste your text into the textarea — it sends to the VM automatically on paste, or click **Send to VM**. Use this to transfer passwords or commands you've copied from mission documents without retyping them. The panel also has a **`/tmp/flags`** button that reads flag files from the VM directly into your clipboard.
 
 ```bash
 # Use an existing wordlist
