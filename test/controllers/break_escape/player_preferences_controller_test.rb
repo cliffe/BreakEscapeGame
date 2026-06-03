@@ -184,6 +184,61 @@ module BreakEscape
       assert_response :success
     end
 
+    # ─── Scenario-scoped avatar filtering ────────────────────────────────────
+
+    test "all sprites are selectable when no game_id is given" do
+      get configuration_url
+      assert_response :success
+      assert_select 'label.sprite-card.invalid', count: 0
+    end
+
+    test "configuration screen with a female_* restriction marks male sprites as invalid" do
+      game = Game.create!(
+        mission:       break_escape_missions(:ceo_exfil),
+        player:        @player,
+        scenario_data: { "startRoom" => "lobby", "rooms" => {}, "validSprites" => ["female_*"] },
+        player_state:  {
+          "currentRoom" => "lobby", "unlockedRooms" => ["lobby"],
+          "unlockedObjects" => [], "inventory" => [], "encounteredNPCs" => [],
+          "globalVariables" => {}, "biometricSamples" => [], "biometricUnlocks" => [],
+          "bluetoothDevices" => [], "notes" => [], "health" => 100
+        }
+      )
+
+      get configuration_url(game_id: game.id)
+      assert_response :success
+
+      # Female sprites must be selectable: no invalid class, radio not disabled
+      assert_select 'label.invalid[data-sprite="female_spy"]',        count: 0
+      assert_select 'label.invalid[data-sprite="female_scientist"]',   count: 0
+      assert_select 'input.sprite-radio[value="female_spy"][disabled]',      count: 0
+      assert_select 'input.sprite-radio[value="female_scientist"][disabled]', count: 0
+
+      # Male sprites must be locked: invalid class + disabled radio
+      assert_select 'label.invalid[data-sprite="male_spy"]',    count: 1
+      assert_select 'label.invalid[data-sprite="male_nerd"]',   count: 1
+      assert_select 'input.sprite-radio[value="male_spy"][disabled]'
+      assert_select 'input.sprite-radio[value="male_nerd"][disabled]'
+    end
+
+    test "configuration screen with a wildcard restriction marks all sprites as valid" do
+      game = Game.create!(
+        mission:       break_escape_missions(:ceo_exfil),
+        player:        @player,
+        scenario_data: { "startRoom" => "lobby", "rooms" => {}, "validSprites" => ["*"] },
+        player_state:  {
+          "currentRoom" => "lobby", "unlockedRooms" => ["lobby"],
+          "unlockedObjects" => [], "inventory" => [], "encounteredNPCs" => [],
+          "globalVariables" => {}, "biometricSamples" => [], "biometricUnlocks" => [],
+          "bluetoothDevices" => [], "notes" => [], "health" => 100
+        }
+      )
+
+      get configuration_url(game_id: game.id)
+      assert_response :success
+      assert_select 'label.sprite-card.invalid', count: 0
+    end
+
     # ─── Available sprites constant ───────────────────────────────────────────
 
     test "PlayerPreference::AVAILABLE_SPRITES includes expected sprites" do

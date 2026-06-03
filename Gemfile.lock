@@ -73,7 +73,10 @@ GEM
       i18n (>= 1.6, < 2)
       minitest (>= 5.1)
       tzinfo (~> 2.0)
+    addressable (2.8.1)
+      public_suffix (>= 2.0.2, < 6.0)
     ast (2.4.3)
+    bigdecimal (4.1.2)
     builder (3.2.4)
     concurrent-ruby (1.2.2)
     crass (1.0.6)
@@ -83,6 +86,9 @@ GEM
     i18n (1.12.0)
       concurrent-ruby (~> 1.0)
     json (2.19.5)
+    json-schema (6.2.0)
+      addressable (~> 2.8)
+      bigdecimal (>= 3.1, < 5)
     language_server-protocol (3.17.0.5)
     lint_roller (1.1.0)
     loofah (2.19.0)
@@ -114,6 +120,7 @@ GEM
       ast (~> 2.4.1)
       racc
     prism (1.9.0)
+    public_suffix (5.0.1)
     puma (6.6.1)
       nio4r (~> 2.0)
     pundit (2.5.2)
@@ -201,6 +208,7 @@ PLATFORMS
 
 DEPENDENCIES
   break_escape!
+  json-schema
   puma
   rails (~> 7.0)
   rubocop-rails-omakase

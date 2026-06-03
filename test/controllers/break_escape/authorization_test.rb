@@ -31,6 +31,11 @@ module BreakEscape
       @owner       = break_escape_demo_users(:test_user)   # == current_player in standalone
       @other_user  = break_escape_demo_users(:other_user)
 
+      PlayerPreference.find_or_create_by!(player: @owner) do |pref|
+        pref.selected_sprite = 'female_spy'
+        pref.in_game_name    = 'TestAgent'
+      end
+
       # Game owned by the current player (happy-path sanity check)
       @own_game = Game.create!(
         mission:       @mission,

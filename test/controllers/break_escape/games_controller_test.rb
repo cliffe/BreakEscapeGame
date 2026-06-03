@@ -7,6 +7,11 @@ module BreakEscape
     setup do
       @mission = break_escape_missions(:ceo_exfil)
       @player = break_escape_demo_users(:test_user)
+      PlayerPreference.find_or_create_by!(player: @player) do |pref|
+        pref.selected_sprite = 'female_spy'
+        pref.in_game_name    = 'TestAgent'
+      end
+
       @game = Game.create!(
         mission: @mission,
         player: @player,
@@ -52,6 +57,39 @@ module BreakEscape
         }
       )
     end
+
+    # ─── Avatar / configuration guard ───────────────────────────────────────
+
+    test "show redirects to configuration when player has no avatar selected" do
+      PlayerPreference.find_by(player: @player).update_column(:selected_sprite, nil)
+      get game_url(@game)
+      assert_redirected_to configuration_url(game_id: @game.id)
+    end
+
+    test "show redirects to configuration when selected avatar is excluded by the scenario's validSprites" do
+      # @player has female_spy; a male_* restriction excludes it
+      restricted_game = Game.create!(
+        mission:       @mission,
+        player:        @player,
+        scenario_data: @game.scenario_data.merge("validSprites" => ["male_*"]),
+        player_state:  @game.player_state.dup
+      )
+      get game_url(restricted_game)
+      assert_redirected_to configuration_url(game_id: restricted_game.id)
+    end
+
+    test "show succeeds when selected avatar matches the scenario's validSprites" do
+      permitted_game = Game.create!(
+        mission:       @mission,
+        player:        @player,
+        scenario_data: @game.scenario_data.merge("validSprites" => ["female_*"]),
+        player_state:  @game.player_state.dup
+      )
+      get game_url(permitted_game)
+      assert_response :success
+    end
+
+    # ─── Game show ───────────────────────────────────────────────────────────
 
     test "should show game" do
       get game_url(@game)
