@@ -22,7 +22,7 @@ gem 'break_escape', path: '../BreakEscape'
 bundle install
 rails break_escape:install:migrations
 rails db:migrate
-rails db:seed  # Creates missions from scenario directories
+rails break_escape:seed  # Creates missions from scenario directories
 ```
 
 ### 3. Mount Engine
