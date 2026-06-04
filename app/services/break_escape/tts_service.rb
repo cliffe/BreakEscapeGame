@@ -42,7 +42,8 @@ module BreakEscape
     CACHE_DIR = BreakEscape::Engine.root.join("tts_cache")
 
     def initialize
-      @api_key = ENV["GEMINI_API_KEY"]
+      @api_key = ENV["GEMINI_API_KEY"].presence ||
+                 Rails.application.credentials.dig(:gemini_api_key).presence
       @enabled = @api_key.present?
       @rate_limit_info = nil
     end

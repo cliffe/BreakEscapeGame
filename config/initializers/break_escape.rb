@@ -9,7 +9,9 @@ BreakEscape.configure do |config|
 end
 
 # TTS configuration check
-unless ENV['GEMINI_API_KEY'].present?
+gemini_key = ENV['GEMINI_API_KEY'].presence ||
+             Rails.application.credentials.dig(:gemini_api_key).presence
+unless gemini_key
   warning = '[BreakEscape] Warning: GEMINI_API_KEY environment variable is not set. '
   warning += 'TTS (text-to-speech) features will be disabled. '
   puts warning

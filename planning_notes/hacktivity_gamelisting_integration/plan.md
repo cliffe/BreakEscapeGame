@@ -469,7 +469,7 @@ The rest of `buildUI()` (standalone instructions and Hacktivity inline card) is 
 .vm-launcher-iframe iframe {
     display: block;
     width: 100%;
-    height: 560px;
+    height: 100vh;
     border: none;
 }
 ```
