@@ -43,7 +43,7 @@ module BreakEscape
 
     def initialize
       @api_key = ENV["GEMINI_API_KEY"].presence ||
-                 Rails.application.credentials[Rails.env.to_sym][:gemini_api_key].presence
+                 Rails.application.credentials.dig(Rails.env.to_sym, :gemini_api_key).presence
       @enabled = @api_key.present?
       @rate_limit_info = nil
     end
