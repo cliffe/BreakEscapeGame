@@ -143,7 +143,8 @@ export async function updatePlayerSprite(newSpriteKey) {
     player.body.setOffset(31, 66);
     
     // Update scenario reference BEFORE recreating animations so createPlayerAnimations() uses the new sprite
-    if (window.gameScenario?.player) {
+    if (window.gameScenario) {
+        window.gameScenario.player = window.gameScenario.player || {};
         window.gameScenario.player.spriteSheet = newSpriteKey;
     }
     
@@ -206,8 +207,9 @@ export function createPlayer(gameInstance) {
     const hasExplicitSprite = !!(window.breakEscapeConfig?.playerSprite || window.gameScenario?.player?.spriteSheet);
     console.log(`🎮 Loading player sprite: ${playerSprite}`);
 
-    // Update scenario to match saved preference
-    if (window.gameScenario?.player && window.breakEscapeConfig?.playerSprite) {
+    // Update scenario to match saved preference (also initialises player object for scenarios that omit it)
+    if (window.gameScenario && window.breakEscapeConfig?.playerSprite) {
+        window.gameScenario.player = window.gameScenario.player || {};
         window.gameScenario.player.spriteSheet = window.breakEscapeConfig.playerSprite;
     }
 
@@ -471,7 +473,7 @@ function updateAnimationSpeed(isRunning) {
 }
 
 function createPlayerAnimations() {
-    const playerSprite = window.gameScenario?.player?.spriteSheet || 'male_hacker_hood';
+    const playerSprite = window.breakEscapeConfig?.playerSprite || window.gameScenario?.player?.spriteSheet || 'male_hacker_hood';
     createAtlasPlayerAnimations(playerSprite);
 }
 
