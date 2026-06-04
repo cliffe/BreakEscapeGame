@@ -73,6 +73,7 @@ export class VmLauncherMinigame extends MinigameScene {
                     word-wrap: break-word;
                     white-space: pre-line;
                     pointer-events: none;
+                    top: 75%;
                 `;
                 postit.textContent = this.postitNote;
                 this.gameContainer.appendChild(postit);

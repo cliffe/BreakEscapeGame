@@ -41,8 +41,7 @@
           <div class="sprite-grid" id="sprite-selection-grid-modal">
             <% @available_sprites.each_with_index do |sprite, index| %>
               <%
-                # In-game modal: no scenario restrictions (or use current game's scenario if available)
-                is_valid = true
+                is_valid = @game.nil? || sprite_valid_for_scenario?(sprite, @game.scenario_data)
                 is_selected = @player_preference.selected_sprite == sprite
               %>
 
@@ -57,6 +56,14 @@
                                 loading: 'lazy' %>
                   <span class="headshot-fallback headshot-fallback-hidden"><%= sprite.humanize %></span>
                 </div>
+
+                <% unless is_valid %>
+                  <div class="sprite-lock-overlay">
+                    <%= image_tag '/break_escape/assets/icons/padlock_32.png',
+                                  class: 'lock-icon',
+                                  alt: 'Locked' %>
+                  </div>
+                <% end %>
 
                 <div class="sprite-info">
                   <%= f.radio_button :selected_sprite,
