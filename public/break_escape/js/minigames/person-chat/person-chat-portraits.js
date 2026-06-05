@@ -376,11 +376,12 @@ export default class PersonChatPortraits {
      */
     _getCurrentTalkFrame() {
         if (!this._isTalkSheet()) return 0;
-        if (this._narratorMode) return 0; // narrator lines — keep mouth closed
+        if (this._narratorMode) return 0;
+        if (this.npc.id === 'player') return 0; // player portrait is always static
         if (this.ttsManager?.isSpeaking()) {
             return (Math.floor(Date.now() / 200) % 3) + 1; // 1 → 2 → 3 → 1 …
         }
-        return 0; // closed mouth
+        return 0;
     }
 
     /**
@@ -681,8 +682,12 @@ export default class PersonChatPortraits {
 
         img.onerror = () => {
             this._loadingSpriteTalkImage = false;
-            console.error(`❌ Failed to load spriteTalk image: ${this.npc.spriteTalk}`);
-            this.renderPlaceholder();
+            console.warn(`⚠️ No talk image found for ${this.npc.id} (${this.npc.spriteTalk}), falling back to sprite`);
+            this.useSpriteTalk = false;
+            this.spriteSheet = this.npc.spriteSheet || (this.npc.id === 'player' ? 'hacker' : 'hacker');
+            this.frameIndex = 20;
+            this.flipped = this.npc.id !== 'player';
+            this.render();
         };
 
         let imageSrc = this.npc.spriteTalk;

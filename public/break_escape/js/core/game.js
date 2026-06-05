@@ -756,7 +756,13 @@ export async function create() {
             id: 'player',
             displayName: window.gameState?.playerName || window.gameScenario?.player?.displayName || 'Agent 0x00',
             spriteSheet: window.breakEscapeConfig?.playerSprite || window.gameScenario?.player?.spriteSheet || 'male_hacker',
-            spriteTalk: window.gameScenario?.player?.spriteTalk || 'assets/characters/hacker-talk.png',
+            spriteTalk: (() => {
+                if (window.gameScenario?.player?.spriteTalk) return window.gameScenario.player.spriteTalk;
+                const sprite = window.breakEscapeConfig?.playerSprite || window.gameScenario?.player?.spriteSheet || 'male_hacker';
+                // Legacy sprites use hyphen naming; all others follow {sprite}_talk.png convention
+                const legacyMap = { 'hacker': 'assets/characters/hacker-talk.png', 'hacker-red': 'assets/characters/hacker-red-talk.png' };
+                return legacyMap[sprite] || `assets/characters/${sprite}_talk.png`;
+            })(),
             metadata: {}
         };
         window.characterRegistry.setPlayer(playerData);

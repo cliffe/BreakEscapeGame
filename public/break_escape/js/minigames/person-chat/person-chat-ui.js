@@ -323,7 +323,7 @@ export default class PersonChatUI {
                     id: 'player',
                     displayName: character.displayName || 'Agent 0x00',
                     spriteSheet: character.spriteSheet || 'hacker',
-                    spriteTalk: character.spriteTalk || 'characters/hacker-talk.png',
+                    spriteTalk: character.spriteTalk || null,
                     spriteConfig: character.spriteConfig || {}
                 };
             } else {
