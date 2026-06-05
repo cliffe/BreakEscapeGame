@@ -11,13 +11,10 @@ module BreakEscape
     end
 
     # Headshot filename for sprite (prefer _down_headshot for hacker_hood, else _headshot)
+    HEADSHOT_VERSION = 2
+
     def sprite_headshot_path(sprite)
-      base = sprite
-      if sprite.end_with?('_hood_down')
-        "/break_escape/assets/characters/#{base}_headshot.png"
-      else
-        "/break_escape/assets/characters/#{base}_headshot.png"
-      end
+      "/break_escape/assets/characters/#{sprite}_headshot.png?v=#{HEADSHOT_VERSION}"
     end
 
     private

@@ -11,7 +11,7 @@
   <%# All fonts are self-hosted in /break_escape/assets/fonts/ via fonts.css %>
 
   <%# Load game CSS files %>
-  <link rel="stylesheet" href="/break_escape/css/fonts.css">
+  <link rel="stylesheet" href="/break_escape/css/fonts.css?v=2">
   <link rel="stylesheet" href="/break_escape/css/main.css">
   <link rel="stylesheet" href="/break_escape/css/utilities.css">
   <link rel="stylesheet" href="/break_escape/css/notifications.css">
@@ -242,7 +242,7 @@
   <script src="/break_escape/assets/vendor/ink.js" nonce="<%= content_security_policy_nonce %>"></script>
 
   <%# Load game JavaScript (ES6 module) %>
-  <script type="module" src="/break_escape/js/main.js" nonce="<%= content_security_policy_nonce %>"></script>
+  <script type="module" src="/break_escape/js/main.js?v=2" nonce="<%= content_security_policy_nonce %>"></script>
 
   <%# Load Hacktivity ActionCable integration for VM console support %>
   <% if BreakEscape::Mission.hacktivity_mode? %>

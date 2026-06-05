@@ -505,62 +505,62 @@ export function preload() {
 
     // Load new PixelLab character atlases (80x80, atlas-based)
     // Female characters
-    this.load.atlas('female_hacker_hood', 
-        'characters/female_hacker_hood.png',
-        'characters/female_hacker_hood.json');
+    this.load.atlas('female_hacker_hood',
+        'characters/female_hacker_hood.png?v=1',
+        'characters/female_hacker_hood.json?v=1');
     this.load.atlas('female_office_worker',
-        'characters/female_office_worker.png',
-        'characters/female_office_worker.json');
+        'characters/female_office_worker.png?v=1',
+        'characters/female_office_worker.json?v=1');
     this.load.atlas('female_security_guard',
-        'characters/female_security_guard.png',
-        'characters/female_security_guard.json');
+        'characters/female_security_guard.png?v=1',
+        'characters/female_security_guard.json?v=1');
     this.load.atlas('female_hacker_hood_down',
-        'characters/female_hacker_hood_down.png',
-        'characters/female_hacker_hood_down.json');
+        'characters/female_hacker_hood_down.png?v=2',
+        'characters/female_hacker_hood_down.json?v=2');
     this.load.atlas('female_telecom',
-        'characters/female_telecom.png',
-        'characters/female_telecom.json');
+        'characters/female_telecom.png?v=1',
+        'characters/female_telecom.json?v=1');
     this.load.atlas('female_spy',
-        'characters/female_spy.png',
-        'characters/female_spy.json');
+        'characters/female_spy.png?v=1',
+        'characters/female_spy.json?v=1');
     this.load.atlas('female_scientist',
-        'characters/female_scientist.png',
-        'characters/female_scientist.json');
+        'characters/female_scientist.png?v=1',
+        'characters/female_scientist.json?v=1');
     this.load.atlas('female_blowse',
-        'characters/female_blowse.png',
-        'characters/female_blowse.json');
+        'characters/female_blowse.png?v=1',
+        'characters/female_blowse.json?v=1');
     this.load.atlas('female_nurse1',
-        'characters/female_nurse1.png',
-        'characters/female_nurse1.json');
+        'characters/female_nurse1.png?v=1',
+        'characters/female_nurse1.json?v=1');
     this.load.atlas('female_nurse2',
-        'characters/female_nurse2.png',
-        'characters/female_nurse2.json');
+        'characters/female_nurse2.png?v=1',
+        'characters/female_nurse2.json?v=1');
 
     // Male characters
     this.load.atlas('male_hacker_hood',
-        'characters/male_hacker_hood.png',
-        'characters/male_hacker_hood.json');
+        'characters/male_hacker_hood.png?v=1',
+        'characters/male_hacker_hood.json?v=1');
     this.load.atlas('male_hacker_hood_down',
-        'characters/male_hacker_hood_down.png',
-        'characters/male_hacker_hood_down.json');
+        'characters/male_hacker_hood_down.png?v=1',
+        'characters/male_hacker_hood_down.json?v=1');
     this.load.atlas('male_office_worker',
-        'characters/male_office_worker.png',
-        'characters/male_office_worker.json');
+        'characters/male_office_worker.png?v=1',
+        'characters/male_office_worker.json?v=1');
     this.load.atlas('male_security_guard',
-        'characters/male_security_guard.png',
-        'characters/male_security_guard.json');
+        'characters/male_security_guard.png?v=1',
+        'characters/male_security_guard.json?v=1');
     this.load.atlas('male_telecom',
-        'characters/male_telecom.png',
-        'characters/male_telecom.json');
+        'characters/male_telecom.png?v=1',
+        'characters/male_telecom.json?v=1');
     this.load.atlas('male_spy',
-        'characters/male_spy.png',
-        'characters/male_spy.json');
+        'characters/male_spy.png?v=1',
+        'characters/male_spy.json?v=1');
     this.load.atlas('male_scientist',
-        'characters/male_scientist.png',
-        'characters/male_scientist.json');
+        'characters/male_scientist.png?v=1',
+        'characters/male_scientist.json?v=1');
     this.load.atlas('male_nerd',
-        'characters/male_nerd.png',
-        'characters/male_nerd.json');
+        'characters/male_nerd.png?v=1',
+        'characters/male_nerd.json?v=1');
 
     // Animated plant textures are loaded above
     
