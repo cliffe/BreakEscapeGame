@@ -85,6 +85,10 @@
         <button type="button" id="player-preferences-cancel-btn" class="btn btn-secondary">Cancel</button>
       </div>
     <% end %>
+
+    <div class="modal-tutorial-section">
+      <button type="button" id="relaunch-tutorial-btn" class="btn btn-secondary">Relaunch Tutorial</button>
+    </div>
   </div>
 </div>
 
@@ -143,6 +147,18 @@
   if (cancelBtn) {
     cancelBtn.addEventListener('click', function() {
       if (window.playerHUD) window.playerHUD.closePlayerPreferences();
+    });
+  }
+
+  const relaunchBtn = document.getElementById('relaunch-tutorial-btn');
+  if (relaunchBtn) {
+    relaunchBtn.addEventListener('click', function() {
+      if (window.playerHUD) window.playerHUD.closePlayerPreferences();
+      if (window.relaunchTutorial) {
+        window.relaunchTutorial();
+      } else {
+        console.warn('Tutorial manager not available');
+      }
     });
   }
 

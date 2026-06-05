@@ -388,6 +388,28 @@ export class TutorialManager {
     }
 
     /**
+     * Relaunch the tutorial from the beginning (e.g. triggered from preferences modal)
+     */
+    relaunch() {
+        this.playerMoved = false;
+        this.playerInteracted = false;
+        this.playerRan = false;
+        this.playerClickedToMove = false;
+        this.playerClickedInventoryItem = false;
+
+        localStorage.removeItem(TUTORIAL_STORAGE_KEY);
+        localStorage.removeItem(TUTORIAL_DECLINED_KEY);
+
+        if (this.active && this.tutorialOverlay) {
+            document.body.removeChild(this.tutorialOverlay);
+            this.tutorialOverlay = null;
+            this.active = false;
+        }
+
+        this.start(this.onComplete);
+    }
+
+    /**
      * Reset tutorial progress (for testing)
      */
     static resetTutorial() {
@@ -410,4 +432,5 @@ export function getTutorialManager() {
 if (typeof window !== 'undefined') {
     window.getTutorialManager = getTutorialManager;
     window.resetTutorial = TutorialManager.resetTutorial;
+    window.relaunchTutorial = () => getTutorialManager().relaunch();
 }

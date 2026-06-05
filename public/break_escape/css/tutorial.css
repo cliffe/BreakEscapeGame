@@ -364,6 +364,17 @@
     }
 }
 
+@keyframes slideDownFromTop {
+    from {
+        transform: translateX(-50%) translateY(-50px);
+        opacity: 0;
+    }
+    to {
+        transform: translateX(-50%) translateY(0);
+        opacity: 1;
+    }
+}
+
 /* Mobile Responsive */
 @media (max-width: 768px) {
     .tutorial-prompt-modal {
@@ -393,10 +404,12 @@
     }
 
     .tutorial-panel {
-        bottom: 100px;  /* Still above inventory on mobile with clearance */
+        bottom: auto;
+        top: 10px;
         padding: 15px 18px;
         max-width: 95%;
-        max-height: calc(100vh - 120px); /* Prevent going off screen on mobile */
+        max-height: calc(100vh - 20px);
+        animation: slideDownFromTop 0.4s ease-out;
     }
 
     .tutorial-header {
