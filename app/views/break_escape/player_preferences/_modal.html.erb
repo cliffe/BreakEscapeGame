@@ -94,6 +94,7 @@
 
 <script type="module" nonce="<%= content_security_policy_nonce %>">
   import { initializeSpritePreview } from '/break_escape/js/ui/sprite-grid.js?v=2';
+  import { getTutorialManager } from '/break_escape/js/systems/tutorial-manager.js';
 
   // Initialize sprite preview when modal is shown
   window.initPlayerPreferencesModal = function() {
@@ -154,11 +155,7 @@
   if (relaunchBtn) {
     relaunchBtn.addEventListener('click', function() {
       if (window.playerHUD) window.playerHUD.closePlayerPreferences();
-      if (window.relaunchTutorial) {
-        window.relaunchTutorial();
-      } else {
-        console.warn('Tutorial manager not available');
-      }
+      getTutorialManager().relaunch();
     });
   }
 
