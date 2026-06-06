@@ -92,3 +92,15 @@
     color: #00ff41;
     animation: titleCursorBlink 0.7s step-end infinite;
 }
+
+.title-screen-prompt {
+    position: relative;
+    z-index: 2;
+    margin-top: 20px;
+    font-size: 24px;
+    font-weight: bold;
+    letter-spacing: 2px;
+    color: #00ff41;
+    animation: titleCursorBlink 1.2s step-end infinite;
+    cursor: pointer;
+}

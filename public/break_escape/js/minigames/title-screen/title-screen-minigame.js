@@ -13,7 +13,8 @@ if (!document.getElementById('title-screen-css')) {
  * Title Screen Minigame
  * Phase 1: Hacktivity logo fades in, zooms to 200%, fades out.
  * Phase 2: Mission display_name typed out terminal-style with blinking cursor.
- * Cursor keeps blinking while the game world finishes loading.
+ * Phase 3: "Click to continue" prompt — player gesture required before closing.
+ *          This also satisfies the browser's autoplay policy for audio.
  */
 export class TitleScreenMinigame extends MinigameScene {
     constructor(container, params) {
@@ -28,6 +29,7 @@ export class TitleScreenMinigame extends MinigameScene {
                 <div class="title-screen-title" style="visibility: hidden;">
                     <span class="title-screen-typed-text"></span><span class="title-screen-cursor">█</span>
                 </div>
+                <div class="title-screen-prompt" style="visibility: hidden;">Continue?</div>
             </div>
         `;
 
@@ -49,89 +51,128 @@ export class TitleScreenMinigame extends MinigameScene {
         this.titleScreenContainer = this.container.querySelector('.title-screen-container');
         this._typingStarted = false;
         this._typingTimer = null;
+        this._loadingTimer = null;
+        this._typingDone = false;
+        this._gameLoaded = false;
+        this._playerClicked = false;
+        this._clickHandler = null;
     }
 
     start() {
         super.start();
         console.log('🎬 Title Screen started');
 
-        const logo = this.container.querySelector('.title-screen-logo');
-        const titleEl = this.container.querySelector('.title-screen-title');
-        const typedTextEl = this.container.querySelector('.title-screen-typed-text');
+        const logo      = this.container.querySelector('.title-screen-logo');
+        const titleEl   = this.container.querySelector('.title-screen-title');
+        const typedText = this.container.querySelector('.title-screen-typed-text');
+        const promptEl  = this.container.querySelector('.title-screen-prompt');
 
-        // Phase 1 → 2 transition: fixed timer matches the CSS animation duration.
-        // animationend is unreliable when the CSS loads asynchronously after the element
-        // is already in the DOM (the animation may never have started).
+        // Phase 1 → 2: fixed timer matching the CSS animation duration.
+        // animationend is unreliable when CSS loads async after the element is in the DOM.
         setTimeout(() => {
             logo.style.visibility = 'hidden';
             titleEl.style.visibility = 'visible'; // cursor blinks immediately
-            this._startTyping(typedTextEl);
+            this._startTyping(typedText, promptEl);
         }, 2500);
 
-        // game_loaded fires after the world finishes building — use it only for the
-        // safety-close timer (typing may already be done by then).
+        // game_loaded fires when the world finishes building.
+        // We close only when BOTH this fires AND the player has clicked.
         this._onGameLoaded = () => {
             window.eventDispatcher?.off('game_loaded', this._onGameLoaded);
             this._onGameLoaded = null;
-            console.log('🎬 Title screen: game_loaded received, arming safety timer');
-            if (!this.autoCloseTimeout) {
-                this.autoCloseTimer = setTimeout(() => {
-                    if (window.MinigameFramework?.currentMinigame === this) {
-                        console.log('⏱️ Title screen: no opening minigame, closing via safety timer');
-                        this.complete(true);
-                    }
-                }, 3000);
+            console.log('🎬 Title screen: game_loaded received');
+            this._gameLoaded = true;
+            if (this._playerClicked) {
+                this.complete(true);
             }
         };
 
         if (window.eventDispatcher) {
             window.eventDispatcher.on('game_loaded', this._onGameLoaded);
         } else {
-            console.warn('🎬 Title screen: eventDispatcher not ready, closing will be handled by game.js');
+            console.warn('🎬 Title screen: eventDispatcher not ready');
+            this._gameLoaded = true; // treat as loaded so click closes immediately
         }
 
         if (this.autoCloseTimeout) {
+            // Dev/test mode: auto-close after timeout, no click required.
             this.autoCloseTimer = setTimeout(() => {
                 console.log('⏱️ Title screen auto-closing after timeout');
                 this.complete(true);
             }, this.autoCloseTimeout);
+        } else {
+            // Failsafe: close after 2 minutes even if player never clicks.
+            this.autoCloseTimer = setTimeout(() => {
+                if (window.MinigameFramework?.currentMinigame === this) {
+                    console.log('⏱️ Title screen: failsafe close');
+                    this.complete(true);
+                }
+            }, 120000);
         }
     }
 
-    // missionDisplayName is embedded by the Rails view into breakEscapeConfig before
-    // the page script runs, so it is available immediately — no polling needed.
-    _startTyping(typedTextEl) {
+    _startTyping(typedTextEl, promptEl) {
         if (this._typingStarted) return;
         this._typingStarted = true;
 
         const name = window.breakEscapeConfig?.missionDisplayName ?? '';
-        // Same character set as the matrix visualiser in bond-visualiser.js
-        const SCRAMBLE_CHARS = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789@#$%^&*<>{}[]|/\\';
-        const SCRAMBLE_STEPS = 5;  // random frames shown before each character locks in
-        const FRAME_MS = 38;       // ms per scramble frame
-        const LOCK_PAUSE = 90;     // ms pause after each character locks before moving on
-
+        const CHAR_DELAY = 85;
         let i = 0;
 
-        const typeNext = () => {
-            if (i >= name.length) return; // done — cursor keeps blinking
+        const tick = () => {
+            if (i < name.length) {
+                typedTextEl.textContent = name.slice(0, ++i);
+                this._typingTimer = setTimeout(tick, CHAR_DELAY);
+            } else {
+                this._onTypingComplete(promptEl);
+            }
+        };
+        this._typingTimer = setTimeout(tick, CHAR_DELAY);
+    }
 
-            let step = 0;
-            const scramble = () => {
-                if (step < SCRAMBLE_STEPS) {
-                    const rand = SCRAMBLE_CHARS[Math.floor(Math.random() * SCRAMBLE_CHARS.length)];
-                    typedTextEl.textContent = name.slice(0, i) + rand;
-                    step++;
-                    this._typingTimer = setTimeout(scramble, FRAME_MS);
-                } else {
-                    typedTextEl.textContent = name.slice(0, ++i);
-                    this._typingTimer = setTimeout(typeNext, LOCK_PAUSE);
-                }
-            };
-            this._typingTimer = setTimeout(scramble, FRAME_MS);
+    _onTypingComplete(promptEl) {
+        this._typingDone = true;
+        promptEl.style.visibility = 'visible';
+
+        this._clickHandler = () => {
+            this._playerClicked = true;
+            if (this._gameLoaded) {
+                this.complete(true);
+            } else {
+                // Remove click listener — no further interaction needed
+                this.container.removeEventListener('click', this._clickHandler);
+                this._clickHandler = null;
+                // Stop blinking and type the loading state
+                promptEl.style.animation = 'none';
+                this._typeLoadingPrompt(promptEl);
+            }
+        };
+        this.container.addEventListener('click', this._clickHandler);
+    }
+
+    _typeLoadingPrompt(promptEl) {
+        const LOADING_TEXT = 'Loading';
+        const CHAR_DELAY = 85;
+        const DOT_DELAY = 700;
+
+        promptEl.textContent = '';
+        let i = 0;
+
+        const typeLoading = () => {
+            if (i < LOADING_TEXT.length) {
+                promptEl.textContent = LOADING_TEXT.slice(0, ++i);
+                this._loadingTimer = setTimeout(typeLoading, CHAR_DELAY);
+            } else {
+                this._loadingTimer = setTimeout(addDot, DOT_DELAY);
+            }
         };
 
-        typeNext();
+        const addDot = () => {
+            promptEl.textContent += '.';
+            this._loadingTimer = setTimeout(addDot, DOT_DELAY);
+        };
+
+        this._loadingTimer = setTimeout(typeLoading, CHAR_DELAY);
     }
 
     complete(success) {
@@ -146,6 +187,11 @@ export class TitleScreenMinigame extends MinigameScene {
         if (this._onGameLoaded) {
             window.eventDispatcher?.off('game_loaded', this._onGameLoaded);
             this._onGameLoaded = null;
+        }
+        if (this._loadingTimer) clearTimeout(this._loadingTimer);
+        if (this._clickHandler) {
+            this.container.removeEventListener('click', this._clickHandler);
+            this._clickHandler = null;
         }
         super.cleanup();
     }
