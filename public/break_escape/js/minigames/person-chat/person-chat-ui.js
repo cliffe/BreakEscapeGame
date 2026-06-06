@@ -11,7 +11,7 @@
  * @module person-chat-ui
  */
 
-import PersonChatPortraits from './person-chat-portraits.js';
+import PersonChatPortraits from './person-chat-portraits.js?v=2';
 
 export default class PersonChatUI {
     /**

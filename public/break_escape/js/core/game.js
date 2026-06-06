@@ -1,7 +1,7 @@
 // IMPORTANT: version must match all other imports of rooms.js — mismatched ?v= strings
 // create separate module instances with separate rooms objects, causing state to diverge.
 import { initializeRooms, calculateWorldBounds, calculateRoomPositions, createRoom, revealRoom, updatePlayerRoom, rooms } from './rooms.js?v=25';
-import { createPlayer, updatePlayerMovement, movePlayerToPoint, facePlayerToward, player } from './player.js?v=18';
+import { createPlayer, updatePlayerMovement, movePlayerToPoint, facePlayerToward, player } from './player.js?v=19';
 import { initializePathfinder } from './pathfinding.js?v=7';
 import { initializeInventory, processInitialInventoryItems } from '../systems/inventory.js?v=9';
 import { checkObjectInteractions, setGameInstance, isObjectInInteractionRange } from '../systems/interactions.js?v=40';
@@ -757,7 +757,6 @@ export async function create() {
             displayName: window.gameState?.playerName || window.gameScenario?.player?.displayName || 'Agent 0x00',
             spriteSheet: window.breakEscapeConfig?.playerSprite || window.gameScenario?.player?.spriteSheet || 'male_hacker',
             spriteTalk: (() => {
-                if (window.gameScenario?.player?.spriteTalk) return window.gameScenario.player.spriteTalk;
                 const sprite = window.breakEscapeConfig?.playerSprite || window.gameScenario?.player?.spriteSheet || 'male_hacker';
                 // Legacy sprites use hyphen naming; all others follow {sprite}_talk.png convention
                 const legacyMap = { 'hacker': 'assets/characters/hacker-talk.png', 'hacker-red': 'assets/characters/hacker-red-talk.png' };

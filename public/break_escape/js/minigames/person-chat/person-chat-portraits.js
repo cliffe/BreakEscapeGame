@@ -302,6 +302,7 @@ export default class PersonChatPortraits {
             this.spriteTalkImage = null; // Will be loaded lazily on first render
             this._loadingSpriteTalkImage = false; // Reset lazy-load flag
             this._lastRenderedTalkFrame = -1;  // Force re-render after load
+            this._headshotFallbackAttempted = false; // Reset fallback flag for new speaker
             // For NPCs with spriteTalk, flip the image to face right
             this.flipped = this.npc.id !== 'player';
             return;
@@ -682,6 +683,13 @@ export default class PersonChatPortraits {
 
         img.onerror = () => {
             this._loadingSpriteTalkImage = false;
+            // If _talk.png failed, try the _headshot.png equivalent before giving up
+            if (!this._headshotFallbackAttempted && this.npc.spriteTalk && /_talk\.\w+$/.test(this.npc.spriteTalk)) {
+                this._headshotFallbackAttempted = true;
+                this.npc.spriteTalk = this.npc.spriteTalk.replace(/_talk(\.\w+)$/, '_headshot$1');
+                this._startLoadingSpriteTalkImage();
+                return;
+            }
             console.warn(`⚠️ No talk image found for ${this.npc.id} (${this.npc.spriteTalk}), falling back to sprite`);
             this.useSpriteTalk = false;
             this.spriteSheet = this.npc.spriteSheet || (this.npc.id === 'player' ? 'hacker' : 'hacker');

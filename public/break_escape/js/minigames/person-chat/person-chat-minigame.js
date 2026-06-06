@@ -13,7 +13,7 @@
  */
 
 import { MinigameScene } from '../framework/base-minigame.js';
-import PersonChatUI from './person-chat-ui.js';
+import PersonChatUI from './person-chat-ui.js?v=2';
 import PhoneChatConversation from '../phone-chat/phone-chat-conversation.js'; // Reuse phone-chat conversation logic
 import InkEngine from '../../systems/ink/ink-engine.js?v=1';
 import { processGameActionTags, determineSpeaker as determineSpeakerFromTags } from '../helpers/chat-helpers.js';

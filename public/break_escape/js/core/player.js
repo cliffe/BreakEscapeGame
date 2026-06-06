@@ -147,6 +147,13 @@ export async function updatePlayerSprite(newSpriteKey) {
         window.gameScenario.player = window.gameScenario.player || {};
         window.gameScenario.player.spriteSheet = newSpriteKey;
     }
+
+    // Keep character registry in sync so person-chat portraits use the right talk image
+    if (window.characterRegistry?.player) {
+        const legacyTalkMap = { 'hacker': 'assets/characters/hacker-talk.png', 'hacker-red': 'assets/characters/hacker-red-talk.png' };
+        window.characterRegistry.player.spriteSheet = newSpriteKey;
+        window.characterRegistry.player.spriteTalk = legacyTalkMap[newSpriteKey] || `assets/characters/${newSpriteKey}_talk.png`;
+    }
     
     // Destroy old animations before creating new ones (they reference the old sprite texture)
     const animKeysToDestroy = [
