@@ -82,7 +82,7 @@ export class TutorialManager {
             overlay.className = 'tutorial-prompt-overlay';
             overlay.innerHTML = `
                 <div class="tutorial-prompt-modal">
-                    <h2>Welcome to BreakEscape!</h2>
+                    <h2>Welcome to Hacktivity Games!</h2>
                     <p>Would you like to go through a quick tutorial to learn the basic controls?</p>
                     <div class="tutorial-prompt-buttons">
                         <button id="tutorial-yes" class="tutorial-btn tutorial-btn-primary">Yes, show me</button>
