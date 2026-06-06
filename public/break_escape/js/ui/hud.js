@@ -400,6 +400,11 @@ export class PlayerHUD {
       window.playerCombat.setInteractionMode(newMode);
     }
 
+    // Notify tutorial when player switches into a combat mode
+    if ((newMode === 'jab' || newMode === 'cross') && window.getTutorialManager) {
+      window.getTutorialManager().notifyCombatModeToggled();
+    }
+
     // Play click sound (if available)
     if (window.playUISound) {
       window.playUISound('click');

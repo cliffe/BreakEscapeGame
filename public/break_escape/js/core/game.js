@@ -993,6 +993,7 @@ export async function create() {
                     
                     // Trigger punch animation (don't move)
                     window.playerCombat.punch();
+                    if (window.getTutorialManager) window.getTutorialManager().notifyAttackedInCombatMode();
                 }
                 return; // Exit early - no movement or interaction in punch modes
             }
@@ -1004,6 +1005,7 @@ export async function create() {
             if (isObjectInInteractionRange(npcAtPosition)) {
                 // NPC is in range - face toward them then interact.
                 facePlayerToward(npcAtPosition.x, npcAtPosition.y);
+                if (window.getTutorialManager) window.getTutorialManager().notifyPlayerInteracted();
                 if (window.tryInteractWithNPC) {
                     window.tryInteractWithNPC(npcAtPosition);
                 }
@@ -1038,6 +1040,7 @@ export async function create() {
                             // Object is in range - face toward it then interact directly.
                             // Click always targets the clicked object; no direction-based selection.
                             facePlayerToward(obj.x, obj.y);
+                            if (window.getTutorialManager) window.getTutorialManager().notifyPlayerInteracted();
                             window.handleObjectInteraction(obj);
                         } else if (obj.isSwivelChair) {
                             // Chairs: move onto the clicked position (player sits/stands at the chair).

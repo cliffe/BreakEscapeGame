@@ -21,6 +21,9 @@ export class TutorialManager {
         this.playerRan = false;
         this.playerClickedToMove = false;
         this.playerClickedInventoryItem = false;
+        this.playerToggledCombatMode = false;
+        this.playerAttackedInCombatMode = false;
+        this.playerToggledObjectives = false;
     }
 
     /**
@@ -131,18 +134,17 @@ export class TutorialManager {
                     instruction: 'Your inventory is at the bottom of the screen. Click on items like the Notepad to use them.',
                     objective: 'Click on the Notepad in your inventory to open it',
                     checkComplete: () => this.playerClickedInventoryItem
+                },
+                {
+                    title: 'Combat Mode',
+                    instruction: 'Tap the hand icon in the bottom-left HUD to cycle through Interact, and attack modes.',
+                    objective: 'Switch to an attack mode using the toggle button, then tap to attack',
+                    checkComplete: () => this.playerToggledCombatMode && this.playerAttackedInCombatMode
                 }
             ];
+
+            // Don't add objectives step on mobile since the objectives panel is stacked under the tutorial and would be difficult to interact with - players can learn about it on desktop or discover it on their own
             
-            // Only add objectives step if scenario has objectives
-            if (this.hasObjectives()) {
-                this.steps.push({
-                    title: 'Objectives',
-                    instruction: 'Check the objectives panel in the top-left corner to see your current tasks.',
-                    objective: 'Take a look at your objectives, then click Continue',
-                    checkComplete: () => true // Always shows Continue button immediately
-                });
-            }
         } else {
             this.steps = [
                 {
@@ -174,18 +176,29 @@ export class TutorialManager {
                     instruction: 'Your inventory is at the bottom of the screen. Click on items like the Notepad to use them.',
                     objective: 'Click on the Notepad in your inventory to open it',
                     checkComplete: () => this.playerClickedInventoryItem
+                },
+                {
+                    title: 'Combat Mode',
+                    instruction: 'Press Q or click the hand icon in the bottom-left HUD to cycle through Interact, Quick Jab, and Cross Punch modes.',
+                    objective: 'Press Q to switch to an attack mode, then click or E to attack',
+                    checkComplete: () => this.playerToggledCombatMode && this.playerAttackedInCombatMode
                 }
             ];
-            
+
             // Only add objectives step if scenario has objectives
             if (this.hasObjectives()) {
                 this.steps.push({
                     title: 'Objectives',
-                    instruction: 'Check the objectives panel in the top-left corner to see your current tasks.',
-                    objective: 'Take a look at your objectives, then click Continue',
-                    checkComplete: () => true // Always shows Continue button immediately
+                    instruction: 'The objectives panel in the top-right corner tracks your current tasks. Click the panel header to expand and collapse it.',
+                    objective: 'Expand and collapse the objectives panel by clicking it',
+                    checkComplete: () => this.playerToggledObjectives
                 });
             }
+        }
+
+        // Collapse objectives panel on mobile so it doesn't obscure the tutorial
+        if (this.isMobile && window.objectivesPanel && !window.objectivesPanel.isCollapsed) {
+            window.objectivesPanel.toggleCollapse();
         }
 
         this.createTutorialOverlay();
@@ -388,6 +401,33 @@ export class TutorialManager {
     }
 
     /**
+     * Notify tutorial that the player switched to a combat mode (jab or cross)
+     */
+    notifyCombatModeToggled() {
+        if (this.active) {
+            this.playerToggledCombatMode = true;
+        }
+    }
+
+    /**
+     * Notify tutorial that the player attacked while in a combat mode
+     */
+    notifyAttackedInCombatMode() {
+        if (this.active) {
+            this.playerAttackedInCombatMode = true;
+        }
+    }
+
+    /**
+     * Notify tutorial that the player toggled the objectives panel
+     */
+    notifyObjectivesToggled() {
+        if (this.active) {
+            this.playerToggledObjectives = true;
+        }
+    }
+
+    /**
      * Relaunch the tutorial from the beginning (e.g. triggered from preferences modal)
      */
     relaunch() {
@@ -396,6 +436,9 @@ export class TutorialManager {
         this.playerRan = false;
         this.playerClickedToMove = false;
         this.playerClickedInventoryItem = false;
+        this.playerToggledCombatMode = false;
+        this.playerAttackedInCombatMode = false;
+        this.playerToggledObjectives = false;
 
         localStorage.removeItem(TUTORIAL_STORAGE_KEY);
         localStorage.removeItem(TUTORIAL_DECLINED_KEY);

@@ -313,6 +313,7 @@ function setupKeyboardInput() {
                 if (currentMode === 'jab' || currentMode === 'cross') {
                     // Punch in current facing direction (don't interact)
                     window.playerCombat.punch();
+                    if (window.getTutorialManager) window.getTutorialManager().notifyAttackedInCombatMode();
                     event.preventDefault();
                     return;
                 }

@@ -4,14 +4,14 @@
 
 .objectives-panel {
   position: fixed;
-  top: 20px;
+  top: 14px;
   left: 20px;
   width: 280px;
   max-height: 60vh;
   background: rgba(0, 0, 0, 0.85);
   border: 2px solid #444;
   font-family: 'GNF', monospace;
-  z-index: 1500;
+  z-index: 1300;
   overflow: hidden;
   transition: max-height 0.3s ease;
 }
@@ -217,8 +217,11 @@
   .objectives-panel {
     width: 240px;
     right: 10px;
-    top: 10px;
     max-height: 50vh;
+  }
+
+  .objectives-panel.collapsed {
+    width: 160px;
   }
   
   .objectives-title {

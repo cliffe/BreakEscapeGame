@@ -140,7 +140,6 @@
 
 .tutorial-panel {
     position: fixed;
-    bottom: 100px;  /* Above the inventory bar (80px) with more clearance */
     left: 50%;
     transform: translateX(-50%);
     background: rgba(0, 0, 0, 0.95);
@@ -378,7 +377,7 @@
 /* Mobile Responsive */
 @media (max-width: 768px) {
     .tutorial-prompt-modal {
-        padding: 20px;
+        padding: 5px;
         max-width: 95%;
     }
 
@@ -404,17 +403,14 @@
     }
 
     .tutorial-panel {
-        bottom: auto;
-        top: 10px;
-        padding: 15px 18px;
-        max-width: 95%;
-        max-height: calc(100vh - 20px);
-        animation: slideDownFromTop 0.4s ease-out;
+        padding: 5px 5px;
+        max-width: 100%;
+        max-height: calc(100vh - 120px); /* Prevent going off screen on mobile */
     }
 
     .tutorial-header {
-        margin-bottom: 12px;
-        padding-bottom: 10px;
+        margin-bottom: 5px;
+        padding-bottom: 5px;
     }
 
     .tutorial-progress {
@@ -439,14 +435,14 @@
     }
 
     .tutorial-objective {
-        padding: 10px 12px;
-        margin: 12px 0;
+        padding: 5px 5px;
+        margin: 5px 0;
         border-left-width: 3px;
     }
 
     .tutorial-objective strong {
         font-size: 11px;
-        margin-bottom: 6px;
+        margin-bottom: 5px;
         letter-spacing: 0.5px;
     }
 

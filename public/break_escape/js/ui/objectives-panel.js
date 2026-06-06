@@ -79,6 +79,7 @@ export class ObjectivesPanel {
     this.container.classList.toggle('collapsed', this.isCollapsed);
     const toggle = this.container.querySelector('.objectives-toggle');
     toggle.textContent = this.isCollapsed ? '▶' : '▼';
+    if (window.getTutorialManager) window.getTutorialManager().notifyObjectivesToggled();
   }
   
   render(aims) {
