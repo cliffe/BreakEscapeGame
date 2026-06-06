@@ -11,26 +11,26 @@ if (!document.getElementById('title-screen-css')) {
 
 /**
  * Title Screen Minigame
- * Displays a simple "BreakEscape" title screen before the main game loads.
- * Auto-closes when the next minigame (e.g., mission brief, dialog) loads.
+ * Phase 1: Hacktivity logo fades in, zooms to 200%, fades out.
+ * Phase 2: Mission display_name typed out terminal-style with blinking cursor.
+ * Cursor keeps blinking while the game world finishes loading.
  */
 export class TitleScreenMinigame extends MinigameScene {
     constructor(container, params) {
         super(container, params);
-        this.autoCloseTimeout = params?.autoCloseTimeout ?? 3000; // 0 = wait for game_loaded; positive = fixed timer
+        this.autoCloseTimeout = params?.autoCloseTimeout ?? 3000;
     }
-    
+
     init() {
-        // Override parent init to customize the title screen
-        // We don't want the default minigame container structure
-        
         this.container.innerHTML = `
             <div class="title-screen-container">
                 <img src="/break_escape/assets/logos/hacktivity-logo.svg" alt="Hacktivity Logo" class="title-screen-logo">
-                <div class="title-screen-title">BreakEscape</div>
+                <div class="title-screen-title" style="visibility: hidden;">
+                    <span class="title-screen-typed-text"></span><span class="title-screen-cursor">█</span>
+                </div>
             </div>
         `;
-        
+
         this.container.style.cssText = `
             width: 100%;
             height: 100%;
@@ -45,74 +45,104 @@ export class TitleScreenMinigame extends MinigameScene {
             margin: 0;
             padding: 0;
         `;
-        
-        // Store reference to elements
-        this.titleScreenContainer = this.container.querySelector('.title-screen-container');
-    }
-    
-    start() {
-        // Call parent start
-        super.start();
 
+        this.titleScreenContainer = this.container.querySelector('.title-screen-container');
+        this._typingStarted = false;
+        this._typingTimer = null;
+    }
+
+    start() {
+        super.start();
         console.log('🎬 Title Screen started');
 
-        if (this.autoCloseTimeout) {
-            // Positive timeout: auto-close after that many ms regardless of loading state.
-            this.autoCloseTimer = setTimeout(() => {
-                console.log('⏱️ Title screen auto-closing after timeout');
-                this.complete(true);
-            }, this.autoCloseTimeout);
-        } else {
-            // autoCloseTimeout === 0: loading-cover mode.
-            // Wait for the game_loaded event (fired at the end of create() once the
-            // game world is fully initialised), then close if nothing else has taken over.
-            this._onGameLoaded = () => {
-                window.eventDispatcher?.off('game_loaded', this._onGameLoaded);
-                this._onGameLoaded = null;
-                console.log('🎬 Title screen: game_loaded received, arming safety timer');
-                // Don't close immediately — if a briefing or scenario-brief minigame is
-                // about to open it will call startMinigame → endMinigame → close us
-                // naturally (no flash). The safety timer is only for scenarios with no
-                // opening minigame.
+        const logo = this.container.querySelector('.title-screen-logo');
+        const titleEl = this.container.querySelector('.title-screen-title');
+        const typedTextEl = this.container.querySelector('.title-screen-typed-text');
+
+        // Phase 1 → 2 transition: fixed timer matches the CSS animation duration.
+        // animationend is unreliable when the CSS loads asynchronously after the element
+        // is already in the DOM (the animation may never have started).
+        setTimeout(() => {
+            logo.style.visibility = 'hidden';
+            titleEl.style.visibility = 'visible'; // cursor blinks immediately
+            this._startTyping(typedTextEl);
+        }, 2500);
+
+        // game_loaded fires after the world finishes building — use it only for the
+        // safety-close timer (typing may already be done by then).
+        this._onGameLoaded = () => {
+            window.eventDispatcher?.off('game_loaded', this._onGameLoaded);
+            this._onGameLoaded = null;
+            console.log('🎬 Title screen: game_loaded received, arming safety timer');
+            if (!this.autoCloseTimeout) {
                 this.autoCloseTimer = setTimeout(() => {
                     if (window.MinigameFramework?.currentMinigame === this) {
                         console.log('⏱️ Title screen: no opening minigame, closing via safety timer');
                         this.complete(true);
                     }
                 }, 3000);
-            };
-            if (window.eventDispatcher) {
-                window.eventDispatcher.on('game_loaded', this._onGameLoaded);
-            } else {
-                // Fallback if eventDispatcher isn't ready yet (shouldn't happen — title screen
-                // is started after eventDispatcher is created in main.js).
-                console.warn('🎬 Title screen: eventDispatcher not ready, closing will be handled by game.js');
             }
+        };
+
+        if (window.eventDispatcher) {
+            window.eventDispatcher.on('game_loaded', this._onGameLoaded);
+        } else {
+            console.warn('🎬 Title screen: eventDispatcher not ready, closing will be handled by game.js');
+        }
+
+        if (this.autoCloseTimeout) {
+            this.autoCloseTimer = setTimeout(() => {
+                console.log('⏱️ Title screen auto-closing after timeout');
+                this.complete(true);
+            }, this.autoCloseTimeout);
         }
     }
-    
-    /**
-     * Override complete to ensure proper cleanup
-     */
+
+    // missionDisplayName is embedded by the Rails view into breakEscapeConfig before
+    // the page script runs, so it is available immediately — no polling needed.
+    _startTyping(typedTextEl) {
+        if (this._typingStarted) return;
+        this._typingStarted = true;
+
+        const name = window.breakEscapeConfig?.missionDisplayName ?? '';
+        // Same character set as the matrix visualiser in bond-visualiser.js
+        const SCRAMBLE_CHARS = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789@#$%^&*<>{}[]|/\\';
+        const SCRAMBLE_STEPS = 5;  // random frames shown before each character locks in
+        const FRAME_MS = 38;       // ms per scramble frame
+        const LOCK_PAUSE = 90;     // ms pause after each character locks before moving on
+
+        let i = 0;
+
+        const typeNext = () => {
+            if (i >= name.length) return; // done — cursor keeps blinking
+
+            let step = 0;
+            const scramble = () => {
+                if (step < SCRAMBLE_STEPS) {
+                    const rand = SCRAMBLE_CHARS[Math.floor(Math.random() * SCRAMBLE_CHARS.length)];
+                    typedTextEl.textContent = name.slice(0, i) + rand;
+                    step++;
+                    this._typingTimer = setTimeout(scramble, FRAME_MS);
+                } else {
+                    typedTextEl.textContent = name.slice(0, ++i);
+                    this._typingTimer = setTimeout(typeNext, LOCK_PAUSE);
+                }
+            };
+            this._typingTimer = setTimeout(scramble, FRAME_MS);
+        };
+
+        typeNext();
+    }
+
     complete(success) {
         console.log('🎬 Title screen closing');
-        
-        // Clear the auto-close timer
-        if (this.autoCloseTimer) {
-            clearTimeout(this.autoCloseTimer);
-        }
-        
-        // Call parent complete which handles cleanup
+        if (this.autoCloseTimer) clearTimeout(this.autoCloseTimer);
         super.complete(success);
     }
-    
-    /**
-     * Override cleanup to ensure container is removed properly
-     */
+
     cleanup() {
-        if (this.autoCloseTimer) {
-            clearTimeout(this.autoCloseTimer);
-        }
+        if (this.autoCloseTimer) clearTimeout(this.autoCloseTimer);
+        if (this._typingTimer) clearTimeout(this._typingTimer);
         if (this._onGameLoaded) {
             window.eventDispatcher?.off('game_loaded', this._onGameLoaded);
             this._onGameLoaded = null;
@@ -129,8 +159,7 @@ export function startTitleScreenMinigame(params = {}) {
         console.error('MinigameFramework not initialized');
         return;
     }
-    
-    // Create a container for the title screen as a centered overlay
+
     const container = document.createElement('div');
     container.className = 'minigame-container';
     container.style.cssText = `
@@ -146,8 +175,7 @@ export function startTitleScreenMinigame(params = {}) {
         background: rgba(26, 26, 26, 0.95);
     `;
     document.body.appendChild(container);
-    
-    // Start the title screen minigame
+
     return window.MinigameFramework.startMinigame('title-screen', container, {
         title: 'BreakEscape',
         hideGameDuringMinigame: false,

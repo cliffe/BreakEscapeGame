@@ -183,7 +183,8 @@
       vmSetActivatedUntil: <%= raw(_vm_set_activated_until&.iso8601.to_json) %>,
       vmActivationMode: '<%= BreakEscape::Mission.hacktivity_mode? ? @game.mission.vm_activation_mode.to_s : '' %>',
       missionConcludedAt: <%= raw(@game.mission_concluded_at&.iso8601.to_json) %>,
-      missionId: <%= @game.mission_id %>
+      missionId: <%= @game.mission_id %>,
+      missionDisplayName: <%= raw(@mission.display_name.to_json) %>
     };
     console.log('🔧 breakEscapeConfig initialized:', window.breakEscapeConfig);
     console.log('🎨 Player sprite from server:', window.breakEscapeConfig.playerSprite);
@@ -249,19 +250,18 @@
     <script type="module" src="/break_escape/js/systems/hacktivity-cable.js" nonce="<%= content_security_policy_nonce %>"></script>
   <% end %>
 
-  <%# Session resume/restart dialog %>
+  <%# Session resume/restart dialog — not shown in hacktivity mode %>
+  <% unless BreakEscape::Mission.hacktivity_mode? %>
   <div id="session-resume-overlay" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.92); z-index:20000; justify-content:center; align-items:center; flex-direction:column; gap:30px; font-family:'Press Start 2P', monospace;">
     <h1 style="color:#00ff00; font-size:28px; margin:0; text-align:center; line-height:1.5;">RESUME SESSION?</h1>
     <p style="color:#cccccc; font-size:16px; font-family:'GNF', monospace; margin:0;">You have a saved session for this mission.</p>
     <div style="display:flex; gap:20px; flex-wrap:wrap; justify-content:center;">
       <button id="session-resume-btn" class="session-overlay-btn" style="padding:15px 40px; font-size:16px; font-family:'GNF', monospace; background:#4CAF50; color:#fff; border:2px solid #4CAF50;">Resume</button>
       <button id="session-restart-btn" class="session-overlay-btn" style="padding:15px 40px; font-size:16px; font-family:'GNF', monospace; background:#555; color:#fff; border:2px solid #777;">Restart</button>
-      <% unless BreakEscape::Mission.hacktivity_mode? %>
       <button id="session-new-btn" class="session-overlay-btn" style="padding:15px 40px; font-size:16px; font-family:'GNF', monospace; background:#1a6fb0; color:#fff; border:2px solid #1a6fb0;">New Session</button>
-      <% end %>
     </div>
     <% other_sessions = @mission_sessions.each_with_index.reject { |sid, _i| sid == @game.id } %>
-    <% if other_sessions.any? && !BreakEscape::Mission.hacktivity_mode? %>
+    <% if other_sessions.any? %>
     <div style="border-top:1px solid #333; padding-top:20px; width:100%; max-width:600px; text-align:center;">
       <p style="color:#888; font-size:12px; font-family:'Press Start 2P', monospace; margin:0 0 14px;">OTHER SESSIONS</p>
       <div id="session-list" style="display:flex; gap:10px; flex-wrap:wrap; justify-content:center; min-height:44px;">
@@ -330,7 +330,7 @@
         status.style.display = 'block';
         document.getElementById('session-resume-btn').disabled = true;
         document.getElementById('session-restart-btn').disabled = true;
-        if (newSessionBtn) newSessionBtn.disabled = true;
+        newSessionBtn.disabled = true;
 
         fetch(window.breakEscapeConfig.apiBasePath + '/reset', {
           method: 'POST',
@@ -347,18 +347,18 @@
             status.textContent = 'Error: ' + (data.error || 'Reset failed');
             document.getElementById('session-resume-btn').disabled = false;
             document.getElementById('session-restart-btn').disabled = false;
-            if (newSessionBtn) newSessionBtn.disabled = false;
+            newSessionBtn.disabled = false;
           }
         })
         .catch(function() {
           status.textContent = 'Network error. Please try again.';
           document.getElementById('session-resume-btn').disabled = false;
           document.getElementById('session-restart-btn').disabled = false;
-          if (newSessionBtn) newSessionBtn.disabled = false;
+          newSessionBtn.disabled = false;
         });
       });
 
-      if (newSessionBtn) newSessionBtn.addEventListener('click', function() {
+      newSessionBtn.addEventListener('click', function() {
         var status = document.getElementById('session-restart-status');
         status.textContent = 'Starting new session...';
         status.style.display = 'block';
@@ -393,6 +393,7 @@
       });
     });
   </script>
+  <% end %>
 
   <%# Mobile touch handling %>
   <script nonce="<%= content_security_policy_nonce %>">
