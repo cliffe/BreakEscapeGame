@@ -346,6 +346,9 @@ export default class NPCBarkSystem {
     this._updateClearAllButton();
     this._trimBarkStackToFit();
 
+    // Auto-dismiss after 7 seconds
+    el._autoDismissTimer = setTimeout(() => this._removeBark(el), 7000);
+
     // Handle clicks - either custom handler or auto-open phone
     if (typeof payload.onClick === 'function') {
       el.addEventListener('click', () => payload.onClick(el));
@@ -365,6 +368,11 @@ export default class NPCBarkSystem {
    */
   _removeBark(el) {
     if (!el || !el.parentNode) return;
+
+    if (el._autoDismissTimer) {
+      clearTimeout(el._autoDismissTimer);
+      el._autoDismissTimer = null;
+    }
 
     const finish = () => {
       if (el.parentNode) el.parentNode.removeChild(el);
