@@ -1494,6 +1494,16 @@ def check_common_issues(json_data, valid_item_types = nil)
         lockpick_items << { path: "startItemsInInventory[#{idx}]", has_unlocks: !item['puzzle_graph_unlocks'].nil? }
       end
 
+      # Starting items with puzzle_graph_unlocks are valid graph sources (e.g. a
+      # starting lockpick that opens locked rooms). Register their targets so locked
+      # rooms they open are not reported as missing an inbound graph edge.
+      if item['puzzle_graph_unlocks']
+        has_puzzle_graph_metadata = true
+        Array(item['puzzle_graph_unlocks']).each do |target|
+          puzzle_graph_unlock_targets << { target: target, path: "startItemsInInventory[#{idx}]", optional: (item['puzzle_graph_optional'] == true) }
+        end
+      end
+
       # Track readable items
       if item['readable'] || (item['type'] == 'notes' && item['text'])
         has_readable_items = true
