@@ -244,8 +244,15 @@ export class PlayerHUD {
     this.updateButtonStyle(currentMode);
     this.modeLabel.textContent = currentMode.toUpperCase();
 
-    // Click handler
+    // Click handler (desktop) and touchend handler (mobile — avoids 300ms delay
+    // and works even when the Phaser canvas is consuming touchstart events).
     this.modeToggleButton.addEventListener('click', () => {
+      if (!this.isAnimating) {
+        this.cycleMode();
+      }
+    });
+    this.modeToggleButton.addEventListener('touchend', (e) => {
+      e.preventDefault();
       if (!this.isAnimating) {
         this.cycleMode();
       }

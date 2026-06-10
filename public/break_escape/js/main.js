@@ -174,6 +174,19 @@ function initializeGame() {
     // Mount VM controls widget — only renders when vmSetPanelUrl is set (VM-backed missions)
     window.vmControlsWidget = createVmControlsWidget();
 
+    // Activate VM set on game start/resume — POST directly to Hacktivity's
+    // activate_and_start endpoint (same action the VM controls panel uses).
+    // Fire-and-forget: quota failures and errors are non-fatal; the VM controls
+    // widget shows current state and the player can activate manually via the HUD.
+    const activateUrl = window.breakEscapeConfig?.hacktivityMode && window.breakEscapeConfig?.vmSetActivateUrl;
+    if (activateUrl) {
+        fetch(activateUrl, {
+            method: 'POST',
+            headers: { 'X-CSRF-Token': window.breakEscapeConfig.csrfToken },
+            redirect: 'follow'
+        }).catch(err => console.warn('[BreakEscape] VM set activate_and_start failed:', err));
+    }
+
     // Calculate optimal integer scale factor for current browser window
     const calculateOptimalScale = () => {
         const container = document.getElementById('game-container');

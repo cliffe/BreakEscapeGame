@@ -42,6 +42,8 @@
 .objectives-title {
   color: #fff;
   font-size: 18px;
+  white-space: nowrap;
+  flex-shrink: 0;
 }
 
 .objectives-controls {
@@ -215,13 +217,13 @@
 /* Responsive adjustments */
 @media (max-width: 768px) {
   .objectives-panel {
-    width: 240px;
+    width: 260px;
     right: 10px;
     max-height: 50vh;
   }
 
   .objectives-panel.collapsed {
-    width: 160px;
+    width: 180px;
   }
   
   .objectives-title {
