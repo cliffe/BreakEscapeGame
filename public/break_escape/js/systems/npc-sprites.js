@@ -7,7 +7,7 @@
  * @module npc-sprites
  */
 
-import { TILE_SIZE, SPRITE_PADDING_BOTTOM_ATLAS, SPRITE_PADDING_BOTTOM_LEGACY } from '../utils/constants.js?v=8';
+import { TILE_SIZE, SPRITE_PADDING_BOTTOM_ATLAS, SPRITE_PADDING_BOTTOM_LEGACY } from '../utils/constants.js';
 
 /**
  * Create an NPC sprite in the game world

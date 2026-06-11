@@ -1,5 +1,5 @@
 // Helper utility functions for the game
-import { gameAlert } from '../systems/notifications.js?v=7';
+import { gameAlert } from '../systems/notifications.js';
 
 // Introduce the scenario to the player
 export function introduceScenario() {

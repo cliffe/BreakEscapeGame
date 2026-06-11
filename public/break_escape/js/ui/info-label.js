@@ -5,8 +5,8 @@
  * tryInteractWithNearest.
  */
 
-import { INTERACTION_RANGE, INTERACTION_RANGE_SQ } from '../utils/constants.js?v=8';
-import { resolveObjectField } from '../utils/conditional-text.js?v=1';
+import { INTERACTION_RANGE, INTERACTION_RANGE_SQ } from '../utils/constants.js';
+import { resolveObjectField } from '../utils/conditional-text.js';
 
 const SIDE_DOOR_RANGE_SQ  = INTERACTION_RANGE_SQ * 4;  // 2× radius for E/W doors
 const SIDE_DOOR_Y_OFFSET  = INTERACTION_RANGE / 2;

@@ -14,7 +14,7 @@
  * @module npc-pathfinding
  */
 
-import { TILE_SIZE, GRID_SIZE, PATHFINDING_STEP } from '../utils/constants.js?v=10';
+import { TILE_SIZE, GRID_SIZE, PATHFINDING_STEP } from '../utils/constants.js';
 
 const PATROL_EDGE_OFFSET = 2; // Distance from room edge (2 tiles)
 

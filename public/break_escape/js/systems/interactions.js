@@ -1,16 +1,16 @@
 // Object interaction system
-import { INTERACTION_RANGE, INTERACTION_RANGE_SQ, INTERACTION_CHECK_INTERVAL, DOOR_INTERACTION_RANGE_SQ } from '../utils/constants.js?v=9';
+import { INTERACTION_RANGE, INTERACTION_RANGE_SQ, INTERACTION_CHECK_INTERVAL, DOOR_INTERACTION_RANGE_SQ } from '../utils/constants.js';
 // IMPORTANT: version must match all other imports of rooms.js — mismatched ?v= strings
 // create separate module instances with separate rooms objects, causing state to diverge.
-import { rooms } from '../core/rooms.js?v=25';
-import { facePlayerToward } from '../core/player.js?v=19';
+import { rooms } from '../core/rooms.js';
+import { facePlayerToward } from '../core/player.js';
 import { handleUnlock } from './unlock-system.js';
-import { handleDoorInteraction } from './doors.js?v=6';
+import { handleDoorInteraction } from './doors.js';
 import { collectFingerprint, handleBiometricScan } from './biometrics.js';
-import { addToInventory, createItemIdentifier } from './inventory.js?v=9';
-import { playUISound, playGameSound } from './ui-sounds.js?v=1';
+import { addToInventory, createItemIdentifier } from './inventory.js';
+import { playUISound, playGameSound } from './ui-sounds.js';
 import { applyActions } from './apply-actions.js';
-import { resolveObjectField } from '../utils/conditional-text.js?v=1';
+import { resolveObjectField } from '../utils/conditional-text.js';
 
 let gameRef = null;
 

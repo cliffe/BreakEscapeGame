@@ -68,15 +68,15 @@ import {
     VISUAL_TOP_TILES,
     GRID_UNIT_WIDTH_PX,
     GRID_UNIT_HEIGHT_PX
-} from '../utils/constants.js?v=8';
+} from '../utils/constants.js';
 
 // Import the new system modules
-import { initializeDoors, createDoorSpritesForRoom, updateDoorSpritesVisibility } from '../systems/doors.js?v=6';
+import { initializeDoors, createDoorSpritesForRoom, updateDoorSpritesVisibility } from '../systems/doors.js';
 import { initializeObjectPhysics, setupChairCollisions, setupExistingChairsWithNewRoom, calculateChairSpinDirection, updateSwivelChairRotation, updateSpriteDepth } from '../systems/object-physics.js';
 import { initializePlayerEffects, createPlayerBumpEffect, createPlantBumpEffect } from '../systems/player-effects.js';
 import { initializeCollision, createWallCollisionBoxes, removeTilesUnderDoor, removeWallTilesForDoorInRoom, removeWallTilesAtWorldPosition } from '../systems/collision.js';
-import { NPCPathfindingManager } from '../systems/npc-pathfinding.js?v=20';
-import NPCSpriteManager from '../systems/npc-sprites.js?v=3';
+import { NPCPathfindingManager } from '../systems/npc-pathfinding.js';
+import NPCSpriteManager from '../systems/npc-sprites.js';
 import { resolveObjectField } from '../utils/conditional-text.js';
 
 export let rooms = {};

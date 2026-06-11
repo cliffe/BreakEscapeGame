@@ -4,7 +4,7 @@
   <title>BreakEscape - Select Mission</title>
   <%= csrf_meta_tags %>
   <%= csp_meta_tag %>
-  <link rel="stylesheet" href="/break_escape/css/mission_index/application.css">
+  <link rel="stylesheet" href="<%= be_asset_path('/break_escape/css/mission_index/application.css') %>">
   <!-- Tippy.js for tooltips -->
   <script src="https://unpkg.com/@popperjs/core@2" nonce="<%= content_security_policy_nonce %>"></script>
   <script src="https://unpkg.com/tippy.js@6" nonce="<%= content_security_policy_nonce %>"></script>

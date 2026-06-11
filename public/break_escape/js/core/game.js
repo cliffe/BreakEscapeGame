@@ -1,14 +1,14 @@
 // IMPORTANT: version must match all other imports of rooms.js — mismatched ?v= strings
 // create separate module instances with separate rooms objects, causing state to diverge.
-import { initializeRooms, calculateWorldBounds, calculateRoomPositions, createRoom, revealRoom, updatePlayerRoom, rooms } from './rooms.js?v=25';
-import { createPlayer, updatePlayerMovement, movePlayerToPoint, facePlayerToward, player } from './player.js?v=19';
-import { initializePathfinder } from './pathfinding.js?v=7';
-import { initializeInventory, processInitialInventoryItems } from '../systems/inventory.js?v=9';
-import { checkObjectInteractions, setGameInstance, isObjectInInteractionRange } from '../systems/interactions.js?v=40';
+import { initializeRooms, calculateWorldBounds, calculateRoomPositions, createRoom, revealRoom, updatePlayerRoom, rooms } from './rooms.js';
+import { createPlayer, updatePlayerMovement, movePlayerToPoint, facePlayerToward, player } from './player.js';
+import { initializePathfinder } from './pathfinding.js';
+import { initializeInventory, processInitialInventoryItems } from '../systems/inventory.js';
+import { checkObjectInteractions, setGameInstance, isObjectInInteractionRange } from '../systems/interactions.js';
 import { createInfoLabel, updateInfoLabel } from '../ui/info-label.js';
-import { introduceScenario } from '../utils/helpers.js?v=19';
-import '../minigames/index.js?v=9';
-import SoundManager from '../systems/sound-manager.js?v=2';
+import { introduceScenario } from '../utils/helpers.js';
+import '../minigames/index.js';
+import SoundManager from '../systems/sound-manager.js';
 import { initPlayerHealth } from '../systems/player-health.js';
 import { initNPCHostileSystem } from '../systems/npc-hostile.js';
 import { COMBAT_CONFIG } from '../config/combat-config.js';
@@ -27,8 +27,8 @@ import { ApiClient } from '../api-client.js'; // Import to ensure window.ApiClie
 import { getTutorialManager } from '../systems/tutorial-manager.js';
 import { TILE_SIZE, SPRITE_PADDING_BOTTOM_ATLAS, SPRITE_PADDING_BOTTOM_LEGACY, DOOR_INTERACTION_RANGE } from '../utils/constants.js';
 import { initScenarioMusicEvents } from '../music/scenario-music-events.js';
-import { ScenarioTimerUI } from '../ui/scenario-timer.js?v=1';  // [Phase 5] Countdown timer HUD widget
-import { ScenarioTimerDispatcher } from '../ui/scenario-timer-dispatcher.js?v=1';  // [Phase 5] Timer event dispatcher
+import { ScenarioTimerUI } from '../ui/scenario-timer.js';  // [Phase 5] Countdown timer HUD widget
+import { ScenarioTimerDispatcher } from '../ui/scenario-timer-dispatcher.js';  // [Phase 5] Timer event dispatcher
 
 // Global variables that will be set by main.js
 let gameScenario;
@@ -719,7 +719,7 @@ export async function create() {
         window.objectivesManager.initialize(gameScenario.objectives);
         
         // Create UI panel (dynamically import to avoid circular dependencies)
-        import('../ui/objectives-panel.js?v=1').then(module => {
+        import('../ui/objectives-panel.js').then(module => {
             window.objectivesPanel = new module.ObjectivesPanel(window.objectivesManager);
             console.log('✅ Objectives panel created');
         }).catch(err => {
@@ -834,7 +834,7 @@ export async function create() {
 
     // Initialize NPC Behavior Manager (async lazy loading)
     if (window.npcManager) {
-        import('../systems/npc-behavior.js?v=7')
+        import('../systems/npc-behavior.js')
             .then(module => {
                 window.npcBehaviorManager = new module.NPCBehaviorManager(this, window.npcManager);
                 console.log('✅ NPC Behavior Manager initialized');

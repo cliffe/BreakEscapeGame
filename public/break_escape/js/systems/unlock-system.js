@@ -10,10 +10,10 @@
 import { DOOR_ALIGN_OVERLAP } from '../utils/constants.js';
 // IMPORTANT: version must match all other imports of rooms.js — mismatched ?v= strings
 // create separate module instances with separate rooms objects, causing state to diverge.
-import { rooms } from '../core/rooms.js?v=25';
-import { unlockDoor } from './doors.js?v=6';
-import { startLockpickingMinigame, startKeySelectionMinigame, startPinMinigame, startPasswordMinigame, startRansomwareDisplayMinigame, startBackupRecoveryMinigame, startInfusionPumpMinigame } from './minigame-starters.js?v=3';
-import { playUISound } from './ui-sounds.js?v=1';
+import { rooms } from '../core/rooms.js';
+import { unlockDoor } from './doors.js';
+import { startLockpickingMinigame, startKeySelectionMinigame, startPinMinigame, startPasswordMinigame, startRansomwareDisplayMinigame, startBackupRecoveryMinigame, startInfusionPumpMinigame } from './minigame-starters.js';
+import { playUISound } from './ui-sounds.js';
 
 // Helper function to notify server of unlock and get room/container data
 export async function notifyServerUnlock(lockable, type, method) {
