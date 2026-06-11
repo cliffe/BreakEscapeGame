@@ -74,6 +74,28 @@ covering the BreakEscape routes. If such a rule exists, add an exception for
 `/break_escape/games/*` and `/break_escape/player_preferences/*` to bypass
 caching for those paths.
 
+## Testing in development mode
+
+In development, static files are served by `StaticFilesController` instead of
+nginx. The controller routes use a `*path` wildcard that captures only the URL
+path, not the query string — `params[:path]` for
+`/break_escape/js/main.js?v=1.0.0` is simply `main.js`. The version param is
+ignored server-side and the correct file is served, so all of the following
+work exactly as in production:
+
+- The import map is injected into the HTML
+- Asset URLs carry `?v=VERSION`
+- All module requests in DevTools show versioned URLs
+- Setting `BREAK_ESCAPE_ASSETS_VERSION=foo` updates every URL immediately
+
+The one thing development cannot reproduce is actual cache behaviour. The
+static controller does not set long-lived cache headers, so browsers will not
+aggressively cache assets and a version bump will not visibly change fetch
+behaviour. To test the cache mechanics themselves, use a staging environment
+with nginx, or temporarily add `response.set_header('Cache-Control', 'public,
+max-age=31536000')` to `StaticFilesController#serve`, load a page, then bump
+the version and confirm fresh `200` responses replace cache hits.
+
 ## Testing after a deploy
 
 ### 1. Confirm the import map is present
