@@ -25,6 +25,7 @@ EXTERNAL player_name()
 // ===========================================
 
 === start ===
+#complete_task:report_to_0x99
 -> debrief_start
 
 === debrief_start ===
@@ -45,7 +46,7 @@ EXTERNAL player_name()
 === debrief_attack_stopped ===
 #speaker:agent_0x99
 
-Good work. Contamination avoided, systems secured.
+Good work. Thermal runaway aborted, the banks are isolated, systems secured.
 
 {chen_trust_level >= 70:
     Chen speaks highly of your work. Says you saved 240,000 lives.
@@ -89,7 +90,7 @@ Critical Mass and Social Fabric were coordinating this attack.
 
 This wasn't random.
 
-Social Fabric was ready with disinformation campaigns in three cities—they planned to amplify the panic from contamination.
+Social Fabric was ready with disinformation campaigns in three cities—they planned to amplify the panic from thermal runaway.
 
 * [The Architect is coordinating this]
     You: The Architect. They're coordinating all of this.

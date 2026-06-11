@@ -1,7 +1,7 @@
 // ===========================================
 // OPERATIVE RELAY - COMBAT ENCOUNTER
 // Mission 4: Critical Failure
-// Break Escape - ENTROPY Operative #2 (Chemical Storage Patrol)
+// Break Escape - ENTROPY Operative #2 (Inverter Room Patrol)
 // ===========================================
 
 // Variables for tracking combat state
@@ -13,7 +13,7 @@ VAR player_defeated = false
 
 // ===========================================
 // RELAY DETECTION
-// Location: Chemical Storage
+// Location: Inverter Room
 // Optional Task 2.10: Neutralize Operative #2
 // ===========================================
 
@@ -25,7 +25,7 @@ VAR player_defeated = false
 
 // Triggered if Relay detects player
 
-Intruder in chemical storage! Relay responding!
+Intruder in inverter room! Relay responding!
 
 // Radio call attempt
 
@@ -35,7 +35,7 @@ Intruder in chemical storage! Relay responding!
 - else:
     // Radio call succeeds
 
-    All units, intruder in chemical storage!
+    All units, intruder in inverter room!
 
     -> relay_combat_team_alerted
 }
@@ -45,7 +45,7 @@ Intruder in chemical storage! Relay responding!
 
 // Combat without team alert
 
-You're not getting to those dosing stations!
+You're not getting to those rack banks!
 
 // Combat begins
 
@@ -155,7 +155,7 @@ Good luck with Voltage. He doesn't surrender.
 === relay_interrogation_devices ===
 #speaker:operative_relay
 
-Dosing stations in Chemical Storage. Three of them.
+Charge stations in Inverter Room. Three of them.
 
 We installed bypass hardware on all three. Remote controllable.
 

@@ -1,7 +1,7 @@
 // ===========================================
 // OPERATIVE CIPHER - COMBAT ENCOUNTER
 // Mission 4: Critical Failure
-// Break Escape - ENTROPY Operative #1 (Treatment Floor Guard)
+// Break Escape - ENTROPY Operative #1 (Battery Hall 1 Guard)
 // ===========================================
 
 // Variables for tracking combat state
@@ -13,7 +13,7 @@ VAR player_defeated = false
 
 // ===========================================
 // CIPHER DETECTION
-// Location: Treatment Floor
+// Location: Battery Hall 1
 // Optional Task 2.9: Neutralize Operative #1
 // ===========================================
 
@@ -156,7 +156,7 @@ Alright, alright! I'm done!
 === cipher_interrogation_voltage ===
 #speaker:operative_cipher
 
-Maintenance wing. Final defensive position.
+Plant room. Final defensive position.
 
 Good luck getting past Relay and Static.
 
@@ -165,7 +165,7 @@ Good luck getting past Relay and Static.
 === cipher_interrogation_attack ===
 #speaker:operative_cipher
 
-Three vectors. Physical bypasses on dosing stations, SCADA malware, remote trigger.
+Three vectors. Physical bypasses on rack banks, SCADA malware, remote trigger.
 
 You'd have to disable all three to stop it.
 

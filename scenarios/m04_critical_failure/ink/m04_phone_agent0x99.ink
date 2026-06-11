@@ -243,7 +243,7 @@ You've identified their complete attack infrastructure. Three-vector approach: p
 
 ~ handler_confidence += 10
 
-Correct. Physical devices on the dosing stations, malicious SCADA script, and their command laptop.
+Correct. Physical devices on the rack banks, malicious SCADA script, and their command laptop.
 
 Disable all three, and the attack is dead.
 
@@ -252,7 +252,7 @@ Disable all three, and the attack is dead.
 === trigger_location_discussion ===
 #speaker:agent_0x99
 
-Based on your intel, the remote trigger is with Voltage—maintenance wing command center.
+Based on your intel, the remote trigger is with Voltage—plant room command center.
 
 That's where you'll find him. And that's where this ends.
 
@@ -326,7 +326,7 @@ That's the right approach. Adapt to what you find.
 
 Final phase objectives:
 
-One—neutralize Voltage and any remaining operatives in the maintenance wing.
+One—neutralize Voltage and any remaining operatives in the plant room.
 
 Two—secure or destroy the remote trigger laptop.
 
@@ -342,9 +342,9 @@ Three—disable physical bypass devices and SCADA malware.
     All three operatives are still active. Be ready for combat.
 }
 
-* [I'm ready. Moving to maintenance wing]
+* [I'm ready. Moving to plant room]
     ~ handler_confidence += 10
-    You: Ready. Moving to the maintenance wing now.
+    You: Ready. Moving to the plant room now.
     -> final_encouragement
 
 === final_encouragement ===
@@ -404,7 +404,7 @@ Three—disable physical bypass devices and SCADA malware.
 {server_room_reached and attack_mechanism_known:
     You know the attack mechanism. Now disable it.
 
-    Confront Voltage in the maintenance wing. Secure the remote trigger. Disable all attack vectors.
+    Confront Voltage in the plant room. Secure the remote trigger. Disable all attack vectors.
 }
 
 + [Understood]
@@ -457,7 +457,7 @@ What's the situation?
 #speaker:agent_0x99
 
 {not server_room_reached:
-    Server room access: through the treatment floor. You'll need Level 2 keycard.
+    Workshop access: through the battery hall. You'll need Level 2 keycard.
 
     {operatives_defeated >= 1:
         Check the operative you defeated—they may have had a keycard.
@@ -470,13 +470,13 @@ What's the situation?
     }
 }
 {server_room_reached:
-    Maintenance wing: final location. Requires master keycard.
+    Plant room: final location. Requires master keycard.
 
     {operatives_defeated >= 2:
-        Check the operative in chemical storage—Relay has the master keycard.
+        Check the operative in inverter room—Relay has the master keycard.
     }
     {operatives_defeated < 2:
-        Defeat the operative patrolling chemical storage. They have the master keycard.
+        Defeat the operative patrolling inverter room. They have the master keycard.
     }
 }
 

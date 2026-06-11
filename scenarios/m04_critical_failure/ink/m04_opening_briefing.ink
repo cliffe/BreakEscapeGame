@@ -52,18 +52,18 @@ This one's different from Ransomware Incorporated. More dangerous.
 === briefing_main ===
 #speaker:agent_0x99
 
-Agent 0x99: Pacific Northwest Regional Water Treatment Facility. ENTROPY cell called "Critical Mass."
+Agent 0x99: Albion Energy Storage — 200 megawatt-hours of grid battery storage. ENTROPY cell called "Critical Mass."
 
 Agent 0x99: They've infiltrated the facility under cover as maintenance contractors—OptiGrid Solutions.
 
-Agent 0x99: Three operatives compromised the SCADA network controlling chemical dosing systems.
+Agent 0x99: Three operatives compromised the SCADA network controlling battery management systems.
 
-Agent 0x99: 240,000 residents drink that water.
+Agent 0x99: 240,000 residents depend on this grid.
 
-* [Ask about the chemical threat]
+* [Ask about the thermal threat]
     ~ knows_full_threat = true
     ~ handler_trust += 5
-    You: Chemical dosing—what's the threat?
+    You: Thermal runaway—what's the threat?
     -> chemical_threat_explanation
 
 * [Ask about Critical Mass]
@@ -78,13 +78,13 @@ Agent 0x99: 240,000 residents drink that water.
 === chemical_threat_explanation ===
 #speaker:agent_0x99
 
-Agent 0x99: Chlorine dosing. Normally safe at 0.5-1.0 ppm for disinfection.
+Agent 0x99: Lithium-ion thermal runaway. The battery cells are safe inside their charge ceiling and cooling.
 
-Agent 0x99: They've installed bypass devices on three dosing stations. Remote trigger ready.
+Agent 0x99: They've fitted interlock-bypass modules on three rack banks and spoofed the thermal sensors. Remote overcharge trigger ready.
 
-Agent 0x99: If they activate it—chlorine concentration spikes to 15+ ppm.
+Agent 0x99: If they activate it—the cells overcharge, heat past the runaway threshold, and ignite.
 
-Agent 0x99: Acute chlorine poisoning. Respiratory failure. Mass casualties.
+Agent 0x99: A chain battery fire and a hydrogen explosion. The grid drops for 240,000 people and the hall goes up.
 
 + [That's horrifying]
     ~ handler_trust += 5
@@ -93,7 +93,7 @@ Agent 0x99: Acute chlorine poisoning. Respiratory failure. Mass casualties.
     -> mission_stakes
 
 + [What's their motive?]
-    You: Why attack water infrastructure?
+    You: Why attack grid storage?
     -> entropy_ideology
 
 + {not knows_entropy_cell} [Who is Critical Mass?]
@@ -105,7 +105,7 @@ Agent 0x99: Acute chlorine poisoning. Respiratory failure. Mass casualties.
 
 Agent 0x99: Critical Mass—ENTROPY cell specializing in infrastructure attacks.
 
-Agent 0x99: Power grids, water systems, transportation. They target critical lifelines.
+Agent 0x99: Power storage, generation, transportation. They target critical lifelines.
 
 Agent 0x99: Ideologically motivated. They want to prove society's infrastructure is fragile.
 
@@ -114,7 +114,7 @@ Agent 0x99: Leader goes by "Voltage." Former power grid engineer. Brilliant and 
 + [Understood. What's the plan?]
     -> mission_objectives
 
-+ {not knows_full_threat} [What's the threat to the water supply?]
++ {not knows_full_threat} [What's the threat to the grid?]
     ~ knows_full_threat = true
     ~ handler_trust += 5
     -> chemical_threat_explanation
@@ -142,9 +142,9 @@ Agent 0x99: Three operatives on-site: codenames Cipher, Relay, and Static. Plus 
 
 Agent 0x99: Yes. This is your first mission with hostile ENTROPY operatives.
 
-Agent 0x99: They're not amateurs. Cipher guards the treatment floor. Relay patrols chemical storage.
+Agent 0x99: They're not amateurs. Cipher guards the battery hall. Relay patrols inverter room.
 
-Agent 0x99: Static and Voltage are in the maintenance wing—final defensive position.
+Agent 0x99: Static and Voltage are in the plant room—final defensive position.
 
 Agent 0x99: You can go stealth, but if compromised, you'll need to fight.
 
@@ -168,7 +168,7 @@ Agent 0x99: I've authorized you for lethal force if necessary. But capture Volta
 
 Agent 0x99: ENTROPY believes society's infrastructure is built on exploitable vulnerabilities.
 
-Agent 0x99: They demonstrate this through attacks. Water, power, transit—all "critical points of failure."
+Agent 0x99: They demonstrate this through attacks. Power, grid, transit—all "critical points of failure."
 
 Agent 0x99: It's ideological terrorism disguised as activism. They claim they're exposing systemic weaknesses.
 
@@ -183,7 +183,7 @@ Agent 0x99: But people die. That's what makes them dangerous.
 === cover_identity_explanation ===
 #speaker:agent_0x99
 
-Agent 0x99: Your cover: state EPA auditor conducting a surprise regulatory inspection.
+Agent 0x99: Your cover: grid-safety regulator conducting a surprise regulatory inspection.
 
 Agent 0x99: Forged credentials in your phone. Facility manager is Robert Chen—he's expecting an auditor today.
 
@@ -247,7 +247,7 @@ Agent 0x99: Capture Voltage, and we might get answers about this larger network.
 
 Agent 0x99: Here's the mission breakdown:
 
-Agent 0x99: One—infiltrate the facility using your EPA auditor cover.
+Agent 0x99: One—infiltrate the facility using your grid-safety regulator cover.
 
 Agent 0x99: Two—investigate the SCADA network. Identify how they compromised it.
 
@@ -316,7 +316,7 @@ Agent 0x99: Lives first. Intelligence second.
 
 Agent 0x99: Facility is 20 minutes out. Security checkpoint will ask for credentials.
 
-Agent 0x99: Present your EPA badge. Act like a routine surprise inspection.
+Agent 0x99: Present your regulator credentials. Act like a routine surprise inspection.
 
 Agent 0x99: {combat_ready: Combat may be unavoidable. Stay tactical.| Stay alert. ENTROPY's waiting.}
 

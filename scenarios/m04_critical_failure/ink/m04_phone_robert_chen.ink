@@ -62,9 +62,9 @@ EXTERNAL player_name()
 
 What specifically?
 
-* [How do the dosing systems work?]
-    You: Can you explain how the dosing systems work?
-    -> dosing_systems_explanation
+* [How do the charge-control systems work?]
+    You: Can you explain how the charge-control systems work?
+    -> charge_control_systems_explanation
 
 * [What am I looking for in the server room?]
     You: I'm in the server room. What should I investigate?
@@ -78,12 +78,12 @@ What specifically?
     You: Never mind, I'm good for now.
     -> support_call_end
 
-=== dosing_systems_explanation ===
+=== charge_control_systems_explanation ===
 #speaker:robert_chen
 
-~ guidance_provided = "dosing_systems"
+~ guidance_provided = "charge_control_systems"
 
-Three dosing stations—chlorine, fluoride, pH adjustment.
+Three rack banks—A, B and C—each with their own BMS and cooling.
 
 They're automated via SCADA but have physical controls.
 
@@ -123,7 +123,7 @@ Careful sequence is critical—wrong order could trigger fail-safes.
 
 Three attack vectors need to be neutralized:
 
-One: Physical bypass devices on the dosing stations. Disconnect them manually at Chemical Storage.
+One: Physical bypass devices on the rack banks. Disconnect them manually at Inverter Room.
 
 Two: Malicious SCADA script. Delete it from the backup server via the VM terminal.
 
@@ -170,14 +170,14 @@ Three: Remote trigger mechanism. Secure and disable Voltage's command laptop.
 // Chen checks SCADA displays
 
 {urgency_stage >= 4:
-    We're at critical levels. Chemical parameters are approaching dangerous thresholds.
+    We're at critical levels. Rack temperatures are climbing toward the runaway threshold.
 
     If you don't disable their attack soon, we'll have to do emergency shutdown—and that might trigger exactly what they want.
 }
 {urgency_stage == 3:
-    Dosing parameters are drifting into yellow zones. We've got time, but not much.
+    Charge parameters are drifting into yellow zones. We've got time, but not much.
 
-    Every minute those parameters drift closer to contamination levels.
+    Every minute those parameters drift closer to runaway thresholds.
 }
 {urgency_stage == 2:
     Systems show anomalies but nothing critical yet.
@@ -216,7 +216,7 @@ Call if you need more guidance.
 === chen_emergency_call ===
 #speaker:robert_chen
 
-{player_name()}! Chemical dosing just spiked!
+{player_name()}! Rack temperatures just spiked!
 
 The attack's been triggered!
 

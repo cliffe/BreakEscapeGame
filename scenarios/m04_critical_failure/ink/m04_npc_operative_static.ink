@@ -13,7 +13,7 @@ VAR player_defeated = false
 
 // ===========================================
 // STATIC CONFRONTATION
-// Location: Maintenance Wing
+// Location: Plant Room
 // Part of Task 3.1: Confront Voltage
 // ===========================================
 

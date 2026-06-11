@@ -2,19 +2,19 @@
 
 # m04_critical_failure — Scenario Graph Reference
 
-Infiltrate Pacific Northwest Regional Water Treatment Facility to investigate suspected ENTROPY operation. Critical Mass cell has weaponized SCADA systems to trigger mass chlorine contamination affecting 240,000 residents. Prevent infrastructure attack before 0800 trigger time.
+Infiltrate the Albion Energy Storage facility — 200 MWh of grid-scale lithium-ion battery storage — to investigate a suspected ENTROPY operation. The Critical Mass cell has weaponised the BMS and SCADA systems to drive the battery racks into thermal runaway, threatening a catastrophic fire and a grid blackout for 240,000 people. Confirm the infiltration, expose the attack mechanism, and trigger Emergency Shutdown before the 0800 trigger time.
 
 ## Scenario Statistics
 
 | Metric | Value |
 |---|---|
 | Story aims | 3 |
-| Total tasks | 17 (0 optional) |
+| Total tasks | 17 (3 optional) |
 | VM flag challenges | 4 |
-| Physical locks | 4 |
+| Physical locks | 5 |
 | AND-gate convergences | 0 |
 | Rooms | 8 |
-| Puzzle graph nodes / edges | 20 / 15 |
+| Puzzle graph nodes / edges | 34 / 34 |
 | Story graph nodes / edges | 3 / 0 |
 
 ## Critical Path
@@ -69,13 +69,31 @@ flowchart TD
   node_start(("▶"))
   node_start --> main_entrance
 
-  door_server_room["Server Room<br/>RFID lock"]
-  server_room("Server Room")
-  door_chemical_storage["Chemical Storage<br/>RFID lock"]
-  chemical_storage("Chemical Storage")
-  door_maintenance_wing["Maintenance Wing<br/>RFID lock"]
-  maintenance_wing("Maintenance Wing")
-  lock_security_equipment_locker["Security Equipment Locker<br/>Key lock"]
+  door_engineering_workshop["Engineering Workshop — Authorised Access Only<br/>RFID lock"]
+  engineering_workshop("Engineering Workshop — Authorised Access Only")
+  door_battery_hall_2["BATTERY HALL 2 / INVERTER ROOM — PPE REQUIRED<br/>RFID lock"]
+  battery_hall_2("BATTERY HALL 2 / INVERTER ROOM — PPE REQUIRED")
+  door_plant_room["Inverter / Plant Room — Authorised Access Only<br/>RFID lock"]
+  plant_room("Inverter / Plant Room — Authorised Access Only")
+  main_entrance("Albion Energy Storage — Reception")
+  lock_pick_kit{"Lock Pick Kit"}
+  lock_security_equipment_locker["Security Equipment Locker"]
+  operations_office("Operations Office")
+  maintenance_work_orders{"Maintenance Work Orders"}
+  npc_robert_chen{"Robert Chen"}
+  facility_access_keycard_level_1{"Facility Access Keycard (Level 1)"}
+  action_meet_robert_chen>"Win Chen's trust and gain facility access"]
+  scada_control_room("SCADA Control Room")
+  scada_hmi_main_display{"SCADA HMI — Main Display"}
+  bms_jump_server_terminal["BMS Jump Server Terminal"]
+  battery_hall_1("BATTERY HALL 1 — RESTRICTED ACCESS — PPE REQUIRED")
+  analog_thermometer_rack_bank_c_wall{"Analog Thermometer — Rack Bank C Wall"}
+  h_gas_detector_panel{"H₂ Gas Detector Panel"}
+  npc_entropy_operative_cipher{"ENTROPY Operative 'Cipher'"}
+  workshop_keycard_level_2{"Workshop Keycard (Level 2)"}
+  npc_entropy_operative_relay{"ENTROPY Operative 'Relay'"}
+  master_keycard{"Master Keycard"}
+  lock_esd_pushbutton["Emergency Shutdown Pushbutton — Rack Banks A-C"]
   vmch_submit_network_scan_flag["Submit network scan evidence"]
   vmfl_submit_network_scan_flag{"Network Scan Flag"}
   vmch_submit_ftp_intel_flag["Submit FTP intelligence evidence"]
@@ -84,16 +102,30 @@ flowchart TD
   vmfl_submit_http_analysis_flag{"Http Analysis Flag"}
   vmch_submit_distcc_exploit_flag["Submit exploitation evidence"]
   vmfl_submit_distcc_exploit_flag{"Distcc Exploit Flag"}
-  main_entrance("Main Entrance")
-  administration_offices("Administration Offices")
-  control_room("Control Room")
   security_office("Security Office")
-  treatment_floor("Treatment Floor")
 
-  door_server_room --> server_room
-  door_chemical_storage --> chemical_storage
-  door_maintenance_wing --> maintenance_wing
+  door_engineering_workshop --> engineering_workshop
+  door_battery_hall_2 --> battery_hall_2
+  door_plant_room --> plant_room
+  main_entrance --> lock_pick_kit
+  lock_pick_kit --> lock_security_equipment_locker
+  operations_office --> maintenance_work_orders
+  operations_office --> npc_robert_chen
+  npc_robert_chen --> facility_access_keycard_level_1
+  facility_access_keycard_level_1 --> door_battery_hall_2
+  npc_robert_chen --> action_meet_robert_chen
+  scada_control_room --> scada_hmi_main_display
+  engineering_workshop --> bms_jump_server_terminal
   security_office --> lock_security_equipment_locker
+  battery_hall_1 --> analog_thermometer_rack_bank_c_wall
+  battery_hall_1 --> h_gas_detector_panel
+  battery_hall_1 --> npc_entropy_operative_cipher
+  npc_entropy_operative_cipher --> workshop_keycard_level_2
+  workshop_keycard_level_2 --> door_engineering_workshop
+  battery_hall_2 --> npc_entropy_operative_relay
+  npc_entropy_operative_relay --> master_keycard
+  master_keycard --> door_plant_room
+  plant_room --> lock_esd_pushbutton
   vmch_submit_network_scan_flag --> vmfl_submit_network_scan_flag
   vmch_submit_ftp_intel_flag --> vmfl_submit_ftp_intel_flag
   vmfl_submit_network_scan_flag -.-> vmch_submit_ftp_intel_flag
@@ -101,14 +133,18 @@ flowchart TD
   vmfl_submit_ftp_intel_flag -.-> vmch_submit_http_analysis_flag
   vmch_submit_distcc_exploit_flag --> vmfl_submit_distcc_exploit_flag
   vmfl_submit_http_analysis_flag -.-> vmch_submit_distcc_exploit_flag
-  main_entrance --> administration_offices
-  administration_offices --> control_room
-  administration_offices --> security_office
-  control_room --> treatment_floor
+  bms_jump_server_terminal --> vmch_submit_network_scan_flag
+  main_entrance --> operations_office
+  operations_office --> scada_control_room
+  operations_office --> security_office
+  scada_control_room --> battery_hall_1
 
-  class door_server_room,door_chemical_storage,door_maintenance_wing,lock_security_equipment_locker lock
-  class server_room,chemical_storage,maintenance_wing,main_entrance,administration_offices,control_room,security_office,treatment_floor room
-  class vmch_submit_network_scan_flag,vmch_submit_ftp_intel_flag,vmch_submit_http_analysis_flag,vmch_submit_distcc_exploit_flag vm
+  class door_engineering_workshop,door_battery_hall_2,door_plant_room,lock_security_equipment_locker,lock_esd_pushbutton lock
+  class engineering_workshop,battery_hall_2,plant_room,main_entrance,operations_office,scada_control_room,battery_hall_1,security_office room
+  class lock_pick_kit,maintenance_work_orders,scada_hmi_main_display,analog_thermometer_rack_bank_c_wall,h_gas_detector_panel item
+  class npc_robert_chen,facility_access_keycard_level_1,npc_entropy_operative_cipher,workshop_keycard_level_2,npc_entropy_operative_relay,master_keycard key
+  class action_meet_robert_chen action
+  class bms_jump_server_terminal,vmch_submit_network_scan_flag,vmch_submit_ftp_intel_flag,vmch_submit_http_analysis_flag,vmch_submit_distcc_exploit_flag vm
   class vmfl_submit_network_scan_flag,vmfl_submit_ftp_intel_flag,vmfl_submit_http_analysis_flag,vmfl_submit_distcc_exploit_flag flag
   class node_start start
 ```
@@ -136,8 +172,8 @@ flowchart TD
   classDef start     fill:#003322,stroke:#00ffaa,color:#00ffaa
 
   aim_infiltrate_facility{{"Infiltrate Facility and Confirm Threat"}}
-  aim_investigate_scada_compromise{{"Investigate SCADA Compromise"}}
-  aim_neutralize_attack_threat{{"Neutralize Attack Threat"}}
+  aim_investigate_scada_compromise{{"Investigate SCADA / BMS Compromise"}}
+  aim_neutralize_attack_threat{{"Neutralise Attack Threat"}}
 
 
   class aim_infiltrate_facility,aim_investigate_scada_compromise,aim_neutralize_attack_threat aim
@@ -168,13 +204,31 @@ flowchart TD
   node_start(("▶"))
   node_start --> main_entrance
 
-  door_server_room["Server Room<br/>RFID lock"]
-  server_room("Server Room")
-  door_chemical_storage["Chemical Storage<br/>RFID lock"]
-  chemical_storage("Chemical Storage")
-  door_maintenance_wing["Maintenance Wing<br/>RFID lock"]
-  maintenance_wing("Maintenance Wing")
-  lock_security_equipment_locker["Security Equipment Locker<br/>Key lock"]
+  door_engineering_workshop["Engineering Workshop — Authorised Access Only<br/>RFID lock"]
+  engineering_workshop("Engineering Workshop — Authorised Access Only")
+  door_battery_hall_2["BATTERY HALL 2 / INVERTER ROOM — PPE REQUIRED<br/>RFID lock"]
+  battery_hall_2("BATTERY HALL 2 / INVERTER ROOM — PPE REQUIRED")
+  door_plant_room["Inverter / Plant Room — Authorised Access Only<br/>RFID lock"]
+  plant_room("Inverter / Plant Room — Authorised Access Only")
+  main_entrance("Albion Energy Storage — Reception")
+  lock_pick_kit{"Lock Pick Kit"}
+  lock_security_equipment_locker["Security Equipment Locker"]
+  operations_office("Operations Office")
+  maintenance_work_orders{"Maintenance Work Orders"}
+  npc_robert_chen{"Robert Chen"}
+  facility_access_keycard_level_1{"Facility Access Keycard (Level 1)"}
+  action_meet_robert_chen>"Win Chen's trust and gain facility access"]
+  scada_control_room("SCADA Control Room")
+  scada_hmi_main_display{"SCADA HMI — Main Display"}
+  bms_jump_server_terminal["BMS Jump Server Terminal"]
+  battery_hall_1("BATTERY HALL 1 — RESTRICTED ACCESS — PPE REQUIRED")
+  analog_thermometer_rack_bank_c_wall{"Analog Thermometer — Rack Bank C Wall"}
+  h_gas_detector_panel{"H₂ Gas Detector Panel"}
+  npc_entropy_operative_cipher{"ENTROPY Operative 'Cipher'"}
+  workshop_keycard_level_2{"Workshop Keycard (Level 2)"}
+  npc_entropy_operative_relay{"ENTROPY Operative 'Relay'"}
+  master_keycard{"Master Keycard"}
+  lock_esd_pushbutton["Emergency Shutdown Pushbutton — Rack Banks A-C"]
   vmch_submit_network_scan_flag["Submit network scan evidence"]
   vmfl_submit_network_scan_flag{"Network Scan Flag"}
   vmch_submit_ftp_intel_flag["Submit FTP intelligence evidence"]
@@ -183,19 +237,33 @@ flowchart TD
   vmfl_submit_http_analysis_flag{"Http Analysis Flag"}
   vmch_submit_distcc_exploit_flag["Submit exploitation evidence"]
   vmfl_submit_distcc_exploit_flag{"Distcc Exploit Flag"}
-  main_entrance("Main Entrance")
-  administration_offices("Administration Offices")
-  control_room("Control Room")
   security_office("Security Office")
-  treatment_floor("Treatment Floor")
   aim_infiltrate_facility{{"Infiltrate Facility and Confirm Threat"}}
-  aim_investigate_scada_compromise{{"Investigate SCADA Compromise"}}
-  aim_neutralize_attack_threat{{"Neutralize Attack Threat"}}
+  aim_investigate_scada_compromise{{"Investigate SCADA / BMS Compromise"}}
+  aim_neutralize_attack_threat{{"Neutralise Attack Threat"}}
 
-  door_server_room --> server_room
-  door_chemical_storage --> chemical_storage
-  door_maintenance_wing --> maintenance_wing
+  door_engineering_workshop --> engineering_workshop
+  door_battery_hall_2 --> battery_hall_2
+  door_plant_room --> plant_room
+  main_entrance --> lock_pick_kit
+  lock_pick_kit --> lock_security_equipment_locker
+  operations_office --> maintenance_work_orders
+  operations_office --> npc_robert_chen
+  npc_robert_chen --> facility_access_keycard_level_1
+  facility_access_keycard_level_1 --> door_battery_hall_2
+  npc_robert_chen --> action_meet_robert_chen
+  scada_control_room --> scada_hmi_main_display
+  engineering_workshop --> bms_jump_server_terminal
   security_office --> lock_security_equipment_locker
+  battery_hall_1 --> analog_thermometer_rack_bank_c_wall
+  battery_hall_1 --> h_gas_detector_panel
+  battery_hall_1 --> npc_entropy_operative_cipher
+  npc_entropy_operative_cipher --> workshop_keycard_level_2
+  workshop_keycard_level_2 --> door_engineering_workshop
+  battery_hall_2 --> npc_entropy_operative_relay
+  npc_entropy_operative_relay --> master_keycard
+  master_keycard --> door_plant_room
+  plant_room --> lock_esd_pushbutton
   vmch_submit_network_scan_flag --> vmfl_submit_network_scan_flag
   vmch_submit_ftp_intel_flag --> vmfl_submit_ftp_intel_flag
   vmfl_submit_network_scan_flag -.-> vmch_submit_ftp_intel_flag
@@ -203,20 +271,28 @@ flowchart TD
   vmfl_submit_ftp_intel_flag -.-> vmch_submit_http_analysis_flag
   vmch_submit_distcc_exploit_flag --> vmfl_submit_distcc_exploit_flag
   vmfl_submit_http_analysis_flag -.-> vmch_submit_distcc_exploit_flag
-  main_entrance --> administration_offices
-  administration_offices --> control_room
-  administration_offices --> security_office
-  control_room --> treatment_floor
+  bms_jump_server_terminal --> vmch_submit_network_scan_flag
+  main_entrance --> operations_office
+  operations_office --> scada_control_room
+  operations_office --> security_office
+  scada_control_room --> battery_hall_1
   main_entrance -.-> aim_infiltrate_facility
-  door_server_room -.-> aim_investigate_scada_compromise
+  door_engineering_workshop -.-> aim_investigate_scada_compromise
   vmfl_submit_network_scan_flag -.-> aim_investigate_scada_compromise
   vmfl_submit_ftp_intel_flag -.-> aim_investigate_scada_compromise
   vmfl_submit_http_analysis_flag -.-> aim_investigate_scada_compromise
   vmfl_submit_distcc_exploit_flag -.-> aim_investigate_scada_compromise
+  action_meet_robert_chen -.-> aim_investigate_scada_compromise
+  bms_jump_server_terminal -.-> aim_investigate_scada_compromise
+  analog_thermometer_rack_bank_c_wall -.-> aim_infiltrate_facility
+  lock_esd_pushbutton -.-> aim_neutralize_attack_threat
 
-  class door_server_room,door_chemical_storage,door_maintenance_wing,lock_security_equipment_locker lock
-  class server_room,chemical_storage,maintenance_wing,main_entrance,administration_offices,control_room,security_office,treatment_floor room
-  class vmch_submit_network_scan_flag,vmch_submit_ftp_intel_flag,vmch_submit_http_analysis_flag,vmch_submit_distcc_exploit_flag vm
+  class door_engineering_workshop,door_battery_hall_2,door_plant_room,lock_security_equipment_locker,lock_esd_pushbutton lock
+  class engineering_workshop,battery_hall_2,plant_room,main_entrance,operations_office,scada_control_room,battery_hall_1,security_office room
+  class lock_pick_kit,maintenance_work_orders,scada_hmi_main_display,analog_thermometer_rack_bank_c_wall,h_gas_detector_panel item
+  class npc_robert_chen,facility_access_keycard_level_1,npc_entropy_operative_cipher,workshop_keycard_level_2,npc_entropy_operative_relay,master_keycard key
+  class action_meet_robert_chen action
+  class bms_jump_server_terminal,vmch_submit_network_scan_flag,vmch_submit_ftp_intel_flag,vmch_submit_http_analysis_flag,vmch_submit_distcc_exploit_flag vm
   class vmfl_submit_network_scan_flag,vmfl_submit_ftp_intel_flag,vmfl_submit_http_analysis_flag,vmfl_submit_distcc_exploit_flag flag
   class aim_infiltrate_facility,aim_investigate_scada_compromise,aim_neutralize_attack_threat aim
   class node_start start
@@ -247,28 +323,28 @@ flowchart TD
   node_start(("▶"))
   node_start --> main_entrance
 
-  main_entrance("Main Entrance")
-  administration_offices("Administration Offices")
-  control_room("Control Room")
-  server_room["Server Room<br/>(locked)"]
+  main_entrance("Albion Energy Storage — Reception")
+  operations_office("Operations Office")
+  scada_control_room("SCADA Control Room")
+  engineering_workshop["Engineering Workshop — Authorised Access Only<br/>(locked)"]
   security_office("Security Office")
-  treatment_floor("Treatment Floor")
-  chemical_storage["Chemical Storage<br/>(locked)"]
-  maintenance_wing["Maintenance Wing<br/>(locked)"]
+  battery_hall_1("BATTERY HALL 1 — RESTRICTED ACCESS — PPE REQUIRED")
+  battery_hall_2["BATTERY HALL 2 / INVERTER ROOM — PPE REQUIRED<br/>(locked)"]
+  plant_room["Inverter / Plant Room — Authorised Access Only<br/>(locked)"]
   loading_dock("Loading Dock")
 
-  main_entrance --> administration_offices
-  administration_offices --> control_room
-  administration_offices --> security_office
-  control_room --> server_room
-  control_room --> treatment_floor
-  server_room --> treatment_floor
-  treatment_floor --> chemical_storage
-  treatment_floor --> maintenance_wing
-  maintenance_wing --> loading_dock
+  main_entrance --> operations_office
+  operations_office --> scada_control_room
+  operations_office --> security_office
+  scada_control_room --> engineering_workshop
+  scada_control_room --> battery_hall_1
+  engineering_workshop --> battery_hall_1
+  battery_hall_1 --> battery_hall_2
+  battery_hall_1 --> plant_room
+  plant_room --> loading_dock
 
-  class main_entrance,administration_offices,control_room,security_office,treatment_floor,loading_dock room
-  class server_room,chemical_storage,maintenance_wing lock
+  class main_entrance,operations_office,scada_control_room,security_office,battery_hall_1,loading_dock room
+  class engineering_workshop,battery_hall_2,plant_room lock
   class node_start start
 ```
 
@@ -297,14 +373,14 @@ flowchart TD
   node_start(("▶"))
   node_start --> main_entrance
 
-  main_entrance("Main Entrance")
-  administration_offices("Administration Offices")
-  control_room("Control Room")
-  server_room["Server Room<br/>(locked)"]
+  main_entrance("Albion Energy Storage — Reception")
+  operations_office("Operations Office")
+  scada_control_room("SCADA Control Room")
+  engineering_workshop["Engineering Workshop — Authorised Access Only<br/>(locked)"]
   security_office("Security Office")
-  treatment_floor("Treatment Floor")
-  chemical_storage["Chemical Storage<br/>(locked)"]
-  maintenance_wing["Maintenance Wing<br/>(locked)"]
+  battery_hall_1("BATTERY HALL 1 — RESTRICTED ACCESS — PPE REQUIRED")
+  battery_hall_2["BATTERY HALL 2 / INVERTER ROOM — PPE REQUIRED<br/>(locked)"]
+  plant_room["Inverter / Plant Room — Authorised Access Only<br/>(locked)"]
   loading_dock("Loading Dock")
   rc_obj1_1{"Visitor Sign-In Log"}
   rc_obj2_2{"Security Desk Procedures"}
@@ -313,54 +389,56 @@ flowchart TD
   rc_npc_agent_0x99_haxolottle_5("Agent 0x99 'Haxolottle'")
   rc_npc_robert_chen_6("Robert Chen")
   rc_npc_agent_0x99_7("Agent 0x99")
-  rc_obj8_8{"Chen's Computer Terminal"}
+  rc_obj8_8{"Chen's BMS Monitoring Terminal"}
   rc_obj9_9{"Maintenance Work Orders"}
-  rc_obj10_10{"Facility Blueprints"}
+  rc_obj10_10{"Facility Layout Map"}
   rc_obj11_11{"Budget Cut Memo"}
   rc_npc_robert_chen_12("Robert Chen")
   rc_obj13_13{"Facility Access Keycard (Level 1)"}
-  rc_obj14_14{"SCADA Main Display"}
-  rc_obj15_15{"Chemical Dosing Parameters"}
-  rc_obj16_16{"Emergency Shutdown Procedures"}
-  rc_vm_launcher_vulnerability_analysis_17{"SCADA Network Terminal"}
+  rc_scada_hmi_display_14{"SCADA HMI — Main Display"}
+  rc_obj15_15{"Thermal & Charge Parameters Log"}
+  rc_obj16_16{"Emergency Shutdown Procedure"}
+  rc_vm_launcher_vulnerability_analysis_17{"BMS Jump Server Terminal"}
   rc_flag_station_dropsite_18{"SAFETYNET Drop-Site Terminal"}
-  rc_obj19_19{"Server Room Access Log"}
+  rc_obj19_19{"Workshop Access Log"}
   rc_obj20_20{"Network Monitoring Station"}
   rc_obj21_21{"Security Camera Monitors"}
   rc_obj22_22{"Camera System Logs"}
-  rc_obj23_23[["Security Equipment Locker"]]
+  rc_security_equipment_locker_23[["Security Equipment Locker"]]
   rc_obj24_24{"Spare Keycard (Level 1)"}
   rc_obj25_25{"Incident Response Guide"}
-  rc_obj26_26{"Treatment Process Diagram"}
-  rc_obj27_27{"Dosing Station Monitoring Terminal"}
-  rc_obj28_28{"OptiGrid Work Order"}
-  rc_npc_entropy_operative_cipher_29("ENTROPY Operative 'Cipher'")
-  rc_obj30_30{"Server Room Keycard (Level 2)"}
-  rc_obj31_31{"Cipher's Intelligence Note"}
-  rc_obj32_32{"Chemical Storage Manifest"}
-  rc_obj33_33{"Dosing Station Control Panel"}
-  rc_obj34_34{"Emergency Shower Procedures"}
-  rc_npc_entropy_operative_relay_35("ENTROPY Operative 'Relay'")
-  rc_obj36_36{"Master Keycard"}
-  rc_obj37_37{"OptiGrid Facility Access Log"}
-  rc_obj38_38{"ENTROPY Command Laptop"}
-  rc_obj39_39{"Facility Blueprints (Marked)"}
-  rc_obj40_40{"The Architect's Directive"}
-  rc_npc_voltage_critical_mass_leader_41("Voltage (Critical Mass Leader)")
-  rc_npc_entropy_operative_static_42("ENTROPY Operative 'Static'")
-  rc_obj43_43{"Critical Mass Coordination Log"}
-  rc_obj44_44{"Loading Dock Schedule"}
-  rc_obj45_45{"Voltage's Escape Plan"}
+  rc_analog_thermometer_26{"Analog Thermometer — Rack Bank C Wall"}
+  rc_rack_status_panel_27{"Battery Rack Status Panels (Digital)"}
+  rc_hydrogen_detector_28{"H₂ Gas Detector Panel"}
+  rc_obj29_29{"BESS Process Diagram"}
+  rc_npc_entropy_operative_cipher_30("ENTROPY Operative 'Cipher'")
+  rc_obj31_31{"Workshop Keycard (Level 2)"}
+  rc_obj32_32{"Cipher's Intelligence Note"}
+  rc_obj33_33{"Rack Bank Maintenance Manifest"}
+  rc_obj34_34{"BMS Interlock-Bypass Module"}
+  rc_obj35_35{"Emergency Procedures"}
+  rc_npc_entropy_operative_relay_36("ENTROPY Operative 'Relay'")
+  rc_obj37_37{"Master Keycard"}
+  rc_obj38_38{"OptiGrid Operations Log"}
+  rc_esd_pushbutton_39{"Emergency Shutdown Pushbutton — Rack Banks A-C"}
+  rc_obj40_40{"ENTROPY Command Laptop"}
+  rc_obj41_41{"Facility Blueprints (Marked)"}
+  rc_obj42_42{"The Architect's Directive"}
+  rc_npc_voltage_critical_mass_leader_43("Voltage (Critical Mass Leader)")
+  rc_npc_entropy_operative_static_44("ENTROPY Operative 'Static'")
+  rc_obj45_45{"Critical Mass Coordination Log"}
+  rc_obj46_46{"Loading Dock Schedule"}
+  rc_obj47_47{"Voltage's Escape Plan"}
 
-  main_entrance --> administration_offices
-  administration_offices --> control_room
-  administration_offices --> security_office
-  control_room --> server_room
-  control_room --> treatment_floor
-  server_room --> treatment_floor
-  treatment_floor --> chemical_storage
-  treatment_floor --> maintenance_wing
-  maintenance_wing --> loading_dock
+  main_entrance --> operations_office
+  operations_office --> scada_control_room
+  operations_office --> security_office
+  scada_control_room --> engineering_workshop
+  scada_control_room --> battery_hall_1
+  engineering_workshop --> battery_hall_1
+  battery_hall_1 --> battery_hall_2
+  battery_hall_1 --> plant_room
+  plant_room --> loading_dock
   main_entrance --> rc_obj1_1
   main_entrance --> rc_obj2_2
   main_entrance --> rc_npc_agent_0x99_3
@@ -368,49 +446,51 @@ flowchart TD
   main_entrance --> rc_npc_agent_0x99_haxolottle_5
   main_entrance --> rc_npc_robert_chen_6
   main_entrance --> rc_npc_agent_0x99_7
-  administration_offices --> rc_obj8_8
-  administration_offices --> rc_obj9_9
-  administration_offices --> rc_obj10_10
-  administration_offices --> rc_obj11_11
-  administration_offices --> rc_npc_robert_chen_12
+  operations_office --> rc_obj8_8
+  operations_office --> rc_obj9_9
+  operations_office --> rc_obj10_10
+  operations_office --> rc_obj11_11
+  operations_office --> rc_npc_robert_chen_12
   rc_npc_robert_chen_12 --> rc_obj13_13
-  control_room --> rc_obj14_14
-  control_room --> rc_obj15_15
-  control_room --> rc_obj16_16
-  server_room --> rc_vm_launcher_vulnerability_analysis_17
-  server_room --> rc_flag_station_dropsite_18
-  server_room --> rc_obj19_19
-  server_room --> rc_obj20_20
+  scada_control_room --> rc_scada_hmi_display_14
+  scada_control_room --> rc_obj15_15
+  scada_control_room --> rc_obj16_16
+  engineering_workshop --> rc_vm_launcher_vulnerability_analysis_17
+  engineering_workshop --> rc_flag_station_dropsite_18
+  engineering_workshop --> rc_obj19_19
+  engineering_workshop --> rc_obj20_20
   security_office --> rc_obj21_21
   security_office --> rc_obj22_22
-  security_office --> rc_obj23_23
-  rc_obj23_23 --> rc_obj24_24
-  rc_obj23_23 --> rc_obj25_25
-  treatment_floor --> rc_obj26_26
-  treatment_floor --> rc_obj27_27
-  treatment_floor --> rc_obj28_28
-  treatment_floor --> rc_npc_entropy_operative_cipher_29
-  rc_npc_entropy_operative_cipher_29 --> rc_obj30_30
-  rc_npc_entropy_operative_cipher_29 --> rc_obj31_31
-  chemical_storage --> rc_obj32_32
-  chemical_storage --> rc_obj33_33
-  chemical_storage --> rc_obj34_34
-  chemical_storage --> rc_npc_entropy_operative_relay_35
-  rc_npc_entropy_operative_relay_35 --> rc_obj36_36
-  rc_npc_entropy_operative_relay_35 --> rc_obj37_37
-  maintenance_wing --> rc_obj38_38
-  maintenance_wing --> rc_obj39_39
-  maintenance_wing --> rc_obj40_40
-  maintenance_wing --> rc_npc_voltage_critical_mass_leader_41
-  maintenance_wing --> rc_npc_entropy_operative_static_42
-  rc_npc_entropy_operative_static_42 --> rc_obj43_43
-  loading_dock --> rc_obj44_44
-  loading_dock --> rc_obj45_45
+  security_office --> rc_security_equipment_locker_23
+  rc_security_equipment_locker_23 --> rc_obj24_24
+  rc_security_equipment_locker_23 --> rc_obj25_25
+  battery_hall_1 --> rc_analog_thermometer_26
+  battery_hall_1 --> rc_rack_status_panel_27
+  battery_hall_1 --> rc_hydrogen_detector_28
+  battery_hall_1 --> rc_obj29_29
+  battery_hall_1 --> rc_npc_entropy_operative_cipher_30
+  rc_npc_entropy_operative_cipher_30 --> rc_obj31_31
+  rc_npc_entropy_operative_cipher_30 --> rc_obj32_32
+  battery_hall_2 --> rc_obj33_33
+  battery_hall_2 --> rc_obj34_34
+  battery_hall_2 --> rc_obj35_35
+  battery_hall_2 --> rc_npc_entropy_operative_relay_36
+  rc_npc_entropy_operative_relay_36 --> rc_obj37_37
+  rc_npc_entropy_operative_relay_36 --> rc_obj38_38
+  plant_room --> rc_esd_pushbutton_39
+  plant_room --> rc_obj40_40
+  plant_room --> rc_obj41_41
+  plant_room --> rc_obj42_42
+  plant_room --> rc_npc_voltage_critical_mass_leader_43
+  plant_room --> rc_npc_entropy_operative_static_44
+  rc_npc_entropy_operative_static_44 --> rc_obj45_45
+  loading_dock --> rc_obj46_46
+  loading_dock --> rc_obj47_47
 
-  class main_entrance,administration_offices,control_room,security_office,treatment_floor,loading_dock room
-  class server_room,chemical_storage,maintenance_wing lock
-  class rc_obj1_1,rc_obj2_2,rc_obj8_8,rc_obj9_9,rc_obj10_10,rc_obj11_11,rc_obj13_13,rc_obj14_14,rc_obj15_15,rc_obj16_16,rc_vm_launcher_vulnerability_analysis_17,rc_flag_station_dropsite_18,rc_obj19_19,rc_obj20_20,rc_obj21_21,rc_obj22_22,rc_obj24_24,rc_obj25_25,rc_obj26_26,rc_obj27_27,rc_obj28_28,rc_obj30_30,rc_obj31_31,rc_obj32_32,rc_obj33_33,rc_obj34_34,rc_obj36_36,rc_obj37_37,rc_obj38_38,rc_obj39_39,rc_obj40_40,rc_obj43_43,rc_obj44_44,rc_obj45_45 item
-  class rc_npc_agent_0x99_3,rc_npc_security_guard_4,rc_npc_agent_0x99_haxolottle_5,rc_npc_robert_chen_6,rc_npc_agent_0x99_7,rc_npc_robert_chen_12,rc_npc_entropy_operative_cipher_29,rc_npc_entropy_operative_relay_35,rc_npc_voltage_critical_mass_leader_41,rc_npc_entropy_operative_static_42 npc
-  class rc_obj23_23 container
+  class main_entrance,operations_office,scada_control_room,security_office,battery_hall_1,loading_dock room
+  class engineering_workshop,battery_hall_2,plant_room lock
+  class rc_obj1_1,rc_obj2_2,rc_obj8_8,rc_obj9_9,rc_obj10_10,rc_obj11_11,rc_obj13_13,rc_scada_hmi_display_14,rc_obj15_15,rc_obj16_16,rc_vm_launcher_vulnerability_analysis_17,rc_flag_station_dropsite_18,rc_obj19_19,rc_obj20_20,rc_obj21_21,rc_obj22_22,rc_obj24_24,rc_obj25_25,rc_analog_thermometer_26,rc_rack_status_panel_27,rc_hydrogen_detector_28,rc_obj29_29,rc_obj31_31,rc_obj32_32,rc_obj33_33,rc_obj34_34,rc_obj35_35,rc_obj37_37,rc_obj38_38,rc_esd_pushbutton_39,rc_obj40_40,rc_obj41_41,rc_obj42_42,rc_obj45_45,rc_obj46_46,rc_obj47_47 item
+  class rc_npc_agent_0x99_3,rc_npc_security_guard_4,rc_npc_agent_0x99_haxolottle_5,rc_npc_robert_chen_6,rc_npc_agent_0x99_7,rc_npc_robert_chen_12,rc_npc_entropy_operative_cipher_30,rc_npc_entropy_operative_relay_36,rc_npc_voltage_critical_mass_leader_43,rc_npc_entropy_operative_static_44 npc
+  class rc_security_equipment_locker_23 container
   class node_start start
 ```

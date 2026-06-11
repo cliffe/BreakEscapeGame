@@ -28,10 +28,11 @@ EXTERNAL current_time()
 
 === initial_meeting ===
 #speaker:robert_chen
+#complete_task:meet_robert_chen
 
 // Chen looks up from desk, visibly tired and annoyed
 
-State audit at 4 AM? You regulatory people have interesting schedules.
+A grid-safety audit at 4 AM? You regulator types have interesting schedules.
 
 * [Just doing my job, Mr. Chen]
     ~ chen_trust_level += 5
@@ -111,7 +112,7 @@ We don't have anything to hide.
 
 // Chen reluctantly agrees
 
-Fine. But this better be routine. I've got 47 operators keeping 240,000 people supplied with clean water.
+Fine. But this better be routine. I've got 47 operators keeping 240,000 people on grid power.
 
 -> chen_provides_access
 
@@ -273,7 +274,7 @@ You: Mr. Chen, I'm not actually a state auditor.
 
 You: I'm with SAFETYNET. We have intelligence that ENTROPY operatives have infiltrated your facility.
 
-You: They're planning an attack on your water treatment systems.
+You: They're planning an attack on your battery storage systems.
 
 // Chen's face goes pale, sits down heavily
 
@@ -283,7 +284,7 @@ ENTROPY? Here? At my facility?
 
 + [Completely serious. Three operatives]
     ~ chen_trust_level += 10
-    You: Completely serious. At least three operatives targeting your chemical dosing systems.
+    You: Completely serious. At least three operatives targeting your battery management systems.
     -> chen_processes_threat
 
 + [The OptiGrid technicians—that was them]
@@ -294,7 +295,7 @@ ENTROPY? Here? At my facility?
 === chen_processes_threat ===
 #speaker:robert_chen
 
-My God. 240,000 people drink this water.
+My God. 240,000 people depend on this grid.
 
 How much time do we have?
 
@@ -359,7 +360,7 @@ Tell me what you need. Anything.
 
 Facility access, SCADA system knowledge, anything.
 
-400,000 people drink this water. We're stopping this.
+400,000 people depend on this grid. We're stopping this.
 
 I'll pull up all the access logs and SCADA monitoring data.
 
@@ -396,7 +397,7 @@ Alright... well, you know where to find me if you need something.
     // If mission already revealed
     I've been monitoring the systems. You were right—something's wrong.
 
-    Look at these chemical dosing parameters. They shouldn't be changing like this.
+    Look at these battery charge parameters. They shouldn't be changing like this.
 - else:
     // If still maintaining cover
     Can I help you with something?
@@ -419,7 +420,7 @@ Alright... well, you know where to find me if you need something.
 {revealed_mission:
     ~ chen_trust_level += 10
 
-    Those dosing rates shouldn't be changing outside of manual input from this terminal.
+    Those charge rates shouldn't be changing outside of manual input from this terminal.
 
     Someone's got remote access to the system.
 - else:
@@ -444,7 +445,7 @@ Alright... well, you know where to find me if you need something.
 
 // Chen points to displays
 
-Normal chlorine dosing: 0.5 to 1.0 parts per million for disinfection.
+Normal charge ceiling holds the cells well inside their thermal envelope, with active cooling.
 
 These readings show gradual increases programmed over the past 48 hours.
 
@@ -465,7 +466,7 @@ If this continues to the levels they're targeting... it would be catastrophic.
 
     The attack you mentioned—this is it, isn't it?
 
-    They're setting up a mass contamination event.
+    They're setting up a mass thermal-runaway event.
 - else:
     // Chen becomes alarmed
 
@@ -493,7 +494,7 @@ If this continues to the levels they're targeting... it would be catastrophic.
 
 You: I'm not a state auditor. I'm with SAFETYNET.
 
-You: ENTROPY operatives have infiltrated your facility. They're planning to weaponize your chemical dosing systems.
+You: ENTROPY operatives have infiltrated your facility. They're planning to weaponize your battery management systems.
 
 // Chen's face goes pale
 
@@ -530,11 +531,11 @@ What do you need from me?
 
 // Chen examines parameters closely, explains technically
 
-They're increasing chlorine dosing rates while decreasing pH adjustment.
+They're raising the charge ceilings while forcing the cooling and hydrogen vents off.
 
-If this continues to the levels they've programmed... toxic byproducts in the treatment process.
+If this continues to the levels they've programmed... the cells tip into thermal runaway.
 
-The contamination wouldn't be immediate—it would build up over hours.
+The thermal runaway wouldn't be immediate—it would build up over hours.
 
 By the time anyone noticed, thousands would have consumed it.
 
@@ -589,7 +590,7 @@ The server room. If they're accessing SCADA remotely, it's through our network i
 
     // Chen retrieves higher-level keycard
 
-    Here. Server room is through the treatment floor.
+    Here. The engineering workshop is off the battery hall.
 
     Be careful—if those operatives are still here...
 }

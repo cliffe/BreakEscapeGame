@@ -22,7 +22,7 @@ EXTERNAL player_name()
 
 // ===========================================
 // CONFRONTATION START
-// Location: Maintenance Wing
+// Location: Plant Room
 // Task 3.1: Confront Voltage
 // ===========================================
 
@@ -52,8 +52,8 @@ But you're too late. This facility's security is a joke. We've been here for thr
     You: The attack is over, Voltage. Stand down.
     -> voltage_professional_approach
 
-* [You're not contaminating this water supply]
-    You: You're not contaminating this water supply.
+* [You're not torching this battery hall]
+    You: You're not torching this battery hall.
     -> voltage_confrontational
 
 * {attack_trigger_secured} [Your trigger is disabled. It's over]
@@ -104,7 +104,7 @@ Smart. You disabled the vectors before coming for me.
 
 // Voltage hand moves near laptop
 
-One keystroke and I trigger it now. 240,000 people drinking contaminated water by noon.
+One keystroke and I trigger it now. The racks go critical, the hall burns, and 240,000 people lose power by noon.
 
 Your move, agent.
 
@@ -193,7 +193,7 @@ You think stopping this changes anything? You stopped ONE attack. How many other
 
 You want to understand? Fine.
 
-Infrastructure is the foundation of the system. Power, water, transportation—without them, society collapses.
+Infrastructure is the foundation of the system. Power, the grid, transportation—without them, society collapses.
 
 ENTROPY isn't about ideology. It's about exposing how fragile everything is.
 
@@ -363,7 +363,7 @@ This attack. One facility. You stopped your battle. We're winning the war.
 
 You're too late!
 
-// Chen radio call: "Chemical dosing just spiked!"
+// Chen radio call: "Rack temperatures just spiked!"
 // Player must immediately proceed to emergency intervention
 
 -> voltage_triggered_outcome

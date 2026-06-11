@@ -4,9 +4,16 @@
 # ============================================================================
 # Break Escape - Season 1: The Architect's Shadow
 #
-# Water treatment facility attack. ENTROPY's Critical Mass cell has infiltrated
-# Pacific Northwest Regional Water Treatment Facility to weaponize chlorine
-# dosing systems. Cross-cell coordination with Social Fabric revealed.
+# Grid-scale battery energy storage attack. ENTROPY's Critical Mass cell has
+# infiltrated the Albion Energy Storage facility (200 MWh lithium-ion BESS) and
+# compromised the BMS/SCADA to falsify thermal sensors and disable the hydrogen
+# venting and Emergency Shutdown (ESD) interlocks — driving the battery racks
+# toward catastrophic thermal runaway. At 0800 the racks tip into a chain fire /
+# hydrogen explosion, taking the grid down for 240,000 people and levelling the
+# site. Cross-cell coordination with Social Fabric revealed.
+#
+# Setting/assets adapted from sis02_energy (battery hall, SCADA control room,
+# rack status panels, H2 detector, analog thermometer, ESD pushbutton).
 #
 # ENTROPY Cell: Critical Mass
 # Mission Type: Infrastructure Crisis / Tactical Response
@@ -15,16 +22,15 @@
 # NEW MECHANICS:
 # - Combat encounters with hostile NPCs
 # - Stage-based urgency system (no timer)
-# - SCADA system investigation
-# - Multi-vector attack disabling
+# - SCADA / BMS investigation (falsified telemetry vs physical instrument)
+# - Multi-vector attack disabling + Emergency Shutdown (ESD) minigame
 # - Critical tactical choices
 #
 # ROOM LAYOUT:
-#   Main Entrance → Administration Offices
-#   Security Office → Treatment Floor → Chemical Storage
-#   Control Room → Server Room (VM integration)
-#   Maintenance Wing (final confrontation)
-#   Parking Lot (initial stealth option)
+#   Reception -> Operations Office -> Security Office
+#   SCADA Control Room -> Engineering Workshop (VM integration)
+#   Battery Hall 1 (Cipher) -> Battery Hall 2 / Inverter Room (Relay)
+#   Plant Room (Voltage + Static, ESD trigger) -> Loading Dock
 # ============================================================================
 
 # ERB Helper Methods
@@ -35,35 +41,96 @@ def base64_encode(text)
 end
 
 # Narrative Content Variables
-scada_warning_message = "SCADA ALERT: Chemical dosing parameters exceeding normal range. Station 3: +15% chlorine concentration. Manual review recommended."
+chen_warning_email = "From: Robert Chen\nTo: OT Security\nDate: 12 January\nSubject: Unscheduled Maintenance Crew\n\nTeam,\n\nOptiGrid Solutions sent a maintenance crew on Thursday night (not on our schedule). They had proper RFID credentials but I have no work order on file. They were in the BMS cabinet and the SCADA control room for over three hours.\n\nCan someone verify their authorisation before I escalate?\n\n-Robert"
 
-chen_warning_email = "From: Robert Chen\nTo: Security Team\nDate: December 12, 2025\nSubject: Unscheduled Maintenance Team\n\nTeam,\n\nOptiGrid Solutions sent a maintenance crew yesterday (not on our schedule). They had proper credentials but I don't have record of the work order. Can someone verify their authorization?\n\nIf this is state oversight, please confirm.\n\n-Robert"
+voltage_attack_note = "CRITICAL MASS OPERATION LOG\n\nPhase 2 complete. BMS interlock-bypass modules installed on rack banks A, B and C.\nThermal sensors falsified at the SCADA layer. Hydrogen venting and ESD interlocks disabled.\nRemote overcharge trigger armed.\n\nCoordination with Social Fabric confirmed - simultaneous infrastructure strikes across the region.\n\nTrigger scheduled: 0800 local. The racks tip into thermal runaway. Grid drops for 240,000. The hall goes up with it.\nFail-safe disabled. No automatic shutdown.\n\nThe Architect sends regards. Phase 3 begins after successful execution.\n\n- Voltage"
 
-voltage_attack_note = "CRITICAL MASS OPERATION LOG\n\nPhase 2 complete. Bypass devices installed on dosing stations 1, 2, 3.\nSCADA access established. Remote trigger ready.\n\nCoordination with Social Fabric confirmed - simultaneous infrastructure strikes across region.\n\nAttack trigger scheduled: 0800 local time.\nEstimated impact: 240,000 population exposure to chlorine contamination.\n\nThe Architect sends regards. Phase 3 begins after successful execution.\n\n- Voltage"
-
-attack_schedule_encoded = base64_encode("ATTACK SEQUENCE:\n0800 - Trigger dosing station override\n0815 - Maximum chlorine concentration reached\n0830 - Contamination enters distribution network\n0900 - Public water supply contaminated\n\nFail-safe disabled. No automatic shutdown.")
+attack_schedule_encoded = base64_encode("ATTACK SEQUENCE:\n0800 - Remote overcharge of rack banks A/B/C\n0815 - Cell temperatures exceed runaway threshold (falsified to SCADA as nominal)\n0830 - First cell venting; hydrogen accumulation (vent fans locked off)\n0900 - Chain thermal runaway across the hall; grid export collapses\n\nESD interlocks disabled. No automatic shutdown.")
 %>
 {
-  "scenario_brief": "Infiltrate Pacific Northwest Regional Water Treatment Facility to investigate suspected ENTROPY operation. Critical Mass cell has weaponized SCADA systems to trigger mass chlorine contamination affecting 240,000 residents. Prevent infrastructure attack before 0800 trigger time.",
+  "scenario_brief": "Infiltrate the Albion Energy Storage facility — 200 MWh of grid-scale lithium-ion battery storage — to investigate a suspected ENTROPY operation. The Critical Mass cell has weaponised the BMS and SCADA systems to drive the battery racks into thermal runaway, threatening a catastrophic fire and a grid blackout for 240,000 people. Confirm the infiltration, expose the attack mechanism, and trigger Emergency Shutdown before the 0800 trigger time.",
+
+  "music": {
+    "events": [
+      {
+        "trigger": "game_loaded",
+        "condition": "!globalVars.briefing_played",
+        "playlist": "cutscene",
+        "fade": false
+      },
+      {
+        "trigger": "game_loaded",
+        "condition": "globalVars.briefing_played === true",
+        "playlist": "noir",
+        "fade": false
+      },
+      {
+        "trigger": "conversation_closed:opening_briefing_cutscene",
+        "playlist": "noir",
+        "fade": true
+      },
+      {
+        "trigger": "npc_hostile_state_changed",
+        "condition": "isHostile === true",
+        "playlist": "threat",
+        "fade": true
+      },
+      {
+        "trigger": "all_hostiles_ko",
+        "playlist": "noir",
+        "fade": true
+      },
+      {
+        "trigger": "global_variable_changed:attack_prevented",
+        "condition": "value === true",
+        "playlist": "spy-action",
+        "fade": true
+      },
+      {
+        "trigger": "conversation_closed:agent_0x99_debrief",
+        "playlist": "victory",
+        "track": "Ghost in the Wire",
+        "autoStop": true,
+        "disableClose": true,
+        "fade": true,
+        "credits": [
+          { "text": "MISSION COMPLETE", "style": "title", "condition": "globalVars.attack_prevented" },
+          { "text": "CATASTROPHIC FAILURE", "style": "title", "condition": "!globalVars.attack_prevented" },
+          { "text": "CRITICAL FAILURE", "style": "subtitle" },
+          { "text": "" },
+          { "text": "ALBION ENERGY STORAGE: THERMAL RUNAWAY AVERTED — Emergency Shutdown engaged", "style": "entry", "condition": "globalVars.attack_prevented" },
+          { "text": "GRID HELD: 240,000 residents kept on supply", "style": "entry", "condition": "globalVars.attack_prevented" },
+          { "text": "" },
+          { "text": "── DECISIONS ──", "style": "section-header" },
+          { "text": "VOLTAGE: CAPTURED — Critical Mass leadership in custody", "style": "entry", "condition": "globalVars.voltage_captured" },
+          { "text": "VOLTAGE: ESCAPED — fled via the loading dock", "style": "entry", "condition": "globalVars.voltage_escaped" },
+          { "text": "ROBERT CHEN: vindicated — his warning broke the case open", "style": "entry", "condition": "globalVars.chen_is_ally" },
+          { "text": "" },
+          { "text": "THE ARCHITECT: identity still unknown. Phase 3 looms.", "style": "warning" },
+          { "text": "ENTROPY: Still operational. Cross-cell strikes continue.", "style": "warning" }
+        ]
+      }
+    ]
+  },
 
   "objectives": [
     {
       "aimId": "infiltrate_facility",
       "title": "Infiltrate Facility and Confirm Threat",
-      "description": "Enter the water treatment facility under cover and confirm ENTROPY infiltration",
+      "description": "Enter the battery storage facility under cover and confirm ENTROPY infiltration",
       "status": "active",
       "order": 0,
       "tasks": [
         {
           "taskId": "enter_facility",
-          "title": "Enter water treatment facility",
+          "title": "Enter the energy storage facility",
           "type": "enter_room",
           "targetRoom": "main_entrance",
           "status": "active"
         },
         {
           "taskId": "meet_robert_chen",
-          "title": "Meet Facility Manager Robert Chen",
+          "title": "Meet OT engineer Robert Chen",
           "type": "npc_conversation",
           "targetNPC": "robert_chen",
           "status": "locked"
@@ -76,7 +143,7 @@ attack_schedule_encoded = base64_encode("ATTACK SEQUENCE:\n0800 - Trigger dosing
         },
         {
           "taskId": "identify_scada_anomalies",
-          "title": "Identify SCADA system anomalies",
+          "title": "Confirm the falsified SCADA telemetry against the analog thermometer",
           "type": "custom",
           "status": "locked"
         }
@@ -84,23 +151,24 @@ attack_schedule_encoded = base64_encode("ATTACK SEQUENCE:\n0800 - Trigger dosing
     },
     {
       "aimId": "investigate_scada_compromise",
-      "title": "Investigate SCADA Compromise",
-      "description": "Analyze compromised SCADA systems and identify attack mechanisms",
+      "title": "Investigate SCADA / BMS Compromise",
+      "description": "Analyse the compromised control systems and identify the attack mechanism",
       "status": "locked",
       "order": 1,
       "tasks": [
         {
           "taskId": "locate_compromised_systems",
-          "title": "Access the server room",
+          "title": "Access the engineering workshop",
           "type": "enter_room",
-          "targetRoom": "server_room",
+          "targetRoom": "engineering_workshop",
           "status": "locked"
         },
         {
           "taskId": "scan_scada_network",
-          "title": "Scan SCADA network for vulnerabilities",
+          "title": "Scan the SCADA/OT network for vulnerabilities",
           "type": "custom",
-          "status": "locked"
+          "status": "locked",
+          "optional": true
         },
         {
           "taskId": "submit_network_scan_flag",
@@ -112,7 +180,8 @@ attack_schedule_encoded = base64_encode("ATTACK SEQUENCE:\n0800 - Trigger dosing
           "taskId": "investigate_compromised_services",
           "title": "Investigate compromised network services",
           "type": "custom",
-          "status": "locked"
+          "status": "locked",
+          "optional": true
         },
         {
           "taskId": "submit_ftp_intel_flag",
@@ -128,9 +197,10 @@ attack_schedule_encoded = base64_encode("ATTACK SEQUENCE:\n0800 - Trigger dosing
         },
         {
           "taskId": "exploit_distcc_vulnerability",
-          "title": "Exploit vulnerable SCADA server",
+          "title": "Exploit the vulnerable BMS jump server",
           "type": "custom",
-          "status": "locked"
+          "status": "locked",
+          "optional": true
         },
         {
           "taskId": "submit_distcc_exploit_flag",
@@ -140,13 +210,13 @@ attack_schedule_encoded = base64_encode("ATTACK SEQUENCE:\n0800 - Trigger dosing
         },
         {
           "taskId": "neutralize_operative_cipher",
-          "title": "Neutralize ENTROPY operative at dosing stations",
+          "title": "Neutralise the ENTROPY operative in Battery Hall 1",
           "type": "custom",
           "status": "locked"
         },
         {
           "taskId": "neutralize_operative_relay",
-          "title": "Neutralize ENTROPY operative in chemical storage",
+          "title": "Neutralise the ENTROPY operative in the inverter room",
           "type": "custom",
           "status": "locked"
         }
@@ -154,20 +224,23 @@ attack_schedule_encoded = base64_encode("ATTACK SEQUENCE:\n0800 - Trigger dosing
     },
     {
       "aimId": "neutralize_attack_threat",
-      "title": "Neutralize Attack Threat",
-      "description": "Confront Critical Mass leadership and disable all attack mechanisms",
+      "title": "Neutralise Attack Threat",
+      "description": "Confront Critical Mass leadership and trigger Emergency Shutdown before 0800",
       "status": "locked",
       "order": 2,
+      "missionConclusion": true,
+      "requiresCompleted": ["disable_attack_vectors"],
+      "conclusionScreen": { "type": "bond_visualiser" },
       "tasks": [
         {
           "taskId": "confront_voltage",
-          "title": "Confront Voltage in maintenance wing",
+          "title": "Confront Voltage in the plant room",
           "type": "custom",
           "status": "locked"
         },
         {
           "taskId": "disable_attack_vectors",
-          "title": "Disable all attack mechanisms",
+          "title": "Trigger Emergency Shutdown to stop the thermal runaway",
           "type": "custom",
           "status": "locked"
         },
@@ -190,20 +263,22 @@ attack_schedule_encoded = base64_encode("ATTACK SEQUENCE:\n0800 - Trigger dosing
       "name": "Your Phone",
       "takeable": true,
       "phoneId": "player_phone",
-      "npcIds": ["agent_0x99", "robert_chen_phone"],
+      "npcIds": ["agent_0x99", "robert_chen_phone", "agent_0x99_debrief"],
       "observations": "Your secure phone with encrypted connection to SAFETYNET"
     },
     {
       "type": "lockpick",
       "name": "Lock Pick Kit",
       "takeable": true,
-      "observations": "Professional lock picking kit for bypassing physical locks"
+      "observations": "Professional lock picking kit for bypassing physical locks",
+      "puzzle_graph_role": "tool",
+      "puzzle_graph_unlocks": ["security_equipment_locker"]
     },
     {
       "type": "id_badge",
-      "name": "State Auditor Credentials",
+      "name": "Grid Regulator Credentials",
       "takeable": true,
-      "observations": "Forged credentials identifying you as Environmental Protection Agency auditor"
+      "observations": "Forged credentials identifying you as an Ofgem / grid-safety regulator conducting a spot audit"
     }
   ],
 
@@ -221,12 +296,10 @@ attack_schedule_encoded = base64_encode("ATTACK SEQUENCE:\n0800 - Trigger dosing
   "rooms": {
     "main_entrance": {
       "type": "room_reception",
-      "dimensions": {
-        "width": 10,
-        "height": 8
-      },
+      "dimensions": { "width": 10, "height": 8 },
+      "door_sign": "Albion Energy Storage — Reception",
       "connections": {
-        "south": "administration_offices"
+        "south": "operations_office"
       },
       "npcs": [
         {
@@ -235,16 +308,16 @@ attack_schedule_encoded = base64_encode("ATTACK SEQUENCE:\n0800 - Trigger dosing
           "npcType": "person",
           "position": { "x": 500, "y": 500 },
           "spriteSheet": "hacker",
-          "spriteConfig": {
-            "idleFrameStart": 20,
-            "idleFrameEnd": 23
-          },
+          "spriteConfig": { "idleFrameStart": 20, "idleFrameEnd": 23 },
           "storyPath": "scenarios/m04_critical_failure/ink/m04_opening_briefing.json",
           "currentKnot": "start",
+          "behavior": { "initiallyHidden": true },
           "timedConversation": {
             "delay": 0,
             "targetKnot": "start",
-            "background": "assets/backgrounds/hq1.png"
+            "background": "assets/backgrounds/hq1.png",
+            "skipIfGlobal": "briefing_played",
+            "setGlobalOnStart": "briefing_played"
           }
         },
         {
@@ -254,12 +327,10 @@ attack_schedule_encoded = base64_encode("ATTACK SEQUENCE:\n0800 - Trigger dosing
           "position": { "x": 5, "y": 4 },
           "spriteSheet": "hacker-red",
           "spriteTalk": "assets/characters/hacker-red-talk.png",
-          "spriteConfig": {
-            "idleFrameStart": 20,
-            "idleFrameEnd": 23
-          },
+          "spriteConfig": { "idleFrameStart": 20, "idleFrameEnd": 23 },
           "storyPath": "scenarios/m04_critical_failure/ink/m04_npc_security_guard.json",
-          "currentKnot": "start"
+          "currentKnot": "start",
+          "globalVarOnKO": "security_guard_ko"
         },
         {
           "id": "agent_0x99",
@@ -272,20 +343,28 @@ attack_schedule_encoded = base64_encode("ATTACK SEQUENCE:\n0800 - Trigger dosing
           "timedMessages": [
             {
               "delay": 3000,
-              "message": "Critical infrastructure threat. ENTROPY's Critical Mass cell targeting water facility. 240,000 people at risk. Move carefully.",
-              "type": "text"
+              "message": "Critical infrastructure threat. ENTROPY's Critical Mass cell has the battery hall rigged for thermal runaway. 240,000 people lose power — and the hall could go up. Move carefully.",
+              "type": "text",
+              "waitForEvent": "conversation_closed:opening_briefing_cutscene"
             }
           ],
           "eventMappings": [
             {
-              "eventPattern": "room_entered:server_room",
-              "targetKnot": "event_server_room_entered",
-              "onceOnly": true
+              "eventPattern": "global_variable_changed:evidence_maintenance_logs_found",
+              "condition": "value === true",
+              "onceOnly": true,
+              "completeTask": "find_infiltration_evidence",
+              "sendTimedMessage": { "delay": 1500, "message": "That work order was never authorised — there's your infiltration evidence. Now don't trust the SCADA screens; they're spoofed. Get into the battery hall and check the racks against a physical instrument." }
             },
             {
-              "eventPattern": "task_completed:submit_distcc_exploit_flag",
-              "targetKnot": "event_attack_mechanism_identified",
-              "onceOnly": true
+              "eventPattern": "room_entered:engineering_workshop",
+              "onceOnly": true,
+              "sendTimedMessage": { "delay": 1500, "message": "The workshop. The BMS jump server lives here — that's your way onto the OT network. Use the VM terminal, scan it, and submit what you find at the drop-site." }
+            },
+            {
+              "eventPattern": "objective_task_completed:submit_distcc_exploit_flag",
+              "onceOnly": true,
+              "sendTimedMessage": { "delay": 1500, "message": "That's the attack mechanism confirmed — falsified thermals, ESD interlocks disabled, overcharge armed for 0800. The trigger is in the plant room. Get there, and get to an ESD button." }
             }
           ]
         },
@@ -300,9 +379,10 @@ attack_schedule_encoded = base64_encode("ATTACK SEQUENCE:\n0800 - Trigger dosing
           "eventMappings": [
             {
               "eventPattern": "global_variable_changed:chen_is_ally",
-              "targetKnot": "available_after_ally",
               "condition": "value === true",
-              "onceOnly": true
+              "onceOnly": true,
+              "setGlobal": { "chen_phone_available": true },
+              "sendTimedMessage": { "delay": 2000, "message": "It's Chen. I'm out of the building but I'm on comms. Call me if you need the engineering side — I can talk you through the BMS and the ESD." }
             }
           ]
         },
@@ -317,9 +397,12 @@ attack_schedule_encoded = base64_encode("ATTACK SEQUENCE:\n0800 - Trigger dosing
           "eventMappings": [
             {
               "eventPattern": "global_variable_changed:mission_complete",
-              "targetKnot": "start",
               "condition": "value === true",
-              "onceOnly": true
+              "onceOnly": true,
+              "conversationMode": "phone-chat",
+              "targetKnot": "start",
+              "setGlobal": { "debrief_ready": true },
+              "sendTimedMessage": { "delay": 2500, "message": "Mission complete. Tap to open your debrief." }
             }
           ]
         }
@@ -330,29 +413,27 @@ attack_schedule_encoded = base64_encode("ATTACK SEQUENCE:\n0800 - Trigger dosing
           "name": "Visitor Sign-In Log",
           "takeable": false,
           "readable": true,
-          "text": "PACIFIC NORTHWEST REGIONAL WATER TREATMENT FACILITY\nVISITOR LOG - December 2025\n\nRecent Entries:\nDec 10 - OptiGrid Solutions Maintenance Team (3 technicians)\nDec 11 - State EPA Auditor (scheduled today - YOU)\n\nNote: OptiGrid crew had proper credentials, work order #4782",
-          "observations": "Sign-in log showing OptiGrid Solutions maintenance team entry two days ago"
+          "text": "ALBION ENERGY STORAGE — VISITOR LOG\nJanuary\n\nRecent Entries:\nJan 9 (23:41) - OptiGrid Solutions Maintenance Crew (3 technicians)\nJan 12 - Grid Safety Auditor (scheduled today - YOU)\n\nNote: OptiGrid crew had valid RFID, work order #4782.",
+          "observations": "Sign-in log showing OptiGrid Solutions maintenance crew entry late on the 9th"
         },
         {
           "type": "notes",
           "name": "Security Desk Procedures",
           "takeable": true,
           "readable": true,
-          "text": "SECURITY CHECKPOINT PROCEDURES\n\n1. Verify visitor credentials\n2. Issue visitor badge\n3. Log entry time\n4. Notify department contact\n5. Provide safety briefing\n\nAll contractors require facility manager authorization.",
-          "observations": "Standard security procedures posted at checkpoint"
+          "text": "SECURITY CHECKPOINT PROCEDURES\n\n1. Verify visitor credentials\n2. Issue visitor badge\n3. Log entry time\n4. Notify the duty engineer\n5. Provide PPE / safety briefing (battery halls)\n\nAll contractors require duty-engineer authorisation.",
+          "observations": "Standard security procedures posted at the checkpoint"
         }
       ]
     },
 
-    "administration_offices": {
+    "operations_office": {
       "type": "room_office",
-      "dimensions": {
-        "width": 15,
-        "height": 10
-      },
+      "dimensions": { "width": 15, "height": 10 },
+      "door_sign": "Operations Office",
       "connections": {
         "north": "main_entrance",
-        "east": "control_room",
+        "east": "scada_control_room",
         "south": "security_office"
       },
       "npcs": [
@@ -362,19 +443,27 @@ attack_schedule_encoded = base64_encode("ATTACK SEQUENCE:\n0800 - Trigger dosing
           "npcType": "person",
           "position": { "x": 10, "y": 5 },
           "spriteSheet": "hacker",
-          "spriteConfig": {
-            "idleFrameStart": 20,
-            "idleFrameEnd": 23
-          },
+          "spriteConfig": { "idleFrameStart": 20, "idleFrameEnd": 23 },
           "storyPath": "scenarios/m04_critical_failure/ink/m04_npc_robert_chen.json",
           "currentKnot": "initial_meeting",
+          "voice": {
+            "name": "Charon",
+            "style": "Conscientious, overworked OT engineer. Defensive at first, then alarmed and determined once he realises the threat is real.",
+            "language": "en-GB"
+          },
+          "globalVarOnKO": "robert_chen_ko",
+          "puzzle_graph_actions": [
+            { "id": "meet_robert_chen", "label": "Win Chen's trust and gain facility access", "unlocks_aim": "investigate_scada_compromise" }
+          ],
           "itemsHeld": [
             {
               "type": "keycard",
               "name": "Facility Access Keycard (Level 1)",
               "takeable": true,
               "key_id": "facility_keycard_level1",
-              "observations": "Standard access keycard for most facility areas"
+              "observations": "Standard RFID access keycard for most facility areas",
+              "puzzle_graph_role": "key",
+              "puzzle_graph_unlocks": "battery_hall_2"
             }
           ]
         }
@@ -382,9 +471,9 @@ attack_schedule_encoded = base64_encode("ATTACK SEQUENCE:\n0800 - Trigger dosing
       "objects": [
         {
           "type": "pc",
-          "name": "Chen's Computer Terminal",
+          "name": "Chen's BMS Monitoring Terminal",
           "takeable": false,
-          "observations": "SCADA monitoring terminal showing system status and access logs"
+          "observations": "Battery Management System monitoring terminal showing rack status and access logs"
         },
         {
           "type": "notes",
@@ -392,15 +481,17 @@ attack_schedule_encoded = base64_encode("ATTACK SEQUENCE:\n0800 - Trigger dosing
           "takeable": true,
           "readable": true,
           "text": <%= chen_warning_email.to_json %>,
-          "observations": "Chen's email about unscheduled OptiGrid maintenance team",
+          "observations": "Chen's email about the unscheduled OptiGrid maintenance crew",
+          "puzzle_graph_role": "clue",
+          "puzzle_graph_reveals": "optigrid_crew_unauthorised_three_hours_in_bms_cabinet",
           "onPickup": { "setVariable": { "evidence_maintenance_logs_found": true } }
         },
         {
           "type": "notes",
-          "name": "Facility Blueprints",
+          "name": "Facility Layout Map",
           "takeable": true,
           "readable": true,
-          "text": "PACIFIC NORTHWEST WATER TREATMENT FACILITY\n\nMAIN SECTIONS:\n- Treatment Floor: Chemical dosing and filtration\n- Control Room: SCADA monitoring\n- Server Room: Network infrastructure\n- Chemical Storage: Hazardous materials\n- Maintenance Wing: Equipment and generators\n\nEmergency contacts and safety procedures on reverse.",
+          "text": "ALBION ENERGY STORAGE — SITE LAYOUT\n\nMAIN SECTIONS:\n- SCADA Control Room: telemetry & HMI\n- Engineering Workshop: BMS jump server, network infrastructure\n- Battery Hall 1 & 2: lithium-ion rack banks A-C\n- Inverter / Plant Room: PCS, ESD interlocks, generators\n- Loading Dock: deliveries / north exit\n\nPPE required beyond the control room. Hydrogen monitors in every hall.",
           "observations": "Complete facility layout map"
         },
         {
@@ -408,81 +499,83 @@ attack_schedule_encoded = base64_encode("ATTACK SEQUENCE:\n0800 - Trigger dosing
           "name": "Budget Cut Memo",
           "takeable": true,
           "readable": true,
-          "text": "MEMORANDUM\n\nFROM: State Infrastructure Budget Office\nTO: All Regional Facilities\nRE: FY2025 Budget Reductions\n\nAll facilities must reduce operational budgets by 12%. Priority: Maintain water quality. Deferrable: IT security upgrades, contractor oversight.\n\nChen's handwritten note: 'How are we supposed to maintain security with these cuts?'",
-          "observations": "Budget memo explaining security gaps that ENTROPY exploited"
+          "text": "MEMORANDUM\n\nFROM: Regional Infrastructure Budget Office\nTO: All Storage Sites\nRE: Budget Reductions\n\nAll sites must reduce operational budgets by 12%. Priority: keep export availability up. Deferrable: OT security upgrades, contractor oversight.\n\nChen's handwritten note: 'How am I supposed to keep the OT network safe with these cuts?'",
+          "observations": "Budget memo explaining the security gaps ENTROPY exploited"
         }
       ]
     },
 
-    "control_room": {
-      "type": "room_office",
-      "dimensions": {
-        "width": 12,
-        "height": 10
-      },
+    "scada_control_room": {
+      "type": "room_control_1x2gu",
+      "dimensions": { "width": 12, "height": 10 },
+      "door_sign": "SCADA Control Room",
       "connections": {
-        "west": "administration_offices",
-        "east": "server_room",
-        "south": "treatment_floor"
+        "west": "operations_office",
+        "east": "engineering_workshop",
+        "south": "battery_hall_1"
       },
       "npcs": [],
       "objects": [
         {
-          "type": "pc",
-          "name": "SCADA Main Display",
-          "takeable": false,
-          "storyPath": "scenarios/m04_critical_failure/ink/m04_terminal_scada_display.json",
-          "currentKnot": "start",
-          "observations": "Primary SCADA monitoring system showing all facility parameters and alerts"
-        },
-        {
-          "type": "notes",
-          "name": "Chemical Dosing Parameters",
+          "type": "tablet",
+          "id": "scada_hmi_display",
+          "name": "SCADA HMI — Main Display",
           "takeable": false,
           "readable": true,
-          "text": "SCADA ALERT LOG\n\nStation 1: Chlorine +8% above baseline\nStation 2: Chlorine +6% above baseline  \nStation 3: Chlorine +15% above baseline [WARNING]\n\nUnauthorized parameter modifications detected.\nLast modification: Dec 11, 04:32 AM\nSource: Remote access (IP: 192.168.100.X)",
-          "observations": "SCADA alert showing compromised chemical dosing systems"
+          "observationDisplay": "gameDisplay",
+          "observations": "A large wall-mounted SCADA HMI mirroring the battery hall status. Every rack bank showing green. Temperature: 28°C. Status: NORMAL.",
+          "text": "ALBION ENERGY STORAGE — SCADA HMI (MAIN DISPLAY)\n\nRack Bank A: 28.0°C | SoC 72% | Status: NORMAL\nRack Bank B: 27.9°C | SoC 71% | Status: NORMAL\nRack Bank C: 28.1°C | SoC 73% | Status: NORMAL\n\nHydrogen vent fans: AUTO\nESD interlocks: ARMED\nAll alarm setpoints: SATISFIED\n\n[These values are sourced from the BMS sensor feed. If you suspect tampering, compare them against an independent physical instrument in the battery hall.]",
+          "puzzle_graph_role": "clue",
+          "puzzle_graph_reveals": "scada_shows_falsified_normal_readings"
         },
         {
           "type": "notes",
-          "name": "Emergency Shutdown Procedures",
+          "name": "Thermal & Charge Parameters Log",
+          "takeable": false,
+          "readable": true,
+          "text": "SCADA PARAMETER CHANGE LOG\n\nRack Bank A: charge ceiling RAISED (override)\nRack Bank B: charge ceiling RAISED (override)\nRack Bank C: charge ceiling RAISED (override) [WARNING]\n\nUnauthorised parameter modifications detected.\nLast modification: Jan 10, 02:14\nSource: Remote access (IP: 192.168.100.X)",
+          "observations": "SCADA log showing compromised charge-ceiling overrides on every rack bank"
+        },
+        {
+          "type": "notes",
+          "name": "Emergency Shutdown Procedure",
           "takeable": true,
           "readable": true,
-          "text": "EMERGENCY SHUTDOWN PROTOCOL\n\nWARNING: Only use in critical emergency\n\n1. Halt all chemical dosing\n2. Isolate treatment systems\n3. Switch to backup water sources\n4. Notify emergency services\n5. Begin manual parameter control\n\nNote: Crude shutdown can damage systems. Consult facility manager if possible.",
-          "observations": "Emergency procedures for SCADA system shutdown"
+          "text": "EMERGENCY SHUTDOWN (ESD) PROTOCOL\n\nWARNING: Only use on authorised instruction or imminent hazard\n\n1. Isolate affected rack banks (hardwired ESD pushbutton)\n2. Force hydrogen vent fans to maximum\n3. Switch export to standby\n4. Notify grid control & emergency services\n5. Begin manual thermal monitoring\n\nNote: The ESD pushbuttons in the halls and plant room are HARDWIRED — independent of SCADA. They cannot be disabled remotely.",
+          "observations": "Emergency procedures — the ESD pushbuttons are hardwired and independent of the compromised SCADA"
         }
       ]
     },
 
-    "server_room": {
-      "type": "room_servers",
-      "dimensions": {
-        "width": 10,
-        "height": 8
-      },
+    "engineering_workshop": {
+      "type": "room_it",
+      "dimensions": { "width": 10, "height": 8 },
       "locked": true,
       "lockType": "rfid",
       "requires": "server_room_keycard",
       "difficulty": "medium",
+      "door_sign": "Engineering Workshop — Authorised Access Only",
       "connections": {
-        "north": "treatment_floor",
-        "west": "control_room"
+        "north": "battery_hall_1",
+        "west": "scada_control_room"
       },
       "npcs": [],
       "objects": [
         {
           "type": "vm-launcher",
           "id": "vm_launcher_vulnerability_analysis",
-          "name": "SCADA Network Terminal",
+          "name": "BMS Jump Server Terminal",
           "takeable": false,
-          "observations": "Network terminal providing access to SCADA backup server for vulnerability analysis",
+          "observations": "Network terminal providing access to the BMS jump server for vulnerability analysis",
           "hacktivityMode": <%= vm_context && vm_context['hacktivity_mode'] ? 'true' : 'false' %>,
           "vm": <%= vm_object('vulnerability_analysis', {
             "id": 1,
-            "title": "SCADA Network Backup Server",
+            "title": "BMS Jump Server",
             "ip": "192.168.100.10",
             "enable_console": true
-          }) %>
+          }) %>,
+          "puzzle_graph_role": "vm",
+          "puzzle_graph_aim": "investigate_scada_compromise"
         },
         {
           "type": "flag-station",
@@ -522,29 +615,28 @@ attack_schedule_encoded = base64_encode("ATTACK SEQUENCE:\n0800 - Trigger dosing
         },
         {
           "type": "notes",
-          "name": "Server Room Access Log",
+          "name": "Workshop Access Log",
           "takeable": true,
           "readable": true,
-          "text": "SERVER ROOM ACCESS LOG\n\nRecent Access:\nDec 9, 11:47 PM - OptiGrid Tech #1 (Badge: OG-4472)\nDec 9, 11:52 PM - OptiGrid Tech #2 (Badge: OG-4473)  \nDec 10, 12:03 AM - OptiGrid Tech #3 (Badge: OG-4474)\n\nDuration: 3 hours 17 minutes\nPurpose: 'Network infrastructure maintenance'\n\nChen's note: 'No one told me about this work order.'",
-          "observations": "Access logs showing ENTROPY operatives had 3+ hours of network access"
+          "text": "ENGINEERING WORKSHOP ACCESS LOG\n\nRecent Access:\nJan 9, 23:47 - OptiGrid Tech #1 (Badge: OG-4472)\nJan 9, 23:52 - OptiGrid Tech #2 (Badge: OG-4473)\nJan 10, 00:03 - OptiGrid Tech #3 (Badge: OG-4474)\n\nDuration: 3 hours 17 minutes\nPurpose: 'Network infrastructure maintenance'\n\nChen's note: 'No one told me about this work order.'",
+          "observations": "Access logs showing the ENTROPY operatives had 3+ hours on the OT network",
+          "onPickup": { "setVariable": { "evidence_access_logs_found": true } }
         },
         {
           "type": "pc",
           "name": "Network Monitoring Station",
           "takeable": false,
-          "observations": "Real-time network traffic monitoring showing SCADA communications"
+          "observations": "Real-time network traffic monitor showing the SCADA/BMS communications"
         }
       ]
     },
 
     "security_office": {
       "type": "room_office",
-      "dimensions": {
-        "width": 8,
-        "height": 6
-      },
+      "dimensions": { "width": 8, "height": 6 },
+      "door_sign": "Security Office",
       "connections": {
-        "north": "administration_offices"
+        "north": "operations_office"
       },
       "npcs": [],
       "objects": [
@@ -559,12 +651,13 @@ attack_schedule_encoded = base64_encode("ATTACK SEQUENCE:\n0800 - Trigger dosing
           "name": "Camera System Logs",
           "takeable": true,
           "readable": true,
-          "text": "SECURITY CAMERA SYSTEM LOG\n\nANOMALY DETECTED:\n\nDec 9, 11:45 PM - Dec 10, 03:00 AM\nCameras 7, 8, 12, 15: RECORDING GAPS\nAffected areas: Server Room corridor, Chemical Storage access\n\nStatus: System glitch reported to maintenance\n\nNote: 'Glitch' coincides exactly with OptiGrid team access window.",
-          "observations": "Evidence showing camera tampering during ENTROPY infiltration",
+          "text": "SECURITY CAMERA SYSTEM LOG\n\nANOMALY DETECTED:\n\nJan 9, 23:45 - Jan 10, 03:00\nCameras 7, 8, 12, 15: RECORDING GAPS\nAffected areas: Workshop corridor, Battery Hall 2 access\n\nStatus: 'system glitch' reported to maintenance\n\nNote: the 'glitch' coincides exactly with the OptiGrid access window.",
+          "observations": "Evidence of camera tampering during the ENTROPY infiltration",
           "onPickup": { "setVariable": { "evidence_camera_tampering_found": true } }
         },
         {
           "type": "safe",
+          "id": "security_equipment_locker",
           "name": "Security Equipment Locker",
           "takeable": false,
           "locked": true,
@@ -585,7 +678,7 @@ attack_schedule_encoded = base64_encode("ATTACK SEQUENCE:\n0800 - Trigger dosing
               "name": "Incident Response Guide",
               "takeable": true,
               "readable": true,
-              "text": "FACILITY INCIDENT RESPONSE PROCEDURES\n\nChemical Emergency:\n1. Activate alarm\n2. Isolate affected area\n3. Notify Robert Chen immediately\n4. Begin evacuation if necessary\n\nSecurity Breach:\n1. Contact local law enforcement\n2. Secure critical systems\n3. Review camera footage",
+              "text": "FACILITY INCIDENT RESPONSE PROCEDURES\n\nThermal / Fire Emergency:\n1. Press the nearest hardwired ESD pushbutton\n2. Isolate the affected rack bank\n3. Notify Robert Chen immediately\n4. Evacuate if hydrogen alarm sounds\n\nSecurity Breach:\n1. Contact local law enforcement\n2. Secure critical systems\n3. Review camera footage",
               "observations": "Emergency response procedures manual"
             }
           ]
@@ -593,17 +686,17 @@ attack_schedule_encoded = base64_encode("ATTACK SEQUENCE:\n0800 - Trigger dosing
       ]
     },
 
-    "treatment_floor": {
-      "type": "room_lab",
-      "dimensions": {
-        "width": 18,
-        "height": 12
-      },
+    "battery_hall_1": {
+      "type": "room_battery_hall",
+      "dimensions": { "width": 18, "height": 12 },
+      "door_sign": "BATTERY HALL 1 — RESTRICTED ACCESS — PPE REQUIRED",
+      "ambientSound": "server_room_ventilation",
+      "ambientVolume": 0.7,
       "connections": {
-        "north": "control_room",
-        "south": "server_room",
-        "east": "chemical_storage",
-        "west": "maintenance_wing"
+        "north": "scada_control_room",
+        "south": "engineering_workshop",
+        "east": "battery_hall_2",
+        "west": "plant_room"
       },
       "npcs": [
         {
@@ -613,73 +706,113 @@ attack_schedule_encoded = base64_encode("ATTACK SEQUENCE:\n0800 - Trigger dosing
           "position": { "x": 12, "y": 6 },
           "spriteSheet": "hacker-red",
           "spriteTalk": "assets/characters/hacker-red-talk.png",
-          "spriteConfig": {
-            "idleFrameStart": 20,
-            "idleFrameEnd": 23
-          },
+          "spriteConfig": { "idleFrameStart": 20, "idleFrameEnd": 23 },
           "storyPath": "scenarios/m04_critical_failure/ink/m04_npc_operative_cipher.json",
           "currentKnot": "start",
           "behavior": {
-            "hostile": true,
-            "alertRange": 200
+            "hostile": { "chaseSpeed": 110, "attackDamage": 12, "pauseToAttack": true }
           },
+          "globalVarOnKO": "operative_cipher_defeated",
+          "taskOnKO": "neutralize_operative_cipher",
           "itemsHeld": [
             {
               "type": "keycard",
-              "name": "Server Room Keycard (Level 2)",
+              "name": "Workshop Keycard (Level 2)",
               "takeable": true,
               "key_id": "server_room_keycard",
-              "observations": "High-level access keycard for secure areas"
+              "observations": "High-level access keycard for the engineering workshop",
+              "puzzle_graph_role": "key",
+              "puzzle_graph_unlocks": "engineering_workshop"
             },
             {
               "type": "notes",
               "name": "Cipher's Intelligence Note",
               "takeable": true,
               "readable": true,
-              "text": "CRITICAL MASS - OPERATION STATUS\n\nPhase 2: COMPLETE\n- Dosing station 3: PRIMARY attack vector installed\n- Dosing stations 1 & 2: REDUNDANCY backups installed\n- SCADA access: CONFIRMED\n\nVoltage coordinating with Social Fabric for simultaneous regional strikes.\n\nMy assignment: Guard treatment floor, eliminate interference.",
-              "observations": "Intelligence revealing multi-station attack infrastructure"
+              "text": "CRITICAL MASS - OPERATION STATUS\n\nPhase 2: COMPLETE\n- Rack Bank C: PRIMARY overcharge vector armed\n- Rack Banks A & B: REDUNDANCY backups armed\n- BMS / SCADA access: CONFIRMED\n\nVoltage coordinating with Social Fabric for simultaneous regional strikes.\n\nMy assignment: hold Battery Hall 1, eliminate interference.",
+              "observations": "Intelligence revealing the multi-bank overcharge infrastructure"
             }
           ]
         }
       ],
       "objects": [
         {
-          "type": "notes",
-          "name": "Treatment Process Diagram",
+          "type": "thermometer",
+          "id": "analog_thermometer",
+          "name": "Analog Thermometer — Rack Bank C Wall",
           "takeable": false,
           "readable": true,
-          "text": "WATER TREATMENT PROCESS FLOW\n\n1. Intake from reservoir\n2. Coagulation & flocculation\n3. Sedimentation  \n4. Filtration\n5. Chemical dosing (chlorine, fluoride, pH adjustment)\n6. Distribution to public supply\n\nCapacity: 240,000 residents\nDaily flow: 45 million gallons",
-          "observations": "Treatment process overview showing facility scale and impact"
+          "important": true,
+          "puzzle_graph_role": "clue",
+          "puzzle_graph_aim": "infiltrate_facility",
+          "puzzle_graph_reveals": "61C_actual_vs_28C_scada_sensor_falsification_confirmed",
+          "observations": "Thermometer dial reads: 61°C\n\nAn old mechanical dial thermometer bolted to the wall by Rack Bank C. Not connected to any network. The SCADA HMI says 28°C.",
+          "observationVariants": [
+            {
+              "condition": "globalVars.attack_prevented",
+              "value": "Thermometer dial now reads: 49°C and falling.\n\nThe analog thermometer by Rack Bank C — the needle is dropping steadily since the Emergency Shutdown."
+            },
+            {
+              "condition": "globalVars.anomaly_detected",
+              "value": "The thermometer dial reads: 61°C\n\nThe analog thermometer confirms a physical thermal anomaly that the SCADA readout (28°C) is hiding."
+            }
+          ],
+          "triggerOnInteract": [
+            { "type": "set_global", "key": "anomaly_detected", "value": true },
+            { "type": "complete_task", "taskId": "identify_scada_anomalies" }
+          ]
         },
         {
-          "type": "pc",
-          "name": "Dosing Station Monitoring Terminal",
+          "type": "tablet",
+          "id": "rack_status_panel",
+          "name": "Battery Rack Status Panels (Digital)",
           "takeable": false,
-          "observations": "Real-time monitoring of chemical dosing stations showing elevated chlorine levels"
+          "readable": true,
+          "observationDisplay": "gameDisplay",
+          "observations": "Digital status panels on each rack. All showing green. Readings look normal.",
+          "text": "BATTERY RACK STATUS — HALL 1 (DIGITAL DISPLAY)\n\nRack C1: 28.0°C | SoC 72% | Status: NORMAL\nRack C2: 27.9°C | SoC 71% | Status: NORMAL\nRack C3: 28.1°C | SoC 73% | Status: NORMAL\n\nAll values within certified operating parameters.\nAll alarm setpoints: SATISFIED\n\n[NOTE: sourced from the BMS sensor feed to SCADA. Compare with the analog thermometer on this wall.]"
+        },
+        {
+          "type": "tablet",
+          "id": "hydrogen_detector",
+          "name": "H₂ Gas Detector Panel",
+          "takeable": false,
+          "readable": true,
+          "observationDisplay": "gameDisplay",
+          "observations": "A wall-mounted hydrogen gas detection panel near the ventilation outlet. An amber indicator is lit.",
+          "observationVariants": [
+            {
+              "condition": "globalVars.attack_prevented",
+              "value": "The hydrogen panel is trending down after the Emergency Shutdown. Vent fans are running at maximum."
+            }
+          ],
+          "text": "HYDROGEN GAS MONITOR — BATTERY HALL 1\nThis sensor is hardwired to the ventilation control system. It is NOT connected to SCADA.\n\nCurrent reading: 0.9% H₂ (Lower Explosive Limit)\nAdvisory threshold: 1.0% H₂ LEL [AMBER]\nEvacuation threshold: 2.0% H₂ LEL [RED — EVACUATE]\n\nStatus: ELEVATED — PRE-ADVISORY\nNote: elevated H₂ is consistent with battery thermal stress. The SCADA HMI claims everything is nominal. It is not.",
+          "puzzle_graph_role": "clue",
+          "puzzle_graph_reveals": "hydrogen_elevated_independent_of_falsified_scada"
         },
         {
           "type": "notes",
-          "name": "OptiGrid Work Order",
-          "takeable": true,
+          "name": "BESS Process Diagram",
+          "takeable": false,
           "readable": true,
-          "text": "WORK ORDER #4782\n\nContractor: OptiGrid Solutions LLC\nDate: December 10, 2025\nScope: 'Network infrastructure maintenance and SCADA system optimization'\n\nTechnicians:\n- Badge OG-4472 (Cipher)\n- Badge OG-4473 (Relay)  \n- Badge OG-4474 (Static)\n\nAuthorization: [FORGED SIGNATURE]\n\nNote: This work order was never approved by Chen.",
-          "observations": "Forged work order used by ENTROPY operatives for facility access"
+          "text": "BATTERY ENERGY STORAGE — PROCESS OVERVIEW\n\n1. Grid import → rectifier / PCS\n2. Charge management (BMS per-rack)\n3. Lithium-ion rack banks A, B, C (cells, thermocouples, vent paths)\n4. Hydrogen detection + forced ventilation\n5. ESD interlocks (hardwired) → isolation\n6. Inverter / export to grid\n\nCapacity: 200 MWh\nServes: 240,000 residents at peak",
+          "observations": "Process overview showing the facility scale and the safety interlocks"
         }
       ]
     },
 
-    "chemical_storage": {
-      "type": "room_lab",
-      "dimensions": {
-        "width": 14,
-        "height": 10
-      },
+    "battery_hall_2": {
+      "type": "room_battery_hall",
+      "dimensions": { "width": 14, "height": 10 },
       "locked": true,
       "lockType": "rfid",
       "requires": "facility_keycard_level1",
       "difficulty": "easy",
+      "door_sign": "BATTERY HALL 2 / INVERTER ROOM — PPE REQUIRED",
+      "ambientSound": "server_room_ventilation",
+      "ambientVolume": 0.6,
       "connections": {
-        "west": "treatment_floor"
+        "west": "battery_hall_1"
       },
       "npcs": [
         {
@@ -689,14 +822,11 @@ attack_schedule_encoded = base64_encode("ATTACK SEQUENCE:\n0800 - Trigger dosing
           "position": { "x": 7, "y": 5 },
           "spriteSheet": "hacker-red",
           "spriteTalk": "assets/characters/hacker-red-talk.png",
-          "spriteConfig": {
-            "idleFrameStart": 20,
-            "idleFrameEnd": 23
-          },
+          "spriteConfig": { "idleFrameStart": 20, "idleFrameEnd": 23 },
           "storyPath": "scenarios/m04_critical_failure/ink/m04_npc_operative_relay.json",
           "currentKnot": "start",
           "behavior": {
-            "hostile": true,
+            "hostile": { "chaseSpeed": 120, "attackDamage": 15, "pauseToAttack": true },
             "patrol": {
               "enabled": true,
               "route": [
@@ -709,20 +839,24 @@ attack_schedule_encoded = base64_encode("ATTACK SEQUENCE:\n0800 - Trigger dosing
               "pauseTime": 10
             }
           },
+          "globalVarOnKO": "operative_relay_defeated",
+          "taskOnKO": "neutralize_operative_relay",
           "itemsHeld": [
             {
               "type": "keycard",
               "name": "Master Keycard",
               "takeable": true,
               "key_id": "master_keycard",
-              "observations": "Master access keycard for all facility areas including Maintenance Wing"
+              "observations": "Master access keycard for all areas including the Plant Room",
+              "puzzle_graph_role": "key",
+              "puzzle_graph_unlocks": "plant_room"
             },
             {
               "type": "notes",
-              "name": "OptiGrid Facility Access Log",
+              "name": "OptiGrid Operations Log",
               "takeable": true,
               "readable": true,
-              "text": "OPTIGRID SOLUTIONS - REGIONAL OPERATIONS LOG\n\nFacilities Accessed (Phase 2):\n- Pacific NW Water Treatment (THIS FACILITY) - STATUS: READY\n- Cascade Valley Power Station - STATUS: COMPROMISED\n- Metro Transit Control Center - STATUS: IN PROGRESS\n\nCoordination: Critical Mass (infrastructure) + Social Fabric (public chaos)\n\nThe Architect approves Phase 3 advancement upon successful execution.",
+              "text": "OPTIGRID SOLUTIONS - REGIONAL OPERATIONS LOG\n\nFacilities Accessed (Phase 2):\n- Albion Energy Storage (THIS FACILITY) - STATUS: READY\n- Cascade Valley Power Station - STATUS: COMPROMISED\n- Metro Transit Control Centre - STATUS: IN PROGRESS\n\nCoordination: Critical Mass (infrastructure) + Social Fabric (public chaos)\n\nThe Architect approves Phase 3 advancement upon successful execution.",
               "observations": "Intelligence revealing coordinated regional infrastructure attacks"
             }
           ]
@@ -731,43 +865,41 @@ attack_schedule_encoded = base64_encode("ATTACK SEQUENCE:\n0800 - Trigger dosing
       "objects": [
         {
           "type": "notes",
-          "name": "Chemical Storage Manifest",
+          "name": "Rack Bank Maintenance Manifest",
           "takeable": true,
           "readable": true,
-          "text": "HAZARDOUS CHEMICAL INVENTORY\n\nChlorine Gas: 4,500 kg (WARNING: TOXIC)\nSodium Hypochlorite: 8,000 L\nFluoride Solution: 2,000 L\nSulfuric Acid (pH adj.): 1,500 L\nPolymer Coagulant: 3,000 L\n\nNote: Dosing rate modifications can weaponize these systems. Proper controls CRITICAL.",
-          "observations": "Chemical inventory showing dangerous materials under SCADA control"
+          "text": "RACK BANK MAINTENANCE MANIFEST — HALL 2\n\nRack Bank A: 64 modules | NMC lithium-ion\nRack Bank B: 64 modules | NMC lithium-ion\nInverter / PCS: 4 MW string inverters\nHydrogen vent fans: 2 × redundant\nESD interlocks: hardwired to plant room\n\nNote: forcing charge beyond the certified ceiling drives cells into thermal runaway. The interlocks exist for exactly this reason.",
+          "observations": "Inventory showing the rack banks and the safety systems ENTROPY disabled"
         },
         {
           "type": "notes",
-          "name": "Dosing Station Control Panel",
+          "name": "BMS Interlock-Bypass Module",
           "takeable": false,
           "readable": true,
-          "text": "DOSING CONTROL STATION 3\n\nSTATUS: COMPROMISED\n\nPhysical bypass device detected (unauthorized hardware)\nSCADA parameter override active\nManual intervention required to disable\n\nWARNING: Do not remove bypass device without proper procedure.",
-          "observations": "Control panel showing ENTROPY's physical attack hardware installed"
+          "text": "BMS CABINET — RACK BANK A/B\n\nSTATUS: COMPROMISED\n\nUnauthorised hardware bypass module fitted across the interlock terminals.\nSCADA thermal feed spoofed (reports 28°C; cells are far hotter).\nHydrogen vent fans forced to MANUAL-OFF.\n\nWARNING: Do not remove the bypass module without isolating the bank first. Use the hardwired ESD.",
+          "observations": "The BMS cabinet showing ENTROPY's physical interlock-bypass hardware"
         },
         {
           "type": "notes",
-          "name": "Emergency Shower Procedures",
+          "name": "Emergency Procedures",
           "takeable": false,
           "readable": true,
-          "text": "CHEMICAL EXPOSURE EMERGENCY\n\n1. Activate emergency shower immediately\n2. Remove contaminated clothing\n3. Rinse for minimum 15 minutes\n4. Seek medical attention\n5. Report incident to safety officer\n\nEmergency contacts posted on wall.",
-          "observations": "Safety procedures for hazardous material exposure"
+          "text": "THERMAL EVENT — EMERGENCY ACTIONS\n\n1. Press the hardwired ESD pushbutton (plant room or hall)\n2. Confirm hydrogen vent fans to maximum\n3. Evacuate if H₂ alarm reaches 2.0% LEL\n4. Notify grid control\n5. Do not approach a venting rack without SCBA\n\nESD pushbuttons are hardwired and cannot be disabled from SCADA.",
+          "observations": "Safety procedures for a battery thermal event"
         }
       ]
     },
 
-    "maintenance_wing": {
-      "type": "room_lab",
-      "dimensions": {
-        "width": 15,
-        "height": 12
-      },
+    "plant_room": {
+      "type": "room_it",
+      "dimensions": { "width": 15, "height": 12 },
       "locked": true,
       "lockType": "rfid",
       "requires": "master_keycard",
       "difficulty": "hard",
+      "door_sign": "Inverter / Plant Room — Authorised Access Only",
       "connections": {
-        "east": "treatment_floor",
+        "east": "battery_hall_1",
         "north": "loading_dock"
       },
       "npcs": [
@@ -778,16 +910,14 @@ attack_schedule_encoded = base64_encode("ATTACK SEQUENCE:\n0800 - Trigger dosing
           "position": { "x": 10, "y": 6 },
           "spriteSheet": "hacker-red",
           "spriteTalk": "assets/characters/hacker-red-talk.png",
-          "spriteConfig": {
-            "idleFrameStart": 20,
-            "idleFrameEnd": 23
-          },
+          "spriteConfig": { "idleFrameStart": 20, "idleFrameEnd": 23 },
           "storyPath": "scenarios/m04_critical_failure/ink/m04_npc_voltage.json",
           "currentKnot": "confrontation_start",
           "behavior": {
-            "hostile": true,
-            "alertRange": 250
-          }
+            "hostile": { "chaseSpeed": 145, "attackDamage": 22, "pauseToAttack": true }
+          },
+          "globalVarOnKO": "voltage_captured",
+          "taskOnKO": "confront_voltage"
         },
         {
           "id": "operative_static",
@@ -796,44 +926,68 @@ attack_schedule_encoded = base64_encode("ATTACK SEQUENCE:\n0800 - Trigger dosing
           "position": { "x": 8, "y": 6 },
           "spriteSheet": "hacker-red",
           "spriteTalk": "assets/characters/hacker-red-talk.png",
-          "spriteConfig": {
-            "idleFrameStart": 20,
-            "idleFrameEnd": 23
-          },
+          "spriteConfig": { "idleFrameStart": 20, "idleFrameEnd": 23 },
           "storyPath": "scenarios/m04_critical_failure/ink/m04_npc_operative_static.json",
           "currentKnot": "start",
           "behavior": {
-            "hostile": true,
-            "alertRange": 200
+            "hostile": { "chaseSpeed": 130, "attackDamage": 18, "pauseToAttack": false }
           },
+          "globalVarOnKO": "operative_static_defeated",
           "itemsHeld": [
             {
               "type": "notes",
               "name": "Critical Mass Coordination Log",
               "takeable": true,
               "readable": true,
-              "text": "ENCRYPTED COMMUNICATION LOG\n\nFROM: Voltage (Critical Mass)\nTO: Cascade (Social Fabric)\n\nPhase 2 synchronization confirmed.\n\nCritical Mass targets: Water, power, transit infrastructure\nSocial Fabric targets: Public panic amplification, emergency response disruption\n\nSimultaneous execution: 0800 local, all cells\n\nThe Architect's Phase 3: Multi-city expansion\n\nThis is bigger than any single operation. We're proving the system's fragility.",
-              "observations": "Critical intelligence revealing cross-cell coordination and The Architect's larger plan"
+              "text": "ENCRYPTED COMMUNICATION LOG\n\nFROM: Voltage (Critical Mass)\nTO: Cascade (Social Fabric)\n\nPhase 2 synchronisation confirmed.\n\nCritical Mass targets: power storage, generation, transit infrastructure\nSocial Fabric targets: public panic amplification, emergency-response disruption\n\nSimultaneous execution: 0800 local, all cells\n\nThe Architect's Phase 3: multi-city expansion\n\nThis is bigger than any single operation. We're proving the grid's fragility.",
+              "observations": "Critical intelligence revealing cross-cell coordination and The Architect's larger plan",
+              "onPickup": { "setVariable": { "lore_cross_cell_coordination_found": true } }
             }
           ]
         }
       ],
       "objects": [
         {
+          "type": "emergency-button",
+          "id": "esd_pushbutton",
+          "name": "Emergency Shutdown Pushbutton — Rack Banks A-C",
+          "takeable": false,
+          "locked": false,
+          "puzzle_graph_role": "lock",
+          "puzzle_graph_aim": "neutralize_attack_threat",
+          "observations": "A large red mushroom-head button in a yellow housing on the plant-room wall. Labelled: EMERGENCY SHUTDOWN — RACK BANKS A-C. This is the hardwired kill switch ENTROPY couldn't disable from SCADA. Pressing it isolates the banks and forces ventilation — stopping the thermal runaway.",
+          "minigameData": {
+            "interactionType": "esd_button",
+            "label": "EMERGENCY SHUTDOWN - RACK BANKS A-C",
+            "confirmDesc": "Initiate hardwired shutdown for Rack Banks A-C. Isolates the banks, forces hydrogen ventilation to maximum, and aborts the 0800 overcharge trigger. Irreversible without manual reset.",
+            "authVar": "anomaly_detected",
+            "unauthorizedText": "Before you isolate the banks: confirm the thermal hazard is real. Read the analog thermometer in the battery hall — don't trust the SCADA readout.",
+            "activatedVar": "attack_prevented",
+            "alreadyActiveText": "Emergency shutdown already active. Rack banks A-C isolated. Thermal runaway aborted.",
+            "confirmedText": "ISOLATED - COOLING ACTIVE - ATTACK ABORTED",
+            "completionActions": [
+              { "type": "set_global",    "key": "attack_prevented",       "value": true },
+              { "type": "set_global",    "key": "remote_trigger_disabled", "value": true },
+              { "type": "set_global",    "key": "mission_complete",        "value": true },
+              { "type": "complete_task", "taskId": "disable_attack_vectors" }
+            ]
+          }
+        },
+        {
           "type": "pc",
           "name": "ENTROPY Command Laptop",
           "takeable": false,
-          "storyPath": "scenarios/m04_critical_failure/ink/m04_terminal_attack_trigger.json",
-          "currentKnot": "start",
-          "observations": "Attack trigger mechanism - must be secured to prevent chemical contamination attack"
+          "readable": true,
+          "text": "REMOTE OVERCHARGE CONTROLLER — ARMED\n\nTarget: Albion Rack Banks A / B / C\nTrigger: 0800 local (countdown running)\nSCADA thermal feed: SPOOFED (nominal)\nHydrogen vent fans: FORCED OFF\nESD interlocks (software): DISABLED\n\n[The software path is locked behind the trigger. The hardwired ESD pushbutton on the wall is the only thing that still works.]",
+          "observations": "Critical Mass's command laptop — the overcharge is armed and counting down. The software won't stop it; the hardwired ESD will."
         },
         {
           "type": "notes",
           "name": "Facility Blueprints (Marked)",
           "takeable": true,
           "readable": true,
-          "text": "PACIFIC NW WATER TREATMENT - FACILITY LAYOUT\n\nCritical Mass tactical annotations:\n- Dosing stations 1, 2, 3: BYPASS DEVICES INSTALLED\n- SCADA network: COMPROMISED\n- Remote trigger: THIS LOCATION\n- Escape route: Loading dock (north exit)\n- Surveillance coverage: ALL AREAS\n\nVoltage's note: 'Clean operation. No casualties unless SAFETYNET interferes.'",
-          "observations": "Tactical planning documents showing complete attack infrastructure"
+          "text": "ALBION ENERGY STORAGE — MARKED LAYOUT\n\nCritical Mass tactical annotations:\n- Rack banks A, B, C: BYPASS MODULES INSTALLED\n- BMS / SCADA: COMPROMISED\n- Remote overcharge trigger: THIS ROOM\n- Escape route: loading dock (north exit)\n- Surveillance coverage: ALL AREAS\n\nVoltage's note: 'Clean operation. No casualties unless SAFETYNET interferes.'",
+          "observations": "Tactical planning documents showing the complete attack infrastructure"
         },
         {
           "type": "notes",
@@ -841,7 +995,7 @@ attack_schedule_encoded = base64_encode("ATTACK SEQUENCE:\n0800 - Trigger dosing
           "takeable": true,
           "readable": true,
           "text": <%= voltage_attack_note.to_json %>,
-          "observations": "Operation log confirming The Architect's coordination of multi-cell attacks",
+          "observations": "Operation log confirming The Architect's coordination of the multi-cell attacks",
           "onPickup": { "setVariable": { "lore_architect_directive_found": true } }
         }
       ]
@@ -849,12 +1003,10 @@ attack_schedule_encoded = base64_encode("ATTACK SEQUENCE:\n0800 - Trigger dosing
 
     "loading_dock": {
       "type": "small_room_1x1gu",
-      "dimensions": {
-        "width": 8,
-        "height": 8
-      },
+      "dimensions": { "width": 8, "height": 8 },
+      "door_sign": "Loading Dock",
       "connections": {
-        "south": "maintenance_wing"
+        "south": "plant_room"
       },
       "npcs": [],
       "objects": [
@@ -863,7 +1015,7 @@ attack_schedule_encoded = base64_encode("ATTACK SEQUENCE:\n0800 - Trigger dosing
           "name": "Loading Dock Schedule",
           "takeable": false,
           "readable": true,
-          "text": "DELIVERY SCHEDULE - DECEMBER 2025\n\nDec 10: Chlorine gas delivery (scheduled)\nDec 12: Polymer delivery (scheduled)\nDec 15: General supplies (scheduled)\n\nNote: OptiGrid van parked here Dec 9-10 (unscheduled). Chen questioned this.",
+          "text": "DELIVERY SCHEDULE — JANUARY\n\nJan 10: Module delivery (scheduled)\nJan 12: Coolant delivery (scheduled)\nJan 15: General supplies (scheduled)\n\nNote: OptiGrid van parked here Jan 9-10 (unscheduled). Chen questioned this.",
           "observations": "Delivery log showing ENTROPY's vehicle access point"
         },
         {
@@ -871,7 +1023,7 @@ attack_schedule_encoded = base64_encode("ATTACK SEQUENCE:\n0800 - Trigger dosing
           "name": "Voltage's Escape Plan",
           "takeable": true,
           "readable": true,
-          "text": "CONTINGENCY: SAFETYNET INTERFERENCE\n\nIf compromised:\n1. Trigger attack immediately (remote activation)\n2. Escape via loading dock\n3. Extraction vehicle: Loading zone B\n4. Rendezvous: Social Fabric safehouse (address encoded)\n\nPriority: Mission success > personal capture\n\nNote: Static and I can hold them long enough to complete trigger.",
+          "text": "CONTINGENCY: SAFETYNET INTERFERENCE\n\nIf compromised:\n1. Confirm the overcharge trigger is armed (it self-completes at 0800)\n2. Escape via the loading dock\n3. Extraction vehicle: loading zone B\n4. Rendezvous: Social Fabric safehouse (address encoded)\n\nPriority: mission success > personal capture\n\nNote: Static and I can hold them long enough.",
           "observations": "Escape plan revealing Voltage's tactical priorities"
         }
       ]
@@ -880,14 +1032,17 @@ attack_schedule_encoded = base64_encode("ATTACK SEQUENCE:\n0800 - Trigger dosing
 
   "globalVariables": {
     "player_name": "Agent 0x00",
+    "briefing_played": false,
     "mission_started": false,
     "agent_0x99_contacted": false,
 
     "chen_is_ally": false,
     "chen_knows_truth": false,
     "chen_trust_level": 0,
+    "chen_phone_available": false,
     "facility_access_granted": false,
 
+    "anomaly_detected": false,
     "scada_anomalies_identified": false,
     "infiltration_confirmed": false,
     "attack_mechanism_understood": false,
@@ -904,6 +1059,8 @@ attack_schedule_encoded = base64_encode("ATTACK SEQUENCE:\n0800 - Trigger dosing
     "operative_cipher_defeated": false,
     "operative_relay_defeated": false,
     "operative_static_defeated": false,
+    "security_guard_ko": false,
+    "robert_chen_ko": false,
     "voltage_captured": false,
     "voltage_escaped": false,
 
@@ -913,7 +1070,9 @@ attack_schedule_encoded = base64_encode("ATTACK SEQUENCE:\n0800 - Trigger dosing
     "remote_trigger_disabled": false,
     "attack_vectors_disabled": 0,
 
+    "esd_activated": false,
     "mission_complete": false,
+    "debrief_ready": false,
     "attack_prevented": false,
 
     "disclosure_choice": "",

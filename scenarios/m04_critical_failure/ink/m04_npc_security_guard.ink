@@ -26,7 +26,7 @@ EXTERNAL chen_trust_level()
 Morning. Kind of early for visitors.
 
 * [Present state auditor credentials]
-    You: State EPA auditor. I'm here for an inspection.
+    You: State grid-safety regulator. I'm here for an inspection.
     -> guard_credentials_check
 
 * [I'm here for an inspection]
