@@ -11,8 +11,9 @@
   <%# All fonts are self-hosted in /break_escape/assets/fonts/ via fonts.css %>
 
   <%# Load configuration CSS %>
-  <link rel="stylesheet" href="/break_escape/css/fonts.css?v=2">
-  <link rel="stylesheet" href="/break_escape/css/player_preferences.css">
+  <link rel="stylesheet" href="<%= be_asset_path('/break_escape/css/fonts.css') %>">
+  <link rel="stylesheet" href="<%= be_asset_path('/break_escape/css/player_preferences.css') %>">
+  <%= break_escape_import_map %>
 </head>
 <body>
   <div class="configuration-container">
@@ -113,7 +114,7 @@
   <!-- Load Phaser for 160x160 animated preview only -->
   <script src="https://cdn.jsdelivr.net/npm/phaser@3.60.0/dist/phaser.min.js" nonce="<%= content_security_policy_nonce %>"></script>
   <script type="module" nonce="<%= content_security_policy_nonce %>">
-    import { initializeSpritePreview } from '/break_escape/js/ui/sprite-grid.js?v=2';
+    import { initializeSpritePreview } from '<%= be_asset_path('/break_escape/js/ui/sprite-grid.js') %>';
 
     document.addEventListener('DOMContentLoaded', () => {
       const sprites = <%= raw @available_sprites.to_json %>;

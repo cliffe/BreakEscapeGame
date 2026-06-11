@@ -1,3 +1,4 @@
 module BreakEscape
   VERSION = '1.0.0'
+  ASSETS_VERSION = ENV.fetch('BREAK_ESCAPE_ASSETS_VERSION', VERSION)
 end
