@@ -41,6 +41,70 @@ operational_log_content = "TRANSACTION LOG - Q3 2024\n\n[2024-09-15 14:32:11] Pr
 {
   "scenario_brief": "Infiltrate Zero Day Syndicate posing as security researcher 'Alex Chen.' Meet Victoria Sterling to clone her RFID keycard, then return at night to exploit vulnerable training network services and gather evidence linking Zero Day to the St. Catherine's Hospital ransomware attack. Uncover The Architect's Phase 2 plans targeting critical infrastructure while confronting moral choices about collateral damage.",
 
+  "music": {
+    "events": [
+      {
+        "trigger": "game_loaded",
+        "condition": "!globalVars.briefing_played",
+        "playlist": "cutscene",
+        "fade": false
+      },
+      {
+        "trigger": "game_loaded",
+        "condition": "globalVars.briefing_played === true",
+        "playlist": "noir",
+        "fade": false
+      },
+      {
+        "trigger": "conversation_closed:briefing_cutscene",
+        "playlist": "noir",
+        "fade": true
+      },
+      {
+        "trigger": "npc_hostile_state_changed",
+        "condition": "isHostile === true",
+        "playlist": "threat",
+        "fade": true
+      },
+      {
+        "trigger": "all_hostiles_ko",
+        "playlist": "noir",
+        "fade": true
+      },
+      {
+        "trigger": "global_variable_changed:victoria_choice_made",
+        "condition": "value === true",
+        "playlist": "spy-action",
+        "fade": true
+      },
+      {
+        "trigger": "conversation_closed:closing_debrief",
+        "playlist": "victory",
+        "track": "Ghost in the Wire",
+        "autoStop": true,
+        "disableClose": true,
+        "fade": true,
+        "credits": [
+          { "text": "MISSION COMPLETE", "style": "title" },
+          { "text": "GHOST IN THE MACHINE", "style": "subtitle" },
+          { "text": "" },
+          { "text": "ZERO DAY SYNDICATE: EXPOSED", "style": "entry" },
+          { "text": "ST. CATHERINE'S LINK: PROVEN — ProFTPD exploit traced to GHOST", "style": "entry" },
+          { "text": "" },
+          { "text": "── DECISIONS ──", "style": "section-header" },
+          { "text": "VICTORIA STERLING: RECRUITED — turned informant against The Architect", "style": "entry", "condition": "globalVars.victoria_recruited" },
+          { "text": "VICTORIA STERLING: ARRESTED — marketplace seized", "style": "entry", "condition": "!globalVars.victoria_recruited" },
+          { "text": "JAMES PARK: PROTECTED — innocent analyst shielded from fallout", "style": "entry", "condition": "globalVars.james_protected" },
+          { "text": "JAMES PARK: EXPOSED — career destroyed in the sweep", "style": "entry", "condition": "globalVars.james_exposed" },
+          { "text": "PERFECT STEALTH — never detected by security", "style": "entry", "condition": "globalVars.guard_detection_count === 0" },
+          { "text": "" },
+          { "text": "THE ARCHITECT: identity still unknown. Phase 2 looms.", "style": "warning" },
+          { "text": "ENTROPY: Still operational. The hunt continues.", "style": "warning" }
+        ]
+      }
+    ]
+  },
+
   "objectives": [
     {
       "aimId": "main_mission",
@@ -61,34 +125,6 @@ operational_log_content = "TRANSACTION LOG - Q3 2024\n\n[2024-09-15 14:32:11] Pr
           "taskId": "clone_rfid_card",
           "title": "Clone RFID Keycard",
           "description": "Clone Victoria Sterling's executive keycard",
-          "type": "custom",
-          "status": "locked"
-        },
-        {
-          "taskId": "scan_network",
-          "title": "Scan Training Network",
-          "description": "Use nmap to scan the training network (192.168.100.0/24)",
-          "type": "custom",
-          "status": "locked"
-        },
-        {
-          "taskId": "ftp_banner",
-          "title": "Gather FTP Intelligence",
-          "description": "Connect to FTP service and extract banner information",
-          "type": "custom",
-          "status": "locked"
-        },
-        {
-          "taskId": "http_analysis",
-          "title": "Analyze HTTP Service",
-          "description": "Analyze HTTP service and decode Base64 pricing data",
-          "type": "custom",
-          "status": "locked"
-        },
-        {
-          "taskId": "distcc_exploit",
-          "title": "Exploit distcc Service",
-          "description": "Exploit legacy distcc service to access operational logs",
           "type": "custom",
           "status": "locked"
         },
@@ -130,8 +166,9 @@ operational_log_content = "TRANSACTION LOG - Q3 2024\n\n[2024-09-15 14:32:11] Pr
         {
           "taskId": "access_victoria_computer",
           "title": "Access Victoria's Computer",
-          "description": "Access Victoria Sterling's executive office computer",
-          "type": "custom",
+          "description": "Crack the password on Victoria Sterling's executive office computer",
+          "type": "unlock_object",
+          "targetObject": "victoria_computer",
           "status": "locked"
         },
         {
@@ -144,7 +181,7 @@ operational_log_content = "TRANSACTION LOG - Q3 2024\n\n[2024-09-15 14:32:11] Pr
         {
           "taskId": "find_operational_logs",
           "title": "Find Operational Logs",
-          "description": "Correlate VM operational logs with physical evidence",
+          "description": "Exploit distcc to recover the operational transaction logs",
           "type": "custom",
           "status": "locked"
         }
@@ -160,8 +197,9 @@ operational_log_content = "TRANSACTION LOG - Q3 2024\n\n[2024-09-15 14:32:11] Pr
         {
           "taskId": "lore_fragment_1",
           "title": "Zero Day Origins",
-          "description": "Find the document detailing Zero Day Syndicate's founding",
-          "type": "custom",
+          "description": "Open the executive office filing cabinet to find Zero Day's founding history",
+          "type": "unlock_object",
+          "targetObject": "exec_filing_cabinet",
           "status": "active"
         },
         {
@@ -193,7 +231,8 @@ operational_log_content = "TRANSACTION LOG - Q3 2024\n\n[2024-09-15 14:32:11] Pr
           "title": "Complete Mission Undetected",
           "description": "Complete all objectives without triggering guard detection",
           "type": "custom",
-          "status": "active"
+          "status": "active",
+          "optional": true
         }
       ]
     },
@@ -203,13 +242,17 @@ operational_log_content = "TRANSACTION LOG - Q3 2024\n\n[2024-09-15 14:32:11] Pr
       "description": "Engage with the moral complexity of the mission",
       "status": "locked",
       "order": 3,
+      "missionConclusion": true,
+      "requiresCompleted": ["victoria_choice_made"],
+      "conclusionScreen": { "type": "bond_visualiser" },
       "tasks": [
         {
           "taskId": "james_choice_made",
           "title": "Decide James Park's Fate",
           "description": "Decide whether to protect James Park from collateral damage",
           "type": "custom",
-          "status": "locked"
+          "status": "locked",
+          "optional": true
         },
         {
           "taskId": "victoria_choice_made",
@@ -223,6 +266,33 @@ operational_log_content = "TRANSACTION LOG - Q3 2024\n\n[2024-09-15 14:32:11] Pr
   ],
 
   "startRoom": "reception_lobby",
+
+  "startItemsInInventory": [
+    {
+      "type": "phone",
+      "name": "Your Phone",
+      "takeable": true,
+      "phoneId": "player_phone",
+      "npcIds": ["agent_0x99", "closing_debrief", "james_choice_cutscene"],
+      "observations": "Your secure phone with encrypted connection to SAFETYNET"
+    },
+    {
+      "type": "rfid_cloner",
+      "name": "RFID Cloner",
+      "takeable": true,
+      "observations": "Concealed RFID cloning device — get close to a keycard to copy it",
+      "puzzle_graph_role": "tool",
+      "puzzle_graph_unlocks": ["server_room"]
+    },
+    {
+      "type": "lockpick",
+      "name": "Lock Pick Kit",
+      "takeable": true,
+      "observations": "Professional lock picking kit for bypassing physical locks",
+      "puzzle_graph_role": "tool",
+      "puzzle_graph_unlocks": ["executive_office", "exec_filing_cabinet", "server_filing_cabinet"]
+    }
+  ],
 
   "player": {
     "id": "player",
@@ -275,7 +345,9 @@ operational_log_content = "TRANSACTION LOG - Q3 2024\n\n[2024-09-15 14:32:11] Pr
           "timedConversation": {
             "delay": 0,
             "targetKnot": "start",
-            "background": "assets/backgrounds/hq1.png"
+            "background": "assets/backgrounds/hq1.png",
+            "skipIfGlobal": "briefing_played",
+            "setGlobalOnStart": "briefing_played"
           }
         },
         {
@@ -289,20 +361,16 @@ operational_log_content = "TRANSACTION LOG - Q3 2024\n\n[2024-09-15 14:32:11] Pr
           "spriteConfig": {
             "idleFrameStart": 20,
             "idleFrameEnd": 23
-          }
-        },
-        {
-          "id": "night_guard",
-          "displayName": "Security Guard",
-          "npcType": "person",
-          "position": {"x": 300, "y": 200},
-          "storyPath": "scenarios/m03_ghost_in_the_machine/ink/m03_npc_guard.json",
-          "currentKnot": "start",
-          "spriteSheet": "hacker",
-          "spriteConfig": {
-            "idleFrameStart": 20,
-            "idleFrameEnd": 23
-          }
+          },
+          "itemsHeld": [
+            {
+              "type": "id_badge",
+              "key_id": "visitor_badge",
+              "name": "Visitor Badge",
+              "takeable": true,
+              "observations": "WhiteHat Security visitor badge — keep it visible inside the building"
+            }
+          ]
         },
         {
           "id": "agent_0x99",
@@ -311,7 +379,59 @@ operational_log_content = "TRANSACTION LOG - Q3 2024\n\n[2024-09-15 14:32:11] Pr
           "storyPath": "scenarios/m03_ghost_in_the_machine/ink/m03_phone_agent0x99.json",
           "avatar": "assets/npc/avatars/npc_helper.png",
           "phoneId": "player_phone",
-          "currentKnot": "start"
+          "currentKnot": "start",
+          "eventMappings": [
+            {
+              "eventPattern": "objective_task_completed:clone_rfid_card",
+              "onceOnly": true,
+              "setGlobal": { "mission_phase": "act2_infiltration" },
+              "sendTimedMessage": { "delay": 2000, "message": "Card's cloned -- nice work. Sit tight until the building clears out, then move. The server room's yours now. Pull their training network apart, find the proof on St. Catherine's, and don't let that guard make you. When you've got what we need, Victoria won't be hard to find." }
+            },
+            {
+              "eventPattern": "item_picked_up:lockpick",
+              "targetKnot": "on_lockpick_pickup",
+              "conversationMode": "phone-chat",
+              "onceOnly": true
+            },
+            {
+              "eventPattern": "room_entered:server_room",
+              "targetKnot": "on_room_discovered",
+              "conversationMode": "phone-chat",
+              "onceOnly": true
+            },
+            {
+              "eventPattern": "objective_task_completed:clone_rfid_card",
+              "targetKnot": "on_rfid_clone_success",
+              "conversationMode": "phone-chat",
+              "onceOnly": true
+            },
+            {
+              "eventPattern": "objective_task_completed:access_victoria_computer",
+              "targetKnot": "on_victoria_computer_accessed",
+              "conversationMode": "phone-chat",
+              "onceOnly": true
+            },
+            {
+              "eventPattern": "objective_task_completed:lore_fragment_2",
+              "targetKnot": "on_exploit_catalog_found",
+              "conversationMode": "phone-chat",
+              "onceOnly": true
+            },
+            {
+              "eventPattern": "objective_task_completed:lore_fragment_3",
+              "targetKnot": "on_architect_directive_found",
+              "conversationMode": "phone-chat",
+              "onceOnly": true
+            },
+            {
+              "eventPattern": "distcc_exploit_flag_submitted",
+              "targetKnot": "m2_revelation_call",
+              "conversationMode": "phone-chat",
+              "completeTask": "find_operational_logs",
+              "setGlobal": { "night_confrontation_ready": true },
+              "onceOnly": true
+            }
+          ]
         },
         {
           "id": "closing_debrief",
@@ -325,6 +445,7 @@ operational_log_content = "TRANSACTION LOG - Q3 2024\n\n[2024-09-15 14:32:11] Pr
             {
               "eventPattern": "global_variable_changed:victoria_choice_made",
               "targetKnot": "start",
+              "conversationMode": "phone-chat",
               "condition": "value === true",
               "onceOnly": true
             }
@@ -342,7 +463,59 @@ operational_log_content = "TRANSACTION LOG - Q3 2024\n\n[2024-09-15 14:32:11] Pr
         "east": "executive_wing_hallway"
       },
       "objects": [],
-      "npcs": []
+      "npcs": [
+        {
+          "id": "night_guard",
+          "displayName": "Security Guard",
+          "npcType": "person",
+          "position": {"x": 10, "y": 2},
+          "storyPath": "scenarios/m03_ghost_in_the_machine/ink/m03_npc_guard.json",
+          "currentKnot": "start",
+          "spriteSheet": "hacker-red",
+          "spriteTalk": "assets/characters/hacker-red-talk.png",
+          "spriteConfig": {
+            "idleFrameStart": 20,
+            "idleFrameEnd": 23
+          },
+          "globalVarOnKO": "guard_knocked_out",
+          "behavior": {
+            "patrol": {
+              "enabled": true,
+              "waypoints": [
+                { "x": 3, "y": 2, "dwellTime": 2000 },
+                { "x": 10, "y": 2 },
+                { "x": 17, "y": 2, "dwellTime": 2000 },
+                { "x": 10, "y": 2 }
+              ],
+              "speed": 40,
+              "loop": true
+            }
+          },
+          "los": {
+            "enabled": true,
+            "range": 150,
+            "angle": 120,
+            "visualize": true
+          },
+          "eventMappings": [
+            {
+              "eventPattern": "lockpick_used_in_view",
+              "targetKnot": "on_lockpick_detected",
+              "conversationMode": "person-chat",
+              "background": "assets/backgrounds/background1.png",
+              "onceOnly": false,
+              "cooldown": 30000
+            },
+            {
+              "eventPattern": "room_entered:server_room",
+              "targetKnot": "on_restricted_area",
+              "conversationMode": "person-chat",
+              "background": "assets/backgrounds/background1.png",
+              "onceOnly": true
+            }
+          ]
+        }
+      ]
     },
 
     "conference_room_01": {
@@ -396,6 +569,7 @@ operational_log_content = "TRANSACTION LOG - Q3 2024\n\n[2024-09-15 14:32:11] Pr
       "objects": [
         {
           "type": "safe",
+          "id": "server_filing_cabinet",
           "name": "Filing Cabinet",
           "takeable": false,
           "locked": true,
@@ -415,6 +589,7 @@ operational_log_content = "TRANSACTION LOG - Q3 2024\n\n[2024-09-15 14:32:11] Pr
         },
         {
           "type": "safe",
+          "id": "wall_safe_server",
           "name": "Wall Safe",
           "takeable": false,
           "locked": true,
@@ -451,9 +626,12 @@ operational_log_content = "TRANSACTION LOG - Q3 2024\n\n[2024-09-15 14:32:11] Pr
         },
         {
           "type": "workstation",
+          "id": "cyberchef_workstation",
           "name": "CyberChef Decoding Workstation",
           "takeable": false,
-          "observations": "Workstation with decoding tools (ROT13, Base64, Hex)"
+          "observations": "Workstation with decoding tools (ROT13, Base64, Hex)",
+          "storyPath": "scenarios/m03_ghost_in_the_machine/ink/m03_terminal_cyberchef.json",
+          "currentKnot": "start"
         },
         {
           "type": "flag-station",
@@ -513,6 +691,7 @@ operational_log_content = "TRANSACTION LOG - Q3 2024\n\n[2024-09-15 14:32:11] Pr
       "objects": [
         {
           "type": "safe",
+          "id": "exec_filing_cabinet",
           "name": "Filing Cabinet",
           "takeable": false,
           "locked": true,
@@ -532,12 +711,16 @@ operational_log_content = "TRANSACTION LOG - Q3 2024\n\n[2024-09-15 14:32:11] Pr
         },
         {
           "type": "pc",
+          "id": "victoria_computer",
           "name": "Executive Computer",
           "takeable": false,
           "locked": true,
           "lockType": "password",
+          "requires": "Sterling2010",
+          "postitNote": "VS / founding year",
+          "showPostit": true,
           "difficulty": "medium",
-          "observations": "Victoria Sterling's executive computer - password protected",
+          "observations": "Victoria Sterling's executive computer - password protected. A post-it on the monitor reads 'VS / founding year'.",
           "itemsHeld": [
             {
               "type": "text_file",
@@ -622,7 +805,25 @@ operational_log_content = "TRANSACTION LOG - Q3 2024\n\n[2024-09-15 14:32:11] Pr
           "observations": "Professional certifications displayed on wall"
         }
       ],
-      "npcs": []
+      "npcs": [
+        {
+          "id": "james_choice_cutscene",
+          "displayName": "Agent 0x99",
+          "npcType": "phone",
+          "storyPath": "scenarios/m03_ghost_in_the_machine/ink/m03_james_choice.json",
+          "avatar": "assets/npc/avatars/npc_helper.png",
+          "phoneId": "player_phone",
+          "currentKnot": "start",
+          "eventMappings": [
+            {
+              "eventPattern": "room_entered:james_office",
+              "targetKnot": "start",
+              "conversationMode": "phone-chat",
+              "onceOnly": true
+            }
+          ]
+        }
+      ]
     }
   },
 
@@ -634,9 +835,15 @@ operational_log_content = "TRANSACTION LOG - Q3 2024\n\n[2024-09-15 14:32:11] Pr
     "victoria_trusts_player": false,
     "victoria_trust": 50,
     "victoria_choice_made": false,
+    "victoria_recruited": false,
     "james_innocence_confirmed": false,
     "james_warned": false,
+    "james_protected": false,
+    "james_exposed": false,
     "handler_trust": 50,
-    "guard_detection_count": 0
+    "guard_detection_count": 0,
+    "guard_knocked_out": false,
+    "briefing_played": false,
+    "night_confrontation_ready": false
   }
 }

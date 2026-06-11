@@ -63,8 +63,11 @@ def render_expr(tokens):
                 if stack:
                     outputs.append(stack.pop())
             elif t == "!":
-                a = stack.pop() if stack else ""
-                stack.append(f"not ({a})")
+                a = strip_paren(stack.pop() if stack else "")
+                if re.fullmatch(r"[A-Za-z_][A-Za-z0-9_]*", a):
+                    stack.append(f"not {a}")
+                else:
+                    stack.append(f"not ({a})")
             elif t in BINOPS:
                 b = stack.pop() if stack else ""
                 a = stack.pop() if stack else ""
@@ -206,6 +209,10 @@ class Decompiler:
                 if el == "\n":
                     flush()
                     i += 1; continue
+                if el == "done":
+                    flush(); self.emit(pad + "-> DONE"); i += 1; continue
+                if el == "end":
+                    flush(); self.emit(pad + "-> END"); i += 1; continue
                 if el.startswith("^"):
                     cur[0] += el[1:]
                     i += 1; continue
@@ -226,10 +233,10 @@ class Decompiler:
                     # choice
                     if isinstance(after, dict) and "*" in after:
                         flush()
-                        text = self.expr_string(toks)
+                        text, cond = self.split_choice(toks)
                         flg = after.get("flg", 0)
                         sticky = not (flg & 0x10)
-                        pending_choices.append((text, after["*"], sticky))
+                        pending_choices.append((text, after["*"], sticky, cond))
                         i = j + 2; continue
                     # conditional
                     if isinstance(after, list) and self.is_cond_block(after):
@@ -276,10 +283,11 @@ class Decompiler:
             i += 1
         flush()
         # Emit choices (text + their branch content)
-        for text, target, sticky in pending_choices:
+        for text, target, sticky, cond in pending_choices:
             marker = "+" if sticky else "*"
             bn = target.split(".")[-1]
-            self.emit(pad + f"{marker} [{text}]")
+            condstr = (" {" + cond + "}") if cond else ""
+            self.emit(pad + f"{marker}{condstr} [{text}]")
             if bn in named:
                 self.walk_container(named[bn], indent+1, knot)
         # Emit leftover named sub-stitches (real stitches, not choice/gather/branch)
@@ -295,6 +303,28 @@ class Decompiler:
                 if gbody and not (len(gbody)==1 and gbody[0]=="done"):
                     self.emit(pad + "-")
                     self.walk_container(named[name], indent, knot)
+
+    def split_choice(self, toks):
+        """Split choice tokens into (choice_text, condition_or_None).
+        Conditional choices encode as: str ^text /str <condition-expr-tokens>."""
+        text = ""
+        cond_toks = []
+        i = 0
+        while i < len(toks):
+            if toks[i] == "str":
+                j = i + 1; buf = []
+                while j < len(toks) and toks[j] != "/str":
+                    if isinstance(toks[j], str) and toks[j].startswith("^"):
+                        buf.append(toks[j][1:])
+                    j += 1
+                text = "".join(buf); i = j + 1; continue
+            cond_toks.append(toks[i]); i += 1
+        cond = None
+        if cond_toks:
+            _, _, stack = render_expr(cond_toks)
+            if stack:
+                cond = strip_paren(stack[-1])
+        return text, cond
 
     def expr_string(self, toks):
         _, _, stack = render_expr(toks)
