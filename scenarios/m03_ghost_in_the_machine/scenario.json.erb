@@ -122,9 +122,16 @@ operational_log_content = "TRANSACTION LOG - Q3 2024\n\n[2024-09-15 14:32:11] Pr
           "status": "active"
         },
         {
+          "taskId": "clone_reception_badge",
+          "title": "Clone Staff Access Badge",
+          "description": "Scan the receptionist's MIFARE badge with the RFID cloner to access the conference area",
+          "type": "custom",
+          "status": "active"
+        },
+        {
           "taskId": "clone_rfid_card",
-          "title": "Clone RFID Keycard",
-          "description": "Clone Victoria Sterling's executive keycard",
+          "title": "Clone Victoria's Executive Keycard",
+          "description": "Clone Victoria Sterling's custom-key executive keycard for server room access",
           "type": "custom",
           "status": "locked"
         },
@@ -282,7 +289,7 @@ operational_log_content = "TRANSACTION LOG - Q3 2024\n\n[2024-09-15 14:32:11] Pr
       "takeable": true,
       "observations": "Concealed RFID cloning device — get close to a keycard to copy it",
       "puzzle_graph_role": "tool",
-      "puzzle_graph_unlocks": ["server_room"]
+      "puzzle_graph_unlocks": ["conference_room_01", "server_room"]
     },
     {
       "type": "lockpick",
@@ -317,7 +324,7 @@ operational_log_content = "TRANSACTION LOG - Q3 2024\n\n[2024-09-15 14:32:11] Pr
           "name": "Building Directory",
           "takeable": false,
           "readable": true,
-          "text": "WhiteHat Security floor plan showing office locations",
+          "text": "WhiteHat Security — Floor Directory\n\n→ RECEPTION (you are here)\n→ CONFERENCE AREA: RFID card access required\n→ MAIN HALLWAY: offices, executive wing\n→ SERVER ROOM: executive access only\n\nVisitors: please check in with reception. Staff badges required beyond the reception lobby.",
           "observations": "Building directory at reception desk"
         },
         {
@@ -362,6 +369,11 @@ operational_log_content = "TRANSACTION LOG - Q3 2024\n\n[2024-09-15 14:32:11] Pr
             "idleFrameStart": 20,
             "idleFrameEnd": 23
           },
+          "rfidCard": {
+            "card_id": "receptionist_badge",
+            "rfid_protocol": "MIFARE_Classic_Weak_Defaults",
+            "name": "Staff Access Badge"
+          },
           "itemsHeld": [
             {
               "type": "id_badge",
@@ -382,10 +394,15 @@ operational_log_content = "TRANSACTION LOG - Q3 2024\n\n[2024-09-15 14:32:11] Pr
           "currentKnot": "start",
           "eventMappings": [
             {
+              "eventPattern": "objective_task_completed:clone_reception_badge",
+              "onceOnly": true,
+              "sendTimedMessage": { "delay": 1500, "message": "Good — reception badge in the cloner. Now emulate it at the conference room door. Read, crack, emulate: that's your workflow with this device. Lock it in before you meet Victoria." }
+            },
+            {
               "eventPattern": "objective_task_completed:clone_rfid_card",
               "onceOnly": true,
               "setGlobal": { "mission_phase": "act2_infiltration" },
-              "sendTimedMessage": { "delay": 2000, "message": "Card's cloned -- nice work. Sit tight until the building clears out, then move. The server room's yours now. Pull their training network apart, find the proof on St. Catherine's, and don't let that guard make you. When you've got what we need, Victoria won't be hard to find." }
+              "sendTimedMessage": { "delay": 2000, "message": "Victoria's keycard data is in the cloner. Sit tight until the building clears out. Go to the server room — the cloner will crack and emulate her card at the door. Pull their training network apart, find the proof on St. Catherine's, and don't let that guard make you." }
             },
             {
               "eventPattern": "item_picked_up:lockpick",
@@ -520,6 +537,9 @@ operational_log_content = "TRANSACTION LOG - Q3 2024\n\n[2024-09-15 14:32:11] Pr
 
     "conference_room_01": {
       "type": "room_office",
+      "locked": true,
+      "lockType": "rfid",
+      "requires": "receptionist_badge",
       "connections": {
         "east": "main_hallway"
       },
@@ -553,6 +573,11 @@ operational_log_content = "TRANSACTION LOG - Q3 2024\n\n[2024-09-15 14:32:11] Pr
           "spriteConfig": {
             "idleFrameStart": 20,
             "idleFrameEnd": 23
+          },
+          "rfidCard": {
+            "card_id": "victoria_keycard_clone",
+            "rfid_protocol": "MIFARE_Classic_Custom_Keys",
+            "name": "Executive Keycard"
           }
         }
       ]

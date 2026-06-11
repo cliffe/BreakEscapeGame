@@ -4,51 +4,70 @@
 > Reconciled against: dungeon_graph.md (regenerated 2026-06-11).
 
 ## Prerequisites
-- Validator passes: ERB renders, JSON + schema valid, all ink compiles, objective task wiring OK. One intentional WARNING (guard `lockpick_used_in_view` repeat-challenge cutscene).
-- All 8 ink files compiled (`.ink` recovered from compiled `.json` and in sync).
-- Minigames / locks on the path:
-  - `rfid` clone (Victoria conversation) — ✅ Implemented (unlocks server room via `#unlock_room`)
+- Validator passes: ERB renders, JSON + schema valid, all ink compiles, objective task wiring OK. One intentional WARNING (guard `lockpick_used_in_view` repeat-challenge cutscene). Two expected `rfidCard` unknown-field warnings (engine reads the field; schema doesn't list it).
+- All 8 ink files compiled (`.ink` in sync with `.json`).
+- Minigames / locks on the critical path:
+  - `rfid` clone (receptionist badge — easy gate) — ✅ Implemented (dictionary attack, `MIFARE_Classic_Weak_Defaults`)
+  - `rfid` clone (Victoria card — server room) — ✅ Implemented (darkside attack, `MIFARE_Classic_Custom_Keys`, fired by `#clone_keycard` in ink)
   - `key` + lockpick (executive office, two filing cabinets) — ✅ Implemented
   - `pin` (wall safe, code 2010) — ✅ Implemented
   - `password` (Victoria's computer, `Sterling2010`) — ✅ Implemented
   - `vm-launcher` + `flag-station` (4 flags) — ✅ Implemented
   - CyberChef workstation (ink terminal) — ✅ Implemented (wired via storyPath)
 
-Player starts with: phone, **RFID Cloner**, **Lock Pick Kit** (added this pass — previously there were no start items, making every lock unsolvable).
+Player starts with: phone, **RFID Cloner**, **Lock Pick Kit**.
+
+## Two-Stage RFID Scaffolding
+
+| Stage | Card | Protocol | Attack | Gate |
+|---|---|---|---|---|
+| 1 — Easy teach | `receptionist_badge` (staff lanyard) | `MIFARE_Classic_Weak_Defaults` | Dictionary (near-instant) | `conference_room_01` door |
+| 2 — Hard payoff | `victoria_keycard_clone` (executive) | `MIFARE_Classic_Custom_Keys` | Darkside (~30 s, progressive) | `server_room` door |
+
+Stage 1 is on the critical path before Victoria — the player **must** clone and emulate the reception badge to enter the conference room. The mechanic is therefore learned by necessity, not as an optional tutorial.
 
 ## Aim: Zero Day Intelligence (main_mission)
 [Active at start]
 
-1. **Reception** — Spawn → opening briefing cutscene plays once (`briefing_played` set). Read the Company Founding Plaque → note **2010** (safe PIN + computer password root).
-2. **Reception → Receptionist** — Sign in → receive Visitor Badge (`#give_item:id_badge:visitor_badge`).
-3. **Conference Room → Victoria Sterling** — Talk → `#complete_task:meet_victoria`. Build influence, then choose "Move closer to examine the whiteboard" to start the RFID clone; keep her talking through the clone checks → `clone_complete` fires `#complete_task:clone_rfid_card` **and `#unlock_room:server_room`** (this is the gate to the night/infiltration half — **see DEAD ZONE note**).
-4. **Main Hallway** — Guard patrols here with line-of-sight. Lockpicking in view triggers `on_lockpick_detected`; entering the server room triggers `on_restricted_area` (cooldown-gated confrontation; bribe / cover-story / SAFETYNET-reveal branches).
-5. **Server Room** (RFID — now unlocked) — Use the **VM Access Terminal** to exploit the training network (192.168.100.0/24), then submit the four flags at the **Drop-Site Terminal**:
+1. **Reception** — Spawn → opening briefing cutscene plays once (`briefing_played` set). Read the Company Founding Plaque → note **2010** (safe PIN + computer password root). Read the Building Directory → conference area requires RFID access.
+2. **Reception → Receptionist** — Sign in → receive Visitor Badge (`#give_item:id_badge:visitor_badge`). Receptionist mentions the card reader at the conference area. Ask about building layout (option unlocks at `receptionist_influence ≥ 15`) → she taps her lanyard: "RFID badges throughout."
+3. **Stage 1 RFID — clone reception badge** *(critical path gate)*:
+   - In the receptionist hub: choose **"Lean across the desk — cloner in range"** → `#clone_keycard:receptionist_badge` fires → RFID minigame opens (clone mode, `MIFARE_Classic_Weak_Defaults`) → read animation → dictionary attack (near-instant) → save card.
+   - `#complete_task:clone_reception_badge` fires → handler bark: *"Good — reception badge in the cloner. Now emulate it at the conference room door."*
+   - Approach the `conference_room_01` door (`lockType: rfid, requires: receptionist_badge`) → RFID minigame (unlock/emulate mode) → door opens.
+4. **Conference Room → Victoria Sterling** — Talk → `#complete_task:meet_victoria`. Build influence (need `victoria_influence ≥ 20` to unlock the whiteboard approach option).
+5. **Stage 2 RFID — capture Victoria's keycard** *(critical path gate)*:
+   - Choose **"Move closer to examine the whiteboard"** → `clone_rfid_opportunity` knot; Victoria's card narrated as MIFARE custom keys. Keep her talking through `clone_rfid_distraction` → `clone_check_1` → `clone_check_2` → `clone_complete`.
+   - At `clone_complete`: `#clone_keycard:victoria_keycard_clone` fires → RFID minigame opens (clone mode, `MIFARE_Classic_Custom_Keys`) → read animation → **Darkside Attack** (30 s, progressive sector-by-sector crack) → card saved.
+   - `#complete_task:clone_rfid_card` fires → handler bark + sets `mission_phase: act2_infiltration`. `on_rfid_clone_success` knot: *"Darkside crack complete… emulate her card at the server room door."*
+   - `server_room` is still locked (`lockType: rfid, requires: victoria_keycard_clone`). No `#unlock_room` bypass exists.
+6. **Main Hallway** — Guard patrols here with line-of-sight. Lockpicking in view triggers `on_lockpick_detected`; entering the server room triggers `on_restricted_area`.
+7. **Server Room** — At night: approach the server room door → RFID minigame (unlock mode) → cloner has `victoria_keycard_clone` in `saved_cards` → emulate → **door opens via real RFID minigame**. Use the **VM Access Terminal** to exploit the training network (192.168.100.0/24), submit the four flags at the **Drop-Site Terminal**:
    - `flag{network_scan_complete}` → `submit_network_scan_flag`
    - `flag{ftp_intel_gathered}` → `submit_ftp_flag`
    - `flag{pricing_intel_decoded}` → `submit_http_flag`
    - `flag{distcc_legacy_compromised}` → `submit_distcc_flag` (emits `distcc_exploit_flag_submitted` → handler `m2_revelation_call` + completes `find_operational_logs`)
-6. **Server Room → Whiteboard + CyberChef Workstation** — Open CyberChef (ink terminal) → decode the ROT13 whiteboard → `#complete_task:decode_whiteboard`.
-7. **Executive Office** (key — lockpick) — Crack the **Executive Computer** (`password` = `Sterling2010`, post-it hints "VS / founding year") → `unlock_object` completes `access_victoria_computer`. The hex Client Roster is inside; decode it at CyberChef → `#complete_task:decode_client_roster`.
+8. **Server Room → Whiteboard + CyberChef Workstation** — Decode the ROT13 whiteboard → `#complete_task:decode_whiteboard`.
+9. **Executive Office** (key — lockpick) — Crack the **Executive Computer** (`password` = `Sterling2010`) → `access_victoria_computer`. Hex Client Roster inside → decode at CyberChef → `decode_client_roster`.
 
 ## Aim: LORE Collection (collect_lore)
 [Active at start]
 
-8. **Executive Office → Filing Cabinet** (`exec_filing_cabinet`, key) — Pick → `unlock_object` completes `lore_fragment_1` (Zero Day history).
-9. **Server Room → Wall Safe** (`wall_safe_server`, PIN 2010) — Open → `unlock_object` completes `lore_fragment_2` (exploit catalog).
-10. **Executive Office → Desk Drawer USB** — Decode the double-encoded (Base64+ROT13) USB at CyberChef → `#complete_task:lore_fragment_3` (Architect's directive).
+10. **Executive Office → Filing Cabinet** (`exec_filing_cabinet`, key) → `lore_fragment_1`.
+11. **Server Room → Wall Safe** (`wall_safe_server`, PIN 2010) → `lore_fragment_2`.
+12. **Executive Office → Desk Drawer USB** → decode double-encoded (Base64+ROT13) at CyberChef → `lore_fragment_3`.
 
 ## Aim: Perfect Stealth (perfect_stealth)
 [Active at start]
 
-11. `zero_detection` (optional) — Earned automatically: the guard ink increments `guard_detection_count` on each "you've been made" moment (caught lockpicking, guard turns hostile, failed bribe). The closing debrief completes `zero_detection` iff `guard_detection_count == 0` and reports the tally; the credits show "PERFECT STEALTH" on the same condition. To earn it: time the guard's hallway patrol (it dwells 2s at each end) and avoid lockpicking in its line of sight.
+13. `zero_detection` (optional) — Guard ink increments `guard_detection_count` on each detection. Closing debrief reports the tally. Earn it by timing the guard patrol (2 s dwell at each end) and never lockpicking in LoS.
 
 ## Aim: Moral Engagement (moral_choices)
 [Auto-reveals when its tasks complete]
 
-12. **James's Office** — Entering fires `room_entered:james_office` → the `james_choice` cutscene (find James's evidence: family photo, certs, performance review) → one of choice_protect / choice_expose / choice_leave → `#complete_task:james_choice_made` (+ sets `james_protected` / `james_exposed`). Optional.
-13. **Victoria — night confrontation** — Submitting the distcc flag (step 5) sets `night_confrontation_ready` (handler points you back to her). **Return to Victoria** → her `start` knot diverts to `nighttime_confrontation` → choose SAFETYNET-reveal / hospital / recruitment → moral_confrontation → `#complete_task:victoria_choice_made` (recruitment_success sets `victoria_recruited`; arrest path leaves it false). **This is the win trigger.** Player-initiated, so the player can finish the exec office / lore / James first.
-14. **Win condition** — `victoria_choice_made` completes → `moral_choices` is a `missionConclusion` aim (`requiresCompleted: [victoria_choice_made]`) → server marks mission concluded, `bond_visualiser` opens; the closing-debrief phone fires on `global_variable_changed:victoria_choice_made`; closing it plays the victory track + branch-aware credits (`conversation_closed:closing_debrief`).
+14. **James's Office** — Entering fires `room_entered:james_office` → `james_choice` cutscene → `#complete_task:james_choice_made`. Optional.
+15. **Victoria — night confrontation** — Submitting the distcc flag sets `night_confrontation_ready`. **Return to Victoria** → her `start` knot diverts to `nighttime_confrontation` → moral confrontation → `#complete_task:victoria_choice_made`. **This is the win trigger.**
+16. **Win condition** — `victoria_choice_made` → `moral_choices` missionConclusion aim → server marks mission concluded → `bond_visualiser` → closing debrief → victory track + branch-aware credits.
 
 ---
 
@@ -57,20 +76,31 @@ Player starts with: phone, **RFID Cloner**, **Lock Pick Kit** (added this pass �
 | Variable | Set by | Step |
 |---|---|---|
 | `briefing_played` | opening briefing timedConversation | 1 |
-| `rfid_clone_complete` | Victoria `clone_complete` | 3 |
-| `flag_*_submitted` (server) | drop-site | 5 |
-| `victoria_recruited` | Victoria `recruitment_success` (if recruited) | 13 |
-| `james_protected` / `james_exposed` | James choice outcome (if engaged) | 12 |
-| `victoria_choice_made` | Victoria night confrontation | 13 |
-| `guard_knocked_out` | guard KO (if used) | 4 |
-| `guard_detection_count` | guard LOS (detection tracking) | 4 |
+| `clone_reception_badge_done` | receptionist ink `clone_badge_opportunity` | 3 |
+| `rfid_clone_complete` | Victoria `clone_complete` | 5 |
+| `mission_phase` = `act2_infiltration` | agent_0x99 on `clone_rfid_card` | 5 |
+| `night_confrontation_ready` | distcc flag submission → agent_0x99 | 7 |
+| `victoria_recruited` | Victoria `recruitment_success` (if recruited) | 15 |
+| `james_protected` / `james_exposed` | James choice (if engaged) | 14 |
+| `victoria_choice_made` | Victoria night confrontation | 15 |
+| `guard_knocked_out` | guard KO (if used) | 6 |
+| `guard_detection_count` | guard LoS detection | 6 |
 
 ## Testing Checklist
 
 - [ ] Start inventory contains phone + RFID Cloner + Lock Pick Kit
+- [ ] Building Directory reads "Conference area: RFID card access required"
 - [ ] Founding plaque shows 2010
-- [ ] Victoria completes `meet_victoria`; clone completes `clone_rfid_card` AND unlocks server room (regression: was a soft-lock)
-- [ ] Guard patrols hallway with LOS; confronts on server-room entry / lockpicking
+- [ ] Receptionist check-in mentions card reader at conference room
+- [ ] Receptionist hub option "Lean across the desk — cloner in range" appears after `badge_received`
+- [ ] Choosing it fires RFID minigame (clone mode); dictionary attack completes near-instantly; `receptionist_badge` appears in cloner `saved_cards`; `clone_reception_badge` task completes; handler bark fires
+- [ ] `conference_room_01` door is RFID locked (`requires: receptionist_badge`); emulating saved badge opens it
+- [ ] Victoria `meet_victoria` task completes on first conversation
+- [ ] "Move closer to examine the whiteboard" option requires `victoria_influence ≥ 20`; progress narration says "MIFARE custom keys detected"
+- [ ] At `clone_complete`: RFID minigame fires (clone mode, `MIFARE_Classic_Custom_Keys`); Darkside Attack runs ~30 s; `victoria_keycard_clone` saved to cloner; `clone_rfid_card` task completes; handler bark fires
+- [ ] **No `#unlock_room` bypass**: server room remains locked after Victoria conversation
+- [ ] At server room door at night: RFID minigame (unlock/emulate mode) opens; emulating `victoria_keycard_clone` opens the door
+- [ ] Guard patrols hallway with LoS; confronts on server-room entry / lockpicking
 - [ ] All four flags submit and complete their tasks; `find_operational_logs` completes on the distcc flag
 - [ ] CyberChef completes `decode_whiteboard`, `decode_client_roster`, `lore_fragment_3`
 - [ ] Computer opens with `Sterling2010`, completes `access_victoria_computer`
@@ -84,22 +114,24 @@ Player starts with: phone, **RFID Cloner**, **Lock Pick Kit** (added this pass �
 - Victoria: recruit vs arrest branch
 
 ### Edge Cases
-- Day→night transition now narrated: handler bark fires on `objective_task_completed:clone_rfid_card` ("server room's yours now… Victoria won't be hard to find").
-- Finale gating: `night_confrontation_ready` is set by the distcc flag submission; the confrontation only fires when the player chooses to return to Victoria (won't cut off optional exec-office/lore/James content).
-- `zero_detection` now tracked via `guard_detection_count` (guard ink increments; debrief completes + reports). Earnable.
-- Aims are fully parallel (no `unlockCondition` chaining) → dungeon Story graph has 0 edges / critical path 0 hops.
+- RFID stage 1 (`clone_reception_badge`) is on the critical path — the player cannot reach Victoria without completing it. Objective task surfaces in panel with `status: active` from the start.
+- RFID stage 2: if the player closes the RFID minigame mid-darkside-attack without saving, the cloner won't have `victoria_keycard_clone` in `saved_cards` — they can re-open the conversation and trigger `clone_badge_opportunity` again (Ink `clone_rfid_started` tracks state; `rfid_clone_complete` gates the re-entry path).
+- Day→night transition: handler bark fires on `objective_task_completed:clone_rfid_card` ("Victoria's keycard data in the cloner… go to server room, emulate her card at the door").
+- Finale gating: `night_confrontation_ready` set by distcc flag; confrontation only fires when player returns to Victoria (won't cut off optional exec-office/lore/James content).
 
 ## Development Status
 
 | Minigame / system | Status | Notes |
 |---|---|---|
-| rfid clone | ✅ | via Victoria conversation + `#unlock_room` |
+| rfid stage 1 (receptionist badge) | ✅ | `MIFARE_Classic_Weak_Defaults`, dict attack, gates `conference_room_01` |
+| rfid stage 2 (Victoria card) | ✅ | `MIFARE_Classic_Custom_Keys`, darkside attack via `#clone_keycard` in ink; no `#unlock_room` bypass |
 | key/lockpick, pin, password | ✅ | start items present |
-| vm-launcher + flag-station | ✅ | 4 flags; graph subgraph disconnected (cosmetic) |
-| CyberChef (ink terminal) | ✅ | wired via storyPath (m01 pattern) |
+| vm-launcher + flag-station | ✅ | 4 flags |
+| CyberChef (ink terminal) | ✅ | wired via storyPath |
 
 Manual test console helpers:
 - `window.gameState.globalVariables` — inspect flags
+- `window.inventory.items.find(i => i?.scenarioData?.type === 'rfid_cloner')?.scenarioData?.saved_cards` — inspect cloner state
 - `window.objectivesManager.completeTask('victoria_choice_made')` — force the conclusion to test the ending
 
 ---

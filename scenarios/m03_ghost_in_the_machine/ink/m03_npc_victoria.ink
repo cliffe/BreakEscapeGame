@@ -193,16 +193,16 @@ Victoria: Vulnerabilities are facts about reality. Suppressing facts doesn't mak
 [You stand and move toward the whiteboard, getting closer to Victoria.]
 You: This network diagram - is this your training lab architecture?
 Victoria: Yes, that's the 192.168.100.0 subnet. Students practice on isolated VMs.
-[RFID CLONER ACTIVE - Stay within 2 meters for 10 seconds]
-[Progress bar appears on screen]
+[RFID CLONER ACTIVE — capturing encrypted MIFARE sectors from her executive keycard]
+[Proximity maintained — keep her engaged]
 ~ rfid_clone_started = true
-You need to keep Victoria talking while the RFID cloner does its work.
+You need to keep Victoria talking while the cloner captures her card data.
 -> clone_rfid_distraction
 
 === clone_rfid_distraction ===
 #speaker:victoria_sterling
 Victoria: The training network uses real vulnerable services. Much more effective than theoretical exercises.
-[CLONING IN PROGRESS...]
+[CAPTURING CARD DATA — stay within range...]
 * [What services are in the lab?]
     You: What kind of services do you run in the lab environment?
     Victoria: FTP, HTTP, some legacy services like distcc. Real-world targets.
@@ -219,7 +219,7 @@ Victoria: The training network uses real vulnerable services. Much more effectiv
 
 === clone_check_1 ===
 #speaker:victoria_sterling
-[CLONING 50% COMPLETE...]
+[CAPTURE 50% — MIFARE custom keys detected, reading encrypted sectors...]
 Victoria: Of course, what students learn in the lab is just the beginning.
 Victoria: Real Zero Day research requires understanding market dynamics, pricing models, buyer relationships.
 * [How do you price vulnerabilities?]
@@ -239,7 +239,7 @@ Victoria: Real Zero Day research requires understanding market dynamics, pricing
 
 === clone_check_2 ===
 #speaker:victoria_sterling
-[CLONING 75% COMPLETE...]
+[CAPTURE 75% — encrypted sector data collected, preparing darkside crack...]
 Victoria: You're asking good questions. Technical competence is common. Strategic thinking is rare.
 * [I believe in understanding the full picture]
     ~ victoria_influence = victoria_influence + 10
@@ -259,12 +259,12 @@ Victoria: You're asking good questions. Technical competence is common. Strategi
 
 === clone_complete ===
 #speaker:victoria_sterling
-[CLONING 100% COMPLETE]
+[CAPTURE COMPLETE — all sectors read, launching darkside crack now]
 [Device vibrates subtly in your pocket]
-[VICTORIA STERLING'S EXECUTIVE KEYCARD CLONED]
+[VICTORIA STERLING'S EXECUTIVE KEYCARD — running key attack]
 You step back from the whiteboard, creating distance naturally.
+#clone_keycard:victoria_keycard_clone
 #complete_task:clone_rfid_card
-#unlock_room:server_room
 ~ rfid_clone_complete = true
 Victoria: I think that covers the basic philosophy. The training program starts next month if you're interested.
 * [I'm very interested]

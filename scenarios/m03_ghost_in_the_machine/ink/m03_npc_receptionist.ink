@@ -6,6 +6,7 @@ VAR topic_victoria = false
 VAR topic_company_history = false
 VAR topic_james = false
 VAR pin_hint_given = false
+VAR clone_reception_badge_done = false
 
 === start ===
 #speaker:receptionist
@@ -33,6 +34,7 @@ Receptionist: Ms. Sterling's in the conference room. Second door on the right do
     ~ receptionist_influence = receptionist_influence + 5
     You sign the visitor log.
     Receptionist: Here's your badge. Please keep it visible while you're in the building.
+    Receptionist: The conference room is through the card reader on the left — RFID access. Ms. Sterling usually authorises visitors herself, so just head over when you're ready.
     Receptionist: And welcome to WhiteHat Security!
     -> first_impression_choice
 * [Ask about the company first]
@@ -44,7 +46,7 @@ Receptionist: Ms. Sterling's in the conference room. Second door on the right do
     #give_item:id_badge:visitor_badge
     ~ badge_received = true
     You quickly sign the log.
-    Receptionist: Here's your badge. Ms. Sterling's waiting in the conference room.
+    Receptionist: Here's your badge. Ms. Sterling's in the conference room — through the card reader on your left.
     #exit_conversation
 
 === company_overview ===
@@ -96,6 +98,8 @@ Receptionist: Is this your first time working with a cybersecurity firm?
     -> ask_company_history
 + {receptionist_influence >= 15} [Ask about the building layout]
     -> ask_building_layout
++ {badge_received && not clone_reception_badge_done} [Lean across the desk to examine the directory — cloner in range]
+    -> clone_badge_opportunity
 + [End conversation]
     #exit_conversation
     Receptionist: Have a great visit!
@@ -174,17 +178,19 @@ Receptionist: "Security Through Economics" - that's our motto.
 #speaker:receptionist
 ~ receptionist_influence = receptionist_influence + 5
 Receptionist: Sure! It's a pretty straightforward layout.
-Receptionist: Reception here, conference rooms to the right, main offices down the central hallway.
-Receptionist: Server room and IT area in the back - that's usually locked, executive access only.
+Receptionist: Reception here, then through the card reader to the conference area, main offices down the central hallway.
+Receptionist: Server room and IT area in the back - executive access only.
 Receptionist: And Ms. Sterling's office is in the executive wing on the north side.
 * [What about after hours?]
     You: Is anyone here after business hours?
     Receptionist: Usually just Ms. Sterling if she's working late. And we have a night security guard - makes rounds to keep the place safe.
     ~ receptionist_influence = receptionist_influence + 5
     -> hub
-* [Executive access for the server room?]
-    You: Executive access for the server room - is that a key card system?
-    Receptionist: RFID badges. Ms. Sterling and the senior staff have access. Security precaution.
+* [Card reader for the conference area too?]
+    You: Even the conference area needs a card? That's pretty tight security.
+    Receptionist: RFID badges throughout - conference area, server room, executive wing. Ms. Sterling is very particular about access control.
+    [She taps the badge on her lanyard.]
+    Receptionist: Staff badges cover the whole building. Visitors normally get escorted through.
     ~ receptionist_influence = receptionist_influence + 5
     -> hub
 + [That's helpful, thanks]
@@ -212,8 +218,17 @@ Receptionist: How did your meeting with Ms. Sterling go?
 === restricted_area_daytime ===
 #speaker:receptionist
 Receptionist: Oh, I'm sorry - that area is for employees only.
-Receptionist: Please stay in the public areas. Conference rooms and the main hallway are open to visitors.
+Receptionist: Visitor access is to the reception and conference area. Ms. Sterling can authorise anything further.
 { receptionist_influence >= 20:
     Receptionist: If you need access to something specific, Ms. Sterling can authorize it.
 }
 #exit_conversation
+
+=== clone_badge_opportunity ===
+#speaker:receptionist
+[You lean over the desk, studying the building directory, keeping the RFID cloner within range of her lanyard.]
+[The cloner's antenna lights up — it detects a MIFARE signal from her staff badge.]
+~ clone_reception_badge_done = true
+#clone_keycard:receptionist_badge
+#complete_task:clone_reception_badge
+-> hub

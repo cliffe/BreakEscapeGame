@@ -49,14 +49,16 @@ Agent 0x99: What do you need help with?
 === hint_rfid_cloning ===
 #speaker:agent_0x99
 ~ hint_rfid_cloning_given = true
-Agent 0x99: RFID cloning - get within 2 meters of Victoria for about 10 seconds.
-Agent 0x99: The device will vibrate when complete. Keep her talking while it works.
-Agent 0x99: Best moment: when you're both standing near the whiteboard or looking at documents together.
-+ [Got it]
-    Agent 0x99: Natural movement. Don't make it obvious.
+Agent 0x99: Two-stage operation. First: the receptionist's staff badge opens the conference area — lean in near her desk, the cloner picks up the MIFARE signal from her lanyard.
+Agent 0x99: That card uses weak defaults, so the dictionary attack cracks it near-instantly.
+Agent 0x99: Second: Victoria's executive keycard uses custom encryption. You'll capture her card data during the meeting, then the cloner runs a darkside attack — about 30 seconds.
+Agent 0x99: Best moment with Victoria: when you're both near the whiteboard. Keep her talking through the capture phase.
++ [Got it - read, crack, emulate]
+    Agent 0x99: Exactly that order. The server room door won't open until you emulate her cracked card there.
     -> hub
-+ [What if she notices?]
-    Agent 0x99: Play curious recruit. Ask about the training network. She loves talking about her philosophy.
++ [What if Victoria notices?]
+    Agent 0x99: Play curious recruit. Ask about the training network — she loves talking philosophy.
+    Agent 0x99: The cloner is passive until you trigger it. Keep conversation natural.
     -> hub
 
 === hint_lockpicking ===
@@ -118,7 +120,7 @@ Agent 0x99: Each flag you capture represents intercepted ENTROPY intelligence. S
 { player_approach() == "diplomatic":
     Agent 0x99: Stay flexible. Read situations. Trust your judgment.
 }
-Agent 0x99: Remember - Victoria's keycard gets you server room access. Network recon gets you digital evidence. Physical search gets you documents.
+Agent 0x99: Remember - clone the reception badge first to reach Victoria, then clone her executive keycard to crack the server room. Network recon gets you digital evidence. Physical search gets you documents.
 Agent 0x99: All three together make the case.
 -> hub
 
@@ -181,9 +183,9 @@ Agent 0x99: Remember - lockpicking makes noise and takes time. Watch for patrols
 
 === on_rfid_clone_success ===
 #speaker:agent_0x99
-Agent 0x99: Excellent. Victoria's keycard cloned successfully.
-Agent 0x99: You now have executive-level access. Server room is yours after hours.
-Agent 0x99: Wait for nighttime, then infiltrate. That's when the real work begins.
+Agent 0x99: Darkside crack complete. Victoria's keycard data is in the cloner.
+Agent 0x99: Wait for nighttime. When the building clears out, go to the server room — emulate her card at the door to get in.
+Agent 0x99: That's when the real work begins.
 #exit_conversation
 
 === on_player_detected ===

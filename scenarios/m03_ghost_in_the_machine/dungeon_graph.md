@@ -9,12 +9,12 @@ Infiltrate Zero Day Syndicate posing as security researcher 'Alex Chen.' Meet Vi
 | Metric | Value |
 |---|---|
 | Story aims | 4 |
-| Total tasks | 16 (2 optional) |
+| Total tasks | 17 (2 optional) |
 | VM flag challenges | 4 |
-| Physical locks | 6 |
+| Physical locks | 7 |
 | AND-gate convergences | 0 |
 | Rooms | 7 |
-| Puzzle graph nodes / edges | 23 / 23 |
+| Puzzle graph nodes / edges | 24 / 24 |
 | Story graph nodes / edges | 4 / 0 |
 
 ## Critical Path
@@ -69,6 +69,8 @@ flowchart TD
   node_start(("▶"))
   node_start --> reception_lobby
 
+  door_conference_room_01["Conference Room 01<br/>RFID lock"]
+  conference_room_01("Conference Room 01")
   door_server_room["Server Room<br/>RFID lock"]
   server_room("Server Room")
   door_executive_office["Executive Office<br/>Key lock"]
@@ -89,13 +91,14 @@ flowchart TD
   vmch_submit_distcc_flag["Submit distcc exploit evidence"]
   vmfl_submit_distcc_flag{"Distcc Flag"}
   main_hallway("Main Hallway")
-  conference_room_01("Conference Room 01")
   executive_wing_hallway("Executive Wing Hallway")
   james_office("James Office")
 
+  door_conference_room_01 --> conference_room_01
   door_server_room --> server_room
   door_executive_office --> executive_office
   reception_lobby --> rfid_cloner
+  rfid_cloner --> door_conference_room_01
   rfid_cloner --> door_server_room
   reception_lobby --> lock_pick_kit
   lock_pick_kit --> door_executive_office
@@ -113,12 +116,11 @@ flowchart TD
   vmch_submit_distcc_flag --> vmfl_submit_distcc_flag
   vmfl_submit_http_flag -.-> vmch_submit_distcc_flag
   reception_lobby --> main_hallway
-  main_hallway --> conference_room_01
   main_hallway --> executive_wing_hallway
   executive_wing_hallway --> james_office
 
-  class door_server_room,door_executive_office,lock_exec_filing_cabinet,lock_server_filing_cabinet,lock_wall_safe_server,lock_victoria_computer lock
-  class server_room,executive_office,reception_lobby,main_hallway,conference_room_01,executive_wing_hallway,james_office room
+  class door_conference_room_01,door_server_room,door_executive_office,lock_exec_filing_cabinet,lock_server_filing_cabinet,lock_wall_safe_server,lock_victoria_computer lock
+  class conference_room_01,server_room,executive_office,reception_lobby,main_hallway,executive_wing_hallway,james_office room
   class rfid_cloner,lock_pick_kit item
   class vmch_submit_network_scan_flag,vmch_submit_ftp_flag,vmch_submit_http_flag,vmch_submit_distcc_flag vm
   class vmfl_submit_network_scan_flag,vmfl_submit_ftp_flag,vmfl_submit_http_flag,vmfl_submit_distcc_flag flag
@@ -181,6 +183,8 @@ flowchart TD
   node_start(("▶"))
   node_start --> reception_lobby
 
+  door_conference_room_01["Conference Room 01<br/>RFID lock"]
+  conference_room_01("Conference Room 01")
   door_server_room["Server Room<br/>RFID lock"]
   server_room("Server Room")
   door_executive_office["Executive Office<br/>Key lock"]
@@ -201,7 +205,6 @@ flowchart TD
   vmch_submit_distcc_flag["Submit distcc exploit evidence"]
   vmfl_submit_distcc_flag{"Distcc Flag"}
   main_hallway("Main Hallway")
-  conference_room_01("Conference Room 01")
   executive_wing_hallway("Executive Wing Hallway")
   james_office("James Office")
   aim_main_mission{{"Zero Day Intelligence"}}
@@ -209,9 +212,11 @@ flowchart TD
   aim_perfect_stealth{{"Perfect Stealth"}}
   aim_moral_choices{{"Moral Engagement"}}
 
+  door_conference_room_01 --> conference_room_01
   door_server_room --> server_room
   door_executive_office --> executive_office
   reception_lobby --> rfid_cloner
+  rfid_cloner --> door_conference_room_01
   rfid_cloner --> door_server_room
   reception_lobby --> lock_pick_kit
   lock_pick_kit --> door_executive_office
@@ -229,7 +234,6 @@ flowchart TD
   vmch_submit_distcc_flag --> vmfl_submit_distcc_flag
   vmfl_submit_http_flag -.-> vmch_submit_distcc_flag
   reception_lobby --> main_hallway
-  main_hallway --> conference_room_01
   main_hallway --> executive_wing_hallway
   executive_wing_hallway --> james_office
   vmfl_submit_network_scan_flag -.-> aim_main_mission
@@ -240,8 +244,8 @@ flowchart TD
   lock_exec_filing_cabinet -.-> aim_collect_lore
   lock_wall_safe_server -.-> aim_collect_lore
 
-  class door_server_room,door_executive_office,lock_exec_filing_cabinet,lock_server_filing_cabinet,lock_wall_safe_server,lock_victoria_computer lock
-  class server_room,executive_office,reception_lobby,main_hallway,conference_room_01,executive_wing_hallway,james_office room
+  class door_conference_room_01,door_server_room,door_executive_office,lock_exec_filing_cabinet,lock_server_filing_cabinet,lock_wall_safe_server,lock_victoria_computer lock
+  class conference_room_01,server_room,executive_office,reception_lobby,main_hallway,executive_wing_hallway,james_office room
   class rfid_cloner,lock_pick_kit item
   class vmch_submit_network_scan_flag,vmch_submit_ftp_flag,vmch_submit_http_flag,vmch_submit_distcc_flag vm
   class vmfl_submit_network_scan_flag,vmfl_submit_ftp_flag,vmfl_submit_http_flag,vmfl_submit_distcc_flag flag
@@ -276,7 +280,7 @@ flowchart TD
 
   reception_lobby("Reception Lobby")
   main_hallway("Main Hallway")
-  conference_room_01("Conference Room 01")
+  conference_room_01["Conference Room 01<br/>(locked)"]
   server_room["Server Room<br/>(locked)"]
   executive_wing_hallway("Executive Wing Hallway")
   executive_office["Executive Office<br/>(locked)"]
@@ -289,8 +293,8 @@ flowchart TD
   executive_wing_hallway --> executive_office
   executive_wing_hallway --> james_office
 
-  class reception_lobby,main_hallway,conference_room_01,executive_wing_hallway,james_office room
-  class server_room,executive_office lock
+  class reception_lobby,main_hallway,executive_wing_hallway,james_office room
+  class conference_room_01,server_room,executive_office lock
   class node_start start
 ```
 
@@ -321,7 +325,7 @@ flowchart TD
 
   reception_lobby("Reception Lobby")
   main_hallway("Main Hallway")
-  conference_room_01("Conference Room 01")
+  conference_room_01["Conference Room 01<br/>(locked)"]
   server_room["Server Room<br/>(locked)"]
   executive_wing_hallway("Executive Wing Hallway")
   executive_office["Executive Office<br/>(locked)"]
@@ -384,8 +388,8 @@ flowchart TD
   james_office --> rc_obj24_24
   james_office --> rc_npc_agent_0x99_25
 
-  class reception_lobby,main_hallway,conference_room_01,executive_wing_hallway,james_office room
-  class server_room,executive_office lock
+  class reception_lobby,main_hallway,executive_wing_hallway,james_office room
+  class conference_room_01,server_room,executive_office lock
   class rc_obj1_1,rc_obj2_2,rc_obj5_5,rc_obj9_9,rc_obj10_10,rc_server_filing_cabinet_12,rc_wall_safe_server_13,rc_obj14_14,rc_vm_launcher_zero_day_15,rc_cyberchef_workstation_16,rc_flag_station_dropsite_17,rc_exec_filing_cabinet_18,rc_victoria_computer_19,rc_obj20_20,rc_obj21_21,rc_obj22_22,rc_obj23_23,rc_obj24_24 item
   class rc_npc_agent_0x99_3,rc_npc_receptionist_4,rc_npc_agent_0x99_6,rc_npc_agent_0x99_7,rc_npc_security_guard_8,rc_npc_victoria_sterling_11,rc_npc_agent_0x99_25 npc
   class node_start start
