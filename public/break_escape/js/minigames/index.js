@@ -11,14 +11,14 @@ export { BleScannerMinigame, startBleScannerMinigame } from './ble-scanner/ble-s
 export { BiometricsMinigame, startBiometricsMinigame } from './biometrics/biometrics-minigame.js';
 export { ContainerMinigame, startContainerMinigame, returnToContainerAfterNotes, returnToConversationAfterNPCInventory } from './container/container-minigame.js';
 export { PhoneChatMinigame, returnToPhoneAfterNotes } from './phone-chat/phone-chat-minigame.js';
-export { PersonChatMinigame } from './person-chat/person-chat-minigame.js?v=12';
+export { PersonChatMinigame } from './person-chat/person-chat-minigame.js';
 export { PinMinigame, startPinMinigame } from './pin/pin-minigame.js';
 export { PasswordMinigame } from './password/password-minigame.js';
 export { TextFileMinigame, returnToTextFileAfterNotes } from './text-file/text-file-minigame.js';
 export { TitleScreenMinigame, startTitleScreenMinigame } from './title-screen/title-screen-minigame.js';
 export { RFIDMinigame, startRFIDMinigame, returnToConversationAfterRFID } from './rfid/rfid-minigame.js';
 export { VmLauncherMinigame } from './vm-launcher/vm-launcher-minigame.js';
-export { FlagStationMinigame } from './flag-station/flag-station-minigame.js?v=6';
+export { FlagStationMinigame } from './flag-station/flag-station-minigame.js';
 export { RansomwareDisplayMinigame } from './ransomware-display/ransomware-display-minigame.js';
 export { SiemDashboardMinigame } from './siem/siem-dashboard-minigame.js';
 export { NetworkSegmentationMapMinigame, startNetworkSegmentationMapMinigame } from './network-segmentation-map/network-segmentation-map-minigame.js';
@@ -89,7 +89,7 @@ import { ContainerMinigame, startContainerMinigame, returnToContainerAfterNotes,
 import { PhoneChatMinigame, returnToPhoneAfterNotes } from './phone-chat/phone-chat-minigame.js';
 
 // Import the person chat minigame (In-person NPC conversations)
-import { PersonChatMinigame } from './person-chat/person-chat-minigame.js?v=12';
+import { PersonChatMinigame } from './person-chat/person-chat-minigame.js';
 
 // Import the PIN minigame
 import { PinMinigame, startPinMinigame } from './pin/pin-minigame.js';
@@ -110,7 +110,7 @@ import { RFIDMinigame, startRFIDMinigame, returnToConversationAfterRFID } from '
 import { VmLauncherMinigame } from './vm-launcher/vm-launcher-minigame.js';
 
 // Import the flag station minigame
-import { FlagStationMinigame } from './flag-station/flag-station-minigame.js?v=6';
+import { FlagStationMinigame } from './flag-station/flag-station-minigame.js';
 import { SiemDashboardMinigame } from './siem/siem-dashboard-minigame.js';
 import { EhrTerminalMinigame } from './ehr-terminal/ehr-terminal-minigame.js';
 import { CommandBoardMinigame } from './command-board/command-board-minigame.js';

@@ -1,6 +1,6 @@
 // UI Panels System
 // Handles generic panel utilities - specific panel functionality is handled by individual systems
-import { playUISound } from '../systems/ui-sounds.js?v=1';
+import { playUISound } from '../systems/ui-sounds.js';
 
 // Initialize UI panels (generic setup only)
 export function initializeUI() {

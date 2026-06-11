@@ -1,12 +1,12 @@
-import { GAME_CONFIG } from './utils/constants.js?v=9';
-import { preload, create, update } from './core/game.js?v=42';
-import { initializeNotifications } from './systems/notifications.js?v=7';
+import { GAME_CONFIG } from './utils/constants.js';
+import { preload, create, update } from './core/game.js';
+import { initializeNotifications } from './systems/notifications.js';
 // Bluetooth scanner is now handled as a minigame
 // Biometrics is now handled as a minigame
-import { startLockpickingMinigame } from './systems/minigame-starters.js?v=4';
-import { initializeDebugSystem } from './systems/debug.js?v=8';
-import { initializeUI } from './ui/panels.js?v=9';
-import { initializeModals } from './ui/modals.js?v=7';
+import { startLockpickingMinigame } from './systems/minigame-starters.js';
+import { initializeDebugSystem } from './systems/debug.js';
+import { initializeUI } from './ui/panels.js';
+import { initializeModals } from './ui/modals.js';
 
 // Import character registry system
 import './systems/character-registry.js';
@@ -15,15 +15,15 @@ import './systems/character-registry.js';
 import './minigames/index.js';
 
 // Import NPC systems
-import './systems/ink/ink-engine.js?v=1';
-import NPCEventDispatcher from './systems/npc-events.js?v=1';
-import NPCManager from './systems/npc-manager.js?v=2';
-import NPCBarkSystem from './systems/npc-barks.js?v=1';
-import NPCLazyLoader from './systems/npc-lazy-loader.js?v=1';
+import './systems/ink/ink-engine.js';
+import NPCEventDispatcher from './systems/npc-events.js';
+import NPCManager from './systems/npc-manager.js';
+import NPCBarkSystem from './systems/npc-barks.js';
+import NPCLazyLoader from './systems/npc-lazy-loader.js';
 import './systems/npc-game-bridge.js'; // Bridge for NPCs to influence game state
 
 // Import Objectives System
-import { getObjectivesManager } from './systems/objectives-manager.js?v=1';
+import { getObjectivesManager } from './systems/objectives-manager.js';
 
 // Import Tutorial System
 import { getTutorialManager } from './systems/tutorial-manager.js';

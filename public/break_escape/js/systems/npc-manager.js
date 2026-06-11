@@ -879,7 +879,7 @@ export default class NPCManager {
       // OPTIMIZATION: Reuse cached InkEngine or create new one
       let inkEngine = this.inkEngineCache.get(npcId);
       if (!inkEngine) {
-        const { default: InkEngine } = await import('./ink/ink-engine.js?v=1');
+        const { default: InkEngine } = await import('./ink/ink-engine.js');
         inkEngine = new InkEngine(npcId);
         inkEngine.loadStory(storyJson);
         this.inkEngineCache.set(npcId, inkEngine);
@@ -1362,12 +1362,12 @@ export default class NPCManager {
       }
 
       // Create and cache InkEngine
-      const { default: InkEngine } = await import('./ink/ink-engine.js?v=1');
+      const { default: InkEngine } = await import('./ink/ink-engine.js');
       const inkEngine = new InkEngine(npcId);
       inkEngine.loadStory(storyJson);
 
       // Import npcConversationStateManager for global variable sync
-      const { default: npcConversationStateManager } = await import('./npc-conversation-state.js?v=2');
+      const { default: npcConversationStateManager } = await import('./npc-conversation-state.js');
 
       // Discover any global_* variables not in scenario JSON
       npcConversationStateManager.discoverGlobalVariables(inkEngine.story);

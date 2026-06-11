@@ -21,8 +21,8 @@
  * @module npc-behavior
  */
 
-import { TILE_SIZE } from '../utils/constants.js?v=8';
-import { NPCPathfindingManager } from './npc-pathfinding.js?v=20';
+import { TILE_SIZE } from '../utils/constants.js';
+import { NPCPathfindingManager } from './npc-pathfinding.js';
 
 /**
  * NPCBehaviorManager - Manages all NPC behaviors

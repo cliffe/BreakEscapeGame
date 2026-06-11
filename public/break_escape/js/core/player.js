@@ -11,7 +11,7 @@ import {
     CLICK_INDICATOR_SIZE,
     CLICK_INDICATOR_DURATION,
     SPRITE_PADDING_BOTTOM_ATLAS
-} from '../utils/constants.js?v=9';
+} from '../utils/constants.js';
 
 export let player = null;
 export let targetPoint = null;
