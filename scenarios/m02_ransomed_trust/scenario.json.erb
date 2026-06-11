@@ -429,6 +429,30 @@ recovery_instructions_encoded = rot13("FULL RECOVERY REQUIRES OFFLINE + ONLINE K
               "takeable": true,
               "labUrl": "https://cliffe.github.io/HacktivityLabSheets/labs/m02_ransomed_trust/safetynet-field-guide-proftpd-exploitation-workflow/",
               "observations": "Stepwise workflow for Metasploit exploitation, handler setup, and controlled post-exploitation"
+            },
+            {
+              "type": "lab-workstation",
+              "key_id": "m02_lockpicking_field_guide",
+              "name": "SAFETYNET Field Guide: Lockpicking",
+              "takeable": true,
+              "labUrl": "https://cliffe.github.io/HacktivityLabSheets/labs/m02_ransomed_trust/safetynet-field-guide-lockpicking/",
+              "observations": "Pin-tumbler lockpicking technique -- reading binding pins and managing tension to open doors and cabinets"
+            },
+            {
+              "type": "lab-workstation",
+              "key_id": "m02_ssh_bruteforce_field_guide",
+              "name": "SAFETYNET Field Guide: SSH Access and Bruteforce",
+              "takeable": true,
+              "labUrl": "https://cliffe.github.io/HacktivityLabSheets/labs/m02_ransomed_trust/safetynet-field-guide-ssh-access-and-bruteforce/",
+              "observations": "Confirming SSH reachability, online credential testing with Hydra, and orienting after login"
+            },
+            {
+              "type": "lab-workstation",
+              "key_id": "m02_privilege_escalation_field_guide",
+              "name": "SAFETYNET Field Guide: Privilege Escalation",
+              "takeable": true,
+              "labUrl": "https://cliffe.github.io/HacktivityLabSheets/labs/m02_ransomed_trust/safetynet-field-guide-privilege-escalation/",
+              "observations": "Enumerating sudo rights and moving into the user or root context that can reach restricted files"
             }
           ],
           "timedMessages": [
@@ -440,6 +464,12 @@ recovery_instructions_encoded = rot13("FULL RECOVERY REQUIRES OFFLINE + ONLINE K
             }
           ],
           "eventMappings": [
+            {
+              "eventPattern": "conversation_closed:opening_briefing_cutscene",
+              "onceOnly": true,
+              "setGlobal": { "lockpicking_guide_offered": true },
+              "sendTimedMessage": { "delay": 6000, "message": "One more thing -- the offices off reception are locked, and you're carrying a lock pick kit. If you'd rather not wait on a keycard, I can send a field guide on pin-tumbler lockpicking. Just ask." }
+            },
             {
               "eventPattern": "global_variable_changed:decoded_ransomware_note",
               "condition": "value === true",
@@ -470,6 +500,12 @@ recovery_instructions_encoded = rot13("FULL RECOVERY REQUIRES OFFLINE + ONLINE K
               "sendTimedMessage": { "delay": 1800, "message": "Before you go hot on this box, I can send a scanning and recon field guide -- fast host/service triage and how to avoid blind spots." }
             },
             {
+              "eventPattern": "objective_task_completed:access_server_room",
+              "onceOnly": true,
+              "setGlobal": { "ssh_guide_offered": true },
+              "sendTimedMessage": { "delay": 3600, "message": "Once you've mapped it, you'll want a foothold over SSH. I've got a field guide on SSH access and bruteforcing weak credentials with Hydra -- say the word and it's yours." }
+            },
+            {
               "eventPattern": "objective_task_completed:submit_ssh_flag",
               "onceOnly": true,
               "setGlobal": { "vulnerability_guide_offered": true },
@@ -480,6 +516,12 @@ recovery_instructions_encoded = rot13("FULL RECOVERY REQUIRES OFFLINE + ONLINE K
               "onceOnly": true,
               "setGlobal": { "exploitation_guide_offered": true },
               "sendTimedMessage": { "delay": 4200, "message": "I also have a dedicated ProFTPD exploitation guide -- Metasploit workflow, handler setup, and failure recovery. Ask if you want it." }
+            },
+            {
+              "eventPattern": "objective_task_completed:submit_ssh_flag",
+              "onceOnly": true,
+              "setGlobal": { "privesc_guide_offered": true },
+              "sendTimedMessage": { "delay": 5600, "message": "That foothold won't be root yet. If you hit files you can't read, I can send a privilege escalation field guide -- sudo enumeration and pivoting to the account that can. Ask when you need it." }
             },
             {
               "eventPattern": "item_picked_up:offline_backup_encryption_keys",
@@ -1443,6 +1485,12 @@ recovery_instructions_encoded = rot13("FULL RECOVERY REQUIRES OFFLINE + ONLINE K
     "flag_database_submitted": false,
     "flag_ghost_log_submitted": false,
 
+    "lockpicking_guide_offered": false,
+    "lockpicking_guide_requested": false,
+    "ssh_guide_offered": false,
+    "ssh_guide_requested": false,
+    "privesc_guide_offered": false,
+    "privesc_guide_requested": false,
     "scanning_guide_offered": false,
     "scanning_guide_requested": false,
     "vulnerability_guide_offered": false,

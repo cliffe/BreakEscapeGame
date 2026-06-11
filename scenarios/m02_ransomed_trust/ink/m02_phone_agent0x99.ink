@@ -12,6 +12,9 @@ VAR hint_vm_given = false
 VAR hint_encoding_given = false
 VAR hint_pin_given = false
 VAR hint_ransom_given = false
+VAR lockpicking_guide_hint_given = false
+VAR ssh_guide_hint_given = false
+VAR privesc_guide_hint_given = false
 VAR scanning_guide_hint_given = false
 VAR vulnerability_guide_hint_given = false
 VAR exploitation_guide_hint_given = false
@@ -28,6 +31,9 @@ VAR flag_proftpd_submitted = false
 VAR flag_database_submitted = false
 VAR flag_ghost_log_submitted = false
 VAR offline_keys_recovered = false
+VAR lockpicking_guide_offered = false
+VAR ssh_guide_offered = false
+VAR privesc_guide_offered = false
 VAR scanning_guide_offered = false
 VAR vulnerability_guide_offered = false
 VAR exploitation_guide_offered = false
@@ -100,9 +106,17 @@ Agent 0x99: Start with Dr. Kim -- CTO, west of reception. She has the authority 
 + {dr_kim_met and not flag_ssh_submitted and not hint_password_given} [Tips for getting Marcus to cooperate]
     -> hint_password
 
+// Optional field guide: lockpicking (offered early -- offices off reception are locked)
++ {lockpicking_guide_offered and not lockpicking_guide_hint_given} [Send the lockpicking field guide]
+    -> request_lockpicking_guide
+
 // Optional field guide: scanning/recon
 + {scanning_guide_offered and not scanning_guide_hint_given} [Send the scanning field guide]
     -> request_scanning_guide
+
+// Optional field guide: SSH access and bruteforce
++ {ssh_guide_offered and not ssh_guide_hint_given} [Send the SSH access and bruteforce field guide]
+    -> request_ssh_guide
 
 // VM phase: ProFTPD
 + {flag_ssh_submitted and not flag_proftpd_submitted and not hint_vm_given} [ProFTPD exploitation help]
@@ -115,6 +129,10 @@ Agent 0x99: Start with Dr. Kim -- CTO, west of reception. She has the authority 
 // Optional field guide: exploitation workflow
 + {exploitation_guide_offered and not exploitation_guide_hint_given} [Send the ProFTPD exploitation field guide]
     -> request_exploitation_guide
+
+// Optional field guide: privilege escalation
++ {privesc_guide_offered and not privesc_guide_hint_given} [Send the privilege escalation field guide]
+    -> request_privesc_guide
 
 // Encoding/decoding (useful throughout VM phase)
 + {flag_ssh_submitted and not hint_encoding_given} [Encoding and decoding help]
@@ -304,6 +322,48 @@ Agent 0x99: The exploit gets you root on the backup server. From there, navigate
     -> support_hub
 
 + [Got it]
+    -> support_hub
+
+=== request_lockpicking_guide ===
+#speaker:agent_0x99
+~ lockpicking_guide_hint_given = true
+#set_variable:lockpicking_guide_requested:true
+#give_item:lab-workstation:m02_lockpicking_field_guide
+
+Agent 0x99: Lockpicking guide uploaded to your terminal.
+
+Agent 0x99: Light tension, find the binding pin, set it, repeat. Read the lock by feel -- don't force it.
+
++ [Received]
+    Agent 0x99: Quiet and patient gets you through any of those doors. Go.
+    -> support_hub
+
+=== request_ssh_guide ===
+#speaker:agent_0x99
+~ ssh_guide_hint_given = true
+#set_variable:ssh_guide_requested:true
+#give_item:lab-workstation:m02_ssh_bruteforce_field_guide
+
+Agent 0x99: SSH access and bruteforce guide sent.
+
+Agent 0x99: Confirm the port's open, test a sensible username against a focused wordlist with Hydra, then connect. Foothold first, exploitation after.
+
++ [Got it]
+    Agent 0x99: Start small on the wordlist and expand only if you need to. Move.
+    -> support_hub
+
+=== request_privesc_guide ===
+#speaker:agent_0x99
+~ privesc_guide_hint_given = true
+#set_variable:privesc_guide_requested:true
+#give_item:lab-workstation:m02_privilege_escalation_field_guide
+
+Agent 0x99: Privilege escalation guide uploaded.
+
+Agent 0x99: Enumerate with sudo -l first, then take the smallest step that reaches the files you need. Read with sudo cat where you can.
+
++ [Understood]
+    Agent 0x99: Least intrusive path that works. Don't kick down doors you can walk through.
     -> support_hub
 
 === request_scanning_guide ===

@@ -392,7 +392,37 @@ operational_log_content = "TRANSACTION LOG - Q3 2024\n\n[2024-09-15 14:32:11] Pr
           "avatar": "assets/npc/avatars/npc_helper.png",
           "phoneId": "player_phone",
           "currentKnot": "start",
+          "itemsHeld": [
+            {
+              "type": "lab-workstation",
+              "key_id": "m03_lockpicking_field_guide",
+              "name": "SAFETYNET Field Guide: Lockpicking",
+              "takeable": true,
+              "labUrl": "https://cliffe.github.io/HacktivityLabSheets/labs/m03_ghost_in_the_machine/safetynet-field-guide-lockpicking/",
+              "observations": "Pin-tumbler lockpicking technique with operational notes on staying out of the guard's line of sight"
+            },
+            {
+              "type": "lab-workstation",
+              "key_id": "m03_netexploit_field_guide",
+              "name": "SAFETYNET Field Guide: Network Exploitation",
+              "takeable": true,
+              "labUrl": "https://cliffe.github.io/HacktivityLabSheets/labs/m03_ghost_in_the_machine/safetynet-field-guide-network-exploitation/",
+              "observations": "Recon-to-exploitation chain: nmap host/service mapping, service enumeration, and exploiting a legacy service for the operational logs"
+            }
+          ],
           "eventMappings": [
+            {
+              "eventPattern": "room_entered:executive_wing_hallway",
+              "onceOnly": true,
+              "setGlobal": { "lockpicking_guide_offered": true },
+              "sendTimedMessage": { "delay": 1500, "message": "That executive office is keyed, not carded — your pick kit handles it. Watch the guard's patrol before you start; picking in view will burn you. Want my lockpicking field guide? Just ask." }
+            },
+            {
+              "eventPattern": "room_entered:server_room",
+              "onceOnly": true,
+              "setGlobal": { "netexploit_guide_offered": true },
+              "sendTimedMessage": { "delay": 2500, "message": "You're at the VM terminal. From here it's recon, enumerate, exploit — and a legacy service is your way to the operational logs. I can send a network exploitation field guide if you want the full chain. Say the word." }
+            },
             {
               "eventPattern": "objective_task_completed:clone_reception_badge",
               "onceOnly": true,
@@ -869,6 +899,10 @@ operational_log_content = "TRANSACTION LOG - Q3 2024\n\n[2024-09-15 14:32:11] Pr
     "guard_detection_count": 0,
     "guard_knocked_out": false,
     "briefing_played": false,
-    "night_confrontation_ready": false
+    "night_confrontation_ready": false,
+    "lockpicking_guide_offered": false,
+    "lockpicking_guide_requested": false,
+    "netexploit_guide_offered": false,
+    "netexploit_guide_requested": false
   }
 }

@@ -410,25 +410,27 @@
   rc_npc_receptionist_4("Receptionist")
   rc_obj5_5{"Visitor Badge"}
   rc_npc_agent_0x99_6("Agent 0x99")
-  rc_npc_agent_0x99_7("Agent 0x99")
-  rc_npc_security_guard_8("Security Guard")
-  rc_obj9_9{"Presentation Materials"}
-  rc_obj10_10{"Conference Whiteboard"}
-  rc_npc_victoria_sterling_11("Victoria Sterling")
-  rc_server_filing_cabinet_12{"Filing Cabinet"}
-  rc_wall_safe_server_13{"Wall Safe"}
-  rc_obj14_14{"Server Room Whiteboard"}
-  rc_vm_launcher_zero_day_15{"VM Access Terminal"}
-  rc_cyberchef_workstation_16{"CyberChef Decoding Workstation"}
-  rc_flag_station_dropsite_17{"Drop-Site Terminal"}
-  rc_exec_filing_cabinet_18{"Filing Cabinet"}
-  rc_victoria_computer_19{"Executive Computer"}
-  rc_obj20_20{"Desk Drawer"}
-  rc_obj21_21{"Performance Review"}
-  rc_obj22_22{"Family Photo"}
-  rc_obj23_23{"James's Workstation"}
-  rc_obj24_24{"Certification Wall"}
-  rc_npc_agent_0x99_25("Agent 0x99")
+  rc_obj7_7{"SAFETYNET Field Guide: Lockpicking"}
+  rc_obj8_8{"SAFETYNET Field Guide: Network Exploitation"}
+  rc_npc_agent_0x99_9("Agent 0x99")
+  rc_npc_security_guard_10("Security Guard")
+  rc_obj11_11{"Presentation Materials"}
+  rc_obj12_12{"Conference Whiteboard"}
+  rc_npc_victoria_sterling_13("Victoria Sterling")
+  rc_server_filing_cabinet_14{"Filing Cabinet"}
+  rc_wall_safe_server_15{"Wall Safe"}
+  rc_obj16_16{"Server Room Whiteboard"}
+  rc_vm_launcher_zero_day_17{"VM Access Terminal"}
+  rc_cyberchef_workstation_18{"CyberChef Decoding Workstation"}
+  rc_flag_station_dropsite_19{"Drop-Site Terminal"}
+  rc_exec_filing_cabinet_20{"Filing Cabinet"}
+  rc_victoria_computer_21{"Executive Computer"}
+  rc_obj22_22{"Desk Drawer"}
+  rc_obj23_23{"Performance Review"}
+  rc_obj24_24{"Family Photo"}
+  rc_obj25_25{"James's Workstation"}
+  rc_obj26_26{"Certification Wall"}
+  rc_npc_agent_0x99_27("Agent 0x99")
 
   reception_lobby --> main_hallway
   main_hallway --> conference_room_01
@@ -442,30 +444,32 @@
   reception_lobby --> rc_npc_receptionist_4
   rc_npc_receptionist_4 --> rc_obj5_5
   reception_lobby --> rc_npc_agent_0x99_6
-  reception_lobby --> rc_npc_agent_0x99_7
-  main_hallway --> rc_npc_security_guard_8
-  conference_room_01 --> rc_obj9_9
-  conference_room_01 --> rc_obj10_10
-  conference_room_01 --> rc_npc_victoria_sterling_11
-  server_room --> rc_server_filing_cabinet_12
-  server_room --> rc_wall_safe_server_13
-  server_room --> rc_obj14_14
-  server_room --> rc_vm_launcher_zero_day_15
-  server_room --> rc_cyberchef_workstation_16
-  server_room --> rc_flag_station_dropsite_17
-  executive_office --> rc_exec_filing_cabinet_18
-  executive_office --> rc_victoria_computer_19
-  executive_office --> rc_obj20_20
-  james_office --> rc_obj21_21
-  james_office --> rc_obj22_22
+  rc_npc_agent_0x99_6 --> rc_obj7_7
+  rc_npc_agent_0x99_6 --> rc_obj8_8
+  reception_lobby --> rc_npc_agent_0x99_9
+  main_hallway --> rc_npc_security_guard_10
+  conference_room_01 --> rc_obj11_11
+  conference_room_01 --> rc_obj12_12
+  conference_room_01 --> rc_npc_victoria_sterling_13
+  server_room --> rc_server_filing_cabinet_14
+  server_room --> rc_wall_safe_server_15
+  server_room --> rc_obj16_16
+  server_room --> rc_vm_launcher_zero_day_17
+  server_room --> rc_cyberchef_workstation_18
+  server_room --> rc_flag_station_dropsite_19
+  executive_office --> rc_exec_filing_cabinet_20
+  executive_office --> rc_victoria_computer_21
+  executive_office --> rc_obj22_22
   james_office --> rc_obj23_23
   james_office --> rc_obj24_24
-  james_office --> rc_npc_agent_0x99_25
+  james_office --> rc_obj25_25
+  james_office --> rc_obj26_26
+  james_office --> rc_npc_agent_0x99_27
 
   class reception_lobby,main_hallway,executive_wing_hallway,james_office room
   class conference_room_01,server_room,executive_office lock
-  class rc_obj1_1,rc_obj2_2,rc_obj5_5,rc_obj9_9,rc_obj10_10,rc_server_filing_cabinet_12,rc_wall_safe_server_13,rc_obj14_14,rc_vm_launcher_zero_day_15,rc_cyberchef_workstation_16,rc_flag_station_dropsite_17,rc_exec_filing_cabinet_18,rc_victoria_computer_19,rc_obj20_20,rc_obj21_21,rc_obj22_22,rc_obj23_23,rc_obj24_24 item
-  class rc_npc_agent_0x99_3,rc_npc_receptionist_4,rc_npc_agent_0x99_6,rc_npc_agent_0x99_7,rc_npc_security_guard_8,rc_npc_victoria_sterling_11,rc_npc_agent_0x99_25 npc
+  class rc_obj1_1,rc_obj2_2,rc_obj5_5,rc_obj7_7,rc_obj8_8,rc_obj11_11,rc_obj12_12,rc_server_filing_cabinet_14,rc_wall_safe_server_15,rc_obj16_16,rc_vm_launcher_zero_day_17,rc_cyberchef_workstation_18,rc_flag_station_dropsite_19,rc_exec_filing_cabinet_20,rc_victoria_computer_21,rc_obj22_22,rc_obj23_23,rc_obj24_24,rc_obj25_25,rc_obj26_26 item
+  class rc_npc_agent_0x99_3,rc_npc_receptionist_4,rc_npc_agent_0x99_6,rc_npc_agent_0x99_9,rc_npc_security_guard_10,rc_npc_victoria_sterling_13,rc_npc_agent_0x99_27 npc
   class node_start start`
     };
     const rendered = {};

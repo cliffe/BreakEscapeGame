@@ -11,6 +11,12 @@ VAR hint_network_recon_given = false
 VAR rooms_discovered = 0
 VAR objectives_mentioned = 0
 
+// ---- Optional field guides (offered flags synced from globalVars; given flags local) ----
+VAR lockpicking_guide_offered = false
+VAR netexploit_guide_offered = false
+VAR lockpicking_guide_given = false
+VAR netexploit_guide_given = false
+
 === start ===
 #speaker:agent_0x99
 [Secure phone connection established]
@@ -20,6 +26,10 @@ Agent 0x99: {player_name()}, what do you need?
 === hub ===
 + [Request hint]
     -> provide_hint
++ {lockpicking_guide_offered and not lockpicking_guide_given} [Send the lockpicking field guide]
+    -> request_lockpicking_guide
++ {netexploit_guide_offered and not netexploit_guide_given} [Send the network exploitation field guide]
+    -> request_netexploit_guide
 + [Report progress]
     -> report_progress
 + [Ask about mission details]
@@ -27,6 +37,26 @@ Agent 0x99: {player_name()}, what do you need?
 + [End call]
     #exit_conversation
     Agent 0x99: Stay safe. Call if you need backup.
+
+=== request_lockpicking_guide ===
+#speaker:agent_0x99
+~ lockpicking_guide_given = true
+#set_variable:lockpicking_guide_requested:true
+#give_item:lab-workstation:m03_lockpicking_field_guide
+Agent 0x99: Lockpicking field guide uploaded to your terminal.
+Agent 0x99: Light tension, find the binding pin, set it, repeat — and only when the guard's at the far end of the patrol. Picking in view will make you.
++ [Received]
+    -> hub
+
+=== request_netexploit_guide ===
+#speaker:agent_0x99
+~ netexploit_guide_given = true
+#set_variable:netexploit_guide_requested:true
+#give_item:lab-workstation:m03_netexploit_field_guide
+Agent 0x99: Network exploitation field guide sent.
+Agent 0x99: Scan, enumerate, exploit — in that order. Fingerprint versions before you fire, and the legacy service is your route to the operational logs.
++ [Got it]
+    -> hub
 
 === provide_hint ===
 #speaker:agent_0x99
