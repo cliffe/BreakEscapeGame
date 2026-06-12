@@ -11,10 +11,10 @@ Infiltrate the Albion Energy Storage facility — 200 MWh of grid-scale lithium-
 | Story aims | 3 |
 | Total tasks | 17 (3 optional) |
 | VM flag challenges | 4 |
-| Physical locks | 5 |
+| Physical locks | 7 |
 | AND-gate convergences | 0 |
-| Rooms | 8 |
-| Puzzle graph nodes / edges | 34 / 34 |
+| Rooms | 9 |
+| Puzzle graph nodes / edges | 38 / 38 |
 | Story graph nodes / edges | 3 / 0 |
 
 ## Critical Path
@@ -78,6 +78,7 @@ flowchart TD
   main_entrance("Albion Energy Storage — Reception")
   lock_pick_kit{"Lock Pick Kit"}
   lock_security_equipment_locker["Security Equipment Locker"]
+  lock_extraction_gobag["Extraction Gobag"]
   operations_office("Operations Office")
   maintenance_work_orders{"Maintenance Work Orders"}
   npc_robert_chen{"Robert Chen"}
@@ -94,6 +95,9 @@ flowchart TD
   npc_entropy_operative_relay{"ENTROPY Operative 'Relay'"}
   master_keycard{"Master Keycard"}
   lock_esd_pushbutton["Emergency Shutdown Pushbutton — Rack Banks A-C"]
+  loading_dock("Loading Dock")
+  social_fabric_safehouse_card_encoded{"Social Fabric Safehouse Card (Encoded)"}
+  abandoned_extraction_go_bag["Abandoned Extraction Go-Bag"]
   vmch_submit_network_scan_flag["Submit network scan evidence"]
   vmfl_submit_network_scan_flag{"Network Scan Flag"}
   vmch_submit_ftp_intel_flag["Submit FTP intelligence evidence"]
@@ -109,6 +113,7 @@ flowchart TD
   door_plant_room --> plant_room
   main_entrance --> lock_pick_kit
   lock_pick_kit --> lock_security_equipment_locker
+  lock_pick_kit --> lock_extraction_gobag
   operations_office --> maintenance_work_orders
   operations_office --> npc_robert_chen
   npc_robert_chen --> facility_access_keycard_level_1
@@ -126,6 +131,9 @@ flowchart TD
   npc_entropy_operative_relay --> master_keycard
   master_keycard --> door_plant_room
   plant_room --> lock_esd_pushbutton
+  loading_dock --> lock_extraction_gobag
+  lock_extraction_gobag --> social_fabric_safehouse_card_encoded
+  loading_dock --> abandoned_extraction_go_bag
   vmch_submit_network_scan_flag --> vmfl_submit_network_scan_flag
   vmch_submit_ftp_intel_flag --> vmfl_submit_ftp_intel_flag
   vmfl_submit_network_scan_flag -.-> vmch_submit_ftp_intel_flag
@@ -139,9 +147,9 @@ flowchart TD
   operations_office --> security_office
   scada_control_room --> battery_hall_1
 
-  class door_engineering_workshop,door_battery_hall_2,door_plant_room,lock_security_equipment_locker,lock_esd_pushbutton lock
-  class engineering_workshop,battery_hall_2,plant_room,main_entrance,operations_office,scada_control_room,battery_hall_1,security_office room
-  class lock_pick_kit,maintenance_work_orders,scada_hmi_main_display,analog_thermometer_rack_bank_c_wall,h_gas_detector_panel item
+  class door_engineering_workshop,door_battery_hall_2,door_plant_room,lock_security_equipment_locker,lock_extraction_gobag,lock_esd_pushbutton,abandoned_extraction_go_bag lock
+  class engineering_workshop,battery_hall_2,plant_room,main_entrance,operations_office,scada_control_room,battery_hall_1,loading_dock,security_office room
+  class lock_pick_kit,maintenance_work_orders,scada_hmi_main_display,analog_thermometer_rack_bank_c_wall,h_gas_detector_panel,social_fabric_safehouse_card_encoded item
   class npc_robert_chen,facility_access_keycard_level_1,npc_entropy_operative_cipher,workshop_keycard_level_2,npc_entropy_operative_relay,master_keycard key
   class action_meet_robert_chen action
   class bms_jump_server_terminal,vmch_submit_network_scan_flag,vmch_submit_ftp_intel_flag,vmch_submit_http_analysis_flag,vmch_submit_distcc_exploit_flag vm
@@ -213,6 +221,7 @@ flowchart TD
   main_entrance("Albion Energy Storage — Reception")
   lock_pick_kit{"Lock Pick Kit"}
   lock_security_equipment_locker["Security Equipment Locker"]
+  lock_extraction_gobag["Extraction Gobag"]
   operations_office("Operations Office")
   maintenance_work_orders{"Maintenance Work Orders"}
   npc_robert_chen{"Robert Chen"}
@@ -229,6 +238,9 @@ flowchart TD
   npc_entropy_operative_relay{"ENTROPY Operative 'Relay'"}
   master_keycard{"Master Keycard"}
   lock_esd_pushbutton["Emergency Shutdown Pushbutton — Rack Banks A-C"]
+  loading_dock("Loading Dock")
+  social_fabric_safehouse_card_encoded{"Social Fabric Safehouse Card (Encoded)"}
+  abandoned_extraction_go_bag["Abandoned Extraction Go-Bag"]
   vmch_submit_network_scan_flag["Submit network scan evidence"]
   vmfl_submit_network_scan_flag{"Network Scan Flag"}
   vmch_submit_ftp_intel_flag["Submit FTP intelligence evidence"]
@@ -247,6 +259,7 @@ flowchart TD
   door_plant_room --> plant_room
   main_entrance --> lock_pick_kit
   lock_pick_kit --> lock_security_equipment_locker
+  lock_pick_kit --> lock_extraction_gobag
   operations_office --> maintenance_work_orders
   operations_office --> npc_robert_chen
   npc_robert_chen --> facility_access_keycard_level_1
@@ -264,6 +277,9 @@ flowchart TD
   npc_entropy_operative_relay --> master_keycard
   master_keycard --> door_plant_room
   plant_room --> lock_esd_pushbutton
+  loading_dock --> lock_extraction_gobag
+  lock_extraction_gobag --> social_fabric_safehouse_card_encoded
+  loading_dock --> abandoned_extraction_go_bag
   vmch_submit_network_scan_flag --> vmfl_submit_network_scan_flag
   vmch_submit_ftp_intel_flag --> vmfl_submit_ftp_intel_flag
   vmfl_submit_network_scan_flag -.-> vmch_submit_ftp_intel_flag
@@ -287,9 +303,9 @@ flowchart TD
   analog_thermometer_rack_bank_c_wall -.-> aim_infiltrate_facility
   lock_esd_pushbutton -.-> aim_neutralize_attack_threat
 
-  class door_engineering_workshop,door_battery_hall_2,door_plant_room,lock_security_equipment_locker,lock_esd_pushbutton lock
-  class engineering_workshop,battery_hall_2,plant_room,main_entrance,operations_office,scada_control_room,battery_hall_1,security_office room
-  class lock_pick_kit,maintenance_work_orders,scada_hmi_main_display,analog_thermometer_rack_bank_c_wall,h_gas_detector_panel item
+  class door_engineering_workshop,door_battery_hall_2,door_plant_room,lock_security_equipment_locker,lock_extraction_gobag,lock_esd_pushbutton,abandoned_extraction_go_bag lock
+  class engineering_workshop,battery_hall_2,plant_room,main_entrance,operations_office,scada_control_room,battery_hall_1,loading_dock,security_office room
+  class lock_pick_kit,maintenance_work_orders,scada_hmi_main_display,analog_thermometer_rack_bank_c_wall,h_gas_detector_panel,social_fabric_safehouse_card_encoded item
   class npc_robert_chen,facility_access_keycard_level_1,npc_entropy_operative_cipher,workshop_keycard_level_2,npc_entropy_operative_relay,master_keycard key
   class action_meet_robert_chen action
   class bms_jump_server_terminal,vmch_submit_network_scan_flag,vmch_submit_ftp_intel_flag,vmch_submit_http_analysis_flag,vmch_submit_distcc_exploit_flag vm
@@ -402,33 +418,36 @@ flowchart TD
   rc_flag_station_dropsite_18{"SAFETYNET Drop-Site Terminal"}
   rc_obj19_19{"Workshop Access Log"}
   rc_obj20_20{"Network Monitoring Station"}
-  rc_obj21_21{"Security Camera Monitors"}
-  rc_obj22_22{"Camera System Logs"}
-  rc_security_equipment_locker_23[["Security Equipment Locker"]]
-  rc_obj24_24{"Spare Keycard (Level 1)"}
-  rc_obj25_25{"Incident Response Guide"}
-  rc_analog_thermometer_26{"Analog Thermometer — Rack Bank C Wall"}
-  rc_rack_status_panel_27{"Battery Rack Status Panels (Digital)"}
-  rc_hydrogen_detector_28{"H₂ Gas Detector Panel"}
-  rc_obj29_29{"BESS Process Diagram"}
-  rc_npc_entropy_operative_cipher_30("ENTROPY Operative 'Cipher'")
-  rc_obj31_31{"Workshop Keycard (Level 2)"}
-  rc_obj32_32{"Cipher's Intelligence Note"}
-  rc_obj33_33{"Rack Bank Maintenance Manifest"}
-  rc_obj34_34{"BMS Interlock-Bypass Module"}
-  rc_obj35_35{"Emergency Procedures"}
-  rc_npc_entropy_operative_relay_36("ENTROPY Operative 'Relay'")
-  rc_obj37_37{"Master Keycard"}
-  rc_obj38_38{"OptiGrid Operations Log"}
-  rc_esd_pushbutton_39{"Emergency Shutdown Pushbutton — Rack Banks A-C"}
-  rc_obj40_40{"ENTROPY Command Laptop"}
-  rc_obj41_41{"Facility Blueprints (Marked)"}
-  rc_obj42_42{"The Architect's Directive"}
-  rc_npc_voltage_critical_mass_leader_43("Voltage (Critical Mass Leader)")
-  rc_npc_entropy_operative_static_44("ENTROPY Operative 'Static'")
-  rc_obj45_45{"Critical Mass Coordination Log"}
-  rc_obj46_46{"Loading Dock Schedule"}
-  rc_obj47_47{"Voltage's Escape Plan"}
+  rc_obj21_21{"SAFETYNET Tasking Note"}
+  rc_obj22_22{"Security Camera Monitors"}
+  rc_obj23_23{"Camera System Logs"}
+  rc_security_equipment_locker_24[["Security Equipment Locker"]]
+  rc_obj25_25{"Spare Keycard (Level 1)"}
+  rc_obj26_26{"Incident Response Guide"}
+  rc_analog_thermometer_27{"Analog Thermometer — Rack Bank C Wall"}
+  rc_rack_status_panel_28{"Battery Rack Status Panels (Digital)"}
+  rc_hydrogen_detector_29{"H₂ Gas Detector Panel"}
+  rc_obj30_30{"BESS Process Diagram"}
+  rc_npc_entropy_operative_cipher_31("ENTROPY Operative 'Cipher'")
+  rc_obj32_32{"Workshop Keycard (Level 2)"}
+  rc_obj33_33{"Cipher's Intelligence Note"}
+  rc_obj34_34{"Rack Bank Maintenance Manifest"}
+  rc_obj35_35{"BMS Interlock-Bypass Module"}
+  rc_obj36_36{"Emergency Procedures"}
+  rc_npc_entropy_operative_relay_37("ENTROPY Operative 'Relay'")
+  rc_obj38_38{"Master Keycard"}
+  rc_obj39_39{"OptiGrid Operations Log"}
+  rc_esd_pushbutton_40{"Emergency Shutdown Pushbutton — Rack Banks A-C"}
+  rc_obj41_41{"ENTROPY Command Laptop"}
+  rc_obj42_42{"Facility Blueprints (Marked)"}
+  rc_obj43_43{"The Architect's Directive"}
+  rc_npc_voltage_critical_mass_leader_44("Voltage (Critical Mass Leader)")
+  rc_npc_entropy_operative_static_45("ENTROPY Operative 'Static'")
+  rc_obj46_46{"Critical Mass Coordination Log"}
+  rc_obj47_47{"Loading Dock Schedule"}
+  rc_obj48_48{"Voltage's Escape Plan"}
+  rc_extraction_gobag_49[["Abandoned Extraction Go-Bag"]]
+  rc_obj50_50{"Social Fabric Safehouse Card (Encoded)"}
 
   main_entrance --> operations_office
   operations_office --> scada_control_room
@@ -459,38 +478,41 @@ flowchart TD
   engineering_workshop --> rc_flag_station_dropsite_18
   engineering_workshop --> rc_obj19_19
   engineering_workshop --> rc_obj20_20
-  security_office --> rc_obj21_21
+  engineering_workshop --> rc_obj21_21
   security_office --> rc_obj22_22
-  security_office --> rc_security_equipment_locker_23
-  rc_security_equipment_locker_23 --> rc_obj24_24
-  rc_security_equipment_locker_23 --> rc_obj25_25
-  battery_hall_1 --> rc_analog_thermometer_26
-  battery_hall_1 --> rc_rack_status_panel_27
-  battery_hall_1 --> rc_hydrogen_detector_28
-  battery_hall_1 --> rc_obj29_29
-  battery_hall_1 --> rc_npc_entropy_operative_cipher_30
-  rc_npc_entropy_operative_cipher_30 --> rc_obj31_31
-  rc_npc_entropy_operative_cipher_30 --> rc_obj32_32
-  battery_hall_2 --> rc_obj33_33
+  security_office --> rc_obj23_23
+  security_office --> rc_security_equipment_locker_24
+  rc_security_equipment_locker_24 --> rc_obj25_25
+  rc_security_equipment_locker_24 --> rc_obj26_26
+  battery_hall_1 --> rc_analog_thermometer_27
+  battery_hall_1 --> rc_rack_status_panel_28
+  battery_hall_1 --> rc_hydrogen_detector_29
+  battery_hall_1 --> rc_obj30_30
+  battery_hall_1 --> rc_npc_entropy_operative_cipher_31
+  rc_npc_entropy_operative_cipher_31 --> rc_obj32_32
+  rc_npc_entropy_operative_cipher_31 --> rc_obj33_33
   battery_hall_2 --> rc_obj34_34
   battery_hall_2 --> rc_obj35_35
-  battery_hall_2 --> rc_npc_entropy_operative_relay_36
-  rc_npc_entropy_operative_relay_36 --> rc_obj37_37
-  rc_npc_entropy_operative_relay_36 --> rc_obj38_38
-  plant_room --> rc_esd_pushbutton_39
-  plant_room --> rc_obj40_40
+  battery_hall_2 --> rc_obj36_36
+  battery_hall_2 --> rc_npc_entropy_operative_relay_37
+  rc_npc_entropy_operative_relay_37 --> rc_obj38_38
+  rc_npc_entropy_operative_relay_37 --> rc_obj39_39
+  plant_room --> rc_esd_pushbutton_40
   plant_room --> rc_obj41_41
   plant_room --> rc_obj42_42
-  plant_room --> rc_npc_voltage_critical_mass_leader_43
-  plant_room --> rc_npc_entropy_operative_static_44
-  rc_npc_entropy_operative_static_44 --> rc_obj45_45
-  loading_dock --> rc_obj46_46
+  plant_room --> rc_obj43_43
+  plant_room --> rc_npc_voltage_critical_mass_leader_44
+  plant_room --> rc_npc_entropy_operative_static_45
+  rc_npc_entropy_operative_static_45 --> rc_obj46_46
   loading_dock --> rc_obj47_47
+  loading_dock --> rc_obj48_48
+  loading_dock --> rc_extraction_gobag_49
+  rc_extraction_gobag_49 --> rc_obj50_50
 
   class main_entrance,operations_office,scada_control_room,security_office,battery_hall_1,loading_dock room
   class engineering_workshop,battery_hall_2,plant_room lock
-  class rc_obj1_1,rc_obj2_2,rc_obj8_8,rc_obj9_9,rc_obj10_10,rc_obj11_11,rc_obj13_13,rc_scada_hmi_display_14,rc_obj15_15,rc_obj16_16,rc_vm_launcher_vulnerability_analysis_17,rc_flag_station_dropsite_18,rc_obj19_19,rc_obj20_20,rc_obj21_21,rc_obj22_22,rc_obj24_24,rc_obj25_25,rc_analog_thermometer_26,rc_rack_status_panel_27,rc_hydrogen_detector_28,rc_obj29_29,rc_obj31_31,rc_obj32_32,rc_obj33_33,rc_obj34_34,rc_obj35_35,rc_obj37_37,rc_obj38_38,rc_esd_pushbutton_39,rc_obj40_40,rc_obj41_41,rc_obj42_42,rc_obj45_45,rc_obj46_46,rc_obj47_47 item
-  class rc_npc_agent_0x99_3,rc_npc_security_guard_4,rc_npc_agent_0x99_haxolottle_5,rc_npc_robert_chen_6,rc_npc_agent_0x99_7,rc_npc_robert_chen_12,rc_npc_entropy_operative_cipher_30,rc_npc_entropy_operative_relay_36,rc_npc_voltage_critical_mass_leader_43,rc_npc_entropy_operative_static_44 npc
-  class rc_security_equipment_locker_23 container
+  class rc_obj1_1,rc_obj2_2,rc_obj8_8,rc_obj9_9,rc_obj10_10,rc_obj11_11,rc_obj13_13,rc_scada_hmi_display_14,rc_obj15_15,rc_obj16_16,rc_vm_launcher_vulnerability_analysis_17,rc_flag_station_dropsite_18,rc_obj19_19,rc_obj20_20,rc_obj21_21,rc_obj22_22,rc_obj23_23,rc_obj25_25,rc_obj26_26,rc_analog_thermometer_27,rc_rack_status_panel_28,rc_hydrogen_detector_29,rc_obj30_30,rc_obj32_32,rc_obj33_33,rc_obj34_34,rc_obj35_35,rc_obj36_36,rc_obj38_38,rc_obj39_39,rc_esd_pushbutton_40,rc_obj41_41,rc_obj42_42,rc_obj43_43,rc_obj46_46,rc_obj47_47,rc_obj48_48,rc_obj50_50 item
+  class rc_npc_agent_0x99_3,rc_npc_security_guard_4,rc_npc_agent_0x99_haxolottle_5,rc_npc_robert_chen_6,rc_npc_agent_0x99_7,rc_npc_robert_chen_12,rc_npc_entropy_operative_cipher_31,rc_npc_entropy_operative_relay_37,rc_npc_voltage_critical_mass_leader_44,rc_npc_entropy_operative_static_45 npc
+  class rc_security_equipment_locker_24,rc_extraction_gobag_49 container
   class node_start start
 ```

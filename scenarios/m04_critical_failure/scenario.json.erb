@@ -272,7 +272,7 @@ attack_schedule_encoded = base64_encode("ATTACK SEQUENCE:\n0800 - Remote overcha
       "takeable": true,
       "observations": "Professional lock picking kit for bypassing physical locks",
       "puzzle_graph_role": "tool",
-      "puzzle_graph_unlocks": ["security_equipment_locker"]
+      "puzzle_graph_unlocks": ["security_equipment_locker", "extraction_gobag"]
     },
     {
       "type": "id_badge",
@@ -376,6 +376,15 @@ attack_schedule_encoded = base64_encode("ATTACK SEQUENCE:\n0800 - Remote overcha
           "avatar": "assets/npc/avatars/npc_helper.png",
           "phoneId": "player_phone",
           "currentKnot": "available_after_ally",
+          "timedMessages": [
+            {
+              "delay": 20000,
+              "message": "It's Chen again. I pulled the rack trends from the historian — the cells are far hotter than the SCADA is admitting. Whatever you do, get to a hardwired ESD. The software won't save us.",
+              "type": "text",
+              "waitForEvent": "global_variable_changed:chen_is_ally",
+              "skipIfGlobal": "attack_prevented"
+            }
+          ],
           "eventMappings": [
             {
               "eventPattern": "global_variable_changed:chen_is_ally",
@@ -394,6 +403,14 @@ attack_schedule_encoded = base64_encode("ATTACK SEQUENCE:\n0800 - Remote overcha
           "avatar": "assets/npc/avatars/npc_helper.png",
           "phoneId": "player_phone",
           "currentKnot": "start",
+          "timedMessages": [
+            {
+              "delay": 2500,
+              "message": "Emergency Shutdown confirmed — the racks are isolating and cooling. You did it. Tap to open your debrief when you're clear of the hall.",
+              "type": "text",
+              "waitForEvent": "global_variable_changed:mission_complete"
+            }
+          ],
           "eventMappings": [
             {
               "eventPattern": "global_variable_changed:mission_complete",
@@ -401,8 +418,7 @@ attack_schedule_encoded = base64_encode("ATTACK SEQUENCE:\n0800 - Remote overcha
               "onceOnly": true,
               "conversationMode": "phone-chat",
               "targetKnot": "start",
-              "setGlobal": { "debrief_ready": true },
-              "sendTimedMessage": { "delay": 2500, "message": "Mission complete. Tap to open your debrief." }
+              "setGlobal": { "debrief_ready": true }
             }
           ]
         }
@@ -627,6 +643,14 @@ attack_schedule_encoded = base64_encode("ATTACK SEQUENCE:\n0800 - Remote overcha
           "name": "Network Monitoring Station",
           "takeable": false,
           "observations": "Real-time network traffic monitor showing the SCADA/BMS communications"
+        },
+        {
+          "type": "notes",
+          "name": "SAFETYNET Tasking Note",
+          "takeable": false,
+          "readable": true,
+          "text": "DROP-SITE TASKING\n\nRequired evidence: submit all four VM flags at the drop-site —\n  network scan, FTP intel, HTTP analysis, distcc exploit.\n\nThe scan / enumerate / exploit steps in your objectives are your methodology —\nlog them if you want the full record, but it's the submitted flags that build the case.\nDon't get stuck chasing a checkbox; get the flags in.",
+          "observations": "SAFETYNET note clarifying that the four flag submissions are the required evidence; the recon sub-tasks are optional methodology"
         }
       ]
     },
@@ -1023,8 +1047,33 @@ attack_schedule_encoded = base64_encode("ATTACK SEQUENCE:\n0800 - Remote overcha
           "name": "Voltage's Escape Plan",
           "takeable": true,
           "readable": true,
-          "text": "CONTINGENCY: SAFETYNET INTERFERENCE\n\nIf compromised:\n1. Confirm the overcharge trigger is armed (it self-completes at 0800)\n2. Escape via the loading dock\n3. Extraction vehicle: loading zone B\n4. Rendezvous: Social Fabric safehouse (address encoded)\n\nPriority: mission success > personal capture\n\nNote: Static and I can hold them long enough.",
-          "observations": "Escape plan revealing Voltage's tactical priorities"
+          "text": "CONTINGENCY: SAFETYNET INTERFERENCE\n\nIf compromised:\n1. Confirm the overcharge trigger is armed (it self-completes at 0800)\n2. Escape via the loading dock\n3. Extraction vehicle: loading zone B\n4. Rendezvous: Social Fabric safehouse (address encoded — in the go-bag)\n\nPriority: mission success > personal capture\n\nNote: Static and I can hold them long enough.",
+          "observations": "Escape plan revealing Voltage's tactical priorities — it mentions an encoded address in a 'go-bag'"
+        },
+        {
+          "type": "suitcase",
+          "id": "extraction_gobag",
+          "name": "Abandoned Extraction Go-Bag",
+          "takeable": false,
+          "locked": true,
+          "lockType": "key",
+          "keyPins": [40, 30, 50, 35],
+          "difficulty": "easy",
+          "observations": "A grab-bag dumped by the loading-dock door — the cell's extraction kit, left in the rush. It's padlocked, but a lockpick will open it.",
+          "puzzle_graph_role": "lock",
+          "contents": [
+            {
+              "type": "notes",
+              "name": "Social Fabric Safehouse Card (Encoded)",
+              "takeable": true,
+              "readable": true,
+              "text": "<%= base64_encode('SOCIAL FABRIC — REGIONAL SAFEHOUSE\nUnit 14, Calder Wharf, Salford\nKnock pattern: 2-1-3\nAsk for \"Cascade\". Burn this after reading.') %>\n\n(Base64 — decode with CyberChef to read the safehouse address.)",
+              "observations": "An encoded card from the go-bag — the next thread to pull on Social Fabric",
+              "puzzle_graph_role": "clue",
+              "puzzle_graph_reveals": "social_fabric_safehouse_address_lead",
+              "onPickup": { "setVariable": { "lore_safehouse_address_found": true } }
+            }
+          ]
         }
       ]
     }
@@ -1080,6 +1129,7 @@ attack_schedule_encoded = base64_encode("ATTACK SEQUENCE:\n0800 - Remote overcha
 
     "lore_architect_directive_found": false,
     "lore_cross_cell_coordination_found": false,
+    "lore_safehouse_address_found": false,
 
     "urgency_stage": 1,
 
