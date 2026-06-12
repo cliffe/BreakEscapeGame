@@ -35,9 +35,24 @@ Edit `lib/break_escape/version.rb`:
 VERSION = '1.0.1'   # was 1.0.0
 ```
 
-`ASSETS_VERSION` inherits from `VERSION` automatically. Alternatively, set the
-environment variable `BREAK_ESCAPE_ASSETS_VERSION` on the server without
-changing code:
+`ASSETS_VERSION` inherits from `VERSION` automatically.
+
+Then update the lockfile in the host Rails app and restart the server:
+
+```bash
+cd ~/Hacktivity
+bundle install
+passenger-config restart-app /
+```
+
+`bundle install` is required because changing `VERSION` in the gem source makes
+the recorded version in `Gemfile.lock` stale. Passenger restarts Bundler, which
+compares the gem's actual version against the lockfile and raises a version
+mismatch error if they differ. Skipping this step causes the app to fail on
+restart.
+
+Alternatively, set the environment variable `BREAK_ESCAPE_ASSETS_VERSION` on
+the server without changing code (no `bundle install` needed):
 
 ```
 BREAK_ESCAPE_ASSETS_VERSION=2024-06-11 rails server
