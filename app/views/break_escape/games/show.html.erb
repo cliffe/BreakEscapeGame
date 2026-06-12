@@ -180,6 +180,7 @@
       gameId: <%= @game.id %>,
       apiBasePath: '/break_escape/games/<%= @game.id %>',
       assetsPath: '/break_escape/assets',
+      assetsVersion: '<%= BreakEscape::ASSETS_VERSION %>',
       csrfToken: '<%= form_authenticity_token %>',
       hacktivityMode: <%= BreakEscape::Mission.hacktivity_mode? ? 'true' : 'false' %>,
       vmSetId: <%= @game.player_state.is_a?(Hash) ? (@game.player_state['vm_set_id'] || 'null') : 'null' %>,

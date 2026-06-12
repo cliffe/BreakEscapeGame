@@ -17,6 +17,7 @@
       <div class="form-group">
         <%= f.label :in_game_name, "Your Code Name" %>
         <%= f.text_field :in_game_name,
+                         value: suggested_in_game_name(@player_preference),
                          class: 'form-control',
                          maxlength: 20,
                          placeholder: 'Zero' %>

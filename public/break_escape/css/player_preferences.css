@@ -354,6 +354,7 @@ h1 {
   align-items: center;
   justify-content: center;
   padding: 20px;
+  box-sizing: border-box;
 }
 
 .player-preferences-modal-content {
@@ -366,6 +367,7 @@ h1 {
   padding: 20px;
   position: relative;
   box-shadow: 0 0 40px rgba(0, 255, 0, 0.3);
+  box-sizing: border-box;
 }
 
 .player-preferences-modal-content .modal-header {
@@ -460,6 +462,12 @@ h1 {
   margin-top: 15px;
   border-top: 1px solid #333;
   text-align: right;
+}
+
+/* Form control in modal: fill available width rather than capping at 400px */
+.player-preferences-modal-content .form-control {
+  max-width: 100%;
+  box-sizing: border-box;
 }
 
 /* Responsive adjustments for modal */

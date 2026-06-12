@@ -1,7 +1,8 @@
 // API configuration from server
 // GAME_ID and ASSETS_PATH are stable after page load — read once.
-export const GAME_ID     = window.breakEscapeConfig?.gameId;
-export const ASSETS_PATH = window.breakEscapeConfig?.assetsPath || '/break_escape/assets';
+export const GAME_ID       = window.breakEscapeConfig?.gameId;
+export const ASSETS_PATH   = window.breakEscapeConfig?.assetsPath || '/break_escape/assets';
+export const ASSETS_VERSION = window.breakEscapeConfig?.assetsVersion || '1';
 
 // API_BASE and CSRF_TOKEN are read lazily so they always reflect the live
 // window.breakEscapeConfig value, even if the module was evaluated before the

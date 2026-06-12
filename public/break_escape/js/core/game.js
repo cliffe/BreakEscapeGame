@@ -29,6 +29,7 @@ import { TILE_SIZE, SPRITE_PADDING_BOTTOM_ATLAS, SPRITE_PADDING_BOTTOM_LEGACY, D
 import { initScenarioMusicEvents } from '../music/scenario-music-events.js';
 import { ScenarioTimerUI } from '../ui/scenario-timer.js';  // [Phase 5] Countdown timer HUD widget
 import { ScenarioTimerDispatcher } from '../ui/scenario-timer-dispatcher.js';  // [Phase 5] Timer event dispatcher
+import { ASSETS_VERSION } from '../config.js';
 
 // Global variables that will be set by main.js
 let gameScenario;
@@ -506,61 +507,61 @@ export function preload() {
     // Load new PixelLab character atlases (80x80, atlas-based)
     // Female characters
     this.load.atlas('female_hacker_hood',
-        'characters/female_hacker_hood.png?v=1',
-        'characters/female_hacker_hood.json?v=1');
+        `characters/female_hacker_hood.png?v=${ASSETS_VERSION}`,
+        `characters/female_hacker_hood.json?v=${ASSETS_VERSION}`);
     this.load.atlas('female_office_worker',
-        'characters/female_office_worker.png?v=1',
-        'characters/female_office_worker.json?v=1');
+        `characters/female_office_worker.png?v=${ASSETS_VERSION}`,
+        `characters/female_office_worker.json?v=${ASSETS_VERSION}`);
     this.load.atlas('female_security_guard',
-        'characters/female_security_guard.png?v=1',
-        'characters/female_security_guard.json?v=1');
+        `characters/female_security_guard.png?v=${ASSETS_VERSION}`,
+        `characters/female_security_guard.json?v=${ASSETS_VERSION}`);
     this.load.atlas('female_hacker_hood_down',
-        'characters/female_hacker_hood_down.png?v=2',
-        'characters/female_hacker_hood_down.json?v=2');
+        `characters/female_hacker_hood_down.png?v=${ASSETS_VERSION}`,
+        `characters/female_hacker_hood_down.json?v=${ASSETS_VERSION}`);
     this.load.atlas('female_telecom',
-        'characters/female_telecom.png?v=1',
-        'characters/female_telecom.json?v=1');
+        `characters/female_telecom.png?v=${ASSETS_VERSION}`,
+        `characters/female_telecom.json?v=${ASSETS_VERSION}`);
     this.load.atlas('female_spy',
-        'characters/female_spy.png?v=1',
-        'characters/female_spy.json?v=1');
+        `characters/female_spy.png?v=${ASSETS_VERSION}`,
+        `characters/female_spy.json?v=${ASSETS_VERSION}`);
     this.load.atlas('female_scientist',
-        'characters/female_scientist.png?v=1',
-        'characters/female_scientist.json?v=1');
+        `characters/female_scientist.png?v=${ASSETS_VERSION}`,
+        `characters/female_scientist.json?v=${ASSETS_VERSION}`);
     this.load.atlas('female_blowse',
-        'characters/female_blowse.png?v=1',
-        'characters/female_blowse.json?v=1');
+        `characters/female_blowse.png?v=${ASSETS_VERSION}`,
+        `characters/female_blowse.json?v=${ASSETS_VERSION}`);
     this.load.atlas('female_nurse1',
-        'characters/female_nurse1.png?v=1',
-        'characters/female_nurse1.json?v=1');
+        `characters/female_nurse1.png?v=${ASSETS_VERSION}`,
+        `characters/female_nurse1.json?v=${ASSETS_VERSION}`);
     this.load.atlas('female_nurse2',
-        'characters/female_nurse2.png?v=1',
-        'characters/female_nurse2.json?v=1');
+        `characters/female_nurse2.png?v=${ASSETS_VERSION}`,
+        `characters/female_nurse2.json?v=${ASSETS_VERSION}`);
 
     // Male characters
     this.load.atlas('male_hacker_hood',
-        'characters/male_hacker_hood.png?v=1',
-        'characters/male_hacker_hood.json?v=1');
+        `characters/male_hacker_hood.png?v=${ASSETS_VERSION}`,
+        `characters/male_hacker_hood.json?v=${ASSETS_VERSION}`);
     this.load.atlas('male_hacker_hood_down',
-        'characters/male_hacker_hood_down.png?v=1',
-        'characters/male_hacker_hood_down.json?v=1');
+        `characters/male_hacker_hood_down.png?v=${ASSETS_VERSION}`,
+        `characters/male_hacker_hood_down.json?v=${ASSETS_VERSION}`);
     this.load.atlas('male_office_worker',
-        'characters/male_office_worker.png?v=1',
-        'characters/male_office_worker.json?v=1');
+        `characters/male_office_worker.png?v=${ASSETS_VERSION}`,
+        `characters/male_office_worker.json?v=${ASSETS_VERSION}`);
     this.load.atlas('male_security_guard',
-        'characters/male_security_guard.png?v=1',
-        'characters/male_security_guard.json?v=1');
+        `characters/male_security_guard.png?v=${ASSETS_VERSION}`,
+        `characters/male_security_guard.json?v=${ASSETS_VERSION}`);
     this.load.atlas('male_telecom',
-        'characters/male_telecom.png?v=1',
-        'characters/male_telecom.json?v=1');
+        `characters/male_telecom.png?v=${ASSETS_VERSION}`,
+        `characters/male_telecom.json?v=${ASSETS_VERSION}`);
     this.load.atlas('male_spy',
-        'characters/male_spy.png?v=1',
-        'characters/male_spy.json?v=1');
+        `characters/male_spy.png?v=${ASSETS_VERSION}`,
+        `characters/male_spy.json?v=${ASSETS_VERSION}`);
     this.load.atlas('male_scientist',
-        'characters/male_scientist.png?v=1',
-        'characters/male_scientist.json?v=1');
+        `characters/male_scientist.png?v=${ASSETS_VERSION}`,
+        `characters/male_scientist.json?v=${ASSETS_VERSION}`);
     this.load.atlas('male_nerd',
-        'characters/male_nerd.png?v=1',
-        'characters/male_nerd.json?v=1');
+        `characters/male_nerd.png?v=${ASSETS_VERSION}`,
+        `characters/male_nerd.json?v=${ASSETS_VERSION}`);
 
     // Animated plant textures are loaded above
     
