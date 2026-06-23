@@ -914,7 +914,9 @@ module BreakEscape
         # (e.g. FlagService in Hacktivity). Runs after task state is saved so the host
         # sees a consistent game state. Errors are logged and swallowed — a scoring
         # failure must not roll back the player's flag submission.
-        if (cb = BreakEscape.configuration&.on_flag_submit)
+        # Skip when the flag was already counted in Hacktivity (backward compat for
+        # flags previously consumed by the wrong station under the old buggy code).
+        if (cb = BreakEscape.configuration&.on_flag_submit) && !result[:already_in_hacktivity]
           begin
             cb.call(@game, flag_key, vm_id)
           rescue => e
@@ -1802,7 +1804,7 @@ module BreakEscape
       # Flags arrays may contain references ("vm:flag_n") or literal values — resolve both.
       @game.scenario_data['rooms']&.each do |_room_id, room|
         room['objects']&.each do |obj|
-          next unless obj['type'] == 'flag-station'
+          next unless obj['type'] == 'flag-station' || obj['type'] == 'launch-device'
           next unless obj['flags']&.any? { |ref| resolve_flag_value(ref)&.downcase == flag_key.downcase }
 
           return obj
@@ -1866,7 +1868,7 @@ module BreakEscape
         # No explicit reference match — fall back to first station accepting this VM
         @game.scenario_data['rooms']&.each do |_room_id, room|
           room['objects']&.each do |obj|
-            next unless obj['type'] == 'flag-station'
+            next unless obj['type'] == 'flag-station' || obj['type'] == 'launch-device'
             return obj.merge('flags' => vm_flags) if Array(obj['acceptsVms']).include?(vm_name)
           end
         end

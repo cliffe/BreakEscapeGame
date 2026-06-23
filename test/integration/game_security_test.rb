@@ -1099,4 +1099,133 @@ module BreakEscape
       assert_nil @game.reload.mission_concluded_at
     end
   end
+
+  # =========================================================================
+  # Flag Station vs Launch Device — cross-submission ownership bug
+  #
+  # A flag that belongs to a launch-device room object must NOT be accepted at
+  # a flag-station, and vice versa. The `stationId` param is the client's way
+  # of telling the server which device the player is interacting with; the
+  # server must verify that the submitted flag actually belongs to that device.
+  #
+  # BUG: find_flag_station_for_flag only checks obj['type'] == 'flag-station'
+  # in the primary room-object search, so launch-device objects in rooms are
+  # invisible to it. When it returns nil the ownership check is silently
+  # skipped, the wrong station accepts the flag, and the launch device later
+  # rejects it as "already submitted".
+  # =========================================================================
+  class FlagStationLaunchDeviceOwnershipTest < ActionDispatch::IntegrationTest
+    include Engine.routes.url_helpers
+
+    LAUNCH_FLAG    = "flag{launch-secret}".freeze
+    DROPSITE_FLAG  = "flag{dropsite-easy}".freeze
+    LAUNCH_STATION = "launch1".freeze
+    DROP_STATION   = "dropsite".freeze
+
+    PLAYER_STATE = {
+      "currentRoom"      => "lobby",
+      "unlockedRooms"    => ["lobby"],
+      "unlockedObjects"  => [],
+      "inventory"        => [],
+      "encounteredNPCs"  => [],
+      "globalVariables"  => {},
+      "biometricSamples" => [],
+      "biometricUnlocks" => [],
+      "bluetoothDevices" => [],
+      "notes"            => [],
+      "health"           => 100,
+      # Both flags are valid game flags so submit_flag doesn't reject them as
+      # "Invalid flag" before the ownership check even runs.
+      "standalone_flags" => [LAUNCH_FLAG, DROPSITE_FLAG]
+    }.freeze
+
+    SCENARIO = {
+      "startRoom" => "lobby",
+      "rooms" => {
+        "lobby" => {
+          "locked"      => false,
+          "connections" => {},
+          "objects" => [
+            # A normal flag drop-site — only owns DROPSITE_FLAG
+            {
+              "id"         => DROP_STATION,
+              "type"       => "flag-station",
+              "name"       => "Drop Site",
+              "acceptsVms" => [],
+              "flags"      => [DROPSITE_FLAG]
+            },
+            # A launch device in the same room — owns LAUNCH_FLAG
+            {
+              "id"         => LAUNCH_STATION,
+              "type"       => "launch-device",
+              "name"       => "Launch Device",
+              "acceptsVms" => [],
+              "flags"      => [LAUNCH_FLAG]
+            }
+          ],
+          "npcs" => []
+        }
+      }
+    }.freeze
+
+    setup do
+      @mission = break_escape_missions(:ceo_exfil)
+      @player  = break_escape_demo_users(:test_user)
+      @game = Game.create!(
+        mission:       @mission,
+        player:        @player,
+        scenario_data: SCENARIO.deep_dup,
+        player_state:  PLAYER_STATE.deep_dup
+      )
+    end
+
+    # -------------------------------------------------------------------------
+    # Happy paths — each flag accepted at its own station
+    # -------------------------------------------------------------------------
+
+    test "launch-device flag is accepted at the launch device" do
+      post flags_game_url(@game), params: { flag: LAUNCH_FLAG, stationId: LAUNCH_STATION }
+      assert_response :success
+      json = JSON.parse(response.body)
+      assert_equal true, json["success"],
+        "Launch-device flag should be accepted when submitted at the launch device"
+    end
+
+    test "flag-station flag is accepted at the flag station" do
+      post flags_game_url(@game), params: { flag: DROPSITE_FLAG, stationId: DROP_STATION }
+      assert_response :success
+      json = JSON.parse(response.body)
+      assert_equal true, json["success"],
+        "Drop-site flag should be accepted when submitted at the flag station"
+    end
+
+    # -------------------------------------------------------------------------
+    # Cross-submission rejection — the bug under test
+    # -------------------------------------------------------------------------
+
+    test "SECURITY: launch-device flag submitted at flag-station is rejected" do
+      post flags_game_url(@game), params: { flag: LAUNCH_FLAG, stationId: DROP_STATION }
+      json = JSON.parse(response.body)
+      assert_equal false, json["success"],
+        "Launch-device flag must be rejected when submitted at the flag-station"
+    end
+
+    test "SECURITY: launch-device flag remains usable after a rejected cross-station attempt" do
+      # Attempt (correctly rejected) at the wrong station
+      post flags_game_url(@game), params: { flag: LAUNCH_FLAG, stationId: DROP_STATION }
+
+      # Must still succeed at the correct station
+      post flags_game_url(@game), params: { flag: LAUNCH_FLAG, stationId: LAUNCH_STATION }
+      json = JSON.parse(response.body)
+      assert_equal true, json["success"],
+        "Launch-device flag must still work at its correct station after a rejected attempt elsewhere"
+    end
+
+    test "flag-station flag submitted at launch device is rejected" do
+      post flags_game_url(@game), params: { flag: DROPSITE_FLAG, stationId: LAUNCH_STATION }
+      json = JSON.parse(response.body)
+      assert_equal false, json["success"],
+        "Drop-site flag should be rejected when submitted at the launch device"
+    end
+  end
 end

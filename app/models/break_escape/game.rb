@@ -1437,7 +1437,9 @@ module BreakEscape
     # In Hacktivity, flags belong to individual VMs (not to SecGenBatch).
     def extract_flags_by_vm(vm_set)
       vm_set.vms.each_with_object({}) do |vm, hash|
-        hash[vm.title] = vm.flags.map(&:flag_key)
+        # Hacktivity's read_secgen_flags_job inserts flags in reverse XML order,
+        # so reversing here restores flag_1..flag_N to match the scenario's references.
+        hash[vm.title] = vm.flags.order(:id).map(&:flag_key).reverse
       end
     end
 
@@ -1469,6 +1471,14 @@ module BreakEscape
     def submit_flag(flag_key)
       # Check if already submitted
       if flag_submitted?(flag_key)
+        # Backward compat: a flag previously consumed by the wrong station (under old
+        # buggy code where find_flag_station_for_flag missed launch-device room objects)
+        # may already be solved in the Hacktivity DB. Check the DB directly — if the
+        # flag is solved there, allow game-side processing (task completions, rewards)
+        # to proceed. The caller skips re-calling FlagService in this case.
+        if BreakEscape::Mission.hacktivity_mode? && hacktivity_flag_solved?(flag_key)
+          return { success: true, message: 'Flag accepted!', already_in_hacktivity: true }
+        end
         return { success: false, message: 'Flag already submitted' }
       end
 
@@ -1522,15 +1532,31 @@ module BreakEscape
         end
       end
 
-      # Extract from flag-station objects in scenario (backward compat: literal values only)
+      # Extract from flag-station and launch-device objects in scenario (backward compat: literal values only)
       scenario_data['rooms']&.each do |_room_id, room|
         room['objects']&.each do |obj|
-          next unless obj['type'] == 'flag-station'
+          next unless obj['type'] == 'flag-station' || obj['type'] == 'launch-device'
           obj['flags']&.each { |f| flags << f unless f.include?(':') }
         end
       end
 
       flags.uniq
+    end
+
+    # Check whether this flag is already solved in the Hacktivity Flag DB.
+    # Used for backward compat when a flag was previously consumed by the wrong
+    # station but already counted in Hacktivity.
+    def hacktivity_flag_solved?(flag_key)
+      return false unless defined?(::Flag) && player_state['vm_set_id'].present?
+
+      vm_set = ::VmSet.find_by(id: player_state['vm_set_id'])
+      return false unless vm_set
+
+      ::Flag.joins(:vm)
+            .where('vms.vm_set_id': vm_set.id)
+            .where('lower(flags.flag_key) = ?', flag_key.downcase)
+            .where(solved: true)
+            .exists?
     end
 
     # Submit flag to Hacktivity's FlagService
