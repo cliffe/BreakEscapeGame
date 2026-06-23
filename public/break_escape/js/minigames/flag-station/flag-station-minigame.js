@@ -606,12 +606,6 @@ export class FlagStationMinigame extends MinigameScene {
             return;
         }
         
-        // Check if already submitted
-        if (this.submittedFlags.some(f => f.toLowerCase() === flagValue.toLowerCase())) {
-            this.showResult(resultEl, 'error', 'This flag has already been submitted');
-            return;
-        }
-        
         this.isSubmitting = true;
         submitBtn.disabled = true;
         submitBtn.textContent = '...';
