@@ -638,13 +638,17 @@ export class FlagStationMinigame extends MinigameScene {
                 if (window.playUISound) window.playUISound('confirm');
                 this.showResult(resultEl, 'success', `✓ ${data.message || 'Flag accepted!'}`);
                 
-                // Add to history
-                this.submittedFlags.push(flagValue);
-                this.updateFlagHistory();
-                
-                // Update global state
-                if (window.gameState) {
-                    window.gameState.submittedFlags = this.submittedFlags;
+                // Add to history only for real submissions, not hint-only responses.
+                // Hints return success:true so the player sees the message, but the flag
+                // is not consumed server-side and must still be submittable elsewhere.
+                if (!data.hint) {
+                    this.submittedFlags.push(flagValue);
+                    this.updateFlagHistory();
+
+                    // Update global state
+                    if (window.gameState) {
+                        window.gameState.submittedFlags = this.submittedFlags;
+                    }
                 }
                 
                 // Emit generic flag_submitted event with identifier for objectives tracking

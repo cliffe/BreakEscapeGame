@@ -1002,7 +1002,7 @@ export function handleObjectInteraction(sprite) {
         if (window.MinigameFramework) {
             window.MinigameFramework.startMinigame('flag-station', null, {
                 title:             sprite.scenarioData.name || 'Flag Submission Terminal',
-                stationId:         sprite.scenarioData.id || sprite.objectId,
+                stationId:         sprite.scenarioData.id || sprite.scenarioData.name || sprite.objectId,
                 stationName:       sprite.scenarioData.name,
                 mode:              sprite.scenarioData.mode || 'standard',
                 flags:             sprite.scenarioData.flags || [],

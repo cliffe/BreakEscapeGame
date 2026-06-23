@@ -859,6 +859,7 @@ module BreakEscape
           if valid_flags.any? { |f| f.downcase == flag_key.downcase }
             return render json: {
               success: true,
+              hint: true,
               message: 'Flag recognised',
               flag: flag_key,
               flagId: nil,
