@@ -1,6 +1,7 @@
 // Container Minigame
 import { MinigameScene } from '../framework/base-minigame.js';
 import { addToInventory, removeFromInventory } from '../../systems/inventory.js';
+import { makeDraggable } from '../../utils/helpers.js';
 
 export class ContainerMinigame extends MinigameScene {
     constructor(container, params) {
@@ -239,10 +240,7 @@ export class ContainerMinigame extends MinigameScene {
                     </div>
                     
                 </div>
-                    ${this.containerItem.scenarioData.postitNote && this.containerItem.scenarioData.showPostit ? `
-                        <div class="postit-note">${this.containerItem.scenarioData.postitNote}</div>
-                    ` : ''}
-                
+
                 <div class="desktop-taskbar">
                     <div class="desktop-actions">
                         ${this.isTakeable ? '<button class="minigame-button" id="take-container-btn">Take Container</button>' : ''}
@@ -250,6 +248,14 @@ export class ContainerMinigame extends MinigameScene {
                 </div>
             </div>
         `;
+
+        if (this.containerItem.scenarioData.postitNote && this.containerItem.scenarioData.showPostit) {
+            const postit = document.createElement('div');
+            postit.className = 'postit-note';
+            postit.textContent = this.containerItem.scenarioData.postitNote;
+            makeDraggable(postit);
+            this.gameContainer.appendChild(postit);
+        }
     }
     
     populateContents() {

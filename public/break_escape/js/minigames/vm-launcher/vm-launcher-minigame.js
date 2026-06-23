@@ -8,6 +8,7 @@
  */
 
 import { MinigameScene } from '../framework/base-minigame.js';
+import { makeDraggable } from '../../utils/helpers.js';
 
 export class VmLauncherMinigame extends MinigameScene {
     constructor(container, params) {
@@ -72,10 +73,10 @@ export class VmLauncherMinigame extends MinigameScene {
                     max-width: 200px;
                     word-wrap: break-word;
                     white-space: pre-line;
-                    pointer-events: none;
                     top: 75%;
                 `;
                 postit.textContent = this.postitNote;
+                makeDraggable(postit);
                 this.gameContainer.appendChild(postit);
             }
             return;
@@ -350,6 +351,7 @@ export class VmLauncherMinigame extends MinigameScene {
             const postit = document.createElement('div');
             postit.className = 'postit-note';
             postit.textContent = this.postitNote;
+            makeDraggable(postit);
             this.gameContainer.appendChild(postit);
         }
 

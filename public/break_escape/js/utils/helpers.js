@@ -131,6 +131,61 @@ export function debounce(func, wait) {
     };
 }
 
+// Make an element draggable by mouse and touch.
+// Switches to absolute positioning on first drag so the note can move freely
+// without disrupting surrounding layout.
+export function makeDraggable(el) {
+    el.style.cursor = 'grab';
+    el.style.userSelect = 'none';
+
+    let startX, startY, initLeft, initTop;
+
+    function onStart(e) {
+        e.preventDefault();
+        const point = e.touches ? e.touches[0] : e;
+
+        if (getComputedStyle(el).position !== 'absolute') {
+            const r = el.getBoundingClientRect();
+            const pr = (el.offsetParent || document.body).getBoundingClientRect();
+            el.style.position = 'absolute';
+            el.style.margin = '0';
+            el.style.left = (r.left - pr.left) + 'px';
+            el.style.top = (r.top - pr.top) + 'px';
+        }
+
+        initLeft = el.offsetLeft;
+        initTop = el.offsetTop;
+        startX = point.clientX;
+        startY = point.clientY;
+
+        el.style.cursor = 'grabbing';
+        el.style.zIndex = '9999';
+
+        document.addEventListener('mousemove', onMove);
+        document.addEventListener('touchmove', onMove, { passive: false });
+        document.addEventListener('mouseup', onEnd);
+        document.addEventListener('touchend', onEnd);
+    }
+
+    function onMove(e) {
+        e.preventDefault();
+        const point = e.touches ? e.touches[0] : e;
+        el.style.left = (initLeft + point.clientX - startX) + 'px';
+        el.style.top = (initTop + point.clientY - startY) + 'px';
+    }
+
+    function onEnd() {
+        el.style.cursor = 'grab';
+        document.removeEventListener('mousemove', onMove);
+        document.removeEventListener('touchmove', onMove);
+        document.removeEventListener('mouseup', onEnd);
+        document.removeEventListener('touchend', onEnd);
+    }
+
+    el.addEventListener('mousedown', onStart);
+    el.addEventListener('touchstart', onStart, { passive: false });
+}
+
 // Export functions to global scope for backward compatibility
 window.openCryptoWorkstation = openCryptoWorkstation;
 window.closeLaptop = closeLaptop;
