@@ -753,6 +753,61 @@ export class NPCPathfindingManager {
     }
 
     /**
+     * Find the walkable cell that is (a) actually reachable from a start position
+     * and (b) Euclidean-closest to a desired target world position.
+     *
+     * Unlike findNearestWalkableWorldCell (which only checks walkability and may
+     * return a cell in a disconnected region the player can never path to), this
+     * flood-fills the connected component containing the start cell, then picks the
+     * reachable cell nearest the target. Used when an exact click target is
+     * unreachable so the player walks as close as possible instead of bee-lining.
+     *
+     * Returns a world {x, y}, or null if the start cell itself isn't walkable.
+     */
+    findNearestReachableWorldCell(startX, startY, targetX, targetY) {
+        if (!this.worldGrid || !this.worldGridBounds) return null;
+        const { minX, minY, cols, rows, step } = this.worldGridBounds;
+
+        const startCX = Math.floor((startX - minX) / step);
+        const startCY = Math.floor((startY - minY) / step);
+        if (startCX < 0 || startCX >= cols || startCY < 0 || startCY >= rows) return null;
+        if (this.worldGrid[startCY][startCX] !== 0) return null;
+
+        const targetCX = (targetX - minX) / step;
+        const targetCY = (targetY - minY) / step;
+
+        const visited = new Uint8Array(cols * rows);
+        const idx = (cx, cy) => cy * cols + cx;
+        const queue = [[startCX, startCY]];
+        visited[idx(startCX, startCY)] = 1;
+
+        let best = null, bestDistSq = Infinity;
+        // 8-connected flood (grid pathfinder uses diagonals).
+        const neighbours = [
+            [-1, 0], [1, 0], [0, -1], [0, 1],
+            [-1, -1], [-1, 1], [1, -1], [1, 1]
+        ];
+
+        for (let head = 0; head < queue.length; head++) {
+            const [cx, cy] = queue[head];
+            const distSq = (cx - targetCX) ** 2 + (cy - targetCY) ** 2;
+            if (distSq < bestDistSq) {
+                bestDistSq = distSq;
+                best = { x: minX + cx * step + step / 2, y: minY + cy * step + step / 2 };
+            }
+            for (const [dx, dy] of neighbours) {
+                const nx = cx + dx, ny = cy + dy;
+                if (nx < 0 || nx >= cols || ny < 0 || ny >= rows) continue;
+                const ni = idx(nx, ny);
+                if (visited[ni] || this.worldGrid[ny][nx] !== 0) continue;
+                visited[ni] = 1;
+                queue.push([nx, ny]);
+            }
+        }
+        return best;
+    }
+
+    /**
      * Mark a rectangular area as walkable in the world grid.
      * Used when a door is unlocked (removes the door body's blocked cells).
      */

@@ -724,8 +724,9 @@ export function movePlayerToPoint(x, y) {
     x = Phaser.Math.Clamp(x, worldBounds.x, worldBounds.x + worldBounds.width);
     y = Phaser.Math.Clamp(y, worldBounds.y, worldBounds.y + worldBounds.height);
 
-    // Create click indicator
-    createClickIndicator(x, y);
+    // Create click indicator (kept so it can be relocated if we end up
+    // navigating to a nearby reachable point instead of the exact click).
+    const clickIndicator = createClickIndicator(x, y);
 
     // Reset path state and bump request ID to cancel any in-flight async callbacks
     playerPath = [];
@@ -759,6 +760,24 @@ export function movePlayerToPoint(x, y) {
             }
             console.log('  → LOS blocked — requesting EasyStar path...');
 
+            // Apply a returned path: smooth it and start following. `goal` is the
+            // point used for the LOS shortcut once on the last leg.
+            const applyPath = (path, goal) => {
+                const { x: cx, y: cy } = playerBodyPos();
+                const smoothed = pathfindingManager.smoothWorldPathForPlayer(cx, cy, path);
+                console.log(`  → Smoothed to ${smoothed.length} waypoints:`,
+                    smoothed.map((p, i) => `[${i}](${p.x.toFixed(0)},${p.y.toFixed(0)})`).join(' → '));
+
+                drawPathDebug(cx, cy, smoothed, path);
+
+                playerFinalGoal = goal;
+                playerPath = smoothed;
+                playerPathIndex = 0;
+                playerFollowingPath = true;
+                targetPoint = playerPath[playerPathIndex++];
+                isMoving = true;
+            };
+
             // Route via the unified world grid (works across room boundaries)
             pathfindingManager.findWorldPath(px, py, snappedDest.x, snappedDest.y, (path) => {
                 // Ignore if player has already clicked somewhere else
@@ -766,23 +785,38 @@ export function movePlayerToPoint(x, y) {
 
                 if (path && path.length > 0) {
                     console.log(`  → EasyStar returned ${path.length} raw waypoints`);
+                    applyPath(path, { x, y }); // original click for LOS shortcut
+                    return;
+                }
 
-                    // Smooth using current feet position (safe even with async delay)
-                    const { x: cx, y: cy } = playerBodyPos();
-                    const smoothed = pathfindingManager.smoothWorldPathForPlayer(cx, cy, path);
-                    console.log(`  → Smoothed to ${smoothed.length} waypoints:`,
-                        smoothed.map((p, i) => `[${i}](${p.x.toFixed(0)},${p.y.toFixed(0)})`).join(' → '));
+                // The click target sits in a region the player can't reach (e.g.
+                // walled-off area). Instead of bee-lining, walk to the nearest cell
+                // that is actually reachable from the player and path there.
+                console.warn('  ⚠️ No path to target — finding nearest reachable cell');
+                const reachable = pathfindingManager.findNearestReachableWorldCell(px, py, x, y);
 
-                    drawPathDebug(cx, cy, smoothed, path);
+                if (reachable) {
+                    console.log(`  → Nearest reachable cell (${reachable.x.toFixed(0)},${reachable.y.toFixed(0)})`);
+                    // Move the click effect to where we're actually navigating so the
+                    // player understands their destination.
+                    if (clickIndicator?.active) clickIndicator.setPosition(reachable.x, reachable.y);
 
-                    playerFinalGoal = { x, y }; // original click for LOS shortcut
-                    playerPath = smoothed;
-                    playerPathIndex = 0;
-                    playerFollowingPath = true;
-                    targetPoint = playerPath[playerPathIndex++];
-                    isMoving = true;
+                    pathfindingManager.findWorldPath(px, py, reachable.x, reachable.y, (path2) => {
+                        if (requestId !== playerPathRequestId) return;
+                        if (path2 && path2.length > 0) {
+                            applyPath(path2, reachable);
+                        } else {
+                            // Should not happen (cell came from a flood-fill of the
+                            // player's own component) — fall back to a direct move.
+                            const { x: cx, y: cy } = playerBodyPos();
+                            drawPathDebug(cx, cy, [reachable], null);
+                            playerFollowingPath = false;
+                            targetPoint = reachable;
+                            isMoving = true;
+                        }
+                    }, true);
                 } else {
-                    console.warn('  ⚠️ EasyStar returned no path — falling back to snapped dest');
+                    console.warn('  ⚠️ No reachable cell found — falling back to snapped dest');
                     const { x: cx, y: cy } = playerBodyPos();
                     drawPathDebug(cx, cy, [snappedDest], null);
                     playerFollowingPath = false;
@@ -892,6 +926,8 @@ function createClickIndicator(x, y) {
             indicator.destroy();
         }
     });
+
+    return indicator;
 }
 
 export function updatePlayerMovement() {
