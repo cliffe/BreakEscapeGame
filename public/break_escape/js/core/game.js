@@ -1019,6 +1019,13 @@ export async function create() {
             showInteractionMenu(nearbyInteractables, nativeEvent.clientX, nativeEvent.clientY);
             return;
         }
+        // Exactly one in-reach interactable near the tap — act on it directly using
+        // the same tap-slop tolerance as the menu, so the player doesn't have to land
+        // the tap precisely on a small item to interact with it.
+        if (nearbyInteractables.length === 1) {
+            nearbyInteractables[0].onSelect();
+            return;
+        }
 
         // Check for NPC sprites at the clicked position first
         const npcAtPosition = findNPCAtPosition(worldX, worldY);
