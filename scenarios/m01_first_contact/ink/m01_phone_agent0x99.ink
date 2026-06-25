@@ -942,7 +942,12 @@ Whatever you choose to do with Derek — choose carefully. The way this ends set
 === closing_debrief ===
 #speaker:agent_0x99
 
-Operation Shatter is neutralized. Let's review what happened.
+{
+    - player_launched_attack:
+        Operation Shatter went through — the attack hit. Let's review what happened.
+    - else:
+        Operation Shatter is neutralized. Let's review what happened.
+}
 
 + [On my way]
     #set_global:start_debrief_cutscene:true

@@ -400,8 +400,6 @@ Player: I'm taking everything. The casualty projections. The demographic segment
 
 Player: I'm giving it all to the press. Let the world see what ENTROPY really is.
 
-*smiles*
-
 You think that hurts me? I WANT people to see this.
 
 Public disclosure means the philosophy spreads. People will read those casualty projections and think—what if it happened? What if next time we're not stopped?
