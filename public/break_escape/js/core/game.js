@@ -1,7 +1,7 @@
 // IMPORTANT: version must match all other imports of rooms.js — mismatched ?v= strings
 // create separate module instances with separate rooms objects, causing state to diverge.
 import { initializeRooms, calculateWorldBounds, calculateRoomPositions, createRoom, revealRoom, updatePlayerRoom, rooms } from './rooms.js';
-import { createPlayer, updatePlayerMovement, movePlayerToPoint, facePlayerToward, player } from './player.js';
+import { createPlayer, updatePlayerMovement, movePlayerToPoint, facePlayerToward, startHoldWalk, stopHoldWalk, player } from './player.js';
 import { initializePathfinder } from './pathfinding.js';
 import { initializeInventory, processInitialInventoryItems } from '../systems/inventory.js';
 import { checkObjectInteractions, setGameInstance, isObjectInInteractionRange } from '../systems/interactions.js';
@@ -1134,9 +1134,17 @@ export async function create() {
             return;
         }
         
-        // No interactable objects found or player out of range - allow movement
+        // No interactable objects found or player out of range - allow movement.
+        // Begin hold-to-walk tracking: if the button stays held, the player will
+        // continuously walk toward the live cursor position (see updateHoldWalk).
         movePlayerToPoint(worldX, worldY);
+        startHoldWalk();
     });
+
+    // Releasing the press ends continuous hold-to-walk. pointerupoutside covers
+    // the case where the release happens off-canvas.
+    this.input.on('pointerup', () => stopHoldWalk());
+    this.input.on('pointerupoutside', () => stopHoldWalk());
     
     // Initialize inventory
     initializeInventory();

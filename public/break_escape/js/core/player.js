@@ -38,6 +38,14 @@ let playerPath = [];           // Array of world {x, y} waypoints from EasyStar 
 let playerPathIndex = 0;       // Next waypoint index to head toward
 let playerPathRequestId = 0;   // Incremented on each click to discard stale async callbacks
 
+// Hold-to-walk state — when the player presses to move and keeps the button held,
+// the character continuously walks toward the live cursor position (joystick-like)
+// once the press has been held past HOLD_WALK_DELAY. A quick click still does a
+// normal one-shot pathfinding move.
+let holdWalkActive = false;
+let holdWalkStartTime = 0;
+const HOLD_WALK_DELAY = 250; // ms the press must be held before continuous-walk engages
+
 // Footstep sound state
 let footstepSound = null;
 let footstepPlaying = false;
@@ -840,6 +848,52 @@ export function movePlayerToPoint(x, y) {
     }
 }
 
+/**
+ * Begin tracking a held press so that, once held past HOLD_WALK_DELAY, the player
+ * continuously walks toward the live cursor position. Called from the pointerdown
+ * handler when a plain click-to-move is issued.
+ */
+export function startHoldWalk() {
+    holdWalkActive = true;
+    holdWalkStartTime = (typeof performance !== 'undefined' ? performance.now() : Date.now());
+}
+
+/** Stop continuous hold-to-walk (called on pointer release). */
+export function stopHoldWalk() {
+    holdWalkActive = false;
+}
+
+/**
+ * While the press is held past the delay, steer the player straight toward the
+ * current cursor position. Returns true if hold-walk is currently driving movement.
+ * Physics collisions naturally stop the player at walls (joystick-like control).
+ */
+function updateHoldWalk() {
+    if (!holdWalkActive || !gameRef) return false;
+
+    const pointer = gameRef.input.activePointer;
+    // Safety: if the button was released without a pointerup event reaching us, stop.
+    if (!pointer || !pointer.isDown) {
+        holdWalkActive = false;
+        return false;
+    }
+
+    const now = (typeof performance !== 'undefined' ? performance.now() : Date.now());
+    if (now - holdWalkStartTime < HOLD_WALK_DELAY) return false; // still within click window
+
+    // Take over from any in-flight pathfinding route and head straight for the cursor.
+    const worldX = gameRef.cameras.main.scrollX + pointer.x;
+    const worldY = gameRef.cameras.main.scrollY + pointer.y;
+    playerPath = [];
+    playerPathIndex = 0;
+    playerFollowingPath = false;
+    playerFinalGoal = null;
+    ++playerPathRequestId; // discard any pending EasyStar callback from the initial click
+    targetPoint = { x: worldX, y: worldY };
+    isMoving = true;
+    return true;
+}
+
 // Exposed globally so teleport handlers (collision.js) can cancel in-flight paths
 // without creating a circular import.
 window.cancelClickToMove = () => {
@@ -850,6 +904,7 @@ window.cancelClickToMove = () => {
     ++playerPathRequestId; // invalidate any pending EasyStar callbacks
     isMoving            = false;
     targetPoint         = null;
+    holdWalkActive      = false;
 };
 
 /**
@@ -974,7 +1029,7 @@ export function updatePlayerMovement() {
 }
 
 function updatePlayerKeyboardMovement() {
-    // Cancel click-to-move when keyboard input is detected
+    // Cancel click-to-move (and any hold-to-walk) when keyboard input is detected
     if (isMoving || targetPoint) {
         isMoving = false;
         targetPoint = null;
@@ -982,6 +1037,7 @@ function updatePlayerKeyboardMovement() {
         playerPathIndex = 0;
         playerFollowingPath = false;
         playerFinalGoal = null;
+        holdWalkActive = false;
     }
     
     // Calculate movement direction based on keyboard input
@@ -1163,6 +1219,9 @@ function updatePlayerKeyboardMovement() {
 }
 
 function updatePlayerMouseMovement() {
+    // If the press is being held, continuously retarget toward the live cursor.
+    updateHoldWalk();
+
     if (!isMoving || !targetPoint) {
         if (player.body.velocity.x !== 0 || player.body.velocity.y !== 0) {
             player.body.setVelocity(0, 0);
