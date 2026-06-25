@@ -6,6 +6,8 @@ import { initializePathfinder } from './pathfinding.js';
 import { initializeInventory, processInitialInventoryItems } from '../systems/inventory.js';
 import { checkObjectInteractions, setGameInstance, isObjectInInteractionRange } from '../systems/interactions.js';
 import { createInfoLabel, updateInfoLabel } from '../ui/info-label.js';
+import { showInteractionMenu, isInteractionMenuOpen, closeInteractionMenu } from '../ui/interaction-menu.js';
+import { resolveObjectField } from '../utils/conditional-text.js';
 import { introduceScenario } from '../utils/helpers.js';
 import '../minigames/index.js';
 import SoundManager from '../systems/sound-manager.js';
@@ -1000,6 +1002,24 @@ export async function create() {
             }
         }
         
+        // A menu is already open — this tap is meant to dismiss it. Consume it so
+        // it doesn't also move the player / trigger another interaction.
+        if (isInteractionMenuOpen()) {
+            closeInteractionMenu();
+            return;
+        }
+
+        // If the tap lands near several interactable entities that are all within
+        // reach (e.g. a memo lying right next to an NPC), don't guess — show a
+        // disambiguation menu listing each by its observation text. This fixes the
+        // "can't pick up items next to characters" problem, especially on touch.
+        const nearbyInteractables = gatherInteractablesNearClick(worldX, worldY);
+        if (nearbyInteractables.length > 1) {
+            const nativeEvent = pointer.event || {};
+            showInteractionMenu(nearbyInteractables, nativeEvent.clientX, nativeEvent.clientY);
+            return;
+        }
+
         // Check for NPC sprites at the clicked position first
         const npcAtPosition = findNPCAtPosition(worldX, worldY);
         if (npcAtPosition) {
@@ -1313,6 +1333,123 @@ function findObjectsAtPosition(worldX, worldY) {
     objectsAtPosition.sort((a, b) => (b.depth || 0) - (a.depth || 0));
     
     return objectsAtPosition;
+}
+
+// Interaction icons for the disambiguation menu. The hand sheet is a 4×4 grid of
+// 32px frames (frame 0 = open hand, frame 6 = fist/jab), matching the HUD toggle.
+function interactionIconsBase() {
+    const assetsPath = window.breakEscapeConfig?.assetsPath || '/break_escape/assets';
+    return `${assetsPath}/icons`;
+}
+function openHandIcon()  { return { src: `${interactionIconsBase()}/hand_frames.png`, frame: 0, cols: 4, cell: 32 }; }
+function jabHandIcon()   { return { src: `${interactionIconsBase()}/hand_frames.png`, frame: 6, cols: 4, cell: 32 }; }
+function talkIcon()      { return { src: `${interactionIconsBase()}/talk.png` }; }
+
+/**
+ * Gather every interactable entity (item, NPC, door) that is both within the
+ * player's reach AND close to the tapped point, so the caller can offer a
+ * disambiguation menu when more than one is found. Each candidate carries the
+ * label/detail text to show and an onSelect handler that performs the interaction.
+ *
+ * @param {number} worldX - World X coordinate of the tap
+ * @param {number} worldY - World Y coordinate of the tap
+ * @returns {Array<{label:string, detail:?string, onSelect:Function}>}
+ */
+function gatherInteractablesNearClick(worldX, worldY) {
+    const player = window.player;
+    if (!player || !window.rooms) return [];
+
+    const TAP_SLOP = TILE_SIZE;            // how close the tap must be to count
+    const TAP_SLOP_SQ = TAP_SLOP * TAP_SLOP;
+    const DOOR_RANGE_SQ = DOOR_INTERACTION_RANGE * DOOR_INTERACTION_RANGE;
+    const candidates = [];
+
+    // True if the tap is inside the sprite's bounds or within TAP_SLOP of its centre.
+    const tapHits = (cx, cy, sprite) => {
+        try {
+            const b = sprite.getBounds();
+            if (worldX >= b.left && worldX <= b.right &&
+                worldY >= b.top && worldY <= b.bottom) return true;
+        } catch (e) { /* graphics fallback — fall through to radial test */ }
+        const dx = cx - worldX;
+        const dy = cy - worldY;
+        return dx * dx + dy * dy <= TAP_SLOP_SQ;
+    };
+
+    const koSystem = window.npcHostileSystem;
+
+    Object.values(window.rooms).forEach(room => {
+        // Items
+        if (room.objects) {
+            Object.values(room.objects).forEach(obj => {
+                if (!obj.active || !obj.interactable || !obj.visible) return;
+                if (!isObjectInInteractionRange(obj)) return;
+                if (!tapHits(obj.x, obj.y, obj)) return;
+                const data = obj.scenarioData || {};
+                const name = data.name || obj.name || 'Item';
+                const detail = resolveObjectField(data, 'observations', obj.observations || null);
+                // Chairs are kicked (jab); everything else uses the open-hand interact icon.
+                const icon = obj.isSwivelChair ? jabHandIcon() : openHandIcon();
+                candidates.push({
+                    label: name,
+                    detail,
+                    icon,
+                    onSelect: () => {
+                        facePlayerToward(obj.x, obj.y);
+                        if (window.getTutorialManager) window.getTutorialManager().notifyPlayerInteracted();
+                        if (window.handleObjectInteraction) window.handleObjectInteraction(obj);
+                    }
+                });
+            });
+        }
+
+        // NPCs
+        if (room.npcSprites && Array.isArray(room.npcSprites)) {
+            room.npcSprites.forEach(sprite => {
+                if (!sprite || sprite.destroyed || !sprite.visible || !sprite._isNPC) return;
+                if (koSystem && sprite.npcId && koSystem.isNPCKO(sprite.npcId)) return;
+                if (!isObjectInInteractionRange(sprite)) return;
+                if (!tapHits(sprite.x, sprite.y, sprite)) return;
+                const npc = sprite.npcId && window.npcManager
+                    ? window.npcManager.getNPC(sprite.npcId) : null;
+                const hostile = koSystem && sprite.npcId && koSystem.isNPCHostile(sprite.npcId);
+                const name = npc?.displayName || sprite.npcId || 'Person';
+                // Hostile NPCs are struck (jab icon); friendly NPCs show the chat icon.
+                candidates.push({
+                    label: name,
+                    detail: npc?.observations || null,
+                    icon: hostile ? jabHandIcon() : talkIcon(),
+                    onSelect: () => {
+                        facePlayerToward(sprite.x, sprite.y);
+                        if (window.getTutorialManager) window.getTutorialManager().notifyPlayerInteracted();
+                        if (window.tryInteractWithNPC) window.tryInteractWithNPC(sprite);
+                    }
+                });
+            });
+        }
+
+        // Doors
+        if (room.doorSprites && Array.isArray(room.doorSprites)) {
+            room.doorSprites.forEach(door => {
+                if (!door || !door.active || door.scene === null) return;
+                if (!door.doorProperties || door.doorProperties.open) return;
+                const ddx = door.x - player.x;
+                const ddy = door.y - player.y;
+                if (ddx * ddx + ddy * ddy > DOOR_RANGE_SQ) return;
+                if (!tapHits(door.x, door.y, door)) return;
+                candidates.push({
+                    label: door.doorProperties.door_sign || 'Door',
+                    detail: door.doorProperties.locked ? 'Locked' : null,
+                    icon: openHandIcon(),
+                    onSelect: () => {
+                        if (window.handleDoorInteraction) window.handleDoorInteraction(door);
+                    }
+                });
+            });
+        }
+    });
+
+    return candidates;
 }
 
 /**
