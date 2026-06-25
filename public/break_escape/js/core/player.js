@@ -1075,16 +1075,6 @@ function updatePlayerKeyboardMovement() {
         updateAnimationSpeed(keyboardInput.shift);
     }
     
-    // Check if movement is being blocked by collisions
-    let isBlocked = false;
-    if (velocityX !== 0 || velocityY !== 0) {
-        // Check if blocked in the direction we want to move
-        if (velocityX > 0 && player.body.blocked.right) isBlocked = true;
-        if (velocityX < 0 && player.body.blocked.left) isBlocked = true;
-        if (velocityY > 0 && player.body.blocked.down) isBlocked = true;
-        if (velocityY < 0 && player.body.blocked.up) isBlocked = true;
-    }
-    
     // Apply velocity
     player.body.setVelocity(velocityX, velocityY);
     
@@ -1112,17 +1102,6 @@ function updatePlayerKeyboardMovement() {
                 !currentAnim.includes('death') && !currentAnim.includes('taking-punch')) {
                 player.anims.play(`idle-${animDir}`, true);
             }
-        }
-    } else if (isBlocked) {
-        // Blocked by collision - preserve special animations but switch walk to idle
-        player.isMoving = false;
-        const currentAnim = player.anims.currentAnim?.key || '';
-        
-        // Only change animation if it's a walk animation
-        // Preserve punch, jab, death, taking-punch, etc.
-        if (currentAnim.includes('walk')) {
-            const animDir = getAnimationKey(player.direction);
-            player.anims.play(`idle-${animDir}`, true);
         }
     } else if (absVX > absVY * 2) {
         // Mostly horizontal movement
