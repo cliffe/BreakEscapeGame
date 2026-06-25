@@ -272,7 +272,6 @@ export class FlagStationMinigame extends MinigameScene {
                 <div class="flag-station-icon">🏁</div>
                 <p class="flag-station-description">
                     Enter captured CTF flags below to validate your findings.
-                    <span id="flag-progress-text">${this.buildProgressText()}</span>
                 </p>
                 ${vmBadges}
             </div>
@@ -754,19 +753,9 @@ export class FlagStationMinigame extends MinigameScene {
         applyActions(rewards, { source: 'flag_reward', gameId: this.gameId });
     }
     
-    buildProgressText() {
-        const totalCount = this.expectedFlags.length;
-        if (totalCount === 0) return '';
-        const submittedCount = this.submittedFlags.length;
-        return `${submittedCount}/${totalCount} flags submitted`;
-    }
-
     updateFlagHistory() {
         const list = this.gameContainer.querySelector('#flag-history-list');
         if (list) list.innerHTML = this.buildFlagHistory();
-
-        const progress = this.gameContainer.querySelector('#flag-progress-text');
-        if (progress) progress.textContent = this.buildProgressText();
     }
     
     getCsrfToken() {

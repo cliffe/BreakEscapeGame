@@ -1725,16 +1725,10 @@ module BreakEscape
       annotate = lambda do |obj|
         return unless obj.is_a?(Hash) && station_types.include?(obj['type'])
         flags = Array(obj['flags'])
-        # The subset of THIS station's flags that have already been submitted, in
-        # station order. Lets the client render an accurate "X/N flags submitted"
-        # counter and history without trying to match plaintext values to the
-        # server-side flag references itself.
-        submitted_refs = flags.select do |ref|
+        obj['flagsAllSubmitted'] = flags.any? && flags.all? do |ref|
           resolved = resolve_flag_value(ref)&.downcase
           resolved && submitted.include?(resolved)
         end
-        obj['flagsAllSubmitted']    = flags.any? && submitted_refs.length == flags.length
-        obj['submittedFlagValues']  = submitted_refs.map { |ref| resolve_flag_value(ref) }
       end
 
       room_data['objects']&.each { |obj| annotate.call(obj) }
