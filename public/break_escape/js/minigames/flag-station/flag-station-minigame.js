@@ -302,26 +302,12 @@ export class FlagStationMinigame extends MinigameScene {
         `;
     }
     
-    // The flags relevant to THIS station. `submittedFlags` is the game-wide list
-    // (every flag submitted anywhere), but the station's progress and history should
-    // only reflect its own expected flags. When a station has no explicit flag list
-    // (e.g. acceptsVms-only stations), fall back to the full submitted list.
-    stationSubmittedFlags() {
-        if (this.expectedFlags.length === 0) {
-            return this.submittedFlags;
-        }
-        const norm = s => String(s).trim().toLowerCase();
-        const submittedSet = new Set(this.submittedFlags.map(norm));
-        return this.expectedFlags.filter(f => submittedSet.has(norm(f)));
-    }
-
     buildFlagHistory() {
-        const flags = this.stationSubmittedFlags();
-        if (flags.length === 0) {
+        if (this.submittedFlags.length === 0) {
             return '<li class="no-flags-yet">No flags submitted yet</li>';
         }
 
-        return flags.map(flag => `
+        return this.submittedFlags.map(flag => `
             <li class="flag-history-item">
                 <span class="flag-value">${this.escapeHtml(flag)}</span>
                 <span class="flag-check">✓</span>
@@ -771,7 +757,7 @@ export class FlagStationMinigame extends MinigameScene {
     buildProgressText() {
         const totalCount = this.expectedFlags.length;
         if (totalCount === 0) return '';
-        const submittedCount = this.stationSubmittedFlags().length;
+        const submittedCount = this.submittedFlags.length;
         return `${submittedCount}/${totalCount} flags submitted`;
     }
 

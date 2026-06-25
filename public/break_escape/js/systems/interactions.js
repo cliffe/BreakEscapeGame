@@ -1012,7 +1012,9 @@ export function handleObjectInteraction(sprite) {
                 abortConfirmText:  sprite.scenarioData.abortConfirmText  || null,
                 launchConfirmText: sprite.scenarioData.launchConfirmText || null,
                 flagsAllSubmitted: sprite.scenarioData.flagsAllSubmitted === true,
-                submittedFlags:    window.gameState?.submittedFlags || [],
+                // Station-scoped list (resolved by the server in annotate_station_submission_status!)
+                // so the counter/history reflect only flags accepted at THIS station.
+                submittedFlags:    sprite.scenarioData.submittedFlagValues || [],
                 gameId:            window.breakEscapeConfig?.gameId || window.gameConfig?.gameId
             });
             return;
