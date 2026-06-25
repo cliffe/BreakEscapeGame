@@ -762,16 +762,27 @@ export class NPCPathfindingManager {
      * reachable cell nearest the target. Used when an exact click target is
      * unreachable so the player walks as close as possible instead of bee-lining.
      *
-     * Returns a world {x, y}, or null if the start cell itself isn't walkable.
+     * Returns a world {x, y}, or null if no walkable start cell can be found.
      */
     findNearestReachableWorldCell(startX, startY, targetX, targetY) {
         if (!this.worldGrid || !this.worldGridBounds) return null;
         const { minX, minY, cols, rows, step } = this.worldGridBounds;
 
-        const startCX = Math.floor((startX - minX) / step);
-        const startCY = Math.floor((startY - minY) / step);
+        let startCX = Math.floor((startX - minX) / step);
+        let startCY = Math.floor((startY - minY) / step);
         if (startCX < 0 || startCX >= cols || startCY < 0 || startCY >= rows) return null;
-        if (this.worldGrid[startCY][startCX] !== 0) return null;
+
+        // The player's feet often sit in a blocked cell (right against a wall or in
+        // a doorway). Snap the flood-fill origin to the nearest walkable cell so we
+        // still find a reachable component instead of bailing out (which would let
+        // the caller fall back to bee-lining straight at the unreachable target).
+        if (this.worldGrid[startCY][startCX] !== 0) {
+            const snapped = this.findNearestWalkableWorldCell(startX, startY);
+            if (!snapped) return null;
+            startCX = Math.floor((snapped.x - minX) / step);
+            startCY = Math.floor((snapped.y - minY) / step);
+            if (this.worldGrid[startCY][startCX] !== 0) return null;
+        }
 
         const targetCX = (targetX - minX) / step;
         const targetCY = (targetY - minY) / step;
