@@ -20,6 +20,7 @@ export class TutorialManager {
         this.playerInteracted = false;
         this.playerRan = false;
         this.playerClickedToMove = false;
+        this.playerUsedHoldWalk = false;
         this.playerClickedInventoryItem = false;
         this.playerToggledCombatMode = false;
         this.playerAttackedInCombatMode = false;
@@ -124,6 +125,12 @@ export class TutorialManager {
                     checkComplete: () => this.playerMoved
                 },
                 {
+                    title: 'Hold to Walk',
+                    instruction: 'Press and hold anywhere on the ground to keep walking toward your finger. Drag around to steer your character.',
+                    objective: 'Hold down and drag to walk continuously',
+                    checkComplete: () => this.playerUsedHoldWalk
+                },
+                {
                     title: 'Interaction',
                     instruction: 'Click or tap on objects, items, or characters to interact with them.',
                     objective: 'Look for highlighted objects you can interact with',
@@ -170,6 +177,12 @@ export class TutorialManager {
                     instruction: 'You can also click on the ground to move to that location.',
                     objective: 'Try clicking where you want to go',
                     checkComplete: () => this.playerClickedToMove
+                },
+                {
+                    title: 'Hold to Walk',
+                    instruction: 'Press and hold the mouse button on the ground to keep walking toward the cursor. Move the mouse while holding to steer your character.',
+                    objective: 'Hold the mouse button down and move the cursor to walk continuously',
+                    checkComplete: () => this.playerUsedHoldWalk
                 },
                 {
                     title: 'Inventory',
@@ -374,6 +387,16 @@ export class TutorialManager {
     }
 
     /**
+     * Notify tutorial that the player used hold-to-walk (held the press to walk
+     * continuously toward the cursor/finger)
+     */
+    notifyPlayerUsedHoldWalk() {
+        if (this.active) {
+            this.playerUsedHoldWalk = true;
+        }
+    }
+
+    /**
      * Notify tutorial of inventory item click
      */
     notifyPlayerClickedInventoryItem() {
@@ -435,6 +458,7 @@ export class TutorialManager {
         this.playerInteracted = false;
         this.playerRan = false;
         this.playerClickedToMove = false;
+        this.playerUsedHoldWalk = false;
         this.playerClickedInventoryItem = false;
         this.playerToggledCombatMode = false;
         this.playerAttackedInCombatMode = false;

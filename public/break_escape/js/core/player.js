@@ -891,6 +891,8 @@ function updateHoldWalk() {
     ++playerPathRequestId; // discard any pending EasyStar callback from the initial click
     targetPoint = { x: worldX, y: worldY };
     isMoving = true;
+
+    if (window.getTutorialManager) window.getTutorialManager().notifyPlayerUsedHoldWalk();
     return true;
 }
 
