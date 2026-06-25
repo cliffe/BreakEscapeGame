@@ -75,7 +75,7 @@ Agent 0x99: What do you need help with?
     -> blockchain_help
 + {not elena_guidance_given} [Elena Volkov recruitment strategy]
     -> elena_guidance
-+ [General mission advice]
++ [Got any general advice?]
     -> general_advice
 + [I'm good for now]
     #exit_conversation

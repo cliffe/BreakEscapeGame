@@ -337,7 +337,7 @@ export class TutorialManager {
         // Show completion message
         if (window.showNotification) {
             window.showNotification(
-                'You can now explore the facility. Check your objectives in the top-right corner!',
+                'You can now explore the facility. Check your objectives in the top-left corner!',
                 'success',
                 'Tutorial Complete!',
                 5000

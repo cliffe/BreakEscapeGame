@@ -1,5 +1,6 @@
 import { MinigameScene } from '../framework/base-minigame.js';
 import { ASSETS_PATH } from '../../config.js';
+import { makeDraggable } from '../../utils/helpers.js';
 
 export class PasswordMinigame extends MinigameScene {
     constructor(container, params) {
@@ -204,7 +205,17 @@ export class PasswordMinigame extends MinigameScene {
         this.submitBtn = document.getElementById('submit-password');
         this.keyboardToggleBtn = document.getElementById('keyboard-toggle');
         this.attemptsDisplay = document.getElementById('attempts-display');
-        
+
+        // Make the post-it note draggable (rendered via HTML template above)
+        if (this.gameData.showPostit && this.gameData.postitNote) {
+            const postit = this.gameContainer
+                ? this.gameContainer.querySelector('.postit-note')
+                : document.querySelector('.password-minigame-area .postit-note');
+            if (postit) {
+                makeDraggable(postit);
+            }
+        }
+
         // Focus the password field
         if (this.passwordField) {
             this.passwordField.focus();

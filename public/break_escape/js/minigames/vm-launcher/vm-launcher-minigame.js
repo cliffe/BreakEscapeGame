@@ -59,7 +59,6 @@ export class VmLauncherMinigame extends MinigameScene {
                 // Overlay on top of the iframe in the bottom-left corner
                 postit.style.cssText = `
                     position: absolute;
-                    bottom: 20px;
                     left: 20px;
                     z-index: 15;
                     background: #ffff88;

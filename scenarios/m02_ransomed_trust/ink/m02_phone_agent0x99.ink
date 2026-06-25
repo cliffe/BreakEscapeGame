@@ -159,7 +159,7 @@ Agent 0x99: Start with Dr. Kim -- CTO, west of reception. She has the authority 
     -> hint_press_terminal
 
 // Always available
-+ [General mission advice]
++ [Got any general advice?]
     -> general_advice
 
 + [I'm good for now]

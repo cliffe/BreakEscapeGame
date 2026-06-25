@@ -127,7 +127,7 @@ VAR lockpicking_guide_offered = false
     -> cyberchef_help
 + {cyberchef_guide_offered and not cyberchef_guide_hint_given} [Send me the CyberChef decoding guide]
     -> request_cyberchef_guide
-+ [General mission advice]
++ [Got any general advice?]
     -> general_advice
 + [I'm good for now]
     #exit_conversation

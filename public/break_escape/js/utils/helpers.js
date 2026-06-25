@@ -153,6 +153,11 @@ export function makeDraggable(el) {
             el.style.top = (r.top - pr.top) + 'px';
         }
 
+        // Anchor by top/left only — leaving bottom/right set alongside top/left
+        // stretches the element (e.g. a post-it dragged into an "infinitely long" note)
+        el.style.bottom = 'auto';
+        el.style.right = 'auto';
+
         initLeft = el.offsetLeft;
         initTop = el.offsetTop;
         startX = point.clientX;

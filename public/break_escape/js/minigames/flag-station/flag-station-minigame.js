@@ -259,12 +259,6 @@ export class FlagStationMinigame extends MinigameScene {
     }
     
     buildStationContent() {
-        const submittedCount = this.submittedFlags.length;
-        const totalCount = this.expectedFlags.length;
-        const progressText = totalCount > 0 
-            ? `${submittedCount}/${totalCount} flags submitted` 
-            : '';
-        
         // Show which VMs' flags are accepted at this station
         const vmBadges = this.acceptsVms.length > 0
             ? `<div class="accepts-vms">
@@ -278,7 +272,7 @@ export class FlagStationMinigame extends MinigameScene {
                 <div class="flag-station-icon">🏁</div>
                 <p class="flag-station-description">
                     Enter captured CTF flags below to validate your findings.
-                    ${progressText}
+                    <span id="flag-progress-text">${this.buildProgressText()}</span>
                 </p>
                 ${vmBadges}
             </div>
@@ -308,12 +302,26 @@ export class FlagStationMinigame extends MinigameScene {
         `;
     }
     
+    // The flags relevant to THIS station. `submittedFlags` is the game-wide list
+    // (every flag submitted anywhere), but the station's progress and history should
+    // only reflect its own expected flags. When a station has no explicit flag list
+    // (e.g. acceptsVms-only stations), fall back to the full submitted list.
+    stationSubmittedFlags() {
+        if (this.expectedFlags.length === 0) {
+            return this.submittedFlags;
+        }
+        const norm = s => String(s).trim().toLowerCase();
+        const submittedSet = new Set(this.submittedFlags.map(norm));
+        return this.expectedFlags.filter(f => submittedSet.has(norm(f)));
+    }
+
     buildFlagHistory() {
-        if (this.submittedFlags.length === 0) {
+        const flags = this.stationSubmittedFlags();
+        if (flags.length === 0) {
             return '<li class="no-flags-yet">No flags submitted yet</li>';
         }
 
-        return this.submittedFlags.map(flag => `
+        return flags.map(flag => `
             <li class="flag-history-item">
                 <span class="flag-value">${this.escapeHtml(flag)}</span>
                 <span class="flag-check">✓</span>
@@ -760,9 +768,19 @@ export class FlagStationMinigame extends MinigameScene {
         applyActions(rewards, { source: 'flag_reward', gameId: this.gameId });
     }
     
+    buildProgressText() {
+        const totalCount = this.expectedFlags.length;
+        if (totalCount === 0) return '';
+        const submittedCount = this.stationSubmittedFlags().length;
+        return `${submittedCount}/${totalCount} flags submitted`;
+    }
+
     updateFlagHistory() {
         const list = this.gameContainer.querySelector('#flag-history-list');
         if (list) list.innerHTML = this.buildFlagHistory();
+
+        const progress = this.gameContainer.querySelector('#flag-progress-text');
+        if (progress) progress.textContent = this.buildProgressText();
     }
     
     getCsrfToken() {
