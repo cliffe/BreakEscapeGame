@@ -1359,7 +1359,10 @@ function updatePlayerMouseMovement() {
     // Stop if collision detected — but only for straight-line (non-pathfinded) movement.
     // When following a computed route, trust the waypoints to navigate around obstacles;
     // stopping here would cancel a valid path just from grazing a tile corner.
-    if (!playerFollowingPath && player.body.blocked.none === false) {
+    // Skip while hold-to-walk is active: the player is steering into the obstacle on
+    // purpose, so cancelling movement here would just be re-engaged next frame,
+    // flickering between walk and idle animations. Physics already holds them at the wall.
+    if (!playerFollowingPath && !holdWalkActive && player.body.blocked.none === false) {
         isMoving = false;
         playerPath = [];
         playerPathIndex = 0;
