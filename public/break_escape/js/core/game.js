@@ -1469,12 +1469,16 @@ function gatherInteractablesNearClick(worldX, worldY) {
 function findNPCAtPosition(worldX, worldY) {
     let closestNPC = null;
     let closestDistance = Infinity;
-    
+    const koSystem = window.npcHostileSystem;
+
     // Check all rooms for NPC sprites at the given position
     Object.entries(window.rooms).forEach(([roomId, room]) => {
         if (room.npcSprites && Array.isArray(room.npcSprites)) {
             room.npcSprites.forEach(npcSprite => {
                 if (npcSprite && !npcSprite.destroyed && npcSprite.visible) {
+                    // Skip KO'd NPCs — they lie on the ground and shouldn't intercept
+                    // clicks meant for movement past them.
+                    if (koSystem && npcSprite.npcId && koSystem.isNPCKO(npcSprite.npcId)) return;
                     // Get NPC bounds
                     const bounds = npcSprite.getBounds();
                     
