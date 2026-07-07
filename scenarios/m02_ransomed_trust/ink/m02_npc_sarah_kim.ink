@@ -14,6 +14,10 @@ VAR topic_budget = false          // Discussed budget cuts
 VAR player_warned_kim = false     // Player warned Kim about scapegoating Marcus
 VAR kim_access_given = false      // Has Kim authorized access and pointed player to Marcus?
 
+// Synced from globalVars by engine at call-open (inside-asset investigation)
+VAR insider_evidence_partial = false
+VAR insider_identified = false
+
 // External variables (set by game)
 EXTERNAL player_name()
 VAR objectives_completed = 0
@@ -217,6 +221,9 @@ Dr. Kim: Do whatever you need. Just save those patients.
     #set_global:marcus_protected:true
     -> hub
 
++ {insider_evidence_partial and not insider_identified} [Accuse Dr. Kim of being the ENTROPY insider]
+    -> accuse_kim
+
 + [Leave conversation]
     #speaker:dr_kim
     {not kim_access_given:
@@ -232,6 +239,39 @@ Dr. Kim: Do whatever you need. Just save those patients.
     }
     #exit_conversation
     -> hub
+
+// ===========================================
+// WRONG ACCUSATION (red herring -- Kim is negligent, not a traitor)
+// ===========================================
+
+=== accuse_kim ===
+#speaker:dr_kim
+
+You: Someone inside this hospital confirmed ENTROPY's timing. You cut the budget. You'd have signed off the fire drill. Was it you?
+
+Dr. Kim: You think I -- I called SAFETYNET. I brought YOU in. Why would I do that if I were working with them?
+
+Dr. Kim: I made a catastrophic budget decision. I did NOT invite these people into my hospital.
+
+* [You're right. That doesn't add up. I'm sorry.]
+    ~ kim_influence -= 5
+    Dr. Kim: Then stop wasting the time we don't have and find who did.
+    -> hub
+
+* [Guilt over the budget would be a perfect cover.]
+    -> accuse_kim_push
+
+=== accuse_kim_push ===
+#speaker:dr_kim
+
+Dr. Kim: How DARE you. I have patients dying on backup power and you're playing detective with the one person trying to save them.
+
+Dr. Kim: We are done. Find your own way around my hospital.
+
+#hostile:dr_sarah_kim
+#set_global:accused_wrong_suspect:true
+#exit_conversation
+-> DONE
 
 // ===========================================
 // MID-MISSION CHECK-IN

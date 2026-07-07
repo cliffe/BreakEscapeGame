@@ -15,6 +15,15 @@ VAR lore_ghosts_manifesto_found = false
 VAR lore_cryptosecure_found = false
 VAR lore_zds_invoice_found = false
 
+// Inside-asset investigation outcomes
+VAR insider_identified = false
+VAR insider_confronted = false
+VAR insider_asset_arrested = false
+VAR insider_asset_escaped = false
+VAR insider_asset_exposed = false
+VAR accused_wrong_suspect = false
+VAR night_security_supervisor_ko = false
+
 EXTERNAL player_name()
 
 // ===========================================
@@ -370,10 +379,105 @@ Agent 0x99: Ransomware Incorporated is still operational.
         Agent 0x99: We denied them funding. They go into the next operation short.
     }
     Agent 0x99: We learned their methodology. Calculated harm, ideological certainty, coordinated cells. That matters.
-    -> entropy_coordination_reveal
+    -> insider_status
 
 * [What about ENTROPY's structure?]
-    -> entropy_coordination_reveal
+    -> insider_status
+
+// ===========================================
+// INSIDE ASSET OUTCOME
+// ===========================================
+
+=== insider_status ===
+#speaker:agent_0x99
+
+{insider_asset_arrested:
+    -> insider_rolled_up
+}
+{insider_asset_escaped:
+    -> insider_escaped
+}
+{night_security_supervisor_ko:
+    -> insider_neutralised_ko
+}
+{insider_identified:
+    -> insider_flagged
+}
+{accused_wrong_suspect:
+    -> insider_missed_wrong
+}
+-> insider_unnoticed
+
+=== insider_rolled_up ===
+#speaker:agent_0x99
+
+Agent 0x99: And you got the one Ghost planted inside. The night security supervisor -- badge SC-4471. He authorised the fire drill that put ENTROPY's device on the LAN.
+
+{insider_asset_exposed:
+    Agent 0x99: You named him publicly alongside the board. He'll stand next to their negligence in every story that runs.
+}
+
+Agent 0x99: We've had his post assignments, his access logs, his handler contacts for six hours now. That's not one arrest -- that's a thread into the whole cell.
+
+Agent 0x99: Underpaid, ignored, radicalised by the same negligence he helped punish. Remember what I said about the injustice that makes people. He's the proof.
+
+Agent 0x99: Good work finding him. Intelligence like that feeds every mission that comes after this one.
+
+-> entropy_coordination_reveal
+
+=== insider_neutralised_ko ===
+#speaker:agent_0x99
+
+{insider_identified:
+    Agent 0x99: And you put down the inside asset yourself. The night security supervisor -- badge SC-4471. No interrogation, so the cell thread is thinner than an arrest would've given us, but he's off the board and contained.
+- else:
+    Agent 0x99: One more thing. The night security supervisor you took down in the conference room -- we ran him afterwards. Badge SC-4471. He authorised the fire drill that planted ENTROPY's device.
+    Agent 0x99: You had the right man. You just never knew what you were holding. We recovered what we could from his post logs, but he wasn't talking.
+}
+
+Agent 0x99: Underpaid, ignored, radicalised by the same negligence he helped punish. Remember what I said about the injustice that makes people.
+
+-> entropy_coordination_reveal
+
+=== insider_flagged ===
+#speaker:agent_0x99
+
+Agent 0x99: You identified Ghost's inside asset -- the night security supervisor, badge SC-4471. You didn't get to close it out yourself, but your identification was enough.
+
+Agent 0x99: SAFETYNET moved on the intel and picked him up before he could disappear. His access logs and handler contacts are ours now. A thread into the cell.
+
+-> entropy_coordination_reveal
+
+=== insider_escaped ===
+#speaker:agent_0x99
+
+Agent 0x99: There's one more thing you should know. Ghost told you the truth -- there was an affiliate inside the building. The night security supervisor.
+
+Agent 0x99: He was standing at the press terminal the whole time. When you transmitted, he moved on you and got out in the confusion. By the time backup reached the conference room, he was gone.
+
+Agent 0x99: Vanished. No trace. The same way Ghost went. That one's on the clock we were racing -- but if we'd read the signs earlier, we'd have had him.
+
+-> entropy_coordination_reveal
+
+=== insider_missed_wrong ===
+#speaker:agent_0x99
+
+Agent 0x99: One loose end. Ghost wasn't bluffing about an inside affiliate -- there was one. And you spent your suspicion on the wrong person.
+
+Agent 0x99: The real asset was the night security supervisor on the conference-room post. Badge SC-4471. He walked out the same night, unquestioned.
+
+Agent 0x99: It happens. The evidence pointed where they wanted it to point. But it's a lead we'll be chasing cold now.
+
+-> entropy_coordination_reveal
+
+=== insider_unnoticed ===
+#speaker:agent_0x99
+
+Agent 0x99: One thing we never closed. Ghost said someone in that building confirmed their operational timing. An ENTROPY affiliate.
+
+Agent 0x99: We never identified them. Whoever it was is still on staff, still trusted, still inside. Next time we go into one of these, we look harder for the person holding the door.
+
+-> entropy_coordination_reveal
 
 === entropy_coordination_reveal ===
 #speaker:agent_0x99

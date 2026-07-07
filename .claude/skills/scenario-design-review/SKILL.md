@@ -137,6 +137,26 @@ Produce a table:
 
 Flag any aim where more than half the required tasks are `manual` with no in-world pointer, or where the transition out of the aim leaves the player without a clear next instruction.
 
+### 2h. NPC knockout resilience — the mission must survive a KO of *any* NPC
+
+KO is permanent in this engine, and the player can attack **any** NPC at any time (including friendly ones, out of suspicion or by mistake). The gold standard is `m01_first_contact`: every NPC KO leaves the mission completable *and* the narrative coherent. Two mechanisms carry this, and both must be present on every NPC that matters:
+
+- **`taskOnKO`** — if an NPC's conversation is the only way to complete a required task (or to *unlock* a downstream required task / give a gating item), knocking them out must complete that task instead. Missing `taskOnKO` on a conversation-gated NPC is a **soft-lock**: the player removes the NPC and the objective can never close. (Reference: `dr_sarah_kim` → `taskOnKO: meet_dr_kim`, `marcus_webb` → `taskOnKO: talk_to_marcus`, `derek_lawson` → `taskOnKO: confront_derek`.)
+- **`globalVarOnKO`** — sets a global on knockout so the closing debrief and end-credits can *acknowledge* the KO rather than contradicting it. In m01 each suspect's KO sets `<name>_ko`, and the credits carry a matching conditional line ("SARAH O'BRIEN: Removed — No ENTROPY connection"). A KO with no corresponding debrief/credit branch produces the classic contradiction: the debrief says a character is "still at large / still on staff" while their body is on the floor.
+
+**Check every `npcType: "person"` NPC:**
+
+1. **Completability.** Does KO'ing this NPC strand any required task? Trace what their conversation completes, unlocks, or gives (`#complete_task`, `#unlock_task`, `#unlock_aim`, `#give_item`, `#set_global` that gates progress). If any of that is *only* reachable through dialogue, the NPC needs `taskOnKO` (for the task) — and if they hand over a gating **item** or unlock a **later** task, confirm there is an alternative path to that item/unlock on the KO branch, because `taskOnKO` completes only one named task. Flag NPCs whose KO removes the only source of a required item or a required downstream unlock.
+2. **Narrative coherence.** Does KO'ing this NPC set a global that the debrief / credits actually branch on? A villain or plot-critical NPC (like the antagonist or a hidden asset) should have its KO feed the *same* resolution state a peaceful path would — e.g. antagonist `globalVarOnKO` reuses the `<villain>_confronted` global so the story continues identically whether the player talks them down or drops them. For a hidden/secret NPC, ensure the KO-without-discovery case has its own debrief line (the player may neutralise them without ever learning what they were).
+3. **Win condition independence.** Confirm the actual win condition (usually a `mission_complete` global set from a terminal/decision, not an NPC conversation) cannot be blocked by any NPC being hostile or KO'd. If the only path to the win runs through a single NPC who can be KO'd, that is a **must-fix**.
+
+Report as a short table:
+
+| Person NPC | Gates a required task/item? | `taskOnKO` present (or N/A)? | KO reflected in debrief/credits? | Verdict |
+|-----------|----------------------------|------------------------------|----------------------------------|---------|
+
+Flag under **Must fix** any NPC whose KO soft-locks the mission (missing `taskOnKO` on a conversation-gated required task, or KO removes the sole source of a gating item/unlock). Flag under **Should fix** any NPC whose KO leaves the debrief/credits contradictory (missing or unhandled `globalVarOnKO`).
+
 ---
 
 ## Step 3 — produce a prioritised action list
@@ -146,6 +166,7 @@ After both phases, produce a short prioritised list:
 **Must fix (blocks play)**
 - All ❌ INVALID items from the validator
 - **Win-condition failure modes first**: any field that controls the scenario's end state (e.g. `disableClose`, `setVisible` for the final NPC, `onComplete` triggers) that is schema-unknown, misspelled, or missing — list these at the top because they silently prevent the scenario from completing even when the player does everything right
+- **NPC knockout soft-locks (§2h)**: any NPC whose KO strands a required task or removes the sole source of a gating item/unlock — KO is permanent, so these silently make the mission uncompletable
 
 **Should fix (degrades experience)**
 - All ⚠️ WARNING items + any CONCERN findings from the design review

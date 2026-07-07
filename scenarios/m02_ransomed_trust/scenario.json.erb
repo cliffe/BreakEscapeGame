@@ -119,6 +119,10 @@ recovery_instructions_encoded = rot13("FULL RECOVERY REQUIRES OFFLINE + ONLINE K
           { "text": "MARCUS WEBB: Vindicated — Career protected by agent documentation", "style": "entry", "condition": "globalVars.marcus_protected" },
           { "text": "MARCUS WEBB: Scapegoated — Position lost, career damaged",          "style": "entry", "condition": "!globalVars.marcus_protected" },
           { "text": "GUARD NEUTRALIZED",                                   "style": "entry", "condition": "globalVars.guard_knocked_out" },
+          { "text": "INSIDE ASSET: Identified and detained — cell thread recovered", "style": "entry", "condition": "globalVars.insider_asset_arrested" },
+          { "text": "INSIDE ASSET: Escaped in the scuffle — no trace",      "style": "warning", "condition": "globalVars.insider_asset_escaped && !globalVars.insider_asset_arrested" },
+          { "text": "INSIDE ASSET: Neutralised — badge SC-4471 confirmed after the fact", "style": "entry", "condition": "globalVars.night_security_supervisor_ko && !globalVars.insider_asset_arrested && !globalVars.insider_asset_escaped" },
+          { "text": "INSIDE ASSET: Unidentified — still embedded in hospital staff", "style": "warning", "condition": "!globalVars.insider_identified && !globalVars.insider_asset_escaped && !globalVars.night_security_supervisor_ko" },
           { "text": "" },
           { "text": "GHOST: At large...",                                  "style": "warning" },
           { "text": "ENTROPY: Still operational. Six cells remain.",       "style": "warning" }
@@ -255,11 +259,45 @@ recovery_instructions_encoded = rot13("FULL RECOVERY REQUIRES OFFLINE + ONLINE K
       ]
     },
     {
+      "aimId": "unmask_inside_asset",
+      "title": "Unmask the Inside Asset",
+      "description": "Ghost claims an ENTROPY affiliate inside this hospital confirmed the operational timing. Gather evidence and identify them.",
+      "status": "locked",
+      "order": 3,
+      "unlockCondition": { "aimCompleted": "access_it_systems" },
+      "tasks": [
+        {
+          "taskId": "unmask_gather_evidence",
+          "title": "Find evidence that an ENTROPY affiliate is embedded in the staff",
+          "type": "manual",
+          "status": "active"
+        },
+        {
+          "taskId": "unmask_db_window",
+          "title": "Use the database backup to expose the fire-drill access window",
+          "type": "manual",
+          "status": "active"
+        },
+        {
+          "taskId": "unmask_ghost_badge",
+          "title": "Recover the badge ID from Ghost's operational log",
+          "type": "manual",
+          "status": "active"
+        },
+        {
+          "taskId": "unmask_identify",
+          "title": "Cross-reference the badge ID against the asset's night post",
+          "type": "manual",
+          "status": "active"
+        }
+      ]
+    },
+    {
       "aimId": "recover_offline_keys",
       "title": "Recover Offline Backup Keys",
       "description": "Find and crack the PIN safe for offline backup encryption keys",
       "status": "locked",
-      "order": 3,
+      "order": 4,
       "unlockCondition": { "aimCompleted": "access_it_systems" },
       "tasks": [
         {
@@ -289,7 +327,7 @@ recovery_instructions_encoded = rot13("FULL RECOVERY REQUIRES OFFLINE + ONLINE K
       "title": "Restore Hospital Systems",
       "description": "Initiate backup recovery and decide how to handle the crisis",
       "status": "locked",
-      "order": 4,
+      "order": 5,
       "unlockCondition": { "aimCompleted": "exploit_entropy_backdoor" },
       "missionConclusion": true,
       "requiresCompleted": ["initiate_backup_recovery", "make_ransom_decision", "decide_hospital_exposure"],
@@ -539,6 +577,50 @@ recovery_instructions_encoded = rot13("FULL RECOVERY REQUIRES OFFLINE + ONLINE K
               "sendTimedMessage": { "delay": 1500, "message": "That's the full backdoor chain -- SSH, ProFTPD, database, and Ghost's own operational logs. You've got everything ENTROPY had on this hospital. Now head to the Hospital Recovery Console in the server room and bring the patients' systems back online -- that's how we finish this." }
             },
             {
+              "eventPattern": "global_variable_changed:marcus_ko",
+              "condition": "value === true",
+              "onceOnly": true,
+              "completeTask": "obtain_password_hints",
+              "sendTimedMessage": { "delay": 2000, "message": "Marcus is down -- you won't be getting those password hints out of him now. Doesn't matter: he wrote them on a sticky note by his monitor. Grab it. Same weak credentials unlock the backup server over SSH." }
+            },
+            {
+              "eventPattern": "global_variable_changed:insider_evidence_partial",
+              "condition": "value === true",
+              "onceOnly": true,
+              "completeTask": "unmask_gather_evidence",
+              "sendTimedMessage": { "delay": 1500, "message": "So Ghost wasn't bluffing. That affiliate note is real -- someone on staff fed them the operational timing. Keep pulling on it. The technical evidence you're recovering should narrow down who." }
+            },
+            {
+              "eventPattern": "objective_task_completed:submit_database_flag",
+              "onceOnly": true,
+              "setGlobal": { "insider_db_window_found": true },
+              "completeTask": "unmask_db_window",
+              "sendTimedMessage": { "delay": 2500, "message": "The backup logs show it -- the planted device went live during a 'fire drill' six weeks ago. An internal badge authorised the contractor sweep that installed it. Not an outsider. Someone with access authority here." }
+            },
+            {
+              "eventPattern": "objective_task_completed:submit_ghost_log_flag",
+              "onceOnly": true,
+              "setGlobal": { "insider_badge_id_found": true },
+              "completeTask": "unmask_ghost_badge",
+              "sendTimedMessage": { "delay": 2600, "message": "Ghost's log names the badge -- #SC-4471 -- and the shift timestamps that confirmed their window. Find whose post that badge sits on and you've got your inside asset." }
+            },
+            {
+              "eventPattern": "objective_task_completed:submit_ghost_log_flag",
+              "condition": "globalVars.inspected_asset_post === true",
+              "onceOnly": true,
+              "setGlobal": { "insider_identified": true },
+              "completeTask": "unmask_identify",
+              "sendTimedMessage": { "delay": 4200, "message": "Badge #SC-4471 is the night security supervisor's -- the man posted on the press terminal in the conference room. That's your ENTROPY affiliate. He's standing right next to the evidence. Your call how you handle him." }
+            },
+            {
+              "eventPattern": "global_variable_changed:inspected_asset_post",
+              "condition": "globalVars.insider_badge_id_found === true",
+              "onceOnly": true,
+              "setGlobal": { "insider_identified": true },
+              "completeTask": "unmask_identify",
+              "sendTimedMessage": { "delay": 2000, "message": "That post log seals it -- badge #SC-4471 is the night security supervisor stationed on the conference-room comms terminal. He authorised the fire drill. He's the inside asset. Your call how you handle him." }
+            },
+            {
               "eventPattern": "item_picked_up:offline_backup_encryption_keys",
               "onceOnly": true,
               "setGlobal": { "offline_keys_recovered": true },
@@ -702,6 +784,46 @@ recovery_instructions_encoded = rot13("FULL RECOVERY REQUIRES OFFLINE + ONLINE K
           "puzzle_graph_actions": [
             { "id": "talk_to_ward_nurse", "label": "Hear from the ward nurse about patient risk", "unlocks_aim": "infiltrate_hospital" }
           ]
+        },
+        {
+          "id": "roaming_ward_nurse",
+          "displayName": "Staff Nurse",
+          "npcType": "person",
+          "position": { "x": 4, "y": 5 },
+          "spriteSheet": "female_nurse1",
+          "spriteTalk": "assets/characters/female_nurse1_headshot.png",
+          "spriteConfig": { "idleFrameRate": 6, "walkFrameRate": 10 },
+          "storyPath": "scenarios/m02_ransomed_trust/ink/m02_npc_roaming_nurse.json",
+          "currentKnot": "start",
+          "voice": {
+            "name": "Aoede",
+            "style": "Busy NHS nurse doing manual obs rounds, brief and focused. Consistent Yorkshire accent throughout.",
+            "language": "en-GB"
+          },
+          "globalVarOnKO": "ward_nurse_ko",
+          "observations": "A second nurse moving bed to bed on manual obs rounds -- she hasn't noticed you yet.",
+          "behavior": {
+            "patrol": {
+              "enabled": true,
+              "waypoints": [
+                { "x": 4, "y": 4.5, "dwellTime": 3000 },
+                { "x": 8, "y": 4, "dwellTime": 4000 },
+                { "x": 12, "y": 4.5, "dwellTime": 3000 },
+                { "x": 12, "y": 7, "dwellTime": 4000 },
+                { "x": 8, "y": 7.5, "dwellTime": 3000 },
+                { "x": 4, "y": 7, "dwellTime": 4000 }
+              ],
+              "waypointMode": "sequential",
+              "loop": true,
+              "speed": 60
+            },
+            "initiallyHidden": false
+          },
+          "los": {
+            "enabled": true,
+            "range": 16,
+            "angle": 360
+          }
         },
         {
           "id": "patient_bed4",
@@ -1327,6 +1449,37 @@ recovery_instructions_encoded = rot13("FULL RECOVERY REQUIRES OFFLINE + ONLINE K
           "currentKnot": "start",
           "avatar": "assets/npc/avatars/npc_hacker.png",
           "behavior": { "initiallyHidden": true }
+        },
+        {
+          "id": "night_security_supervisor",
+          "displayName": "Night Security Supervisor",
+          "npcType": "person",
+          "position": { "x": 6, "y": 3 },
+          "spriteSheet": "hacker-red",
+          "spriteTalk": "assets/characters/hacker-red-talk.png",
+          "spriteConfig": {
+            "idleFrameStart": 20,
+            "idleFrameEnd": 23
+          },
+          "storyPath": "scenarios/m02_ransomed_trust/ink/m02_npc_asset.json",
+          "currentKnot": "start",
+          "voice": {
+            "name": "Enceladus",
+            "style": "Calm, courteous plainclothes night security supervisor. Reassuring and helpful on the surface. When cornered, the warmth drains away into cold, quiet conviction.",
+            "language": "en-GB"
+          },
+          "globalVarOnKO": "night_security_supervisor_ko",
+          "observations": "A composed man in a plain suit standing beside the communications terminal. A hospital visitor lanyard, but no scrubs and no uniform. He gives you a small, professional nod.",
+          "eventMappings": [
+            {
+              "eventPattern": "objective_task_completed:decide_hospital_exposure",
+              "condition": "!globalVars.insider_identified && !globalVars.insider_confronted",
+              "onceOnly": true,
+              "conversationMode": "person-chat",
+              "background": "assets/backgrounds/hospital1.png",
+              "targetKnot": "press_terminal_ambush"
+            }
+          ]
         }
       ],
       "objects": [
@@ -1361,7 +1514,23 @@ recovery_instructions_encoded = rot13("FULL RECOVERY REQUIRES OFFLINE + ONLINE K
           "takeable": false,
           "readable": true,
           "text": "ZERO DAY SYNDICATE -- AFFILIATE PROGRAMME\n\nTarget: St. Catherine's Regional Medical Center\nOperator: Ghost (Ransomware Incorporated)\nAttack vector: ProFTPD CVE-2010-4652 (unpatched since 2020)\n\nRansom: $87,000 (2.5 BTC)\nSyndicate cut: 30%\nOperator cut: 70%\n\nNOTE: Hospital has deferred all security upgrades. Unpatched systems confirmed. Success probability: 94%.\n\nThis document was printed from an encrypted channel -- someone inside this hospital is an ENTROPY affiliate.",
-          "observations": "A printed briefing document -- someone was feeding ENTROPY information about the hospital's vulnerabilities"
+          "observations": "A printed briefing document -- someone was feeding ENTROPY information about the hospital's vulnerabilities",
+          "onRead": { "setVariable": { "insider_evidence_partial": true } },
+          "puzzle_graph_role": "clue",
+          "puzzle_graph_aim": "unmask_inside_asset",
+          "puzzle_graph_reveals": "an_entropy_affiliate_is_embedded_in_hospital_staff"
+        },
+        {
+          "type": "notes",
+          "name": "Night Security Post Log",
+          "takeable": false,
+          "readable": true,
+          "text": "ST. CATHERINE'S -- NIGHT SECURITY POST ASSIGNMENT\n\nPOST: Conference Room / Communications Relay\nDETAIL: Plainclothes, sensitive-comms watch (crisis protocol)\nSUPERVISOR ON POST: badge #SC-4471\nSHIFT: 22:00 -- 06:00\n\nACCESS HISTORY (this badge):\n- Authorised contractor entry, fire drill, six weeks ago (facilities override)\n- Comms relay room, recurring after-hours access\n\nNOTE: Same supervisor authorised the external 'fire safety' contractor sweep. No facilities record of a drill being scheduled that night.",
+          "observations": "The duty log for whoever is posted here -- badge #SC-4471, and an odd note about a fire drill six weeks ago that facilities never scheduled",
+          "onRead": { "setVariable": { "inspected_asset_post": true } },
+          "puzzle_graph_role": "clue",
+          "puzzle_graph_aim": "unmask_inside_asset",
+          "puzzle_graph_reveals": "badge_SC4471_on_this_post_authorised_the_fire_drill_device_planting"
         },
         {
           "type": "phone",
@@ -1559,6 +1728,20 @@ recovery_instructions_encoded = rot13("FULL RECOVERY REQUIRES OFFLINE + ONLINE K
     "ward_nurse_ko": false,
 
     "debrief_ready": false,
-    "ransom_decision_acknowledged": false
+    "ransom_decision_acknowledged": false,
+
+    "insider_evidence_partial": false,
+    "insider_db_window_found": false,
+    "insider_badge_id_found": false,
+    "inspected_asset_post": false,
+    "insider_identified": false,
+    "insider_confronted": false,
+    "insider_hostile": false,
+    "insider_asset_arrested": false,
+    "insider_asset_escaped": false,
+    "insider_asset_exposed": false,
+    "accused_wrong_suspect": false,
+
+    "night_security_supervisor_ko": false
   }
 }

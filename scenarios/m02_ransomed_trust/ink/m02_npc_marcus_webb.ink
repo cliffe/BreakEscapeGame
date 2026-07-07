@@ -14,6 +14,10 @@ VAR topic_vulnerability = false   // Discussed CVE-2010-4652
 VAR topic_family = false          // Discussed Emma (daughter)
 VAR gave_keycard = false          // Marcus gave player server room keycard
 
+// Synced from globalVars by engine at call-open (inside-asset investigation)
+VAR insider_evidence_partial = false
+VAR insider_identified = false
+
 // External variables (set by game)
 EXTERNAL player_name()
 
@@ -261,6 +265,9 @@ Marcus: It's locked, but if you can open it... that's my vindication.
 + {topic_warnings and marcus_influence >= 20} [Offer to protect Marcus from scapegoating]
     -> promise_protection
 
++ {insider_evidence_partial and not insider_identified} [Accuse Marcus of being the ENTROPY insider]
+    -> accuse_marcus
+
 + [Leave conversation]
     #speaker:marcus_webb
     {marcus_trusts_player:
@@ -271,6 +278,45 @@ Marcus: It's locked, but if you can open it... that's my vindication.
     }
     #exit_conversation
     -> hub
+
+// ===========================================
+// WRONG ACCUSATION (red herring -- Marcus is innocent of treason)
+// ===========================================
+
+=== accuse_marcus ===
+#speaker:marcus_webb
+
+You: The insider who confirmed ENTROPY's timing. The badge that let them in. That was you, wasn't it?
+
+Marcus: What? No. NO. I'm the one who WARNED them. Seven times. You've read the emails yourself.
+
+Marcus: You think I'd hand the keys to the people who did this? After what it's cost my patients, my career?
+
+* [You're right. That doesn't add up. I'm sorry.]
+    -> accuse_marcus_backdown
+
+* [You had the access and the grievance. Convenient.]
+    -> accuse_marcus_push
+
+=== accuse_marcus_backdown ===
+#speaker:marcus_webb
+
+Marcus: ...Fine. Just find who actually did this. Don't pin it on the one bloke who tried to stop it.
+
+-> hub
+
+=== accuse_marcus_push ===
+#speaker:marcus_webb
+~ marcus_defensive = true
+
+Marcus: A grievance? You're building a case against ME now?
+
+Marcus: Get out. Get OUT. I'm done helping you hang me for their crime.
+
+#hostile:marcus_webb
+#set_global:accused_wrong_suspect:true
+#exit_conversation
+-> DONE
 
 === discuss_vulnerability ===
 #speaker:marcus_webb
