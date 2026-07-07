@@ -33,7 +33,7 @@ Receptionist: *looks up from paper forms* Sorry -- everything's manual right now
 
 Receptionist: Oh thank goodness. Dr. Kim said you'd be coming.
 
-Receptionist: She's down the east corridor -- the admin block. Her office is on the left.
+Receptionist: She's down the west corridor -- the admin block. Her office is on the left.
 
 Receptionist: You can't miss it. She'll be the one who looks like she hasn't slept in two days.
 
@@ -49,7 +49,7 @@ Receptionist: You can't miss it. She'll be the one who looks like she hasn't sle
 === direct_to_kim ===
 #speaker:receptionist
 
-Receptionist: Dr. Kim, yes. She's in the admin block -- east corridor, first door on the left.
+Receptionist: Dr. Kim, yes. She's in the admin block -- west corridor, first door on the left.
 
 Receptionist: She's been managing the response since 3am. Please tell me you can fix this.
 
@@ -74,14 +74,14 @@ Receptionist: 47 patients on life support. The backup generators have maybe 12 h
 
 * [That's serious. Where's Dr. Kim?]
     You: I need to speak to Dr. Kim immediately.
-    Receptionist: East corridor, admin block. First door on the left.
+    Receptionist: West corridor, admin block. First door on the left.
     #unlock_task:meet_dr_kim
     -> hub
 
 * [Have the police been called?]
     You: Has anyone contacted the police?
     Receptionist: IT crimes unit. They said they're -- *checks notes* -- "monitoring the situation."
-    Receptionist: Whatever that means. Dr. Kim's down the east corridor if you need her.
+    Receptionist: Whatever that means. Dr. Kim's down the west corridor if you need her.
     #unlock_task:meet_dr_kim
     -> hub
 
