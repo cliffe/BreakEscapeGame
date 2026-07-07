@@ -233,7 +233,7 @@ recovery_instructions_encoded = rot13("FULL RECOVERY REQUIRES OFFLINE + ONLINE K
           "title": "Submit database backup flag",
           "type": "submit_flags",
           "status": "active",
-          "puzzle_graph_unlocks": "lock_emergency_storage_safe"
+          "puzzle_graph_unlocks": "emergency_storage_safe"
         },
         {
           "taskId": "submit_ghost_log_flag",
@@ -267,7 +267,7 @@ recovery_instructions_encoded = rot13("FULL RECOVERY REQUIRES OFFLINE + ONLINE K
         },
         {
           "taskId": "crack_safe_pin",
-          "title": "Crack the PIN safe (code: 1987)",
+          "title": "Crack the 4-digit PIN safe in Emergency Storage",
           "type": "unlock_object",
           "targetObject": "emergency_storage_safe",
           "status": "active"
@@ -524,6 +524,12 @@ recovery_instructions_encoded = rot13("FULL RECOVERY REQUIRES OFFLINE + ONLINE K
               "sendTimedMessage": { "delay": 5600, "message": "That foothold won't be root yet. If you hit files you can't read, I can send a privilege escalation field guide -- sudo enumeration and pivoting to the account that can. Ask when you need it." }
             },
             {
+              "eventPattern": "objective_task_completed:submit_ghost_log_flag",
+              "onceOnly": true,
+              "setGlobal": { "backdoor_fully_exploited": true },
+              "sendTimedMessage": { "delay": 1500, "message": "That's the full backdoor chain -- SSH, ProFTPD, database, and Ghost's own operational logs. You've got everything ENTROPY had on this hospital. Now head to the Hospital Recovery Console in the server room and bring the patients' systems back online -- that's how we finish this." }
+            },
+            {
               "eventPattern": "item_picked_up:offline_backup_encryption_keys",
               "onceOnly": true,
               "setGlobal": { "offline_keys_recovered": true },
@@ -653,7 +659,7 @@ recovery_instructions_encoded = rot13("FULL RECOVERY REQUIRES OFFLINE + ONLINE K
           "text": "ST. CATHERINE'S REGIONAL MEDICAL CENTER\n\nFounded 1987\n\nServing the community for over 35 years with compassion and excellence",
           "observations": "Bronze plaque showing hospital founding year: 1987",
           "puzzle_graph_role": "clue",
-          "puzzle_graph_unlocks": "lock_emergency_storage_safe",
+          "puzzle_graph_unlocks": "emergency_storage_safe",
           "puzzle_graph_reveals": "hospital_founding_year_1987_is_the_safe_pin"
         }
       ]
@@ -1170,7 +1176,7 @@ recovery_instructions_encoded = rot13("FULL RECOVERY REQUIRES OFFLINE + ONLINE K
           "text": "PIN CRACKER DEVICE\n\nAutomated 4-digit PIN brute force tool\nEstimated time: 2 minutes\n\nUse if clues to safe PIN cannot be found",
           "observations": "Fallback tool for PIN puzzle if clues were missed",
           "puzzle_graph_role": "tool",
-          "puzzle_graph_unlocks": "lock_emergency_storage_safe",
+          "puzzle_graph_unlocks": "emergency_storage_safe",
           "puzzle_graph_optional": true
         },
         {
@@ -1198,7 +1204,7 @@ recovery_instructions_encoded = rot13("FULL RECOVERY REQUIRES OFFLINE + ONLINE K
       "door_sign": "CTO Office",
       "connections": {
         "east": "reception_lobby",
-        "south": "conference_room"
+        "north": "conference_room"
       },
       "npcs": [
         {
@@ -1244,7 +1250,7 @@ recovery_instructions_encoded = rot13("FULL RECOVERY REQUIRES OFFLINE + ONLINE K
           "text": "Sticky note on Dr. Kim's desk:\n\n'Safe combination: founding year (for emergency access)'",
           "observations": "PIN safe clue -- references hospital founding year",
           "puzzle_graph_role": "clue",
-          "puzzle_graph_unlocks": "lock_emergency_storage_safe",
+          "puzzle_graph_unlocks": "emergency_storage_safe",
           "puzzle_graph_reveals": "safe_pin_is_the_hospital_founding_year",
           "puzzle_graph_optional": true
         },
@@ -1299,7 +1305,7 @@ recovery_instructions_encoded = rot13("FULL RECOVERY REQUIRES OFFLINE + ONLINE K
       },
       "door_sign": "Conference Room",
       "connections": {
-        "north": "dr_kim_office",
+        "south": "dr_kim_office",
         "east": "hallway_north"
       },
       "npcs": [],
@@ -1484,6 +1490,7 @@ recovery_instructions_encoded = rot13("FULL RECOVERY REQUIRES OFFLINE + ONLINE K
     "flag_proftpd_submitted": false,
     "flag_database_submitted": false,
     "flag_ghost_log_submitted": false,
+    "backdoor_fully_exploited": false,
 
     "lockpicking_guide_offered": false,
     "lockpicking_guide_requested": false,

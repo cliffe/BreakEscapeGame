@@ -2013,6 +2013,211 @@ def check_recommended_fields(json_data)
   warnings
 end
 
+# ============================================================================
+# ROOM GEOMETRY CHECK
+#
+# Faithful Ruby port of the game engine's room-layout algorithm
+# (public/break_escape/js/core/rooms.js: calculateRoomPositions +
+# validateNoOverlaps). Rooms carry no explicit world position — the engine
+# lays them out breadth-first from startRoom, placing each room edge-to-edge
+# with the first neighbour that reaches it, using the real tile dimensions
+# from each room type's Tiled tilemap (NOT the optional JSON `dimensions`
+# field, which the engine ignores). We reproduce that placement here and
+# flag any pair of rooms whose axis-aligned bounding boxes overlap in world
+# space — the same defect the engine's own validateNoOverlaps detects, but
+# usable at authoring time without launching Phaser.
+# ============================================================================
+
+GEOM_TILE_SIZE   = 32
+GEOM_GU_W_PX     = 160  # GRID_UNIT_WIDTH_TILES(5)  * TILE_SIZE
+GEOM_GU_H_PX     = 128  # GRID_UNIT_HEIGHT_TILES(4) * TILE_SIZE
+GEOM_VISUAL_TOP  = 2    # VISUAL_TOP_TILES
+
+# Build the room-type -> tilemap-file map from the engine's loader.
+def geom_type_to_tilemap(repo_root)
+  game_js = File.join(repo_root, 'public/break_escape/js/core/game.js')
+  return {} unless File.exist?(game_js)
+  map = {}
+  File.read(game_js).scan(/tilemapTiledJSON\('([^']+)',\s*'rooms\/([^']+)'\)/) do |type, file|
+    map[type] = file
+  end
+  map
+end
+
+# Real tile dimensions for a room type, read from its Tiled tilemap.
+# Returns nil if the tilemap can't be located (so the check can degrade
+# gracefully rather than guessing).
+def geom_room_dimensions(type, type_map, repo_root, cache)
+  return cache[type] if cache.key?(type)
+  file = type_map[type]
+  dims = nil
+  if file
+    path = File.join(repo_root, 'public/break_escape/assets/rooms', file)
+    if File.exist?(path)
+      tj = JSON.parse(File.read(path)) rescue nil
+      if tj && tj['width'] && tj['height']
+        wt = tj['width']; ht = tj['height']
+        dims = {
+          width_px: wt * GEOM_TILE_SIZE,
+          # Vertical extent used for both placement and overlap is the
+          # "stacking height" — full height minus the top visual wall rows.
+          stack_px: (ht - GEOM_VISUAL_TOP) * GEOM_TILE_SIZE,
+          w_tiles: wt, h_tiles: ht
+        }
+      end
+    end
+  end
+  cache[type] = dims
+  dims
+end
+
+def geom_align(x, y)
+  [(x.to_f / GEOM_GU_W_PX).floor * GEOM_GU_W_PX,
+   (y.to_f / GEOM_GU_H_PX).floor * GEOM_GU_H_PX]
+end
+
+def geom_world_to_grid_sum(x, y)
+  (x.to_f / GEOM_GU_W_PX).floor + (y.to_f / GEOM_GU_H_PX).floor
+end
+
+# Parity-based edge alignment for north/south single placement when the two
+# rooms differ in width (mirrors positionNorth/SouthSingle).
+def geom_edge_x(cd, kd, cpos)
+  return cpos[0] if cd[:width_px] == kd[:width_px]
+  sum = geom_world_to_grid_sum(cpos[0], cpos[1])
+  use_right = ((sum % 2) + 2) % 2 == 1
+  use_right ? cpos[0] + cd[:width_px] - kd[:width_px] : cpos[0]
+end
+
+def geom_place_single(dir, cur, con, cpos, dims)
+  cd = dims[cur]; kd = dims[con]
+  case dir
+  when 'north' then geom_align(geom_edge_x(cd, kd, cpos), cpos[1] - kd[:stack_px])
+  when 'south' then geom_align(geom_edge_x(cd, kd, cpos), cpos[1] + cd[:stack_px])
+  when 'east'  then geom_align(cpos[0] + cd[:width_px], cpos[1])
+  when 'west'  then geom_align(cpos[0] - kd[:width_px], cpos[1])
+  end
+end
+
+# Multiple rooms sharing one direction are spread along the shared edge,
+# with a min 1-GU overlap nudge against the parent (mirrors
+# positionNorth/South/East/WestMultiple).
+def geom_place_multiple(dir, cur, list, cpos, dims)
+  cd = dims[cur]
+  out = {}
+  if dir == 'north' || dir == 'south'
+    total = list.sum { |r| dims[r][:width_px] }
+    ax = geom_align(cpos[0] + (cd[:width_px] - total) / 2.0, 0)[0]
+    min_ov = GEOM_GU_W_PX
+    first = dims[list.first]
+    first_ov = [ax + first[:width_px], cpos[0] + cd[:width_px]].min - [ax, cpos[0]].max
+    ax = geom_align(cpos[0] - first[:width_px] + min_ov, 0)[0] if first_ov < min_ov
+    last = dims[list.last]
+    last_start = ax + total - last[:width_px]
+    last_ov = [ax + total, cpos[0] + cd[:width_px]].min - [last_start, cpos[0]].max
+    ax = geom_align(cpos[0] + cd[:width_px] - total - last[:width_px] + min_ov, 0)[0] if last_ov < min_ov
+    cx = ax
+    ay = dir == 'south' ? geom_align(0, cpos[1] + cd[:stack_px])[1] : nil
+    list.each do |rid|
+      kd = dims[rid]
+      ry = dir == 'north' ? geom_align(0, cpos[1] - kd[:stack_px])[1] : ay
+      out[rid] = [cx, ry]
+      cx += kd[:width_px]
+    end
+  else # east / west
+    total = list.sum { |r| dims[r][:stack_px] }
+    ay = geom_align(0, cpos[1] + (cd[:stack_px] - total) / 2.0)[1]
+    min_ov = GEOM_GU_H_PX
+    first = dims[list.first]
+    first_ov = [ay + first[:stack_px], cpos[1] + cd[:stack_px]].min - [ay, cpos[1]].max
+    ay = geom_align(0, cpos[1] - first[:stack_px] + min_ov)[1] if first_ov < min_ov
+    last = dims[list.last]
+    last_start = ay + total - last[:stack_px]
+    last_ov = [ay + total, cpos[1] + cd[:stack_px]].min - [last_start, cpos[1]].max
+    ay = geom_align(0, cpos[1] + cd[:stack_px] - total - last[:stack_px] + min_ov)[1] if last_ov < min_ov
+    cy = ay
+    list.each do |rid|
+      kd = dims[rid]
+      x = dir == 'east' ? geom_align(cpos[0] + cd[:width_px], 0)[0] : geom_align(cpos[0] - kd[:width_px], 0)[0]
+      out[rid] = [x, cy]
+      cy += kd[:stack_px]
+    end
+  end
+  out
+end
+
+def geom_boxes_overlap(a, b, positions, dims)
+  p1 = positions[a]; d1 = dims[a]
+  p2 = positions[b]; d2 = dims[b]
+  !(p1[0] + d1[:width_px] <= p2[0] ||
+    p2[0] + d2[:width_px] <= p1[0] ||
+    p1[1] + d1[:stack_px]  <= p2[1] ||
+    p2[1] + d2[:stack_px]  <= p1[1])
+end
+
+# Returns a list of issue strings (warnings). Empty when the layout is clean
+# or when tilemaps are unavailable (skips gracefully with one note).
+def check_room_geometry(json_data, repo_root)
+  issues = []
+  rooms = json_data['rooms']
+  start = json_data['startRoom']
+  return issues unless rooms.is_a?(Hash) && start && rooms[start]
+
+  type_map = geom_type_to_tilemap(repo_root)
+  cache = {}
+  dims = {}
+  missing = []
+  rooms.each do |id, r|
+    d = geom_room_dimensions(r['type'], type_map, repo_root, cache)
+    if d.nil?
+      missing << (r['type'] || '(no type)')
+    else
+      dims[id] = d
+    end
+  end
+
+  unless missing.empty?
+    issues << "💡 SUGGESTION: Room geometry overlap check skipped — could not read tilemap dimensions for room type(s): #{missing.uniq.join(', ')}."
+    return issues
+  end
+
+  # Breadth-first placement from startRoom (mirrors calculateRoomPositions).
+  positions = { start => [0, 0] }
+  processed = { start => true }
+  queue = [start]
+  until queue.empty?
+    cid = queue.shift
+    conns = rooms[cid]['connections']
+    next unless conns.is_a?(Hash)
+    cpos = positions[cid]
+    %w[north south east west].each do |dir|
+      con = conns[dir]
+      next unless con
+      list = (con.is_a?(Array) ? con : [con]).reject { |rid| processed[rid] || !rooms[rid] }
+      next if list.empty?
+      placed = list.size == 1 ? { list[0] => geom_place_single(dir, cid, list[0], cpos, dims) } \
+                              : geom_place_multiple(dir, cid, list, cpos, dims)
+      placed.each do |rid, pos|
+        positions[rid] = pos
+        processed[rid] = true
+        queue.push(rid)
+      end
+    end
+  end
+
+  ids = positions.keys
+  ids.combination(2).each do |a, b|
+    next unless geom_boxes_overlap(a, b, positions, dims)
+    pa = positions[a]; pb = positions[b]
+    issues << "⚠️ WARNING: Rooms '#{a}' and '#{b}' overlap in world-space layout " \
+              "('#{a}' at grid (#{(pa[0]/GEOM_GU_W_PX)},#{(pa[1]/GEOM_GU_H_PX)}), " \
+              "'#{b}' at grid (#{(pb[0]/GEOM_GU_W_PX)},#{(pb[1]/GEOM_GU_H_PX)})). " \
+              "The engine lays rooms out breadth-first from startRoom by tilemap size; " \
+              "check the connection directions/room-size mix so branches don't collide."
+  end
+  issues
+end
+
 # Main execution
 def main
   options = {
@@ -2199,6 +2404,24 @@ def main
       puts
     else
       puts "✓ Objective task wiring OK"
+      puts
+    end
+
+    # Check room layout geometry (world-space overlaps)
+    puts "Checking room layout geometry..."
+    geometry_issues = check_room_geometry(json_data, repo_root)
+    if geometry_issues.any? { |i| i.start_with?("⚠️") }
+      puts "⚠️ Found #{geometry_issues.count { |i| i.start_with?('⚠️') }} room overlap warning(s):"
+      puts
+      geometry_issues.each_with_index do |issue, index|
+        puts "#{index + 1}. #{issue}"
+        puts
+      end
+    elsif geometry_issues.any?
+      geometry_issues.each { |issue| puts issue }
+      puts
+    else
+      puts "✓ Room layout geometry OK — no world-space overlaps"
       puts
     end
 

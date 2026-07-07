@@ -1215,84 +1215,6 @@ function positionNorthSingle(currentRoom, connectedRoom, currentPos, dimensions)
 }
 
 /**
- * Validate if multiple connections can fit in the given direction
- * Returns true if valid, false with console error if invalid
- */
-function validateMultipleConnections(direction, currentRoom, connectedRooms, currentDim, dimensions) {
-    if (direction === 'north' || direction === 'south') {
-        // Check if rooms can fit side-by-side when centered on door positions
-        const edgeInset = TILE_SIZE * 1.5; // 48px
-        const availableWidth = currentDim.widthPx - (edgeInset * 2);
-        const doorCount = connectedRooms.length;
-        const doorSpacing = availableWidth / (doorCount - 1);
-
-        // Calculate total span of rooms when centered on doors
-        let minX = Infinity;
-        let maxX = -Infinity;
-
-        connectedRooms.forEach((roomId, index) => {
-            const connectedDim = dimensions[roomId];
-            const doorX = edgeInset + (doorSpacing * index);
-            const roomLeft = doorX - (connectedDim.widthPx / 2);
-            const roomRight = doorX + (connectedDim.widthPx / 2);
-
-            minX = Math.min(minX, roomLeft);
-            maxX = Math.max(maxX, roomRight);
-        });
-
-        const totalSpan = maxX - minX;
-        const overhang = Math.max(0, totalSpan - currentDim.widthPx);
-
-        if (overhang > GRID_UNIT_WIDTH_PX / 2) { // Allow some small overhang (half grid unit)
-            console.error(`❌ VALIDATION ERROR: Room "${currentRoom}" (${currentDim.gridWidth}×${currentDim.gridHeight} GU, ${currentDim.widthPx}px wide) has ${doorCount} ${direction} connections, but they don't fit!`);
-            console.error(`   Connected rooms total span: ${totalSpan.toFixed(0)}px, overhang: ${overhang.toFixed(0)}px`);
-            console.error(`   Recommendation: Reduce number of connections to ${Math.floor(doorCount * currentDim.widthPx / totalSpan)} or use a wider room (${Math.ceil(totalSpan / GRID_UNIT_WIDTH_PX)}+ GU)`);
-            connectedRooms.forEach((roomId, index) => {
-                const dim = dimensions[roomId];
-                console.error(`   - ${roomId}: ${dim.gridWidth}×${dim.gridHeight} GU (${dim.widthPx}px wide)`);
-            });
-            return false;
-        }
-    } else if (direction === 'east' || direction === 'west') {
-        // Check if rooms can fit stacked vertically when centered on door positions
-        const topY = TILE_SIZE * 2;
-        const bottomY = currentDim.heightPx - (TILE_SIZE * 3);
-        const doorSpacing = (bottomY - topY) / (connectedRooms.length - 1);
-
-        // Calculate total span of rooms when centered on doors
-        let minY = Infinity;
-        let maxY = -Infinity;
-
-        connectedRooms.forEach((roomId, index) => {
-            const connectedDim = dimensions[roomId];
-            const doorY = topY + (doorSpacing * index);
-            // Door is positioned at 2 tiles from top of room
-            const roomTop = doorY - (TILE_SIZE * 2);
-            const roomBottom = roomTop + connectedDim.heightPx;
-
-            minY = Math.min(minY, roomTop);
-            maxY = Math.max(maxY, roomBottom);
-        });
-
-        const totalSpan = maxY - minY;
-        const overhang = Math.max(0, totalSpan - currentDim.heightPx);
-
-        if (overhang > GRID_UNIT_HEIGHT_PX / 2) { // Allow some small overhang (half grid unit)
-            console.error(`❌ VALIDATION ERROR: Room "${currentRoom}" (${currentDim.gridWidth}×${currentDim.gridHeight} GU, ${currentDim.heightPx}px tall) has ${connectedRooms.length} ${direction} connections, but they don't fit!`);
-            console.error(`   Connected rooms total span: ${totalSpan.toFixed(0)}px, overhang: ${overhang.toFixed(0)}px`);
-            console.error(`   Recommendation: Reduce number of connections or use a taller room`);
-            connectedRooms.forEach((roomId, index) => {
-                const dim = dimensions[roomId];
-                console.error(`   - ${roomId}: ${dim.gridWidth}×${dim.gridHeight} GU (${dim.heightPx}px tall)`);
-            });
-            return false;
-        }
-    }
-
-    return true;
-}
-
-/**
  * Position multiple rooms to the north of current room
  * CRITICAL: Ensures all connected rooms have at least 1 GU overlap with current room's edge
  */
@@ -1698,15 +1620,12 @@ export function calculateRoomPositions(gameInstance) {
                 const gridCoords = worldToGrid(position.x, position.y);
                 console.log(`    ${roomId}: positioned at world(${position.x}, ${position.y}) = grid(${gridCoords.gridX}, ${gridCoords.gridY})`);
             } else {
-                // Multiple room connections - validate first
-                const currentDim = dimensions[currentRoomId];
-                const isValid = validateMultipleConnections(direction, currentRoomId, unprocessed, currentDim, dimensions);
-
-                if (!isValid) {
-                    console.warn(`⚠️  Skipping invalid connections for ${currentRoomId} ${direction}. Layout may be broken.`);
-                    // Still process them to avoid breaking the game, but with a warning
-                }
-
+                // Multiple room connections placed side-by-side by
+                // positionMultipleRooms. Correctness is verified afterwards by
+                // validateNoOverlaps on the final positions — we deliberately
+                // do NOT pre-check with a door-span heuristic here, because that
+                // heuristic does not model the actual side-by-side placement and
+                // raised false alarms on valid multi-door corridors.
                 const newPositions = positionMultipleRooms(direction, currentRoomId, unprocessed, currentPos, dimensions);
 
                 unprocessed.forEach(roomId => {

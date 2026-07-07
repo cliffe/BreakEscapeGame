@@ -11,10 +11,10 @@ Infiltrate St. Catherine's Hospital to recover ransomware decryption keys before
 | Story aims | 5 |
 | Total tasks | 20 (3 optional) |
 | VM flag challenges | 4 |
-| Physical locks | 19 |
+| Physical locks | 18 |
 | AND-gate convergences | 0 |
 | Rooms | 9 |
-| Puzzle graph nodes / edges | 59 / 64 |
+| Puzzle graph nodes / edges | 58 / 64 |
 | Story graph nodes / edges | 5 / 4 |
 
 ## Critical Path
@@ -79,7 +79,7 @@ flowchart TD
   lock_pick_kit{"Lock Pick Kit"}
   lock_it_filing_cabinet["It Filing Cabinet"]
   hospital_founding_plaque{"Hospital Founding Plaque"}
-  lock_lock_emergency_storage_safe["Lock Emergency Storage Safe"]
+  lock_emergency_storage_safe["Emergency Storage Safe"]
   hospital_ward("Patient Ward")
   lock_ehr_terminal_ward["EHR Terminal (Offline)<br/>Ransomware terminal"]
   ehr_terminal_offline["EHR Terminal (Offline)"]
@@ -104,7 +104,6 @@ flowchart TD
   lock_hospital_recovery_console["Hospital Recovery Console"]
   recovery_instructions_encoded{"Recovery Instructions (Encoded)"}
   emergency_equipment_storage("Emergency Storage")
-  lock_emergency_storage_safe["PIN-Locked Safe<br/>PIN lock"]
   offline_backup_encryption_keys{"Offline Backup Encryption Keys"}
   pin_locked_safe["PIN-Locked Safe"]
   pin_cracker_device{"PIN Cracker Device"}
@@ -137,7 +136,7 @@ flowchart TD
   lock_pick_kit --> door_dr_kim_office
   lock_pick_kit --> lock_it_filing_cabinet
   reception_lobby --> hospital_founding_plaque
-  hospital_founding_plaque --> lock_lock_emergency_storage_safe
+  hospital_founding_plaque --> lock_emergency_storage_safe
   hospital_ward --> lock_ehr_terminal_ward
   hospital_ward --> ehr_terminal_offline
   hospital_ward --> npc_ward_nurse
@@ -168,9 +167,9 @@ flowchart TD
   offline_backup_encryption_keys --> lock_hospital_recovery_console
   emergency_equipment_storage --> pin_locked_safe
   emergency_equipment_storage -.-> pin_cracker_device
-  pin_cracker_device -.-> lock_lock_emergency_storage_safe
+  pin_cracker_device -.-> lock_emergency_storage_safe
   dr_kim_office -.-> dr_kim_s_desk_pin_clue
-  dr_kim_s_desk_pin_clue -.-> lock_lock_emergency_storage_safe
+  dr_kim_s_desk_pin_clue -.-> lock_emergency_storage_safe
   dr_kim_office --> lock_dr_kim_s_safe
   lock_dr_kim_s_safe --> zero_day_syndicate_invoice
   dr_kim_office --> npc_dr_sarah_kim
@@ -183,7 +182,7 @@ flowchart TD
   vmfl_submit_proftpd_flag --> lock_database_backup_accessible
   vmch_submit_database_flag --> vmfl_submit_database_flag
   vmfl_submit_proftpd_flag -.-> vmch_submit_database_flag
-  vmfl_submit_database_flag --> lock_lock_emergency_storage_safe
+  vmfl_submit_database_flag --> lock_emergency_storage_safe
   vmch_submit_ghost_log_flag --> vmfl_submit_ghost_log_flag
   vmfl_submit_database_flag -.-> vmch_submit_ghost_log_flag
   vmfl_submit_ghost_log_flag --> lock_ghost_lore_unlocked
@@ -194,7 +193,7 @@ flowchart TD
   emergency_equipment_storage --> hallway_south
   conference_room --> hallway_north
 
-  class door_it_department,door_server_room,door_dr_kim_office,lock_it_filing_cabinet,lock_lock_emergency_storage_safe,lock_ehr_terminal_ward,ehr_terminal_offline,lock_infected_terminal,lock_marcus_workstation,marcus_s_workstation,lock_vm_launcher_rooting_for_a_win,lock_hospital_recovery_console,lock_emergency_storage_safe,pin_locked_safe,lock_dr_kim_s_safe,lock_press_terminal,lock_proftpd_exploitation_unlocked,lock_database_backup_accessible,lock_ghost_lore_unlocked lock
+  class door_it_department,door_server_room,door_dr_kim_office,lock_it_filing_cabinet,lock_emergency_storage_safe,lock_ehr_terminal_ward,ehr_terminal_offline,lock_infected_terminal,lock_marcus_workstation,marcus_s_workstation,lock_vm_launcher_rooting_for_a_win,lock_hospital_recovery_console,pin_locked_safe,lock_dr_kim_s_safe,lock_press_terminal,lock_proftpd_exploitation_unlocked,lock_database_backup_accessible,lock_ghost_lore_unlocked lock
   class it_department,server_room,dr_kim_office,reception_lobby,hospital_ward,emergency_equipment_storage,conference_room,hallway_north,hallway_south room
   class lock_pick_kit,hospital_founding_plaque,infected_terminal,backup_server_ssh_notes,marcus_s_password_sticky_note,photo_frame_emma_s_birthday,marcus_s_email_archive,network_diagram_whiteboard,planted_network_device,cyberchef_workstation,recovery_instructions_encoded,pin_cracker_device,dr_kim_s_desk_pin_clue,zero_day_syndicate_invoice item
   class npc_ward_nurse,npc_marcus_webb,server_room_keycard,offline_backup_encryption_keys,npc_dr_sarah_kim key
@@ -279,7 +278,7 @@ flowchart TD
   lock_pick_kit{"Lock Pick Kit"}
   lock_it_filing_cabinet["It Filing Cabinet"]
   hospital_founding_plaque{"Hospital Founding Plaque"}
-  lock_lock_emergency_storage_safe["Lock Emergency Storage Safe"]
+  lock_emergency_storage_safe["Emergency Storage Safe"]
   hospital_ward("Patient Ward")
   lock_ehr_terminal_ward["EHR Terminal (Offline)<br/>Ransomware terminal"]
   ehr_terminal_offline["EHR Terminal (Offline)"]
@@ -304,7 +303,6 @@ flowchart TD
   lock_hospital_recovery_console["Hospital Recovery Console"]
   recovery_instructions_encoded{"Recovery Instructions (Encoded)"}
   emergency_equipment_storage("Emergency Storage")
-  lock_emergency_storage_safe["PIN-Locked Safe<br/>PIN lock"]
   offline_backup_encryption_keys{"Offline Backup Encryption Keys"}
   pin_locked_safe["PIN-Locked Safe"]
   pin_cracker_device{"PIN Cracker Device"}
@@ -342,7 +340,7 @@ flowchart TD
   lock_pick_kit --> door_dr_kim_office
   lock_pick_kit --> lock_it_filing_cabinet
   reception_lobby --> hospital_founding_plaque
-  hospital_founding_plaque --> lock_lock_emergency_storage_safe
+  hospital_founding_plaque --> lock_emergency_storage_safe
   hospital_ward --> lock_ehr_terminal_ward
   hospital_ward --> ehr_terminal_offline
   hospital_ward --> npc_ward_nurse
@@ -373,9 +371,9 @@ flowchart TD
   offline_backup_encryption_keys --> lock_hospital_recovery_console
   emergency_equipment_storage --> pin_locked_safe
   emergency_equipment_storage -.-> pin_cracker_device
-  pin_cracker_device -.-> lock_lock_emergency_storage_safe
+  pin_cracker_device -.-> lock_emergency_storage_safe
   dr_kim_office -.-> dr_kim_s_desk_pin_clue
-  dr_kim_s_desk_pin_clue -.-> lock_lock_emergency_storage_safe
+  dr_kim_s_desk_pin_clue -.-> lock_emergency_storage_safe
   dr_kim_office --> lock_dr_kim_s_safe
   lock_dr_kim_s_safe --> zero_day_syndicate_invoice
   dr_kim_office --> npc_dr_sarah_kim
@@ -388,7 +386,7 @@ flowchart TD
   vmfl_submit_proftpd_flag --> lock_database_backup_accessible
   vmch_submit_database_flag --> vmfl_submit_database_flag
   vmfl_submit_proftpd_flag -.-> vmch_submit_database_flag
-  vmfl_submit_database_flag --> lock_lock_emergency_storage_safe
+  vmfl_submit_database_flag --> lock_emergency_storage_safe
   vmch_submit_ghost_log_flag --> vmfl_submit_ghost_log_flag
   vmfl_submit_database_flag -.-> vmch_submit_ghost_log_flag
   vmfl_submit_ghost_log_flag --> lock_ghost_lore_unlocked
@@ -420,7 +418,7 @@ flowchart TD
   lock_hospital_recovery_console -.-> aim_restore_hospital_systems
   pin_locked_safe -.-> aim_recover_offline_keys
 
-  class door_it_department,door_server_room,door_dr_kim_office,lock_it_filing_cabinet,lock_lock_emergency_storage_safe,lock_ehr_terminal_ward,ehr_terminal_offline,lock_infected_terminal,lock_marcus_workstation,marcus_s_workstation,lock_vm_launcher_rooting_for_a_win,lock_hospital_recovery_console,lock_emergency_storage_safe,pin_locked_safe,lock_dr_kim_s_safe,lock_press_terminal,lock_proftpd_exploitation_unlocked,lock_database_backup_accessible,lock_ghost_lore_unlocked lock
+  class door_it_department,door_server_room,door_dr_kim_office,lock_it_filing_cabinet,lock_emergency_storage_safe,lock_ehr_terminal_ward,ehr_terminal_offline,lock_infected_terminal,lock_marcus_workstation,marcus_s_workstation,lock_vm_launcher_rooting_for_a_win,lock_hospital_recovery_console,pin_locked_safe,lock_dr_kim_s_safe,lock_press_terminal,lock_proftpd_exploitation_unlocked,lock_database_backup_accessible,lock_ghost_lore_unlocked lock
   class it_department,server_room,dr_kim_office,reception_lobby,hospital_ward,emergency_equipment_storage,conference_room,hallway_north,hallway_south room
   class lock_pick_kit,hospital_founding_plaque,infected_terminal,backup_server_ssh_notes,marcus_s_password_sticky_note,photo_frame_emma_s_birthday,marcus_s_email_archive,network_diagram_whiteboard,planted_network_device,cyberchef_workstation,recovery_instructions_encoded,pin_cracker_device,dr_kim_s_desk_pin_clue,zero_day_syndicate_invoice item
   class npc_ward_nurse,npc_marcus_webb,server_room_keycard,offline_backup_encryption_keys,npc_dr_sarah_kim key
