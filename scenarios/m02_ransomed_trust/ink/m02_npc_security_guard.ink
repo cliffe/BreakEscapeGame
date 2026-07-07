@@ -1,6 +1,11 @@
 // ===========================================
 // SECURITY GUARD NPC - Mission 2: Ransomed Trust
 // Break Escape - St. Catherine's Hospital
+//
+// Talk / persuade / react-to-lockpicking only.
+// Physical combat is NOT scripted here: aggression sets the guard hostile
+// via #hostile:security_guard and hands control to the game's combat system.
+// Scene description and action beats are spoken by the Narrator.
 // ===========================================
 
 // Variables for tracking player choices and state
@@ -8,8 +13,6 @@ VAR influence = 0
 VAR caught_lockpicking = false
 VAR confrontation_attempts = 0
 VAR warned_player = false
-VAR player_attacked_guard = false
-VAR guard_knocked_out = false
 VAR player_has_id_badge = false
 
 // External variables (set by game)
@@ -24,31 +27,25 @@ EXTERNAL player_name()
 
 {not warned_player:
     #display:guard-patrol
-    You see a hospital security guard patrolling the corridor. They're watching the area carefully.
-
-    The guard notices you and approaches.
+    #speaker:narrator
+    Narrator: A hospital security guard patrols the north corridor, watching the area carefully. They notice you and approach.
 
     ~ warned_player = true
+    #speaker:security_guard
     Guard: Hold on. This is a restricted area during the crisis. What's your business here?
 
     -> initial_response
 }
 
-{warned_player and not caught_lockpicking and not guard_knocked_out:
+{warned_player and not caught_lockpicking:
     #display:guard-patrol
-    The guard nods at you as they continue their patrol.
+    #speaker:narrator
+    Narrator: The guard nods at you as they continue their patrol.
 
+    #speaker:security_guard
     Guard: Still working on the crisis?
 
     -> hub
-}
-
-{guard_knocked_out:
-    #display:guard-unconscious
-    The security guard is unconscious on the floor. You should move quickly before they wake up.
-
-    #exit_conversation
-    -> DONE
 }
 
 -> hub
@@ -68,9 +65,11 @@ EXTERNAL player_name()
     Guard: Still, I need to see your visitor badge.
 
     {player_has_id_badge:
-        You show the visitor badge from reception.
+        #speaker:narrator
+        Narrator: You show the visitor badge from reception.
 
         ~ influence += 10
+        #speaker:security_guard
         Guard: Checks out. Be careful in there. It's a mess.
 
         -> hub
@@ -127,7 +126,7 @@ EXTERNAL player_name()
 + [End conversation]
     #exit_conversation
     Guard: Stay safe. This crisis has everyone on edge.
-    -> hub
+    -> DONE
 
 // ===========================================
 // LOCKPICK DETECTION EVENT
@@ -163,9 +162,6 @@ EXTERNAL player_name()
 
     * [Back off - this is more important than you know]
         -> hostile_response
-
-    * [Try to physically overpower the guard]
-        -> attempt_fight
 }
 
 {confrontation_attempts > 1:
@@ -173,14 +169,11 @@ EXTERNAL player_name()
 
     Guard: This is your FINAL warning before I call backup!
 
-    * [Okay, I'm leaving right now]
+    * [Okay, I'm backing away]
         -> back_down
 
     * [You don't understand the stakes here]
         -> escalate_conflict
-
-    * [Attack the guard before they call backup]
-        -> attempt_fight
 }
 
 // ===========================================
@@ -208,7 +201,7 @@ EXTERNAL player_name()
 
     #display:guard-hostile
     #exit_conversation
-    -> hub
+    -> DONE
 }
 
 === explain_emergency ===
@@ -216,7 +209,7 @@ EXTERNAL player_name()
 
 {influence >= 25:
     ~ influence -= 5
-    Guard: Patient data? In a locked storage room?
+    Guard: Patient data? In a locked room?
 
     Guard: Look, I get the emergency, but protocol is protocol.
 
@@ -234,7 +227,7 @@ EXTERNAL player_name()
 
     #display:guard-alert
     #exit_conversation
-    -> hub
+    -> DONE
 }
 
 === poor_excuse ===
@@ -269,11 +262,13 @@ Guard: That's the weakest excuse I've heard all week.
 
     #display:guard-arrest
     #exit_conversation
-    -> hub
+    -> DONE
 }
 
 // ===========================================
-// HOSTILE/COMBAT RESPONSES
+// HOSTILE RESPONSES
+// Aggression hands control to the combat system via #hostile.
+// No fighting is scripted in ink.
 // ===========================================
 
 === hostile_response ===
@@ -282,12 +277,12 @@ Guard: That's the weakest excuse I've heard all week.
 
 Guard: More important than hospital security? You just crossed a line.
 
-Guard: SECURITY! CODE VIOLATION IN ADMINISTRATIVE WING!
+Guard: SECURITY! CODE VIOLATION IN THE ADMINISTRATIVE WING!
 
 #display:guard-aggressive
 #hostile:security_guard
 #exit_conversation
--> hub
+-> DONE
 
 === escalate_conflict ===
 #speaker:security_guard
@@ -300,146 +295,7 @@ Guard: LOCKDOWN! INTRUDER ALERT!
 #display:guard-alarm
 #hostile:security_guard
 #exit_conversation
--> hub
-
-=== attempt_fight ===
-#speaker:security_guard
-
-Guard: You're really going to attack a security officer?!
-
-You lunge at the guard, trying to knock them out before they can call for backup.
-
-* [Go for a quick knockout punch]
-    -> fight_punch
-
-* [Try to wrestle them to the ground]
-    -> fight_wrestle
-
-* [Use a nearby object as a weapon]
-    -> fight_improvise
-
-* [Actually, back down from this]
-    -> fight_backdown
-
-=== fight_punch ===
-You swing at the guard's jaw.
-
-{influence >= 20:
-    Your punch connects! The guard staggers backward, dazed.
-
-    The guard slumps against the wall, unconscious.
-
-    ~ guard_knocked_out = true
-    ~ player_attacked_guard = true
-    #display:guard-unconscious
-    #complete_task:neutralize_guard
-    #set_global:attacked_guard:true
-
-    You have a limited window before they wake up or someone finds them.
-
-    #exit_conversation
-    -> DONE
-}
-
-{influence < 20:
-    The guard blocks your punch and counters with a baton strike!
-
-    You fall back, stunned. The guard radios for backup.
-
-    Guard: ASSAULT ON SECURITY! BACKUP NEEDED NOW!
-
-    ~ player_attacked_guard = true
-    #display:guard-combat
-    #hostile:security_guard
-    #take_damage:moderate
-    #mission_failed:attacked_security
-    #exit_conversation
-    -> DONE
-}
-
-=== fight_wrestle ===
-You attempt to tackle the guard and pin them down.
-
-{influence >= 15:
-    You manage to get the guard in a headlock. They struggle but can't break free.
-
-    After a few seconds, the guard goes limp - unconscious.
-
-    ~ guard_knocked_out = true
-    ~ player_attacked_guard = true
-    #display:guard-unconscious
-    #complete_task:neutralize_guard
-    #set_global:attacked_guard:true
-
-    Move quickly. You only have a few minutes.
-
-    #exit_conversation
-    -> DONE
-}
-
-{influence < 15:
-    The guard is stronger than you expected!
-
-    They break your grip and shove you hard against the wall.
-
-    Guard: ASSAULT! SECURITY BREACH! ALL UNITS TO ADMINISTRATIVE WING!
-
-    ~ player_attacked_guard = true
-    #display:guard-combat
-    #hostile:security_guard
-    #take_damage:moderate
-    #mission_failed:attacked_security
-    #exit_conversation
-    -> DONE
-}
-
-=== fight_improvise ===
-You grab a fire extinguisher from the wall mount.
-
-{influence >= 25:
-    You swing the extinguisher and connect with the guard's shoulder.
-
-    The guard drops to one knee, stunned. A second swing knocks them out cold.
-
-    ~ guard_knocked_out = true
-    ~ player_attacked_guard = true
-    #display:guard-unconscious
-    #complete_task:neutralize_guard
-    #set_global:attacked_guard:true
-    The guard is unconscious. Work fast.
-
-    #exit_conversation
-    -> DONE
-}
-
-{influence < 25:
-    The guard sees you reaching for the extinguisher and draws their baton!
-
-    They strike your arm hard before you can swing. The extinguisher clatters to the floor.
-
-    Guard: ARMED ASSAULT! REPEAT - ARMED ASSAULT!
-
-    ~ player_attacked_guard = true
-    #display:guard-combat
-    #hostile:security_guard
-    #take_damage:severe
-    #mission_failed:attacked_security
-    #exit_conversation
-    -> DONE
-}
-
-=== fight_backdown ===
-You raise your hands and step back.
-
-~ influence -= 10
-
-You: Wait, wait. I'm not going to fight you.
-
-Guard: Smart choice. Now get out of here before I change my mind about calling this in.
-
-#display:guard-wary
-#exit_conversation
--> hub
+-> DONE
 
 // ===========================================
 // DE-ESCALATION
@@ -454,7 +310,7 @@ Guard: Smart choice. Now get out of here before I change my mind about calling t
 
     #display:guard-neutral
     #exit_conversation
-    -> hub
+    -> DONE
 }
 
 {influence < 15:
@@ -464,7 +320,7 @@ Guard: Smart choice. Now get out of here before I change my mind about calling t
 
     #display:guard-watchful
     #exit_conversation
-    -> hub
+    -> DONE
 }
 
 // ===========================================
@@ -559,12 +415,10 @@ Guard: I don't like your attitude. You're on thin ice.
 
     Guard: That's it. You're leaving. NOW.
 
+    #display:guard-aggressive
     #hostile:security_guard
     #exit_conversation
-    -> hub
-
-* [Try to physically intimidate the guard]
-    -> attempt_fight
+    -> DONE
 
 // ===========================================
 // SERVER ROOM ACCESS EVENT
@@ -577,18 +431,18 @@ Guard: Hey! Server room access -- that's restricted to authorised IT personnel o
 
 * [Show ID badge]
     You: Security consultant. Dr. Kim authorised full access. I have the badge right here.
-    Guard: *examines badge* ...fine. But I'm logging this. Stay visible.
+    Guard: ...fine. But I'm logging this. Stay visible.
     #exit_conversation
-    -> hub
+    -> DONE
 
 * [Bluff with authority]
     You: I've been all over this building tonight. Dr. Kim's orders. Crisis response.
     Guard: Yeah, well. I'm watching.
     #exit_conversation
-    -> hub
+    -> DONE
 
 * [Say nothing, walk past]
     ~ influence -= 10
     Guard: Hey! I said restricted! Don't make me follow you in there.
     #exit_conversation
-    -> hub
+    -> DONE

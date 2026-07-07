@@ -22,10 +22,10 @@ EXTERNAL player_name()
 // ===========================================
 
 === start ===
+#speaker:narrator
+Narrator: SAFETYNET secure channel. Forty-eight hours after the mission.
+
 #speaker:agent_0x99
-
-[Location: SAFETYNET Secure Channel -- 48 Hours After Mission]
-
 Agent 0x99: {player_name()}. Good to see you back.
 
 Agent 0x99: St. Catherine's is stabilised. Systems restored. The immediate crisis is over.
@@ -340,8 +340,10 @@ Agent 0x99: He did everything right. Warned them. Documented the risk. Seven tim
 
 Agent 0x99: Last I heard, he's working help desk at a community college. $45,000 a year.
 
-*A pause.*
+#speaker:narrator
+Narrator: A pause.
 
+#speaker:agent_0x99
 Agent 0x99: That's the injustice that radicalises people. The ones who did the right thing and got ground up for it anyway.
 
 Agent 0x99: Remember that when you think about Ghost's ideology. They're not wrong about the problem.

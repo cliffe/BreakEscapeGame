@@ -497,7 +497,6 @@
   vmfl_submit_ghost_log_flag -.-> aim_exploit_entropy_backdoor
   emergency_equipment_storage -.-> aim_recover_offline_keys
   lock_emergency_storage_safe -.-> aim_recover_offline_keys
-  lock_press_terminal -.-> aim_restore_hospital_systems
   action_talk_to_ward_nurse -.-> aim_infiltrate_hospital
   action_social_engineer_marcus -.-> aim_access_it_systems
   action_meet_dr_kim -.-> aim_access_it_systems
@@ -505,6 +504,7 @@
   vm_access_terminal -.-> aim_exploit_entropy_backdoor
   lock_hospital_recovery_console -.-> aim_restore_hospital_systems
   pin_locked_safe -.-> aim_recover_offline_keys
+  lock_press_terminal -.-> aim_restore_hospital_systems
 
   class door_it_department,door_server_room,door_dr_kim_office,lock_it_filing_cabinet,lock_emergency_storage_safe,lock_ehr_terminal_ward,ehr_terminal_offline,lock_infected_terminal,lock_marcus_workstation,marcus_s_workstation,lock_vm_launcher_rooting_for_a_win,lock_hospital_recovery_console,pin_locked_safe,lock_dr_kim_s_safe,lock_press_terminal,lock_proftpd_exploitation_unlocked,lock_database_backup_accessible,lock_ghost_lore_unlocked lock
   class it_department,server_room,dr_kim_office,reception_lobby,hospital_ward,emergency_equipment_storage,conference_room,hallway_north,hallway_south room
@@ -644,9 +644,10 @@
   rc_obj52_52{"Board Liability Email"}
   rc_obj53_53{"Ransomware Incorporated Proposal"}
   rc_press_terminal_54{"Hospital Communications Terminal"}
-  rc_npc_hospital_security_guard_55("Hospital Security Guard")
-  rc_obj56_56{"Guard's Station Log"}
-  rc_obj57_57{"Nurse's Handwritten Note"}
+  rc_npc_hospital_comms_terminal_55("Hospital Comms Terminal")
+  rc_npc_hospital_security_guard_56("Hospital Security Guard")
+  rc_obj57_57{"Guard's Station Log"}
+  rc_obj58_58{"Nurse's Handwritten Note"}
 
   reception_lobby --> hallway_north
   reception_lobby --> it_department
@@ -710,14 +711,15 @@
   conference_room --> rc_obj52_52
   conference_room --> rc_obj53_53
   conference_room --> rc_press_terminal_54
-  hallway_north --> rc_npc_hospital_security_guard_55
-  rc_npc_hospital_security_guard_55 --> rc_obj56_56
-  hallway_south --> rc_obj57_57
+  conference_room --> rc_npc_hospital_comms_terminal_55
+  hallway_north --> rc_npc_hospital_security_guard_56
+  rc_npc_hospital_security_guard_56 --> rc_obj57_57
+  hallway_south --> rc_obj58_58
 
   class reception_lobby,hospital_ward,emergency_equipment_storage,conference_room,hallway_north,hallway_south room
   class it_department,server_room,dr_kim_office lock
-  class rc_obj1_1,rc_obj2_2,rc_obj6_6,rc_obj7_7,rc_obj8_8,rc_obj9_9,rc_obj10_10,rc_obj11_11,rc_ehr_terminal_ward_14,rc_obj15_15,rc_obj16_16,rc_infected_terminal_21,rc_obj23_23,rc_password_sticky_note_24,rc_obj25_25,rc_obj27_27,rc_obj28_28,rc_obj29_29,rc_ghost_terminal_device_30,rc_obj32_32,rc_vm_launcher_rooting_for_a_win_33,rc_flag_station_dropsite_34,rc_cyberchef_workstation_35,rc_hospital_recovery_console_36,rc_obj37_37,rc_obj38_38,rc_offline_backup_encryption_keys_40,rc_obj41_41,rc_obj42_42,rc_obj43_43,rc_obj44_44,rc_obj45_45,rc_obj47_47,rc_obj49_49,rc_obj50_50,rc_obj51_51,rc_obj52_52,rc_obj53_53,rc_press_terminal_54,rc_obj56_56,rc_obj57_57 item
-  class rc_npc_agent_0x99_3,rc_npc_hospital_receptionist_4,rc_npc_agent_0x99_haxolottle_5,rc_npc_ghost_12,rc_npc_agent_0x99_13,rc_npc_ward_nurse_17,rc_npc_mr_okafor_bed_4_18,rc_npc_mrs_hargreaves_bed_2_19,rc_npc_ms_chen_bed_5_20,rc_npc_marcus_webb_31,rc_npc_dr_sarah_kim_48,rc_npc_hospital_security_guard_55 npc
+  class rc_obj1_1,rc_obj2_2,rc_obj6_6,rc_obj7_7,rc_obj8_8,rc_obj9_9,rc_obj10_10,rc_obj11_11,rc_ehr_terminal_ward_14,rc_obj15_15,rc_obj16_16,rc_infected_terminal_21,rc_obj23_23,rc_password_sticky_note_24,rc_obj25_25,rc_obj27_27,rc_obj28_28,rc_obj29_29,rc_ghost_terminal_device_30,rc_obj32_32,rc_vm_launcher_rooting_for_a_win_33,rc_flag_station_dropsite_34,rc_cyberchef_workstation_35,rc_hospital_recovery_console_36,rc_obj37_37,rc_obj38_38,rc_offline_backup_encryption_keys_40,rc_obj41_41,rc_obj42_42,rc_obj43_43,rc_obj44_44,rc_obj45_45,rc_obj47_47,rc_obj49_49,rc_obj50_50,rc_obj51_51,rc_obj52_52,rc_obj53_53,rc_press_terminal_54,rc_obj57_57,rc_obj58_58 item
+  class rc_npc_agent_0x99_3,rc_npc_hospital_receptionist_4,rc_npc_agent_0x99_haxolottle_5,rc_npc_ghost_12,rc_npc_agent_0x99_13,rc_npc_ward_nurse_17,rc_npc_mr_okafor_bed_4_18,rc_npc_mrs_hargreaves_bed_2_19,rc_npc_ms_chen_bed_5_20,rc_npc_marcus_webb_31,rc_npc_dr_sarah_kim_48,rc_npc_hospital_comms_terminal_55,rc_npc_hospital_security_guard_56 npc
   class rc_marcus_workstation_22,rc_it_filing_cabinet_26,rc_emergency_storage_safe_39,rc_obj46_46 container
   class node_start start`
     };

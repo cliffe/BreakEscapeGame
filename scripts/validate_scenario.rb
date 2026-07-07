@@ -464,6 +464,7 @@ end
 def check_ink_files(json_data, base_dir, scenario_dir = nil)
   issues = []
   ink_files_to_check = Set.new
+  narrator_used_files = []  # ink files that use a #speaker:narrator / Narrator: line
 
   # Collect all referenced ink files from NPCs
   json_data['rooms']&.each do |room_id, room|
@@ -586,6 +587,23 @@ def check_ink_files(json_data, base_dir, scenario_dir = nil)
             end
           end
         end
+
+        # Track Narrator usage (checked against a defined narrator voice after the loop),
+        # and discourage resolving combat inside ink. Ink is for talk/messages; fights
+        # should switch the NPC hostile (#hostile:<npc_id>) and let the combat system /
+        # a minigame decide the outcome — not choose-your-own-adventure fight branches.
+        ink_lines.each_with_index do |line, i|
+          stripped = line.strip
+          if stripped.start_with?('#speaker:narrator') || stripped.start_with?('Narrator:')
+            narrator_used_files << source_ink_path unless narrator_used_files.include?(source_ink_path)
+          end
+          if stripped.start_with?('#take_damage') || stripped.match?(/^#mission_failed(:|\b)/)
+            issues << "💡 SUGGESTION: '#{source_ink_path}' line #{i + 1}: '#{stripped}' resolves combat/damage " \
+                      "inside ink. Ink should carry dialogue/messages only — drive fights by switching the NPC " \
+                      "hostile (#hostile:<npc_id>) and let the combat system / a minigame decide the outcome. " \
+                      "See scenarios/ink/security-guard.ink for the talk-then-#hostile pattern."
+          end
+        end
       rescue => e
         # Non-fatal — file was already compiled successfully above
       end
@@ -601,6 +619,18 @@ def check_ink_files(json_data, base_dir, scenario_dir = nil)
       end
     else
       issues << "❌ INVALID: '#{npc_path}' references ink file '#{story_path}' which does not exist (checked for both .json and .ink versions)"
+    end
+  end
+
+  # If any ink narrates via a Narrator speaker, the scenario must define a narrator voice,
+  # otherwise the line plays with no voice profile. See scenarios/m01_first_contact.
+  if !narrator_used_files.empty?
+    narrator_def = json_data['narrator']
+    unless narrator_def.is_a?(Hash) && narrator_def['voice'].is_a?(Hash)
+      issues << "⚠️ WARNING: Ink narrates via '#speaker:narrator' (in #{narrator_used_files.uniq.join(', ')}) " \
+                "but the scenario defines no top-level 'narrator' voice. Add: " \
+                "\"narrator\": { \"id\": \"narrator\", \"skipTextValidation\": true, \"voice\": { \"name\": \"...\", \"style\": \"...\", \"language\": \"en-GB\" } }. " \
+                "See scenarios/m01_first_contact/scenario.json.erb."
     end
   end
 

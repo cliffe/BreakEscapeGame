@@ -16,10 +16,10 @@ EXTERNAL player_name()
 // ===========================================
 
 === start ===
+#speaker:narrator
+Narrator: The ward nurse moves between beds, writing observations on paper -- barely glancing up.
+
 #speaker:ward_nurse
-
-*She's moving between beds, writing observations on paper -- barely glances up.*
-
 Nurse: I'm sorry, are you authorised to be in here? This is a restricted ward.
 
 * [Show your consultant badge]
@@ -39,10 +39,10 @@ Nurse: I'm sorry, are you authorised to be in here? This is a restricted ward.
     -> stakes_conversation
 
 === ward_tour ===
+#speaker:narrator
+Narrator: She gestures at the row of beds.
+
 #speaker:ward_nurse
-
-*She gestures at the row of beds.*
-
 Nurse: Bed one -- Mr. Okafor. 67. Ventilator. The machine runs on its own power, but the monitoring feeds into the central system. Which is down.
 
 Nurse: Bed three -- Mrs. Hargreaves. ECMO. If that system fails without warning, she has maybe four minutes.

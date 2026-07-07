@@ -205,8 +205,10 @@ Agent 0x99: Free decryption keys. No ransom payment. Faster recovery, ENTROPY de
 
 Agent 0x99: In exchange: you publish the board's negligence from the press terminal.
 
-*A pause.*
+#speaker:narrator
+Narrator: A pause.
 
+#speaker:agent_0x99
 Agent 0x99: Ghost gets exactly what they wanted without spending $87,000.
 
 Agent 0x99: You're still the one making the final choice at that terminal. Ghost's deal doesn't override your judgment.

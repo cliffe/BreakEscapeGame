@@ -77,6 +77,21 @@ Based on `README_scenario_design.md §Designing Solvable Scenarios` points 8 and
 - **Closing debrief**: Is there a narrative endpoint (hidden person NPC with event-driven reveal, or equivalent)? Does the scenario have a clear win condition?
 - **Ink dialogue arcs**: Are key NPCs wired to respond to the major plot events (via `eventMappings`)? Spot-check 2–3 event mappings that seem critical to narrative flow.
 
+### 2d′. Ink conventions
+
+Ink files are for **characters talking / messaging** — nothing else. Read the scenario's `.ink` files and check:
+
+- **Narration uses the Narrator voice.** Standalone scene-setting or third-person action beats (e.g. `*She gestures at the beds.*`, `[Location: …]`, `*A pause.*`) must be spoken lines prefixed `Narrator:` under a `#speaker:narrator` tag, and the scenario must define a top-level `narrator` voice block (`{ "id": "narrator", "skipTextValidation": true, "voice": {…} }`, pattern in `m01_first_contact`). Inline emotes *inside* a character's own line (`Nurse: *sighs* Right.`) are fine and stay with that character. The validator warns if `#speaker:narrator` is used with no narrator voice defined, but it can't tell whether *all* narration was converted — that's the reviewer's job.
+- **No choose-your-own-adventure combat, terminals, or minigames in ink.** Fights must not be resolved with in-ink branches (`fight_punch` / `fight_wrestle`, `#take_damage`, `#mission_failed`). Instead the dialogue ends by switching the NPC hostile (`#hostile:<npc_id>` + `#exit_conversation`) and the engine's combat system takes over. The clean reference is `scenarios/ink/security-guard.ink`. Likewise, complex terminal/decision logic belongs in a minigame or is driven by tags that set global state — not elaborate ink menus. The validator flags `#take_damage` / `#mission_failed` as a suggestion; also eyeball choice text for scripted fighting.
+
+### 2d″. Patrol guards (stealth-evade obstacles)
+
+If the scenario has a patrolling guard the player must slip past, check the config against the reference patterns (`scenarios/npc-patrol-lockpick` for a stealth guard; `scenarios/sis01_healthcare` for the current waypoint schema):
+
+- **Waypoints in-bounds & current schema**: `behavior.patrol.waypoints` (with per-point `dwellTime`), plus `waypointMode: "sequential"`, `loop`, `speed`. Every waypoint must fall inside the room's real tilemap dimensions (a common bug is coordinates sized for the JSON `dimensions` field, which the engine ignores).
+- **Visible detection cone**: `los` with `visualize: true`, a directional `angle` (~120–140° for a guard the player evades — *not* 360°, which is a near-contact omni-reactor like the sis01 nurse), and `range` **in pixels** (~150 ≈ 4.7 tiles). The nurse's `range: 16 / angle: 360` is a different role; don't copy it for a stealth guard.
+- **Evade-able space**: a guard the player is meant to sneak past needs an office-sized room to circle around in. A 1-GU corridor only supports timing-based passes, not walk-around evasion — flag it if the design intends the latter.
+
 ### 2e. Dungeon graph metadata completeness
 
 Beyond what the validator checks mechanically:

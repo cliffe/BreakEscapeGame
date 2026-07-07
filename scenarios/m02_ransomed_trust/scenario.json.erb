@@ -18,12 +18,12 @@
 # - Ransomware display minigame (infected terminals)
 # - Backup recovery minigame (restore hospital systems)
 #
-# ROOM LAYOUT:
-#   Hospital Ward (south of Reception) - narrative stakes room
-#   Reception <-> IT Department (locked-easy) <-> Server Room (locked-rfid)
-#   Reception <-> Dr. Kim's Office <-> Conference Room
-#   Hallways connect: North (Reception <-> Server Room) / South (IT <-> Emergency Storage)
-#   Emergency Equipment Storage (PIN safe with offline backup keys)
+# ROOM LAYOUT (verified overlap-free by scripts/validate_scenario.rb):
+#   Reception (start hub)
+#     -N-> Hallway North -N-> Server Room (locked-rfid)
+#     -E-> IT Department (locked-easy)          [single-door]
+#     -W-> Dr. Kim's Office (locked) -N-> Conference Room
+#     -S-> Patient Ward -S-> Hallway South -S-> Emergency Storage (PIN safe)
 # ============================================================================
 
 # ERB Helper Methods
@@ -46,6 +46,16 @@ recovery_instructions_encoded = rot13("FULL RECOVERY REQUIRES OFFLINE + ONLINE K
 %>
 {
   "scenario_brief": "Infiltrate St. Catherine's Hospital to recover ransomware decryption keys before 47 patients on life support die. ENTROPY's Ransomware Incorporated has calculated patient death probabilities--recover keys before backup power fails.",
+
+  "narrator": {
+    "id": "narrator",
+    "skipTextValidation": true,
+    "voice": {
+      "name": "Algenib",
+      "style": "Cinematic, tense clinical thriller narrator. Measured and grave -- a hospital in crisis.",
+      "language": "en-GB"
+    }
+  },
 
   "music": {
     "events": [
@@ -300,8 +310,7 @@ recovery_instructions_encoded = rot13("FULL RECOVERY REQUIRES OFFLINE + ONLINE K
         {
           "taskId": "decide_hospital_exposure",
           "title": "Use the press terminal in the conference room to decide on public disclosure",
-          "type": "unlock_object",
-          "targetObject": "press_terminal",
+          "type": "manual",
           "status": "active"
         }
       ]
@@ -1307,7 +1316,19 @@ recovery_instructions_encoded = rot13("FULL RECOVERY REQUIRES OFFLINE + ONLINE K
       "connections": {
         "south": "dr_kim_office"
       },
-      "npcs": [],
+      "npcs": [
+        {
+          "id": "press_terminal_system",
+          "displayName": "Hospital Comms Terminal",
+          "npcType": "phone",
+          "phoneTheme": "terminal",
+          "phoneId": "press_terminal",
+          "storyPath": "scenarios/m02_ransomed_trust/ink/m02_object_press_terminal.json",
+          "currentKnot": "start",
+          "avatar": "assets/npc/avatars/npc_hacker.png",
+          "behavior": { "initiallyHidden": true }
+        }
+      ],
       "objects": [
         {
           "type": "notes",
@@ -1343,13 +1364,14 @@ recovery_instructions_encoded = rot13("FULL RECOVERY REQUIRES OFFLINE + ONLINE K
           "observations": "A printed briefing document -- someone was feeding ENTROPY information about the hospital's vulnerabilities"
         },
         {
-          "type": "workstation",
+          "type": "phone",
           "id": "press_terminal",
           "name": "Hospital Communications Terminal",
           "takeable": false,
+          "sprite": "workstation",
           "observations": "Secure outgoing relay connected to regional press networks. A system for transmitting official hospital communications to media contacts. The indicator light is green -- it's active.",
-          "storyPath": "scenarios/m02_ransomed_trust/ink/m02_object_press_terminal.json",
-          "currentKnot": "start",
+          "phoneId": "press_terminal",
+          "npcIds": ["press_terminal_system"],
           "puzzle_graph_role": "lock",
           "puzzle_graph_aim": "restore_hospital_systems"
         }
@@ -1391,11 +1413,12 @@ recovery_instructions_encoded = rot13("FULL RECOVERY REQUIRES OFFLINE + ONLINE K
             "patrol": {
               "enabled": true,
               "waypoints": [
-                { "x": 3, "y": 2, "dwellTime": 2000 },
-                { "x": 10, "y": 2 },
-                { "x": 17, "y": 2, "dwellTime": 2000 },
-                { "x": 10, "y": 2 }
+                { "x": 2, "y": 2, "dwellTime": 2000 },
+                { "x": 8, "y": 2 },
+                { "x": 8, "y": 3, "dwellTime": 2000 },
+                { "x": 2, "y": 3 }
               ],
+              "waypointMode": "sequential",
               "speed": 40,
               "loop": true
             }
@@ -1403,7 +1426,7 @@ recovery_instructions_encoded = rot13("FULL RECOVERY REQUIRES OFFLINE + ONLINE K
           "los": {
             "enabled": true,
             "range": 150,
-            "angle": 120,
+            "angle": 140,
             "visualize": true
           },
           "eventMappings": [
