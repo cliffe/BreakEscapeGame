@@ -142,7 +142,7 @@
       <tr><th>AND-gate convergences</th><td class="val">2</td></tr>
       <tr><th>Physical locks (puzzle)</th><td class="val">7</td></tr>
       <tr><th>Rooms</th><td class="val">3</td></tr>
-      <tr><th>Puzzle nodes / edges</th><td class="val">33 / 40</td></tr>
+      <tr><th>Puzzle nodes / edges</th><td class="val">33 / 38</td></tr>
       <tr><th>Story nodes / edges</th><td class="val">5 / 4</td></tr>
     </table>
   </div>
@@ -242,8 +242,6 @@
   it_network_change_authorisation_form -.-> andgate2
   andgate2 --> lock_network_map_screen
   clinical_safety_sign_off_network_isolation --> andgate2
-  it_security_office --> ward_7
-  it_security_office --> major_incident_room
   siem_console_ravi_s_laptop --> action_brief_ravi
 
   class door_it_security_office,lock_ward_monitoring_station,lock_bed2_pump_terminal,lock_network_map_screen,lock_infected_workstation_it_office,lock_backup_console,lock_drug_library_checker lock
@@ -382,8 +380,6 @@
   it_network_change_authorisation_form -.-> andgate2
   andgate2 --> lock_network_map_screen
   clinical_safety_sign_off_network_isolation --> andgate2
-  it_security_office --> ward_7
-  it_security_office --> major_incident_room
   siem_console_ravi_s_laptop --> action_brief_ravi
   aim_assess_ward -.-> aim_investigate_attack
   aim_investigate_attack -.-> aim_authorise_isolation
@@ -499,18 +495,16 @@
   rc_obj30_30{"Backup Status Report"}
   rc_drug_library_checker_31{"Drug Library Integrity Terminal"}
   rc_pump_manufacturer_binder_32{"ALARIS GP — Manufacturer Safety Documentation"}
-  rc_dual_auth_panel_33[["Network Isolation — Dual Authorisation Panel"]]
-  rc_obj34_34{"Network Isolation Authorisation Slip"}
-  rc_obj35_35{"Printed Ransom Note"}
-  rc_obj36_36{"ICO Notification Deadline"}
-  rc_obj37_37{"Safety Case Extract (CLAIM-HC-001, HC-003, HC-007)"}
-  rc_obj38_38{"Vendor Remote Access Exception Register"}
-  rc_obj39_39{"Internal Audit Follow-Up — Backup and Governance Gaps"}
-  rc_npc_david_osei_40("David Osei")
-  rc_obj41_41{"Clinical Safety Sign-Off — Network Isolation"}
-  rc_npc_helen_carver_42("Helen Carver")
-  rc_npc_dr_fiona_hartley_43("Dr Fiona Hartley")
-  rc_npc_priya_s_44("Priya S.")
+  rc_obj33_33{"Printed Ransom Note"}
+  rc_obj34_34{"ICO Notification Deadline"}
+  rc_obj35_35{"Safety Case Extract (CLAIM-HC-001, HC-003, HC-007)"}
+  rc_obj36_36{"Vendor Remote Access Exception Register"}
+  rc_obj37_37{"Internal Audit Follow-Up — Backup and Governance Gaps"}
+  rc_npc_david_osei_38("David Osei")
+  rc_obj39_39{"Clinical Safety Sign-Off — Network Isolation"}
+  rc_npc_helen_carver_40("Helen Carver")
+  rc_npc_dr_fiona_hartley_41("Dr Fiona Hartley")
+  rc_npc_priya_s_42("Priya S.")
 
   ward_7 --> it_security_office
   it_security_office --> major_incident_room
@@ -546,24 +540,22 @@
   rc_backup_console_29 --> rc_obj30_30
   major_incident_room --> rc_drug_library_checker_31
   major_incident_room --> rc_pump_manufacturer_binder_32
-  major_incident_room --> rc_dual_auth_panel_33
-  rc_dual_auth_panel_33 --> rc_obj34_34
+  major_incident_room --> rc_obj33_33
+  major_incident_room --> rc_obj34_34
   major_incident_room --> rc_obj35_35
   major_incident_room --> rc_obj36_36
   major_incident_room --> rc_obj37_37
-  major_incident_room --> rc_obj38_38
-  major_incident_room --> rc_obj39_39
-  major_incident_room --> rc_npc_david_osei_40
-  rc_npc_david_osei_40 --> rc_obj41_41
-  major_incident_room --> rc_npc_helen_carver_42
-  major_incident_room --> rc_npc_dr_fiona_hartley_43
-  major_incident_room --> rc_npc_priya_s_44
+  major_incident_room --> rc_npc_david_osei_38
+  rc_npc_david_osei_38 --> rc_obj39_39
+  major_incident_room --> rc_npc_helen_carver_40
+  major_incident_room --> rc_npc_dr_fiona_hartley_41
+  major_incident_room --> rc_npc_priya_s_42
 
   class ward_7,major_incident_room room
   class it_security_office lock
-  class rc_ward_monitoring_station_1,rc_bed2_pump_terminal_2,rc_mar_charts_stack_3,rc_obj4_4,rc_ward_desk_phone_5,rc_ehr_terminal_6,rc_bed1_vitals_7,rc_bed2_vitals_8,rc_bed3_monitor_9,rc_bed4_monitor_10,rc_bed5_vitals_11,rc_bed6_vitals_12,rc_obj14_14,rc_siem_console_20,rc_vpn_terminal_21,rc_network_map_screen_22,rc_obj23_23,rc_obj24_24,rc_obj25_25,rc_obj27_27,rc_command_board_28,rc_obj30_30,rc_drug_library_checker_31,rc_pump_manufacturer_binder_32,rc_obj34_34,rc_obj35_35,rc_obj36_36,rc_obj37_37,rc_obj38_38,rc_obj39_39,rc_obj41_41 item
-  class rc_npc_sarah_mitchell_13,rc_npc_staff_nurse_15,rc_npc_mr_t_ahmed_16,rc_npc_ms_a_okafor_17,rc_npc_mrs_kowalski_18,rc_npc_on_call_pharmacist_19,rc_npc_ravi_anand_26,rc_npc_david_osei_40,rc_npc_helen_carver_42,rc_npc_dr_fiona_hartley_43,rc_npc_priya_s_44 npc
-  class rc_backup_console_29,rc_dual_auth_panel_33 container
+  class rc_ward_monitoring_station_1,rc_bed2_pump_terminal_2,rc_mar_charts_stack_3,rc_obj4_4,rc_ward_desk_phone_5,rc_ehr_terminal_6,rc_bed1_vitals_7,rc_bed2_vitals_8,rc_bed3_monitor_9,rc_bed4_monitor_10,rc_bed5_vitals_11,rc_bed6_vitals_12,rc_obj14_14,rc_siem_console_20,rc_vpn_terminal_21,rc_network_map_screen_22,rc_obj23_23,rc_obj24_24,rc_obj25_25,rc_obj27_27,rc_command_board_28,rc_obj30_30,rc_drug_library_checker_31,rc_pump_manufacturer_binder_32,rc_obj33_33,rc_obj34_34,rc_obj35_35,rc_obj36_36,rc_obj37_37,rc_obj39_39 item
+  class rc_npc_sarah_mitchell_13,rc_npc_staff_nurse_15,rc_npc_mr_t_ahmed_16,rc_npc_ms_a_okafor_17,rc_npc_mrs_kowalski_18,rc_npc_on_call_pharmacist_19,rc_npc_ravi_anand_26,rc_npc_david_osei_38,rc_npc_helen_carver_40,rc_npc_dr_fiona_hartley_41,rc_npc_priya_s_42 npc
+  class rc_backup_console_29 container
   class node_start start`
     };
     const rendered = {};

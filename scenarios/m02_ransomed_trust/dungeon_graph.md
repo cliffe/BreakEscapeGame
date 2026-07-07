@@ -190,8 +190,8 @@ flowchart TD
   vm_access_terminal --> vmch_submit_ssh_flag
   reception_lobby --> hallway_north
   reception_lobby --> hospital_ward
+  hospital_ward --> hallway_south
   emergency_equipment_storage --> hallway_south
-  conference_room --> hallway_north
 
   class door_it_department,door_server_room,door_dr_kim_office,lock_it_filing_cabinet,lock_emergency_storage_safe,lock_ehr_terminal_ward,ehr_terminal_offline,lock_infected_terminal,lock_marcus_workstation,marcus_s_workstation,lock_vm_launcher_rooting_for_a_win,lock_hospital_recovery_console,pin_locked_safe,lock_dr_kim_s_safe,lock_press_terminal,lock_proftpd_exploitation_unlocked,lock_database_backup_accessible,lock_ghost_lore_unlocked lock
   class it_department,server_room,dr_kim_office,reception_lobby,hospital_ward,emergency_equipment_storage,conference_room,hallway_north,hallway_south room
@@ -394,8 +394,8 @@ flowchart TD
   vm_access_terminal --> vmch_submit_ssh_flag
   reception_lobby --> hallway_north
   reception_lobby --> hospital_ward
+  hospital_ward --> hallway_south
   emergency_equipment_storage --> hallway_south
-  conference_room --> hallway_north
   aim_infiltrate_hospital -.-> aim_access_it_systems
   aim_access_it_systems -.-> aim_exploit_entropy_backdoor
   aim_access_it_systems -.-> aim_recover_offline_keys
@@ -472,11 +472,10 @@ flowchart TD
   reception_lobby --> it_department
   reception_lobby --> dr_kim_office
   reception_lobby --> hospital_ward
-  it_department --> hallway_south
+  hospital_ward --> hallway_south
   server_room --> hallway_north
   emergency_equipment_storage --> hallway_south
   dr_kim_office --> conference_room
-  conference_room --> hallway_north
 
   class reception_lobby,hospital_ward,emergency_equipment_storage,conference_room,hallway_north,hallway_south room
   class it_department,server_room,dr_kim_office lock
@@ -579,11 +578,10 @@ flowchart TD
   reception_lobby --> it_department
   reception_lobby --> dr_kim_office
   reception_lobby --> hospital_ward
-  it_department --> hallway_south
+  hospital_ward --> hallway_south
   server_room --> hallway_north
   emergency_equipment_storage --> hallway_south
   dr_kim_office --> conference_room
-  conference_room --> hallway_north
   reception_lobby --> rc_obj1_1
   reception_lobby --> rc_obj2_2
   reception_lobby --> rc_npc_agent_0x99_3

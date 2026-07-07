@@ -669,7 +669,8 @@ recovery_instructions_encoded = rot13("FULL RECOVERY REQUIRES OFFLINE + ONLINE K
       "type": "room_hospital_ward",
       "door_sign": "Patient Ward",
       "connections": {
-        "north": "reception_lobby"
+        "north": "reception_lobby",
+        "south": "hallway_south"
       },
       "npcs": [
         {
@@ -815,8 +816,7 @@ recovery_instructions_encoded = rot13("FULL RECOVERY REQUIRES OFFLINE + ONLINE K
       "difficulty": "easy",
       "door_sign": "IT Department",
       "connections": {
-        "west": "reception_lobby",
-        "south": "hallway_south"
+        "west": "reception_lobby"
       },
       "npcs": [
         {
@@ -996,7 +996,7 @@ recovery_instructions_encoded = rot13("FULL RECOVERY REQUIRES OFFLINE + ONLINE K
       "difficulty": "medium",
       "door_sign": "Server Room",
       "connections": {
-        "west": "hallway_north"
+        "south": "hallway_north"
       },
       "npcs": [],
       "objects": [
@@ -1305,8 +1305,7 @@ recovery_instructions_encoded = rot13("FULL RECOVERY REQUIRES OFFLINE + ONLINE K
       },
       "door_sign": "Conference Room",
       "connections": {
-        "south": "dr_kim_office",
-        "east": "hallway_north"
+        "south": "dr_kim_office"
       },
       "npcs": [],
       "objects": [
@@ -1366,8 +1365,7 @@ recovery_instructions_encoded = rot13("FULL RECOVERY REQUIRES OFFLINE + ONLINE K
       "door_sign": "North Corridor",
       "connections": {
         "south": "reception_lobby",
-        "west": "conference_room",
-        "east": "server_room"
+        "north": "server_room"
       },
       "npcs": [
         {
@@ -1448,7 +1446,7 @@ recovery_instructions_encoded = rot13("FULL RECOVERY REQUIRES OFFLINE + ONLINE K
       },
       "door_sign": "South Corridor",
       "connections": {
-        "north": "it_department",
+        "north": "hospital_ward",
         "south": "emergency_equipment_storage"
       },
       "npcs": [],
