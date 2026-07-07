@@ -202,85 +202,79 @@ Recover decryption keys and advise hospital board on ransom payment decision bef
                         ADMINISTRATIVE WING
                 ========================================
 
-
-    ┌─────────────────┐         ┌──────────────────┐
-    │  CONFERENCE     │         │   HALLWAY NORTH  │ 🚨 Patrol Route:
-    │     ROOM        │←────────┤    (20×4 GU)     │    ①→②→③→②(loop)
-    │   (10×12 GU)    │         │                  │
-    │                 │         │  ①──────②──────③ │
-    │  📦 Budget      │         │                  │    Waypoints:
-    │     Evidence    │         │  👤 Security     │    ① (3,2)
-    └─────────────────┘         │     Guard        │    ② (10,2)
-                                │  (Patrol)        │    ③ (17,2)
-                                └──────┬───────┬───┘
-                                       │       │
-                    ┌──────────────────┘       └──────────────────┐
-                    │                                              │
-            ┌───────┴──────────┐                          ┌───────┴─────────┐
-            │  DR. KIM'S       │                          │   SERVER ROOM   │
-            │    OFFICE        │                          │    (10×8 GU)    │
-            │  (12×10 GU)      │                          │                 │
-            │                  │                          │ ▓▓▓▓ LOCKED ▓▓▓ │
-            │  👤 Dr. Kim      │                          │  (RFID/Lockpick)│
-            │  🔒 Safe (1987)  │                          │                 │
-            │  📦 ZDS Invoice  │                          │  💻 VM Terminal │
-            └────────┬─────────┘                          │  💻 Drop-Site   │
-                     │                                    │  💻 CyberChef   │
-                     │                                    │  💻 Ransom UI   │
-            ┌────────┴─────────┐                          └─────────────────┘
-            │   RECEPTION      │
-            │     LOBBY        │
-            │   (15×12 GU)     │
-            │                  │
-            │  👤 Briefing     │
-            │  👤 Receptionist │
-            │  📦 Plaque 1987  │
-            │  📦 Directory    │
-            └────────┬─────────┘
-                     │
-            ┌────────┴─────────┐
-            │  IT DEPARTMENT   │
-            │   (12×10 GU)     │
-            │                  │
-            │  👤 Marcus Webb  │
-            │  🔒 Filing       │
-            │     Cabinet      │
-            │  📦 Password     │
-            │     Hints        │
-            │  📦 Emma Photo   │
-            │  💻 Infected     │
-            │     Terminal     │
-            └────────┬─────────┘
-                     │
-            ┌────────┴─────────┐
-            │  HALLWAY SOUTH   │
-            │    (20×4 GU)     │
-            │                  │
-            │  📦 Signs        │
-            └────────┬─────────┘
-                     │
-            ┌────────┴─────────┐
-            │   EMERGENCY      │
-            │   EQUIPMENT      │
-            │    STORAGE       │
-            │    (8×8 GU)      │
-            │                  │
-            │  🔒 Safe (1987)  │
-            │  🔑 Offline Keys │
-            │  📦 PIN Cracker  │
-            └──────────────────┘
+    Layout verified overlap-free by scripts/validate_scenario.rb
+    (room geometry check). Start room: RECEPTION LOBBY.
 
 
-    ROOM DIMENSIONS (All measurements in Game Units - GU)
-    ======================================================
-    Reception Lobby:          15 × 12 GU  (Usable: 13 × 10 GU)
-    IT Department:            12 × 10 GU  (Usable: 10 × 8 GU)
-    Server Room:              10 × 8 GU   (Usable: 8 × 6 GU)
-    Emergency Storage:        8 × 8 GU    (Usable: 6 × 6 GU)
-    Dr. Kim's Office:         12 × 10 GU  (Usable: 10 × 8 GU)
-    Conference Room:          10 × 12 GU  (Usable: 8 × 10 GU)
-    Hallway North:            20 × 4 GU   (Usable: 18 × 2 GU)
-    Hallway South:            20 × 4 GU   (Usable: 18 × 2 GU)
+        WEST WING              CENTRE COLUMN            EAST WING
+
+     ┌───────────┐            ┌───────────┐
+     │CONFERENCE │            │  SERVER   │ ▓ LOCKED (RFID keycard
+     │   ROOM    │            │   ROOM    │   from Marcus, or pick)
+     │ 💻 Press  │            │ 💻 VM Term│
+     │   Terminal│            │ 💻 Drop-  │
+     │ 📦 Board  │            │    Site   │
+     │   liability            │ 💻 CyberChef
+     │   + budget│            │ 💻 Recovery
+     └─────┬─────┘            │    Console│
+           │ N                └─────┬─────┘
+     ┌─────┴─────┐            ┌─────┴─────┐
+     │ DR. KIM'S │ ▓ LOCKED   │  HALLWAY  │ 🚨 Security guard
+     │   OFFICE  │ (lockpick) │   NORTH   │    (patrol)
+     │ 👤 Dr.Kim │            └─────┬─────┘
+     │ 🔒 Safe   │                  │ S
+     │   (1987)  │            ┌─────┴─────┐         ┌───────────┐
+     │ 📦 ZDS    │   (E→)     │ RECEPTION │  (E→)   │    IT     │ ▓ LOCKED
+     │   Invoice │───────────►│   LOBBY   │────────►│ DEPARTMENT│ (lockpick)
+     └───────────┘   dr_kim   │ 👤 Briefing         │ 👤 Marcus │
+                     ↔ recept │ 👤 Recept.│  reception│ 🔒 Filing │
+                              │ 📦 Plaque │  ↔ IT     │   Cabinet │
+                              │   "1987"  │         │ 📦 Pwd    │
+                              │ 🔑 Lockpick│         │   sticky  │
+                              └─────┬─────┘         │ 💻 Infected
+                                    │ S             └───────────┘
+                              ┌─────┴─────────────┐
+                              │   PATIENT WARD    │ (double-wide, 4 GU)
+                              │ 👤 Ward Nurse     │
+                              │ 👤 Patients (beds)│
+                              │ 💻 EHR Terminal   │
+                              └─────┬─────────────┘
+                                    │ S
+                              ┌─────┴─────┐
+                              │  HALLWAY  │
+                              │   SOUTH   │
+                              │ 📦 Nurse's│
+                              │    note   │
+                              └─────┬─────┘
+                                    │ S
+                              ┌─────┴─────┐
+                              │ EMERGENCY │
+                              │  STORAGE  │
+                              │ 🔒 Safe   │
+                              │   (1987)  │
+                              │ 🔑 Offline│
+                              │   Keys    │
+                              │ 📦 PIN    │
+                              │   Cracker │
+                              └───────────┘
+
+    CONNECTIONS (reciprocal doors)
+    ==============================
+    Reception   —N→ Hallway North   —N→ Server Room (RFID/pick)
+    Reception   —E→ IT Department (pick)          [single-door]
+    Reception   —W→ Dr. Kim's Office (pick) —N→ Conference Room
+    Reception   —S→ Patient Ward —S→ Hallway South —S→ Emergency Storage
+
+    ROOM DIMENSIONS (real tilemap size, in Grid Units — GU)
+    =======================================================
+    Reception Lobby:      2 × 2 GU   (room_reception)
+    IT Department:        2 × 2 GU   (room_office)
+    Server Room:          2 × 2 GU   (room_servers)
+    Dr. Kim's Office:     2 × 2 GU   (room_office)
+    Conference Room:      2 × 2 GU   (room_meeting)
+    Patient Ward:         4 × 2 GU   (room_hospital_ward, double-wide)
+    Emergency Storage:    1 × 1 GU   (small_room_storage_1x1gu)
+    Hallway North/South:  2 × 1 GU   (hall_1x2gu)
 
     LOCK TYPES & DIFFICULTY
     =======================
@@ -370,13 +364,13 @@ Recover decryption keys and advise hospital board on ransom payment decision bef
 - Task `decode_ransomware_note` completes
 
 **Step 6:** Navigate to Server Room (STEALTH CRITICAL)
-- From IT Department, go north to hallway_north
+- From Reception, go north into hallway_north (the server room sits north of this corridor)
 - **SECURITY GUARD PATROL ACTIVE**
 - Observe guard patrol pattern (60-second loop)
 - **Timing Strategy:**
-  - Wait for guard to patrol to left end (waypoint 1)
-  - Guard pauses 20 ticks at waypoint
-  - Sprint to server room door (east connection) during pause
+  - Wait for guard to patrol to one end of the corridor
+  - Guard pauses 20 ticks at each waypoint
+  - Sprint to the server room door (north connection) during a pause
   - Enter quickly before guard turns around
 
 **Step 7A:** Enter Server Room (High Trust - Easy)
@@ -474,11 +468,10 @@ Recover decryption keys and advise hospital board on ransom payment decision bef
 #### Phase 4: Offline Key Recovery (50-65 minutes)
 
 **Step 9:** Navigate to Emergency Equipment Storage
-- Exit server room
-- Go south through hallway_north (avoid guard)
+- Exit server room, go south through hallway_north (avoid guard)
 - Enter reception_lobby
-- Go east to it_department
-- Go south to hallway_south
+- Go south into the Patient Ward (open access)
+- Continue south to hallway_south
 - Go south to emergency_equipment_storage
 - Task `locate_safe` completes
 
