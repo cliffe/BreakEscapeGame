@@ -479,6 +479,14 @@ recovery_instructions_encoded = rot13("FULL RECOVERY REQUIRES OFFLINE + ONLINE K
             },
             {
               "type": "lab-workstation",
+              "key_id": "m02_scanning_exploitation_field_guide",
+              "name": "SAFETYNET Field Guide: Scanning and Exploitation",
+              "takeable": true,
+              "labUrl": "https://cliffe.github.io/HacktivityLabSheets/labs/m02_ransomed_trust/safetynet-field-guide-scanning-and-exploitation/",
+              "observations": "End-to-end path from an Nmap scan to a validated Metasploit shell -- fingerprint, research the CVE, configure, launch, verify"
+            },
+            {
+              "type": "lab-workstation",
               "key_id": "m02_lockpicking_field_guide",
               "name": "SAFETYNET Field Guide: Lockpicking",
               "takeable": true,
@@ -551,6 +559,13 @@ recovery_instructions_encoded = rot13("FULL RECOVERY REQUIRES OFFLINE + ONLINE K
               "onceOnly": true,
               "setGlobal": { "ssh_guide_offered": true },
               "sendTimedMessage": { "delay": 3600, "message": "Once you've mapped it, you'll want a foothold over SSH. I've got a field guide on SSH access and bruteforcing weak credentials with Hydra -- say the word and it's yours." }
+            },
+            {
+              "eventPattern": "object_interacted",
+              "condition": "data.objectType === 'vm-launcher'",
+              "onceOnly": true,
+              "setGlobal": { "scanning_exploitation_guide_offered": true },
+              "sendTimedMessage": { "delay": 1200, "message": "You're on the Kali terminal -- that's your attack box for this op. If you want the whole path in one place, from the first Nmap scan through to a validated Metasploit shell, I can send you the scanning-and-exploitation field guide. Just say the word." }
             },
             {
               "eventPattern": "objective_task_completed:submit_ssh_flag",
@@ -780,6 +795,7 @@ recovery_instructions_encoded = rot13("FULL RECOVERY REQUIRES OFFLINE + ONLINE K
             "language": "en-GB"
           },
           "globalVarOnKO": "ward_nurse_ko",
+          "taskOnKO": "gather_pin_clues",
           "observations": "A nurse moving between beds, checking paper charts since the electronic systems are down",
           "puzzle_graph_actions": [
             { "id": "talk_to_ward_nurse", "label": "Hear from the ward nurse about patient risk", "unlocks_aim": "infiltrate_hospital" }
@@ -1694,6 +1710,8 @@ recovery_instructions_encoded = rot13("FULL RECOVERY REQUIRES OFFLINE + ONLINE K
     "vulnerability_guide_requested": false,
     "exploitation_guide_offered": false,
     "exploitation_guide_requested": false,
+    "scanning_exploitation_guide_offered": false,
+    "scanning_exploitation_guide_requested": false,
 
     "ghost_contacted_player": false,
     "ghost_persuasion_attempted": false,

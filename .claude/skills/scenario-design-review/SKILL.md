@@ -69,6 +69,15 @@ Cross-reference the scenario's lock types against the README teaching objectives
 - Does the combination of lock types in this scenario meaningfully address its stated brief?
 - If the scenario has a specific security topic (e.g. ransomware response, network segmentation), are the locks/puzzles thematically coherent rather than generic?
 
+### 2c′. Field guides (handler lab sheets)
+
+If the handler (a phone NPC like Agent HaX) hands out **Field Guides** — `lab-workstation` items with a `labUrl` — check the delivery follows the `m01_first_contact` / `m02_ransomed_trust` pattern (documented in `README_scenario_design.md §Field guides`):
+
+- **Exposure-gated, not time-gated**: each guide is offered by an `eventMapping` that fires when the player first reaches the challenge element it explains (e.g. `object_interacted`/`vm-launcher` for the Kali box, `item_picked_up:lockpick`, `room_entered:server_room`) — not on a bare timer. A guide the player is offered before they've encountered the thing it teaches is a design smell.
+- **On request, not forced**: the offer sets a `<x>_guide_offered` global; the actual `#give_item:lab-workstation:<key_id>` lives behind an ink `support_hub` choice gated `{<x>_guide_offered and not <x>_guide_hint_given}`. Flag guides pushed directly into the inventory with no player choice.
+- **Wiring integrity**: every `#give_item:lab-workstation:<key_id>` must match a `key_id` in the handler's `itemsHeld` (the validator flags mismatches), and each `<x>_guide_offered`/`_requested` global should be declared in `globalVariables`. Spot-check that offered guides actually have a reachable request path (a hub choice), and that a guide's `labUrl` points at a lab sheet that exists in the `HacktivityLabSheets` repo (a referenced `labUrl` with no corresponding published lab sheet is a broken link — report it).
+- **Coverage**: does each significant technical challenge (scanning, exploitation, priv-esc, decoding, lockpicking) have a corresponding guide, and does each guide map to a real challenge in this scenario rather than being generic filler?
+
 ### 2d. Narrative structure
 
 Based on `README_scenario_design.md §Designing Solvable Scenarios` points 8 and 9:
@@ -139,14 +148,18 @@ Flag any aim where more than half the required tasks are `manual` with no in-wor
 
 ### 2h. NPC knockout resilience — the mission must survive a KO of *any* NPC
 
-KO is permanent in this engine, and the player can attack **any** NPC at any time (including friendly ones, out of suspicion or by mistake). The gold standard is `m01_first_contact`: every NPC KO leaves the mission completable *and* the narrative coherent. Two mechanisms carry this, and both must be present on every NPC that matters:
+KO is permanent in this engine, and the player can attack **any** NPC at any time (including friendly ones, out of suspicion or by mistake). The gold standard is `m01_first_contact`: every NPC KO leaves the mission completable *and* the narrative coherent.
+
+**Phase 1 now covers the mechanical half of this**: the objective-wiring check warns when a required task's only completion path is a KO-vulnerable conversation (a `#complete_task` ink tag on a person NPC) with no `taskOnKO`/`eventMapping` fallback. It classifies each as **critical-path** (→ warning, genuine soft-lock, must-fix) or **side-objective** (→ suggestion, acceptable — a KO may legitimately close off a side/lore aim). Cross-reference those here rather than restating them, and sanity-check the classification against the real win condition. Your job in this section is the part the validator cannot judge: **narrative coherence** on the KO branch.
+
+Two mechanisms carry KO resilience, and both must be present on every NPC that matters:
 
 - **`taskOnKO`** — if an NPC's conversation is the only way to complete a required task (or to *unlock* a downstream required task / give a gating item), knocking them out must complete that task instead. Missing `taskOnKO` on a conversation-gated NPC is a **soft-lock**: the player removes the NPC and the objective can never close. (Reference: `dr_sarah_kim` → `taskOnKO: meet_dr_kim`, `marcus_webb` → `taskOnKO: talk_to_marcus`, `derek_lawson` → `taskOnKO: confront_derek`.)
 - **`globalVarOnKO`** — sets a global on knockout so the closing debrief and end-credits can *acknowledge* the KO rather than contradicting it. In m01 each suspect's KO sets `<name>_ko`, and the credits carry a matching conditional line ("SARAH O'BRIEN: Removed — No ENTROPY connection"). A KO with no corresponding debrief/credit branch produces the classic contradiction: the debrief says a character is "still at large / still on staff" while their body is on the floor.
 
 **Check every `npcType: "person"` NPC:**
 
-1. **Completability.** Does KO'ing this NPC strand any required task? Trace what their conversation completes, unlocks, or gives (`#complete_task`, `#unlock_task`, `#unlock_aim`, `#give_item`, `#set_global` that gates progress). If any of that is *only* reachable through dialogue, the NPC needs `taskOnKO` (for the task) — and if they hand over a gating **item** or unlock a **later** task, confirm there is an alternative path to that item/unlock on the KO branch, because `taskOnKO` completes only one named task. Flag NPCs whose KO removes the only source of a required item or a required downstream unlock.
+1. **Completability — critical path only.** The bar is *mission completability*, not task completability. Does KO'ing this NPC strand a task that is **required to finish the mission** (the `missionConclusion` aim's `requiresCompleted` tasks, plus the non-optional tasks of every aim its `unlockCondition` chain depends on)? Trace what their conversation completes, unlocks, or gives (`#complete_task`, `#unlock_task`, `#unlock_aim`, `#give_item`, `#set_global` that gates progress). If a **critical-path** task/item/unlock is *only* reachable through dialogue, the NPC needs a `taskOnKO` (or `eventMapping`) fallback — and since `taskOnKO` completes only one named task, a second critical unlock/item needs its own KO-keyed `eventMapping`. **It is acceptable for a KO to permanently close off a *side / lore* objective** (a non-critical aim) — that can be an intended consequence of the player's choice, and does not need a fallback. The validator makes this split for you (critical → warning, side → suggestion); confirm its critical/side classification matches the actual win condition.
 2. **Narrative coherence.** Does KO'ing this NPC set a global that the debrief / credits actually branch on? A villain or plot-critical NPC (like the antagonist or a hidden asset) should have its KO feed the *same* resolution state a peaceful path would — e.g. antagonist `globalVarOnKO` reuses the `<villain>_confronted` global so the story continues identically whether the player talks them down or drops them. For a hidden/secret NPC, ensure the KO-without-discovery case has its own debrief line (the player may neutralise them without ever learning what they were).
 3. **Win condition independence.** Confirm the actual win condition (usually a `mission_complete` global set from a terminal/decision, not an NPC conversation) cannot be blocked by any NPC being hostile or KO'd. If the only path to the win runs through a single NPC who can be KO'd, that is a **must-fix**.
 
@@ -155,7 +168,7 @@ Report as a short table:
 | Person NPC | Gates a required task/item? | `taskOnKO` present (or N/A)? | KO reflected in debrief/credits? | Verdict |
 |-----------|----------------------------|------------------------------|----------------------------------|---------|
 
-Flag under **Must fix** any NPC whose KO soft-locks the mission (missing `taskOnKO` on a conversation-gated required task, or KO removes the sole source of a gating item/unlock). Flag under **Should fix** any NPC whose KO leaves the debrief/credits contradictory (missing or unhandled `globalVarOnKO`).
+Flag under **Must fix** only an NPC whose KO soft-locks the *mission* — i.e. strands a **critical-path** task or removes the sole source of a gating item/unlock needed to complete the mission. A KO that only strands a **side / lore** objective is acceptable (note it, don't escalate it, unless the side arc is important enough that the author clearly intends it to survive a KO). Flag under **Should fix** any NPC whose KO leaves the debrief/credits contradictory (missing or unhandled `globalVarOnKO`).
 
 ---
 
@@ -166,7 +179,7 @@ After both phases, produce a short prioritised list:
 **Must fix (blocks play)**
 - All ❌ INVALID items from the validator
 - **Win-condition failure modes first**: any field that controls the scenario's end state (e.g. `disableClose`, `setVisible` for the final NPC, `onComplete` triggers) that is schema-unknown, misspelled, or missing — list these at the top because they silently prevent the scenario from completing even when the player does everything right
-- **NPC knockout soft-locks (§2h)**: any NPC whose KO strands a required task or removes the sole source of a gating item/unlock — KO is permanent, so these silently make the mission uncompletable
+- **NPC knockout soft-locks (§2h)**: any NPC whose KO strands a **critical-path** task or removes the sole source of a gating item/unlock needed to finish the mission — KO is permanent, so these silently make the mission uncompletable. (A KO that only closes off a side/lore objective is not a must-fix.)
 
 **Should fix (degrades experience)**
 - All ⚠️ WARNING items + any CONCERN findings from the design review

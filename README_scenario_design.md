@@ -47,6 +47,7 @@ The validator performs three phases:
    - Missing or non-bidirectional room connections
    - `onRead.setVariable` / `onPickup.setVariable` referencing variables not in `globalVariables`
    - `globalVarOnKO` / `taskOnKO` cross-references on NPCs
+   - **NPC knockout resilience** — required tasks whose only completion path is a KO-vulnerable conversation (a `#complete_task` ink tag on a person NPC) with no `taskOnKO` or `eventMapping` fallback
    - NPC `timedConversation` using `knot` instead of `targetKnot`
    - Phone NPC pitfalls (`targetKnot` in eventMappings, `conversationMode` on phone NPCs, etc.)
    - Task `targetNPC`, `targetRoom`, `targetObject` cross-references
@@ -813,6 +814,15 @@ In-world characters with sprites that the player can walk up to and interact wit
 | `behavior.immovable` | `true` — NPC cannot be pushed or displaced by collisions (e.g. a patient in a bed) |
 | `behavior.initiallyHidden` | `true` hides NPC at spawn — use `setVisible` in an event mapping to reveal them later |
 
+#### Knockout resilience — the mission must survive a KO of *any* NPC
+
+The player can attack **any** person NPC at any time, and **KO is permanent** — there is no respawn. A well-built scenario stays both *completable* and *narratively coherent* no matter who the player knocks out. `m01_first_contact` is the reference: every conversation-gated task has a knockout fallback, and every plot-relevant NPC's KO feeds the debrief. Two fields carry this:
+
+- **`taskOnKO`** — completes a task when the NPC is knocked out. The rule that actually matters: **a KO must never block mission completion.** If an NPC's conversation is the *only* way to complete a task on the **critical path** (required to finish the mission — the `missionConclusion` aim's `requiresCompleted` tasks, plus the non-optional tasks of every aim its `unlockCondition` chain depends on), it **must** have a `taskOnKO` (or `eventMapping`) fallback, or KO'ing it soft-locks the mission. It is **fine** for a KO to permanently close off a *side / lore* objective (a non-critical aim) — that can be an intended consequence of the player's choice; m01's `meet_kevin` is exactly this. **`taskOnKO` names only ONE task** — if an NPC's ink completes *two* critical tasks, wire the second one's completion through an `eventMapping` with `completeTask` on a phone/handler NPC keyed to the NPC's KO global (`global_variable_changed:<name>_ko`). See the `obtain_password_hints` wiring in `m02_ransomed_trust`. The validator reports a critical-path case as a **warning** and a side-objective case as a **suggestion**.
+- **`globalVarOnKO`** — sets a global on KO so the closing debrief and end-credits can *acknowledge* the KO rather than contradicting it (e.g. "SARAH O'BRIEN: Removed — No ENTROPY connection"). A villain or secret NPC should have its KO drive the *same* resolution state a peaceful path would (e.g. an antagonist's `globalVarOnKO` reusing the `<villain>_confronted` global). For a hidden asset, add a debrief branch for the "neutralised without being identified" case.
+
+The win condition itself (usually a `mission_complete` global set from a terminal/decision, not a conversation) should never route solely through an NPC that can be KO'd. The validator's objective-wiring check flags a KO-vulnerable **critical-path** task as a warning (a real soft-lock) and a KO-vulnerable **side-objective** task as a suggestion (acceptable if intended).
+
 #### Patrol Behaviour
 
 The `behavior.patrol` object controls how the NPC moves around its room:
@@ -976,6 +986,22 @@ Contacts in the player's phone. Not rendered in the world — they exist only in
 - `targetKnot` in event mappings does **not** work after first conversation — use `setGlobal` + an Ink conditional hub choice instead
 - `conversationMode` field is ignored on phone NPCs
 - A phone NPC with no `timedMessages` still works as a contact the player can call manually
+
+#### Field guides (exposure-gated handler lab sheets)
+
+The handler (a phone NPC like Agent HaX) can hand the player optional **Field Guides** — in-universe lab sheets that teach the technique a challenge needs. The established pattern (see `m01_first_contact` and `m02_ransomed_trust`) gates each guide behind **exposure to the relevant challenge element**, then delivers it **on request** so the player is never spammed:
+
+1. **Hold the guide.** Add a `lab-workstation` item to the handler's `itemsHeld`, with a `key_id`, a `name`, and a `labUrl` pointing at the published lab sheet (a markdown file in the `HacktivityLabSheets` repo with `game_fragment: true` and a matching `permalink`):
+   ```json
+   { "type": "lab-workstation", "key_id": "m02_scanning_exploitation_field_guide",
+     "name": "SAFETYNET Field Guide: Scanning and Exploitation",
+     "takeable": true,
+     "labUrl": "https://cliffe.github.io/HacktivityLabSheets/labs/m02_ransomed_trust/safetynet-field-guide-scanning-and-exploitation/" }
+   ```
+2. **Offer on exposure.** An `eventMapping` fires when the player first reaches the challenge element (e.g. `object_interacted` with `data.objectType === 'vm-launcher'` — "do they have the Kali box yet?", or `item_picked_up:lockpick`, or `room_entered:server_room`). It sets a `<x>_guide_offered` global and sends a message offering the guide.
+3. **Deliver on request.** In the handler's ink, a `support_hub` choice gated `{<x>_guide_offered and not <x>_guide_hint_given}` routes to a knot that fires `#give_item:lab-workstation:<key_id>` (the `key_id` must match an item in `itemsHeld`, or the give silently fails — the validator checks this).
+
+Keep the offer/request globals in `globalVariables` (`<x>_guide_offered`, `<x>_guide_requested`). Gate on genuine exposure, not on time — a guide should appear because the player has walked into the thing it explains.
 
 ---
 

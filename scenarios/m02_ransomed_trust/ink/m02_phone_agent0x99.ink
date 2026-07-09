@@ -18,6 +18,7 @@ VAR privesc_guide_hint_given = false
 VAR scanning_guide_hint_given = false
 VAR vulnerability_guide_hint_given = false
 VAR exploitation_guide_hint_given = false
+VAR scanning_exploitation_guide_hint_given = false
 VAR ghost_reaction_discussed = false
 VAR ghost_deal_discussed = false
 VAR board_email_discussed = false
@@ -37,6 +38,7 @@ VAR privesc_guide_offered = false
 VAR scanning_guide_offered = false
 VAR vulnerability_guide_offered = false
 VAR exploitation_guide_offered = false
+VAR scanning_exploitation_guide_offered = false
 VAR board_coverup_email_found = false
 VAR ransom_decision_made = false
 VAR ghost_deal_accepted = false
@@ -125,6 +127,10 @@ Agent 0x99: Start with Dr. Kim -- CTO, west of reception. She has the authority 
 // Optional field guide: vulnerability triage
 + {vulnerability_guide_offered and not vulnerability_guide_hint_given} [Send the vulnerability analysis field guide]
     -> request_vulnerability_guide
+
+// Optional field guide: scanning-to-exploitation (offered on reaching the Kali/VM box)
++ {scanning_exploitation_guide_offered and not scanning_exploitation_guide_hint_given} [Send the scanning and exploitation field guide]
+    -> request_scanning_exploitation_guide
 
 // Optional field guide: exploitation workflow
 + {exploitation_guide_offered and not exploitation_guide_hint_given} [Send the ProFTPD exploitation field guide]
@@ -394,6 +400,20 @@ Agent 0x99: You already have access. Now classify exposed services, match likely
 
 + [Got it]
     Agent 0x99: Exactly. Prioritize what is exploitable now, not everything that looks noisy.
+    -> support_hub
+
+=== request_scanning_exploitation_guide ===
+#speaker:agent_0x99
+~ scanning_exploitation_guide_hint_given = true
+#set_variable:scanning_exploitation_guide_requested:true
+#give_item:lab-workstation:m02_scanning_exploitation_field_guide
+
+Agent 0x99: Scanning and exploitation guide uploaded.
+
+Agent 0x99: It runs the whole chain -- Nmap fingerprint, research the CVE, feed the scan into Metasploit, configure the exploit and payload, then validate the shell. Work it top to bottom and you won't miss a step.
+
++ [Thanks, I needed this]
+    Agent 0x99: Scan first, match the version exactly, and don't improvise until you've got a stable session.
     -> support_hub
 
 === request_exploitation_guide ===

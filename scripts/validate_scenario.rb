@@ -845,6 +845,150 @@ def check_objectives_wiring(json_data, base_dir)
     end
   end
 
+  # ─────────────────────────────────────────────────────────────
+  # CHECK 4  NPC knockout resilience — required tasks must survive a KO
+  #
+  # KO is permanent in this engine and the player can attack any NPC. If a
+  # required task's ONLY completion path is talking to a person NPC (a
+  # '#complete_task' tag in their ink) with no taskOnKO / eventMapping /
+  # world-event fallback, knocking that NPC out strands the task and can
+  # soft-lock the mission. Note that an NPC's taskOnKO can name only ONE
+  # task, so an NPC whose ink completes two required tasks needs an
+  # eventMapping fallback (keyed to its KO global) for the second one.
+  # Reference: m01_first_contact gives every conversation-gated task a
+  # taskOnKO (e.g. dr_sarah_kim→meet_dr_kim, derek_lawson→confront_derek).
+  # ─────────────────────────────────────────────────────────────
+  begin
+    # Tasks completed via any eventMapping (phones, handlers, objects, rooms) — KO-safe.
+    event_completed_tasks = Set.new
+    # Tasks named by any NPC's taskOnKO — KO-safe.
+    taskonko_tasks = Set.new
+
+    scan_event_mappings = lambda do |mappings|
+      Array(mappings).each do |m|
+        event_completed_tasks << m['completeTask'] if m.is_a?(Hash) && m['completeTask']
+      end
+    end
+
+    json_data['rooms']&.each do |_room_id, room|
+      room['npcs']&.each do |npc|
+        scan_event_mappings.call(npc['eventMappings'])
+        taskonko_tasks << npc['taskOnKO'] if npc['taskOnKO']
+      end
+      room['objects']&.each { |obj| scan_event_mappings.call(obj['eventMappings']) }
+    end
+    json_data['startItemsInInventory']&.each { |item| scan_event_mappings.call(item['eventMappings']) }
+
+    # Required (non-optional) tasks and their types.
+    required_task_types = {}
+    json_data['objectives']&.each do |aim|
+      aim['tasks']&.each do |t|
+        next if t['optional']
+        required_task_types[t['taskId']] = t['type']
+      end
+    end
+
+    # Critical-path tasks: those whose completion is genuinely required to finish the
+    # mission. A KO stranding a *side-aim* (lore / optional-arc) task is acceptable by
+    # design — only a KO that blocks mission completion is a real problem. We derive the
+    # critical set from the missionConclusion aim and its unlockCondition ancestry.
+    aims_by_id = {}
+    json_data['objectives']&.each { |a| aims_by_id[a['aimId']] = a }
+    conclusion_aim = json_data['objectives']&.find { |a| a['missionConclusion'] }
+
+    critical_aim_ids = Set.new
+    if conclusion_aim
+      queue = [conclusion_aim['aimId']]
+      until queue.empty?
+        aid = queue.shift
+        next if critical_aim_ids.include?(aid)
+        critical_aim_ids << aid
+        aim = aims_by_id[aid]
+        next unless aim
+        dep = aim.dig('unlockCondition', 'aimCompleted')
+        Array(dep).each { |d| queue << d } if dep
+      end
+    end
+
+    # Task ids required for mission completion. For an aim with requiresCompleted (the
+    # conclusion aim), only those tasks are strictly required; for the rest, all
+    # non-optional tasks must complete for the aim to count as completed.
+    critical_task_ids = Set.new
+    critical_aim_ids.each do |aid|
+      aim = aims_by_id[aid]
+      next unless aim
+      if aim['requiresCompleted']
+        Array(aim['requiresCompleted']).each { |tid| critical_task_ids << tid }
+      else
+        aim['tasks']&.each { |t| critical_task_ids << t['taskId'] unless t['optional'] }
+      end
+    end
+    # If we cannot identify a conclusion aim, we cannot prove any task is non-critical —
+    # treat every required task as critical so nothing mission-blocking slips through.
+    critical_path_known = !critical_aim_ids.empty?
+
+    # These task types complete via movement / unlock / flag / pickup events,
+    # not through conversation, so they are not KO-vulnerable.
+    world_event_types = %w[enter_room unlock_object submit_flags collect_items].freeze
+
+    # For each required task, find the person NPC(s) whose ink completes it.
+    person_ink_completions = Hash.new { |h, k| h[k] = [] } # task_id => [{ npc_id, taskonko_match }]
+
+    json_data['rooms']&.each do |_room_id, room|
+      room['npcs']&.each do |npc|
+        next if npc['npcType'] == 'phone'                     # phones can't be KO'd
+        next if npc.dig('behavior', 'initiallyHidden')        # hidden cutscene NPCs aren't attackable
+        story = npc['storyPath']
+        next unless story
+
+        content = nil
+        [story.sub(/\.json$/, '.ink'), story.sub(/\.ink$/, '.json')].each do |rel|
+          full = File.join(base_dir, rel)
+          if File.exist?(full)
+            content = File.read(full)
+            break
+          end
+        end
+        next unless content
+
+        required_task_types.each_key do |tid|
+          next if content.include?("complete_task:#{tid}") == false
+          person_ink_completions[tid] << { npc_id: npc['id'], taskonko_match: (npc['taskOnKO'] == tid) }
+        end
+      end
+    end
+
+    person_ink_completions.each do |tid, sources|
+      type = required_task_types[tid]
+      next if world_event_types.include?(type)
+      next if event_completed_tasks.include?(tid)          # eventMapping fallback exists
+      next if taskonko_tasks.include?(tid)                 # some NPC's taskOnKO covers it
+      next if sources.any? { |s| s[:taskonko_match] }      # a completing NPC has taskOnKO for it
+
+      npc_list = sources.map { |s| s[:npc_id] }.compact.uniq.join(', ')
+      whom = sources.size == 1 ? 'that NPC' : 'those NPCs'
+      fix = "Add 'taskOnKO': '#{tid}' to the NPC; if the NPC's taskOnKO is already used for another task " \
+            "(it can name only one), add an eventMapping with 'completeTask': '#{tid}' on a phone/handler NPC " \
+            "keyed to the NPC's KO global instead. Reference: m01_first_contact wires a taskOnKO for " \
+            "conversation-gated tasks."
+
+      if !critical_path_known || critical_task_ids.include?(tid)
+        issues << "⚠️ WARNING: Mission-critical task '#{tid}' completes only through conversation with person " \
+                  "NPC(s) [#{npc_list}] (a '#complete_task:#{tid}' ink tag) with no knockout-safe fallback. " \
+                  "KO is permanent — knocking out #{whom} strands a task required for mission completion, " \
+                  "soft-locking the mission. #{fix}"
+      else
+        issues << "💡 SUGGESTION: Side-objective task '#{tid}' completes only through conversation with person " \
+                  "NPC(s) [#{npc_list}] (a '#complete_task:#{tid}' ink tag) with no knockout-safe fallback, so " \
+                  "knocking out #{whom} strands it. This is acceptable if intended — the task is not on the " \
+                  "critical path, so it does not block mission completion (a KO may legitimately close off a " \
+                  "side/lore objective). If you want the side aim to survive a KO anyway: #{fix}"
+      end
+    end
+  rescue => e
+    # Non-fatal — KO-resilience analysis is best-effort.
+  end
+
   issues
 end
 
