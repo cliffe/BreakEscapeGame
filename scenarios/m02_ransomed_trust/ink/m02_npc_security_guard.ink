@@ -56,9 +56,8 @@ EXTERNAL player_name()
 
 === initial_response ===
 
-+ [I'm the security consultant Dr. Kim called in]
++ [I'm the external security consultant. Dr. Kim authorized my access.]
     ~ influence += 20
-    You: I'm the external security consultant. Dr. Kim authorized my access.
 
     Guard: Oh, right. The ransomware crisis. Dr. Kim mentioned someone was coming.
 
@@ -82,16 +81,13 @@ EXTERNAL player_name()
         -> hub
     }
 
-+ [Just passing through, officer]
-    You: Just passing through. No trouble.
-
++ [Just passing through. No trouble.]
     Guard: During a ransomware crisis? Nothing is "just passing through" right now.
 
     -> hub
 
-+ [Emergency - I need to access the server room]
++ [This is urgent. The hospital systems are down. Lives are at stake.]
     ~ influence += 5
-    You: This is urgent. The hospital systems are down. Lives are at stake.
 
     Guard: I know. That's why I'm here securing this area.
 
@@ -99,9 +95,8 @@ EXTERNAL player_name()
 
     -> hub
 
-+ [None of your business]
++ [That's not your concern.]
     ~ influence -= 30
-    You: That's not your concern.
 
     Guard: Wrong answer. Everything in this corridor is my concern.
 
@@ -114,16 +109,16 @@ EXTERNAL player_name()
 
 === hub ===
 
-+ [Ask about the ransomware attack]
++ [What can you tell me about the ransomware attack?]
     -> ask_about_attack
 
-+ [Request access to restricted areas]
++ [I need access to the restricted areas.]
     -> request_access
 
-+ {caught_lockpicking} [Explain the lockpicking situation]
++ {caught_lockpicking} [About that lockpicking...]
     -> explain_lockpick_again
 
-+ [End conversation]
++ [I should get moving.]
     #exit_conversation
     Guard: Stay safe. This crisis has everyone on edge.
     -> DONE
@@ -401,18 +396,15 @@ Guard: I'm being patient because of the crisis, but don't push it.
 
 Guard: I don't like your attitude. You're on thin ice.
 
-* [Apologize and explain you're stressed]
+* [Sorry. This crisis has me on edge. I'm just trying to help.]
     ~ influence += 10
-    You: Sorry. This crisis has me on edge. I'm just trying to help.
 
     Guard: Fine. We're all stressed. But watch your tone.
 
     #display:guard-neutral
     -> hub
 
-* [Double down on hostility]
-    You: I don't have time for this security theater.
-
+* [I don't have time for this security theater.]
     Guard: That's it. You're leaving. NOW.
 
     #display:guard-aggressive
@@ -429,14 +421,12 @@ Guard: I don't like your attitude. You're on thin ice.
 
 Guard: Hey! Server room access -- that's restricted to authorised IT personnel only.
 
-* [Show ID badge]
-    You: Security consultant. Dr. Kim authorised full access. I have the badge right here.
+* [Security consultant. Dr. Kim authorised full access. I have the badge right here.]
     Guard: ...fine. But I'm logging this. Stay visible.
     #exit_conversation
     -> DONE
 
-* [Bluff with authority]
-    You: I've been all over this building tonight. Dr. Kim's orders. Crisis response.
+* [I've been all over this building tonight. Dr. Kim's orders. Crisis response.]
     Guard: Yeah, well. I'm watching.
     #exit_conversation
     -> DONE

@@ -35,11 +35,11 @@ EXTERNAL player_name()
 Narrator: SAFETYNET secure channel. Forty-eight hours after the mission.
 
 #speaker:agent_0x99
-Agent 0x99: {player_name()}. Good to see you back.
+Agent HaX: {player_name()}. Good to see you back.
 
-Agent 0x99: St. Catherine's is stabilised. Systems restored. The immediate crisis is over.
+Agent HaX: St. Catherine's is stabilised. Systems restored. The immediate crisis is over.
 
-Agent 0x99: Let's debrief.
+Agent HaX: Let's debrief.
 
 * [How are the patients?]
     -> patient_outcomes
@@ -58,21 +58,21 @@ Agent 0x99: Let's debrief.
 #speaker:agent_0x99
 
 {flag_ghost_log_submitted:
-    Agent 0x99: You found Ghost's operational log. The mortality calculations.
-    Agent 0x99: Pre-planned. Spreadsheet-precise. They knew what the statistics meant before the operation started and ran it anyway.
+    Agent HaX: You found Ghost's operational log. The mortality calculations.
+    Agent HaX: Pre-planned. Spreadsheet-precise. They knew what the statistics meant before the operation started and ran it anyway.
 }
 
 {lore_ghosts_manifesto_found:
-    Agent 0x99: The manifesto -- read it again when you have time. It's how they see themselves. Understanding their ideology matters for what comes next.
+    Agent HaX: The manifesto -- read it again when you have time. It's how they see themselves. Understanding their ideology matters for what comes next.
 }
 
 {not flag_ghost_log_submitted and not lore_ghosts_manifesto_found:
-    Agent 0x99: The exploit chain was exactly what Ghost's communications suggested -- CVE-2010-4652, fourteen years unpatched. Standard ENTROPY playbook.
+    Agent HaX: The exploit chain was exactly what Ghost's communications suggested -- CVE-2010-4652, fourteen years unpatched. Standard ENTROPY playbook.
 }
 
 {ghost_deal_accepted:
-    Agent 0x99: And you negotiated with Ghost. Got the keys without the ransom payment.
-    Agent 0x99: That was unconventional. The ethics of it depend entirely on what you did at the press terminal.
+    Agent HaX: And you negotiated with Ghost. Got the keys without the ransom payment.
+    Agent HaX: That was unconventional. The ethics of it depend entirely on what you did at the press terminal.
 }
 
 -> patient_outcomes
@@ -93,22 +93,20 @@ Agent 0x99: Let's debrief.
 === ransom_paid_outcomes ===
 #speaker:agent_0x99
 
-Agent 0x99: You paid the ransom. Systems restored in under four hours.
+Agent HaX: You paid the ransom. Systems restored in under four hours.
 
-Agent 0x99: Patient outcomes: 2 fatalities. Cardiac events during system transition -- both had pre-existing complications.
+Agent HaX: Patient outcomes: 2 fatalities. Cardiac events during system transition -- both had pre-existing complications.
 
-Agent 0x99: 45 patients survived. Medical board ruled the deaths statistically probable regardless of the attack.
+Agent HaX: 45 patients survived. Medical board ruled the deaths statistically probable regardless of the attack.
 
-* [We saved 45 lives]
-    You: 45 people are alive because we moved fast.
-    Agent 0x99: Yes. That's real. Those families don't have funerals.
-    Agent 0x99: But the $87,000 is already gone. You should know where it went.
+* [45 people are alive because we moved fast.]
+    Agent HaX: Yes. That's real. Those families don't have funerals.
+    Agent HaX: But the $87,000 is already gone. You should know where it went.
     -> entropy_funding_discussion
 
-* [2 people still died]
-    You: 2 people died. That's not nothing.
-    Agent 0x99: No. It's not. They were elderly, critical -- but they were alive when we arrived.
-    Agent 0x99: Medical review concluded the attack accelerated what would have happened anyway. I'm not sure that's the comfort it's supposed to be.
+* [2 people died. That's not nothing.]
+    Agent HaX: No. It's not. They were elderly, critical -- but they were alive when we arrived.
+    Agent HaX: Medical review concluded the attack accelerated what would have happened anyway. I'm not sure that's the comfort it's supposed to be.
     -> ransom_paid_funding
 
 * [What does $87,000 actually buy them?]
@@ -117,36 +115,33 @@ Agent 0x99: 45 patients survived. Medical board ruled the deaths statistically p
 === ransom_paid_funding ===
 #speaker:agent_0x99
 
-Agent 0x99: The $87,000. You should know where it goes.
+Agent HaX: The $87,000. You should know where it goes.
 
 -> entropy_funding_discussion
 
 === manual_recovery_outcomes ===
 #speaker:agent_0x99
 
-Agent 0x99: You chose manual recovery. Eleven hours, thirty-four minutes. Just inside the window.
+Agent HaX: You chose manual recovery. Eleven hours, thirty-four minutes. Just inside the window.
 
-Agent 0x99: Patient outcomes: 6 fatalities. Ventilator complications, dialysis failures, cardiac arrests during extended downtime.
+Agent HaX: Patient outcomes: 6 fatalities. Ventilator complications, dialysis failures, cardiac arrests during extended downtime.
 
-* [6 people died because of my decision]
-    You: 6 people died because I refused to pay.
+* [6 people died because I refused to pay.]
     -> manual_recovery_guilt
 
-* [We denied ENTROPY their funding]
-    You: But ENTROPY got nothing. No operational funding.
+* [But ENTROPY got nothing. No operational funding.]
     -> manual_recovery_vindication
 
 === manual_recovery_guilt ===
 #speaker:agent_0x99
 
-Agent 0x99: 6 people died during a crisis Ghost created. Not you.
+Agent HaX: 6 people died during a crisis Ghost created. Not you.
 
-Agent 0x99: Medical review: 4 of the 6 had terminal diagnoses -- life expectancy under six months regardless. 2 were critical ICU patients, 50/50 odds even without the attack.
+Agent HaX: Medical review: 4 of the 6 had terminal diagnoses -- life expectancy under six months regardless. 2 were critical ICU patients, 50/50 odds even without the attack.
 
-* [Ghost said those deaths were on my conscience]
-    You: Ghost told me those deaths would be on my conscience.
-    Agent 0x99: Ghost designed that line for maximum effect. They calculated patient death probabilities specifically to weaponise your empathy.
-    Agent 0x99: Don't let them win twice -- once with the attack, again with guilt.
+* [Ghost told me those deaths would be on my conscience.]
+    Agent HaX: Ghost designed that line for maximum effect. They calculated patient death probabilities specifically to weaponise your empathy.
+    Agent HaX: Don't let them win twice -- once with the attack, again with guilt.
     -> manual_recovery_vindication
 
 * [I made the best decision I could]
@@ -155,9 +150,9 @@ Agent 0x99: Medical review: 4 of the 6 had terminal diagnoses -- life expectancy
 === manual_recovery_vindication ===
 #speaker:agent_0x99
 
-Agent 0x99: You denied ENTROPY $87,000. No operational funding for Ransomware Incorporated.
+Agent HaX: You denied ENTROPY $87,000. No operational funding for Ransomware Incorporated.
 
-Agent 0x99: Ghost's next hospital target -- delayed. Possibly cancelled. And we have no transaction to trace, which means they have less financial signal to hide behind.
+Agent HaX: Ghost's next hospital target -- delayed. Possibly cancelled. And we have no transaction to trace, which means they have less financial signal to hide behind.
 
 -> entropy_funding_discussion
 
@@ -169,19 +164,19 @@ Agent 0x99: Ghost's next hospital target -- delayed. Possibly cancelled. And we 
 #speaker:agent_0x99
 
 {paid_ransom:
-    Agent 0x99: 2.5 BTC. HashChain Exchange, Monero mixing, multi-hop routing. The trail goes cold within hours.
-    Agent 0x99: Ransomware Incorporated has operational funding for their next two or three operations.
+    Agent HaX: 2.5 BTC. HashChain Exchange, Monero mixing, multi-hop routing. The trail goes cold within hours.
+    Agent HaX: Ransomware Incorporated has operational funding for their next two or three operations.
 }
 {not paid_ransom:
-    Agent 0x99: No transaction means no financial trail -- which cuts both ways. Less to trace, but they have less too.
+    Agent HaX: No transaction means no financial trail -- which cuts both ways. Less to trace, but they have less too.
 }
 
-Agent 0x99: Either way, Crypto Anarchists handle ENTROPY's payment infrastructure across all cells. That's Mission 6.
+Agent HaX: Either way, Crypto Anarchists handle ENTROPY's payment infrastructure across all cells. That's Mission 6.
 
 {paid_ransom:
-    Agent 0x99: Your ransom gives us a fresh transaction to trace. Specific wallets. Specific timing. That's data.
+    Agent HaX: Your ransom gives us a fresh transaction to trace. Specific wallets. Specific timing. That's data.
 - else:
-    Agent 0x99: ENTROPY goes into their next operation short-funded. That changes what they can afford to do.
+    Agent HaX: ENTROPY goes into their next operation short-funded. That changes what they can afford to do.
 }
 
 -> hospital_status
@@ -202,19 +197,18 @@ Agent 0x99: Either way, Crypto Anarchists handle ENTROPY's payment infrastructur
 === hospital_exposed_path ===
 #speaker:agent_0x99
 
-Agent 0x99: You published the evidence.
+Agent HaX: You published the evidence.
 
-Agent 0x99: "Hospital Ignored IT Warnings for Six Months Before Ransomware Attack." The story ran within the hour.
+Agent HaX: "Hospital Ignored IT Warnings for Six Months Before Ransomware Attack." The story ran within the hour.
 
-Agent 0x99: Congressional hearings. Forty-plus hospitals implementing emergency security audits within a fortnight.
+Agent HaX: Congressional hearings. Forty-plus hospitals implementing emergency security audits within a fortnight.
 
 {ghost_deal_accepted:
-    Agent 0x99: Ghost got exactly what they wanted -- the public lesson. Without spending a penny.
-    Agent 0x99: Whether that matters depends on what you think counts as winning.
+    Agent HaX: Ghost got exactly what they wanted -- the public lesson. Without spending a penny.
+    Agent HaX: Whether that matters depends on what you think counts as winning.
 }
 
-* [Was that the right call?]
-    You: Did I do the right thing by exposing them?
+* [Did I do the right thing by exposing them?]
     -> exposure_reflection
 
 * [What happened to Dr. Kim and Marcus?]
@@ -223,29 +217,28 @@ Agent 0x99: Congressional hearings. Forty-plus hospitals implementing emergency 
 === exposure_reflection ===
 #speaker:agent_0x99
 
-Agent 0x99: Forty hospitals upgraded their security posture within two weeks of the story breaking.
+Agent HaX: Forty hospitals upgraded their security posture within two weeks of the story breaking.
 
-Agent 0x99: Long-term lives saved -- hard to count, but real.
+Agent HaX: Long-term lives saved -- hard to count, but real.
 
-Agent 0x99: St. Catherine's is going to spend years in legal proceedings. Their reputation is damaged in ways that will cost the patients who still need care there.
+Agent HaX: St. Catherine's is going to spend years in legal proceedings. Their reputation is damaged in ways that will cost the patients who still need care there.
 
-Agent 0x99: I don't know if it was right. I know it was consequential.
+Agent HaX: I don't know if it was right. I know it was consequential.
 
 -> npc_outcomes_exposed
 
 === hospital_quiet_path ===
 #speaker:agent_0x99
 
-Agent 0x99: You kept the evidence internal. St. Catherine's board has privately committed to a security overhaul -- cybersecurity budget tripled. $250,000 annual allocation.
+Agent HaX: You kept the evidence internal. St. Catherine's board has privately committed to a security overhaul -- cybersecurity budget tripled. $250,000 annual allocation.
 
-Agent 0x99: Reputation intact. Public unaware.
+Agent HaX: Reputation intact. Public unaware.
 
 {ghost_deal_accepted:
-    Agent 0x99: Ghost considers the deal broken. They'll remember that.
+    Agent HaX: Ghost considers the deal broken. They'll remember that.
 }
 
-* [Should I have published?]
-    You: Should I have exposed them?
+* [Should I have exposed them?]
     -> quiet_resolution_reflection
 
 * [What happened to Dr. Kim and Marcus?]
@@ -254,11 +247,11 @@ Agent 0x99: Reputation intact. Public unaware.
 === quiet_resolution_reflection ===
 #speaker:agent_0x99
 
-Agent 0x99: 214 hospitals scanned. 147 with critical vulnerabilities. None of them know what happened here.
+Agent HaX: 214 hospitals scanned. 147 with critical vulnerabilities. None of them know what happened here.
 
-Agent 0x99: Some of them will be hit before someone publishes the lesson. I don't know how many.
+Agent HaX: Some of them will be hit before someone publishes the lesson. I don't know how many.
 
-Agent 0x99: St. Catherine's is safer. The rest of the sector -- unchanged.
+Agent HaX: St. Catherine's is safer. The rest of the sector -- unchanged.
 
 -> npc_outcomes_quiet
 
@@ -269,14 +262,14 @@ Agent 0x99: St. Catherine's is safer. The rest of the sector -- unchanged.
 === npc_outcomes_exposed ===
 #speaker:agent_0x99
 
-Agent 0x99: Dr. Kim resigned under pressure. Congressional testimony. Reputation damaged, not destroyed -- she's consulting in healthcare tech now.
+Agent HaX: Dr. Kim resigned under pressure. Congressional testimony. Reputation damaged, not destroyed -- she's consulting in healthcare tech now.
 
 {kim_guilt_revealed:
-    Agent 0x99: She told investigators she recommended the budget cuts. Accepted responsibility publicly.
-    Agent 0x99: That took something. Not many executives do that.
+    Agent HaX: She told investigators she recommended the budget cuts. Accepted responsibility publicly.
+    Agent HaX: That took something. Not many executives do that.
 }
 
-Agent 0x99: Marcus Webb...
+Agent HaX: Marcus Webb...
 
 {marcus_protected:
     -> marcus_protected_exposed
@@ -287,24 +280,24 @@ Agent 0x99: Marcus Webb...
 === marcus_protected_exposed ===
 #speaker:agent_0x99
 
-Agent 0x99: Vindicated. Your documentation of his warnings went public alongside everything else.
+Agent HaX: Vindicated. Your documentation of his warnings went public alongside everything else.
 
-Agent 0x99: He's Director of Cybersecurity at Metro General now. Full team, proper budget.
+Agent HaX: He's Director of Cybersecurity at Metro General now. Full team, proper budget.
 
-Agent 0x99: He asked us to pass something on: "Tell the agent who documented my warnings. They gave me my career back."
+Agent HaX: He asked us to pass something on: "Tell the agent who documented my warnings. They gave me my career back."
 
 -> ghost_status
 
 === marcus_unprotected_exposed ===
 #speaker:agent_0x99
 
-Agent 0x99: He was fired within 48 hours of the attack. Scapegoated.
+Agent HaX: He was fired within 48 hours of the attack. Scapegoated.
 
-Agent 0x99: But when the story broke -- his emails were in it. Seven warnings, ignored. The backlash forced St. Catherine's to rehire him. He's IT Security Director now.
+Agent HaX: But when the story broke -- his emails were in it. Seven warnings, ignored. The backlash forced St. Catherine's to rehire him. He's IT Security Director now.
 
-Agent 0x99: He survived it. But he asked me: "Does the agency know what happened to me here?"
+Agent HaX: He survived it. But he asked me: "Does the agency know what happened to me here?"
 
-Agent 0x99: I told him yes. We know.
+Agent HaX: I told him yes. We know.
 
 -> ghost_status
 
@@ -315,13 +308,13 @@ Agent 0x99: I told him yes. We know.
 === npc_outcomes_quiet ===
 #speaker:agent_0x99
 
-Agent 0x99: Dr. Kim kept her position. Private reprimand, no public consequences.
+Agent HaX: Dr. Kim kept her position. Private reprimand, no public consequences.
 
 {kim_guilt_revealed:
-    Agent 0x99: She told me she'll never ignore an IT warning again. I believe her. Guilt is a better teacher than public shame, sometimes.
+    Agent HaX: She told me she'll never ignore an IT warning again. I believe her. Guilt is a better teacher than public shame, sometimes.
 }
 
-Agent 0x99: Marcus Webb...
+Agent HaX: Marcus Webb...
 
 {marcus_protected:
     -> marcus_protected_quiet
@@ -332,30 +325,30 @@ Agent 0x99: Marcus Webb...
 === marcus_protected_quiet ===
 #speaker:agent_0x99
 
-Agent 0x99: You protected him. Your documentation went into the internal review.
+Agent HaX: You protected him. Your documentation went into the internal review.
 
-Agent 0x99: Promoted to Director of Cybersecurity. Full budget authority. He sent a message: "Thank whoever it was who documented the warnings. Saved my career."
+Agent HaX: Promoted to Director of Cybersecurity. Full budget authority. He sent a message: "Thank whoever it was who documented the warnings. Saved my career."
 
 -> ghost_status
 
 === marcus_unprotected_quiet ===
 #speaker:agent_0x99
 
-Agent 0x99: He was fired quietly. No public scapegoat narrative -- but the career's gone.
+Agent HaX: He was fired quietly. No public scapegoat narrative -- but the career's gone.
 
-Agent 0x99: Blacklisted in healthcare IT. "Failed to prevent catastrophic breach."
+Agent HaX: Blacklisted in healthcare IT. "Failed to prevent catastrophic breach."
 
-Agent 0x99: He did everything right. Warned them. Documented the risk. Seven times.
+Agent HaX: He did everything right. Warned them. Documented the risk. Seven times.
 
-Agent 0x99: Last I heard, he's working help desk at a community college. $45,000 a year.
+Agent HaX: Last I heard, he's working help desk at a community college. $45,000 a year.
 
 #speaker:narrator
 Narrator: A pause.
 
 #speaker:agent_0x99
-Agent 0x99: That's the injustice that radicalises people. The ones who did the right thing and got ground up for it anyway.
+Agent HaX: That's the injustice that radicalises people. The ones who did the right thing and got ground up for it anyway.
 
-Agent 0x99: Remember that when you think about Ghost's ideology. They're not wrong about the problem.
+Agent HaX: Remember that when you think about Ghost's ideology. They're not wrong about the problem.
 
 -> ghost_status
 
@@ -366,19 +359,18 @@ Agent 0x99: Remember that when you think about Ghost's ideology. They're not wro
 === ghost_status ===
 #speaker:agent_0x99
 
-Agent 0x99: Ghost vanished. Ghost Protocol anonymity architecture performed exactly as designed. No trace. No leads.
+Agent HaX: Ghost vanished. Ghost Protocol anonymity architecture performed exactly as designed. No trace. No leads.
 
-Agent 0x99: Ransomware Incorporated is still operational.
+Agent HaX: Ransomware Incorporated is still operational.
 
-* [We failed to stop them]
-    You: Ghost escaped. We failed.
-    Agent 0x99: We disrupted their operation and gathered intelligence on how they work. That's not failure.
+* [Ghost escaped. We failed.]
+    Agent HaX: We disrupted their operation and gathered intelligence on how they work. That's not failure.
     {paid_ransom:
-        Agent 0x99: We have a transaction trail. Financial data for Mission 6.
+        Agent HaX: We have a transaction trail. Financial data for Mission 6.
     - else:
-        Agent 0x99: We denied them funding. They go into the next operation short.
+        Agent HaX: We denied them funding. They go into the next operation short.
     }
-    Agent 0x99: We learned their methodology. Calculated harm, ideological certainty, coordinated cells. That matters.
+    Agent HaX: We learned their methodology. Calculated harm, ideological certainty, coordinated cells. That matters.
     -> insider_status
 
 * [What about ENTROPY's structure?]
@@ -411,17 +403,17 @@ Agent 0x99: Ransomware Incorporated is still operational.
 === insider_rolled_up ===
 #speaker:agent_0x99
 
-Agent 0x99: And you got the one Ghost planted inside. The night security supervisor -- badge SC-4471. He authorised the fire drill that put ENTROPY's device on the LAN.
+Agent HaX: And you got the one Ghost planted inside. The night security supervisor -- badge SC-4471. He authorised the fire drill that put ENTROPY's device on the LAN.
 
 {insider_asset_exposed:
-    Agent 0x99: You named him publicly alongside the board. He'll stand next to their negligence in every story that runs.
+    Agent HaX: You named him publicly alongside the board. He'll stand next to their negligence in every story that runs.
 }
 
-Agent 0x99: We've had his post assignments, his access logs, his handler contacts for six hours now. That's not one arrest -- that's a thread into the whole cell.
+Agent HaX: We've had his post assignments, his access logs, his handler contacts for six hours now. That's not one arrest -- that's a thread into the whole cell.
 
-Agent 0x99: Underpaid, ignored, radicalised by the same negligence he helped punish. Remember what I said about the injustice that makes people. He's the proof.
+Agent HaX: Underpaid, ignored, radicalised by the same negligence he helped punish. Remember what I said about the injustice that makes people. He's the proof.
 
-Agent 0x99: Good work finding him. Intelligence like that feeds every mission that comes after this one.
+Agent HaX: Good work finding him. Intelligence like that feeds every mission that comes after this one.
 
 -> entropy_coordination_reveal
 
@@ -429,72 +421,72 @@ Agent 0x99: Good work finding him. Intelligence like that feeds every mission th
 #speaker:agent_0x99
 
 {insider_identified:
-    Agent 0x99: And you put down the inside asset yourself. The night security supervisor -- badge SC-4471. No interrogation, so the cell thread is thinner than an arrest would've given us, but he's off the board and contained.
+    Agent HaX: And you put down the inside asset yourself. The night security supervisor -- badge SC-4471. No interrogation, so the cell thread is thinner than an arrest would've given us, but he's off the board and contained.
 - else:
-    Agent 0x99: One more thing. The night security supervisor you took down in the conference room -- we ran him afterwards. Badge SC-4471. He authorised the fire drill that planted ENTROPY's device.
-    Agent 0x99: You had the right man. You just never knew what you were holding. We recovered what we could from his post logs, but he wasn't talking.
+    Agent HaX: One more thing. The night security supervisor you took down in the conference room -- we ran him afterwards. Badge SC-4471. He authorised the fire drill that planted ENTROPY's device.
+    Agent HaX: You had the right man. You just never knew what you were holding. We recovered what we could from his post logs, but he wasn't talking.
 }
 
-Agent 0x99: Underpaid, ignored, radicalised by the same negligence he helped punish. Remember what I said about the injustice that makes people.
+Agent HaX: Underpaid, ignored, radicalised by the same negligence he helped punish. Remember what I said about the injustice that makes people.
 
 -> entropy_coordination_reveal
 
 === insider_flagged ===
 #speaker:agent_0x99
 
-Agent 0x99: You identified Ghost's inside asset -- the night security supervisor, badge SC-4471. You didn't get to close it out yourself, but your identification was enough.
+Agent HaX: You identified Ghost's inside asset -- the night security supervisor, badge SC-4471. You didn't get to close it out yourself, but your identification was enough.
 
-Agent 0x99: SAFETYNET moved on the intel and picked him up before he could disappear. His access logs and handler contacts are ours now. A thread into the cell.
+Agent HaX: SAFETYNET moved on the intel and picked him up before he could disappear. His access logs and handler contacts are ours now. A thread into the cell.
 
 -> entropy_coordination_reveal
 
 === insider_escaped ===
 #speaker:agent_0x99
 
-Agent 0x99: There's one more thing you should know. Ghost told you the truth -- there was an affiliate inside the building. The night security supervisor.
+Agent HaX: There's one more thing you should know. Ghost told you the truth -- there was an affiliate inside the building. The night security supervisor.
 
-Agent 0x99: He was standing at the press terminal the whole time. When you transmitted, he moved on you and got out in the confusion. By the time backup reached the conference room, he was gone.
+Agent HaX: He was standing at the press terminal the whole time. When you transmitted, he moved on you and got out in the confusion. By the time backup reached the conference room, he was gone.
 
-Agent 0x99: Vanished. No trace. The same way Ghost went. That one's on the clock we were racing -- but if we'd read the signs earlier, we'd have had him.
+Agent HaX: Vanished. No trace. The same way Ghost went. That one's on the clock we were racing -- but if we'd read the signs earlier, we'd have had him.
 
 -> entropy_coordination_reveal
 
 === insider_missed_wrong ===
 #speaker:agent_0x99
 
-Agent 0x99: One loose end. Ghost wasn't bluffing about an inside affiliate -- there was one. And you spent your suspicion on the wrong person.
+Agent HaX: One loose end. Ghost wasn't bluffing about an inside affiliate -- there was one. And you spent your suspicion on the wrong person.
 
-Agent 0x99: The real asset was the night security supervisor on the conference-room post. Badge SC-4471. He walked out the same night, unquestioned.
+Agent HaX: The real asset was the night security supervisor on the conference-room post. Badge SC-4471. He walked out the same night, unquestioned.
 
-Agent 0x99: It happens. The evidence pointed where they wanted it to point. But it's a lead we'll be chasing cold now.
+Agent HaX: It happens. The evidence pointed where they wanted it to point. But it's a lead we'll be chasing cold now.
 
 -> entropy_coordination_reveal
 
 === insider_unnoticed ===
 #speaker:agent_0x99
 
-Agent 0x99: One thing we never closed. Ghost said someone in that building confirmed their operational timing. An ENTROPY affiliate.
+Agent HaX: One thing we never closed. Ghost said someone in that building confirmed their operational timing. An ENTROPY affiliate.
 
-Agent 0x99: We never identified them. Whoever it was is still on staff, still trusted, still inside. Next time we go into one of these, we look harder for the person holding the door.
+Agent HaX: We never identified them. Whoever it was is still on staff, still trusted, still inside. Next time we go into one of these, we look harder for the person holding the door.
 
 -> entropy_coordination_reveal
 
 === entropy_coordination_reveal ===
 #speaker:agent_0x99
 
-Agent 0x99: Ghost's logs confirmed what we suspected -- Zero Day Syndicate sourced the ProFTPD exploit. Crypto Anarchists handle payment processing across all cells.
+Agent HaX: Ghost's logs confirmed what we suspected -- Zero Day Syndicate sourced the ProFTPD exploit. Crypto Anarchists handle payment processing across all cells.
 
 {lore_cryptosecure_found:
-    Agent 0x99: The CryptoSecure intelligence you recovered -- that's their financial front. We're building a picture of the network.
+    Agent HaX: The CryptoSecure intelligence you recovered -- that's their financial front. We're building a picture of the network.
 }
 
 {lore_zds_invoice_found:
-    Agent 0x99: The Zero Day Syndicate invoice you found -- specific evidence of the procurement chain between ENTROPY cells. That's going into Mission 3 planning.
+    Agent HaX: The Zero Day Syndicate invoice you found -- specific evidence of the procurement chain between ENTROPY cells. That's going into Mission 3 planning.
 }
 
-Agent 0x99: Mission 3 targets Zero Day Syndicate. Mission 6 targets Crypto Anarchists.
+Agent HaX: Mission 3 targets Zero Day Syndicate. Mission 6 targets Crypto Anarchists.
 
-Agent 0x99: Your work here feeds both.
+Agent HaX: Your work here feeds both.
 
 -> final_reflection
 
@@ -505,29 +497,27 @@ Agent 0x99: Your work here feeds both.
 === final_reflection ===
 #speaker:agent_0x99
 
-Agent 0x99: Here's what I'll say, {player_name()}.
+Agent HaX: Here's what I'll say, {player_name()}.
 
-Agent 0x99: You faced a dilemma Ghost designed specifically to have no clean answer. Pay or don't pay -- both choices cost lives. Just different lives, different timeframes.
+Agent HaX: You faced a dilemma Ghost designed specifically to have no clean answer. Pay or don't pay -- both choices cost lives. Just different lives, different timeframes.
 
-Agent 0x99: You made a call under time pressure, with incomplete information, in a building full of people depending on you.
+Agent HaX: You made a call under time pressure, with incomplete information, in a building full of people depending on you.
 
-* [I did the best I could]
-    You: I made the best decision I could with what I had.
-    Agent 0x99: That's all this job ever gives you. Best decision, available information, time pressure.
-    Agent 0x99: ENTROPY creates impossible dilemmas on purpose. They want you paralysed, or they want you to act and feel guilty either way.
-    Agent 0x99: You acted. That counts.
+* [I made the best decision I could with what I had.]
+    Agent HaX: That's all this job ever gives you. Best decision, available information, time pressure.
+    Agent HaX: ENTROPY creates impossible dilemmas on purpose. They want you paralysed, or they want you to act and feel guilty either way.
+    Agent HaX: You acted. That counts.
     -> mission_3_setup
 
-* [I'm not sure I chose right]
-    You: I'm still not sure it was the right call.
+* [I'm still not sure it was the right call.]
     {paid_ransom:
-        Agent 0x99: 45 people are alive today. That's real. Those are real families not burying someone.
-        Agent 0x99: ENTROPY has funding. That's also real. Both things are true simultaneously.
+        Agent HaX: 45 people are alive today. That's real. Those are real families not burying someone.
+        Agent HaX: ENTROPY has funding. That's also real. Both things are true simultaneously.
     - else:
-        Agent 0x99: You denied ENTROPY $87,000. Long-term, that matters.
-        Agent 0x99: Six people died in the downtime. That also matters.
+        Agent HaX: You denied ENTROPY $87,000. Long-term, that matters.
+        Agent HaX: Six people died in the downtime. That also matters.
     }
-    Agent 0x99: I won't tell you which weighs more. I genuinely don't know. Neither does anyone who hasn't stood where you stood.
+    Agent HaX: I won't tell you which weighs more. I genuinely don't know. Neither does anyone who hasn't stood where you stood.
     -> mission_3_setup
 
 * [What's next?]
@@ -540,28 +530,26 @@ Agent 0x99: You made a call under time pressure, with incomplete information, in
 === mission_3_setup ===
 #speaker:agent_0x99
 
-Agent 0x99: Zero Day Syndicate. They sold Ghost the ProFTPD exploit. They scanned 214 hospitals and recommended St. Catherine's specifically.
+Agent HaX: Zero Day Syndicate. They sold Ghost the ProFTPD exploit. They scanned 214 hospitals and recommended St. Catherine's specifically.
 
-Agent 0x99: Shut down their exploit marketplace and ENTROPY loses its technical supply chain across all cells.
+Agent HaX: Shut down their exploit marketplace and ENTROPY loses its technical supply chain across all cells.
 
-Agent 0x99: Mission 3: Operation Cyber Arsenal.
+Agent HaX: Mission 3: Operation Cyber Arsenal.
 
-* [I'm ready]
-    You: Let's take them down.
+* [Let's take them down.]
     -> debrief_close
 
-* [Who is The Architect?]
-    You: Ghost mentioned The Architect. Who coordinates ENTROPY?
+* [Ghost mentioned The Architect. Who coordinates ENTROPY?]
     -> architect_tease
 
 === architect_tease ===
 #speaker:agent_0x99
 
-Agent 0x99: The Architect runs all six cells. We don't know who they are yet.
+Agent HaX: The Architect runs all six cells. We don't know who they are yet.
 
-Agent 0x99: But each mission reveals more. Social Fabric, Ransomware Incorporated -- patterns emerging in how the cells communicate, how they're structured.
+Agent HaX: But each mission reveals more. Social Fabric, Ransomware Incorporated -- patterns emerging in how the cells communicate, how they're structured.
 
-Agent 0x99: Eventually we'll have enough to identify them. Then we end this.
+Agent HaX: Eventually we'll have enough to identify them. Then we end this.
 
 -> debrief_close
 
@@ -572,13 +560,13 @@ Agent 0x99: Eventually we'll have enough to identify them. Then we end this.
 === debrief_close ===
 #speaker:agent_0x99
 
-Agent 0x99: Get some rest, {player_name()}.
+Agent HaX: Get some rest, {player_name()}.
 
-Agent 0x99: You saved lives. You stopped an ENTROPY operation. You gathered intelligence on their network.
+Agent HaX: You saved lives. You stopped an ENTROPY operation. You gathered intelligence on their network.
 
-Agent 0x99: That's what you came in there to do.
+Agent HaX: That's what you came in there to do.
 
-Agent 0x99: We'll brief Mission 3 when you're ready.
+Agent HaX: We'll brief Mission 3 when you're ready.
 
 #complete_mission
 #exit_conversation

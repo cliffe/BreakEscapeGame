@@ -77,11 +77,9 @@ Supervisor: So you did the work. Good. I'd have been disappointed otherwise.
 
 Supervisor: You want to know why. They all want to know why.
 
-* [You let ENTROPY into a hospital.]
-    You: You opened the door for Ghost. Patients on life support paid for it.
+* [You opened the door for Ghost. Patients on life support paid for it.]
     -> monologue_1
-* [Why? You had access, authority -- a career.]
-    You: You had a good post here. Why throw it away for them?
+* [You had a good post here. Why throw it away for them?]
     -> monologue_1
 
 === monologue_1 ===
@@ -92,11 +90,9 @@ Supervisor: Less than the board spent catering the meeting where they cut Marcus
 
 Supervisor: I watched them choose an MRI over the servers keeping those wards alive. I raised it. I was told to mind my post.
 
-* [That doesn't make this right.]
-    You: Feeling ignored doesn't justify handing them the keys.
+* [Feeling ignored doesn't justify handing them the keys.]
     -> monologue_2
-* [So ENTROPY found you.]
-    You: And then someone from ENTROPY came along and listened.
+* [And then someone from ENTROPY came along and listened.]
     -> monologue_2
 
 === monologue_2 ===

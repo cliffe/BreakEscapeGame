@@ -28,13 +28,13 @@ Transmission is irreversible. Once sent, this evidence enters permanent public r
 
 === decision_menu ===
 
-+ [Upload all evidence — make the negligence public]
++ [I'm transmitting everything. The public needs to see this.]
     -> confirm_upload
 
-+ [Leave evidence undisclosed — protect hospital reputation]
++ [I'm leaving this undisclosed. The hospital's reputation stays intact.]
     -> confirm_stay_quiet
 
-+ [Exit terminal]
++ [I'll step away from the terminal for now.]
     #exit_conversation
     -> DONE
 
@@ -53,10 +53,10 @@ St. Catherine's board cannot suppress this.
 
 Marcus Webb's warnings enter public record.
 
-+ [Confirm — upload everything]
++ [Confirmed. Send it all.]
     -> do_upload
 
-+ [Go back]
++ [Wait -- let me reconsider.]
     -> decision_menu
 
 === do_upload ===
@@ -101,10 +101,10 @@ Marcus Webb's situation remains an internal matter.
 
 The sector-wide vulnerability profile does not become public knowledge.
 
-+ [Confirm — keep it internal]
++ [Confirmed. Keep it internal.]
     -> do_stay_quiet
 
-+ [Go back]
++ [Wait -- let me reconsider.]
     -> decision_menu
 
 === do_stay_quiet ===

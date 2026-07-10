@@ -109,21 +109,65 @@ All Break Escape NPC conversations **must** follow this standard structure:
 
 ### Player Choice Formatting
 
-**Critical**: Every player choice must be written as dialogue in square brackets `[]`, not as menu options.
+**Critical**: Every player choice must be written as dialogue in square brackets `[]`, not as menu options or stage directions summarising what the player is about to say.
 
-❌ **WRONG** - Technical menu language:
+❌ **WRONG** - Technical menu language / third-person stage direction:
 ```ink
 * [Ask about security]
+* [Sympathize with Marcus]
+* [Express readiness]
+* [Offer to protect Marcus from scapegoating]
 ```
 
-✅ **RIGHT** - Dialogue as the player would speak:
+✅ **RIGHT** - Dialogue as the player would actually speak, first person:
 ```ink
 * [Can you tell me about security?]
 * [How do I create a strong password?]
 * [I've heard about phishing attacks...]
+* [I'm ready. What's the mission?]
+* [I'll make sure the evidence shows you warned them. You won't be scapegoated.]
 ```
 
-The text in brackets appears as the player's spoken dialogue to the NPC. Make it conversational and in-character!
+The text in brackets appears as the player's spoken dialogue to the NPC. Make it conversational and in-character — it's what the player says out loud, not a label describing their intent.
+
+#### Don't echo the choice in a separate `You:` line
+
+A common mistake is writing a short menu-style bracket and then repeating the actual spoken line as a separate `You:` line right after it:
+
+❌ **WRONG** - Bracket is a label, the real line is duplicated below it:
+```ink
+* [Sympathize with Marcus]
+    You: Budget cuts are common. You did your job by warning them.
+    ~ marcus_influence += 15
+    -> sympathize_response
+```
+
+✅ **RIGHT** - The bracket *is* the spoken line; there's nothing left to echo:
+```ink
+* [Budget cuts are common. You did your job by warning them.]
+    ~ marcus_influence += 15
+    -> sympathize_response
+```
+
+The engine displays the selected choice text as the player's dialogue when the choice is made — a following `You:` line is redundant at best and, since it silently duplicates what the player just "said", reads as a script error. Fold the intended spoken content into the bracket and delete the echo. This is the consistent pattern in `m01_first_contact` — no NPC ink file there follows a choice with a `You:` line.
+
+A short non-verbal choice (staying silent, walking away without a word) is the one legitimate exception — e.g. `* [Say nothing, let her process]` or `* [Stay silent]` followed by `You: ...` to represent the silence itself. That's an action, not a stage-direction label standing in for dialogue.
+
+#### Decision-terminal / computer menus
+
+For `#speaker:computer` interactions (a terminal decision UI, not a person conversation), the same rule applies: phrase the option as the player's decision in the moment, not a UI action label.
+
+❌ **WRONG:**
+```ink
++ [Confirm — upload everything]
++ [Go back]
+```
+
+✅ **RIGHT:**
+```ink
++ [Confirmed. Send it all.]
++ [Wait -- let me reconsider.]
+```
 
 ### Hub Structure Pattern
 

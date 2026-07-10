@@ -40,18 +40,15 @@ Marcus: They said "budget constraints." Now look what happened.
 
 Marcus: Nobody listens to IT until everything's on fire.
 
-* [Sympathize with Marcus]
-    You: Budget cuts are common. You did your job by warning them.
+* [Budget cuts are common. You did your job by warning them.]
     ~ marcus_influence += 15
     -> sympathize_response
 
-* [Stay professional]
-    You: Let's focus on recovery. What do you need from me?
+* [Let's focus on recovery. What do you need from me?]
     ~ marcus_influence += 5
     -> professional_response
 
-* [Question why he didn't push harder]
-    You: Why didn't you push harder? Make them listen?
+* [Why didn't you push harder? Make them listen?]
     ~ marcus_influence -= 15
     ~ marcus_defensive = true
     -> defensive_response
@@ -68,15 +65,13 @@ Marcus: Now they're planning to fire me. Scapegoat the IT guy.
 ~ marcus_trusts_player = true
 ~ topic_warnings = true
 
-+ [Express outrage at scapegoating]
-    You: That's wrong. You warned them. I'll make sure that's documented.
++ [That's wrong. You warned them. I'll make sure that's documented.]
     ~ marcus_influence += 20
     Marcus: You... you'd do that?
     Marcus: I have all the emails. Six months of ignored warnings.
     -> offer_help
 
-+ [Stay focused on mission]
-    You: We need to recover those systems. Can you help me?
++ [We need to recover those systems. Can you help me?]
     -> ask_for_help
 
 === professional_response ===
@@ -91,10 +86,10 @@ Marcus: The vulnerability is CVE-2010-4652. I documented it in May.
 ~ topic_vulnerability = true
 ~ marcus_influence += 5
 
-+ [Ask about access]
++ [Can I get access to the server room?]
     -> ask_for_help
 
-+ [Ask about the warnings]
++ [Tell me more about those warnings you sent.]
     -> discuss_warnings
 
 === defensive_response ===
@@ -128,14 +123,12 @@ Marcus: $85,000 for server security, or $3.2 million for a new MRI. Guess which 
 
 ~ marcus_influence += 5
 
-+ [Express sympathy]
-    You: That must be frustrating.
++ [That must be frustrating.]
     ~ marcus_influence += 10
     Marcus: You have no idea.
     -> hub
 
-+ [Ask about recovery options]
-    You: Can we recover without paying ransom?
++ [Can we recover without paying ransom?]
     -> discuss_recovery
 
 === discuss_recovery ===
@@ -147,7 +140,7 @@ Marcus: Get the decryption keys from the backup server.
 
 Marcus: But that takes time. 12 hours minimum. Patients at risk the whole time.
 
-+ [I need access to the server room]
++ [I need access to the server room.]
     -> ask_for_help
 
 === ask_for_help ===
@@ -197,11 +190,10 @@ Marcus: If you have lockpicks, you could probably get in. I won't stop you.
 
 ~ marcus_influence += 5
 
-+ [Ask about password hints]
++ [Any password hints that could help me get in?]
     -> request_password_hints
 
-+ [Thank Marcus]
-    You: Thanks for the help.
++ [Thanks for the help.]
     Marcus: Just... save those patients. Please.
     -> hub
 
@@ -250,25 +242,25 @@ Marcus: It's locked, but if you can open it... that's my vindication.
 // ===========================================
 
 === hub ===
-+ {not topic_warnings} [Ask about security warnings]
++ {not topic_warnings} [What warnings did you send them?]
     -> discuss_warnings
 
-+ {not topic_vulnerability} [Ask about ProFTPD vulnerability]
++ {not topic_vulnerability} [Tell me about the ProFTPD vulnerability.]
     -> discuss_vulnerability
 
-+ {not topic_passwords and marcus_influence >= 15} [Ask about password hints]
++ {not topic_passwords and marcus_influence >= 15} [Any password hints that could help me get in?]
     -> request_password_hints
 
-+ {not topic_family} [Ask about family photo on desk]
++ {not topic_family} [Who's in the photo on your desk?]
     -> discuss_family
 
-+ {topic_warnings and marcus_influence >= 20} [Offer to protect Marcus from scapegoating]
++ {topic_warnings and marcus_influence >= 20} [I'll make sure the evidence shows you warned them. You won't be scapegoated.]
     -> promise_protection
 
-+ {insider_evidence_partial and not insider_identified} [Accuse Marcus of being the ENTROPY insider]
++ {insider_evidence_partial and not insider_identified} [The insider who confirmed ENTROPY's timing -- that was you, wasn't it?]
     -> accuse_marcus
 
-+ [Leave conversation]
++ [I should get back to it.]
     #speaker:marcus_webb
     {marcus_trusts_player:
         Marcus: Good luck. And... thanks for listening.
@@ -285,8 +277,6 @@ Marcus: It's locked, but if you can open it... that's my vindication.
 
 === accuse_marcus ===
 #speaker:marcus_webb
-
-You: The insider who confirmed ENTROPY's timing. The badge that let them in. That was you, wasn't it?
 
 Marcus: What? No. NO. I'm the one who WARNED them. Seven times. You've read the emails yourself.
 
@@ -330,14 +320,12 @@ Marcus: Patched in 2011. We're running a 2010 version because "budgets."
 
 ~ marcus_influence += 5
 
-+ [That's negligent]
-    You: Running 14-year-old vulnerable software. That's negligent.
++ [Running 14-year-old vulnerable software. That's negligent.]
     ~ marcus_influence += 10
     Marcus: Exactly! But nobody listens to the IT guy.
     -> hub
 
-+ [Can we exploit it too?]
-    You: Can we use that same vulnerability to recover data?
++ [Can we use that same vulnerability to recover data?]
     Marcus: That's... actually smart. Fight fire with fire.
     ~ marcus_influence += 5
     -> hub
@@ -354,20 +342,16 @@ Marcus: Ironic, right? Happiest day of my life, most ignored email of my career.
 
 ~ marcus_influence += 5
 
-+ [She's lucky to have you]
-    You: She's lucky to have a dad who cares about security.
++ [She's lucky to have a dad who cares about security.]
     ~ marcus_influence += 10
     Marcus: Thanks. I just hope she doesn't read about this in the news.
     -> hub
 
-+ [Focus on the mission]
-    You: Let's make sure this gets resolved properly.
++ [Let's make sure this gets resolved properly.]
     -> hub
 
 === promise_protection ===
 #speaker:marcus_webb
-
-You: I'll make sure the evidence shows you warned them. You won't be scapegoated.
 
 ~ marcus_influence += 20
 

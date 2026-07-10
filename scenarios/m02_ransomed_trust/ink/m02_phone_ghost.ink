@@ -41,14 +41,12 @@ Ghost: SAFETYNET sent one person. I planned for a team.
 ~ ghost_contacted_player = true
 #set_global:ghost_contacted_player:true
 
-* [Who are you?]
-    You: Ghost. Who are you, really?
+* [Ghost. Who are you, really?]
     Ghost: Someone who spent fourteen months preparing for tonight.
     Ghost: Ransomware Incorporated. You know what we did. Ask me why.
     -> ghost_introduction
 
-* [You attacked a hospital]
-    You: You encrypted patient records. People are on life support.
+* [You encrypted patient records. People are on life support.]
     -> player_threatens
 
 * [Stay silent]
@@ -65,12 +63,10 @@ Ghost: Marcus Webb's email, May 17th: "ProFTPD vulnerability, critical severity,
 
 Ghost: Hospital response: "Budget constraints. Defer to next fiscal year."
 
-* [That doesn't justify attacking patients]
-    You: That doesn't justify encrypting patient records. People could die.
+* [That doesn't justify encrypting patient records. People could die.]
     -> ghost_justification
 
-* [So this is ideological?]
-    You: You're teaching them a lesson? That's your justification?
+* [You're teaching them a lesson? That's your justification?]
     -> ghost_philosophy
 
 === player_threatens ===
@@ -84,12 +80,10 @@ Ghost: 1-2 deaths if they pay immediately. 4-6 if they delay for manual recovery
 
 Ghost: We didn't create that risk. St. Catherine's negligence did. We're revealing consequences.
 
-* [You calculated death probabilities?]
-    You: You have spreadsheets of how many people will die?
+* [You have spreadsheets of how many people will die?]
     -> ghost_confirms_calculations
 
-* [That's monstrous]
-    You: You're using human lives as leverage. That's evil.
+* [You're using human lives as leverage. That's evil.]
     -> ghost_philosophy
 
 === ghost_confirms_calculations ===
@@ -101,8 +95,7 @@ Ghost: St. Catherine's board never ran these numbers. They deferred $85K securit
 
 Ghost: They gambled with patient safety. We're making the stakes visible.
 
-* [You're rationalizing terrorism]
-    You: This is terrorism, not education.
+* [This is terrorism, not education.]
     Ghost: Terrorism is violence for political aims. This is consequence for negligence.
     Ghost: We're the mirror showing them what they've always risked.
     -> ghost_philosophy
@@ -134,14 +127,12 @@ Ghost: After this, St. Catherine's will triple cybersecurity budgets. Forty othe
 
 Ghost: Long-term -- we prevent hundreds of deaths across five years. The modelling holds every time I run it.
 
-* [You don't get to make that calculation]
-    You: You don't get to decide whose lives are worth risking.
+* [You don't get to decide whose lives are worth risking.]
     Ghost: I didn't decide. St. Catherine's board decided when they cut the security budget.
     Ghost: We're just the consequence they tried to ignore.
     -> ransom_demand
 
-* [That's utilitarian logic]
-    You: Utilitarian harm for long-term good. Slippery slope.
+* [Utilitarian harm for long-term good. Slippery slope.]
     Ghost: Perhaps. But someone has to force change. Systemic negligence doesn't fix itself.
     Ghost: The alternative is more hospitals get attacked. More patients die.
     Ghost: We're harsh teachers. But institutional change requires pain.
@@ -165,16 +156,13 @@ Ghost: Your choice, SAFETYNET.
 ~ ghost_persuasion_attempted = true
 #set_global:ghost_persuasion_attempted:true
 
-* [We'll recover independently]
-    You: We're not funding terrorism. We'll recover independently.
+* [We're not funding terrorism. We'll recover independently.]
     -> ghost_warns_consequences
 
-* [Threaten to trace Ghost]
-    You: We'll trace the payment. Find you. Arrest you.
+* [We'll trace the payment. Find you. Arrest you.]
     -> ghost_laughs_at_threat
 
-* [End communication]
-    You: We're done here.
+* [We're done here.]
     Ghost: Time's running out. Patients are counting on you.
     #exit_conversation
     -> DONE
@@ -229,17 +217,15 @@ Ghost: 47 patients. Backup power failing. Families watching monitors.
 
 Ghost: $87,000 vs. human lives.
 
-* [You're trying to pressure me]
-    You: This is psychological manipulation.
+* [This is psychological manipulation.]
     Ghost: This is reality. 0.3% per hour. The clock doesn't care about your feelings.
     -> end_contact
 
-* [We'll stop you]
-    You: SAFETYNET will dismantle ENTROPY. You'll be arrested.
+* [SAFETYNET will dismantle ENTROPY. You'll be arrested.]
     Ghost: Maybe. But St. Catherine's will never ignore cybersecurity again. Mission accomplished.
     -> end_contact
 
-* [End call]
+* [I'm done talking. This call's over.]
     -> end_contact
 
 === post_decision_contact ===
@@ -260,15 +246,13 @@ Ghost: St. Catherine's board approved a $250K security budget within 24 hours. M
 
 Ghost: That's what this was for.
 
-* [You're still a terrorist]
-    You: You killed people. That's terrorism.
+* [You killed people. That's terrorism.]
     Ghost: Pre-existing complications, accelerated by system downtime. Medical records confirm it.
     Ghost: Those patients were already dying. We changed the timeline, not the outcome.
     Ghost: I've reviewed every case. I know their names.
     -> ghost_final_statement
 
-* [This won't stop SAFETYNET]
-    You: We're coming for you. ENTROPY won't last.
+* [We're coming for you. ENTROPY won't last.]
     Ghost: Maybe. But how many hospitals improve security before you find us?
     Ghost: Every one of them is lives saved long-term. That's the arithmetic.
     -> ghost_final_statement
@@ -282,12 +266,10 @@ Ghost: Ventilator complications. Dialysis failures. Cardiac arrests during exten
 
 Ghost: Those deaths are on your conscience. You could have paid. You chose ideology.
 
-* [No. Those deaths are on YOU]
-    You: YOU attacked the hospital. YOU encrypted patient records. This is YOUR fault.
+* [YOU attacked the hospital. YOU encrypted patient records. This is YOUR fault.]
     -> ghost_rejects_responsibility
 
-* [We denied ENTROPY funding]
-    You: $87,000 denied. No funding for your next attack.
+* [$87,000 denied. No funding for your next attack.]
     -> ghost_acknowledges_loss
 
 === ghost_rejects_responsibility ===
@@ -331,14 +313,12 @@ Ghost: Because St. Catherine's will never ignore cybersecurity again. Neither wi
 
 Ghost: That's worth it. That's the mission. That's what ENTROPY is for.
 
-* [You're a fanatic]
-    You: Calculated harm is still harm. You're a fanatic.
+* [Calculated harm is still harm. You're a fanatic.]
     Ghost: Fanaticism is believing despite evidence. I have statistical models, outcome projections, verified results.
     Ghost: This is evidence-based ideology. There's a difference.
     -> ghost_disconnects
 
-* [We'll stop ENTROPY]
-    You: This isn't over. We're coming for the whole network.
+* [This isn't over. We're coming for the whole network.]
     Ghost: Good luck. The Architect coordinates six cells. We're everywhere.
     Ghost: Shut down one, five remain. Hydra principle.
     -> ghost_disconnects
@@ -394,15 +374,13 @@ Ghost: Marcus Webb. Dr. Kim. The ward nurse with the paper charts.
 
 Ghost: We know everything that's happened in this building tonight.
 
-* [What do you want?]
-    You: What do you want from me?
+* [What do you want from me?]
     Ghost: Nothing from you. I want the board to understand what they chose.
     Ghost: You're incidental to that. But since you're here -- do your job properly.
     Ghost: Don't leave anything unfound.
     -> act1_end
 
-* [Stop watching us]
-    You: Get off this network. This is a hospital.
+* [Get off this network. This is a hospital.]
     Ghost: It is. 47 patients, backup power, paper charts.
     Ghost: I know. I planned for all of it.
     Ghost: We're watching. Carry on.
@@ -433,15 +411,13 @@ Ghost: We can do that for four minutes. Four hours.
 
 Ghost: That's not a threat. It's a capability demonstration. You should understand your situation clearly.
 
-* [Is that a threat?]
-    You: Are you threatening me?
+* [Are you threatening me?]
     Ghost: Threats require intent to harm. I have no interest in harming you.
     Ghost: I have interest in this lesson landing correctly.
     Ghost: The difference matters.
     -> act2_reveal
 
-* [What do you actually want?]
-    You: What is it you actually want from this?
+* [What is it you actually want from this?]
     Ghost: The board to face what they chose. The negligence on public record.
     Ghost: The $87,000 is operational funding. The lesson is the point.
     -> act2_reveal
@@ -489,12 +465,10 @@ Ghost: The decryption keys. All of them. Free. No payment. No ransom. No ENTROPY
 
 Ghost: Clean recovery. Under an hour. Those patients have their systems before the next manual obs check.
 
-* [What's the price?]
-    You: Nothing from you is free. What do you want?
+* [Nothing from you is free. What do you want?]
     -> ghost_states_terms
 
-* [I'm listening]
-    You: Go on.
+* [I'm listening. Go on.]
     -> ghost_states_terms
 
 === ghost_states_terms ===
@@ -520,8 +494,7 @@ Ghost: The board made a calculation too. They chose the MRI.
 
 Ghost: They just didn't show their working.
 
-* [I accept. I'll publish the evidence.]
-    You: I'll upload the evidence. Give me the keys.
+* [I accept. I'll upload the evidence. Give me the keys.]
     Ghost: Keys transmitted.
     Ghost: Conference room. Press terminal. Don't forget what you agreed to.
     Ghost: Include Marcus Webb's emails specifically. The full six months. Not just the cover-up memo -- the timeline.
@@ -529,13 +502,11 @@ Ghost: They just didn't show their working.
     #set_global:ghost_deal_accepted:true
     -> act3_deal_accepted
 
-* [No deal. We do this ourselves.]
-    You: We don't negotiate with ENTROPY.
+* [No deal. We don't negotiate with ENTROPY.]
     Ghost: Noted.
     -> act3_deal_refused
 
 * [I need time to think.]
-    You: I need to think.
     Ghost: The patients are thinking too. They're just doing it on backup power.
     -> act3_dismissed
 

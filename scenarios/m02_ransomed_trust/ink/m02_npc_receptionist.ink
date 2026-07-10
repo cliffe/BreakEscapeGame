@@ -16,16 +16,13 @@ EXTERNAL player_name()
 
 Receptionist: *looks up from paper forms* Sorry -- everything's manual right now. The computers are... well, you've probably heard.
 
-* [Ask about Dr. Kim]
-    You: I'm looking for Dr. Kim. She's expecting me.
+* [I'm looking for Dr. Kim. She's expecting me.]
     -> direct_to_kim
 
-* [Mention you're the security consultant]
-    You: I'm the cybersecurity consultant. Here for the ransomware response.
+* [I'm the cybersecurity consultant. Here for the ransomware response.]
     -> introduce_as_consultant
 
-* [Ask about the situation]
-    You: How bad is it in there?
+* [How bad is it in there?]
     -> ask_situation
 
 === introduce_as_consultant ===
@@ -39,11 +36,10 @@ Receptionist: You can't miss it. She'll be the one who looks like she hasn't sle
 
 #unlock_task:meet_dr_kim
 
-+ [Thanks]
-    You: Thanks. I'll find her.
++ [Thanks. I'll find her.]
     -> hub
 
-+ [Ask about the situation first]
++ [How bad is it in there?]
     -> ask_situation
 
 === direct_to_kim ===
@@ -55,12 +51,11 @@ Receptionist: She's been managing the response since 3am. Please tell me you can
 
 #unlock_task:meet_dr_kim
 
-+ [We'll do everything we can]
-    You: We're going to do everything we can.
++ [We're going to do everything we can.]
     Receptionist: Good. Those patients need their monitoring systems back.
     -> hub
 
-+ [Ask about the situation]
++ [How bad is it in there?]
     -> ask_situation
 
 === ask_situation ===
@@ -72,21 +67,19 @@ Receptionist: Patient monitoring, records, medication schedules... the ward nurs
 
 Receptionist: 47 patients on life support. The backup generators have maybe 12 hours.
 
-* [That's serious. Where's Dr. Kim?]
-    You: I need to speak to Dr. Kim immediately.
+* [That's serious. I need to speak to Dr. Kim immediately.]
     Receptionist: West corridor, admin block. First door on the left.
     #unlock_task:meet_dr_kim
     -> hub
 
-* [Have the police been called?]
-    You: Has anyone contacted the police?
+* [Has anyone contacted the police?]
     Receptionist: IT crimes unit. They said they're -- *checks notes* -- "monitoring the situation."
     Receptionist: Whatever that means. Dr. Kim's down the west corridor if you need her.
     #unlock_task:meet_dr_kim
     -> hub
 
 === hub ===
-+ [Leave conversation]
++ [I should get moving.]
     #speaker:receptionist
     Receptionist: Good luck. We're all counting on you.
     #exit_conversation

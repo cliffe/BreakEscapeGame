@@ -532,9 +532,9 @@ flowchart TD
   hallway_south("South Corridor")
   rc_obj1_1{"Reception Desk Visitor Log"}
   rc_obj2_2{"Hospital Founding Plaque"}
-  rc_npc_agent_0x99_3("Agent 0x99")
+  rc_npc_agent_hax_3("Agent HaX")
   rc_npc_hospital_receptionist_4("Hospital Receptionist")
-  rc_npc_agent_0x99_haxolottle_5("Agent 0x99 'Haxolottle'")
+  rc_npc_agent_hax_5("Agent HaX")
   rc_obj6_6{"SAFETYNET Field Guide: Reconnaissance and Network Mapping"}
   rc_obj7_7{"SAFETYNET Field Guide: Vulnerability Analysis and Attack Surface"}
   rc_obj8_8{"SAFETYNET Field Guide: ProFTPD Exploitation Workflow"}
@@ -543,7 +543,7 @@ flowchart TD
   rc_obj11_11{"SAFETYNET Field Guide: SSH Access and Bruteforce"}
   rc_obj12_12{"SAFETYNET Field Guide: Privilege Escalation"}
   rc_npc_ghost_13("Ghost")
-  rc_npc_agent_0x99_14("Agent 0x99")
+  rc_npc_agent_hax_14("Agent HaX")
   rc_ehr_terminal_ward_15{"EHR Terminal (Offline)"}
   rc_obj16_16{"Paper Patient Chart - Bed 3"}
   rc_obj17_17{"Emergency Ops Board"}
@@ -603,18 +603,18 @@ flowchart TD
   dr_kim_office --> conference_room
   reception_lobby --> rc_obj1_1
   reception_lobby --> rc_obj2_2
-  reception_lobby --> rc_npc_agent_0x99_3
+  reception_lobby --> rc_npc_agent_hax_3
   reception_lobby --> rc_npc_hospital_receptionist_4
-  reception_lobby --> rc_npc_agent_0x99_haxolottle_5
-  rc_npc_agent_0x99_haxolottle_5 --> rc_obj6_6
-  rc_npc_agent_0x99_haxolottle_5 --> rc_obj7_7
-  rc_npc_agent_0x99_haxolottle_5 --> rc_obj8_8
-  rc_npc_agent_0x99_haxolottle_5 --> rc_obj9_9
-  rc_npc_agent_0x99_haxolottle_5 --> rc_obj10_10
-  rc_npc_agent_0x99_haxolottle_5 --> rc_obj11_11
-  rc_npc_agent_0x99_haxolottle_5 --> rc_obj12_12
+  reception_lobby --> rc_npc_agent_hax_5
+  rc_npc_agent_hax_5 --> rc_obj6_6
+  rc_npc_agent_hax_5 --> rc_obj7_7
+  rc_npc_agent_hax_5 --> rc_obj8_8
+  rc_npc_agent_hax_5 --> rc_obj9_9
+  rc_npc_agent_hax_5 --> rc_obj10_10
+  rc_npc_agent_hax_5 --> rc_obj11_11
+  rc_npc_agent_hax_5 --> rc_obj12_12
   reception_lobby --> rc_npc_ghost_13
-  reception_lobby --> rc_npc_agent_0x99_14
+  reception_lobby --> rc_npc_agent_hax_14
   hospital_ward --> rc_ehr_terminal_ward_15
   hospital_ward --> rc_obj16_16
   hospital_ward --> rc_obj17_17
@@ -667,7 +667,7 @@ flowchart TD
   class reception_lobby,hospital_ward,emergency_equipment_storage,conference_room,hallway_north,hallway_south room
   class it_department,server_room,dr_kim_office lock
   class rc_obj1_1,rc_obj2_2,rc_obj6_6,rc_obj7_7,rc_obj8_8,rc_obj9_9,rc_obj10_10,rc_obj11_11,rc_obj12_12,rc_ehr_terminal_ward_15,rc_obj16_16,rc_obj17_17,rc_infected_terminal_23,rc_obj25_25,rc_password_sticky_note_26,rc_obj27_27,rc_obj29_29,rc_obj30_30,rc_obj31_31,rc_ghost_terminal_device_32,rc_obj34_34,rc_vm_launcher_rooting_for_a_win_35,rc_flag_station_dropsite_36,rc_cyberchef_workstation_37,rc_hospital_recovery_console_38,rc_obj39_39,rc_obj40_40,rc_offline_backup_encryption_keys_42,rc_obj43_43,rc_obj44_44,rc_obj45_45,rc_obj46_46,rc_obj47_47,rc_obj49_49,rc_obj51_51,rc_obj52_52,rc_obj53_53,rc_obj54_54,rc_obj55_55,rc_obj56_56,rc_press_terminal_57,rc_obj61_61,rc_obj62_62 item
-  class rc_npc_agent_0x99_3,rc_npc_hospital_receptionist_4,rc_npc_agent_0x99_haxolottle_5,rc_npc_ghost_13,rc_npc_agent_0x99_14,rc_npc_ward_nurse_18,rc_npc_staff_nurse_19,rc_npc_mr_okafor_bed_4_20,rc_npc_mrs_hargreaves_bed_2_21,rc_npc_ms_chen_bed_5_22,rc_npc_marcus_webb_33,rc_npc_dr_sarah_kim_50,rc_npc_hospital_comms_terminal_58,rc_npc_night_security_supervisor_59,rc_npc_hospital_security_guard_60 npc
+  class rc_npc_agent_hax_3,rc_npc_hospital_receptionist_4,rc_npc_agent_hax_5,rc_npc_ghost_13,rc_npc_agent_hax_14,rc_npc_ward_nurse_18,rc_npc_staff_nurse_19,rc_npc_mr_okafor_bed_4_20,rc_npc_mrs_hargreaves_bed_2_21,rc_npc_ms_chen_bed_5_22,rc_npc_marcus_webb_33,rc_npc_dr_sarah_kim_50,rc_npc_hospital_comms_terminal_58,rc_npc_night_security_supervisor_59,rc_npc_hospital_security_guard_60 npc
   class rc_marcus_workstation_24,rc_it_filing_cabinet_28,rc_emergency_storage_safe_41,rc_obj48_48 container
   class node_start start
 ```

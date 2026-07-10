@@ -22,19 +22,16 @@ Narrator: The ward nurse moves between beds, writing observations on paper -- ba
 #speaker:ward_nurse
 Nurse: I'm sorry, are you authorised to be in here? This is a restricted ward.
 
-* [Show your consultant badge]
-    You: Security consultant. Dr. Kim authorised full access.
+* [Security consultant. Dr. Kim authorised full access.]
     Nurse: *sighs* Right. The IT people. Please -- tell me you can fix the monitors.
     -> stakes_conversation
 
-* [Explain the urgency]
-    You: I need to understand the patient situation. What are we dealing with?
+* [I need to understand the patient situation. What are we dealing with?]
     ~ nurse_spoke_about_patients = true
     Nurse: *looks up* You want to know what we're dealing with? Come with me.
     -> ward_tour
 
-* [Ask what she needs]
-    You: What do you need right now?
+* [What do you need right now?]
     Nurse: *flat* The computers back. All of them. Right now.
     -> stakes_conversation
 
@@ -49,12 +46,10 @@ Nurse: Bed three -- Mrs. Hargreaves. ECMO. If that system fails without warning,
 
 Nurse: Six beds. Six patients. And that's just this bay. There are two more wards.
 
-* [How are you managing?]
-    You: How are you coping without the electronic systems?
+* [How are you coping without the electronic systems?]
     -> discuss_manual_work
 
-* [What happens at 12 hours?]
-    You: The backup generator -- what happens when it runs out?
+* [The backup generator -- what happens when it runs out?]
     -> discuss_timeline
 
 === stakes_conversation ===
@@ -70,12 +65,10 @@ Nurse: We're doing everything on paper. Two nurses for 47 patients with no elect
 
 #complete_task:talk_to_ward_nurse
 
-* [How long can you sustain this?]
-    You: How long can you keep this up manually?
+* [How long can you keep this up manually?]
     -> discuss_timeline
 
-* [What's the biggest risk?]
-    You: What are you most worried about?
+* [What are you most worried about?]
     Nurse: Missing something. A reading that would have triggered an alarm. A medication conflict in the records we can't access.
     Nurse: Every hour without monitoring is another hour where we might miss the thing that kills someone.
     -> hub
@@ -93,12 +86,11 @@ Nurse: We're managing. But "managing" isn't good enough for ICU-level patients. 
 
 #complete_task:talk_to_ward_nurse
 
-+ [I'll do everything I can]
-    You: I'm going to recover those systems. I promise.
++ [I'm going to recover those systems. I promise.]
     Nurse: *quietly* Don't make promises. Just fix it.
     -> hub
 
-+ [Ask about the generator]
++ [What happens when the generator runs out?]
     -> discuss_timeline
 
 === discuss_timeline ===
@@ -117,13 +109,11 @@ Nurse: The emergency equipment storage is at the end of the south corridor. That
 #complete_task:talk_to_ward_nurse
 #complete_task:gather_pin_clues
 
-* [I understand. I'll work as fast as I can.]
-    You: I understand the stakes. I'm working as fast as I can.
+* [I understand the stakes. I'm working as fast as I can.]
     Nurse: Good. Now please -- let me work.
     -> hub
 
-* [What do you know about the IT admin?]
-    You: Do you know Marcus Webb, the IT admin?
+* [Do you know Marcus Webb, the IT admin?]
     Nurse: Marcus? He's been here all night. He warned them, you know. Months ago.
     Nurse: Nobody listened. And now here we are.
     -> hub
@@ -133,13 +123,13 @@ Nurse: The emergency equipment storage is at the end of the south corridor. That
 // ===========================================
 
 === hub ===
-+ {not nurse_spoke_about_patients} [Ask about the patients]
++ {not nurse_spoke_about_patients} [How many patients are we talking about?]
     -> stakes_conversation
 
-+ {not nurse_spoke_about_manual} [Ask how they're managing]
++ {not nurse_spoke_about_manual} [How are you managing without the systems?]
     -> discuss_manual_work
 
-+ [Leave her to her work]
++ [I'll let you get back to it.]
     #speaker:ward_nurse
     Nurse: Please hurry.
     #exit_conversation

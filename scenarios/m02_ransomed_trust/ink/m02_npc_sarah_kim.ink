@@ -48,19 +48,16 @@ Dr. Kim: 47 patients on backup power. If we don't restore systems in 12 hours...
 
 Dr. Kim: The board is voting on paying the ransom in 4 hours. I need your opinion.
 
-* [Ask about the attack]
-    You: Tell me what happened. How did they get in?
+* [Tell me what happened. How did they get in?]
     ~ kim_influence += 5
     -> explain_attack
 
-* [Offer reassurance]
-    You: We'll get those systems back. That's why I'm here.
+* [We'll get those systems back. That's why I'm here.]
     ~ kim_influence += 10
     Dr. Kim: I hope you're right. Those are real people.
     -> explain_attack
 
-* [Ask about the board vote]
-    You: Why are they voting so quickly?
+* [Why are they voting so quickly?]
     ~ kim_influence += 5
     -> explain_board_vote
 
@@ -74,18 +71,15 @@ Dr. Kim: CVE-2010-4652. He wanted an $85,000 server upgrade.
 
 Dr. Kim: We... we deferred it. Budget cuts.
 
-* [Press about budget cuts]
-    You: Why defer cybersecurity?
+* [Why defer cybersecurity?]
     ~ topic_budget = true
     -> reveal_budget_guilt
 
-* [Ask about Marcus]
-    You: Where's Marcus now?
+* [Where's Marcus now?]
     ~ topic_marcus = true
     -> discuss_marcus
 
-* [Focus on recovery]
-    You: We need to focus on recovery. Where's your IT department?
+* [We need to focus on recovery. Where's your IT department?]
     -> grant_access
 
 === reveal_budget_guilt ===
@@ -99,20 +93,17 @@ Dr. Kim: We bought a $3.2 million MRI instead. State-of-the-art equipment.
 
 Dr. Kim: Now people might die because I chose shiny technology over unsexy cybersecurity.
 
-* [Sympathize]
-    You: You made a decision based on patient care priorities. You couldn't have known.
+* [You made a decision based on patient care priorities. You couldn't have known.]
     ~ kim_influence += 10
     Dr. Kim: That's... thank you. But I should have listened.
     -> hub
 
-* [Stay professional]
-    You: The past doesn't matter now. Let's focus on recovery.
+* [The past doesn't matter now. Let's focus on recovery.]
     ~ kim_influence += 5
     Dr. Kim: Right. Professional. I appreciate that.
     -> hub
 
-* [Challenge the decision]
-    You: $85K vs. patient data security. That was a risky choice.
+* [$85K vs. patient data security. That was a risky choice.]
     ~ kim_influence -= 10
     Dr. Kim: I... I know. I know.
     -> hub
@@ -127,8 +118,7 @@ Dr. Kim: The board... they're planning to blame him too. Scapegoat.
 
 Dr. Kim: But he warned us. He did everything right.
 
-* [Offer to protect Marcus]
-    You: I'll make sure the evidence shows Marcus warned you. He shouldn't take the fall.
+* [I'll make sure the evidence shows Marcus warned you. He shouldn't take the fall.]
     ~ kim_influence += 15
     ~ player_warned_kim = true
     Dr. Kim: Thank you. He deserves better than this.
@@ -136,14 +126,12 @@ Dr. Kim: But he warned us. He did everything right.
     #set_global:marcus_protected:true
     -> hub
 
-* [Stay neutral]
-    You: Let's focus on the mission first.
+* [Let's focus on the mission first.]
     ~ kim_influence += 0
     Dr. Kim: Of course. IT Department is down the hall.
     -> hub
 
-* [Suggest Marcus share responsibility]
-    You: He's the IT admin. He has some responsibility here.
+* [He's the IT admin. He has some responsibility here.]
     ~ kim_influence -= 15
     Dr. Kim: No. We ignored him. This isn't his fault.
     -> hub
@@ -158,20 +146,17 @@ Dr. Kim: $87,000 seems cheap compared to those risks.
 
 Dr. Kim: But... we'd be funding terrorists. Criminals. What do I tell them?
 
-* [Advise paying ransom]
-    You: Patient lives come first. Pay if necessary.
+* [Patient lives come first. Pay if necessary.]
     ~ kim_influence += 5
     Dr. Kim: That's my medical training talking too. "Do no harm."
     -> hub
 
-* [Advise against ransom]
-    You: Don't fund ENTROPY. They'll use it for the next attack.
+* [Don't fund ENTROPY. They'll use it for the next attack.]
     ~ kim_influence += 5
     Dr. Kim: Long-term thinking. But those are real lives today.
     -> hub
 
-* [Leave decision to her]
-    You: That's your call, Dr. Kim. I'm here to find the decryption keys.
+* [That's your call, Dr. Kim. I'm here to find the decryption keys.]
     ~ kim_influence += 10
     Dr. Kim: Fair enough. Let me give you access to IT systems.
     -> grant_access
@@ -199,21 +184,20 @@ Dr. Kim: Do whatever you need. Just save those patients.
 // ===========================================
 
 === hub ===
-+ {not topic_attack_vector} [Ask about the attack]
++ {not topic_attack_vector} [Tell me what happened. How did they get in?]
     -> explain_attack
 
-+ {not topic_marcus} [Ask about Marcus Webb]
++ {not topic_marcus} [What's the situation with Marcus Webb?]
     -> discuss_marcus
 
-+ {not topic_ransom_vote} [Ask about the board vote]
++ {not topic_ransom_vote} [Why is the board voting so quickly?]
     -> explain_board_vote
 
-+ {not topic_budget and topic_marcus} [Ask about budget priorities]
++ {not topic_budget and topic_marcus} [What were the board's budget priorities?]
     ~ topic_budget = true
     -> reveal_budget_guilt
 
-+ {topic_marcus and not player_warned_kim} [Offer to protect Marcus]
-    You: I can document Marcus's warnings. Make sure he's not scapegoated.
++ {topic_marcus and not player_warned_kim} [I can document Marcus's warnings. Make sure he's not scapegoated.]
     ~ kim_influence += 15
     ~ player_warned_kim = true
     Dr. Kim: Thank you. He deserves better.
@@ -221,10 +205,10 @@ Dr. Kim: Do whatever you need. Just save those patients.
     #set_global:marcus_protected:true
     -> hub
 
-+ {insider_evidence_partial and not insider_identified} [Accuse Dr. Kim of being the ENTROPY insider]
++ {insider_evidence_partial and not insider_identified} [Someone inside this hospital confirmed ENTROPY's timing. You cut the budget. You'd have signed off the fire drill. Was it you?]
     -> accuse_kim
 
-+ [Leave conversation]
++ [I need to get back to it.]
     #speaker:dr_kim
     {not kim_access_given:
         ~ kim_access_given = true
@@ -246,8 +230,6 @@ Dr. Kim: Do whatever you need. Just save those patients.
 
 === accuse_kim ===
 #speaker:dr_kim
-
-You: Someone inside this hospital confirmed ENTROPY's timing. You cut the budget. You'd have signed off the fire drill. Was it you?
 
 Dr. Kim: You think I -- I called SAFETYNET. I brought YOU in. Why would I do that if I were working with them?
 
@@ -289,19 +271,16 @@ Dr. Kim: Any progress?
     Dr. Kim: Time's running out. Board votes in less than 2 hours now.
 }
 
-+ [Report findings]
-    You: I've accessed the IT systems. Working on recovery.
++ [I've accessed the IT systems. Working on recovery.]
     ~ kim_influence += 5
     Dr. Kim: Good. Keep going.
     -> hub
 
-+ [Ask for update]
-    You: How are the patients?
++ [How are the patients?]
     Dr. Kim: Stable for now. Backup power holding. But every hour increases risk.
     -> hub
 
-+ [Continue mission]
-    You: I need to keep working.
++ [I need to keep working.]
     Dr. Kim: Of course. Go.
     #exit_conversation
     -> hub
@@ -327,23 +306,20 @@ Dr. Kim: The board is meeting right now. Have you found the decryption keys?
 === ransom_decision_input ===
 #speaker:dr_kim
 
-+ [Advise paying ransom for patient safety]
-    You: Pay the ransom. Patient lives come first.
++ [Pay the ransom. Patient lives come first.]
     Dr. Kim: My instinct too. Thank you.
     ~ kim_influence += 10
     -> hub
 
-+ [Advise independent recovery]
-    You: Don't pay. We can recover independently.
++ [Don't pay. We can recover independently.]
     Dr. Kim: That's... a risk. But I trust your judgment.
     ~ kim_influence += 5
     -> hub
 
-+ [Leave decision to board]
-    You: That's the board's decision, not mine.
++ [That's the board's decision, not mine.]
     Dr. Kim: Fair enough.
     -> hub
 
-+ [Continue mission]
++ [I need to keep working.]
     #exit_conversation
     -> hub
