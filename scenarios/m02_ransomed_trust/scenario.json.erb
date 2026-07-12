@@ -792,6 +792,28 @@ recovery_instructions_encoded = rot13("FULL RECOVERY REQUIRES OFFLINE + ONLINE K
           "puzzle_graph_role": "clue",
           "puzzle_graph_unlocks": "emergency_storage_safe",
           "puzzle_graph_reveals": "hospital_founding_year_1987_is_the_safe_pin"
+        },
+        {
+          "type": "pc",
+          "id": "reception_terminal",
+          "name": "Reception Workstation (Encrypted)",
+          "sprite": "pc",
+          "takeable": false,
+          "locked": true,
+          "lockType": "ransomware_display",
+          "observations": "The front-desk workstation that should be pulling up appointments and registrations. Instead the screen is black with a Ransomware Incorporated demand -- which is why the receptionist is working off paper forms.",
+          "puzzle_graph_role": "lock",
+          "puzzle_graph_aim": "infiltrate_hospital",
+          "minigameData": {
+            "organisation": "St. Catherine's Regional Medical Center",
+            "encryptedSystems": "Patient registration | Appointment scheduling | Admissions records | Front-desk workstations",
+            "ransomAmount": "$87,000",
+            "ransomBitcoin": "2.5 BTC",
+            "walletAddress": "bc1q7cyrfmckn2ewz5m78ts6jt9lcfhfwcvzefm27k",
+            "timerHours": 12,
+            "groupName": "Ransomware Incorporated",
+            "supportPortal": "ransom1nc0rp0rated.onion"
+          }
         }
       ]
     },
@@ -960,7 +982,7 @@ recovery_instructions_encoded = rot13("FULL RECOVERY REQUIRES OFFLINE + ONLINE K
           "name": "Paper Patient Chart - Bed 3",
           "takeable": false,
           "readable": true,
-          "text": "PATIENT: M. Okafor, DOB: 1944-03-15\nWARD: St. Catherine's - Bed 3\nCONDITION: ECMO (heart-lung bypass)\nBACKUP POWER: Active\n\nNURSE NOTE: Electronic monitoring offline. Manual obs every 15 minutes. Patient stable but ECMO requires constant monitoring. Do NOT leave unsupervised.\n\nFAMILY: Daughter calling every hour. Please update when you can.",
+          "text": "PATIENT: A. Rahman, DOB: 1944-03-15\nWARD: St. Catherine's - Bed 3\nCONDITION: ECMO (heart-lung bypass)\nBACKUP POWER: Active\n\nNURSE NOTE: Electronic monitoring offline. Manual obs every 15 minutes. Patient stable but ECMO requires constant monitoring. Do NOT leave unsupervised.\n\nFAMILY: Daughter calling every hour. Please update when you can.",
           "observations": "Paper chart pinned to the bed frame -- nurses are working without electronic support"
         },
         {
@@ -1409,6 +1431,28 @@ recovery_instructions_encoded = rot13("FULL RECOVERY REQUIRES OFFLINE + ONLINE K
         }
       ],
       "objects": [
+        {
+          "type": "pc",
+          "id": "kim_office_terminal",
+          "name": "CTO Workstation (Encrypted)",
+          "sprite": "pc",
+          "takeable": false,
+          "locked": true,
+          "lockType": "ransomware_display",
+          "observations": "Dr. Kim's executive workstation. The ransom note has locked it like every other machine in the building -- board papers, financials, and the incident response she is trying to run, all behind Ransomware Incorporated's countdown.",
+          "puzzle_graph_role": "lock",
+          "puzzle_graph_aim": "infiltrate_hospital",
+          "minigameData": {
+            "organisation": "St. Catherine's Regional Medical Center",
+            "encryptedSystems": "Executive workstation | Board records | Financial systems | Administrative email",
+            "ransomAmount": "$87,000",
+            "ransomBitcoin": "2.5 BTC",
+            "walletAddress": "bc1q7cyrfmckn2ewz5m78ts6jt9lcfhfwcvzefm27k",
+            "timerHours": 12,
+            "groupName": "Ransomware Incorporated",
+            "supportPortal": "ransom1nc0rp0rated.onion"
+          }
+        },
         {
           "type": "notes",
           "name": "Dr. Kim's Desk - PIN Clue",
