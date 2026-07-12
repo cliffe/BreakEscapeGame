@@ -10,6 +10,8 @@ VAR exposed_hospital = false
 VAR marcus_protected = false
 VAR kim_guilt_revealed = false
 VAR ghost_deal_accepted = false
+VAR advised_board_pay = false
+VAR advised_board_refuse = false
 VAR flag_ghost_log_submitted = false
 VAR lore_ghosts_manifesto_found = false
 VAR lore_cryptosecure_found = false
@@ -578,6 +580,19 @@ Agent HaX: Here's what I'll say, {player_name()}.
 }
 {player_shaken:
     Agent HaX: You couldn't say the Architect's name out loud when you came in. Good. The day this stops costing you something is the day I start worrying about you.
+}
+
+{advised_board_refuse and paid_ransom:
+    Agent HaX: One more thing. Dr. Kim held the board off because you told her you'd have the keys in time. In the end, someone wrote the cheque anyway. She spent trust she didn't have to spare -- on your word. People remember that.
+}
+{advised_board_pay and not paid_ransom:
+    Agent HaX: For what it's worth -- you told Kim to pay, then found a way that didn't need paying. She'll have gone into that boardroom arguing for a cheque nobody had to write. A small thing. She noticed it anyway.
+}
+{advised_board_refuse and not paid_ransom:
+    Agent HaX: And you kept your word to Kim. You told her you'd get the keys without paying, and you did. In this line of work, that's rarer than it should be. She knows what you spent to make good on it.
+}
+{advised_board_pay and paid_ransom:
+    Agent HaX: You told Kim to pay, and that's how it ended. No surprises for her. She trusted your read, and your read held. That matters more than you'd think, next time you need someone on the inside to believe you.
 }
 
 Agent HaX: You faced a dilemma Ghost designed specifically to have no clean answer. Pay or don't pay -- both choices cost lives. Just different lives, different timeframes.

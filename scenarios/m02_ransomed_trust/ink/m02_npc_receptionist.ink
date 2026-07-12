@@ -2,10 +2,22 @@
 // ACT 1 NPC: Hospital Receptionist
 // Mission 2: Ransomed Trust
 // Break Escape - Information Gatekeeper
+//
+// Primary job: signpost the player to Dr. Kim.
+// But a player who actually engages her gets something the others can't
+// give -- an early, optional breadcrumb toward the ENTROPY inside asset.
+// She works the front desk; she's the one person who'd notice a man who
+// never signs her visitor log. Pure foreshadowing (no puzzle flags), so
+// the curious player walks in already suspicious of the plainclothes
+// "supervisor" by the conference room.
 // ===========================================
 
 // External variables (set by game)
 EXTERNAL player_name()
+
+// Local conversation tracking
+VAR asked_situation = false
+VAR observed_stranger = false
 
 // ===========================================
 // FIRST ENCOUNTER
@@ -60,6 +72,7 @@ Receptionist: She's been managing the response since 3am. Please tell me you can
 
 === ask_situation ===
 #speaker:receptionist
+~ asked_situation = true
 
 Receptionist: It's -- it's bad. All the computers went down at 2:47am. Everything.
 
@@ -78,9 +91,52 @@ Receptionist: 47 patients on life support. The backup generators have maybe 12 h
     #unlock_task:meet_dr_kim
     -> hub
 
+// ===========================================
+// CONVERSATION HUB
+// ===========================================
+
 === hub ===
++ {not observed_stranger} [Before I go -- you're on this desk all night. Anyone come through who doesn't belong?]
+    -> observe_stranger
+
++ {not asked_situation} [How bad is it in there?]
+    -> ask_situation
+
 + [I should get moving.]
     #speaker:receptionist
     Receptionist: Good luck. We're all counting on you.
     #exit_conversation
+    -> hub
+
+// ===========================================
+// OPTIONAL: EARLY BREADCRUMB TOWARD THE INSIDE ASSET
+// Foreshadowing only -- rewards the curious player with a head start.
+// Matches the asset's own cover ("posted since the summer", conference
+// room / comms relay) so it pays off when they meet him later.
+// ===========================================
+
+=== observe_stranger ===
+#speaker:receptionist
+~ observed_stranger = true
+
+Receptionist: *lowers her voice* ...Now you mention it. There's a man on the night security detail. Plain suit -- no uniform, no scrubs. Very polite. Keeps himself down by the conference room and the comms relay.
+
+Receptionist: Everyone signs this log. Every contractor, every engineer, all night long. He never has. Says he's "posted," like that's answer enough.
+
+Receptionist: Probably nothing. They keep telling me it's crisis protocol. But you did ask.
+
++ [How long has he been around?]
+    #speaker:receptionist
+    Receptionist: Since the summer, he tells me. Funny thing -- I've worked this desk eleven years, and I'd never once clapped eyes on him before all this started.
+    -> hub
+
++ [Which way is the conference room?]
+    #speaker:receptionist
+    Receptionist: East side, past the wards. But you'll want Dr. Kim first -- west corridor, admin block.
+    #unlock_task:meet_dr_kim
+    -> hub
+
++ [Thanks. I'll keep an eye out.]
+    #speaker:receptionist
+    Receptionist: Probably just me being jumpy. It's been that kind of night.
     -> hub

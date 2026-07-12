@@ -146,19 +146,23 @@ Dr. Kim: $87,000 seems cheap compared to those risks.
 
 Dr. Kim: But... we'd be funding terrorists. Criminals. What do I tell them?
 
-* [Patient lives come first. Pay if necessary.]
+* [Patient lives first. If it comes to it, pay.]
     ~ kim_influence += 5
-    Dr. Kim: That's my medical training talking too. "Do no harm."
+    #set_global:advised_board_pay:true
+    #set_global:advised_board_refuse:false
+    Dr. Kim: "Do no harm." That's the oath. Right now it's the only thing I still trust myself on.
     -> hub
 
-* [Don't fund ENTROPY. They'll use it for the next attack.]
+* [Don't fund ENTROPY. Whatever they get, they spend on the next hospital.]
     ~ kim_influence += 5
-    Dr. Kim: Long-term thinking. But those are real lives today.
+    #set_global:advised_board_refuse:true
+    #set_global:advised_board_pay:false
+    Dr. Kim: You sound like Marcus did. Six months ago. I didn't listen to him either.
     -> hub
 
-* [That's your call, Dr. Kim. I'm here to find the decryption keys.]
+* [That's your call, Dr. Kim. I'm here to find the keys, not vote.]
     ~ kim_influence += 10
-    Dr. Kim: Fair enough. Let me give you access to IT systems.
+    Dr. Kim: Everyone's got an opinion tonight. You're the first to admit the decision isn't yours to make.
     -> grant_access
 
 === grant_access ===
@@ -306,18 +310,26 @@ Dr. Kim: The board is meeting right now. Have you found the decryption keys?
 === ransom_decision_input ===
 #speaker:dr_kim
 
-+ [Pay the ransom. Patient lives come first.]
-    Dr. Kim: My instinct too. Thank you.
+Dr. Kim: I walk into that boardroom in five minutes. Whatever you tell me now, I carry in with me. So be sure.
+
++ [Pay the ransom. Save who you can save tonight.]
+    #set_global:advised_board_pay:true
+    #set_global:advised_board_refuse:false
     ~ kim_influence += 10
+    Dr. Kim: Then that's what I'll argue. And if they ask who advised it, I put my name on it. Not yours.
     -> hub
 
-+ [Don't pay. We can recover independently.]
-    Dr. Kim: That's... a risk. But I trust your judgment.
++ [Don't pay. I'll have the keys -- give me the time.]
+    #set_global:advised_board_refuse:true
+    #set_global:advised_board_pay:false
     ~ kim_influence += 5
+    Dr. Kim: You're asking me to bet forty-seven lives on you being fast enough.
+    Dr. Kim: ...All right. I'll hold them off as long as I can. Don't make me a liar in that room.
     -> hub
 
-+ [That's the board's decision, not mine.]
-    Dr. Kim: Fair enough.
++ [The board decides. I'll have keys either way -- just buy me time.]
+    ~ kim_influence += 5
+    Dr. Kim: Time, I can buy. Go.
     -> hub
 
 + [I need to keep working.]

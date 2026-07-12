@@ -7,6 +7,11 @@
 // Variables for tracking conversation
 VAR nurse_spoke_about_patients = false
 VAR nurse_spoke_about_manual = false
+// Did the player engage with the patients as people, or treat this purely
+// as a systems job? Determines whether she volunteers the safe override
+// or sends them to dig it up themselves. (Not a hard gate -- Kim's desk
+// note, the founding plaque, and the PIN cracker are all backups.)
+VAR showed_empathy = false
 
 // External variables (set by game)
 EXTERNAL player_name()
@@ -28,6 +33,7 @@ Nurse: I'm sorry, are you authorised to be in here? This is a restricted ward.
 
 * [I need to understand the patient situation. What are we dealing with?]
     ~ nurse_spoke_about_patients = true
+    ~ showed_empathy = true
     Nurse: *looks up* You want to know what we're dealing with? Come with me.
     -> ward_tour
 
@@ -69,6 +75,7 @@ Nurse: We're doing everything on paper. Two nurses for 47 patients with no elect
     -> discuss_timeline
 
 * [What are you most worried about?]
+    ~ showed_empathy = true
     Nurse: Missing something. A reading that would have triggered an alarm. A medication conflict in the records we can't access.
     Nurse: Every hour without monitoring is another hour where we might miss the thing that kills someone.
     -> hub
@@ -104,7 +111,13 @@ Nurse: The board's talking about paying that ransom. I don't understand the poli
 
 Nurse: *looks at Bed One* Statistical risk goes up every hour. The registrar did the math. I told him I didn't want to hear the numbers.
 
-Nurse: The emergency equipment storage is at the end of the south corridor. That's where the backup kit is. Emergency override codes default to the hospital's founding year, as they always have.
+Nurse: The emergency equipment storage is at the end of the south corridor. That's where the backup kit is.
+
+{showed_empathy:
+    Nurse: There's a PIN safe on it. The override's never once changed in all my years here -- it's the hospital's founding year. If knowing that gets those monitors back a minute sooner, then take it and go.
+- else:
+    Nurse: There's a PIN safe on it. Old institutional code -- the sort of thing that's written down in half a dozen places if you actually stop and look. I haven't the time to walk you through it. I've patients to watch.
+}
 
 #complete_task:talk_to_ward_nurse
 #complete_task:gather_pin_clues
