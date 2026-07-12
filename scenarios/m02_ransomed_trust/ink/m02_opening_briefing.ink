@@ -126,6 +126,12 @@ Agent HaX: Ghost's their operative. Cold, methodical. No remorse.
     ~ knows_full_stakes = true
     -> mission_objectives
 
++ [This isn't ENTROPY's first operation, is it?]
+    Agent HaX: No. It isn't. Social Fabric ran a misinformation campaign out of Viral Dynamics -- Operation Shatter. Same network. Same playbook.
+    Agent HaX: Different cell, but every one of them answers to the same person. The Architect. We still don't have a name.
+    Agent HaX: Ransomware Incorporated is another head on the same body. Cut carefully -- and watch what it tells you about the rest.
+    -> mission_objectives
+
 // ===========================================
 // MISSION OBJECTIVES
 // ===========================================

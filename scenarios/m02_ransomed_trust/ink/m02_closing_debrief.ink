@@ -24,6 +24,11 @@ VAR insider_asset_exposed = false
 VAR accused_wrong_suspect = false
 VAR night_security_supervisor_ko = false
 
+// Local: how the player carries the weight of the mission. Set in the hub,
+// paid off in the final reflection. Not a global -- self-contained to this scene.
+VAR player_shaken = false
+VAR player_cold = false
+
 EXTERNAL player_name()
 
 // ===========================================
@@ -32,26 +37,95 @@ EXTERNAL player_name()
 
 === start ===
 #speaker:narrator
-Narrator: SAFETYNET secure channel. Forty-eight hours after the mission.
+Narrator: SAFETYNET headquarters. Forty-eight hours after St. Catherine's.
 
 #speaker:agent_0x99
-Agent HaX: {player_name()}. Good to see you back.
+Agent HaX: {player_name()}. Good to see you back on your feet. That's not nothing, after a night like that.
 
-Agent HaX: St. Catherine's is stabilised. Systems restored. The immediate crisis is over.
+Agent HaX: Systems are back. Patients are stable. But I've read your field notes twice and I keep landing on the same thing.
 
-Agent HaX: Let's debrief.
+Agent HaX: This wasn't a burglary. Ghost didn't want money -- they wanted a lesson taught in bodies. Casualties, calculated in advance, signed off before the operation ever started.
 
-* [How are the patients?]
-    -> patient_outcomes
+Agent HaX: We've seen that signature before. You've seen it before.
 
-* [What happened to Ghost?]
-    -> ghost_status
-
-* [Walk me through what we found]
-    -> mission_summary
+* [You mean Derek. Social Fabric.]
+    ~ player_cold = true
+    Agent HaX: I mean Derek. Same fingerprints, different hands.
+    Agent HaX: Operation Shatter, this -- ENTROPY doesn't improvise. Somebody's teaching them.
+    -> debrief_hub
+* [Say that plainly. Who's really behind this?]
+    ~ player_shaken = true
+    Agent HaX: You already know the answer you don't want. So do I.
+    Agent HaX: We'll get to it. Ask me what you need first.
+    -> debrief_hub
 
 // ===========================================
-// MISSION SUMMARY
+// DEBRIEF HUB -- player-driven questions
+// Each answer is distinct. Nothing here is on rails; the consequence
+// report plays in full once you're done, no matter what you skip.
+// ===========================================
+
+=== debrief_hub ===
+#speaker:agent_0x99
+
+- (options)
+Agent HaX: {&What do you want to know?|What else?|Anything more before we get to the cost?|Ask.}
+
+* [Who was Ghost, really?]
+    -> q_ghost_identity
+* {q_entropy_link < 1} [This was ENTROPY again -- like Derek's cell at Viral Dynamics.]
+    -> q_entropy_link
+* {q_entropy_link > 0 and q_architect < 1} [Then who's running the cells? The Architect?]
+    -> q_architect
+* [Enough. Walk me through what it cost.]
+    -> mission_summary
+
+=== q_ghost_identity ===
+#speaker:agent_0x99
+
+Agent HaX: Honestly? We don't know. "Ghost" is a handle, not a name.
+
+Agent HaX: Fourteen months of preparation. A device planted during a fire drill six weeks before you ever arrived. Comms discipline so clean we've got nothing -- no face, no voice print, no trail out.
+
+Agent HaX: What we do know is the shape of them. A true believer. Ransomware Incorporated's field operative, and they meant every word of it. To Ghost, the patients weren't victims. They were the argument.
+
+{q_entropy_link > 0:
+    Agent HaX: And that discipline? It's trained. Nobody's that careful by accident. Same school as Derek.
+}
+
+-> debrief_hub
+
+=== q_entropy_link ===
+#speaker:agent_0x99
+
+Agent HaX: Yes. ENTROPY. The same network that ran Social Fabric out of Viral Dynamics.
+
+Agent HaX: Derek Lawson kept casualty projections -- a spreadsheet of how many people Operation Shatter would kill, approved before he pulled the trigger. Ghost kept mortality calculations. Different cell, different weapon. Identical arithmetic.
+
+Agent HaX: That's not coincidence. That's a method. Somebody taught both of them to do the math and sleep at night.
+
+* [So the cells don't even know each other?]
+    Agent HaX: Compartmentalised. Social Fabric never heard of Ransomware Incorporated. That's by design -- you can't burn a network you can't see.
+    Agent HaX: But they all learned from the same source.
+    -> debrief_hub
+* [Then Derek was never the end of it.]
+    Agent HaX: Derek was one node. Whatever happened to him at Viral Dynamics, the network kept moving. Ghost is proof.
+    Agent HaX: We don't win this by catching operatives. We win it by finding the one who trains them.
+    -> debrief_hub
+
+=== q_architect ===
+#speaker:agent_0x99
+
+Agent HaX: The Architect. Derek's letter named them. Ghost's logs point the same way, without ever saying it.
+
+Agent HaX: One person -- or one mind -- coordinating every cell. Social Fabric. Ransomware Incorporated. The two you haven't met yet.
+
+Agent HaX: We don't have a name. We have a philosophy, a signature, and now two data points that rhyme. That's more than we had a week ago. Because of you.
+
+-> debrief_hub
+
+// ===========================================
+// MISSION SUMMARY -- consequence spine begins here
 // ===========================================
 
 === mission_summary ===
@@ -498,6 +572,13 @@ Agent HaX: Your work here feeds both.
 #speaker:agent_0x99
 
 Agent HaX: Here's what I'll say, {player_name()}.
+
+{player_cold:
+    Agent HaX: When you walked in here, you named Derek before I could. Cold. Focused. That's useful in this work -- but I want you to hear the next part anyway.
+}
+{player_shaken:
+    Agent HaX: You couldn't say the Architect's name out loud when you came in. Good. The day this stops costing you something is the day I start worrying about you.
+}
 
 Agent HaX: You faced a dilemma Ghost designed specifically to have no clean answer. Pay or don't pay -- both choices cost lives. Just different lives, different timeframes.
 
