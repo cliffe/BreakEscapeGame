@@ -247,7 +247,7 @@ Agent HaX: Ghost's next hospital target -- delayed. Possibly cancelled. And we h
     Agent HaX: No transaction means no financial trail -- which cuts both ways. Less to trace, but they have less too.
 }
 
-Agent HaX: Either way, Crypto Anarchists handle ENTROPY's payment infrastructure across all cells. That's Mission 6.
+Agent HaX: Either way, Crypto Anarchists handle ENTROPY's payment infrastructure across all cells. That's a mission for another day.
 
 {paid_ransom:
     Agent HaX: Your ransom gives us a fresh transaction to trace. Specific wallets. Specific timing. That's data.
@@ -442,7 +442,7 @@ Agent HaX: Ransomware Incorporated is still operational.
 * [Ghost escaped. We failed.]
     Agent HaX: We disrupted their operation and gathered intelligence on how they work. That's not failure.
     {paid_ransom:
-        Agent HaX: We have a transaction trail. Financial data for Mission 6.
+        Agent HaX: We have a transaction trail. Financial data for an operation further down the line.
     - else:
         Agent HaX: We denied them funding. They go into the next operation short.
     }
@@ -557,10 +557,10 @@ Agent HaX: Ghost's logs confirmed what we suspected -- Zero Day Syndicate source
 }
 
 {lore_zds_invoice_found:
-    Agent HaX: The Zero Day Syndicate invoice you found -- specific evidence of the procurement chain between ENTROPY cells. That's going into Mission 3 planning.
+    Agent HaX: The Zero Day Syndicate invoice you found -- specific evidence of the procurement chain between ENTROPY cells. That's going straight into planning for what comes next.
 }
 
-Agent HaX: Mission 3 targets Zero Day Syndicate. Mission 6 targets Crypto Anarchists.
+Agent HaX: The Zero Day Syndicate is next in our sights. The Crypto Anarchists, further down the line.
 
 Agent HaX: Your work here feeds both.
 
@@ -630,7 +630,7 @@ Agent HaX: Zero Day Syndicate. They sold Ghost the ProFTPD exploit. They scanned
 
 Agent HaX: Shut down their exploit marketplace and ENTROPY loses its technical supply chain across all cells.
 
-Agent HaX: Mission 3: Operation Cyber Arsenal.
+Agent HaX: Operation Cyber Arsenal.
 
 * [Let's take them down.]
     -> debrief_close
@@ -662,7 +662,7 @@ Agent HaX: You saved lives. You stopped an ENTROPY operation. You gathered intel
 
 Agent HaX: That's what you came in there to do.
 
-Agent HaX: We'll brief Mission 3 when you're ready.
+Agent HaX: We'll brief the next operation when you're ready.
 
 #complete_mission
 #exit_conversation

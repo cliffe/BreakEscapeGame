@@ -2,135 +2,133 @@
 // ACT 1: OPENING BRIEFING
 // Mission 2: Ransomed Trust
 // Break Escape - ENTROPY Cell: Ransomware Incorporated
+//
+// Structure: cold-open hook + stakes, then a question-hub so the player can
+// pull the threads (why we know it's ENTROPY, the ZDS exploit supply chain,
+// the ransomware cell, the human stakes) in any order without missing content.
+// Different questions reveal different intel -- a legitimate briefing
+// consequence -- but nothing here carries into the debrief, which is driven by
+// what the player actually DOES in the mission. (No influence var: this is a
+// handler cutscene, gated on knowledge flags, not on rapport.)
 // ===========================================
 
-// Variables for tracking what player asked about (affects nothing in the debrief --
-// the debrief is driven entirely by what the player actually does in the mission,
-// not by a self-reported approach chosen here. See m01_opening_briefing.ink.)
-VAR handler_trust = 50            // 0-100 Handler's confidence in player
-VAR knows_full_stakes = false     // Did player ask about patient risk?
-VAR knows_timeline = false        // Did player ask about time pressure?
+// What the player has asked about -- gates the closing lines of the briefing.
+VAR knows_stakes = false
+VAR knows_entropy_link = false
+VAR asked_zds = false
+VAR asked_ransomware = false
 
 // External variables (set by game)
 EXTERNAL player_name()
 
 // ===========================================
-// OPENING
+// COLD OPEN
 // ===========================================
 
 === start ===
 #speaker:agent_0x99
 
-{player_name()}, thanks for getting here fast.
+Agent HaX: {player_name()}. I'll be quick -- a hospital doesn't have the patience for me to be slow.
 
-We have an emergency situation at St. Catherine's Regional Medical Center.
+Agent HaX: St. Catherine's Regional went dark at 02:47 this morning. Every clinical system encrypted in the same minute. Patient monitoring, medication records, imaging -- all of it sitting behind a ransom screen.
 
-* [I'm listening. Go ahead.]
-    ~ handler_trust += 5
-    -> briefing_main
+Agent HaX: Forty-seven people are on life support in there right now, running on backup generators. Twelve hours of power. Less, if anything trips. After that, the machines keeping them breathing start going quiet.
 
-* [What's happened?]
-    -> briefing_main
+* [Who did this?]
+    -> briefing_hub
 
-* [I'm ready. What's the mission?]
-    ~ handler_trust += 10
-    Agent HaX: Good. Let's get straight to it.
-    -> briefing_main
+* [Why is SAFETYNET on a ransomware call? Isn't this one for the police?]
+    -> why_us
+
+* [Then we shouldn't be standing here. What do you need?]
+    -> briefing_hub
 
 // ===========================================
-// MAIN BRIEFING
+// WHY SAFETYNET / THE ENTROPY LINK
 // ===========================================
 
-=== briefing_main ===
+=== why_us ===
 #speaker:agent_0x99
 
-Agent HaX: Hospital ransomware attack. ENTROPY signature detected--Ransomware Incorporated.
+Agent HaX: Normally? You'd be right. The police work a hospital ransomware case most weeks. This one landed on our desk because of what you pulled out of Viral Dynamics last time.
 
-Agent HaX: 47 patients on life support. Backup power holds 12 hours.
+Agent HaX: Derek Lawson's outfit. Social Fabric. The intelligence from that op didn't just burn his cell -- it gave us the first real map of how ENTROPY's cells trade with each other. Who builds what. Who buys from whom.
 
-Agent HaX: If systems aren't restored... the math gets ugly.
+Agent HaX: One line in that material matches this attack almost exactly. So no. This isn't ordinary crime. This is them.
 
-* [How much time do we have?]
-    ~ knows_timeline = true
-    -> timeline_explanation
+~ knows_entropy_link = true
+-> briefing_hub
 
-* [What's the actual risk to those patients?]
-    ~ knows_full_stakes = true
-    ~ handler_trust += 5
-    -> patient_risk_explanation
+// ===========================================
+// QUESTION HUB
+// ===========================================
 
-* [Ransomware Incorporated -- what do we know?]
-    -> entropy_explanation
-
-=== timeline_explanation ===
+=== briefing_hub ===
 #speaker:agent_0x99
+{briefing_hub > 1: Agent HaX: Any other questions?}
 
-Agent HaX: 12 hours of backup power. Maybe less if systems fail cascading.
++ {not knows_entropy_link} [How can you be sure this is ENTROPY and not some ordinary crew?]
+    -> q_entropy_link
 
-Agent HaX: Hospital board's voting on paying the ransom in 4 hours.
++ {not asked_zds} [You said the cells trade with each other. Trade what, exactly?]
+    -> q_zds
 
-Agent HaX: We need to recover decryption keys before they make that decision.
++ {not asked_ransomware} [So who actually pulled the trigger on this?]
+    -> q_ransomware
 
-+ [Understood. What's the plan?]
++ {not knows_stakes} [Walk me through the stakes. What happens if I'm too slow?]
+    -> q_stakes
+
++ [Enough background. Give me my objectives.]
     -> mission_objectives
 
-+ {not knows_full_stakes} [What's the risk to patients?]
-    ~ knows_full_stakes = true
-    ~ handler_trust += 5
-    -> patient_risk_explanation
-
-=== patient_risk_explanation ===
+=== q_entropy_link ===
 #speaker:agent_0x99
+~ knows_entropy_link = true
 
-Agent HaX: 47 patients: ventilators, ECMO, dialysis. All dependent on networked systems.
+Agent HaX: Two things. First, the note in Derek's material -- Social Fabric was cataloguing the other cells, and one entry describes this playbook: exploit a neglected system, encrypt everything, squeeze a public service that can't afford downtime.
 
-Agent HaX: Statistical risk increases every hour. 0.3% per hour without full systems.
+Agent HaX: Second, the ransom note itself. Same signature we flagged in that intelligence. It's not the usual pay-or-else. It's clinical. Written like a business invoice. That is a tell.
 
-Agent HaX: If we hit 12 hours... 4-6 expected fatalities. Those are real people.
+Agent HaX: ENTROPY doesn't do this for money alone. They do it to prove a point -- that everything you rely on is one unpatched box away from collapse. This is a lesson, and the patients are the chalkboard.
 
-+ [Those are real lives. We have to move fast.]
-    ~ handler_trust += 5
-    Agent HaX: Exactly. Every minute counts.
-    -> mission_objectives
+-> briefing_hub
 
-+ [If they pay, systems restore faster, right?]
-    -> ransom_preliminary_discussion
-
-=== ransom_preliminary_discussion ===
+=== q_zds ===
 #speaker:agent_0x99
+~ asked_zds = true
 
-Agent HaX: Yes. Ransom payment gets decryption keys immediately--maybe 1-2 patient deaths.
+Agent HaX: Exploits, mostly. The Zero Day Syndicate -- that's the name they trade under, and it was all through Derek's notes. ENTROPY's arms shop. Their whole business is finding and weaponising software flaws, then selling them on to whoever's paying.
 
-Agent HaX: But that's $87,000 funding ENTROPY's next attack.
+Agent HaX: They didn't need anything clever here. St. Catherine's backup server is running software that's been known-vulnerable for years. A public advisory, a patch available the whole time. Nobody applied it.
 
-Agent HaX: This won't be a simple mission, agent.
+Agent HaX: That's the ugly truth of it. Half the NHS is holding critical systems together with software this old. ENTROPY isn't breaking down the door -- the Syndicate just noticed it was never locked, and sold the address on.
 
-+ [I understand the stakes]
-    ~ knows_full_stakes = true
-    -> mission_objectives
+-> briefing_hub
 
-=== entropy_explanation ===
+=== q_ransomware ===
 #speaker:agent_0x99
+~ asked_ransomware = true
 
-Agent HaX: Ransomware Incorporated. They believe suffering "teaches resilience."
+Agent HaX: A cell we hadn't confirmed until now -- but Derek's notes named them. Ransomware Incorporated. And they run exactly like the name says. Like a company. Professional ransom notes, a payment portal, even "support" for victims who get stuck paying.
 
-Agent HaX: Not profit-motivated--ideologically driven. They calculate harm.
+Agent HaX: They buy the way in from the Syndicate, then they specialise in the part that hurts -- hospitals, councils, anyone who'll pay fast because the alternative is unthinkable.
 
-Agent HaX: Ghost's their operative. Cold, methodical. No remorse.
+Agent HaX: The operative on the ground goes by Ghost. Cold. Methodical. Runs the numbers on how many people die at each hour of downtime and prices the ransom against it. Part of your job today is confirming this cell is real -- and everything you find in there that ties it back to the Syndicate is gold to us.
 
-+ [How do we stop them?]
-    -> mission_objectives
+-> briefing_hub
 
-+ [They calculated how many people might die?]
-    Agent HaX: Spreadsheet of projected fatalities. This is ENTROPY's ideology.
-    ~ knows_full_stakes = true
-    -> mission_objectives
+=== q_stakes ===
+#speaker:agent_0x99
+~ knows_stakes = true
 
-+ [This isn't ENTROPY's first operation, is it?]
-    Agent HaX: No. It isn't. Social Fabric ran a misinformation campaign out of Viral Dynamics -- Operation Shatter. Same network. Same playbook.
-    Agent HaX: Different cell, but every one of them answers to the same person. The Architect. We still don't have a name.
-    Agent HaX: Ransomware Incorporated is another head on the same body. Cut carefully -- and watch what it tells you about the rest.
-    -> mission_objectives
+Agent HaX: Two clocks, and they're both bad. The generators give you twelve hours before life support starts failing. And the hospital board votes on paying the ransom in about four.
+
+Agent HaX: If they pay, the systems come back fast -- and ENTROPY walks away eighty-seven thousand richer, funding the next hospital, the next council. If they refuse and you don't get those systems back in time, people die on the ward.
+
+Agent HaX: Your job is to take that choice off the table. Recover the decryption keys yourself, and nobody has to decide between their patients and their principles.
+
+-> briefing_hub
 
 // ===========================================
 // MISSION OBJECTIVES
@@ -139,48 +137,43 @@ Agent HaX: Ghost's their operative. Cold, methodical. No remorse.
 === mission_objectives ===
 #speaker:agent_0x99
 
-Agent HaX: Your objectives:
+Agent HaX: Three things, then. Get inside St. Catherine's and reach their crisis lead -- she's expecting a security consultant.
 
-Agent HaX: One--infiltrate St. Catherine's as external security consultant.
+Agent HaX: Get into their IT systems and find how the attackers got in. It'll be that neglected backup server.
 
-Agent HaX: Two--access hospital's IT systems, identify attack vector.
+Agent HaX: Then turn their own backdoor against them -- exploit it, recover the decryption keys, and bring those patients' systems home before either clock runs out.
 
-Agent HaX: Three--exploit ENTROPY's backdoor on backup server, recover decryption keys.
-
-* [What's my cover story?]
+* [What's my cover?]
     -> cover_story
 
-* [What about hospital security?]
+* [What am I walking into? Security?]
     -> security_warning
 
-* [I'm ready to go]
+* [Understood. I'm moving.]
     -> final_instructions
 
 === cover_story ===
 #speaker:agent_0x99
 
-Agent HaX: You're a cybersecurity consultant brought in for emergency recovery.
+Agent HaX: Their CTO, Dr. Sarah Kim, put out a call for an emergency security consultant to help them through the incident. We made sure you're the one who answered it.
 
-Agent HaX: Dr. Sarah Kim, Hospital CTO, is expecting you. She'll grant access.
+Agent HaX: Understand what that does and doesn't buy you. She's expecting a consultant -- a set of hands to assess the breach and get her systems back. She has no idea SAFETYNET is involved, and no idea this is ENTROPY. To her, you're a contractor on a very bad night. Keep it that way.
 
-Agent HaX: Staff is stressed, desperate. Use that. Build trust.
-
-+ [Understood]
++ [So how much access does that actually get me?]
     -> security_warning
 
 === security_warning ===
 #speaker:agent_0x99
 
-Agent HaX: Security is heightened. Guards patrolling. Stay low profile.
+Agent HaX: Less than you'd like. A consultant's remit is to assess and advise -- not to be handed the keys to the kingdom. And a hospital mid-breach locks everything down: restricted areas go to named staff badges only. Chain of custody, data governance. Your visitor badge gets you the public and admin floors and a room full of frightened people. It will not open their IT department, their server room, or their records.
 
-Agent HaX: You'll need lockpicking, social engineering, and technical exploitation. Read the room as you go.
+Agent HaX: So you earn the rest. Get a member of staff to authorise you or walk you in -- that's your clean route. And where the crisis means nobody's free to sign off a locked door? You improvise. You're carrying a pick kit for exactly that. Just don't do it where a guard can see.
 
-+ [I can handle it]
++ [Who's worth leaning on inside?]
+    Agent HaX: Their IT admin, Marcus Webb. He flagged this exact weakness to the board six months ago and got overruled. He's drowning in guilt, he holds the server-room keycard, and he's your fastest way past the doors that matter. Win him over.
     -> final_instructions
 
-+ [What else should I know?]
-    Agent HaX: IT admin is named Marcus Webb. He warned them about vulnerabilities six months ago.
-    Agent HaX: They ignored him. Now he's devastated. Might be an ally.
++ [Understood. I'll talk my way in where I can.]
     -> final_instructions
 
 // ===========================================
@@ -190,28 +183,13 @@ Agent HaX: You'll need lockpicking, social engineering, and technical exploitati
 === final_instructions ===
 #speaker:agent_0x99
 
-Agent HaX: You'll have comms support. Call if you need guidance.
+Agent HaX: One more thing. Ghost is still in the wires -- watching that network. If they reach out, don't expect threats. Expect arithmetic. Don't let it get in your head.
 
-* [Any last advice?]
-    Agent HaX: Marcus Webb, the IT admin. He's guilty and desperate.
-    Agent HaX: That makes him vulnerable. Build trust, get access.
-    Agent HaX: And watch for Ghost. They're calculated. Expect spreadsheets, not rage.
-    -> deployment
-
-* [I'm ready to go]
-    -> deployment
-
-=== deployment ===
-#speaker:agent_0x99
-
-Agent HaX: Good luck, {player_name()}.
-
-Agent HaX: 47 lives. 12 hours. SAFETYNET is counting on you.
-
-{knows_full_stakes:
-    Agent HaX: And remember--those patient deaths? They're on ENTROPY, not you.
-    Agent HaX: Do your best. That's all anyone can ask.
+{knows_stakes:
+    Agent HaX: And whatever the ward looks like in there -- those numbers on the board are on ENTROPY. Not on you. Just do the work and get the keys.
 }
+
+Agent HaX: Good luck, {player_name()}. Forty-seven lives, twelve hours. Go.
 
 #complete_task:receive_mission_briefing
 #unlock_aim:infiltrate_hospital

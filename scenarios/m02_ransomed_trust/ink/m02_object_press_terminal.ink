@@ -9,8 +9,19 @@
 
 EXTERNAL player_name()
 
+// Synced from globalVars. The exposure decision is the LAST act of the mission
+// and setting mission_complete here launches the debrief -- so the terminal must
+// stay locked until the incident is actually resolved (recovery decision logged).
+// Without this gate a player can pick into the conference room early, release the
+// evidence, and skip the entire technical mission.
+VAR ransom_decision_made = false
+
 === start ===
 #speaker:computer
+
+{not ransom_decision_made:
+    -> relay_locked
+}
 
 HOSPITAL COMMUNICATIONS TERMINAL
 
@@ -25,6 +36,24 @@ Available for transmission:
 Transmission is irreversible. Once sent, this evidence enters permanent public record.
 
 -> decision_menu
+
+// ===========================================
+// GATE: incident must be resolved before evidence can be released
+// ===========================================
+
+=== relay_locked ===
+#speaker:computer
+
+HOSPITAL COMMUNICATIONS TERMINAL
+
+>>> OUTGOING RELAY LOCKED <<<
+
+Evidence release is unavailable while the incident is active. The board liability record, the budget files, and Marcus Webb's advisory archive cannot be authenticated for transmission until the patient systems are recovered and the ransom decision has been logged.
+
+Resolve the incident first. Then decide what the world gets to see.
+
+#exit_conversation
+-> DONE
 
 === decision_menu ===
 

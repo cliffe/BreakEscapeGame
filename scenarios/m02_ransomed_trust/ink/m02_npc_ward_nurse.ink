@@ -5,6 +5,7 @@
 // ===========================================
 
 // Variables for tracking conversation
+VAR influence = 0                 // rapport with the ward nurse (visible via #influence tags)
 VAR nurse_spoke_about_patients = false
 VAR nurse_spoke_about_manual = false
 // Did the player engage with the patients as people, or treat this purely
@@ -34,6 +35,8 @@ Nurse: I'm sorry, are you authorised to be in here? This is a restricted ward.
 * [I need to understand the patient situation. What are we dealing with?]
     ~ nurse_spoke_about_patients = true
     ~ showed_empathy = true
+    ~ influence += 1
+    # influence_increased
     Nurse: *looks up* You want to know what we're dealing with? Come with me.
     -> ward_tour
 
@@ -76,6 +79,8 @@ Nurse: We're doing everything on paper. Two nurses for 47 patients with no elect
 
 * [What are you most worried about?]
     ~ showed_empathy = true
+    ~ influence += 1
+    # influence_increased
     Nurse: Missing something. A reading that would have triggered an alarm. A medication conflict in the records we can't access.
     Nurse: Every hour without monitoring is another hour where we might miss the thing that kills someone.
     -> hub

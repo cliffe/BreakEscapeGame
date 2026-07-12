@@ -58,7 +58,7 @@ EXTERNAL player_name()
 
 + [I'm the external security consultant. Dr. Kim authorized my access.]
     ~ influence += 20
-
+    # influence_increased
     Guard: Oh, right. The ransomware crisis. Dr. Kim mentioned someone was coming.
 
     Guard: Still, I need to see your visitor badge.
@@ -68,6 +68,7 @@ EXTERNAL player_name()
         Narrator: You show the visitor badge from reception.
 
         ~ influence += 10
+        # influence_increased
         #speaker:security_guard
         Guard: Checks out. Be careful in there. It's a mess.
 
@@ -76,6 +77,7 @@ EXTERNAL player_name()
         You: I... must have left it at reception.
 
         ~ influence -= 5
+        # influence_decreased
         Guard: Then go get it. Security protocols exist for a reason.
 
         -> hub
@@ -88,7 +90,7 @@ EXTERNAL player_name()
 
 + [This is urgent. The hospital systems are down. Lives are at stake.]
     ~ influence += 5
-
+    # influence_increased
     Guard: I know. That's why I'm here securing this area.
 
     Guard: You need proper authorization to access restricted systems.
@@ -97,7 +99,7 @@ EXTERNAL player_name()
 
 + [That's not your concern.]
     ~ influence -= 30
-
+    # influence_decreased
     Guard: Wrong answer. Everything in this corridor is my concern.
 
     #display:guard-hostile
@@ -180,6 +182,7 @@ EXTERNAL player_name()
 
 {influence >= 30:
     ~ influence -= 10
+    # influence_decreased
     Guard: Dr. Kim authorized lockpicking? That's... unusual.
 
     Guard: Fine. But if she didn't, you're in deep trouble.
@@ -190,6 +193,7 @@ EXTERNAL player_name()
 
 {influence < 30:
     ~ influence -= 20
+    # influence_decreased
     Guard: Authorization doesn't mean breaking into rooms! Where's your paperwork?
 
     Guard: Move along before this gets reported.
@@ -204,6 +208,7 @@ EXTERNAL player_name()
 
 {influence >= 25:
     ~ influence -= 5
+    # influence_decreased
     Guard: Patient data? In a locked room?
 
     Guard: Look, I get the emergency, but protocol is protocol.
@@ -216,6 +221,7 @@ EXTERNAL player_name()
 
 {influence < 25:
     ~ influence -= 15
+    # influence_decreased
     Guard: Nice try. Security breach is security breach, crisis or not.
 
     Guard: Backup is on the way.
@@ -228,7 +234,7 @@ EXTERNAL player_name()
 === poor_excuse ===
 #speaker:security_guard
 ~ influence -= 15
-
+# influence_decreased
 Guard: Looking for something you dropped? With lockpicks?
 
 Guard: That's the weakest excuse I've heard all week.
@@ -241,6 +247,7 @@ Guard: That's the weakest excuse I've heard all week.
 
 {influence >= 40:
     ~ influence -= 5
+    # influence_decreased
     Guard: Security audit during a ransomware crisis? Bold timing.
 
     Guard: You better have documentation for this.
@@ -251,6 +258,7 @@ Guard: That's the weakest excuse I've heard all week.
 
 {influence < 40:
     ~ influence -= 25
+    # influence_decreased
     Guard: An audit would be scheduled with security. This isn't official.
 
     Guard: You're coming with me to speak with my supervisor.
@@ -269,7 +277,7 @@ Guard: That's the weakest excuse I've heard all week.
 === hostile_response ===
 #speaker:security_guard
 ~ influence -= 30
-
+# influence_decreased
 Guard: More important than hospital security? You just crossed a line.
 
 Guard: SECURITY! CODE VIOLATION IN THE ADMINISTRATIVE WING!
@@ -282,7 +290,7 @@ Guard: SECURITY! CODE VIOLATION IN THE ADMINISTRATIVE WING!
 === escalate_conflict ===
 #speaker:security_guard
 ~ influence -= 40
-
+# influence_decreased
 Guard: The stakes? You're breaking hospital protocol during an emergency!
 
 Guard: LOCKDOWN! INTRUDER ALERT!
@@ -301,6 +309,7 @@ Guard: LOCKDOWN! INTRUDER ALERT!
 
 {influence >= 15:
     ~ influence -= 5
+    # influence_decreased
     Guard: Smart move. Now get out of this wing and don't come back without authorization.
 
     #display:guard-neutral
@@ -332,7 +341,7 @@ Guard: 47 patients on life support. Backup power for maybe 12 hours.
 Guard: IT says someone exploited our backup server. We're locked out of everything.
 
 ~ influence += 5
-
+# influence_increased
 + [Did anyone see suspicious activity?]
     Guard: Marcus in IT was warning about security issues for months.
 
@@ -384,7 +393,7 @@ Guard: We already discussed this. No lockpicking without authorization.
 Guard: I'm being patient because of the crisis, but don't push it.
 
 ~ influence -= 5
-#display:guard-annoyed
+# influence_decreased#display:guard-annoyed
 -> hub
 
 // ===========================================
@@ -398,7 +407,7 @@ Guard: I don't like your attitude. You're on thin ice.
 
 * [Sorry. This crisis has me on edge. I'm just trying to help.]
     ~ influence += 10
-
+    # influence_increased
     Guard: Fine. We're all stressed. But watch your tone.
 
     #display:guard-neutral
@@ -433,6 +442,7 @@ Guard: Hey! Server room access -- that's restricted to authorised IT personnel o
 
 * [Say nothing, walk past]
     ~ influence -= 10
+    # influence_decreased
     Guard: Hey! I said restricted! Don't make me follow you in there.
     #exit_conversation
     -> DONE

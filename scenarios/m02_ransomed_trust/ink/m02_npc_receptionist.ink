@@ -16,6 +16,7 @@
 EXTERNAL player_name()
 
 // Local conversation tracking
+VAR influence = 0                 // rapport with the receptionist (visible via #influence tags)
 VAR asked_situation = false
 VAR observed_stranger = false
 
@@ -64,6 +65,8 @@ Receptionist: She's been managing the response since 3am. Please tell me you can
 #unlock_task:meet_dr_kim
 
 + [We're going to do everything we can.]
+    ~ influence += 1
+    # influence_increased
     Receptionist: Good. Those patients need their monitoring systems back.
     -> hub
 

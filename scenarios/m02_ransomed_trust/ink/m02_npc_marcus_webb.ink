@@ -42,14 +42,17 @@ Marcus: Nobody listens to IT until everything's on fire.
 
 * [Budget cuts are common. You did your job by warning them.]
     ~ marcus_influence += 15
+    # influence_increased
     -> sympathize_response
 
 * [Let's focus on recovery. What do you need from me?]
     ~ marcus_influence += 5
+    # influence_increased
     -> professional_response
 
 * [Why didn't you push harder? Make them listen?]
     ~ marcus_influence -= 15
+    # influence_decreased
     ~ marcus_defensive = true
     -> defensive_response
 
@@ -67,6 +70,7 @@ Marcus: Now they're planning to fire me. Scapegoat the IT guy.
 
 + [That's wrong. You warned them. I'll make sure that's documented.]
     ~ marcus_influence += 20
+    # influence_increased
     Marcus: You... you'd do that?
     Marcus: I have all the emails. Six months of ignored warnings.
     -> offer_help
@@ -85,7 +89,7 @@ Marcus: The vulnerability is CVE-2010-4652. I documented it in May.
 
 ~ topic_vulnerability = true
 ~ marcus_influence += 5
-
+# influence_increased
 + [Can I get access to the server room?]
     -> ask_for_help
 
@@ -122,9 +126,10 @@ Marcus: She forwarded it to the board with a recommendation to defer.
 Marcus: $85,000 for server security, or $3.2 million for a new MRI. Guess which they chose.
 
 ~ marcus_influence += 5
-
+# influence_increased
 + [That must be frustrating.]
     ~ marcus_influence += 10
+    # influence_increased
     Marcus: You have no idea.
     -> hub
 
@@ -189,7 +194,7 @@ Marcus: If you have lockpicks, you could probably get in. I won't stop you.
 #unlock_task:access_server_room
 
 ~ marcus_influence += 5
-
+# influence_increased
 + [Any password hints that could help me get in?]
     -> request_password_hints
 
@@ -214,6 +219,7 @@ Marcus: Figure it out yourself. I have enough problems.
 {marcus_influence >= 15:
     ~ topic_passwords = true
     ~ marcus_influence += 5
+    # influence_increased
     Marcus: *sighs* Fine. But this stays between us.
     Marcus: Common passwords: Emma2018, Hospital1987, StCatherines.
     Marcus: Employees used birthdays, company names, stupid variations.
@@ -319,15 +325,17 @@ Marcus: Backdoor in the source code. Remote code execution.
 Marcus: Patched in 2011. We're running a 2010 version because "budgets."
 
 ~ marcus_influence += 5
-
+# influence_increased
 + [Running 14-year-old vulnerable software. That's negligent.]
     ~ marcus_influence += 10
+    # influence_increased
     Marcus: Exactly! But nobody listens to the IT guy.
     -> hub
 
 + [Can we use that same vulnerability to recover data?]
     Marcus: That's... actually smart. Fight fire with fire.
     ~ marcus_influence += 5
+    # influence_increased
     -> hub
 
 === discuss_family ===
@@ -341,9 +349,10 @@ Marcus: May 17th, 2018. Same day I sent that security warning.
 Marcus: Ironic, right? Happiest day of my life, most ignored email of my career.
 
 ~ marcus_influence += 5
-
+# influence_increased
 + [She's lucky to have a dad who cares about security.]
     ~ marcus_influence += 10
+    # influence_increased
     Marcus: Thanks. I just hope she doesn't read about this in the news.
     -> hub
 
@@ -354,7 +363,7 @@ Marcus: Ironic, right? Happiest day of my life, most ignored email of my career.
 #speaker:marcus_webb
 
 ~ marcus_influence += 20
-
+# influence_increased
 Marcus: I... thank you. That means everything.
 
 Marcus: I have all the emails, all the documentation. They can't ignore it if it's public.

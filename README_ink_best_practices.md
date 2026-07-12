@@ -927,7 +927,11 @@ sticky {
 
 Every NPC can track an **influence** variable representing your relationship with them. When influence changes, Break Escape displays visual feedback to the player.
 
-**CRITICAL REQUIREMENT**: You MUST include `#influence_increased` after every `influence +=` statement and `#influence_decreased` after every `influence -=` statement. These tags are required for the game to display visual feedback to players. This applies regardless of the variable name used (e.g., `influence`, `rapport`, `favour`, `trust`, etc.).
+**Use an influence variable wherever it plausibly fits.** Any NPC the player can build rapport with — allies, gatekeepers, witnesses, suspects — should track influence so the player gets visible feedback that their approach is landing. Reserve "no influence var" for NPCs where rapport is genuinely meaningless (pure ambient one-liners, in-bed patients, a text terminal, or a cutscene handler gated on knowledge flags rather than relationship).
+
+**Name it `influence`, or `<name>_influence` for a per-NPC scalar** (`marcus_influence`, `kim_influence` are good — they read clearly and the tags still apply). **Do not invent parallel rapport scalars** like `trust_level`, `relationship_score`, or `friendliness` — collapse them into the one influence variable. A derived *boolean threshold* flag (e.g. `marcus_trusts_player = marcus_influence >= 20`) is fine; a second competing numeric rapport track is not.
+
+**CRITICAL REQUIREMENT**: You MUST include `# influence_increased` after every `influence +=` statement and `# influence_decreased` after every `influence -=` statement. These tags are required for the game to display visual feedback to players. This applies regardless of the variable name used (e.g., `influence`, `marcus_influence`, `rapport`, `favour`). A `+= 0` no-op needs no tag (nothing changed).
 
 ### Implementation
 

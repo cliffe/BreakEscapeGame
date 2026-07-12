@@ -76,8 +76,11 @@ For every `#set_global:<name>:…` found in the ink:
 - Is it read *somewhere* (a conditional, a callback)? Set-but-never-read is a CONCERN.
 Grep aids: `grep -rho '#set_global:[a-z_]*' ink/ | sort -u` vs the `globalVariables` block and each file's `VAR` declarations.
 
-### 2f. Influence feedback tags
-Per `§NPC Influence System`: every `influence +=` (or `rapport`/`favour`/`trust +=`) must be immediately followed by `#influence_increased`, and every `-=` by `#influence_decreased`. Missing tags = no visual feedback. List offenders.
+### 2f. Influence variable & feedback tags
+Per `§NPC Influence System`:
+- **Tags are mandatory:** every `influence +=` (or `<name>_influence`/`rapport`/`favour +=`) must be immediately followed by `# influence_increased`, and every `-=` by `# influence_decreased`. Missing tags = no visual feedback — list every offender (this is a Should-fix). A `+= 0` no-op needs no tag.
+- **Coverage:** does every NPC the player can build rapport with (allies, gatekeepers, witnesses, suspects) actually *have* an influence variable? Flag conversational NPCs that gate or colour behaviour on ad-hoc booleans but expose no influence feedback at all. (Pure ambient one-liners, in-bed patients, terminals, and knowledge-gated cutscene handlers legitimately have none.)
+- **No parallel scalars:** flag any second numeric rapport track (`trust_level`, `relationship_score`, `friendliness`) competing with influence — collapse into one influence var. A derived boolean threshold (`marcus_trusts_player`) is fine.
 
 ### 2g. Syntax & readability anti-patterns
 Per `§Common Syntax Errors`:
