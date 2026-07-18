@@ -182,17 +182,17 @@ recovery_instructions_encoded = rot13("FULL RECOVERY REQUIRES OFFLINE + ONLINE K
           "status": "locked"
         },
         {
-          "taskId": "neutralize_guard",
-          "title": "Deal with the security guard in the north corridor",
+          "taskId": "learn_about_scapegoating",
+          "title": "Learn about the plan to scapegoat Marcus",
           "type": "manual",
           "status": "active",
           "optional": true
         },
         {
-          "taskId": "learn_about_scapegoating",
-          "title": "Learn about the plan to scapegoat Marcus",
+          "taskId": "investigate_marcus_office",
+          "title": "Open Marcus's filing cabinet for proof he warned them",
           "type": "manual",
-          "status": "active",
+          "status": "locked",
           "optional": true
         }
       ]
@@ -389,7 +389,7 @@ recovery_instructions_encoded = rot13("FULL RECOVERY REQUIRES OFFLINE + ONLINE K
 
   "rooms": {
     "reception_lobby": {
-      "type": "room_reception",
+      "type": "room_hospital_reception",
       "dimensions": {
         "width": 15,
         "height": 10
@@ -643,6 +643,12 @@ recovery_instructions_encoded = rot13("FULL RECOVERY REQUIRES OFFLINE + ONLINE K
               "setGlobal": { "insider_identified": true },
               "completeTask": "unmask_identify",
               "sendTimedMessage": { "delay": 2000, "message": "That post log seals it -- badge #SC-4471 is the night security supervisor stationed on the conference-room comms terminal. He authorised the fire drill. He's the inside asset. Your call how you handle him." }
+            },
+            {
+              "eventPattern": "item_picked_up:marcus_vindication_email",
+              "onceOnly": true,
+              "completeTask": "investigate_marcus_office",
+              "sendTimedMessage": { "delay": 1500, "message": "That's Marcus's proof -- he warned them six months out and they buried it. Hold onto it. If you decide to go public later, this is what clears his name." }
             },
             {
               "eventPattern": "item_picked_up:offline_backup_encryption_keys",
@@ -998,7 +1004,7 @@ recovery_instructions_encoded = rot13("FULL RECOVERY REQUIRES OFFLINE + ONLINE K
     },
 
     "it_department": {
-      "type": "room_office",
+      "type": "room_hospital_office",
       "dimensions": {
         "width": 10,
         "height": 10
@@ -1132,6 +1138,7 @@ recovery_instructions_encoded = rot13("FULL RECOVERY REQUIRES OFFLINE + ONLINE K
           "contents": [
             {
               "type": "notes",
+              "id": "marcus_vindication_email",
               "name": "Marcus's Email Archive",
               "takeable": true,
               "readable": true,
@@ -1177,7 +1184,7 @@ recovery_instructions_encoded = rot13("FULL RECOVERY REQUIRES OFFLINE + ONLINE K
     },
 
     "server_room": {
-      "type": "room_servers",
+      "type": "room_hospital_servers",
       "dimensions": {
         "width": 10,
         "height": 10
@@ -1383,7 +1390,7 @@ recovery_instructions_encoded = rot13("FULL RECOVERY REQUIRES OFFLINE + ONLINE K
     },
 
     "dr_kim_office": {
-      "type": "room_office",
+      "type": "room_hospital_office",
       "dimensions": {
         "width": 10,
         "height": 10
@@ -1509,7 +1516,7 @@ recovery_instructions_encoded = rot13("FULL RECOVERY REQUIRES OFFLINE + ONLINE K
     },
 
     "conference_room": {
-      "type": "room_meeting",
+      "type": "room_hospital_meeting",
       "dimensions": {
         "width": 10,
         "height": 10

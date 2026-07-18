@@ -82,6 +82,8 @@ Agent HaX: One line in that material matches this attack almost exactly. So no. 
 + [Enough background. Give me my objectives.]
     -> mission_objectives
 
+- -> mission_objectives
+
 === q_entropy_link ===
 #speaker:agent_0x99
 ~ knows_entropy_link = true
@@ -191,7 +193,6 @@ Agent HaX: One more thing. Ghost is still in the wires -- watching that network.
 
 Agent HaX: Good luck, {player_name()}. Forty-seven lives, twelve hours. Go.
 
-#complete_task:receive_mission_briefing
 #unlock_aim:infiltrate_hospital
 #start_gameplay
 #exit_conversation

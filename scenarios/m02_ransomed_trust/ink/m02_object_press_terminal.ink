@@ -11,16 +11,25 @@ EXTERNAL player_name()
 
 // Synced from globalVars. The exposure decision is the LAST act of the mission
 // and setting mission_complete here launches the debrief -- so the terminal must
-// stay locked until the incident is actually resolved (recovery decision logged).
-// Without this gate a player can pick into the conference room early, release the
+// stay locked until BOTH gates clear:
+//   backdoor_fully_exploited -> the technical investigation is done (full flag
+//     chain: SSH -> ProFTPD -> database -> Ghost's operational log). The evidence
+//     package can't be authenticated without it.
+//   ransom_decision_made     -> the emergency itself has been resolved at the
+//     recovery console.
+// Without these a player can pick into the conference room early, release the
 // evidence, and skip the entire technical mission.
+VAR backdoor_fully_exploited = false
 VAR ransom_decision_made = false
 
 === start ===
 #speaker:computer
 
+{not backdoor_fully_exploited:
+    -> relay_locked_investigation
+}
 {not ransom_decision_made:
-    -> relay_locked
+    -> relay_locked_incident
 }
 
 HOSPITAL COMMUNICATIONS TERMINAL
@@ -32,23 +41,43 @@ Available for transmission:
 - Board liability email (cover-up plan, Marcus Webb scapegoating)
 - FY2024 Budget Report ($85K security deferred, $3.2M MRI approved)
 - Marcus Webb security advisory archive (May–November 2024, 7 formal warnings)
+- SAFETYNET forensic record (ENTROPY backdoor, decryption keys recovered)
 
 Transmission is irreversible. Once sent, this evidence enters permanent public record.
 
 -> decision_menu
 
 // ===========================================
-// GATE: incident must be resolved before evidence can be released
+// GATES: the investigation must be complete AND the incident resolved
+// before the SAFETYNET evidence package will authenticate for release
 // ===========================================
 
-=== relay_locked ===
+=== relay_locked_investigation ===
 #speaker:computer
 
 HOSPITAL COMMUNICATIONS TERMINAL
 
 >>> OUTGOING RELAY LOCKED <<<
 
-Evidence release is unavailable while the incident is active. The board liability record, the budget files, and Marcus Webb's advisory archive cannot be authenticated for transmission until the patient systems are recovered and the ransom decision has been logged.
+Evidence package FAILED AUTHENTICATION.
+
+The SAFETYNET forensic record is incomplete. A public submission must include verified proof of the intrusion -- the exploited backdoor and the recovered decryption keys. Right now there is nothing on file to prove how ENTROPY got in.
+
+Finish working the backup server. Recover the evidence off it. Then the archive will accept a release.
+
+#exit_conversation
+-> DONE
+
+=== relay_locked_incident ===
+#speaker:computer
+
+HOSPITAL COMMUNICATIONS TERMINAL
+
+>>> OUTGOING RELAY LOCKED <<<
+
+Evidence release held: incident still active.
+
+The forensic record checks out, but the emergency is not yet resolved. Patient systems must be recovered and the ransom decision logged at the recovery console before this evidence can go to public record.
 
 Resolve the incident first. Then decide what the world gets to see.
 

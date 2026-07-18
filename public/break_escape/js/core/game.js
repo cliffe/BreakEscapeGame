@@ -68,9 +68,19 @@ export function preload() {
     this.load.tilemapTiledJSON('small_office_room1_1x1gu', 'rooms/small_office_room1_1x1gu.json');
     this.load.tilemapTiledJSON('small_office_room2_1x1gu', 'rooms/small_office_room2_1x1gu.json');
     this.load.tilemapTiledJSON('small_office_room3_1x1gu', 'rooms/small_office_room3_1x1gu.json');
+    this.load.tilemapTiledJSON('small_office_room4_1x1gu', 'rooms/small_office_room4_1x1gu.json'); // Left-desk small office variant
 
     // Load small closet/utility room variants
     this.load.tilemapTiledJSON('small_room_closet_east_connections_only_1x1gu', 'rooms/small_room_closet_east_connections_only_1x1gu.json'); // Closet with east door only
+
+    // Generated layout variants (existing tilesets/objects only)
+    this.load.tilemapTiledJSON('room_security', 'rooms/room_security.json'); // Dual-desk security office
+    this.load.tilemapTiledJSON('room_lab', 'rooms/room_lab.json');           // Tech/lab workbench room
+    this.load.tilemapTiledJSON('room_hospital_office', 'rooms/room_hospital_office.json'); // Hospital admin office (room6)
+    this.load.tilemapTiledJSON('room_hospital_cto_office', 'rooms/room_hospital_cto_office.json'); // Small hospital CTO office (room6)
+    this.load.tilemapTiledJSON('room_hospital_reception', 'rooms/room_hospital_reception.json'); // Hospital reception (room6)
+    this.load.tilemapTiledJSON('room_hospital_meeting', 'rooms/room_hospital_meeting.json'); // Hospital conference room (room6)
+    this.load.tilemapTiledJSON('room_hospital_servers', 'rooms/room_hospital_servers.json'); // Hospital server room (room6)
 
     // Load room images (now using smaller 32px scale images)
     this.load.image('room_reception', 'tiles/rooms/room1.png');
@@ -109,6 +119,8 @@ export function preload() {
     this.load.image('smalldesk1', 'tables/smalldesk1.png');
     this.load.image('smalldesk2', 'tables/smalldesk2.png');
     this.load.image('reception_table1', 'tables/reception_table1.png');
+    this.load.image('hospital_desk1', 'tables/hospital_desk1.png');
+    this.load.image('hospital_desk2', 'tables/hospital_desk2.png');
 
     // Load object sprites - keeping existing ones for backward compatibility
     this.load.image('pc', 'objects/pc1.png');
@@ -147,6 +159,20 @@ export function preload() {
     this.load.image('keycard-maintenance', 'objects/keycard-maintenance.png');
     this.load.image('rfid_cloner', 'objects/rfid_cloner.png');
     this.load.image('nfc-waves', 'icons/nfc-waves.png');
+
+    // Load hospital object sprites (referenced by the objects tileset, tile ids 191-202)
+    this.load.image('medical_cabinet1', 'objects/medical_cabinet1.png');
+    this.load.image('medical_cabinet2', 'objects/medical_cabinet2.png');
+    this.load.image('hospital_chair1', 'objects/hospital_chair1.png');
+    this.load.image('hospital_chair2', 'objects/hospital_chair2.png');
+    this.load.image('hospital_chair_north', 'objects/hospital_chair_north.png');
+    this.load.image('hospital_chair_south', 'objects/hospital_chair_south.png');
+    this.load.image('crash_cart1', 'objects/crash_cart1.png');
+    this.load.image('crash_cart2', 'objects/crash_cart2.png');
+    this.load.image('sanitizer_stand1', 'objects/sanitizer_stand1.png');
+    this.load.image('sanitizer_stand2', 'objects/sanitizer_stand2.png');
+    this.load.image('hospital_chart_board1', 'objects/hospital_chart_board1.png');
+    this.load.image('hospital_chart_board2', 'objects/hospital_chart_board2.png');
 
     // Load new object sprites from Tiled map tileset
     // These are the key objects that appear in the new room_reception2.json

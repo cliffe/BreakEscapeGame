@@ -370,7 +370,7 @@ Marcus: I have all the emails, all the documentation. They can't ignore it if it
 
 Marcus: Just... save those patients first. Then we'll worry about blame.
 
-#complete_task:promise_to_protect_marcus
+#complete_task:learn_about_scapegoating
 #set_global:marcus_protected:true
 
 -> hub

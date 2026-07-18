@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<tileset version="1.10" tiledversion="1.11.2" name="objects" tilewidth="251" tileheight="88" tilecount="236" columns="0">
+<tileset version="1.10" tiledversion="1.11.2" name="objects" tilewidth="251" tileheight="88" tilecount="248" columns="0">
  <grid orientation="orthogonal" width="1" height="1"/>
  <tile id="0">
   <image source="../objects/fingerprint-brush-red.png" width="10" height="24"/>
@@ -708,5 +708,41 @@
  </tile>
  <tile id="253">
   <image source="../objects/briefcase1.aseprite" width="24" height="19"/>
+ </tile>
+ <tile id="191">
+  <image source="../objects/medical_cabinet1.png" width="52" height="63"/>
+ </tile>
+ <tile id="192">
+  <image source="../objects/medical_cabinet2.png" width="52" height="63"/>
+ </tile>
+ <tile id="193">
+  <image source="../objects/hospital_chair1.png" width="17" height="32"/>
+ </tile>
+ <tile id="194">
+  <image source="../objects/hospital_chair2.png" width="17" height="32"/>
+ </tile>
+ <tile id="195">
+  <image source="../objects/crash_cart1.png" width="41" height="51"/>
+ </tile>
+ <tile id="196">
+  <image source="../objects/crash_cart2.png" width="24" height="56"/>
+ </tile>
+ <tile id="197">
+  <image source="../objects/sanitizer_stand1.png" width="18" height="46"/>
+ </tile>
+ <tile id="198">
+  <image source="../objects/sanitizer_stand2.png" width="21" height="46"/>
+ </tile>
+ <tile id="199">
+  <image source="../objects/hospital_chart_board1.png" width="45" height="32"/>
+ </tile>
+ <tile id="200">
+  <image source="../objects/hospital_chart_board2.png" width="38" height="39"/>
+ </tile>
+ <tile id="201">
+  <image source="../objects/hospital_chair_north.png" width="16" height="26"/>
+ </tile>
+ <tile id="202">
+  <image source="../objects/hospital_chair_south.png" width="16" height="32"/>
  </tile>
 </tileset>
