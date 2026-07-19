@@ -350,7 +350,9 @@ export class PersonChatMinigame extends MinigameScene {
             // Set new timeout that will call handleContinueButtonClick
             this.autoAdvanceTimer = setTimeout(() => {
                 if (this.pendingContinueCallback && typeof this.pendingContinueCallback === 'function') {
-                    this.pendingContinueCallback();
+                    const callback = this.pendingContinueCallback;
+                    this.pendingContinueCallback = null;
+                    callback();
                 }
             }, delay);
         }
@@ -930,6 +932,12 @@ export class PersonChatMinigame extends MinigameScene {
                     const nextLine = this.conversation.continue();
                     this.lastResult = nextLine;
                     this.displayAccumulatedDialogue(nextLine);
+                } else if (result.choices && result.choices.length > 0) {
+                    // Choices available with no preceding text (e.g. a conditional that
+                    // produced an empty string on first visit, like {hub > 1: ...})
+                    console.log(`📋 No text, showing ${result.choices.length} choices`);
+                    this.ui.showChoices(result.choices);
+                    this.lastResult = result;
                 }
                 return;
             }

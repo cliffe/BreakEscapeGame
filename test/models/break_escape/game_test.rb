@@ -463,5 +463,98 @@ module BreakEscape
       @game.complete_task!('conclusion_task') # blocked by guard
       assert_nil @game.reload.mission_concluded_at
     end
+
+    # T9: regression test for the out-of-order gate bug — the conclusion aim's
+    # own task can complete BEFORE its requiresCompleted gate task (e.g. two
+    # client requests racing, or simply a player finishing tasks in a
+    # different order than the scenario author assumed). Without
+    # recheck_pending_mission_conclusions!, completing the gate task
+    # afterward never re-triggers conclusion because check_aim_completion
+    # only re-checks the aim that owns the task that just completed.
+    test "conclusion aim completed before its gate task still concludes once the gate task lands" do
+      result = @game.complete_task!('conclusion_task') # gate unmet — blocked
+      assert_equal false, result[:missionConcluded]
+      assert_nil @game.reload.mission_concluded_at
+
+      result = @game.complete_task!('setup_task') # satisfies the gate, out of order
+      assert result[:success]
+      assert_not_nil @game.reload.mission_concluded_at, "mission should conclude once the gate task lands, even though the conclusion aim's own task completed first"
+      assert_equal 'completed', @game.status
+    end
+  end
+
+  # ---------------------------------------------------------------------------
+  # Aim completion idempotency (score/objectives_completed over-count guard)
+  # ---------------------------------------------------------------------------
+  class AimCompletionIdempotencyTest < ActiveSupport::TestCase
+    IDEMPOTENCY_SCENARIO = {
+      "startRoom" => "room1",
+      "rooms" => {},
+      "objectives" => [
+        {
+          "aimId" => "mixed_aim",
+          "title" => "Mixed",
+          "status" => "active",
+          "order" => 0,
+          "tasks" => [
+            { "taskId" => "required_task", "title" => "Required", "type" => "custom", "status" => "active" },
+            { "taskId" => "optional_task", "title" => "Optional", "type" => "custom", "status" => "active", "optional" => true }
+          ]
+        }
+      ]
+    }.freeze
+
+    setup do
+      @mission = break_escape_missions(:ceo_exfil)
+      @player  = break_escape_demo_users(:test_user)
+      @game = BreakEscape::Game.create!(
+        mission: @mission,
+        player: @player,
+        scenario_data: IDEMPOTENCY_SCENARIO.deep_dup,
+        player_state: {
+          "currentRoom" => "room1",
+          "unlockedRooms" => ["room1"],
+          "unlockedObjects" => [],
+          "inventory" => [],
+          "encounteredNPCs" => [],
+          "globalVariables" => {},
+          "biometricSamples" => [],
+          "biometricUnlocks" => [],
+          "bluetoothDevices" => [],
+          "notes" => [],
+          "health" => 100
+        }
+      )
+    end
+
+    test "completing an aim's required task marks it completed and counts it once" do
+      @game.complete_task!('required_task')
+      assert_equal 'completed', @game.player_state.dig('objectivesState', 'aims', 'mixed_aim', 'status')
+      assert_equal 1, @game.objectives_completed
+    end
+
+    # Regression test: completing an already-satisfied aim's remaining
+    # optional task used to re-run the completion block in
+    # check_aim_completion (no guard against the aim already being
+    # 'completed'), double-incrementing objectives_completed and pushing
+    # score past 100%.
+    test "completing a later optional task in an already-completed aim does not double-count objectives_completed" do
+      @game.complete_task!('required_task')
+      assert_equal 1, @game.objectives_completed
+
+      @game.complete_task!('optional_task')
+      assert_equal 1, @game.reload.objectives_completed, "objectives_completed must not increment again for an aim that's already completed"
+      assert_equal 2, @game.tasks_completed, "the optional task itself should still count toward tasks_completed"
+    end
+
+    test "score does not exceed 100 after completing every task including a redundant optional one" do
+      @game.complete_task!('required_task')
+      @game.complete_task!('optional_task')
+      @game.reload
+
+      assert_equal 2, @game.total_tasks
+      assert_equal 1, @game.total_aims
+      assert_equal 100.0, @game.calculate_task_score
+    end
   end
 end

@@ -522,14 +522,19 @@ export default class NPCManager {
     }
 
     // Complete tasks directly (bypasses broken ink knot jumping)
+    // Sequenced (not Promise.all/forEach) so each task's server round-trip
+    // finishes before the next starts — two parallel completeTask requests
+    // for the same game can otherwise race past each other server-side.
     if (config.completeTask) {
       const tasks = Array.isArray(config.completeTask) ? config.completeTask : [config.completeTask];
-      tasks.forEach(taskId => {
-        if (window.objectivesManager) {
-          window.objectivesManager.completeTask(taskId);
-          console.log(`✅ Event completeTask: ${taskId}`);
+      (async () => {
+        for (const taskId of tasks) {
+          if (window.objectivesManager) {
+            await window.objectivesManager.completeTask(taskId);
+            console.log(`✅ Event completeTask: ${taskId}`);
+          }
         }
-      });
+      })();
     }
 
     // Unlock tasks directly

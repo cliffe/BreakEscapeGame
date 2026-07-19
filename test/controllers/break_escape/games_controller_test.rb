@@ -732,6 +732,64 @@ module BreakEscape
       assert_response :not_found
     end
 
+    # ─── player_state row locking (lost-update race guard) ─────────────────────
+    #
+    # These endpoints read-modify-write @game.player_state then save!, with no
+    # DB-level coordination otherwise. Two concurrent requests for the same
+    # game (e.g. a scenario event firing several completeTask calls, or a
+    # periodic sync_state landing next to a player action) can silently
+    # overwrite each other's change. with_game_lock wraps these actions in
+    # @game.with_lock so Postgres (production/staging) serializes them via
+    # SELECT ... FOR UPDATE. We can't reliably exercise the actual locking
+    # here — SQLite (the test DB) does not honor FOR UPDATE, so a threaded
+    # race test against it would be flaky rather than meaningful — so instead
+    # we assert the wiring itself is in place and hasn't silently regressed.
+
+    test 'complete_task actually goes through Game#with_lock' do
+      lock_calls = []
+      Game.send(:define_method, :with_lock_spy) do |*args, &block|
+        lock_calls << id
+        with_lock_without_spy(*args, &block)
+      end
+      Game.send(:alias_method, :with_lock_without_spy, :with_lock)
+      Game.send(:alias_method, :with_lock, :with_lock_spy)
+
+      @game.scenario_data = @game.scenario_data.merge(
+        'objectives' => [
+          { 'aimId' => 'aim1', 'title' => 'Aim', 'tasks' => [
+            { 'taskId' => 'task1', 'type' => 'custom', 'title' => 'Task' }
+          ] }
+        ]
+      )
+      @game.save!
+
+      post complete_task_game_url(@game, task_id: 'task1')
+      assert_response :success
+
+      assert_includes lock_calls, @game.id, 'complete_task must acquire @game.with_lock'
+    ensure
+      Game.send(:alias_method, :with_lock, :with_lock_without_spy)
+      Game.send(:remove_method, :with_lock_spy, :with_lock_without_spy)
+    end
+
+    test 'read-only actions like show are NOT wrapped in with_game_lock' do
+      lock_calls = []
+      Game.send(:define_method, :with_lock_spy) do |*args, &block|
+        lock_calls << id
+        with_lock_without_spy(*args, &block)
+      end
+      Game.send(:alias_method, :with_lock_without_spy, :with_lock)
+      Game.send(:alias_method, :with_lock, :with_lock_spy)
+
+      get game_url(@game)
+      assert_response :success
+
+      assert_empty lock_calls, 'show is read-only and should not pay the locking cost'
+    ensure
+      Game.send(:alias_method, :with_lock, :with_lock_without_spy)
+      Game.send(:remove_method, :with_lock_spy, :with_lock_without_spy)
+    end
+
     # ========================================================================
     # HELPERS FOR SECURITY TESTS
     # ========================================================================

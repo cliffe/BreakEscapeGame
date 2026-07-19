@@ -969,6 +969,11 @@ module BreakEscape
       # Returns false when a missionConclusion aim's requiresCompleted gate is unmet
       conclusion_result = check_aim_completion(task['aimId'])
 
+      # This task may be a requiresCompleted gate task for a *different*
+      # missionConclusion aim that already finished its own tasks earlier
+      # and was blocked pending this one — re-check those too.
+      recheck_pending_mission_conclusions!
+
       # Update statistics
       self.tasks_completed = (self.tasks_completed || 0) + 1
       self.score = calculate_task_score.round
@@ -1078,6 +1083,8 @@ module BreakEscape
         end
       end
 
+      recheck_pending_mission_conclusions! if completed_tasks.any?
+
       save! if completed_tasks.any? || updated_tasks.any?
       { completed_tasks: completed_tasks, updated_tasks: updated_tasks }
     end
@@ -1106,6 +1113,24 @@ module BreakEscape
       self.status               = 'completed'
       self.completed_at         = now
       true  # concluded
+    end
+
+    # Re-evaluate any missionConclusion aims whose own tasks are already
+    # complete but whose requiresCompleted gate wasn't satisfied at the time
+    # they first tried to conclude. A gate task can belong to a *different*
+    # aim and complete afterward — check_aim_completion only re-runs
+    # check_mission_conclusion for the aim owning the task that just
+    # completed, so without this, that later gate task never re-triggers
+    # conclusion for the aim that was blocked on it.
+    def recheck_pending_mission_conclusions!
+      return if mission_concluded_at.present?
+
+      scenario_data['objectives']&.each do |aim|
+        next unless aim['missionConclusion']
+        next unless player_state.dig('objectivesState', 'aims', aim['aimId'], 'status') == 'completed'
+
+        break if check_mission_conclusion(aim)
+      end
     end
 
     # Find a task in scenario objectives by taskId
@@ -1220,6 +1245,12 @@ module BreakEscape
     def check_aim_completion(aim_id)
       aim = scenario_data['objectives']&.find { |a| a['aimId'] == aim_id }
       return unless aim
+
+      # Already counted — without this guard, completing a later optional
+      # task in an aim that's already 'completed' would re-run the block
+      # below and double-increment objectives_completed, pushing score
+      # past 100%.
+      return if player_state.dig('objectivesState', 'aims', aim_id, 'status') == 'completed'
 
       all_complete = aim['tasks'].all? do |task|
         task['optional'] == true || task_status(task['taskId']) == 'completed'

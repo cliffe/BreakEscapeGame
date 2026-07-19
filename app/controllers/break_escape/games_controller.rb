@@ -26,6 +26,40 @@ module BreakEscape
 
     before_action :set_game, only: [:show, :scenario, :scenario_map, :ink, :room, :container, :sync_state, :update_room, :unlock, :inventory, :objectives, :complete_task, :update_task_progress, :submit_flag, :tts, :reset, :new_session, :vm_panel, :vm_set_panel]
 
+    # Actions that read-modify-write @game.player_state and then save! need a
+    # row lock, or two concurrent requests for the same game (e.g. a single
+    # client event that fires several completeTask calls without awaiting
+    # each other) can race: both load the same pre-update player_state, and
+    # whichever save! commits last silently overwrites the other's change.
+    #
+    # FUTURE IMPROVEMENT (not yet needed — no evidence of lock contention):
+    # complete_task and submit_flag are the only two of these actions whose
+    # writes depend on reading *multiple* player_state keys to decide what to
+    # write (check_aim_completion / check_mission_conclusion evaluate every
+    # task in an aim, and gate tasks that can belong to a different aim, before
+    # deciding whether to flip a status or bump objectives_completed/score).
+    # That's exactly the kind of compound, conditional read-then-write that
+    # can't be expressed as a single atomic per-path SQL update — Postgres's
+    # own row-level MVCC can't help you if the *decision* of what to write
+    # requires Ruby-side business logic across several keys.
+    #
+    # The other actions here (container, sync_state, update_room, unlock,
+    # update_task_progress, reset, new_session) only set or append to a single
+    # independent JSON path each time (currentRoom, a note, an unlocked room
+    # id, a task's progress counter, etc.) — two concurrent writers touching
+    # *different* paths don't need to be serialized at all. If this lock ever
+    # shows up as real contention, those actions are the candidates to move to
+    # atomic per-path writes (e.g. Postgres jsonb_set in a single UPDATE) and
+    # drop from this list, narrowing the locked surface down to just
+    # complete_task/submit_flag. Doing so means bypassing/reimplementing the
+    # ActiveRecord callbacks these actions currently get for free via a normal
+    # save! (e.g. after_commit :fire_completion_callback relies on
+    # previous_changes, which raw update_all doesn't populate), and writing
+    # parallel SQL for the SQLite test adapter (no jsonb_set there) — so treat
+    # this as a scoped, deliberate optimization to reach for if lock
+    # contention is actually observed, not a default to prefer today.
+    around_action :with_game_lock, only: [:container, :sync_state, :update_room, :unlock, :complete_task, :update_task_progress, :submit_flag, :reset, :new_session]
+
     # GET /games/new?mission_id=:id
     # Show VM set selection page for VM-required missions
     def new
@@ -148,6 +182,12 @@ module BreakEscape
 
     # POST /games/:id/reset
     # Resets the game session to the initial state, preserving mission context
+    #
+    # Wrapped in with_game_lock (see around_action above): reset_player_state!
+    # overwrites player_state wholesale, so it must not race with any other
+    # in-flight write to the same game. It doesn't read multiple keys to
+    # decide what to write, so it's a candidate to drop the lock if this ever
+    # moves to atomic per-path writes — see the FUTURE IMPROVEMENT note above.
     def reset
       authorize @game if defined?(Pundit)
       @game.reset_player_state!
@@ -161,6 +201,13 @@ module BreakEscape
 
     # POST /games/:id/new_session
     # Creates a fresh game record for the same mission, preserving VM context
+    #
+    # Wrapped in with_game_lock (see around_action above): the abandon-the-old-
+    # game update below must not race with another write still in flight
+    # against @game. It's a single status field flip, not a cross-key
+    # decision, so it's a candidate to drop the lock if this ever moves to
+    # atomic per-path writes — see the FUTURE IMPROVEMENT note above. (The new
+    # Game record created afterward needs no locking — it doesn't exist yet.)
     def new_session
       authorize @game if defined?(Pundit)
 
@@ -344,6 +391,18 @@ module BreakEscape
 
     # GET /games/:id/container/:container_id
     # Returns container contents after unlock (lazy-loaded)
+    #
+    # Wrapped in with_game_lock (see around_action above) even though this
+    # action never writes player_state — it only reads unlockedObjects and
+    # inventory. The lock is here purely as a read barrier: without it, this
+    # request could race a concurrent unlock/inventory write and serve a
+    # stale "not unlocked yet" response from before that write committed. The
+    # cost is that this request also blocks any concurrent writer for its own
+    # (brief, read-only) duration. This is a different situation from the
+    # other locked actions below — it's not a candidate for atomic per-path
+    # writes (there's nothing to write), it's a candidate to simply drop the
+    # lock and rely on the plain @game.reload already below if that
+    # write-blocking turns out to matter in practice.
     def container
       authorize @game if defined?(Pundit)
 
@@ -495,6 +554,21 @@ module BreakEscape
 
     # PUT /games/:id/sync_state
     # Periodic state sync from client
+    #
+    # Wrapped in with_game_lock (see around_action above): writes currentRoom,
+    # globalVariables, and notes, each an independent path rather than a
+    # cross-key decision, so it's a candidate to drop the lock if this ever
+    # moves to atomic per-path writes — see the FUTURE IMPROVEMENT note above.
+    #
+    # NOTE — separate, still-open concern the lock does NOT address: this
+    # writes plain client-supplied snapshot values (e.g. currentRoom = ...),
+    # not idempotent/commutative operations. The lock only guarantees two
+    # concurrent syncs can't corrupt each other's write; it does not guarantee
+    # they apply in the client's intended chronological order. If a delayed or
+    # retried sync_state request reaches the lock *after* a newer one, it will
+    # still fully overwrite the newer value with older data — that requires a
+    # client-supplied sequence number/timestamp to fix, not locking or atomic
+    # writes.
     def sync_state
       authorize @game if defined?(Pundit)
 
@@ -540,6 +614,12 @@ module BreakEscape
 
     # POST /games/:id/update_room
     # Update dynamic room state (items added/removed, NPCs moved, object state changes)
+    #
+    # Wrapped in with_game_lock (see around_action above): writes are scoped
+    # to a single room_id's entry under player_state['room_states'], an
+    # independent path rather than a cross-key decision, so it's a candidate
+    # to drop the lock if this ever moves to atomic per-path writes — see the
+    # FUTURE IMPROVEMENT note above.
     def update_room
       authorize @game if defined?(Pundit)
 
@@ -634,6 +714,12 @@ module BreakEscape
 
     # POST /games/:id/unlock
     # Validate unlock attempt
+    #
+    # Wrapped in with_game_lock (see around_action above): a successful unlock
+    # appends to unlockedRooms/unlockedObjects, an independent path rather
+    # than a cross-key decision, so it's a candidate to drop the lock if this
+    # ever moves to atomic per-path writes — see the FUTURE IMPROVEMENT note
+    # above.
     def unlock
       authorize @game if defined?(Pundit)
 
@@ -777,6 +863,18 @@ module BreakEscape
 
     # POST /games/:id/objectives/tasks/:task_id
     # Complete a specific task
+    #
+    # Wrapped in with_game_lock (see around_action above) and MUST STAY LOCKED
+    # even if the other actions in that list are ever narrowed to atomic
+    # per-path writes: complete_task! calls check_aim_completion /
+    # check_mission_conclusion, which read every task in an aim (and gate
+    # tasks that can belong to a *different* aim) before deciding whether to
+    # flip an aim's status or bump objectives_completed/score. That's a
+    # cross-key decision, not an independent field write, and it's exactly
+    # the logic that produced both the >100% score bug and the mission stuck
+    # in 'abandoned' with all real objectives complete — see the FUTURE
+    # IMPROVEMENT note above for why this can't become a single atomic SQL
+    # statement without moving that decision logic into the database.
     def complete_task
       authorize @game if defined?(Pundit)
 
@@ -816,6 +914,14 @@ module BreakEscape
 
     # PUT /games/:id/objectives/tasks/:task_id
     # Update task progress (for collect_items and submit_flags tasks)
+    #
+    # Wrapped in with_game_lock (see around_action above): unlike complete_task
+    # right above it, update_task_progress! only writes this one task's own
+    # progress/submittedFlags — it never calls check_aim_completion, so it's a
+    # candidate to drop the lock if this ever moves to atomic per-path writes
+    # — see the FUTURE IMPROVEMENT note above. Don't confuse this with
+    # complete_task's lock requirement; they look similar but touch very
+    # different logic.
     def update_task_progress
       authorize @game if defined?(Pundit)
 
@@ -839,6 +945,14 @@ module BreakEscape
 
     # POST /games/:id/flags
     # Submit a CTF flag for validation
+    #
+    # Wrapped in with_game_lock (see around_action above) and MUST STAY LOCKED
+    # even if the other actions in that list are ever narrowed to atomic
+    # per-path writes: this calls @game.process_flag_task_completions!, which
+    # — like complete_task! above — calls check_aim_completion for every
+    # matching task and can trigger check_mission_conclusion. Same cross-key
+    # aggregation logic, same reasoning as complete_task; see the FUTURE
+    # IMPROVEMENT note above.
     def submit_flag
       authorize @game if defined?(Pundit)
 
@@ -1030,6 +1144,15 @@ module BreakEscape
 
     def set_game
       @game = Game.find(params[:id])
+    end
+
+    # Serializes all player_state read-modify-write actions for a single game
+    # behind a row lock (SELECT ... FOR UPDATE on Postgres; whole-DB write
+    # lock on SQLite). A second concurrent request blocks here until the
+    # first transaction commits, then with_lock reloads @game's attributes
+    # so it operates on the post-commit state instead of a stale copy.
+    def with_game_lock
+      @game.with_lock { yield }
     end
 
     def filter_requires_recursive(obj)

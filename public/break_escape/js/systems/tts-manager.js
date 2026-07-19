@@ -21,6 +21,7 @@ class TTSManager {
         this.preloadCache = new Map(); // "npcId|text" -> objectURL
         this.onEndedCallback = null;
         this.playing = false;
+        this._hasSrc = false; // Whether audio.src has been set to a real URL
 
         // Web Audio: one MediaElementSource per <audio> element, shared context
         this._mediaElementSource = null;
@@ -73,6 +74,7 @@ class TTSManager {
             }
 
             this.audio.src = audioUrl;
+            this._hasSrc = true;
 
             // Wait for metadata to get duration
             const duration = await new Promise((resolve, reject) => {
@@ -148,7 +150,16 @@ class TTSManager {
             this.audio.currentTime = 0;
             this.playing = false;
         }
-        this.audio.src = '';
+        // Use removeAttribute instead of src = '' to avoid the
+        // "Invalid URI. Load of media resource failed." browser error
+        // that fires whenever an empty string is assigned to audio.src.
+        if (this._hasSrc) {
+            if (this.audio.src.startsWith('blob:')) {
+                URL.revokeObjectURL(this.audio.src);
+            }
+            this.audio.removeAttribute('src');
+            this._hasSrc = false;
+        }
     }
 
     /**
