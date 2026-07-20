@@ -15,7 +15,7 @@ Infiltrate Viral Dynamics Media to investigate suspected ENTROPY operations. Gat
 | AND-gate convergences | 3 |
 | Rooms | 13 |
 | Puzzle graph nodes / edges | 50 / 61 |
-| Story graph nodes / edges | 11 / 11 |
+| Story graph nodes / edges | 11 / 10 |
 
 ## Critical Path
 
@@ -237,7 +237,6 @@ flowchart TD
   aim_decrypt_entropy_intel -.-> aim_return_intel
   aim_decrypt_entropy_intel -.-> aim_disrupt_the_cell
   aim_disrupt_the_cell -.-> aim_deactivate_the_launch
-  aim_return_intel --> aim_andgate_close_the_case
   aim_deactivate_the_launch --> aim_andgate_close_the_case
   aim_andgate_close_the_case --> aim_close_the_case
 
@@ -401,7 +400,6 @@ flowchart TD
   aim_decrypt_entropy_intel -.-> aim_return_intel
   aim_decrypt_entropy_intel -.-> aim_disrupt_the_cell
   aim_disrupt_the_cell -.-> aim_deactivate_the_launch
-  aim_return_intel --> aim_andgate_close_the_case
   aim_deactivate_the_launch --> aim_andgate_close_the_case
   aim_andgate_close_the_case --> aim_close_the_case
   door_main_office_area -.-> aim_establish_access

@@ -143,7 +143,7 @@
       <tr><th>Physical locks (puzzle)</th><td class="val">13</td></tr>
       <tr><th>Rooms</th><td class="val">13</td></tr>
       <tr><th>Puzzle nodes / edges</th><td class="val">50 / 61</td></tr>
-      <tr><th>Story nodes / edges</th><td class="val">11 / 11</td></tr>
+      <tr><th>Story nodes / edges</th><td class="val">11 / 10</td></tr>
     </table>
   </div>
 
@@ -332,7 +332,6 @@
   aim_decrypt_entropy_intel -.-> aim_return_intel
   aim_decrypt_entropy_intel -.-> aim_disrupt_the_cell
   aim_disrupt_the_cell -.-> aim_deactivate_the_launch
-  aim_return_intel --> aim_andgate_close_the_case
   aim_deactivate_the_launch --> aim_andgate_close_the_case
   aim_andgate_close_the_case --> aim_close_the_case
 
@@ -489,7 +488,6 @@
   aim_decrypt_entropy_intel -.-> aim_return_intel
   aim_decrypt_entropy_intel -.-> aim_disrupt_the_cell
   aim_disrupt_the_cell -.-> aim_deactivate_the_launch
-  aim_return_intel --> aim_andgate_close_the_case
   aim_deactivate_the_launch --> aim_andgate_close_the_case
   aim_andgate_close_the_case --> aim_close_the_case
   door_main_office_area -.-> aim_establish_access
