@@ -29,13 +29,15 @@ function safeEvaluateCondition(conditionStr, eventData) {
     return t;
   }
 
-  // Helper: resolve "value" or "data.prop" from eventData
+  // Helper: resolve "value", "data.prop", or "globalVars.prop" from eventData
   function resolveLHS(token) {
     const t = token.trim();
     if (t === 'value') return value;
     if (t === 'name')  return name;
     const propMatch = t.match(/^data\.(\w+)$/);
     if (propMatch) return eventData?.[propMatch[1]];
+    const globalMatch = t.match(/^globalVars\.(\w+)$/);
+    if (globalMatch) return window.gameState?.globalVariables?.[globalMatch[1]];
     return undefined;
   }
 
@@ -61,8 +63,8 @@ function safeEvaluateCondition(conditionStr, eventData) {
     return !!(lhs && typeof lhs === 'string' && lhs.includes(andIncludesMatch[3]));
   }
 
-  // Pattern: "value OP literal"  or  "data.prop OP literal"
-  const compareMatch = s.match(/^(value|name|data\.\w+)\s*(===|!==|>=|<=|>|<)\s*(.+)$/);
+  // Pattern: "value OP literal", "data.prop OP literal", or "globalVars.prop OP literal"
+  const compareMatch = s.match(/^(value|name|data\.\w+|globalVars\.\w+)\s*(===|!==|>=|<=|>|<)\s*(.+)$/);
   if (compareMatch) {
     const lhs = resolveLHS(compareMatch[1]);
     const rhs = parseLiteral(compareMatch[3]);
