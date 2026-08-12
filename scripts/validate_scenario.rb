@@ -1754,12 +1754,18 @@ def check_common_issues(json_data, valid_item_types = nil)
               end
             end
 
-            # Check for missing spriteTalk when using non-numeric frame sprites
+            # Check for missing spriteTalk when using non-numeric frame sprites.
+            # The engine falls back to '{spriteSheet}_talk.png' (then '_headshot.png'),
+            # so only warn when neither derived file actually exists.
             if !npc['spriteTalk'] && npc['spriteSheet']
-              # Sprites with named frames (not numeric indices) need spriteTalk
+              # Sprites with named frames (not numeric indices) need a portrait image
               named_frame_sprites = ['female_spy', 'male_spy', 'female_hacker_hood', 'male_doctor']
               if named_frame_sprites.include?(npc['spriteSheet'])
-                issues << "⚠️ WARNING: '#{path}' uses spriteSheet '#{npc['spriteSheet']}' which has named frames, but no 'spriteTalk' property. Person-chat cutscenes will show frame errors. Add 'spriteTalk' property pointing to a headshot image (e.g., 'assets/characters/#{npc['spriteSheet']}_headshot.png')"
+                chars_dir = File.join(File.expand_path('..', __dir__), 'public/break_escape/assets/characters')
+                derived = ["#{npc['spriteSheet']}_talk.png", "#{npc['spriteSheet']}_headshot.png"]
+                unless derived.any? { |f| File.exist?(File.join(chars_dir, f)) }
+                  issues << "⚠️ WARNING: '#{path}' uses spriteSheet '#{npc['spriteSheet']}' which has named frames, but no 'spriteTalk' property and no derived portrait ('assets/characters/#{derived[0]}' or '#{derived[1]}'). Person-chat cutscenes will show frame errors. Add one of those images, or a 'spriteTalk' property pointing to a portrait"
+                end
               end
             end
 

@@ -802,7 +802,7 @@ In-world characters with sprites that the player can walk up to and interact wit
 |-------|-------------|
 | `position` | `{ "x": tiles_from_left, "y": tiles_from_top }`. Omit only if `behavior.initiallyHidden: true`. |
 | `spriteSheet` | Character sprite name (see `public/break_escape/assets/characters/`) |
-| `spriteTalk` | Headshot image for dialogue box |
+| `spriteTalk` | Portrait image for dialogue box. Optional — defaults to `assets/characters/{spriteSheet}_talk.png`, then `{spriteSheet}_headshot.png`. Only set it for off-convention filenames. |
 | `storyPath` | Path to compiled Ink `.json` story file |
 | `currentKnot` | Starting Ink knot (usually `"start"`) |
 | `voice` | TTS voice for dialogue and barks: `{ "name": "...", "style": "...", "language": "en-GB" }` |

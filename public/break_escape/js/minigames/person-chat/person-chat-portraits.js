@@ -10,6 +10,10 @@
 
 import { ASSETS_PATH } from '../../config.js';
 
+// Sprite sheets with no derivable portrait (e.g. prop sprites like hospital beds).
+// Remembered after the first failed lookup so later conversations skip the 404s.
+const spritesWithoutTalkImage = new Set();
+
 export default class PersonChatPortraits {
     /**
      * Create portrait renderer
@@ -43,6 +47,7 @@ export default class PersonChatPortraits {
         this.spriteSheet = null;
         this.frameIndex = null;
         this.spriteTalkImage = null; // Loaded *_talk.png (single frame OR 2×2 spritesheet)
+        this.talkImageSrc = null; // Resolved path: explicit spriteTalk or derived from spriteSheet
         this.useSpriteTalk = false; // Whether to use spriteTalk instead of spriteSheet
         this.flipped = false; // Whether to flip the sprite horizontally
         this.facingDirection = npc.id === 'player' ? 'right' : 'left';
@@ -287,15 +292,38 @@ export default class PersonChatPortraits {
     }
     
     /**
+     * Resolve the talk portrait path for the current speaker.
+     * Uses the explicit spriteTalk when set, otherwise derives it from the
+     * spriteSheet using the {spriteSheet}_talk.png convention.
+     * @returns {string|null} Path to try, or null when there is nothing to derive from
+     * @private
+     */
+    _resolveTalkImageSrc() {
+        if (this.npc.spriteTalk) return this.npc.spriteTalk;
+
+        const sprite = this.npc.spriteSheet;
+        if (!sprite || spritesWithoutTalkImage.has(sprite)) return null;
+
+        // Legacy sprites use hyphen naming; all others follow {sprite}_talk.png
+        const legacyMap = {
+            'hacker': 'assets/characters/hacker-talk.png',
+            'hacker-red': 'assets/characters/hacker-red-talk.png'
+        };
+        return legacyMap[sprite] || `assets/characters/${sprite}_talk.png`;
+    }
+
+    /**
      * Set up sprite sheet and frame information
      */
     setupSpriteInfo() {
         console.log(`🔍 setupSpriteInfo - this.npc.id: ${this.npc.id}, this.npc.spriteTalk: ${this.npc.spriteTalk}`);
         console.log(`🔍 setupSpriteInfo - full NPC object:`, this.npc);
-        
-        // Check if NPC has a spriteTalk image (single frame portrait)
-        if (this.npc.spriteTalk) {
-            console.log(`📸 Using spriteTalk image: ${this.npc.spriteTalk}`);
+
+        // Check for a talk portrait: explicit spriteTalk, or derived from spriteSheet
+        const talkImageSrc = this._resolveTalkImageSrc();
+        if (talkImageSrc) {
+            console.log(`📸 Using talk image: ${talkImageSrc}${this.npc.spriteTalk ? '' : ' (derived from spriteSheet)'}`);
+            this.talkImageSrc = talkImageSrc;
             this.useSpriteTalk = true;
             // Clear spriteTalkImage on speaker change to ensure correct dimensions are calculated
             // This ensures background scale is recalculated for each speaker's sprite size
@@ -309,10 +337,11 @@ export default class PersonChatPortraits {
         }
         
         // Otherwise use spriteSheet with frame
-        console.log(`🔍 No spriteTalk found, using spriteSheet`);
+        console.log(`🔍 No talk image available, using spriteSheet`);
         this.useSpriteTalk = false;
         // Clear spriteTalkImage when switching to spriteSheet
         this.spriteTalkImage = null;
+        this.talkImageSrc = null;
         
         if (this.npc.id === 'player') {
             // Player uses their sprite
@@ -684,13 +713,17 @@ export default class PersonChatPortraits {
         img.onerror = () => {
             this._loadingSpriteTalkImage = false;
             // If _talk.png failed, try the _headshot.png equivalent before giving up
-            if (!this._headshotFallbackAttempted && this.npc.spriteTalk && /_talk\.\w+$/.test(this.npc.spriteTalk)) {
+            if (!this._headshotFallbackAttempted && this.talkImageSrc && /[_-]talk\.\w+$/.test(this.talkImageSrc)) {
                 this._headshotFallbackAttempted = true;
-                this.npc.spriteTalk = this.npc.spriteTalk.replace(/_talk(\.\w+)$/, '_headshot$1');
+                this.talkImageSrc = this.talkImageSrc.replace(/[_-]talk(\.\w+)$/, '_headshot$1');
                 this._startLoadingSpriteTalkImage();
                 return;
             }
-            console.warn(`⚠️ No talk image found for ${this.npc.id} (${this.npc.spriteTalk}), falling back to sprite`);
+            console.warn(`⚠️ No talk image found for ${this.npc.id} (${this.talkImageSrc}), falling back to sprite`);
+            // Only remember derived misses — an explicit spriteTalk is the author's call
+            if (!this.npc.spriteTalk && this.npc.spriteSheet) {
+                spritesWithoutTalkImage.add(this.npc.spriteSheet);
+            }
             this.useSpriteTalk = false;
             this.spriteSheet = this.npc.spriteSheet || (this.npc.id === 'player' ? 'hacker' : 'hacker');
             this.frameIndex = 20;
@@ -698,7 +731,12 @@ export default class PersonChatPortraits {
             this.render();
         };
 
-        let imageSrc = this.npc.spriteTalk;
+        let imageSrc = this.talkImageSrc;
+        if (!imageSrc) {
+            this._loadingSpriteTalkImage = false;
+            this.useSpriteTalk = false;
+            return;
+        }
         if (!imageSrc.startsWith('/') && !imageSrc.startsWith('http')) {
             imageSrc = imageSrc.startsWith('assets/')
                 ? `/break_escape/${imageSrc}`

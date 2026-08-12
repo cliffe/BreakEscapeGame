@@ -138,7 +138,11 @@ The `spriteTalk` field specifies a separate larger image used in conversation sc
 "spriteTalk": "assets/characters/custom-talk-portrait.png"
 ```
 
-If not specified, the system will fall back to using the sprite sheet for portraits.
+If not specified, the portrait path is derived from the sprite sheet name using the
+`assets/characters/{spriteSheet}_talk.png` convention (the legacy `hacker` and `hacker-red`
+sprites map to `hacker-talk.png` / `hacker-red-talk.png`). If that file is missing the loader
+tries `{spriteSheet}_headshot.png`, and only then falls back to rendering a sprite sheet frame.
+So a character only needs an explicit `spriteTalk` when its portrait is named off-convention.
 
 ## Adding New Characters
 
