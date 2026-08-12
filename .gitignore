@@ -36,3 +36,5 @@ test/dummy/storage/*
 # Temporary files
 .byebug_history
 .spring.pid
+
+public/break_escape/assets/characters/wip/*
