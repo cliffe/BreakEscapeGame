@@ -44,6 +44,16 @@ VAR ransom_decision_made = false
 VAR ghost_deal_accepted = false
 VAR ghost_contacted_player = false
 VAR mission_complete = false
+VAR cover_burned = false
+VAR cover_restored = false
+VAR bernie_trusts_player = false
+VAR staff_lanyard_obtained = false
+VAR insider_identified = false
+VAR insider_evidence_partial = false
+
+// Local
+VAR cover_advice_given = false
+VAR insider_advice_given = false
 
 EXTERNAL player_name()
 
@@ -63,17 +73,22 @@ EXTERNAL player_name()
 
 Agent HaX: {player_name()}. You're in. Good.
 
-Agent HaX: 47 patients. Backup power. Twelve hours.
+Agent HaX: Forty-seven on generators, twelve hours of fuel, and a board vote in four.
 
-Agent HaX: Start with Dr. Kim -- CTO, west of reception. She has the authority you need to access IT systems. Then find Marcus Webb in IT.
+Agent HaX: Front desk first -- get yourself into their paper log, because the electronic one no longer exists. Then Dr. Kim. She's up on the main corridor, past the ward. She called us in.
 
 + [Understood]
     -> support_hub
 
 + [What should I know going in?]
-    Agent HaX: The institutional failure here is going to make you angry. Stay professional.
-    Agent HaX: Marcus Webb warned them about this vulnerability six months ago. Seven times. Nobody listened.
-    Agent HaX: Don't let their negligence distract from the mission. People are depending on you right now.
+    Agent HaX: One thing above everything else. Nobody in that building can grant you access to anything.
+    Agent HaX: Their access control server is encrypted along with the rest of it. Kim can authorise you until she's hoarse and not a single reader will care.
+    Agent HaX: So every door in there is a person, a mechanical key, or your picks. Plan around that and you'll be fine. Assume a badge will save you and you'll waste an hour.
+    -> support_hub
+
++ [Anything I should be careful of?]
+    Agent HaX: The institutional failure in there is going to make you angry. Marcus Webb warned them seven times and got told to stop escalating. Feel it later.
+    Agent HaX: And be careful who you are rude to. You are going to need at least one of those people to vouch for you before the night is out, and you will not know which one until it's too late to fix.
     -> support_hub
 
 // ===========================================
@@ -83,6 +98,14 @@ Agent HaX: Start with Dr. Kim -- CTO, west of reception. She has the authority y
 
 === support_hub ===
 #speaker:agent_0x99
+
+// URGENT: cover burned, player needs a way back into the corridor
++ {cover_burned and not cover_restored and not cover_advice_given} [My booking's been pulled. What are my options?]
+    -> cover_burned_advice
+
+// Who did it, and what it tells us
++ {cover_burned and not insider_advice_given} [Who pulls a consultant's booking in the middle of a ransomware incident?]
+    -> cover_burned_who
 
 // Urgent: Ghost made contact
 + {ghost_contacted_player and not ghost_reaction_discussed} [Ghost just reached out to me]
@@ -174,6 +197,62 @@ Agent HaX: Start with Dr. Kim -- CTO, west of reception. She has the authority y
     -> DONE
 
 // ===========================================
+// COVER BURN SUPPORT
+// The handler does not solve it for the player -- she lays out the routes
+// and lets them choose which relationship to spend.
+// ===========================================
+
+=== cover_burned_advice ===
+#speaker:agent_0x99
+~ cover_advice_given = true
+
+Agent HaX: Right. Deep breath. This is recoverable and it is not the first time.
+
+Agent HaX: What you have lost is not access -- you never had any. What you have lost is the benefit of the doubt. Everything you have opened tonight, you opened because somebody chose to believe you.
+
+Agent HaX: So go and get that back from somebody who has a reason to give it.
+
++ [Give me the options.]
+    Agent HaX: Three, that I can see from here.
+    Agent HaX: One. A real hospital lanyard. Marcus in IT has a drawer of blank contractor passes, and the ward office keeps agency lanyards. Either will stand up in a corridor at four in the morning.
+    Agent HaX: Two. Reception. If Bernie will log a correction under her own staff number, that beats an anonymous phone call, because control have actually met her.
+    Agent HaX: Three. The officer in the security office. She is not an idiot and she has her own suspicions about somebody in that building. Give her a reason and she may make the call on her own judgement.
+    -> support_hub
+
++ [And if none of them will help me?]
+    Agent HaX: Then you go the long way round and you stay out of that corridor, and it costs you time you have not got.
+    Agent HaX: {staff_lanyard_obtained: You already have a pass, though. Use it.|I would start with IT. Marcus has every reason to want you in that server room.}
+    -> support_hub
+
++ [Understood. I'll sort it.]
+    Agent HaX: Good. Quickly, please.
+    -> support_hub
+
+=== cover_burned_who ===
+#speaker:agent_0x99
+~ insider_advice_given = true
+
+Agent HaX: Somebody who knew exactly which lever to pull, is the honest answer.
+
+Agent HaX: Think about what that call actually required. It required knowing you existed, knowing your booking was informal, knowing the access system was down so nobody could check, and knowing that hospital security would default to challenge rather than assume.
+
+Agent HaX: That is not a hacker. Ghost is on the network, and if Ghost wanted you stopped they had cleaner ways. That is somebody standing in the building with a telephone and a working knowledge of the procedures.
+
+{insider_evidence_partial:
+    Agent HaX: And you have already found the thing that says an ENTROPY affiliate is embedded in that staff. So stop treating those as two separate problems, because they are not.
+- else:
+    Agent HaX: Which means when Ghost tells you they had help inside -- and they will -- take it seriously.
+}
+
++ [So I'm looking for staff, not an intruder.]
+    Agent HaX: You are looking for somebody with standing. Somebody a receptionist would let sign a book on her behalf.
+    Agent HaX: Whoever burned you did it because you were about to reach something. Work out what, and you will have worked out who.
+    -> support_hub
+
++ [Noted. I'll keep pulling.]
+    -> support_hub
+
+// ===========================================
 // GHOST REACTIONS
 // ===========================================
 
@@ -215,7 +294,7 @@ Agent HaX: In exchange: you publish the board's negligence from the press termin
 Narrator: A pause.
 
 #speaker:agent_0x99
-Agent HaX: Ghost gets exactly what they wanted without spending $87,000.
+Agent HaX: Ghost gets exactly what they wanted without spending £87,000.
 
 Agent HaX: You're still the one making the final choice at that terminal. Ghost's deal doesn't override your judgment.
 
@@ -263,16 +342,16 @@ Agent HaX: That email is going to matter at the press terminal. Keep it in mind.
 #speaker:agent_0x99
 ~ hint_start_given = true
 
-Agent HaX: Dr. Kim. CTO. Office wing west of reception.
+Agent HaX: Front desk, then west.
 
-Agent HaX: She has authorization authority over IT access, server room, everything you need.
+Agent HaX: The night coordinator on reception is holding every mechanical override key in that building on a hook behind her, because Estates dumped them on her this morning. That includes IT. She is the first lock in this mission and she is a person, not a door.
 
-Agent HaX: She's under extreme pressure -- the board is pushing for a ransom vote. She needs someone who can offer an alternative.
+Agent HaX: Then Dr. Kim, the CTO. She called us in and she is out of options, which makes her useful and slightly unpredictable.
 
 + [What about Marcus Webb?]
-    Agent HaX: IT administrator. East corridor, IT department.
-    Agent HaX: He's the one who warned them about this vulnerability six months ago. He's furious and guilty in equal measure.
-    Agent HaX: Kim first, then Marcus. Order matters.
+    Agent HaX: IT administrator. Main corridor, far door, behind that override lock.
+    Agent HaX: He warned them about this exact vulnerability seven times and got told to stop escalating. He is furious, guilty and holding the only working credential in the building.
+    Agent HaX: Desk first, Kim second, Marcus third. The order buys you goodwill you will want later.
     -> support_hub
 
 + [Understood]
@@ -282,15 +361,20 @@ Agent HaX: She's under extreme pressure -- the board is pushing for a ransom vot
 #speaker:agent_0x99
 ~ hint_lockpick_given = true
 
-Agent HaX: Server room is RFID-locked. You need Marcus's keycard.
+Agent HaX: The server room is the one door in that hospital where picks and charm are both useless.
 
-Agent HaX: Build enough trust with Marcus and he'll hand it over voluntarily. He wants those systems recovered as much as anyone.
+Agent HaX: RFID, on a standalone offline controller -- which is why it still works when nothing else does. It will only accept a card that already exists, and no new card can be issued, because the thing that issues them is encrypted.
 
-Agent HaX: If he's being difficult -- the IT department itself uses a standard pin-tumbler lock. Lockpicks work on it.
+Agent HaX: Marcus has one. That is the entire route. Get it from him, or take it off him, but you are not getting past that reader any other way.
 
-+ [What if Marcus is in a defensive spiral?]
-    Agent HaX: Validate the ignored-warnings angle. He needs someone to believe him.
-    Agent HaX: Don't challenge him about responsibility. That's not the conversation you need right now.
++ [And the IT department door itself?]
+    Agent HaX: Standard pin tumbler on a mechanical override. Reception has the key, and your picks will do it if she won't.
+    Agent HaX: One warning -- her desk faces that door. Picking a lock she has already offered you the key to is not a clever look.
+    -> support_hub
+
++ [What if Marcus won't play?]
+    Agent HaX: Then give him a reason. He has a locked filing cabinet in there full of the warnings nobody read.
+    Agent HaX: Put one of those in front of him and you stop being another person who wants something from him.
     -> support_hub
 
 + [Got it]
@@ -300,15 +384,15 @@ Agent HaX: If he's being difficult -- the IT department itself uses a standard p
 #speaker:agent_0x99
 ~ hint_password_given = true
 
-Agent HaX: Marcus is a social engineering target. He's been dismissed by management for six months.
+Agent HaX: Marcus has spent six months being treated as an overhead. Don't be the fifth person tonight to walk in and treat him as one.
 
-Agent HaX: Sympathize with the experience. Tell him you've read his warnings. Tell him you believe him.
+Agent HaX: He does not want sympathy, he wants somebody to acknowledge he was right in writing. Give him that and he'll open every drawer he owns.
 
-Agent HaX: High trust gets you his keycard and the employee password list. Low trust gets you nothing useful.
+Agent HaX: And do not, whatever you do, ask him how he let this happen. He will hand you the card and stop being any further use to you at all.
 
-+ [What passwords specifically?]
-    Agent HaX: Hospital environments use weak credentials. Birthdays, company names, simple variations.
-    Agent HaX: Emma2018. Hospital1987. StCatherines. Check his desk too -- he may have written something down.
++ [What am I actually after from him?]
+    Agent HaX: The server room card, and the credentials on the backup box. Shared admin login, never rotated -- Emma2018, Hospital1987, StCatherines.
+    Agent HaX: He'll tell you if he trusts you. If he doesn't, it's on a sticky note stuck to his monitor, which tells you everything about the state of that department.
     -> support_hub
 
 + [Understood]
@@ -454,7 +538,7 @@ Agent HaX: ENTROPY uses encoding for obfuscation and encryption for actual secur
 #speaker:agent_0x99
 ~ hint_pin_given = true
 
-Agent HaX: Ghost's logs confirmed offline backup keys are in a physical PIN safe. Emergency equipment storage, south corridor.
+Agent HaX: Ghost's logs confirmed offline backup keys are in a physical PIN safe. Emergency equipment store, far end of the ward.
 
 Agent HaX: Four-digit code. Hospitals use institutional dates -- founding years, significant administrative anniversaries.
 
@@ -477,7 +561,7 @@ Agent HaX: The answer's somewhere in the building. Check plaques, framed documen
 
 Agent HaX: You have both key types. That means independent recovery is genuinely on the table.
 
-Agent HaX: Pay the ransom: 1-2 patient deaths, $87,000 funds ENTROPY's next operation.
+Agent HaX: Pay the ransom: 1-2 patient deaths, £87,000 funds ENTROPY's next operation.
 
 Agent HaX: Manual recovery: 4-6 patient deaths, ENTROPY gets nothing. The hospital recovers independently.
 
@@ -577,12 +661,16 @@ Agent HaX: That's the last decision of this mission.
 === general_advice ===
 #speaker:agent_0x99
 
+{cover_burned and not cover_restored:
+    Agent HaX: One thing at a time. Get your standing back, then get to that server room. Everything else can wait.
+    -> support_hub
+}
 {not dr_kim_met:
-    Agent HaX: Get to Dr. Kim first. Authorization unlocks everything else.
+    Agent HaX: Reception first, then Kim. You want the override key and you want somebody who has met you willing to say so.
     -> support_hub
 }
 {dr_kim_met and not flag_ssh_submitted:
-    Agent HaX: Marcus is your route to the server room. Build trust -- cooperation beats lockpicking.
+    Agent HaX: Marcus is your route to the server room, and cooperation gets you three things where theft only gets you one.
     -> support_hub
 }
 {flag_ssh_submitted and not offline_keys_recovered:

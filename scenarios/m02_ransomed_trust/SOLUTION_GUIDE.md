@@ -1,5 +1,12 @@
 # Mission 2: "Ransomed Trust" - Complete Solution Guide
 
+> ⚠️ **STALE — predates the 2026-08 rewrite.** The mission was restructured: the cover-story
+> premise changed (the access-control server is encrypted, so nobody can *grant* access), the
+> aim/task IDs changed, Dr. Kim's office is now unlocked, the IT department is gated behind
+> Bernie Nwosu's override key, the boardroom is PIN-locked, a cover-burn beat was added after
+> `talk_to_marcus`, and several characters were renamed. Use `TESTING_WALKTHROUGH.md` as the
+> authoritative critical-path reference until this guide is rewritten.
+
 **Mission ID:** m02_ransomed_trust
 **Difficulty:** Beginner (Mission 2 of Season 1)
 **Estimated Playtime:** 50-70 minutes

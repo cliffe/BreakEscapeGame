@@ -1,24 +1,72 @@
 // ===========================================
-// Ward Patient: Bed 4 (Mr Okafor, cardiac)
+// Ward Patient: Bed 4 -- Mr Okafor (ventilated, cardiac)
 // Mission 2: Ransomed Trust
-// Break Escape - Stakes witness / life support
+//
+// He can speak, barely -- four or five words between breaths. That is the
+// point of him: the ward is not a set of statistics, it is a retired bus
+// engineer from Peckham who is awake and knows exactly what the dark screen
+// above his head means.
 // ===========================================
 
+VAR spoke_to_player = false
+VAR read_chart = false
+
 === start ===
-Narrator: Mr Okafor, 67, is lying motionless in Bed 4. His ventilator cycles rhythmically -- the machine itself still runs, but the central monitoring feed that would display his vitals at the nursing station is offline.
+{spoke_to_player:
+    -> returning
+}
+~ spoke_to_player = true
 
-Narrator: A paper chart hangs at the foot of the bed. The last manual observation was recorded 14 minutes ago.
+Narrator: Mr Okafor is awake. The ventilator beside him cycles on its own power; the monitor above the bed, which should be reporting him to the nurses' station, is dark.
 
-+ [Let's see how you're doing, Mr Okafor.]
-    Narrator: Blood pressure 138/86. O2 sat 94%. Last check 14 minutes ago. Nurse initials: S.H.
-    Narrator: The chart would normally auto-update every 30 seconds. Now it depends entirely on when a nurse can get back to him.
+Narrator: His eyes track to you, then to the dead screen above the bed.
+
+Mr Okafor: ...you the one.
+
+Mr Okafor: *breath* Fixing it.
+
+* [I am. Systems should be back tonight.]
+    Mr Okafor: *long breath* Good.
+    Mr Okafor: Sister's been. Every fifteen minutes. *breath* All night.
+    Mr Okafor: She's tired. Tell someone.
     -> hub
 
-+ [I'll let you rest.]
-    #exit_conversation
+* [Yes. How are you doing, Mr Okafor?]
+    Narrator: One hand moves, barely.
+
+    Mr Okafor: Breathing.
+    Mr Okafor: Machine's doing it. *breath* But it's getting done.
+    Mr Okafor: Forty years I fixed buses. *breath* Never trusted a thing with no gauge on it.
+    -> hub
+
+* [Rest. I'll come back when it's done.]
+    Mr Okafor: *breath* Mm.
     -> hub
 
 === hub ===
++ {not read_chart} [Check the paper chart at the foot of the bed.]
+    -> the_chart
+
 + [I'll let you rest.]
+    Mr Okafor: *breath* Go on.
     #exit_conversation
     -> hub
+
+=== the_chart ===
+~ read_chart = true
+
+Narrator: Blood pressure 138 over 86. Sats 94 percent. Last observation recorded fourteen minutes ago in biro, initialled A.D.
+
+Narrator: The monitor above the bed would have written this line every thirty seconds and flagged anything drifting. Tonight it depends entirely on when a nurse can next get back down the row.
+
+Narrator: He watches you read it.
+
+Mr Okafor: Fourteen minutes.
+
+Mr Okafor: *breath* Long time, fourteen minutes.
+
+-> hub
+
+=== returning ===
+Mr Okafor: *eyes open* ...still here.
+-> hub

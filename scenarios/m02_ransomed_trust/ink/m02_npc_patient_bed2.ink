@@ -9,28 +9,32 @@ VAR spoke_to_player = false
 === start ===
 {not spoke_to_player:
     ~ spoke_to_player = true
-    Mrs Hargreaves: *eyes open, very weakly* ...someone there?
+    Mrs Hargreaves: *eyes open, barely* ...that you, love?
     -> first_words
 }
 {spoke_to_player:
-    Mrs Hargreaves: ...still here?
+    Mrs Hargreaves: ...still at it, love?
     -> hub
 }
 
 === first_words ===
 
-Mrs Hargreaves: ...can't see the screen. The nurse said the screen was down.
+Mrs Hargreaves: ...can't see me screen. Sister says it's down.
 
-Mrs Hargreaves: That screen... told them if my heart was doing what it's supposed to.
+Mrs Hargreaves: *breath* That screen tells them. If me heart's doing what it should.
+
+Mrs Hargreaves: Three weeks I've watched that screen.
 
 * [The machine keeping you going is still working. We're working to restore the monitors.]
-    Mrs Hargreaves: ...good. I know this machine. Been on it three weeks.
-    Mrs Hargreaves: Just... don't like not being able to see.
+    Mrs Hargreaves: ...good.
+    Mrs Hargreaves: I know this machine. Me and it have an understanding.
+    Mrs Hargreaves: *breath* I just don't like not being able to see.
     -> hub
 
 * [How are you feeling right now?]
-    Mrs Hargreaves: Like I'm on a machine that I can't switch off. Which I am.
-    Mrs Hargreaves: *very faint* Don't worry. I've had good days and bad days on this thing. Today's... a day.
+    Mrs Hargreaves: Like I'm plugged into summat I can't switch off. Which I am.
+    Mrs Hargreaves: *very faint* Don't fuss. I've had good days and bad days on this thing.
+    Mrs Hargreaves: Today's... a day.
     -> hub
 
 === hub ===

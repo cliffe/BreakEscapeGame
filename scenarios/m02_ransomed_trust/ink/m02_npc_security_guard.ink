@@ -1,448 +1,497 @@
 // ===========================================
-// SECURITY GUARD NPC - Mission 2: Ransomed Trust
-// Break Escape - St. Catherine's Hospital
+// PATROL NPC: Val Okonkwo -- Hospital Security Officer, nights
+// Mission 2: Ransomed Trust
 //
-// Talk / persuade / react-to-lockpicking only.
-// Physical combat is NOT scripted here: aggression sets the guard hostile
-// via #hostile:security_guard and hands control to the game's combat system.
-// Scene description and action beats are spoken by the Narrator.
+// Val works the security office -- a 2x2 room that the server room door opens
+// off, so she is physically between the player and the only lock that matters.
+// She has TWO completely different modes and the switch between them is the
+// mission's midpoint:
+//
+//   BEFORE the cover burn -- the consultant line works. She's warm, funny,
+//     slightly bored, and she'll wave you through on Kim's say-so.
+//   AFTER the cover burn -- control has told her there is no consultant.
+//     That line is now a lie she can disprove, and she is not stupid.
+//     The player needs a real lanyard, Bernie vouching, or to earn it in
+//     conversation. Or to put her on the floor, which has costs.
+//
+// She is not an obstacle for its own sake. She has independently clocked
+// Graham Reeves and been told twice to drop it, which makes her the
+// player's best alternative route into the insider thread if they treat
+// her as a colleague rather than a turnstile.
+//
+// Physical combat is never scripted here -- aggression sets #hostile and
+// hands control to the game's combat system.
 // ===========================================
 
-// Variables for tracking player choices and state
-VAR influence = 0
-VAR caught_lockpicking = false
-VAR confrontation_attempts = 0
-VAR warned_player = false
-VAR player_has_id_badge = false
-
-// External variables (set by game)
 EXTERNAL player_name()
 
+VAR influence = 0
+VAR warned_player = false
+VAR caught_lockpicking = false
+VAR lockpick_confrontations = 0
+VAR talked_about_reeves = false
+VAR talked_about_attack = false
+VAR cleared_after_burn = false
+
+// Synced from globalVars by engine at call-open
+VAR cover_burned = false
+VAR cover_restored = false
+VAR staff_lanyard_obtained = false
+VAR bernie_vouched = false
+VAR dr_kim_met = false
+VAR insider_identified = false
+
 // ===========================================
-// INITIAL ENCOUNTER
+// ENTRY
 // ===========================================
 
 === start ===
-#speaker:security_guard
-
+{cover_burned and not cover_restored:
+    -> cover_challenge
+}
 {not warned_player:
-    #display:guard-patrol
-    #speaker:narrator
-    Narrator: A hospital security guard patrols the north corridor, watching the area carefully. They notice you and approach.
-
-    ~ warned_player = true
-    #speaker:security_guard
-    Guard: Hold on. This is a restricted area during the crisis. What's your business here?
-
-    -> initial_response
+    -> first_encounter
 }
+-> friendly_return
 
-{warned_player and not caught_lockpicking:
-    #display:guard-patrol
-    #speaker:narrator
-    Narrator: The guard nods at you as they continue their patrol.
+=== first_encounter ===
+~ warned_player = true
 
-    #speaker:security_guard
-    Guard: Still working on the crisis?
+Narrator: The security office sits between the main corridor and the server room, and the officer in it has clocked you through the glass before you are halfway across it.
 
-    -> hub
-}
+Val Okonkwo: Alright. Stop there a sec.
 
--> hub
+Val Okonkwo: That door behind me is restricted, and before you say it -- yes, I know the readers are dead. That's precisely why it's me stood in front of it instead of them.
 
-// ===========================================
-// INITIAL RESPONSE OPTIONS
-// ===========================================
+Val Okonkwo: So. Who are you and who says you're allowed?
 
-=== initial_response ===
-
-+ [I'm the external security consultant. Dr. Kim authorized my access.]
-    ~ influence += 20
+* [Emergency security consultant. Dr. Kim called me in at one this morning.]
+    ~ influence += 15
     # influence_increased
-    Guard: Oh, right. The ransomware crisis. Dr. Kim mentioned someone was coming.
+    -> claim_consultant
 
-    Guard: Still, I need to see your visitor badge.
-
-    {player_has_id_badge:
-        #speaker:narrator
-        Narrator: You show the visitor badge from reception.
-
-        ~ influence += 10
-        # influence_increased
-        #speaker:security_guard
-        Guard: Checks out. Be careful in there. It's a mess.
-
-        -> hub
-    - else:
-        You: I... must have left it at reception.
-
-        ~ influence -= 5
-        # influence_decreased
-        Guard: Then go get it. Security protocols exist for a reason.
-
-        -> hub
-    }
-
-+ [Just passing through. No trouble.]
-    Guard: During a ransomware crisis? Nothing is "just passing through" right now.
-
-    -> hub
-
-+ [This is urgent. The hospital systems are down. Lives are at stake.]
+* [I'm working the incident. There are forty-seven people on generators.]
     ~ influence += 5
     # influence_increased
-    Guard: I know. That's why I'm here securing this area.
-
-    Guard: You need proper authorization to access restricted systems.
-
+    Val Okonkwo: I know how many there are, love. I walked past every one of them on my first round.
+    Val Okonkwo: Doesn't tell me who you are, though, does it.
     -> hub
 
-+ [That's not your concern.]
-    ~ influence -= 30
+* [I'd rather not get into it.]
+    ~ influence -= 20
     # influence_decreased
-    Guard: Wrong answer. Everything in this corridor is my concern.
+    Val Okonkwo: *entire manner changes* Right.
+    Val Okonkwo: Then we've got a problem, because "I'd rather not get into it" is a full sentence and it means no.
+    -> standoff
 
-    #display:guard-hostile
-    -> hostile_stance
+=== claim_consultant ===
+{dr_kim_met:
+    Val Okonkwo: *relaxing about ten percent* Right, yeah. Reception flagged it through about an hour back.
+    Val Okonkwo: Go on then. Mind yourself in there -- it's twenty-odd degrees hotter than it should be and there's cable everywhere.
+    -> hub
+- else:
+    Val Okonkwo: Consultant. Right.
+    Val Okonkwo: Nobody's told me that, but then nobody's told me anything since two forty-seven, so join the queue.
+    Val Okonkwo: Get yourself signed in properly at reception and have a word with Dr Kim, and I'll not stand in your way.
+    -> hub
+}
 
 // ===========================================
-// HUB - MAIN CONVERSATION LOOP
+// THE COVER CHALLENGE -- mission midpoint
 // ===========================================
 
-=== hub ===
+=== cover_challenge ===
+Narrator: She is not ambling any more. She crosses the office at a pace that closes the distance before you have decided what to do with it, and plants herself squarely between you and the server room door.
 
-+ [What can you tell me about the ransomware attack?]
-    -> ask_about_attack
+Val Okonkwo: Stay where you are.
 
-+ [I need access to the restricted areas.]
-    -> request_access
+Val Okonkwo: Control have just been on. There is no external consultant booked at this hospital tonight. There never was. Reception's paper log's been amended and there's nothing on the system, because there is no system.
 
-+ {caught_lockpicking} [About that lockpicking...]
-    -> explain_lockpick_again
+Val Okonkwo: So whatever you told me an hour ago -- start again.
 
-+ [I should get moving.]
+-> cover_challenge_options
+
+=== cover_challenge_options ===
++ {staff_lanyard_obtained} [Show her the lanyard.]
+    -> show_lanyard
+
++ {bernie_vouched} [Ring Bernie on reception. She's logged a correction under her own name.]
+    -> bernie_backs_you
+
++ {influence >= 20} [Val. You've watched me for an hour. Do I look like the problem in this building tonight?]
+    -> earn_it
+
++ [Somebody phoned that in to stop me reaching that room. Ask yourself who benefits.]
+    -> the_argument
+
++ [Then we're doing this the hard way.] #color:red
+    ~ influence -= 40
+    # influence_decreased
+    Narrator: Her hand is already going to her radio.
+
+    Val Okonkwo: Don't.
+    Val Okonkwo: Don't you dare. Not in here, not tonight --
+    #hostile:security_guard_patrol
+    #set_global:attacked_guard:true
     #exit_conversation
-    Guard: Stay safe. This crisis has everyone on edge.
+    -> DONE
+
+=== show_lanyard ===
+~ cleared_after_burn = true
+#set_global:cover_restored:true
+
+Narrator: She takes the lanyard, turns it over, checks the reverse, and hands it back.
+
+Val Okonkwo: Contractor pass. IT issue.
+
+Val Okonkwo: *pause* Which is blank, has no photograph, and could have come out of anybody's drawer.
+
+Narrator: She looks at you for a long moment. Somewhere behind you a generator changes note.
+
+Val Okonkwo: Here's where I've got to. Either you're a wrong 'un with a stolen pass, or somebody's had my control room told a lie about you.
+
+Val Okonkwo: And I've had this building tell me lies about who's supposed to be stood where for about six weeks now. So.
+
+Val Okonkwo: Go on. But you come past me on your way out and you tell me what you found, or I'll take it very personally.
+
+* [Deal.]
+    ~ influence += 10
+    # influence_increased
+    Val Okonkwo: Right.
+    #exit_conversation
+    -> hub
+
+* [Six weeks. Tell me about that.]
+    -> discuss_reeves
+
+=== bernie_backs_you ===
+~ cleared_after_burn = true
+#set_global:cover_restored:true
+
+Val Okonkwo: Bernie's logged what?
+
+Narrator: She turns away, says four sentences into the radio, and listens to rather more than four sentences coming back.
+
+Narrator: She lowers the handset.
+
+Val Okonkwo: She's named herself as vouching officer. In writing. On her own log, against her own staff number.
+
+Val Okonkwo: Bernie Nwosu has worked that desk eleven years and has never once put her name to something she wasn't sure of. Not once.
+
+Val Okonkwo: So now I've got a phone call from control saying one thing and Bernie saying the other, and I know which of those two I've actually met.
+
+Val Okonkwo: Go on. Quick.
+
+* [Thank you.]
+    ~ influence += 10
+    # influence_increased
+    Val Okonkwo: Don't thank me, thank her. And don't make either of us regret it.
+    #exit_conversation
+    -> hub
+
+* [Whoever rang control -- can you find out which extension?]
+    Val Okonkwo: *slowly* Now that is a very good question and I do not like the answer I'm already thinking of.
+    -> discuss_reeves
+
+=== earn_it ===
+~ cleared_after_burn = true
+#set_global:cover_restored:true
+
+Val Okonkwo: *doesn't answer straight away*
+
+Val Okonkwo: No. You don't.
+
+Val Okonkwo: You've been polite, you've stopped when I've asked, and you've spent your night going towards the thing that's on fire instead of away from it. I've been doing this eleven years and that's not nothing.
+
+Val Okonkwo: And the fella who I reckon rang that in has never once stopped when I've asked.
+
+Narrator: She steps aside, but not far.
+
+Val Okonkwo: I'm putting my own name against this in my notebook. If you make a fool of me I'll find you myself.
+
+* [Understood.]
+    ~ influence += 5
+    # influence_increased
+    #exit_conversation
+    -> hub
+
+* [Who is he? The one who doesn't stop.]
+    -> discuss_reeves
+
+=== the_argument ===
+Val Okonkwo: *unmoved* Everyone who's ever been where they shouldn't has a theory about who grassed them up.
+
+Val Okonkwo: Give me something I can hold. A pass. A name on a log. Somebody on a phone saying you're alright.
+
+Val Okonkwo: "Ask yourself who benefits" is what people say when they've got none of those.
+
++ {staff_lanyard_obtained} [Fine. Here.]
+    -> show_lanyard
+
++ {bernie_vouched} [Then ring Bernie. She's already logged it.]
+    -> bernie_backs_you
+
++ [I'll get you something. Don't go anywhere.]
+    Val Okonkwo: I'm stood in a windowless room at four in the morning guarding a door. Where am I going?
+    #exit_conversation
     -> DONE
 
 // ===========================================
-// LOCKPICK DETECTION EVENT
+// LOCKPICK DETECTION
 // ===========================================
 
 === on_lockpick_used ===
-#speaker:security_guard
+~ caught_lockpicking = true
+~ lockpick_confrontations++
 
-{caught_lockpicking < 1:
-    ~ caught_lockpicking = true
-    ~ confrontation_attempts = 0
+{lockpick_confrontations == 1:
+    -> lockpick_first
 }
+-> lockpick_again
 
-~ confrontation_attempts++
-#display:guard-confrontation
+=== lockpick_first ===
+Narrator: You hear her before you see her. The torch beam arrives about a second ahead of she does.
 
-{confrontation_attempts == 1:
-    Guard: HEY! What the hell are you doing with those lockpicks?!
+Val Okonkwo: WHOA. Whoa whoa whoa. Away from the door.
 
-    Guard: Step away from that door RIGHT NOW!
+Val Okonkwo: What in God's name have you got in your hands?
 
-    * [I have authorization from Dr. Kim!]
-        -> claim_authorization
+* [Reception key's not working on this one. I'm improvising.]
+    ~ influence -= 5
+    # influence_decreased
+    Val Okonkwo: *taking that in* Improvising.
+    Val Okonkwo: Half this building's improvising tonight, so I'll let that go the once. But not in my office and not where I can see you.
+    -> hub
 
-    * [I'm trying to recover critical patient data!]
-        -> explain_emergency
-
-    * [I was just... looking for something I dropped]
-        -> poor_excuse
-
-    * [This is official security testing]
-        -> claim_audit
-
-    * [Back off - this is more important than you know]
-        -> hostile_response
-}
-
-{confrontation_attempts > 1:
-    Guard: I ALREADY TOLD YOU TO STOP!
-
-    Guard: This is your FINAL warning before I call backup!
-
-    * [Okay, I'm backing away]
-        -> back_down
-
-    * [You don't understand the stakes here]
-        -> escalate_conflict
-}
-
-// ===========================================
-// LOCKPICK CONFRONTATION RESPONSES
-// ===========================================
-
-=== claim_authorization ===
-#speaker:security_guard
-
-{influence >= 30:
+* [Every second on that door is a second the ward hasn't got. You know that.]
     ~ influence -= 10
     # influence_decreased
-    Guard: Dr. Kim authorized lockpicking? That's... unusual.
-
-    Guard: Fine. But if she didn't, you're in deep trouble.
-
-    #display:guard-skeptical
+    Val Okonkwo: I do know that. I also know that's what I'd say if I was you and I was lying.
+    Val Okonkwo: Once. That's your once.
     -> hub
-}
 
-{influence < 30:
+* [Dropped something. Just having a look.]
     ~ influence -= 20
     # influence_decreased
-    Guard: Authorization doesn't mean breaking into rooms! Where's your paperwork?
+    Val Okonkwo: *flatly* With a pick set.
+    Val Okonkwo: That is the worst lie I have heard on this shift, and a man told me at midnight he was his own next of kin.
+    -> hub
 
-    Guard: Move along before this gets reported.
-
-    #display:guard-hostile
+* [Turn round and walk away.] #color:red
+    ~ influence -= 40
+    # influence_decreased
+    Val Okonkwo: Not a chance.
+    #hostile:security_guard_patrol
+    #set_global:attacked_guard:true
     #exit_conversation
     -> DONE
-}
 
-=== explain_emergency ===
-#speaker:security_guard
+=== lockpick_again ===
+Val Okonkwo: Again? Seriously?
 
-{influence >= 25:
-    ~ influence -= 5
-    # influence_decreased
-    Guard: Patient data? In a locked room?
+Val Okonkwo: I gave you the benefit. I don't hand that out twice.
 
-    Guard: Look, I get the emergency, but protocol is protocol.
+* [Last time. You have my word.]
+    {influence >= 15:
+        ~ influence -= 10
+        # influence_decreased
+        Val Okonkwo: *hard stare* Last time.
+        Val Okonkwo: Because you've been straight with me otherwise. Not because I believe you.
+        -> hub
+    - else:
+        ~ influence -= 15
+        # influence_decreased
+        Val Okonkwo: Your word's not worth much on current form.
+        Val Okonkwo: I'm logging it. Every incident, every time. That's how this ends up being somebody's problem, and it won't be mine.
+        -> hub
+    }
 
-    Guard: Get proper authorization or I can't let this slide.
-
-    #display:guard-concerned
-    -> hub
-}
-
-{influence < 25:
+* [Then log it. I've got work to do.]
     ~ influence -= 15
     # influence_decreased
-    Guard: Nice try. Security breach is security breach, crisis or not.
+    Val Okonkwo: Oh, I'm logging it.
+    -> hub
 
-    Guard: Backup is on the way.
+// ===========================================
+// STANDOFF
+// ===========================================
 
-    #display:guard-alert
-    #exit_conversation
-    -> DONE
-}
+=== standoff ===
+Val Okonkwo: I'm going to ask you once more, properly, and then I'm going to stop asking.
 
-=== poor_excuse ===
-#speaker:security_guard
-~ influence -= 15
-# influence_decreased
-Guard: Looking for something you dropped? With lockpicks?
+* [Sorry. Long night, and I'm taking it out on the wrong person. Emergency security consultant -- Dr. Kim's call.]
+    ~ influence += 15
+    # influence_increased
+    Val Okonkwo: *the temperature drops about ten degrees* There we are. That wasn't hard, was it.
+    Val Okonkwo: We're all shattered. Doesn't cost anything to say who you are.
+    -> hub
 
-Guard: That's the weakest excuse I've heard all week.
-
-#display:guard-annoyed
--> hub
-
-=== claim_audit ===
-#speaker:security_guard
-
-{influence >= 40:
-    ~ influence -= 5
+* [I don't answer to hospital security.]
+    ~ influence -= 20
     # influence_decreased
-    Guard: Security audit during a ransomware crisis? Bold timing.
-
-    Guard: You better have documentation for this.
-
-    #display:guard-neutral
-    -> hub
-}
-
-{influence < 40:
-    ~ influence -= 25
-    # influence_decreased
-    Guard: An audit would be scheduled with security. This isn't official.
-
-    Guard: You're coming with me to speak with my supervisor.
-
-    #display:guard-arrest
+    Val Okonkwo: You do tonight, sunshine.
+    Val Okonkwo: Control, this is Okonkwo on north --
+    #hostile:security_guard_patrol
+    #set_global:attacked_guard:true
     #exit_conversation
     -> DONE
-}
 
 // ===========================================
-// HOSTILE RESPONSES
-// Aggression hands control to the combat system via #hostile.
-// No fighting is scripted in ink.
+// HUB
 // ===========================================
 
-=== hostile_response ===
-#speaker:security_guard
-~ influence -= 30
-# influence_decreased
-Guard: More important than hospital security? You just crossed a line.
+=== hub ===
++ {not talked_about_attack} [What have you actually been told about all this?]
+    -> discuss_attack
 
-Guard: SECURITY! CODE VIOLATION IN THE ADMINISTRATIVE WING!
++ {not talked_about_reeves} [Is there anyone in this building tonight who shouldn't be?]
+    -> discuss_reeves
 
-#display:guard-aggressive
-#hostile:security_guard
-#exit_conversation
--> DONE
++ {talked_about_reeves and insider_identified} [Graham Reeves is ENTROPY's man inside. You were right.]
+    -> reeves_vindicated
 
-=== escalate_conflict ===
-#speaker:security_guard
-~ influence -= 40
-# influence_decreased
-Guard: The stakes? You're breaking hospital protocol during an emergency!
-
-Guard: LOCKDOWN! INTRUDER ALERT!
-
-#display:guard-alarm
-#hostile:security_guard
-#exit_conversation
--> DONE
-
-// ===========================================
-// DE-ESCALATION
-// ===========================================
-
-=== back_down ===
-#speaker:security_guard
-
-{influence >= 15:
-    ~ influence -= 5
-    # influence_decreased
-    Guard: Smart move. Now get out of this wing and don't come back without authorization.
-
-    #display:guard-neutral
++ [I'll let you get on.]
+    Val Okonkwo: {influence >= 20: Go on. Shout if you need me -- I mean that.|Mm.}
     #exit_conversation
-    -> DONE
-}
+    -> hub
 
-{influence < 15:
-    Guard: Good thinking. But I've got your description documented now.
+=== discuss_attack ===
+~ talked_about_attack = true
 
-    Guard: One more incident and you're banned from the facility.
+Val Okonkwo: Officially? "An IT incident." That's the phrase. I've had it four times off three different people.
 
-    #display:guard-watchful
-    #exit_conversation
-    -> DONE
-}
+Val Okonkwo: What I've worked out on my own is that somebody's locked up every computer in the building and wants paying, and that the lad in IT has been shouting about exactly this since about May.
+
+Val Okonkwo: Marcus. Nice lad. Bit intense. Been right for six months, which round here is basically a disciplinary offence.
+
++ [Nobody listens to the people who tell them things they don't want to hear.]
+    ~ influence += 8
+    # influence_increased
+    Val Okonkwo: *very dryly* You've worked in a hospital before.
+    -> hub
+
++ [What's your job in all this?]
+    Val Okonkwo: Stand in front of that door. Stop people. Which sounds daft until you remember that everything that decides who's allowed where has gone in the fire.
+    Val Okonkwo: Tonight I am the access control system. Me. A torch and a radio.
+    -> hub
 
 // ===========================================
-// GENERAL CONVERSATION
+// THE REEVES THREAD -- Val's real value
 // ===========================================
 
-=== ask_about_attack ===
-#speaker:security_guard
+=== discuss_reeves ===
+~ talked_about_reeves = true
 
-Guard: The ransomware? It's bad. Really bad.
+Narrator: The professional distance drops off her like a coat.
 
-Guard: 47 patients on life support. Backup power for maybe 12 hours.
+Val Okonkwo: Funny you should ask.
 
-Guard: IT says someone exploited our backup server. We're locked out of everything.
+Val Okonkwo: There's a fella been on nights since about July. Reeves. Plain suit, no uniform, "night security supervisor". Stands himself in the boardroom by the comms relay and doesn't move all shift.
 
-~ influence += 5
-# influence_increased
-+ [Did anyone see suspicious activity?]
-    Guard: Marcus in IT was warning about security issues for months.
+Val Okonkwo: He is not on my rota. He has never been on my rota. I've asked Estates, I've asked control, I've asked the agency -- nobody's got a Graham Reeves on any list I'm allowed to see.
 
-    Guard: Management ignored him. Now look where we are.
+Val Okonkwo: I've raised it twice. Twice I've been told it's "crisis protocol" by people who won't put it in an email.
 
-    -> hub
-
-+ [What's your job during the crisis?]
-    Guard: Secure critical areas. Make sure nobody makes things worse.
-
-    Guard: And prevent anyone from... tampering with evidence, if you know what I mean.
-
-    -> hub
-
-+ [Thanks for the info]
-    -> hub
-
-=== request_access ===
-#speaker:security_guard
-
-{influence >= 50:
-    Guard: Access to where? The server room?
-
-    Guard: That's locked down. Only Dr. Kim or Marcus can authorize that.
-
-    -> hub
-}
-
-{influence >= 30:
-    Guard: You need proper credentials for restricted areas.
-
-    Guard: Talk to Dr. Kim or IT if you have legitimate business.
-
-    -> hub
-}
-
-{influence < 30:
-    Guard: Access? Not without authorization from administration.
-
-    #display:guard-skeptical
-    -> hub
-}
-
-=== explain_lockpick_again ===
-#speaker:security_guard
-
-Guard: We already discussed this. No lockpicking without authorization.
-
-Guard: I'm being patient because of the crisis, but don't push it.
-
-~ influence -= 5
-# influence_decreased#display:guard-annoyed
--> hub
-
-// ===========================================
-// HOSTILE STANCE (AFTER AGGRESSIVE RESPONSE)
-// ===========================================
-
-=== hostile_stance ===
-#speaker:security_guard
-
-Guard: I don't like your attitude. You're on thin ice.
-
-* [Sorry. This crisis has me on edge. I'm just trying to help.]
++ [Six weeks ago there was a fire drill nobody scheduled. Was he on that night?]
     ~ influence += 10
     # influence_increased
-    Guard: Fine. We're all stressed. But watch your tone.
-
-    #display:guard-neutral
+    Val Okonkwo: *stops dead*
+    Val Okonkwo: He walked two men in high-vis through the lobby. Told Bernie they were facilities. Signed for them himself.
+    Val Okonkwo: I remember, because I asked him for their names and he smiled at me and said he'd already sorted it.
+    #set_global:insider_evidence_partial:true
+    Val Okonkwo: I have never liked being smiled at like that.
     -> hub
 
-* [I don't have time for this security theater.]
-    Guard: That's it. You're leaving. NOW.
++ [You've got all this written down?]
+    ~ influence += 5
+    # influence_increased
+    #give_item:notes:val_notebook
+    #set_global:insider_evidence_partial:true
+    Narrator: She taps her breast pocket.
 
-    #display:guard-aggressive
-    #hostile:security_guard
+    Val Okonkwo: Every shift. Dates, times, who told me to drop it.
+    Val Okonkwo: Here. Take the whole thing -- I've been waiting eight weeks for somebody to want it.
+    Narrator: She tears the used pages out and folds them into your hand without any ceremony at all.
+    -> hub
+
++ [Keep it to yourself for now. Don't let him know you've told me.]
+    ~ influence += 5
+    # influence_increased
+    Val Okonkwo: *quietly* Right you are.
+    Val Okonkwo: You'll tell me though. When you know.
+    -> hub
+
+=== reeves_vindicated ===
+Narrator: She takes it in without any visible satisfaction at all.
+
+Val Okonkwo: Eight weeks.
+
+Val Okonkwo: Eight weeks I've had that man in my notebook, and twice I've been told to leave it, and now you're telling me he let them in.
+
+Val Okonkwo: *steadily* I'm not going to be dramatic about it. But when they ask afterwards who knew -- and they will ask, they always ask -- I want it said that somebody knew and got told to drop it.
+
+* [It'll be in the record. Your name, your dates, and who told you to drop it.]
+    ~ influence += 15
+    # influence_increased
+    Val Okonkwo: Then that'll do me.
+    Val Okonkwo: Go and get him. And be careful -- he's stood next to the only phone line out of this building that still works.
     #exit_conversation
-    -> DONE
+    -> hub
+
+* [Stay out of the boardroom until SAFETYNET arrive. He's not what he looks like.]
+    ~ influence += 8
+    # influence_increased
+    Val Okonkwo: I've been doing this eleven years. I know exactly what he looks like.
+    Val Okonkwo: But I'll hold this room. Go on.
+    #exit_conversation
+    -> hub
 
 // ===========================================
 // SERVER ROOM ACCESS EVENT
 // ===========================================
 
 === on_server_room_access ===
-#speaker:security_guard
+{cleared_after_burn:
+    Val Okonkwo: *from across the office* Server room. Right. I've seen nothing.
+    Val Okonkwo: Get the wards their screens back and we'll call it square.
+    #exit_conversation
+    -> DONE
+}
 
-Guard: Hey! Server room access -- that's restricted to authorised IT personnel only.
+Val Okonkwo: Hang on -- server room's authorised IT personnel only. That's not a badge thing, that's a rule thing.
 
-* [Security consultant. Dr. Kim authorised full access. I have the badge right here.]
-    Guard: ...fine. But I'm logging this. Stay visible.
+* [I've got Marcus Webb's card and Marcus Webb's blessing. Ring him if you want.]
+    Val Okonkwo: *pause* ...I would, but the phones in IT are as dead as everything else, aren't they.
+    Val Okonkwo: Go on. I'm logging it with your description and the time.
     #exit_conversation
     -> DONE
 
-* [I've been all over this building tonight. Dr. Kim's orders. Crisis response.]
-    Guard: Yeah, well. I'm watching.
+* [Then come in with me and watch what I do.]
+    ~ influence += 10
+    # influence_increased
+    Val Okonkwo: *genuinely thrown* Nobody's ever said that to me.
+    Val Okonkwo: No. You've got a job. But I'll be on this door, and I'll remember you offered.
     #exit_conversation
     -> DONE
 
-* [Say nothing, walk past]
-    ~ influence -= 10
+* [Say nothing and walk past.]
+    ~ influence -= 15
     # influence_decreased
-    Guard: Hey! I said restricted! Don't make me follow you in there.
+    Val Okonkwo: Oi! I said authorised only!
+    Val Okonkwo: *to the radio* ...control, security office, I want that logging.
     #exit_conversation
     -> DONE
+
+// ===========================================
+// FRIENDLY RETURN
+// ===========================================
+
+=== friendly_return ===
+{cleared_after_burn:
+    Val Okonkwo: Still with us, then.
+- else:
+    Narrator: She nods you past without breaking her round.
+
+    Val Okonkwo: Alright.
+}
+-> hub

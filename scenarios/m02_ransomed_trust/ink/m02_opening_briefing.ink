@@ -157,25 +157,48 @@ Agent HaX: Then turn their own backdoor against them -- exploit it, recover the 
 === cover_story ===
 #speaker:agent_0x99
 
-Agent HaX: Their CTO, Dr. Sarah Kim, put out a call for an emergency security consultant to help them through the incident. We made sure you're the one who answered it.
+Agent HaX: Their CTO, Dr. Sarah Kim, put out a call at one this morning for an emergency security consultant. We made sure you were the one who answered it.
 
-Agent HaX: Understand what that does and doesn't buy you. She's expecting a consultant -- a set of hands to assess the breach and get her systems back. She has no idea SAFETYNET is involved, and no idea this is ENTROPY. To her, you're a contractor on a very bad night. Keep it that way.
+Agent HaX: So this isn't a false flag. You are genuinely booked, genuinely expected, and there is genuinely a line in their visitor log with your job title on it. She has no idea SAFETYNET is involved and no idea this is ENTROPY. To her you're a contractor on a very bad night. Keep it that way.
 
-+ [So how much access does that actually get me?]
++ [Then what's the problem? I walk in the front door.]
+    -> security_warning
+
++ [So how much access does being expected actually buy me?]
     -> security_warning
 
 === security_warning ===
 #speaker:agent_0x99
 
-Agent HaX: Less than you'd like. A consultant's remit is to assess and advise -- not to be handed the keys to the kingdom. And a hospital mid-breach locks everything down: restricted areas go to named staff badges only. Chain of custody, data governance. Your visitor badge gets you the public and admin floors and a room full of frightened people. It will not open their IT department, their server room, or their records.
+Agent HaX: You walk in the front door and then you stop, because here is the thing everyone gets wrong about this one.
 
-Agent HaX: So you earn the rest. Get a member of staff to authorise you or walk you in -- that's your clean route. And where the crisis means nobody's free to sign off a locked door? You improvise. You're carrying a pick kit for exactly that. Just don't do it where a guard can see.
+Agent HaX: Ransomware Incorporated encrypted the access control server along with the rest of the estate.
 
-+ [Who's worth leaning on inside?]
-    Agent HaX: Their IT admin, Marcus Webb. He flagged this exact weakness to the board six months ago and got overruled. He's drowning in guilt, he holds the server-room keycard, and he's your fastest way past the doors that matter. Win him over.
+Agent HaX: Think about what that means. Not "the doors are locked down". The system that decides who is allowed where is itself sat behind the ransom screen. There is no permission left to give you. Kim can authorise you at the top of her voice and it will not move a single reader, because there is nothing in that building still listening.
+
+* [So a badge is worthless.]
+    Agent HaX: A badge is a piece of card with your name on it. It proves a human being vouched for you. That is genuinely all it does tonight.
+    -> security_routes
+
+* [Then how does anyone get through their own doors?]
+    -> security_routes
+
+=== security_routes ===
+#speaker:agent_0x99
+
+Agent HaX: Same way they did it in 1987. Estates emptied every mechanical override onto the reception desk this morning, and beyond that it's whoever happens to be standing next to the door.
+
+Agent HaX: Which gives you three routes and no fourth. Get a member of staff to hand you a key or walk you through -- that's clean, and it's your first choice every time. Get hold of a physical credential that already exists. Or open it yourself, which you're equipped for, and which is a confession if anyone sees you do it.
+
+Agent HaX: This is a mission about people, {player_name()}. The lockpicks are what you use when you've failed at the actual job.
+
++ [Who's worth working on?]
+    Agent HaX: Three names. The night coordinator on reception has the override keys and eleven years of institutional memory. Dr. Kim has guilt, which is a lever whether you like it or not.
+    Agent HaX: And Marcus Webb, their IT administrator. He flagged this exact weakness seven times and got told to stop escalating. He holds the server room card -- and that reader is on an isolated controller, so his card is the only working credential left in the entire building. Win him over.
     -> final_instructions
 
 + [Understood. I'll talk my way in where I can.]
+    Agent HaX: Do. And be pleasant to people who can't help you as well as people who can. You will not know which is which until about four in the morning.
     -> final_instructions
 
 // ===========================================
@@ -185,7 +208,9 @@ Agent HaX: So you earn the rest. Get a member of staff to authorise you or walk 
 === final_instructions ===
 #speaker:agent_0x99
 
-Agent HaX: One more thing. Ghost is still in the wires -- watching that network. If they reach out, don't expect threats. Expect arithmetic. Don't let it get in your head.
+Agent HaX: Two more things. Ghost is still in the wires, watching that network. If they reach out, don't expect threats. Expect arithmetic. Don't let it get in your head.
+
+Agent HaX: And be alert to the possibility that Ghost had help getting in. Fourteen months of preparation, and they picked the one hospital in the country with an immaculate paper trail of ignored warnings. That is not something you find with a scanner. That is something somebody tells you.
 
 {knows_stakes:
     Agent HaX: And whatever the ward looks like in there -- those numbers on the board are on ENTROPY. Not on you. Just do the work and get the keys.

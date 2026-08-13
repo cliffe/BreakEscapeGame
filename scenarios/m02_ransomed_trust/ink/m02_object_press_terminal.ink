@@ -39,7 +39,7 @@ Secure outgoing relay — St. Catherine's regional press network.
 
 Available for transmission:
 - Board liability email (cover-up plan, Marcus Webb scapegoating)
-- FY2024 Budget Report ($85K security deferred, $3.2M MRI approved)
+- FY2024 Budget Report (£85,000 security deferred, £3.2 million MRI approved)
 - Marcus Webb security advisory archive (May–November 2024, 7 formal warnings)
 - SAFETYNET forensic record (ENTROPY backdoor, decryption keys recovered)
 

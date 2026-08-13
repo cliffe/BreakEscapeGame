@@ -9,33 +9,36 @@ VAR spoke_to_player = false
 === start ===
 {not spoke_to_player:
     ~ spoke_to_player = true
-    Ms Chen: *glances up from her pillow* You're the person from the computers?
+    Narrator: She lowers her book.
+
+    Ms Chen: You'll be the one they've brought in about the computers.
     -> first_words
 }
 {spoke_to_player:
-    Ms Chen: Everything alright?
+    Ms Chen: Any progress, or are we still guessing?
     -> hub
 }
 
 === first_words ===
 
-Ms Chen: They told us there'd been a... cyber attack. Ransomware.
+Ms Chen: They've told us it's a cyber attack. Ransomware, the young doctor said, as though that explained itself.
 
-Ms Chen: I didn't know you had to worry about that sort of thing in a hospital.
+Ms Chen: Forty years I taught in Edinburgh and I never once had to think about it. Now here we are.
 
 * [We're working on it. Your care isn't affected.]
-    Ms Chen: That's what the nurse said. But the lady in Bed 2 -- she's on that machine.
-    Ms Chen: I keep looking over. She seems alright. But the nurse can't watch everyone at once.
+    Ms Chen: That's what the nurse said, and I believe her about me.
+    Ms Chen: But Mrs Hargreaves in bed two is on that machine, and the screen above her is off.
+    Ms Chen: I've been watching her since three. I've nothing else to do and Sister cannot be in six places.
     -> hub
 
 * [How are you holding up?]
-    Ms Chen: I've had my operation, so I'm just waiting now. I'm not the one who needs watching.
-    Ms Chen: It's the others I'm thinking about. The ones who can't speak for themselves.
+    Ms Chen: I've had my operation. I'm just waiting now, and waiting I can do.
+    Ms Chen: It's the ones who cannot tell you they're in trouble that I'd worry about, if I were you.
     -> hub
 
 === hub ===
 + [Thank you for watching out for your neighbours.]
-    Ms Chen: That's what you do, isn't it. We're all in the same ward.
+    Ms Chen: That's not watching out. That's just being in the same room as somebody.
     -> hub
 
 + [I'll let you rest.]

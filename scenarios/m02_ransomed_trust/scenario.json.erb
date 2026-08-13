@@ -11,19 +11,58 @@
 # Mission Type: Crisis Response / Recovery
 # Difficulty: Beginner (Mission 2)
 #
-# NEW MECHANICS:
-# - Guard patrol timing (60-second predictable loop)
-# - PIN safe cracking (4-digit puzzle)
+# CORE PREMISE (why a "legitimate" consultant still has to work for every door):
+#   The ransomware encrypted the hospital's access control server along with
+#   everything else. Nobody in this building can GRANT access any more -- the
+#   system that issues permissions is itself behind the ransom screen. So the
+#   player's consultant cover buys goodwill and a paper visitor badge, and
+#   nothing else. Every restricted door now needs a PERSON to open it, a
+#   mechanical override key, or a pick. That is the mission.
+#
+# NARRATIVE SPINE (gated story beats):
+#   ACT I   Talk your way past the desk. Bernie Nwosu holds the IT override key
+#           and will not hand it to a stranger. Social engineering or picks.
+#   ACT II  Marcus Webb holds the only working reader-card in the building.
+#           Four routes to it: rapport, leverage, theft, force.
+#   TURN    THE COVER BURNS. Someone phones security and pulls the player's
+#           booking. The consultant line stops working. Freedom of movement
+#           must be re-earned -- and WHO made that call is the intrigue.
+#   ACT III The backup server. VM exploitation is on the critical path: the
+#           database flag exposes the fire-drill window, Ghost's log names the
+#           badge, and the press relay refuses to authenticate without both.
+#   ACT IV  Four decisions that all pay back in the debrief.
+#
+# NEW MECHANICS (over m01):
+# - Cover-burn state change mid-mission (guard behaviour + dialogue both branch)
+# - Social-engineering gate with multiple redundant routes (no soft-locks)
+# - PIN safe cracking (4-digit puzzle) + pin-cracker fallback device
+# - Flag-locked container (VM progress unlocks physical loot)
 # - Moral dilemma interface (ransom decision)
 # - Ransomware display minigame (infected terminals)
 # - Backup recovery minigame (restore hospital systems)
 #
 # ROOM LAYOUT (verified overlap-free by scripts/validate_scenario.rb):
-#   Reception (start hub)
-#     -N-> Hallway North -N-> Server Room (locked-rfid)
-#     -E-> IT Department (locked-easy)          [single-door]
-#     -W-> Dr. Kim's Office (locked) -N-> Conference Room
-#     -S-> Patient Ward -S-> Hallway South -S-> Emergency Storage (PIN safe)
+#
+#   [Server Room]--[Security Office]--[========= Office Corridor =========]
+#    (locked-rfid)   (Val patrols)      |          |          |
+#                                  [Boardroom] [CTO Office] [IT Dept]
+#                                  (locked-pin)  (OPEN)    (locked-key)
+#                                            |
+#                                      [Ward Link]--[== Patient Ward ==]--[Emergency Storage]
+#                                                          |                  (PIN safe)
+#                                                   [Ward Approach]--[Reception]  START
+#
+#   DOOR SIDES (predicted from doors.js placement maths, see scratchpad/doorsim.py):
+#     Patient Ward  south -> RIGHT  == the player enters at the ward's BOTTOM-RIGHT.
+#                                      Forced by putting Ward Approach two grid units
+#                                      wide on an ODD grid column: the south-door
+#                                      parity check is (gridX + gridY) % 2 on the
+#                                      shared bottom wall, so the ward must sit on an
+#                                      odd column for the door to take the SE corner.
+#     Patient Ward  west  -> TOP    == the route on to the offices leaves from the
+#                                      ward's TOP-LEFT (single E/W doors are always
+#                                      placed 2.5 tiles down from the room's top).
+#   Do not casually reorder these connections -- the door corners will move.
 # ============================================================================
 
 # ERB Helper Methods
@@ -40,12 +79,23 @@ end
 # Narrative Content Variables
 ransomware_note = "YOUR PATIENT RECORDS ARE ENCRYPTED. 47 PATIENTS ON LIFE SUPPORT. 12 HOURS OF BACKUP POWER. PAY 2.5 BTC OR WATCH THEM DIE. - RANSOMWARE INCORPORATED"
 
-marcus_warning_email = "From: Marcus Webb\nTo: Dr. Sarah Kim\nDate: May 17, 2024\nSubject: URGENT - ProFTPD Vulnerability CVE-2010-4652\n\nDr. Kim,\n\nOur backup server is running ProFTPD 1.3.5, which has a critical backdoor vulnerability (CVE-2010-4652). Attackers can gain remote code execution.\n\nI recommend immediate patching and $85,000 budget for server security upgrade.\n\nPlease escalate to board.\n\n-Marcus"
+marcus_warning_email = "From: Marcus Webb (IT Systems)\nTo: Dr. Sarah Kim (CTO)\nCC: Board Secretariat\nDate: 17 May\nSubject: URGENT -- ProFTPD backdoor on backup server (CVE-2010-4652)\n\nDr Kim,\n\nSeventh time of asking. The backup server is still running ProFTPD 1.3.5. That version carries a source-code backdoor -- CVE-2010-4652 -- which gives an attacker remote code execution with no credentials at all. It has been patchable since 2011.\n\nThis box holds every clinical backup we have. If it goes, the wards go with it.\n\nI have costed the remediation at £85,000. That is the whole ask. I am not asking for a project, I am asking for a server that is not fourteen years out of date.\n\nPlease put this in front of the board as CRITICAL and not as an IT wish-list item.\n\nMarcus"
+
+board_reply_email = "From: Dr. Sarah Kim (CTO)\nTo: Marcus Webb (IT Systems)\nDate: 21 May\nSubject: RE: URGENT -- ProFTPD backdoor on backup server\n\nMarcus,\n\nNoted, and I do understand. The board reviewed it on Tuesday. The position is that the imaging replacement takes precedence this cycle and infrastructure security is deferred to FY25.\n\nI would ask you not to escalate this again outside the department. It does not help either of us.\n\nSarah"
 
 recovery_instructions_encoded = rot13("FULL RECOVERY REQUIRES OFFLINE + ONLINE KEYS--12-HOUR PROCESS IF MANUAL, INSTANT IF RANSOM PAID.")
+
+# Board room door code -- also written in Dr. Kim's desk diary and spoken by Kim.
+boardroom_pin = "0417"
 %>
 {
-  "scenario_brief": "Infiltrate St. Catherine's Hospital to recover ransomware decryption keys before 47 patients on life support die. ENTROPY's Ransomware Incorporated has calculated patient death probabilities--recover keys before backup power fails.",
+  "scenario_brief": "St. Catherine's Regional went dark at 02:47. Every clinical system is encrypted, forty-seven patients are running on backup generators, and the board votes on paying ENTROPY's ransom in four hours. You are in as an emergency security consultant -- which buys you a paper badge and nothing else, because the ransomware took the access control server too. Nobody in this building can grant you access. You will have to earn every door.",
+
+  "show_scenario_brief": "on_resume",
+
+  "flags": {
+    "secgen_rooting_for_a_win": <%= vm_flags_json('secgen_rooting_for_a_win', ['flag{ssh_access_granted}', 'flag{proftpd_backdoor_exploited}', 'flag{database_backup_located}', 'flag{ghost_operational_log}']) %>
+  },
 
   "narrator": {
     "id": "narrator",
@@ -104,25 +154,28 @@ recovery_instructions_encoded = rot13("FULL RECOVERY REQUIRES OFFLINE + ONLINE K
           { "text": "MISSION COMPLETE",                                    "style": "title" },
           { "text": "RANSOMED TRUST",                                      "style": "subtitle" },
           { "text": "" },
-          { "text": "ST. CATHERINE'S HOSPITAL: SYSTEMS RESTORED",         "style": "entry" },
-          { "text": "PATIENT DEATHS: 2 (cardiac complications during system transition)", "style": "entry", "condition": "globalVars.paid_ransom" },
-          { "text": "PATIENT DEATHS: 4-6 (extended downtime — manual recovery)",          "style": "entry", "condition": "!globalVars.paid_ransom" },
+          { "text": "ST. CATHERINE'S REGIONAL: CLINICAL SYSTEMS RESTORED", "style": "entry" },
+          { "text": "PATIENT DEATHS: 2 (cardiac events during system transition)", "style": "entry", "condition": "globalVars.paid_ransom" },
+          { "text": "PATIENT DEATHS: 6 (ventilator and dialysis complications — extended downtime)", "style": "entry", "condition": "!globalVars.paid_ransom" },
           { "text": "" },
           { "text": "── DECISION ──",                                      "style": "section-header" },
-          { "text": "RANSOM PAID: $87,000 to Ransomware Incorporated — ENTROPY funded",   "style": "entry", "condition": "globalVars.paid_ransom" },
+          { "text": "RANSOM PAID: £87,000 to Ransomware Incorporated — ENTROPY funded",   "style": "entry", "condition": "globalVars.paid_ransom" },
           { "text": "RANSOM REFUSED: Offline backup keys used — ENTROPY denied funding",  "style": "entry", "condition": "!globalVars.paid_ransom" },
-          { "text": "HOSPITAL EXPOSED: Negligence made public — sector-wide security improvements forced", "style": "entry", "condition": "globalVars.exposed_hospital" },
+          { "text": "HOSPITAL EXPOSED: Negligence on public record — Health and Social Care Committee to take evidence", "style": "entry", "condition": "globalVars.exposed_hospital" },
           { "text": "QUIET RESOLUTION: Negligence kept confidential — St. Catherine's reputation intact",  "style": "entry", "condition": "!globalVars.exposed_hospital" },
           { "text": "" },
           { "text": "── PERSONNEL ──",                                     "style": "section-header" },
-          { "text": "OFFLINE BACKUP KEYS RECOVERED — Full recovery pathway available",   "style": "entry", "condition": "globalVars.offline_keys_recovered" },
+          { "text": "OFFLINE BACKUP KEYS RECOVERED — Independent recovery pathway available", "style": "entry", "condition": "globalVars.offline_keys_recovered" },
           { "text": "MARCUS WEBB: Vindicated — Career protected by agent documentation", "style": "entry", "condition": "globalVars.marcus_protected" },
           { "text": "MARCUS WEBB: Scapegoated — Position lost, career damaged",          "style": "entry", "condition": "!globalVars.marcus_protected" },
-          { "text": "GUARD NEUTRALIZED",                                   "style": "entry", "condition": "globalVars.guard_knocked_out" },
-          { "text": "INSIDE ASSET: Identified and detained — cell thread recovered", "style": "entry", "condition": "globalVars.insider_asset_arrested" },
-          { "text": "INSIDE ASSET: Escaped in the scuffle — no trace",      "style": "warning", "condition": "globalVars.insider_asset_escaped && !globalVars.insider_asset_arrested" },
-          { "text": "INSIDE ASSET: Neutralised — badge SC-4471 confirmed after the fact", "style": "entry", "condition": "globalVars.night_security_supervisor_ko && !globalVars.insider_asset_arrested && !globalVars.insider_asset_escaped" },
-          { "text": "INSIDE ASSET: Unidentified — still embedded in hospital staff", "style": "warning", "condition": "!globalVars.insider_identified && !globalVars.insider_asset_escaped && !globalVars.night_security_supervisor_ko" },
+          { "text": "COVER BURNED: Booking pulled from the visitor system mid-operation", "style": "warning", "condition": "globalVars.cover_burned && !globalVars.cover_restored" },
+          { "text": "COVER RE-ESTABLISHED: Access regained without incident",           "style": "entry", "condition": "globalVars.cover_restored" },
+          { "text": "BERNIE NWOSU: Vouched for the agent when the paperwork vanished",  "style": "entry", "condition": "globalVars.bernie_vouched" },
+          { "text": "SECURITY OFFICER V. OKONKWO: Neutralised on shift",                "style": "warning", "condition": "globalVars.guard_knocked_out" },
+          { "text": "GRAHAM REEVES (badge SC-4471): Identified and detained — cell thread recovered", "style": "entry", "condition": "globalVars.insider_asset_arrested" },
+          { "text": "GRAHAM REEVES (badge SC-4471): Escaped in the scuffle — no trace",      "style": "warning", "condition": "globalVars.insider_asset_escaped && !globalVars.insider_asset_arrested" },
+          { "text": "GRAHAM REEVES (badge SC-4471): Neutralised — affiliation confirmed after the fact", "style": "entry", "condition": "globalVars.night_security_supervisor_ko && !globalVars.insider_asset_arrested && !globalVars.insider_asset_escaped" },
+          { "text": "INSIDE ASSET: Unidentified — still on the night rota, still trusted", "style": "warning", "condition": "!globalVars.insider_identified && !globalVars.insider_asset_escaped && !globalVars.night_security_supervisor_ko" },
           { "text": "" },
           { "text": "GHOST: At large...",                                  "style": "warning" },
           { "text": "ENTROPY: Still operational. Six cells remain.",       "style": "warning" }
@@ -134,56 +187,86 @@ recovery_instructions_encoded = rot13("FULL RECOVERY REQUIRES OFFLINE + ONLINE K
   "objectives": [
     {
       "aimId": "infiltrate_hospital",
-      "title": "Infiltrate Hospital",
-      "description": "Enter St. Catherine's Regional Medical Center and meet key staff",
+      "title": "Talk Your Way In",
+      "description": "Your consultant booking gets you through the front door and no further. The access control server is encrypted with everything else, so nobody here can grant you anything. Work the people.",
       "status": "active",
       "order": 0,
       "tasks": [
         {
           "taskId": "arrive_at_hospital",
-          "title": "Arrive at hospital reception",
+          "title": "Arrive at St. Catherine's reception",
           "type": "enter_room",
           "targetRoom": "reception_lobby",
           "status": "active"
         },
         {
+          "taskId": "sign_in_at_reception",
+          "title": "Get yourself signed in by Bernie on the night desk",
+          "type": "npc_conversation",
+          "targetNPC": "receptionist",
+          "status": "active"
+        },
+        {
+          "taskId": "meet_dr_kim",
+          "title": "Find Dr. Sarah Kim, the CTO who called you in",
+          "type": "npc_conversation",
+          "targetNPC": "dr_sarah_kim",
+          "status": "active"
+        },
+        {
           "taskId": "assess_the_ward",
-          "title": "Assess the patient ward to understand the stakes",
+          "title": "See the ward for yourself",
           "type": "enter_room",
           "targetRoom": "hospital_ward",
           "status": "active"
         },
         {
           "taskId": "talk_to_ward_nurse",
-          "title": "Speak to the ward nurse about patient risk",
+          "title": "Speak to Sister Doyle about what the outage is costing her",
           "type": "npc_conversation",
           "targetNPC": "ward_nurse",
           "status": "active",
           "optional": true
-        },
+        }
+      ]
+    },
+    {
+      "aimId": "access_it_systems",
+      "title": "Get Into IT",
+      "description": "The IT department is on a mechanical override key since the badge readers died. Marcus Webb is behind that door -- and he is holding the only card in the building that still opens the server room.",
+      "status": "locked",
+      "order": 1,
+      "unlockCondition": { "aimCompleted": "infiltrate_hospital" },
+      "tasks": [
         {
-          "taskId": "meet_dr_kim",
-          "title": "Meet Dr. Sarah Kim (Hospital CTO)",
-          "type": "npc_conversation",
-          "targetNPC": "dr_sarah_kim",
-          "status": "locked"
+          "taskId": "open_it_department",
+          "title": "Get through the IT department door",
+          "type": "unlock_room",
+          "targetRoom": "it_department",
+          "status": "active"
         },
         {
           "taskId": "talk_to_marcus",
-          "title": "Interview IT administrator Marcus Webb",
+          "title": "Work Marcus Webb for the server room keycard",
           "type": "npc_conversation",
           "targetNPC": "marcus_webb",
-          "status": "locked"
+          "status": "active"
         },
         {
           "taskId": "obtain_password_hints",
-          "title": "Gather SSH password hints from Marcus",
+          "title": "Get the reused admin credentials for the backup server",
           "type": "manual",
-          "status": "locked"
+          "status": "active"
+        },
+        {
+          "taskId": "decode_ransomware_note",
+          "title": "Read a ransom screen and identify who you are up against",
+          "type": "manual",
+          "status": "active"
         },
         {
           "taskId": "learn_about_scapegoating",
-          "title": "Learn about the plan to scapegoat Marcus",
+          "title": "Learn the board's plan to scapegoat Marcus",
           "type": "manual",
           "status": "active",
           "optional": true
@@ -192,28 +275,34 @@ recovery_instructions_encoded = rot13("FULL RECOVERY REQUIRES OFFLINE + ONLINE K
           "taskId": "investigate_marcus_office",
           "title": "Open Marcus's filing cabinet for proof he warned them",
           "type": "manual",
-          "status": "locked",
+          "status": "active",
           "optional": true
         }
       ]
     },
     {
-      "aimId": "access_it_systems",
-      "title": "Access IT Systems",
-      "description": "Gain access to hospital's IT infrastructure and server room",
+      "aimId": "cover_compromised",
+      "title": "Somebody Pulled Your Booking",
+      "description": "Security has been told no consultant was booked tonight. Your name is off the visitor system. Get your freedom of movement back -- and start asking who made that call.",
       "status": "locked",
-      "order": 1,
-      "unlockCondition": { "aimCompleted": "infiltrate_hospital" },
+      "order": 2,
+      "unlockCondition": { "aimCompleted": "access_it_systems" },
       "tasks": [
         {
-          "taskId": "decode_ransomware_note",
-          "title": "Decode the ransomware note using CyberChef",
+          "taskId": "cover_burned_notified",
+          "title": "Find out your cover has been pulled",
+          "type": "manual",
+          "status": "active"
+        },
+        {
+          "taskId": "regain_freedom_of_movement",
+          "title": "Get something that stands up to a security challenge",
           "type": "manual",
           "status": "active"
         },
         {
           "taskId": "access_server_room",
-          "title": "Access the server room",
+          "title": "Reach the server room",
           "type": "enter_room",
           "targetRoom": "server_room",
           "status": "active"
@@ -222,53 +311,69 @@ recovery_instructions_encoded = rot13("FULL RECOVERY REQUIRES OFFLINE + ONLINE K
     },
     {
       "aimId": "exploit_entropy_backdoor",
-      "title": "Exploit ENTROPY's Backdoor",
-      "description": "Use ProFTPD vulnerability to access encrypted backups",
+      "title": "Turn Their Backdoor Around",
+      "description": "ENTROPY came in through a fourteen-year-old ProFTPD backdoor on the backup server. Go in the same way and take everything they left behind.",
       "status": "locked",
-      "order": 2,
-      "unlockCondition": { "aimCompleted": "access_it_systems" },
+      "order": 3,
+      "unlockCondition": { "aimCompleted": "cover_compromised" },
       "tasks": [
         {
           "taskId": "submit_ssh_flag",
-          "title": "Submit SSH access flag",
+          "title": "Get a foothold on the backup server and submit the SSH flag",
           "type": "submit_flags",
+          "targetFlags": ["secgen_rooting_for_a_win:flag_1"],
+          "targetCount": 1,
+          "currentCount": 0,
+          "showProgress": true,
           "status": "active",
           "puzzle_graph_unlocks": "proftpd_exploitation_unlocked"
         },
         {
           "taskId": "submit_proftpd_flag",
-          "title": "Submit ProFTPD exploitation flag",
+          "title": "Exploit the ProFTPD backdoor and submit the flag",
           "type": "submit_flags",
+          "targetFlags": ["secgen_rooting_for_a_win:flag_2"],
+          "targetCount": 1,
+          "currentCount": 0,
+          "showProgress": true,
           "status": "active",
           "puzzle_graph_unlocks": "database_backup_accessible"
         },
         {
           "taskId": "submit_database_flag",
-          "title": "Submit database backup flag",
+          "title": "Locate the encrypted database backup and submit the flag",
           "type": "submit_flags",
+          "targetFlags": ["secgen_rooting_for_a_win:flag_3"],
+          "targetCount": 1,
+          "currentCount": 0,
+          "showProgress": true,
           "status": "active",
           "puzzle_graph_unlocks": "emergency_storage_safe"
         },
         {
           "taskId": "submit_ghost_log_flag",
-          "title": "Submit Ghost's operational log flag",
+          "title": "Recover Ghost's operational log and submit the flag",
           "type": "submit_flags",
+          "targetFlags": ["secgen_rooting_for_a_win:flag_4"],
+          "targetCount": 1,
+          "currentCount": 0,
+          "showProgress": true,
           "status": "active",
-          "puzzle_graph_unlocks": "ghost_lore_unlocked"
+          "puzzle_graph_unlocks": ["ghost_lore_unlocked", "entropy_staging_cache"]
         }
       ]
     },
     {
       "aimId": "unmask_inside_asset",
-      "title": "Unmask the Inside Asset",
-      "description": "Ghost claims an ENTROPY affiliate inside this hospital confirmed the operational timing. Gather evidence and identify them.",
+      "title": "Somebody Held The Door",
+      "description": "Ghost says an ENTROPY affiliate inside St. Catherine's confirmed the operational timing -- and the same person burned your cover. Three pieces of evidence will name them.",
       "status": "locked",
-      "order": 3,
-      "unlockCondition": { "aimCompleted": "access_it_systems" },
+      "order": 4,
+      "unlockCondition": { "aimCompleted": "cover_compromised" },
       "tasks": [
         {
           "taskId": "unmask_gather_evidence",
-          "title": "Find evidence that an ENTROPY affiliate is embedded in the staff",
+          "title": "Find proof an ENTROPY affiliate is embedded in the staff",
           "type": "manual",
           "status": "active"
         },
@@ -280,13 +385,13 @@ recovery_instructions_encoded = rot13("FULL RECOVERY REQUIRES OFFLINE + ONLINE K
         },
         {
           "taskId": "unmask_ghost_badge",
-          "title": "Recover the badge ID from Ghost's operational log",
+          "title": "Recover the badge number from Ghost's operational log",
           "type": "manual",
           "status": "active"
         },
         {
           "taskId": "unmask_identify",
-          "title": "Cross-reference the badge ID against the asset's night post",
+          "title": "Match badge SC-4471 to the post it sits on",
           "type": "manual",
           "status": "active"
         }
@@ -294,28 +399,28 @@ recovery_instructions_encoded = rot13("FULL RECOVERY REQUIRES OFFLINE + ONLINE K
     },
     {
       "aimId": "recover_offline_keys",
-      "title": "Recover Offline Backup Keys",
-      "description": "Find and crack the PIN safe for offline backup encryption keys",
+      "title": "The Keys In The Safe",
+      "description": "There is an offline key set in the emergency storage safe. Recover it and the ransom stops being the only way to bring the wards back.",
       "status": "locked",
-      "order": 4,
-      "unlockCondition": { "aimCompleted": "access_it_systems" },
+      "order": 5,
+      "unlockCondition": { "aimCompleted": "cover_compromised" },
       "tasks": [
         {
           "taskId": "locate_safe",
-          "title": "Locate the PIN safe in Emergency Equipment Storage",
+          "title": "Find the PIN safe in emergency equipment storage",
           "type": "enter_room",
           "targetRoom": "emergency_equipment_storage",
           "status": "active"
         },
         {
           "taskId": "gather_pin_clues",
-          "title": "Find clues for the 4-digit safe PIN",
+          "title": "Work out the four-digit override code",
           "type": "manual",
           "status": "active"
         },
         {
           "taskId": "crack_safe_pin",
-          "title": "Crack the 4-digit PIN safe in Emergency Storage",
+          "title": "Open the safe",
           "type": "unlock_object",
           "targetObject": "emergency_storage_safe",
           "status": "active"
@@ -324,30 +429,38 @@ recovery_instructions_encoded = rot13("FULL RECOVERY REQUIRES OFFLINE + ONLINE K
     },
     {
       "aimId": "restore_hospital_systems",
-      "title": "Restore Hospital Systems",
-      "description": "Initiate backup recovery and decide how to handle the crisis",
+      "title": "Bring The Wards Back",
+      "description": "Choose how St. Catherine's recovers, and choose what the world is told about how it happened.",
       "status": "locked",
-      "order": 5,
+      "order": 6,
       "unlockCondition": { "aimCompleted": "exploit_entropy_backdoor" },
       "missionConclusion": true,
-      "requiresCompleted": ["initiate_backup_recovery", "make_ransom_decision", "decide_hospital_exposure"],
+      "requiresCompleted": [
+        "talk_to_marcus",
+        "access_server_room",
+        "submit_proftpd_flag",
+        "submit_ghost_log_flag",
+        "initiate_backup_recovery",
+        "make_ransom_decision",
+        "decide_hospital_exposure"
+      ],
       "conclusionScreen": { "type": "bond_visualiser" },
       "tasks": [
         {
           "taskId": "initiate_backup_recovery",
-          "title": "Open the Hospital Recovery Console and choose a restore method",
+          "title": "Choose a restore method at the Hospital Recovery Console",
           "type": "manual",
           "status": "active"
         },
         {
           "taskId": "make_ransom_decision",
-          "title": "Decide on ransom payment",
+          "title": "Settle the ransom question",
           "type": "manual",
           "status": "active"
         },
         {
           "taskId": "decide_hospital_exposure",
-          "title": "Use the press terminal in the conference room to decide on public disclosure",
+          "title": "Decide what goes public at the comms terminal",
           "type": "manual",
           "status": "active"
         }
@@ -370,9 +483,10 @@ recovery_instructions_encoded = rot13("FULL RECOVERY REQUIRES OFFLINE + ONLINE K
       "type": "lockpick",
       "name": "Lock Pick Kit",
       "takeable": true,
-      "observations": "Professional lock picking kit for bypassing physical locks",
+      "observations": "SAFETYNET field pick kit. The fallback for every door nobody will open for you -- and a straight admission of what you actually are, if anyone sees you using it.",
       "puzzle_graph_role": "tool",
-      "puzzle_graph_unlocks": ["it_department", "dr_kim_office", "it_filing_cabinet"]
+      "puzzle_graph_unlocks": ["it_department", "it_filing_cabinet"],
+      "puzzle_graph_optional": true
     }
   ],
 
@@ -396,10 +510,7 @@ recovery_instructions_encoded = rot13("FULL RECOVERY REQUIRES OFFLINE + ONLINE K
       },
       "door_sign": "Reception",
       "connections": {
-        "north": "hallway_north",
-        "east": "it_department",
-        "west": "dr_kim_office",
-        "south": "hospital_ward"
+        "east": "ward_approach"
       },
       "npcs": [
         {
@@ -432,7 +543,7 @@ recovery_instructions_encoded = rot13("FULL RECOVERY REQUIRES OFFLINE + ONLINE K
         },
         {
           "id": "receptionist",
-          "displayName": "Hospital Receptionist",
+          "displayName": "Bernie Nwosu",
           "npcType": "person",
           "position": { "x": 6, "y": 5 },
           "spriteSheet": "female_telecom",
@@ -441,12 +552,43 @@ recovery_instructions_encoded = rot13("FULL RECOVERY REQUIRES OFFLINE + ONLINE K
           "storyPath": "scenarios/m02_ransomed_trust/ink/m02_npc_receptionist.json",
           "currentKnot": "start",
           "voice": {
-            "name": "Kore",
-            "style": "Stressed but professional hospital receptionist. Speak with a calm, measured tone despite the crisis around her.",
+            "name": "Despina",
+            "style": "Night reception coordinator, eleven years on this desk. South London / Multicultural London English accent throughout -- warm, quick, dry. Unflappable on the surface, running on fumes underneath.",
             "language": "en-GB"
           },
           "globalVarOnKO": "receptionist_ko",
-          "observations": "The receptionist looks stressed but is maintaining professionalism"
+          "taskOnKO": "sign_in_at_reception",
+          "observations": "Bernie Nwosu works the night desk behind a wall of paper forms. Every screen in front of her is dead. She is triaging a hospital with a biro.",
+          "puzzle_graph_actions": [
+            { "id": "sign_in_at_reception", "label": "Social engineer Bernie for the IT override key", "unlocks_aim": "access_it_systems" }
+          ],
+          "itemsHeld": [
+            {
+              "type": "key",
+              "name": "IT Department Override Key",
+              "takeable": true,
+              "key_id": "it_override_key",
+              "keyPins": [35, 45, 25, 55],
+              "observations": "The mechanical override for the IT department door, kept on the reception key hook since the badge readers went down",
+              "puzzle_graph_role": "key",
+              "puzzle_graph_unlocks": "it_department"
+            }
+          ],
+          "los": {
+            "enabled": true,
+            "range": 170,
+            "angle": 150,
+            "visualize": false
+          },
+          "eventMappings": [
+            {
+              "eventPattern": "lockpick_used_in_view",
+              "onceOnly": true,
+              "setGlobal": { "seen_picking_by_bernie": true },
+              "bark": "...I'm going to pretend I didn't see that.",
+              "barkDelay": 400
+            }
+          ]
         },
         {
           "id": "agent_0x99",
@@ -532,7 +674,18 @@ recovery_instructions_encoded = rot13("FULL RECOVERY REQUIRES OFFLINE + ONLINE K
               "eventPattern": "conversation_closed:opening_briefing_cutscene",
               "onceOnly": true,
               "setGlobal": { "lockpicking_guide_offered": true },
-              "sendTimedMessage": { "delay": 6000, "message": "One more thing -- the offices off reception are locked, and you're carrying a lock pick kit. If you'd rather not wait on a keycard, I can send a field guide on pin-tumbler lockpicking. Just ask." }
+              "sendTimedMessage": { "delay": 6000, "message": "Reminder on the doors in there. Nobody can badge you through anything -- the access control server is encrypted with the rest of it. That leaves you two ways past a lock: get a human to open it, or open it yourself. You're carrying a pick kit for the second one. Want the field guide on pin-tumbler work? Just ask." }
+            },
+            {
+              "eventPattern": "global_variable_changed:noticed_struck_booking",
+              "condition": "value === true",
+              "onceOnly": true,
+              "sendTimedMessage": { "delay": 2000, "message": "You've read that right -- your booking is on their paper log and somebody has put a line through it. Different pen, no initials. That's not a clerical error, that's someone tidying you out of the record. File it. Keep moving." }
+            },
+            {
+              "eventPattern": "objective_task_completed:sign_in_at_reception",
+              "onceOnly": true,
+              "sendTimedMessage": { "delay": 1500, "message": "Signed in. That paper badge makes you a guest, not staff -- it won't open a single internal door. Kim's the one who called you in; she's west of reception. Start there." }
             },
             {
               "eventPattern": "global_variable_changed:decoded_ransomware_note",
@@ -550,7 +703,58 @@ recovery_instructions_encoded = rot13("FULL RECOVERY REQUIRES OFFLINE + ONLINE K
               "eventPattern": "objective_task_completed:meet_dr_kim",
               "onceOnly": true,
               "setGlobal": { "dr_kim_met": true },
-              "sendTimedMessage": { "delay": 1500, "message": "Good. Kim's authorized you. Your next contact is Marcus Webb -- IT department, east of reception. He knows exactly how they got in." }
+              "sendTimedMessage": { "delay": 1500, "message": "Kim's vouched for you as far as she's able, which is verbally and no further. Marcus Webb is your next problem -- IT department, east of reception, behind an override lock. He knows exactly how they got in, and he's holding the only card that still opens the server room." }
+            },
+            {
+              "eventPattern": "objective_task_completed:talk_to_marcus",
+              "onceOnly": true,
+              "setGlobal": { "cover_burned": true },
+              "completeTask": "cover_burned_notified",
+              "sendTimedMessage": { "delay": 4000, "message": "Stop. Listen to me carefully. Two minutes ago someone rang St. Catherine's security desk from an internal extension and told them no external consultant was booked tonight. Your name is off their system. Your booking is gone from the log." }
+            },
+            {
+              "eventPattern": "objective_task_completed:talk_to_marcus",
+              "onceOnly": true,
+              "sendTimedMessage": { "delay": 11000, "message": "This wasn't the board and it wasn't Kim -- she'd have called me. Someone in that building watched you get as far as IT and decided to slow you down. Which tells me they know exactly what you're about to reach.\n\nPractical problem first: 'I'm the consultant, Dr Kim authorised me' is now a lie the guard can disprove. Get something that stands up -- a real staff lanyard, or somebody willing to vouch for you out loud. Then get to that server room." }
+            },
+            {
+              "eventPattern": "item_picked_up:contractor_lanyard",
+              "onceOnly": true,
+              "setGlobal": { "staff_lanyard_obtained": true, "cover_restored": true },
+              "sendTimedMessage": { "delay": 1200, "message": "Blank contractor pass, real hospital stock. That's your standing back. Nobody has ever questioned one of those and that is exactly the sort of thing Marcus has been writing emails about." }
+            },
+            {
+              "eventPattern": "item_picked_up:bank_staff_lanyard",
+              "onceOnly": true,
+              "setGlobal": { "staff_lanyard_obtained": true, "cover_restored": true },
+              "sendTimedMessage": { "delay": 1200, "message": "Agency lanyard off the ward. Green ribbon, no photograph, and at four in the morning that is most of the battle. Use it and don't linger." }
+            },
+            {
+              "eventPattern": "objective_task_completed:access_server_room",
+              "onceOnly": true,
+              "setGlobal": { "cover_restored": true },
+              "completeTask": "regain_freedom_of_movement"
+            },
+            {
+              "eventPattern": "item_picked_up:password_sticky_note",
+              "onceOnly": true,
+              "completeTask": "obtain_password_hints",
+              "sendTimedMessage": { "delay": 1200, "message": "Shared admin credential on a sticky note. Emma2018, Hospital1987, StCatherines -- one of those gets you an SSH session on the backup box. Try the middle one first." }
+            },
+            {
+              "eventPattern": "global_variable_changed:cover_restored",
+              "condition": "value === true",
+              "onceOnly": true,
+              "completeTask": "regain_freedom_of_movement",
+              "sendTimedMessage": { "delay": 1200, "message": "That'll hold. Now -- whoever made that call is still in the building, and they've just told us they're frightened of what's on that backup server. Go and find out why." }
+            },
+            {
+              "eventPattern": "global_variable_changed:guard_knocked_out",
+              "condition": "value === true",
+              "onceOnly": true,
+              "setGlobal": { "cover_restored": true },
+              "completeTask": "regain_freedom_of_movement",
+              "sendTimedMessage": { "delay": 1500, "message": "You've put a hospital security officer on the floor. That solves your corridor problem and creates about four others. Move fast -- when she's found, this building locks down." }
             },
             {
               "eventPattern": "room_entered:server_room",
@@ -579,6 +783,11 @@ recovery_instructions_encoded = rot13("FULL RECOVERY REQUIRES OFFLINE + ONLINE K
             {
               "eventPattern": "objective_task_completed:submit_ssh_flag",
               "onceOnly": true,
+              "setGlobal": { "flag_ssh_submitted": true }
+            },
+            {
+              "eventPattern": "objective_task_completed:submit_ssh_flag",
+              "onceOnly": true,
               "setGlobal": { "vulnerability_guide_offered": true },
               "sendTimedMessage": { "delay": 1800, "message": "SSH foothold confirmed. I can send a vulnerability analysis guide for attack-surface triage before you commit to the exploit chain." }
             },
@@ -593,6 +802,11 @@ recovery_instructions_encoded = rot13("FULL RECOVERY REQUIRES OFFLINE + ONLINE K
               "onceOnly": true,
               "setGlobal": { "privesc_guide_offered": true },
               "sendTimedMessage": { "delay": 5600, "message": "That foothold won't be root yet. If you hit files you can't read, I can send a privilege escalation field guide -- sudo enumeration and pivoting to the account that can. Ask when you need it." }
+            },
+            {
+              "eventPattern": "objective_task_completed:submit_ghost_log_flag",
+              "onceOnly": true,
+              "setGlobal": { "flag_ghost_log_submitted": true }
             },
             {
               "eventPattern": "objective_task_completed:submit_ghost_log_flag",
@@ -617,6 +831,11 @@ recovery_instructions_encoded = rot13("FULL RECOVERY REQUIRES OFFLINE + ONLINE K
             {
               "eventPattern": "objective_task_completed:submit_database_flag",
               "onceOnly": true,
+              "setGlobal": { "flag_database_submitted": true }
+            },
+            {
+              "eventPattern": "objective_task_completed:submit_database_flag",
+              "onceOnly": true,
               "setGlobal": { "insider_db_window_found": true },
               "completeTask": "unmask_db_window",
               "sendTimedMessage": { "delay": 2500, "message": "The backup logs show it -- the planted device went live during a 'fire drill' six weeks ago. An internal badge authorised the contractor sweep that installed it. Not an outsider. Someone with access authority here." }
@@ -634,7 +853,7 @@ recovery_instructions_encoded = rot13("FULL RECOVERY REQUIRES OFFLINE + ONLINE K
               "onceOnly": true,
               "setGlobal": { "insider_identified": true },
               "completeTask": "unmask_identify",
-              "sendTimedMessage": { "delay": 4200, "message": "Badge #SC-4471 is the night security supervisor's -- the man posted on the press terminal in the conference room. That's your ENTROPY affiliate. He's standing right next to the evidence. Your call how you handle him." }
+              "sendTimedMessage": { "delay": 4200, "message": "Badge SC-4471 belongs to Graham Reeves. Night security supervisor. The polite man in the plain suit standing beside the comms terminal in the conference room.\n\nAnd check the timing: that call to the security desk about you came from an internal extension in the conference room block. He authorised the fire drill, he pulled your booking, and he has been standing next to the evidence all night being helpful. Your call how you handle him." }
             },
             {
               "eventPattern": "global_variable_changed:inspected_asset_post",
@@ -642,7 +861,7 @@ recovery_instructions_encoded = rot13("FULL RECOVERY REQUIRES OFFLINE + ONLINE K
               "onceOnly": true,
               "setGlobal": { "insider_identified": true },
               "completeTask": "unmask_identify",
-              "sendTimedMessage": { "delay": 2000, "message": "That post log seals it -- badge #SC-4471 is the night security supervisor stationed on the conference-room comms terminal. He authorised the fire drill. He's the inside asset. Your call how you handle him." }
+              "sendTimedMessage": { "delay": 2000, "message": "That post log seals it. Badge SC-4471 is Graham Reeves -- the night security supervisor stationed on that comms terminal. He authorised a fire drill facilities never scheduled, and the call that pulled your booking came from an extension on his post. He is the inside asset. Your call how you handle him." }
             },
             {
               "eventPattern": "item_picked_up:marcus_vindication_email",
@@ -712,12 +931,22 @@ recovery_instructions_encoded = rot13("FULL RECOVERY REQUIRES OFFLINE + ONLINE K
           "avatar": "assets/npc/avatars/npc_hacker.png",
           "phoneId": "ghost_terminal",
           "currentKnot": "start",
+          "voice": {
+            "name": "Iapetus",
+            "style": "ENTROPY field operative. Deliberately unplaceable -- an educated English base with every regional marker sanded off, the way someone sounds when they have consciously trained their own accent out. Unhurried, precise, never raises the pitch. Speaks as though reading a conclusion they reached months ago and have no further doubts about.",
+            "language": "en-GB"
+          },
           "eventMappings": [
             {
               "eventPattern": "item_picked_up:ghost_terminal_device",
               "onceOnly": true,
               "conversationMode": "phone-chat",
               "targetKnot": "start"
+            },
+            {
+              "eventPattern": "objective_task_completed:submit_proftpd_flag",
+              "onceOnly": true,
+              "setGlobal": { "flag_proftpd_submitted": true }
             },
             {
               "eventPattern": "objective_task_completed:submit_proftpd_flag",
@@ -782,22 +1011,39 @@ recovery_instructions_encoded = rot13("FULL RECOVERY REQUIRES OFFLINE + ONLINE K
       "objects": [
         {
           "type": "notes",
+          "id": "reception_visitor_log",
           "name": "Reception Desk Visitor Log",
           "takeable": false,
           "readable": true,
-          "text": "ST. CATHERINE'S HOSPITAL - VISITOR LOG\n\nToday's Appointments:\n- 9:00 AM: External Security Consultant (Emergency Response)\n- Status: CRITICAL SYSTEMS OFFLINE\n- Authorization: Dr. Sarah Kim, CTO",
-          "observations": "Visitor log confirms your appointment and crisis status"
+          "text": "ST. CATHERINE'S REGIONAL -- NIGHT VISITOR LOG (PAPER FALLBACK)\n\n22:40  M. WEBB (IT Systems) -- on site, no sign-out\n23:15  DR S. KIM (CTO) -- on site\n01:02  ~~EXTERNAL SECURITY CONSULTANT -- emergency response -- auth: DR S. KIM~~\n       ^ struck through. Different biro. No initials against the amendment.\n03:20  G. REEVES (night security supervisor) -- \"posted\", declined to sign\n\nB.N. note in the margin: \"Who crossed this out? Not me.\"",
+          "observations": "The paper fallback log. Your booking is on it -- and somebody has scored a line through it in different ink, with no initials against the change.",
+          "observationDisplay": "gameDisplay",
+          "onRead": { "setVariable": { "noticed_struck_booking": true } },
+          "puzzle_graph_role": "clue",
+          "puzzle_graph_aim": "cover_compromised",
+          "puzzle_graph_reveals": "foreshadows_the_cover_burn_someone_is_erasing_the_agents_paper_trail"
         },
         {
           "type": "notes",
           "name": "Hospital Founding Plaque",
           "takeable": false,
           "readable": true,
-          "text": "ST. CATHERINE'S REGIONAL MEDICAL CENTER\n\nFounded 1987\n\nServing the community for over 35 years with compassion and excellence",
-          "observations": "Bronze plaque showing hospital founding year: 1987",
+          "text": "ST. CATHERINE'S REGIONAL MEDICAL CENTRE\n\nFounded 1987\n\nServing this community for over thirty-five years",
+          "observations": "Bronze plaque by the doors. Founded 1987.",
           "puzzle_graph_role": "clue",
           "puzzle_graph_unlocks": "emergency_storage_safe",
           "puzzle_graph_reveals": "hospital_founding_year_1987_is_the_safe_pin"
+        },
+        {
+          "type": "notes",
+          "name": "Crisis Protocol Notice",
+          "takeable": false,
+          "readable": true,
+          "text": "TO ALL STAFF -- ISSUED 03:10\n\nFollowing the cyber incident, the electronic access control system is UNAVAILABLE. Badge readers on internal doors will not respond and CANNOT be reprogrammed until systems are restored.\n\nMechanical override keys are held at reception. Sign them out. Do not prop doors.\n\nThe server room reader is on a standalone offline controller and is UNAFFECTED. Existing issued cards for that door continue to work. No new cards can be issued.\n\n-- Estates & Facilities",
+          "observations": "This explains why nobody can grant you access: the system that grants access is itself encrypted. Override keys at reception; the server room runs on an isolated reader and still needs a card that already exists.",
+          "observationDisplay": "gameDisplay",
+          "puzzle_graph_role": "clue",
+          "puzzle_graph_reveals": "why_authorisation_cannot_be_granted_and_what_the_two_routes_are"
         },
         {
           "type": "pc",
@@ -807,13 +1053,14 @@ recovery_instructions_encoded = rot13("FULL RECOVERY REQUIRES OFFLINE + ONLINE K
           "takeable": false,
           "locked": true,
           "lockType": "ransomware_display",
-          "observations": "The front-desk workstation that should be pulling up appointments and registrations. Instead the screen is black with a Ransomware Incorporated demand -- which is why the receptionist is working off paper forms.",
+          "observations": "The front-desk workstation that should be pulling up appointments and registrations. Instead the screen is black with a Ransomware Incorporated demand -- which is why Bernie is triaging a hospital with a biro.",
+          "onRead": { "setVariable": { "decoded_ransomware_note": true } },
           "puzzle_graph_role": "lock",
           "puzzle_graph_aim": "infiltrate_hospital",
           "minigameData": {
-            "organisation": "St. Catherine's Regional Medical Center",
+            "organisation": "St. Catherine's Regional Medical Centre",
             "encryptedSystems": "Patient registration | Appointment scheduling | Admissions records | Front-desk workstations",
-            "ransomAmount": "$87,000",
+            "ransomAmount": "£87,000",
             "ransomBitcoin": "2.5 BTC",
             "walletAddress": "bc1q7cyrfmckn2ewz5m78ts6jt9lcfhfwcvzefm27k",
             "timerHours": 12,
@@ -828,15 +1075,16 @@ recovery_instructions_encoded = rot13("FULL RECOVERY REQUIRES OFFLINE + ONLINE K
       "type": "room_hospital_ward",
       "door_sign": "Patient Ward",
       "connections": {
-        "north": "reception_lobby",
-        "south": "hallway_south"
+        "south": "ward_approach",
+        "west": "ward_hall",
+        "east": "emergency_equipment_storage"
       },
       "npcs": [
         {
           "id": "ward_nurse",
-          "displayName": "Ward Nurse",
+          "displayName": "Sister Doyle",
           "npcType": "person",
-          "position": { "x": 16, "y": 4 },
+          "position": { "x": 10, "y": 3 },
           "spriteSheet": "female_nurse1",
           "spriteTalk": "assets/characters/female_nurse1_talk.png",
           "spriteConfig": { "idleFrameRate": 6, "walkFrameRate": 10 },
@@ -844,19 +1092,31 @@ recovery_instructions_encoded = rot13("FULL RECOVERY REQUIRES OFFLINE + ONLINE K
           "currentKnot": "start",
           "voice": {
             "name": "Kore",
-            "style": "Exhausted but professional NHS nurse. Quiet, controlled urgency. Genuinely worried about her patients.",
+            "style": "Ward sister, twenty years on the wards. Consistent Belfast / Northern Irish accent throughout. Exhausted, dry, absolutely unsentimental about everything except her patients. Quiet controlled urgency, never raises her voice.",
             "language": "en-GB"
           },
           "globalVarOnKO": "ward_nurse_ko",
           "taskOnKO": "gather_pin_clues",
-          "observations": "A nurse moving between beds, checking paper charts since the electronic systems are down",
+          "observations": "Sister Aoife Doyle has not moved from the side of bed two since three o'clock. With the central monitoring dark, she is what stands between Mrs Hargreaves and an unnoticed ECMO alarm.",
           "puzzle_graph_actions": [
-            { "id": "talk_to_ward_nurse", "label": "Hear from the ward nurse about patient risk", "unlocks_aim": "infiltrate_hospital" }
+            { "id": "talk_to_ward_nurse", "label": "Hear from Sister Doyle what the outage costs -- and earn the safe code", "unlocks_aim": "recover_offline_keys" }
+          ],
+          "itemsHeld": [
+            {
+              "type": "id_badge",
+              "name": "Bank Staff Lanyard",
+              "takeable": true,
+              "key_id": "bank_staff_lanyard",
+              "observations": "A spare agency-nurse lanyard from the ward office drawer. Not your name, not your face -- but it is real hospital issue, and at three in the morning that is most of the battle.",
+              "puzzle_graph_role": "key",
+              "puzzle_graph_unlocks": "lock_guard_challenge",
+              "puzzle_graph_optional": true
+            }
           ]
         },
         {
           "id": "roaming_ward_nurse",
-          "displayName": "Staff Nurse",
+          "displayName": "Nurse Raval",
           "npcType": "person",
           "position": { "x": 4, "y": 5 },
           "spriteSheet": "female_nurse2",
@@ -865,8 +1125,8 @@ recovery_instructions_encoded = rot13("FULL RECOVERY REQUIRES OFFLINE + ONLINE K
           "storyPath": "scenarios/m02_ransomed_trust/ink/m02_npc_roaming_nurse.json",
           "currentKnot": "start",
           "voice": {
-            "name": "Aoede",
-            "style": "Busy NHS nurse doing manual obs rounds, brief and focused. Consistent Yorkshire accent throughout.",
+            "name": "Erinome",
+            "style": "Staff nurse, late twenties, four hours into doing the work of a monitoring system by hand. Consistent West Yorkshire accent -- Bradford, flat and quick. Brisk to the point of curt, not unkind, genuinely has no time for you. Talks while walking.",
             "language": "en-GB"
           },
           "globalVarOnKO": "ward_nurse_ko",
@@ -896,7 +1156,7 @@ recovery_instructions_encoded = rot13("FULL RECOVERY REQUIRES OFFLINE + ONLINE K
         },
         {
           "id": "patient_bed4",
-          "displayName": "Mr Okafor (Bed 4)",
+          "displayName": "Mr Okafor",
           "npcType": "person",
           "position": { "x": 3.088, "y": 8.396 },
           "spriteSheet": "bed4",
@@ -904,8 +1164,8 @@ recovery_instructions_encoded = rot13("FULL RECOVERY REQUIRES OFFLINE + ONLINE K
           "storyPath": "scenarios/m02_ransomed_trust/ink/m02_npc_patient_bed4.json",
           "currentKnot": "start",
           "voice": {
-            "name": "Charon",
-            "style": "Elderly cardiac patient on a ventilator. Speaks very little. Weak and breathless.",
+            "name": "Rasalgethi",
+            "style": "Retired London bus engineer in his late sixties, on a ventilator. Nigerian-British -- Lagos vowels softened by forty years in south London. Very weak, very short of breath, four or five words at a time with long gaps. Dignified, not frightened.",
             "language": "en-GB"
           },
           "behavior": {
@@ -918,7 +1178,7 @@ recovery_instructions_encoded = rot13("FULL RECOVERY REQUIRES OFFLINE + ONLINE K
         },
         {
           "id": "patient_bed2",
-          "displayName": "Mrs Hargreaves (Bed 2)",
+          "displayName": "Mrs Hargreaves",
           "npcType": "person",
           "position": { "x": 8.078, "y": 3 },
           "spriteSheet": "bed2",
@@ -926,8 +1186,8 @@ recovery_instructions_encoded = rot13("FULL RECOVERY REQUIRES OFFLINE + ONLINE K
           "storyPath": "scenarios/m02_ransomed_trust/ink/m02_npc_patient_bed2.json",
           "currentKnot": "start",
           "voice": {
-            "name": "Leda",
-            "style": "A patient on ECMO life support. Speaks only in fragments, very quietly. She is dependent on the machine beside her.",
+            "name": "Sulafat",
+            "style": "Woman in her seventies on ECMO life support. Consistent Lancashire accent -- flat, warm, entirely matter-of-fact about her own situation. Speaks in fragments and only just above a whisper, because the machine is doing the work of her heart and lungs and she has no breath spare for anything decorative.",
             "language": "en-GB"
           },
           "behavior": {
@@ -940,7 +1200,7 @@ recovery_instructions_encoded = rot13("FULL RECOVERY REQUIRES OFFLINE + ONLINE K
         },
         {
           "id": "patient_bed5",
-          "displayName": "Ms Chen (Bed 5)",
+          "displayName": "Ms Chen",
           "npcType": "person",
           "position": { "x": 7.708, "y": 8.333 },
           "spriteSheet": "bed5",
@@ -948,8 +1208,8 @@ recovery_instructions_encoded = rot13("FULL RECOVERY REQUIRES OFFLINE + ONLINE K
           "storyPath": "scenarios/m02_ransomed_trust/ink/m02_npc_patient_bed5.json",
           "currentKnot": "start",
           "voice": {
-            "name": "Kore",
-            "style": "A post-surgical patient who is alert and quietly watching the ward. Calm but clearly worried.",
+            "name": "Autonoe",
+            "style": "Retired schoolteacher, seventy-one, post-operative and fully alert. British-Chinese, raised in Edinburgh -- a clear, precise Scottish accent. Calm, observant, quietly furious on behalf of the sicker patients around her. Speaks in complete sentences because she has always spoken in complete sentences.",
             "language": "en-GB"
           },
           "behavior": {
@@ -973,9 +1233,9 @@ recovery_instructions_encoded = rot13("FULL RECOVERY REQUIRES OFFLINE + ONLINE K
           "puzzle_graph_role": "lock",
           "puzzle_graph_aim": "infiltrate_hospital",
           "minigameData": {
-            "organisation": "St. Catherine's Regional Medical Center",
+            "organisation": "St. Catherine's Regional Medical Centre",
             "encryptedSystems": "47 life-support patients | EHR terminals | Patient monitoring | Medication records",
-            "ransomAmount": "$87,000",
+            "ransomAmount": "£87,000",
             "ransomBitcoin": "2.5 BTC",
             "walletAddress": "bc1q7cyrfmckn2ewz5m78ts6jt9lcfhfwcvzefm27k",
             "timerHours": 12,
@@ -1011,12 +1271,12 @@ recovery_instructions_encoded = rot13("FULL RECOVERY REQUIRES OFFLINE + ONLINE K
       },
       "locked": true,
       "lockType": "key",
-      "requires": "it_door_lock",
+      "requires": "it_override_key",
       "keyPins": [35, 45, 25, 55],
       "difficulty": "easy",
       "door_sign": "IT Department",
       "connections": {
-        "west": "reception_lobby"
+        "south": "office_corridor"
       },
       "npcs": [
         {
@@ -1031,14 +1291,14 @@ recovery_instructions_encoded = rot13("FULL RECOVERY REQUIRES OFFLINE + ONLINE K
           "currentKnot": "start",
           "voice": {
             "name": "Charon",
-            "style": "Stressed, guilt-ridden IT administrator. Australian accent. Genuinely competent but ignored by management. Mix of guilt and frustration.",
-            "language": "en-AU"
+            "style": "Hospital IT systems administrator, mid-thirties, running on vending machine coffee. Consistent Birmingham / Black Country accent throughout. Flat, tired, self-deprecating -- a man who has been right for six months and got nothing for it. Anger sits under the surface, not on top of it.",
+            "language": "en-GB"
           },
           "globalVarOnKO": "marcus_ko",
           "taskOnKO": "talk_to_marcus",
-          "observations": "Marcus Webb sits at his desk, staring at a screen full of error messages. He looks like he hasn't slept.",
+          "observations": "Marcus Webb has not moved from that chair since half ten. Four dead terminals in front of him and a printout of his own ignored emails on the desk, which tells you roughly how the night is going.",
           "puzzle_graph_actions": [
-            { "id": "social_engineer_marcus", "label": "Social engineer Marcus for server room keycard + SSH passwords", "unlocks_aim": "access_it_systems" }
+            { "id": "social_engineer_marcus", "label": "Win Marcus over -- rapport, leverage, theft, or force", "unlocks_aim": "cover_compromised" }
           ],
           "itemsHeld": [
             {
@@ -1046,9 +1306,19 @@ recovery_instructions_encoded = rot13("FULL RECOVERY REQUIRES OFFLINE + ONLINE K
               "name": "Server Room Keycard",
               "takeable": true,
               "key_id": "server_room_keycard",
-              "observations": "Marcus's RFID keycard for server room access",
+              "observations": "Marcus's RFID card for the server room. The reader on that door is on an isolated controller, so this is the only credential in the building that still opens anything.",
               "puzzle_graph_role": "key",
               "puzzle_graph_unlocks": "server_room"
+            },
+            {
+              "type": "id_badge",
+              "name": "Spare Contractor Lanyard",
+              "takeable": true,
+              "key_id": "contractor_lanyard",
+              "observations": "A blank contractor lanyard from Marcus's drawer -- the sort IT issue to hardware engineers. Real hospital stock, no name on it.",
+              "puzzle_graph_role": "key",
+              "puzzle_graph_unlocks": "lock_guard_challenge",
+              "puzzle_graph_optional": true
             }
           ]
         }
@@ -1066,9 +1336,9 @@ recovery_instructions_encoded = rot13("FULL RECOVERY REQUIRES OFFLINE + ONLINE K
           "puzzle_graph_role": "clue",
           "puzzle_graph_reveals": "ransomware_group_identity_and_ransom_demand",
           "minigameData": {
-            "organisation": "St. Catherine's Regional Medical Center",
+            "organisation": "St. Catherine's Regional Medical Centre",
             "encryptedSystems": "Patient records | Backup server | All workstations",
-            "ransomAmount": "$87,000",
+            "ransomAmount": "£87,000",
             "ransomBitcoin": "2.5 BTC",
             "walletAddress": "bc1q7cyrfmckn2ewz5m78ts6jt9lcfhfwcvzefm27k",
             "timerHours": 12,
@@ -1101,6 +1371,18 @@ recovery_instructions_encoded = rot13("FULL RECOVERY REQUIRES OFFLINE + ONLINE K
               "puzzle_graph_reveals": "password_reuse_same_weak_credential_across_workstation_and_ssh"
             }
           ]
+        },
+        {
+          "type": "notes",
+          "id": "marcus_desk_printouts",
+          "name": "Printouts on Marcus's Desk",
+          "sprite": "notes3",
+          "takeable": false,
+          "readable": true,
+          "text": "A squared-up stack of printed emails, all sent BY M. Webb. Warnings one through seven, in order, with the send dates highlighted.\n\nNo replies in the stack. He has printed only his own half of it.\n\nOn the top sheet, in biro: \"IF ANYONE ASKS LATER.\"",
+          "observations": "The stack of emails on his desk -- his side of the correspondence only, printed out at some point tonight. The replies, and the board's deferral, are not here. Those are in the locked filing cabinet.",
+          "puzzle_graph_role": "clue",
+          "puzzle_graph_reveals": "signals_the_filing_cabinet_holds_the_other_half_of_the_paper_trail"
         },
         {
           "type": "notes",
@@ -1139,13 +1421,26 @@ recovery_instructions_encoded = rot13("FULL RECOVERY REQUIRES OFFLINE + ONLINE K
             {
               "type": "notes",
               "id": "marcus_vindication_email",
-              "name": "Marcus's Email Archive",
+              "name": "Marcus's Email Archive -- Warning 7 of 7",
               "takeable": true,
               "readable": true,
               "text": <%= marcus_warning_email.to_json %>,
-              "observations": "Email proving Marcus warned Dr. Kim 6 months ago about the vulnerability",
+              "observations": "The seventh warning. Dated 17 May, sent to Dr. Kim and copied to the board secretariat. Show this to Marcus and he will know you have actually read his file.",
+              "onPickup": { "setVariable": { "marcus_evidence_recovered": true } },
               "puzzle_graph_role": "clue",
-              "puzzle_graph_reveals": "institutional_negligence_evidence_marcus_warned_them"
+              "puzzle_graph_unlocks": "lock_marcus_cooperation",
+              "puzzle_graph_reveals": "leverage_route_to_marcus_plus_institutional_negligence_evidence"
+            },
+            {
+              "type": "notes",
+              "id": "kim_deferral_reply",
+              "name": "Dr. Kim's Reply -- 21 May",
+              "takeable": true,
+              "readable": true,
+              "text": <%= board_reply_email.to_json %>,
+              "observations": "Kim's answer to the seventh warning. Deferred to next financial year, and a request that he stop escalating it. She has been carrying this since May.",
+              "puzzle_graph_role": "clue",
+              "puzzle_graph_reveals": "kim_personally_signed_the_deferral_and_told_him_to_stop_asking"
             },
             {
               "type": "notes",
@@ -1195,7 +1490,7 @@ recovery_instructions_encoded = rot13("FULL RECOVERY REQUIRES OFFLINE + ONLINE K
       "difficulty": "medium",
       "door_sign": "Server Room",
       "connections": {
-        "south": "hallway_north"
+        "east": "security_office"
       },
       "npcs": [],
       "objects": [
@@ -1331,6 +1626,48 @@ recovery_instructions_encoded = rot13("FULL RECOVERY REQUIRES OFFLINE + ONLINE K
           "observations": "Encoded note taped to the server rack -- ROT13 cipher",
           "puzzle_graph_role": "clue",
           "puzzle_graph_reveals": "recovery_requires_both_key_types_and_ransom_vs_manual_tradeoff"
+        },
+        {
+          "type": "safe",
+          "id": "entropy_staging_cache",
+          "name": "ENTROPY Staging Cache",
+          "sprite": "safe3",
+          "takeable": false,
+          "locked": true,
+          "lockType": "flag",
+          "requires": "secgen_rooting_for_a_win:flag_4",
+          "observations": "A hardened container bolted inside the rack, not on any hospital asset register. Ghost staged from here. The lock wants a verification string that only exists in the operational log on the backup server -- recover that flag and submit it at the drop-site to open this.",
+          "puzzle_graph_role": "lock",
+          "puzzle_graph_aim": "unmask_inside_asset",
+          "puzzle_graph_note": "Flag-locked container: forces the full VM chain (SSH -> ProFTPD -> database -> Ghost's log) before the mission's ideological payload is readable",
+          "contents": [
+            {
+              "type": "notes",
+              "id": "ghost_manifesto",
+              "name": "Ghost's Operational Manifesto",
+              "takeable": true,
+              "readable": true,
+              "text": "OPERATION TRIAGE -- OPERATOR'S STATEMENT OF INTENT\nGhost, Ransomware Incorporated\n\nI have been asked by the Architect to record why, so that the cell can be audited against its own reasoning. Very well.\n\n214 healthcare providers surveyed. 147 carrying at least one critical unpatched service reachable from their own network. Not one of them unaware. Every single one of them warned, in writing, by somebody they employed and then ignored.\n\nSt. Catherine's was selected not because it was the weakest. It was selected because the paper trail is immaculate. Seven written warnings from one administrator, each one answered, each one deferred. When this becomes public there will be no argument about whether they knew.\n\nProjected harm at this site: 1 to 2 fatalities on a fast recovery, 4 to 6 on a slow one.\nProjected harm avoided across the sector over five years, on observed post-incident remediation rates: 200 to 600.\n\nI am aware of how that sentence reads. I wrote it anyway, and I checked it, and I did not find the error.\n\nThe board of St. Catherine's performed the same arithmetic in March. £85,000 against £3.2 million, patients on one side of the ledger and imaging capacity on the other. They simply did not write theirs down.\n\nI am not asking to be forgiven. I am asking to be understood, and there is a difference.",
+              "observations": "Ghost's own statement of intent, staged on their own hardware. Signed off by the Architect. This is the ideological core of the whole ENTROPY network in one document.",
+              "observationDisplay": "gameDisplay",
+              "onPickup": { "setVariable": { "lore_ghosts_manifesto_found": true } },
+              "puzzle_graph_role": "clue",
+              "puzzle_graph_reveals": "ghost_ideology_and_architect_oversight_lore_payload"
+            },
+            {
+              "type": "notes",
+              "name": "Affiliate Handling Note",
+              "takeable": true,
+              "readable": true,
+              "text": "INTERNAL -- AFFILIATE HANDLING\n\nSite contact remains stable. Grievance-motivated, not financially motivated -- do not offer further payment, it insults him and he becomes unpredictable.\n\nHis contribution: access window confirmation, contractor escort during the estates sweep, and post-incident interference if the site brings in outside responders.\n\nStanding instruction to site contact: if a responder arrives, do not obstruct physically. Remove their standing. A person nobody can vouch for spends their night arguing with a security officer instead of reading our logs.\n\nHe volunteered that method himself. He is better at this than we pay him to be.",
+              "observations": "ENTROPY's handling notes on their inside man -- including the instruction to burn an outside responder's credentials rather than confront them. That is exactly what happened to you tonight.",
+              "observationDisplay": "gameDisplay",
+              "onPickup": { "setVariable": { "insider_method_confirmed": true } },
+              "puzzle_graph_role": "clue",
+              "puzzle_graph_aim": "unmask_inside_asset",
+              "puzzle_graph_reveals": "confirms_the_inside_asset_personally_burned_the_players_cover"
+            }
+          ]
         }
       ]
     },
@@ -1339,7 +1676,7 @@ recovery_instructions_encoded = rot13("FULL RECOVERY REQUIRES OFFLINE + ONLINE K
       "type": "small_room_storage_1x1gu",
       "door_sign": "Emergency Storage",
       "connections": {
-        "north": "hallway_south"
+        "west": "hospital_ward"
       },
       "npcs": [],
       "objects": [
@@ -1368,12 +1705,10 @@ recovery_instructions_encoded = rot13("FULL RECOVERY REQUIRES OFFLINE + ONLINE K
           ]
         },
         {
-          "type": "notes",
-          "name": "PIN Cracker Device",
+          "type": "pin-cracker",
+          "name": "PIN Cracker",
           "takeable": true,
-          "readable": true,
-          "text": "PIN CRACKER DEVICE\n\nAutomated 4-digit PIN brute force tool\nEstimated time: 2 minutes\n\nUse if clues to safe PIN cannot be found",
-          "observations": "Fallback tool for PIN puzzle if clues were missed",
+          "observations": "SAFETYNET-issue keypad brute-forcer, left in the kit box on the shelf. Four digits is ten thousand combinations and it walks them in about two minutes. Slower than knowing the code, and it will not help you on any other lock in this building -- but it will open this one.",
           "puzzle_graph_role": "tool",
           "puzzle_graph_unlocks": "emergency_storage_safe",
           "puzzle_graph_optional": true
@@ -1395,15 +1730,10 @@ recovery_instructions_encoded = rot13("FULL RECOVERY REQUIRES OFFLINE + ONLINE K
         "width": 10,
         "height": 10
       },
-      "locked": true,
-      "lockType": "key",
-      "requires": "admin_office_lock",
-      "keyPins": [40, 50, 30, 60],
-      "difficulty": "medium",
+      "locked": false,
       "door_sign": "CTO Office",
       "connections": {
-        "east": "reception_lobby",
-        "north": "conference_room"
+        "south": "office_corridor"
       },
       "npcs": [
         {
@@ -1417,7 +1747,7 @@ recovery_instructions_encoded = rot13("FULL RECOVERY REQUIRES OFFLINE + ONLINE K
           "storyPath": "scenarios/m02_ransomed_trust/ink/m02_npc_sarah_kim.json",
           "currentKnot": "start",
           "voice": {
-            "name": "Aoede",
+            "name": "Achernar",
             "style": "Senior hospital executive under extreme pressure. Authoritative but clearly guilty and frightened. British RP accent.",
             "language": "en-GB"
           },
@@ -1425,14 +1755,26 @@ recovery_instructions_encoded = rot13("FULL RECOVERY REQUIRES OFFLINE + ONLINE K
           "taskOnKO": "meet_dr_kim",
           "observations": "Dr. Kim is pacing behind her desk, phone in hand. She looks relieved to see you.",
           "puzzle_graph_actions": [
-            { "id": "meet_dr_kim", "label": "Meet Dr. Kim and receive mission authorization", "unlocks_aim": "access_it_systems" }
+            { "id": "meet_dr_kim", "label": "Get Kim's verbal authorisation and the boardroom code", "unlocks_aim": "access_it_systems" }
           ],
           "itemsHeld": [
             {
               "type": "id_badge",
-              "name": "Hospital Admin Access Badge",
+              "name": "Visitor Badge (Countersigned)",
               "takeable": true,
-              "observations": "Dr. Kim's authorization badge -- grants access to administrative areas"
+              "observations": "Kim has signed your paper visitor badge herself and written her extension on it. It proves a person vouched for you. It opens precisely nothing -- the system that would have made it mean something is encrypted."
+                        },
+            {
+              "type": "notes",
+              "name": "Dr. Kim's Signed Statement",
+              "key_id": "kim_statement",
+              "takeable": true,
+              "readable": true,
+              "text": "STATEMENT OF FACT -- S. KIM, Chief Technology Officer, St. Catherine's Regional\n\nThe security remediation of the backup server was costed by M. Webb (IT Systems) at \u00a385,000 and formally escalated by him on seven occasions between May and November.\n\nIt was deferred on my recommendation. The decision was mine. Mr Webb discharged his responsibilities in full and was instructed by me, in writing, to stop escalating outside the department.\n\nAny characterisation of this incident as an implementation failure on his part is factually incorrect and I will say so under oath.\n\nSigned, S. Kim.",
+              "observations": "Kim's handwritten statement taking the budget decision onto her own name. Signed. This is what stops Marcus carrying it alone.",
+              "puzzle_graph_role": "clue",
+              "puzzle_graph_optional": true,
+              "puzzle_graph_reveals": "kim_formally_absorbs_responsibility_protecting_marcus"
             }
           ]
         }
@@ -1450,9 +1792,9 @@ recovery_instructions_encoded = rot13("FULL RECOVERY REQUIRES OFFLINE + ONLINE K
           "puzzle_graph_role": "lock",
           "puzzle_graph_aim": "infiltrate_hospital",
           "minigameData": {
-            "organisation": "St. Catherine's Regional Medical Center",
+            "organisation": "St. Catherine's Regional Medical Centre",
             "encryptedSystems": "Executive workstation | Board records | Financial systems | Administrative email",
-            "ransomAmount": "$87,000",
+            "ransomAmount": "£87,000",
             "ransomBitcoin": "2.5 BTC",
             "walletAddress": "bc1q7cyrfmckn2ewz5m78ts6jt9lcfhfwcvzefm27k",
             "timerHours": 12,
@@ -1462,15 +1804,21 @@ recovery_instructions_encoded = rot13("FULL RECOVERY REQUIRES OFFLINE + ONLINE K
         },
         {
           "type": "notes",
-          "name": "Dr. Kim's Desk - PIN Clue",
-          "takeable": true,
+          "name": "Dr. Kim's Desk Diary",
+          "takeable": false,
           "readable": true,
-          "text": "Sticky note on Dr. Kim's desk:\n\n'Safe combination: founding year (for emergency access)'",
-          "observations": "PIN safe clue -- references hospital founding year",
+          "text": "Open on the desk, this week's page.\n\nTue -- Board, 09:00. Boardroom keypad <%= boardroom_pin %> (CHANGE THIS)\nWed -- Estates: emergency store safe still on the founding year. Flag at audit.\nThu -- M. Webb 1:1. Postponed (again).\nFri -- ?\n\nBottom of the page, pressed hard enough to score the paper: \"Should have listened in May.\"",
+          "observations": "Her working diary. Two access codes she has been meaning to change for months, and a line at the bottom she wrote for nobody but herself.",
+          "observationDisplay": "gameDisplay",
+          "onRead": { "setVariable": { "found_boardroom_code": true } },
           "puzzle_graph_role": "clue",
-          "puzzle_graph_unlocks": "emergency_storage_safe",
-          "puzzle_graph_reveals": "safe_pin_is_the_hospital_founding_year",
-          "puzzle_graph_optional": true
+          "puzzle_graph_unlocks": ["emergency_storage_safe", "conference_room"],
+          "puzzle_graph_optional": true,
+          "puzzle_graph_reveals": "boardroom_pin_and_confirmation_that_the_safe_pin_is_the_founding_year",
+          "puzzle_graph_links": [
+            { "from": "action_meet_dr_kim", "to": "conference_room" },
+            { "from": "action_meet_dr_kim", "to": "it_department", "dashed": true }
+          ]
         },
         {
           "type": "notes",
@@ -1521,9 +1869,13 @@ recovery_instructions_encoded = rot13("FULL RECOVERY REQUIRES OFFLINE + ONLINE K
         "width": 10,
         "height": 10
       },
-      "door_sign": "Conference Room",
+      "locked": true,
+      "lockType": "pin",
+      "requires": "<%= boardroom_pin %>",
+      "difficulty": "medium",
+      "door_sign": "Boardroom",
       "connections": {
-        "south": "dr_kim_office"
+        "south": "office_corridor"
       },
       "npcs": [
         {
@@ -1539,7 +1891,7 @@ recovery_instructions_encoded = rot13("FULL RECOVERY REQUIRES OFFLINE + ONLINE K
         },
         {
           "id": "night_security_supervisor",
-          "displayName": "Night Security Supervisor",
+          "displayName": "Graham Reeves",
           "npcType": "person",
           "position": { "x": 6, "y": 3 },
           "spriteSheet": "male_security_guard",
@@ -1549,11 +1901,11 @@ recovery_instructions_encoded = rot13("FULL RECOVERY REQUIRES OFFLINE + ONLINE K
           "currentKnot": "start",
           "voice": {
             "name": "Enceladus",
-            "style": "Calm, courteous plainclothes night security supervisor. Reassuring and helpful on the surface. When cornered, the warmth drains away into cold, quiet conviction.",
+            "style": "Night security supervisor, fifties, eleven years on the same post. Consistent Estuary English -- flat Home Counties, quiet, unhurried. Courteous to the point of being soothing. When cornered the warmth switches off completely and what is underneath is calm, articulate and entirely unrepentant.",
             "language": "en-GB"
           },
           "globalVarOnKO": "night_security_supervisor_ko",
-          "observations": "A composed man in a plain suit standing beside the communications terminal. A hospital visitor lanyard, but no scrubs and no uniform. He gives you a small, professional nod.",
+          "observations": "A composed man in a plain suit beside the comms terminal. Hospital lanyard, no uniform, no scrubs. He nods at you the way staff nod at other staff -- and he has been on the phone recently.",
           "eventMappings": [
             {
               "eventPattern": "objective_task_completed:decide_hospital_exposure",
@@ -1562,6 +1914,12 @@ recovery_instructions_encoded = rot13("FULL RECOVERY REQUIRES OFFLINE + ONLINE K
               "conversationMode": "person-chat",
               "background": "assets/backgrounds/hospital1.png",
               "targetKnot": "press_terminal_ambush"
+            },
+            {
+              "eventPattern": "global_variable_changed:insider_asset_arrested",
+              "condition": "value === true && !globalVars.insider_hostile",
+              "onceOnly": true,
+              "setVisible": false
             }
           ]
         }
@@ -1597,7 +1955,7 @@ recovery_instructions_encoded = rot13("FULL RECOVERY REQUIRES OFFLINE + ONLINE K
           "name": "Ransomware Incorporated Proposal",
           "takeable": false,
           "readable": true,
-          "text": "ZERO DAY SYNDICATE -- AFFILIATE PROGRAMME\n\nTarget: St. Catherine's Regional Medical Center\nOperator: Ghost (Ransomware Incorporated)\nAttack vector: ProFTPD CVE-2010-4652 (unpatched since 2020)\n\nRansom: $87,000 (2.5 BTC)\nSyndicate cut: 30%\nOperator cut: 70%\n\nNOTE: Hospital has deferred all security upgrades. Unpatched systems confirmed. Success probability: 94%.\n\nThis document was printed from an encrypted channel -- someone inside this hospital is an ENTROPY affiliate.",
+          "text": "ZERO DAY SYNDICATE -- AFFILIATE PROGRAMME\n\nTarget: St. Catherine's Regional Medical Centre\nOperator: Ghost (Ransomware Incorporated)\nAttack vector: ProFTPD CVE-2010-4652 (unpatched since 2020)\n\nRansom: $87,000 (2.5 BTC)\nSyndicate cut: 30%\nOperator cut: 70%\n\nNOTE: Hospital has deferred all security upgrades. Unpatched systems confirmed. Success probability: 94%.\n\nThis document was printed from an encrypted channel -- someone inside this hospital is an ENTROPY affiliate.",
           "observations": "A printed briefing document -- someone was feeding ENTROPY information about the hospital's vulnerabilities",
           "onRead": { "setVariable": { "insider_evidence_partial": true } },
           "puzzle_graph_role": "clue",
@@ -1626,36 +1984,41 @@ recovery_instructions_encoded = rot13("FULL RECOVERY REQUIRES OFFLINE + ONLINE K
           "phoneId": "press_terminal",
           "npcIds": ["press_terminal_system"],
           "puzzle_graph_role": "lock",
-          "puzzle_graph_aim": "restore_hospital_systems"
+          "puzzle_graph_aim": "restore_hospital_systems",
+          "puzzle_graph_note": "Double-gated: the evidence package will not authenticate until backdoor_fully_exploited (full VM flag chain) AND ransom_decision_made. This is what keeps VM exploitation on the critical path to the ending.",
+          "puzzle_graph_links": [
+            { "from": "vmfl_submit_ghost_log_flag", "to": "lock_press_terminal" },
+            { "from": "lock_hospital_recovery_console", "to": "lock_press_terminal" }
+          ]
         }
       ]
     },
 
-    "hallway_north": {
-      "type": "hall_1x2gu",
+    "security_office": {
+      "type": "room_hospital_office",
       "dimensions": {
-        "width": 20,
-        "height": 6
+        "width": 10,
+        "height": 10
       },
-      "door_sign": "North Corridor",
+      "door_sign": "Security Office",
       "connections": {
-        "south": "reception_lobby",
-        "north": "server_room"
+        "east": "office_corridor",
+        "west": "server_room"
       },
       "npcs": [
         {
           "id": "security_guard_patrol",
-          "displayName": "Hospital Security Guard",
+          "displayName": "Val Okonkwo",
           "npcType": "person",
-          "position": { "x": 10, "y": 2 },
+          "position": { "x": 4, "y": 5 },
           "spriteSheet": "female_security_guard",
           "spriteTalk": "assets/characters/female_security_guard_talk.png",
           "spriteConfig": { "idleFrameRate": 6, "walkFrameRate": 10 },
           "storyPath": "scenarios/m02_ransomed_trust/ink/m02_npc_security_guard.json",
           "currentKnot": "start",
           "voice": {
-            "name": "Enceladus",
-            "style": "Authoritative hospital security guard. No-nonsense, by the book. Suspicious of strangers during the crisis.",
+            "name": "Leda",
+            "style": "Hospital security officer on nights. Consistent Liverpool / Scouse accent throughout. Warm and quick with a joke until the moment she isn't -- then completely immovable. Not stupid, not a jobsworth, genuinely believes the corridor is her responsibility.",
             "language": "en-GB"
           },
           "globalVarOnKO": "guard_knocked_out",
@@ -1663,10 +2026,10 @@ recovery_instructions_encoded = rot13("FULL RECOVERY REQUIRES OFFLINE + ONLINE K
             "patrol": {
               "enabled": true,
               "waypoints": [
-                { "x": 2, "y": 2, "dwellTime": 2000 },
-                { "x": 8, "y": 2 },
-                { "x": 8, "y": 3, "dwellTime": 2000 },
-                { "x": 2, "y": 3 }
+                { "x": 2, "y": 3, "dwellTime": 3000 },
+                { "x": 7, "y": 3 },
+                { "x": 7, "y": 7, "dwellTime": 2000 },
+                { "x": 2, "y": 7, "dwellTime": 3000 }
               ],
               "waypointMode": "sequential",
               "speed": 40,
@@ -1689,6 +2052,16 @@ recovery_instructions_encoded = rot13("FULL RECOVERY REQUIRES OFFLINE + ONLINE K
               "cooldown": 30000
             },
             {
+              "eventPattern": "global_variable_changed:cover_burned",
+              "condition": "value === true",
+              "onceOnly": true,
+              "bark": "Control just rang. Says there's no consultant booked.",
+              "barkDelay": 1200,
+              "setPatrolSpeed": 62,
+              "setDwellMultiplier": 0.4,
+              "targetKnot": "cover_challenge"
+            },
+            {
               "eventPattern": "room_entered:server_room",
               "targetKnot": "on_server_room_access",
               "conversationMode": "person-chat",
@@ -1699,28 +2072,129 @@ recovery_instructions_encoded = rot13("FULL RECOVERY REQUIRES OFFLINE + ONLINE K
           "itemsHeld": [
             {
               "type": "notes",
-              "name": "Guard's Station Log",
+              "name": "Val's Pocket Notebook",
+              "key_id": "val_notebook",
               "takeable": true,
               "readable": true,
-              "text": "SECURITY LOG - TODAY\n\n09:12 - External security consultant arrived (Dr. Kim authorized)\n09:20 - All non-critical systems confirmed offline\n10:05 - Perimeter secured, IT access restricted\n\nNOTE: Unauthorized access to server room is a fireable offense.",
-              "observations": "The guard's station log -- useful context"
+              "text": "NIGHT LOG -- V. OKONKWO\n\n22:40  Webb (IT) in. Told him to go home. He didn't.\n23:15  Dr Kim in. Looked through me.\n01:02  Ext. consultant expected -- Kim's authorisation, per reception.\n03:20  Reeves on his post again. Sensitive comms, apparently.\n       Not on my rota. Not on ANY rota I've ever been given.\n       Asked Sandra in Estates. She's never heard of him either.\n       Raised it twice. Told twice it's \"crisis protocol\".\n\nNote to self: get that in writing before someone asks me why I let him stand there all night.",
+              "observations": "Val's own notebook. She has been quietly logging Graham Reeves for weeks and nobody upstairs wants to hear it.",
+              "observationDisplay": "gameDisplay",
+              "onRead": { "setVariable": { "insider_evidence_partial": true } },
+              "puzzle_graph_role": "clue",
+              "puzzle_graph_aim": "unmask_inside_asset",
+              "puzzle_graph_reveals": "val_independently_flagged_reeves_alternative_route_into_the_insider_thread"
             }
           ]
         }
       ],
-      "objects": []
+      "objects": [
+        {
+          "type": "pc",
+          "id": "security_desk_terminal",
+          "name": "Security Desk Terminal (Encrypted)",
+          "sprite": "pc",
+          "takeable": false,
+          "locked": true,
+          "lockType": "ransomware_display",
+          "observations": "The security office workstation -- door logs, badge records, the lot. Encrypted with everything else, which is precisely why Val is stood in this room instead of sat at this desk.",
+          "onRead": { "setVariable": { "decoded_ransomware_note": true } },
+          "puzzle_graph_role": "lock",
+          "puzzle_graph_aim": "cover_compromised",
+          "minigameData": {
+            "organisation": "St. Catherine's Regional Medical Centre",
+            "encryptedSystems": "Access control | Door logs | Badge issuing | CCTV index",
+            "ransomAmount": "£87,000",
+            "ransomBitcoin": "2.5 BTC",
+            "walletAddress": "bc1q7cyrfmckn2ewz5m78ts6jt9lcfhfwcvzefm27k",
+            "timerHours": 12,
+            "groupName": "Ransomware Incorporated",
+            "supportPortal": "ransom1nc0rp0rated.onion"
+          }
+        },
+        {
+          "type": "notes",
+          "name": "Key Cabinet (Empty)",
+          "takeable": false,
+          "readable": true,
+          "text": "MECHANICAL OVERRIDE CABINET\n\nSigned out 06:15 -- ALL KEYS -- to Reception (B. Nwosu) per Estates instruction.\n\nRemaining in cabinet: none.\n\nNOTE PINNED INSIDE THE DOOR:\n\"Server room is NOT on this cabinet. That door runs off its own offline reader and only takes a card that already exists. No card, no entry, no exceptions, and no I cannot make you one.\"",
+          "observations": "The override key cabinet, hanging open and completely empty -- everything went down to Bernie on reception this morning. The note inside the door explains why the server room is the one door nobody can help you with.",
+          "observationDisplay": "gameDisplay",
+          "puzzle_graph_role": "clue",
+          "puzzle_graph_reveals": "confirms_the_two_access_routes_and_that_the_server_room_needs_an_existing_card"
+        },
+        {
+          "type": "notes",
+          "name": "Night Rota",
+          "takeable": false,
+          "readable": true,
+          "text": "SECURITY -- NIGHT ROTA, THIS WEEK\n\nMon  V. OKONKWO\nTue  V. OKONKWO\nWed  V. OKONKWO\nThu  V. OKONKWO\nFri  V. OKONKWO / cover TBC\n\nIn biro at the bottom, underlined twice:\n\"Still no G. REEVES on this. Asked Estates 14/06, 02/07, 19/07. Told to leave it.\"",
+          "observations": "The printed rota. One officer covers every night this week -- and somebody has been quietly noting that the man in the boardroom appears on no rota at all.",
+          "onRead": { "setVariable": { "insider_evidence_partial": true } },
+          "puzzle_graph_role": "clue",
+          "puzzle_graph_aim": "unmask_inside_asset",
+          "puzzle_graph_reveals": "reeves_is_on_no_rota_third_independent_entry_into_the_insider_thread"
+        },
+        {
+          "type": "chair-exec-rotate3",
+          "name": "Val's Chair",
+          "takeable": false,
+          "observations": "Pushed back from the desk and cold. She has not sat down since two."
+        }
+      ]
     },
 
-    "hallway_south": {
+    "office_corridor": {
       "type": "hall_1x2gu",
       "dimensions": {
         "width": 20,
         "height": 6
       },
-      "door_sign": "South Corridor",
+      "door_sign": "Main Corridor",
       "connections": {
-        "north": "hospital_ward",
-        "south": "emergency_equipment_storage"
+        "south": "ward_hall",
+        "north": ["conference_room", "dr_kim_office", "it_department"],
+        "west": "security_office"
+      },
+      "npcs": [],
+      "objects": [
+        {
+          "type": "notes",
+          "name": "Ward Board",
+          "takeable": false,
+          "readable": true,
+          "text": "ST. CATHERINE'S -- CORRIDOR DIRECTORY\n\nBoardroom .................... this corridor, first door (KEYPAD)\nExecutive / CTO .............. this corridor, centre door\nIT Systems ................... this corridor, far door (OVERRIDE KEY)\nSecurity Office .............. west end of this corridor\nServer Room .................. through Security Office (RESTRICTED)\nWard 3 (Critical Care) ....... down the ward link, south\nEmergency Equipment Store .... far end of Ward 3\nReception .................... through Ward 3, ward approach\n\nHandwritten underneath, in biro: \"ALL READERS DOWN -- overrides at reception, sign them out, DO NOT PROP DOORS.\"",
+          "observations": "The corridor directory. Somebody has added the state of the access control system underneath in biro.",
+          "puzzle_graph_role": "clue",
+          "puzzle_graph_reveals": "map_orientation_and_confirmation_that_overrides_live_at_reception"
+        }
+      ]
+    },
+
+    "ward_hall": {
+      "type": "hall_1x2gu",
+      "dimensions": {
+        "width": 5,
+        "height": 10
+      },
+      "door_sign": "Ward Link",
+      "connections": {
+        "east": "hospital_ward",
+        "north": "office_corridor"
+      },
+      "npcs": [],
+      "objects": []
+    },
+
+    "ward_approach": {
+      "type": "hall_1x2gu",
+      "dimensions": {
+        "width": 10,
+        "height": 10
+      },
+      "door_sign": "Ward Approach",
+      "connections": {
+        "west": "reception_lobby",
+        "north": "hospital_ward"
       },
       "npcs": [],
       "objects": [
@@ -1729,8 +2203,12 @@ recovery_instructions_encoded = rot13("FULL RECOVERY REQUIRES OFFLINE + ONLINE K
           "name": "Nurse's Handwritten Note",
           "takeable": false,
           "readable": true,
-          "text": "Emergency kit -- storage room at end of corridor.\n\nPIN reset to hospital default after last fire drill. Ask Facilities if you need it. (They won't be available today.)\n\n-- S.H.",
-          "observations": "A handwritten note pinned to the corridor wall -- mentions a PIN and the emergency storage room"
+          "text": "Emergency kit -- store room off the far end of Ward 3.\n\nPIN went back to the hospital default after the last fire drill and nobody has changed it since. Ask Facilities if you're stuck.\n\n(Facilities are not in tonight. Nobody is in tonight.)\n\n-- A.D.",
+          "observations": "A note taped to the wall by the ward doors, in the same hand as the paper charts inside. It mentions the storage PIN and the fire drill.",
+          "puzzle_graph_role": "clue",
+          "puzzle_graph_unlocks": "emergency_storage_safe",
+          "puzzle_graph_optional": true,
+          "puzzle_graph_reveals": "points_at_the_default_pin_and_seeds_the_fire_drill_thread"
         }
       ]
     }
@@ -1753,9 +2231,24 @@ recovery_instructions_encoded = rot13("FULL RECOVERY REQUIRES OFFLINE + ONLINE K
     "marcus_defensive": false,
     "marcus_trusts_player": false,
     "gave_keycard": false,
+    "marcus_evidence_recovered": false,
+    "marcus_gave_lanyard": false,
 
     "kim_influence": 0,
     "player_warned_kim": false,
+    "found_boardroom_code": false,
+
+    "bernie_influence": 0,
+    "bernie_trusts_player": false,
+    "bernie_vouched": false,
+    "bernie_gave_key": false,
+    "seen_picking_by_bernie": false,
+    "noticed_struck_booking": false,
+
+    "cover_burned": false,
+    "cover_restored": false,
+    "staff_lanyard_obtained": false,
+    "insider_method_confirmed": false,
 
     "flag_ssh_submitted": false,
     "flag_proftpd_submitted": false,

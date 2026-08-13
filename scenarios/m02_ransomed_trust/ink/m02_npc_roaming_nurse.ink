@@ -1,23 +1,31 @@
 // ===========================================
-// Patrol NPC: Roaming Ward Nurse (ambiance / stakes)
+// Patrol NPC: Nurse Priya Raval (ambience / stakes)
 // Mission 2: Ransomed Trust
 // Brief, focused single-line responses. No branching.
-// She is on manual obs rounds and hasn't the time to stop.
+// She is on manual obs rounds and has not got time to stop for you.
+// Yorkshire, brisk, not unkind -- just genuinely busy.
 // ===========================================
 
 === start ===
-#speaker:roaming_ward_nurse
-Nurse: *doesn't slow down* Can't stop, love -- manual obs on all six beds, every fifteen minutes, no monitors.
+Nurse Raval: *doesn't slow down* Can't stop, love -- manual obs on all six, every fifteen minutes, no monitors.
 
-Nurse: If it's the systems you're here for, get on with it. These patients haven't got all night.
+Nurse Raval: If it's the computers you're here for, get on with it. These lot haven't got all night.
 
-+ [Sorry -- carry on]
-    #speaker:roaming_ward_nurse
-    Nurse: Right. *moves to the next bed*
++ [Sorry. Carry on.]
+    Nurse Raval: Aye. *already at the next bed*
     #exit_conversation
     -> DONE
+
 + [Anything you need?]
-    #speaker:roaming_ward_nurse
-    Nurse: Their charts back on a screen. That's all. Go and make that happen.
+    Nurse Raval: Their charts back on a screen so I can look at six people at once again.
+    Nurse Raval: That's it. That's the whole list. Go and do that.
+    #exit_conversation
+    -> DONE
+
++ [Fifteen minutes is a long gap on an ECMO bed.]
+    Narrator: She stops, just for a second.
+
+    Nurse Raval: It is.
+    Nurse Raval: That's why Sister's not left bay two since three o'clock. Now shift, you're stood where I need to be.
     #exit_conversation
     -> DONE

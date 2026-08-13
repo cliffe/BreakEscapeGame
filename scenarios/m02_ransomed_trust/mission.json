@@ -1,6 +1,6 @@
 {
   "display_name": "Ransomed Trust",
-  "description": "Infiltrate St. Catherine's Regional Medical Center after a ransomware attack has encrypted critical systems. With 47 patients on life support and 12 hours of backup power remaining, you must recover decryption keys before making a critical decision: pay the ransom to save lives today, or refuse and deny ENTROPY funding.",
+  "description": "St. Catherine's Regional went dark at 02:47. Forty-seven patients are on backup generators and the board votes on paying ENTROPY's ransom in four hours. You are booked in as an emergency security consultant — which buys you a paper badge and nothing else, because the ransomware took the access control server too. Nobody in this building can grant you access. Talk, borrow or pick your way to the backup server, turn ENTROPY's own backdoor against them, and find out who inside the hospital held the door open.",
   "difficulty_level": 1,
   "secgen_scenario": "rooting_for_a_win",
   "collection": "season_1",

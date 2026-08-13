@@ -26,6 +26,18 @@ VAR insider_asset_exposed = false
 VAR accused_wrong_suspect = false
 VAR night_security_supervisor_ko = false
 
+// The cover-burn thread
+VAR cover_burned = false
+VAR cover_restored = false
+VAR bernie_vouched = false
+VAR staff_lanyard_obtained = false
+VAR insider_method_confirmed = false
+VAR guard_knocked_out = false
+VAR attacked_guard = false
+
+// Local
+VAR asked_about_the_call = false
+
 // Local: how the player carries the weight of the mission. Set in the hub,
 // paid off in the final reflection. Not a global -- self-contained to this scene.
 VAR player_shaken = false
@@ -79,8 +91,38 @@ Agent HaX: {&What do you want to know?|What else?|Anything more before we get to
     -> q_entropy_link
 * {q_entropy_link > 0 and q_architect < 1} [Then who's running the cells? The Architect?]
     -> q_architect
+* {cover_burned and not asked_about_the_call} [Someone in that building took my name off their system in the middle of the job. I want to talk about that.]
+    -> q_the_phone_call
 * [Enough. Walk me through what it cost.]
     -> mission_summary
+
+=== q_the_phone_call ===
+#speaker:agent_0x99
+~ asked_about_the_call = true
+
+Agent HaX: Yes. I've thought about very little else since your field notes came in.
+
+Agent HaX: Eleven words on an internal telephone, and it very nearly cost you the operation. No exploit, no weapon, no confrontation. He simply removed the thing every one of your doors was actually running on, which was other people's willingness to believe you.
+
+{insider_method_confirmed:
+    Agent HaX: And ENTROPY's own handling notes had it written down as doctrine. "Do not obstruct physically. Remove their standing." They knew exactly what they were buying when they bought Reeves.
+}
+
+* [It worked because there was no system left to correct the record in.]
+    Agent HaX: That's the part I want you to keep.
+    Agent HaX: The ransomware didn't just take their patient records. It took their ability to know who anybody was. And the moment that goes, an institution runs entirely on social trust -- and social trust is a great deal easier to attack than a server.
+    -> debrief_hub
+
+* {bernie_vouched} [It didn't work. A night receptionist put her own staff number against my name.]
+    Agent HaX: *and there's something almost like a laugh in it* Bernadette Nwosu.
+    Agent HaX: Eleven years on a reception desk, no security clearance, no training, no idea who you actually were. And she is the single reason ENTROPY's inside asset did not run this operation to a conclusion.
+    Agent HaX: Put her in the report by name. I'll make sure somebody senior enough to embarrass a hospital board reads it.
+    -> debrief_hub
+
+* {not cover_restored} [I never did get it back. I worked the rest of that night as a trespasser.]
+    Agent HaX: I know. It's in every line of your notes.
+    Agent HaX: You did the job with the building against you, which is harder than the job you were briefed for. I'd rather you hadn't had to.
+    -> debrief_hub
 
 === q_ghost_identity ===
 #speaker:agent_0x99
@@ -173,11 +215,11 @@ Agent HaX: You paid the ransom. Systems restored in under four hours.
 
 Agent HaX: Patient outcomes: 2 fatalities. Cardiac events during system transition -- both had pre-existing complications.
 
-Agent HaX: 45 patients survived. Medical board ruled the deaths statistically probable regardless of the attack.
+Agent HaX: 45 patients survived. The coroner's office ruled the deaths statistically probable regardless of the attack.
 
 * [45 people are alive because we moved fast.]
     Agent HaX: Yes. That's real. Those families don't have funerals.
-    Agent HaX: But the $87,000 is already gone. You should know where it went.
+    Agent HaX: But the £87,000 is already gone. You should know where it went.
     -> entropy_funding_discussion
 
 * [2 people died. That's not nothing.]
@@ -185,13 +227,13 @@ Agent HaX: 45 patients survived. Medical board ruled the deaths statistically pr
     Agent HaX: Medical review concluded the attack accelerated what would have happened anyway. I'm not sure that's the comfort it's supposed to be.
     -> ransom_paid_funding
 
-* [What does $87,000 actually buy them?]
+* [What does £87,000 actually buy them?]
     -> entropy_funding_discussion
 
 === ransom_paid_funding ===
 #speaker:agent_0x99
 
-Agent HaX: The $87,000. You should know where it goes.
+Agent HaX: The £87,000. You should know where it goes.
 
 -> entropy_funding_discussion
 
@@ -226,7 +268,7 @@ Agent HaX: Medical review: 4 of the 6 had terminal diagnoses -- life expectancy 
 === manual_recovery_vindication ===
 #speaker:agent_0x99
 
-Agent HaX: You denied ENTROPY $87,000. No operational funding for Ransomware Incorporated.
+Agent HaX: You denied ENTROPY £87,000. No operational funding for Ransomware Incorporated.
 
 Agent HaX: Ghost's next hospital target -- delayed. Possibly cancelled. And we have no transaction to trace, which means they have less financial signal to hide behind.
 
@@ -277,7 +319,7 @@ Agent HaX: You published the evidence.
 
 Agent HaX: "Hospital Ignored IT Warnings for Six Months Before Ransomware Attack." The story ran within the hour.
 
-Agent HaX: Congressional hearings. Forty-plus hospitals implementing emergency security audits within a fortnight.
+Agent HaX: A Health and Social Care Committee inquiry. Forty-plus hospitals implementing emergency security audits within a fortnight.
 
 {ghost_deal_accepted:
     Agent HaX: Ghost got exactly what they wanted -- the public lesson. Without spending a penny.
@@ -306,7 +348,7 @@ Agent HaX: I don't know if it was right. I know it was consequential.
 === hospital_quiet_path ===
 #speaker:agent_0x99
 
-Agent HaX: You kept the evidence internal. St. Catherine's board has privately committed to a security overhaul -- cybersecurity budget tripled. $250,000 annual allocation.
+Agent HaX: You kept the evidence internal. St. Catherine's board has privately committed to a security overhaul -- cybersecurity budget tripled. £250,000 annual allocation.
 
 Agent HaX: Reputation intact. Public unaware.
 
@@ -338,7 +380,7 @@ Agent HaX: St. Catherine's is safer. The rest of the sector -- unchanged.
 === npc_outcomes_exposed ===
 #speaker:agent_0x99
 
-Agent HaX: Dr. Kim resigned under pressure. Congressional testimony. Reputation damaged, not destroyed -- she's consulting in healthcare tech now.
+Agent HaX: Dr. Kim resigned under pressure. Gave evidence to a select committee. Reputation damaged, not destroyed -- she's consulting in healthcare tech now.
 
 {kim_guilt_revealed:
     Agent HaX: She told investigators she recommended the budget cuts. Accepted responsibility publicly.
@@ -358,7 +400,7 @@ Agent HaX: Marcus Webb...
 
 Agent HaX: Vindicated. Your documentation of his warnings went public alongside everything else.
 
-Agent HaX: He's Director of Cybersecurity at Metro General now. Full team, proper budget.
+Agent HaX: He's Director of Cybersecurity at Royal Northern now. Full team, proper budget.
 
 Agent HaX: He asked us to pass something on: "Tell the agent who documented my warnings. They gave me my career back."
 
@@ -416,7 +458,7 @@ Agent HaX: Blacklisted in healthcare IT. "Failed to prevent catastrophic breach.
 
 Agent HaX: He did everything right. Warned them. Documented the risk. Seven times.
 
-Agent HaX: Last I heard, he's working help desk at a community college. $45,000 a year.
+Agent HaX: Last I heard, he's working help desk at a further education college. £26,000 a year.
 
 #speaker:narrator
 Narrator: A pause.
@@ -479,7 +521,11 @@ Agent HaX: Ransomware Incorporated is still operational.
 === insider_rolled_up ===
 #speaker:agent_0x99
 
-Agent HaX: And you got the one Ghost planted inside. The night security supervisor -- badge SC-4471. He authorised the fire drill that put ENTROPY's device on the LAN.
+Agent HaX: And you got the one Ghost planted inside. Graham Reeves. Badge SC-4471. He authorised the fire drill that put ENTROPY's device on the LAN six weeks before you ever walked in.
+
+{cover_burned:
+    Agent HaX: And he made the phone call. Which means the man slowing you down all night was standing four feet from the evidence, being helpful.
+}
 
 {insider_asset_exposed:
     Agent HaX: You named him publicly alongside the board. He'll stand next to their negligence in every story that runs.
@@ -497,9 +543,9 @@ Agent HaX: Good work finding him. Intelligence like that feeds every mission tha
 #speaker:agent_0x99
 
 {insider_identified:
-    Agent HaX: And you put down the inside asset yourself. The night security supervisor -- badge SC-4471. No interrogation, so the cell thread is thinner than an arrest would've given us, but he's off the board and contained.
+    Agent HaX: And you put down the inside asset yourself. Graham Reeves, badge SC-4471. No interrogation, so the cell thread is thinner than an arrest would've given us, but he's off the board and contained.
 - else:
-    Agent HaX: One more thing. The night security supervisor you took down in the conference room -- we ran him afterwards. Badge SC-4471. He authorised the fire drill that planted ENTROPY's device.
+    Agent HaX: One more thing. The night security supervisor you put down in the boardroom -- we ran him afterwards. Graham Reeves, badge SC-4471. He authorised the fire drill that planted ENTROPY's device.
     Agent HaX: You had the right man. You just never knew what you were holding. We recovered what we could from his post logs, but he wasn't talking.
 }
 
@@ -510,7 +556,7 @@ Agent HaX: Underpaid, ignored, radicalised by the same negligence he helped puni
 === insider_flagged ===
 #speaker:agent_0x99
 
-Agent HaX: You identified Ghost's inside asset -- the night security supervisor, badge SC-4471. You didn't get to close it out yourself, but your identification was enough.
+Agent HaX: You identified Ghost's inside asset -- Graham Reeves, night security supervisor, badge SC-4471. You didn't get to close it out yourself, but your identification was enough.
 
 Agent HaX: SAFETYNET moved on the intel and picked him up before he could disappear. His access logs and handler contacts are ours now. A thread into the cell.
 
@@ -519,9 +565,9 @@ Agent HaX: SAFETYNET moved on the intel and picked him up before he could disapp
 === insider_escaped ===
 #speaker:agent_0x99
 
-Agent HaX: There's one more thing you should know. Ghost told you the truth -- there was an affiliate inside the building. The night security supervisor.
+Agent HaX: There's one more thing you should know. Ghost told you the truth -- there was an affiliate inside the building. Graham Reeves, the night security supervisor.
 
-Agent HaX: He was standing at the press terminal the whole time. When you transmitted, he moved on you and got out in the confusion. By the time backup reached the conference room, he was gone.
+Agent HaX: Graham Reeves. He was standing at that terminal the whole time. When you transmitted, he moved on you and got out in the confusion. By the time backup reached the conference room, he was gone.
 
 Agent HaX: Vanished. No trace. The same way Ghost went. That one's on the clock we were racing -- but if we'd read the signs earlier, we'd have had him.
 
@@ -532,7 +578,7 @@ Agent HaX: Vanished. No trace. The same way Ghost went. That one's on the clock 
 
 Agent HaX: One loose end. Ghost wasn't bluffing about an inside affiliate -- there was one. And you spent your suspicion on the wrong person.
 
-Agent HaX: The real asset was the night security supervisor on the conference-room post. Badge SC-4471. He walked out the same night, unquestioned.
+Agent HaX: The real asset was Graham Reeves, on the boardroom post. Badge SC-4471. He walked out the same night, unquestioned.
 
 Agent HaX: It happens. The evidence pointed where they wanted it to point. But it's a lead we'll be chasing cold now.
 
@@ -560,9 +606,50 @@ Agent HaX: Ghost's logs confirmed what we suspected -- Zero Day Syndicate source
     Agent HaX: The Zero Day Syndicate invoice you found -- specific evidence of the procurement chain between ENTROPY cells. That's going straight into planning for what comes next.
 }
 
+{lore_ghosts_manifesto_found:
+    Agent HaX: And the manifesto. Ghost's own statement of intent, staged on their own hardware, signed off by the Architect.
+    Agent HaX: Analysts have had it two days and nobody's slept. It is not the ravings we were expecting. It is a costed argument with an error bar on it, and the last line reads "I am not asking to be forgiven, I am asking to be understood."
+    Agent HaX: That document is the most valuable thing you brought out of that building. It tells us what we are actually fighting, and it isn't crime.
+}
+
 Agent HaX: The Zero Day Syndicate is next in our sights. The Crypto Anarchists, further down the line.
 
 Agent HaX: Your work here feeds both.
+
+-> staff_outcomes
+
+// ===========================================
+// THE PEOPLE WHO HELPED -- the mission's social ledger
+// ===========================================
+
+=== staff_outcomes ===
+#speaker:agent_0x99
+
+Agent HaX: One last section, and then I'll let you go. The people.
+
+{bernie_vouched:
+    Agent HaX: Bernadette Nwosu, night reception. She put her own staff number against a stranger on the word of one honest conversation, and she was right.
+    Agent HaX: The trust's opened a disciplinary about it. I have written to them. At some length.
+}
+
+{cover_burned and not cover_restored:
+    Agent HaX: Nobody vouched for you. You finished that job as an unidentified man in a hospital corridor, which is a thing I would rather you never had to do twice.
+}
+
+{guard_knocked_out:
+    Agent HaX: Val Okonkwo, security officer, north corridor. Concussion, four days off, and a written statement that she was assaulted by an intruder.
+    Agent HaX: She'd spent eight weeks logging Graham Reeves and getting told to drop it. She was the closest thing you had to an ally in that building and you put her on the floor.
+    Agent HaX: I'm not going to lecture you. You've read the file. I just want it said out loud once.
+- else:
+    {insider_identified:
+        Agent HaX: Val Okonkwo on security had Reeves in her notebook for eight weeks and was told twice to leave it. Her contemporaneous log is now the spine of the case against him.
+        Agent HaX: She has asked, through her union, that the record show she raised it. It will.
+    }
+}
+
+{marcus_protected:
+    Agent HaX: And Marcus Webb has the thing he actually wanted, which was never his job. It was somebody senior saying, in writing, that he was right.
+}
 
 -> final_reflection
 
@@ -610,7 +697,7 @@ Agent HaX: You made a call under time pressure, with incomplete information, in 
         Agent HaX: 45 people are alive today. That's real. Those are real families not burying someone.
         Agent HaX: ENTROPY has funding. That's also real. Both things are true simultaneously.
     - else:
-        Agent HaX: You denied ENTROPY $87,000. Long-term, that matters.
+        Agent HaX: You denied ENTROPY £87,000. Long-term, that matters.
         Agent HaX: Six people died in the downtime. That also matters.
     }
     Agent HaX: I won't tell you which weighs more. I genuinely don't know. Neither does anyone who hasn't stood where you stood.

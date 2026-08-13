@@ -34,24 +34,27 @@ EXTERNAL player_name()
 
 Ghost: You found it.
 
-Ghost: Installed during a fire drill, six weeks ago. Been sitting on your LAN since October.
+Ghost: Took you rather longer than I'd allowed for. I'd pencilled in ninety minutes and you've had rather more than that.
 
-Ghost: SAFETYNET sent one person. I planned for a team.
+Ghost: It went on this network six weeks ago, during a fire drill. It has been listening ever since -- through the budget meetings, through the patch that never happened, through a man in IT sending his seventh email.
+
+Ghost: And I want you to sit with the word "drill" for a moment, because a drill is a thing somebody has to authorise.
 
 ~ ghost_contacted_player = true
 #set_global:ghost_contacted_player:true
 
-* [Ghost. Who are you, really?]
-    Ghost: Someone who spent fourteen months preparing for tonight.
-    Ghost: Ransomware Incorporated. You know what we did. Ask me why.
+* [Somebody let you in.]
+    Ghost: *the pause is deliberate* Somebody agreed with me. That is not the same thing and I'd thank you to keep the distinction.
+    Ghost: You'll work it out. It will take you most of the night and you will be furious when you do.
     -> ghost_introduction
 
-* [You encrypted patient records. People are on life support.]
+* [There is a woman on ECMO forty feet from where I'm stood.]
     -> player_threatens
 
-* [Stay silent]
+* [Say nothing. Let them fill the silence.]
     You: ...
-    Ghost: Fine. I'll explain.
+    Ghost: *after a long moment* Most people shout. You're going to be tiresome, I can tell.
+    Ghost: Very well. I'll do both parts.
     -> ghost_introduction
 
 === ghost_introduction ===
@@ -91,7 +94,7 @@ Ghost: We didn't create that risk. St. Catherine's negligence did. We're reveali
 
 Ghost: Of course I calculated probabilities. This is risk assessment, not recklessness.
 
-Ghost: St. Catherine's board never ran these numbers. They deferred $85K security spending for a $3.2M MRI.
+Ghost: St. Catherine's board never ran these numbers. They deferred £85,000 security spending for a £3.2 million MRI.
 
 Ghost: They gambled with patient safety. We're making the stakes visible.
 
@@ -117,15 +120,13 @@ Ghost: Now they face consequences. Expensive, painful, unforgettable.
 === ghost_philosophy ===
 #speaker:ghost
 
-Ghost: Healthcare sector is systemically vulnerable. 214 hospitals scanned. 147 have critical vulnerabilities.
+Ghost: I surveyed two hundred and fourteen hospitals. A hundred and forty-seven of them are carrying something critical and unpatched that they have already been warned about in writing.
 
-Ghost: Traditional cybersecurity consultants charge millions for reports nobody reads.
+Ghost: Not ignorant. Warned. There is always a Marcus Webb. There is always a file of emails.
 
-Ghost: We charge thousands for lessons nobody forgets.
+Ghost: Consultants charge them a fortune for a report that goes in a drawer next to the last one. I charge rather less for a lesson that doesn't.
 
-Ghost: After this, St. Catherine's will triple cybersecurity budgets. Forty other hospitals will too.
-
-Ghost: Long-term -- we prevent hundreds of deaths across five years. The modelling holds every time I run it.
+Ghost: This board will triple their security budget inside a month. So will forty others, the moment they read about tonight. I have watched it happen before and the figures are consistent enough to be boring.
 
 * [You don't get to decide whose lives are worth risking.]
     Ghost: I didn't decide. St. Catherine's board decided when they cut the security budget.
@@ -147,7 +148,7 @@ Ghost: Long-term -- we prevent hundreds of deaths across five years. The modelli
 
 Ghost: Here's what happens next.
 
-Ghost: Pay 2.5 BTC -- $87,000. Systems restored in 2-4 hours. 1-2 patient deaths, statistical minimum.
+Ghost: Pay 2.5 BTC -- £87,000. Systems restored in 2-4 hours. 1-2 patient deaths, statistical minimum.
 
 Ghost: Don't pay. Manual recovery takes 12 hours. 4-6 patient deaths. Malpractice lawsuits. Hospital reputation destroyed.
 
@@ -215,7 +216,7 @@ Ghost: Still working? Time's running out.
 
 Ghost: 47 patients. Backup power failing. Families watching monitors.
 
-Ghost: $87,000 vs. human lives.
+Ghost: £87,000 vs. human lives.
 
 * [This is psychological manipulation.]
     Ghost: This is reality. 0.3% per hour. The clock doesn't care about your feelings.
@@ -242,7 +243,7 @@ Ghost: $87,000 vs. human lives.
 
 Ghost: Decryption keys delivered. Systems restoring.
 
-Ghost: St. Catherine's board approved a $250K security budget within 24 hours. More than triple what Marcus requested.
+Ghost: St. Catherine's board approved a £250,000 security budget within 24 hours. More than triple what Marcus requested.
 
 Ghost: That's what this was for.
 
@@ -269,7 +270,7 @@ Ghost: Those deaths are on your conscience. You could have paid. You chose ideol
 * [YOU attacked the hospital. YOU encrypted patient records. This is YOUR fault.]
     -> ghost_rejects_responsibility
 
-* [$87,000 denied. No funding for your next attack.]
+* [£87,000 denied. No funding for your next attack.]
     -> ghost_acknowledges_loss
 
 === ghost_rejects_responsibility ===
@@ -286,9 +287,9 @@ Ghost: We exploited it. They enabled it. The blame is shared whether you accept 
 === ghost_acknowledges_loss ===
 #speaker:ghost
 
-Ghost: $87,000 lost. Operational setback acknowledged.
+Ghost: £87,000 lost. Operational setback acknowledged.
 
-Ghost: But St. Catherine's board approved $400K emergency security budget -- panic response.
+Ghost: But St. Catherine's board approved £400,000 emergency security budget -- panic response.
 
 Ghost: Forty hospitals implementing emergency upgrades. Sector-wide impact achieved.
 
@@ -419,7 +420,7 @@ Ghost: That's not a threat. It's a capability demonstration. You should understa
 
 * [What is it you actually want from this?]
     Ghost: The board to face what they chose. The negligence on public record.
-    Ghost: The $87,000 is operational funding. The lesson is the point.
+    Ghost: The £87,000 is operational funding. The lesson is the point.
     -> act2_reveal
 
 === act2_reveal ===
@@ -480,7 +481,7 @@ Ghost: Upload them. Unredacted. To the press terminal in the conference room.
 
 Ghost: Public record. Journalist distribution. Permanent.
 
-Ghost: Not $87,000. The lesson.
+Ghost: Not £87,000. The lesson.
 
 Ghost: I planned this operation for fourteen months.
 
