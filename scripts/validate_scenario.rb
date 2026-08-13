@@ -461,10 +461,136 @@ def check_structure_validity(json_data)
 end
 
 # Check that ink files exist and compile
+# Every "Name: text" dialogue prefix is resolved at runtime by
+# person-chat-minigame.js -> normalizeSpeakerId(), which matches the text before
+# the colon against an NPC id or displayName (plus the special cases player / npc /
+# you / narrator). A prefix that does NOT resolve is not an error at compile time —
+# the engine silently treats the whole line as unprefixed and appends it, colon and
+# all, to whichever character spoke last. The player then sees "Marcus: I told them"
+# sitting inside somebody else's speech bubble. This is invisible until playtest,
+# so it is checked here.
+INK_SPEAKER_SPECIALS = %w[narrator player npc you computer].freeze
+
+# Abstract nouns that turn up as prose/terminal labels ("Reasoning: ...",
+# "Command: nmap -sV"). Title Case and repeated, so they look like speakers to a
+# naive check, but they render exactly as written and are not attribution bugs.
+INK_LABEL_WORDS = %w[
+  command reasoning inside note notes warning status result results reason outcome
+  evidence recommendation recommendations objective objectives target targets summary
+  action actions impact background context method methods tools tool step steps
+  host hosts port ports service services payload output input example examples
+  question answer options option task tasks goal goals risk risks finding findings
+].freeze
+
+# Words that read as physical stage direction rather than a vocal/emotional cue.
+# Used only for a soft suggestion — the call is a judgement one.
+INK_ACTION_EMOTE_HINTS = /\b(walks?|walking|crosses|steps?|moves?|leaves?|returns?|fetch|fetches|comes? back|goes? (?:over|off)|wanders?|paces?|strides?)\b/i.freeze
+
+def check_ink_dialogue_hazards(ink_lines, source_ink_path, valid_speakers)
+  issues = []
+  unresolved = Hash.new { |h, k| h[k] = [] }
+
+  ink_lines.each_with_index do |line, i|
+    ln = i + 1
+    stripped = line.strip
+    next if stripped.empty?
+
+    is_meta   = stripped.start_with?('//', '=', '~', '#', '->', 'VAR ', 'EXTERNAL ', 'CONST ', '{', '}', '>')
+    is_choice = stripped.start_with?('*', '+', '-')
+
+    # 1. A flavour emote written on its own line starts with '*', which ink parses
+    #    as a choice. It becomes a phantom choice button and can dead-end a branch.
+    if stripped.start_with?('*') && stripped.end_with?('*') && !stripped.include?('[') && stripped.count('*') >= 2
+      issues << "❌ INVALID: '#{source_ink_path}' line #{ln}: '#{stripped[0, 60]}' is a standalone emote starting " \
+                "with '*', which ink parses as a CHOICE. Attach it to a spoken line " \
+                "(\"Marcus Webb: *sighs* ...\") or make it a 'Narrator:' beat."
+    end
+
+    # 2. '//' inside dialogue is an ink comment — everything after it is dropped.
+    if !is_meta && stripped.include?('//')
+      issues << "❌ INVALID: '#{source_ink_path}' line #{ln}: contains '//', which ink treats as a comment. " \
+                "The rest of the line will be silently discarded at compile time. Rephrase or escape it."
+    end
+
+    # 3. Markdown bold is not supported and renders literally.
+    if stripped.include?('**')
+      issues << "⚠️ WARNING: '#{source_ink_path}' line #{ln}: '**' markdown bold is not supported by ink and " \
+                "will render literally. Use capitals or plain wording instead."
+    end
+
+    # 4. An unpaired '*' inside a dialogue line breaks emote pairing.
+    if !is_meta && !is_choice && stripped.count('*').odd?
+      issues << "⚠️ WARNING: '#{source_ink_path}' line #{ln}: odd number of '*' characters — an emote is " \
+                "probably unclosed, which will render the asterisk to the player."
+    end
+
+    # 5. A choice whose brackets don't balance swallows the rest of the line.
+    if is_choice && stripped.count('[') != stripped.count(']')
+      issues << "❌ INVALID: '#{source_ink_path}' line #{ln}: unbalanced '[' / ']' in a choice."
+    end
+
+    # 6. Speaker-prefix resolution.
+    next if is_meta || is_choice
+    m = stripped.match(/\A([A-Z][A-Za-z0-9.'\- ]{0,30}):\s+\S/)
+    next unless m
+
+    speaker = m[1].strip
+    key = speaker.downcase
+    next if INK_SPEAKER_SPECIALS.include?(key)
+    next if key.start_with?('narrator')      # Narrator[character_id]: form
+    next if valid_speakers.include?(key)
+
+    # Only flag things that actually look like a character name, so terminal /
+    # computer output ("CONFIRM: Do not transmit?", "Evidence release held: ...")
+    # is not mistaken for broken attribution. A name is Title Case in every word
+    # and is not a shouted all-caps label.
+    words = speaker.split(/\s+/)
+    next if words.size > 4
+    next if speaker == speaker.upcase && speaker.length > 3   # ALL-CAPS label
+    next unless words.all? { |w| w.match?(/\A[A-Z]/) }
+
+    unresolved[speaker] << ln
+  end
+
+  unresolved.each do |speaker, lines|
+    shown = lines.first(6).join(', ')
+    more  = lines.size > 6 ? " (+#{lines.size - 6} more)" : ''
+    is_label_word = INK_LABEL_WORDS.include?(speaker.downcase)
+    if lines.size >= 5 && !is_label_word
+      # Used repeatedly in one file — this is somebody's dialogue, not a label.
+      issues << "❌ INVALID: '#{source_ink_path}': speaker prefix '#{speaker}:' is used #{lines.size} times but " \
+                "matches no NPC id or displayName in this scenario (lines #{shown}#{more}). The engine will render " \
+                "the literal text '#{speaker}: ...' inside the previous speaker's bubble. Use the NPC's exact " \
+                "displayName, or 'Narrator:' / 'You:'."
+    else
+      # One or two uses is more often a prose label ("Command: sudo ...",
+      # "Inside: network diagrams"), which renders harmlessly. Flag it quietly.
+      issues << "💡 SUGGESTION: '#{source_ink_path}' line#{lines.size > 1 ? 's' : ''} #{shown}: '#{speaker}:' looks " \
+                "like a speaker prefix but matches no NPC. If it is a label (e.g. 'Command: nmap ...') this is fine " \
+                "and renders as written; if it is meant to be dialogue, use the NPC's exact displayName."
+    end
+  end
+
+  issues
+end
+
 def check_ink_files(json_data, base_dir, scenario_dir = nil)
   issues = []
   ink_files_to_check = Set.new
   narrator_used_files = []  # ink files that use a #speaker:narrator / Narrator: line
+
+  # Every id / displayName the engine's character registry will know about.
+  valid_speakers = Set.new
+  json_data['rooms']&.each_value do |room|
+    room['npcs']&.each do |npc|
+      valid_speakers << npc['id'].to_s.downcase if npc['id']
+      valid_speakers << npc['displayName'].to_s.downcase if npc['displayName']
+    end
+  end
+  if json_data['player']
+    valid_speakers << json_data['player']['id'].to_s.downcase if json_data['player']['id']
+    valid_speakers << json_data['player']['displayName'].to_s.downcase if json_data['player']['displayName']
+  end
 
   # Collect all referenced ink files from NPCs
   json_data['rooms']&.each do |room_id, room|
@@ -604,6 +730,9 @@ def check_ink_files(json_data, base_dir, scenario_dir = nil)
                       "See scenarios/ink/security-guard.ink for the talk-then-#hostile pattern."
           end
         end
+
+        # Speaker-prefix resolution + ink character hazards.
+        issues.concat(check_ink_dialogue_hazards(ink_lines, source_ink_path, valid_speakers))
       rescue => e
         # Non-fatal — file was already compiled successfully above
       end
@@ -1850,6 +1979,22 @@ def check_common_issues(json_data, valid_item_types = nil)
       end
       if task['targetObject'] && !all_object_ids.include?(task['targetObject'])
         issues << "⚠️ WARNING: #{task_path} references targetObject '#{task['targetObject']}' but no object with that id was found. Ensure the object has an explicit 'id' field matching '#{task['targetObject']}'."
+      end
+
+      # A submit_flags task with no targetFlags/targetCount has nothing to match a
+      # submission against, so it can never complete. That silently strands its aim —
+      # and if the aim gates the mission-conclusion aim, the scenario becomes
+      # unfinishable in a way nothing else in this validator would catch.
+      if task['type'] == 'submit_flags'
+        flags = task['targetFlags']
+        if !flags.is_a?(Array) || flags.empty?
+          issues << "❌ INVALID: #{task_path} is type 'submit_flags' but has no 'targetFlags' array. " \
+                    "The task can never complete. Add \"targetFlags\": [\"<vm_name>:flag_1\"] and " \
+                    "\"targetCount\": 1. See scenarios/m01_first_contact/scenario.json.erb."
+        elsif !task['targetCount'].is_a?(Integer) || task['targetCount'] < 1
+          issues << "❌ INVALID: #{task_path} (submit_flags) has targetFlags but no valid 'targetCount'. " \
+                    "Add \"targetCount\": #{flags.size}."
+        end
       end
 
       # Suggest puzzle_graph_unlocks on submit_flags tasks that gate further progress

@@ -764,6 +764,17 @@ export class PersonChatMinigame extends MinigameScene {
             }
         }
 
+        // "You:" is the documented way to write a player-spoken line (see
+        // README_ink_best_practices.md), and it is used several hundred times across
+        // the shipped scenarios. Without this alias the prefix fails to resolve, the
+        // line is treated as unprefixed, and the literal text "You: ..." gets appended
+        // to whichever NPC spoke last — i.e. the player's words appear inside the NPC's
+        // speech bubble. Resolved AFTER the exact id/displayName scan so a character
+        // genuinely named "You" would still win.
+        if (normalized === 'you') {
+            return this.characters['player'] ? 'player' : null;
+        }
+
         // Not found
         return null;
     }

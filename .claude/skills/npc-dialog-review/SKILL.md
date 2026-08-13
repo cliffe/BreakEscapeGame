@@ -26,7 +26,9 @@ ruby scripts/validate_scenario.rb scenarios/<scenario_name>/scenario.json.erb
 **From the validator**, surface only the **dialogue-facing** findings (leave layout/objectives/graph to `scenario-design-review`):
 - `#speaker:narrator` used with no top-level `narrator` voice block defined.
 - Player-choice / `You:`-echo phrasing flags.
-- `#give_item:lab-workstation:<key_id>` that doesn't match the handler's `itemsHeld`.
+- `#give_item:...` that doesn't match the speaking NPC's `itemsHeld`, and `#give_item` tags placed *after* their dialogue line (they fire on the wrong `story.Continue()`).
+- **Speaker prefixes that resolve to no NPC** — ❌ INVALID for a name used 5+ times in a file, 💡 SUGGESTION for a one-off (prose labels like `Command: nmap ...` look identical to the check and render harmlessly).
+- **Ink character hazards** — `//` inside dialogue (silently truncates the line as a comment), a standalone `*emote*` at line start (parses as a phantom choice), `**bold**`, unpaired `*`, unbalanced `[ ]` in a choice.
 - KO-wiring warnings where a required task's only completion path is a KO-vulnerable conversation with no `taskOnKO` fallback (cross-reference in §2f, don't restate detail).
 
 Present blockers first, then warnings. Omit empty groups.
@@ -36,6 +38,29 @@ Present blockers first, then warnings. Omit empty groups.
 Read every `.ink` file in `scenarios/<name>/ink/`. Report each finding as **CONCERN**, **OK**, or **N/A**, and cite the file + knot. Do not restate Phase-1 items; cross-reference them.
 
 ### 2a. Attribution & narration
+
+- **Every `Character Name:` prefix resolves to an NPC `id` or `displayName`, exactly.** This is the highest-value check in this skill. `normalizeSpeakerId()` matches only against id / displayName plus the specials `player`, `npc`, `you`, `Narrator`. A shortened name (`Marcus:` for `Marcus Webb`) or a role word (`Guard:`, `Nurse:`, `Dr. Kim:`) does **not** resolve — ink still compiles, and the engine renders the literal text `Marcus: ...` inside whichever character spoke last. Phase 1 flags this automatically; confirm each ❌ INVALID is a real speaker rather than a prose label, and check the fix used the NPC's exact `displayName` instead of shortening it further.
+- **Emotes split by category, not wholesale.** Delivery cues the TTS can act on (`*quietly*`, `*sighs*`, `*pause*`, `*not looking up*`) stay inline; events in the scene (handing something over, crossing the room, looking up for the first time) become `Narrator:` beats. Flag a file that has promoted *every* gesture — each Narrator line is an extra click-through and conversations start to wade.
+
+### 2a-bis. Is the dialogue supported by the scenario?
+
+Ink can assert anything; the engine only renders what the scenario defines. Read each NPC's block in `scenario.json.erb` alongside its ink and flag contradictions — these are invisible until playtest:
+
+- **Movement vs `behavior`.** An NPC with no `behavior.patrol` never moves. Stage directions like *"without stopping"*, *"takes you down the row"*, *"comes back with"* describe something the player will never see. Either the NPC needs a patrol, or the stillness should become the characterisation.
+- **Props.** Anything the dialogue draws attention to should exist as an object in that room. If it must not be takeable (it would bypass a puzzle), it still wants to exist as `takeable: false`.
+- **Handovers.** "Take it, it's yours" needs a `#give_item` tag *and* a matching `itemsHeld` entry. Phase 1 validates the tag; only reading the prose catches an offer that was never tagged at all.
+- **Geography.** Directions in dialogue go stale whenever connections change. Cross-check every "east of", "down the corridor", "first door" against the current `connections`.
+- **Sprites vs narration.** If a knot says a character has been taken away or their post is empty, an event mapping should `setVisible: false`.
+- **Off-screen intentions.** A stationary NPC saying "I go in in five minutes" is still standing there hours later. Intentions must stay true for an unbounded night.
+
+Off-map events and post-mission debriefs are legitimate exceptions.
+
+### 2a-ter. Voices
+
+- Every speaking NPC has a `voice` block (terminals/computer phone NPCs excepted).
+- No `voice.name` is reused by two characters who appear together — reuse is correct only for the *same* character across multiple NPC entries.
+- Each `style` names its accent explicitly and says "consistent ... throughout"; the cast is not uniformly RP.
+
 - Dialogue uses inline `Character Name:` prefixes (primary method); `#speaker:` tags only as a fallback for tag-less lines. (Both styles are valid — `#speaker:` keys resolve to NPCs by **prefix**, e.g. `#speaker:dr_kim` → NPC `dr_sarah_kim`, matching the shipped m01 `derek` → `derek_lawson` convention. A speaker key that matches no NPC by prefix is a real bug.)
 - Standalone scene-setting / third-person action beats are spoken as `Narrator:` lines, and a top-level `narrator` voice block exists. Inline emotes inside a character's own line (`Nurse: *sighs* Right.`) are fine.
 

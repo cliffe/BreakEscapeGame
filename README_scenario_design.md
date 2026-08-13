@@ -57,6 +57,9 @@ The validator performs three phases:
    - `vm-launcher` missing `vm` or `hacktivityMode` fields
    - `launch-device` missing required fields
    - **Minigame configuration** (`minigameData`) with undeclared fields or missing required fields per `scripts/minigame-data-schemas.json`
+   - **Ink speaker prefixes** that resolve to no NPC `id` / `displayName` (the engine would render the literal `Name: ...` inside another character's bubble)
+   - **Ink character hazards** — `//` inside dialogue, a standalone `*emote*` at line start, `**bold**`, unpaired `*`, unbalanced `[ ]` in a choice
+   - **`submit_flags` tasks** missing `targetFlags` / `targetCount` (the task could never complete)
 4. **Recommended fields** – warnings for missing `globalVariables`, `objectives`, `observations`, NPC `position`, `currentKnot`, etc.
 5. **Suggestions** – guidance for adding VM launchers, flag stations, opening cutscenes, closing debriefs, patrol NPCs, and variety in lock types
 
@@ -217,6 +220,11 @@ The `type` field of each room must match a file in `public/break_escape/assets/r
 | `room_control_1x2gu` | SCADA / industrial control room (1×2 GU) |
 | `room_battery_hall` | Industrial lithium-ion battery storage hall (4×2 GU) |
 | `room_hospital_ward` | Hospital ward (4×2 GU) |
+| `room_hospital_reception` | Hospital reception / night desk (2×2 GU) |
+| `room_hospital_office` | Hospital office — IT department, admin (2×2 GU) |
+| `room_hospital_cto_office` | Hospital executive office (1×1 GU) |
+| `room_hospital_meeting` | Hospital boardroom / meeting room (2×2 GU) |
+| `room_hospital_servers` | Hospital server room (2×2 GU) |
 | `small_office_room1_1x1gu` | Small private office (1×1 GU) |
 | `small_office_room2_1x1gu` | Small private office variant 2 |
 | `small_office_room3_1x1gu` | Small private office variant 3 |
@@ -805,7 +813,7 @@ In-world characters with sprites that the player can walk up to and interact wit
 | `spriteTalk` | Portrait image for dialogue box. Optional — defaults to `assets/characters/{spriteSheet}_talk.png`, then `{spriteSheet}_headshot.png`. Only set it for off-convention filenames. |
 | `storyPath` | Path to compiled Ink `.json` story file |
 | `currentKnot` | Starting Ink knot (usually `"start"`) |
-| `voice` | TTS voice for dialogue and barks: `{ "name": "...", "style": "...", "language": "en-GB" }` |
+| `voice` | TTS voice for dialogue and barks: `{ "name": "...", "style": "...", "language": "en-GB" }`. See Casting Voices below |
 | `globalVarOnKO` | Global variable name to set `true` when NPC is knocked out |
 | `taskOnKO` | Task ID to complete when NPC is knocked out |
 | `itemsHeld` | Items dropped when NPC is knocked out (do NOT give items an `id` field here — use `type` only) |
@@ -813,6 +821,16 @@ In-world characters with sprites that the player can walk up to and interact wit
 | `behavior.patrol` | Patrol configuration (see Patrol Behaviour below) |
 | `behavior.immovable` | `true` — NPC cannot be pushed or displaced by collisions (e.g. a patient in a bed) |
 | `behavior.initiallyHidden` | `true` hides NPC at spawn — use `setVisible` in an event mapping to reveal them later |
+
+#### Casting voices
+
+`voice.name` is a Gemini prebuilt voice; `voice.style` is a free-text prompt the TTS acts on. Nothing validates either field, so both drift easily.
+
+- **Give every speaking NPC a voice.** An NPC with no `voice` block is silent while everyone around them is not, which reads as a bug. Terminals and computer-driven phone NPCs are the legitimate exception.
+- **Don't reuse one `name` across characters who appear together.** The `style` prompt differentiates them somewhat, but two characters in adjacent rooms sharing a voice sounds like one actor doing both. Reuse is correct only for the *same* character across multiple NPC entries (a handler who appears as a briefing cutscene, a phone contact, and a debrief).
+- **Name the accent explicitly and say "consistent … throughout".** Without it the model drifts mid-line. "British" is not an instruction; "consistent Belfast accent throughout" is.
+- **Write the style as a character brief, not adjectives.** Role, age, what the night has done to them, and how they speak under pressure. `"Ward sister, twenty years on the wards. Consistent Belfast accent throughout. Exhausted, dry, unsentimental about everything except her patients. Never raises her voice."` gives the model far more to work with than `"tired nurse"`.
+- **Spread the accents.** A cast that is uniformly RP sounds like one institution's senior management, not a hospital at four in the morning. Mix regional British (Scouse, Brummie, Yorkshire, Belfast, Estuary, MLE) with international where the character's history supports it, and let a character's accent carry their biography rather than decorating it.
 
 #### Knockout resilience — the mission must survive a KO of *any* NPC
 
@@ -1043,9 +1061,47 @@ Objectives structure the mission with `aims` (groups) containing `tasks` (indivi
 | `unlock_object` | `targetObject` | Complete when an object with that ID is unlocked. Object must have an explicit `id` field. |
 | `unlock_room` | `targetRoom` | Complete when the specified room is unlocked |
 | `collect_items` | `targetItems` or `targetGroup` or `targetItemIds` + `targetCount` | Track item collection. `targetItems` matches by `type`; `targetGroup` matches `collection_group` on items; `targetItemIds` matches by `name` or `id`. Add `showProgress: true` for a progress counter. |
-| `submit_flags` | `targetFlags`, `targetCount` | Track VM flag submissions |
+| `submit_flags` | `targetFlags`, `targetCount` | Track VM flag submissions. **Both are mandatory** — see below |
 | `manual` | — | Completed only via `completeTask` in an event mapping |
 | `custom` | — | Custom completion logic |
+
+### Wiring VM flags — two failure modes that are silent
+
+Both of these compile, validate against the schema, and look correct in the dungeon graph. Neither shows up until someone plays to the end and finds the mission unfinishable.
+
+**1. `submit_flags` without `targetFlags` / `targetCount` can never complete.**
+
+There is nothing for a submission to match against, so the task stays open forever, its aim never completes, and any aim gated behind it is stranded. Flag IDs are `<vm_name>:flag_N`, **1-indexed** in the order the flags appear in the top-level `flags` block:
+
+```json
+{
+  "taskId": "submit_ssh_flag",
+  "type": "submit_flags",
+  "targetFlags": ["secgen_rooting_for_a_win:flag_1"],
+  "targetCount": 1,
+  "currentCount": 0,
+  "showProgress": true,
+  "status": "active"
+}
+```
+
+The validator now reports a missing `targetFlags` as ❌ INVALID.
+
+**2. `flagRewards` using `emit_event` does not set a global.**
+
+The flag-station fires the raw event, but only `sudo_flag_submitted` is hard-bridged to a global variable in `systems/interactions.js`. Any Ink gated on `flag_<x>_submitted` will therefore never open, so the handler's whole VM-phase hint tree can silently go dead.
+
+Bridge it explicitly on the handler NPC, keyed off task completion:
+
+```json
+{
+  "eventPattern": "objective_task_completed:submit_ssh_flag",
+  "onceOnly": true,
+  "setGlobal": { "flag_ssh_submitted": true }
+}
+```
+
+Rule of thumb: **if an Ink `VAR` is meant to track VM progress, something must explicitly `setGlobal` it.** Declaring it in `globalVariables` is not enough.
 
 ### `unlockCondition`
 
@@ -1237,6 +1293,39 @@ The game uses a **grid unit system** for room positioning that supports variable
 - **Multiple doors**: First at north corner, last 3 tiles up from south, others evenly spaced
 
 **Alignment**: Doors must align perfectly between connecting rooms. Special logic handles asymmetric connections (single door to multi-door room).
+
+### Which corner a door lands on
+
+The validator proves rooms do not overlap. It says nothing about *which side of a wall* each door ends up on — and that decides how the player enters a room, which matters when a room's art only reads well from one approach.
+
+```bash
+python3 scripts/predict_door_sides.py scenarios/my_scenario/scenario.json.erb
+```
+
+This mirrors the maths in `systems/doors.js` and prints the corner for every door, so you can check the layout before playtesting. The rules it encodes:
+
+| Case | Corner |
+|---|---|
+| **N/S single door** | Parity of `(gridX + gridY)` — room origin for a north door, the *shared bottom wall* for a south door |
+| **N/S single, neighbour has an array on the opposite side** | Parity ignored; aligns to this room's **index** in that array |
+| **E/W single door** | **Always** 2.5 tiles down from the room top. No parity, no variation |
+| **E/W multiple** | First at top, last at bottom, rest spread evenly |
+| **N/S multiple** | First at left, last at right, rest spread evenly |
+
+Two consequences worth designing around:
+
+1. **A room an even number of GU tall gets its north and south doors on the same side.** The south parity is measured on the shared bottom wall, which is an even number of grid units below the origin, so the sum's parity is unchanged. You cannot get top-left *and* bottom-right on one room by parity alone. To force a side, give the **neighbour** an array on the facing side and rely on index alignment.
+2. **To move a door to the other corner, move the room to an adjacent grid column.** Parity is positional, so inserting or resizing an upstream room by an odd number of grid units flips every door that depends on it.
+
+#### Multi-room sides only position correctly for dead ends
+
+`core/rooms.js` filters already-positioned rooms out of a connection array before placing the rest. So `"east": ["store", "corridor"]` only lays out as a vertical stack when **both** rooms are leaves reached solely through this room. If one of them is the route back to the rest of the map, it will already have been positioned by its other parent, the array collapses to a single placement, and the two rooms land on top of each other — which surfaces as a geometry overlap warning.
+
+Design rule: **the way in can never be the second element of a multi-room side.**
+
+#### Door art is generated, not authored
+
+The `doors` tilelayer inside a room's `.tmj` is **ignored** — `core/rooms.js` skips it ("using sprite-based doors") and carves the wall tiles wherever it places a door sprite. You therefore do **not** need to edit a tilemap to add a door on a wall that has never had one. Connect the rooms and the engine handles it.
 
 ### Four-Direction Connections
 
@@ -1459,6 +1548,13 @@ Use when two nodes need an edge but the target node doesn't exist at the time th
 ```bash
 ruby scripts/generate_dungeon_graph.rb scenarios/my_scenario/scenario.json.erb
 # Output: scenarios/my_scenario/dungeon_graph.html (open in browser)
+```
+
+Related tooling:
+
+```bash
+python3 scripts/predict_door_sides.py scenarios/my_scenario/scenario.json.erb
+# Prints the corner each door lands on -- see Which corner a door lands on
 ```
 
 The output is a three-tab HTML page:

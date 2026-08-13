@@ -25,6 +25,32 @@ The engine uses `parseDialogueLine()` (in `person-chat-minigame.js`) to check ea
 2. **`# speaker:` tag** — fallback used when a line has no inline prefix (see below)
 3. **Default** — lines with no prefix and no tag attribute to the main NPC
 
+### ⚠️ The prefix must match `id` or `displayName` EXACTLY
+
+This is the single most common silent bug in Break Escape dialogue, and it does not fail at compile time.
+
+`normalizeSpeakerId()` matches the text before the colon (case-insensitively) against each character's **`id`** or **`displayName`**, plus the special cases `player`, `npc`, `you` and `Narrator`. **Nothing else resolves.** A shortened name does not resolve. A role word does not resolve.
+
+When a prefix fails to resolve, ink still compiles, the validator's old checks still pass, and the engine treats the whole line as *unprefixed* — so it appends the raw text, colon and all, to **whoever spoke last**. The player sees the other character's speech bubble containing `Marcus: I told them six months ago`.
+
+❌ **WRONG** — NPC `displayName` is `"Marcus Webb"`, so `Marcus:` does not resolve:
+```ink
+Marcus: I told them six months ago.
+```
+
+✅ **RIGHT**:
+```ink
+Marcus Webb: I told them six months ago.
+```
+
+The same trap catches `Nurse:` (displayName `Sister Doyle`), `Guard:` (displayName `Val Okonkwo`), `Dr. Kim:` (displayName `Dr. Sarah Kim`), and `Supervisor:` (displayName `Graham Reeves`).
+
+If you want a shorter label on screen, **change the `displayName` in the scenario** — do not shorten the prefix in the ink.
+
+`ruby scripts/validate_scenario.rb <scenario>` now checks this. A prefix used five or more times in a file that matches no NPC is reported as ❌ INVALID; a one-off is reported as 💡 SUGGESTION, because prose labels (`Command: nmap -sV ...`, `Reasoning: ...`) look identical to a naive check and render harmlessly.
+
+**`You:` is safe** — the engine aliases it to the player character. `Player:` works too.
+
 ### Narration and Stage Directions
 
 Use the `Narrator:` inline prefix for stage directions. These display as italicised text rather than dialogue:
@@ -71,6 +97,34 @@ Derek Lawson: Take it. Stop the launch. I won't resist.
 **Why this matters mechanically:** any line beginning with `*` is parsed as a `*` choice. A prefix-less emote line (`*laughs*`) therefore becomes a phantom choice button and can silently dead-end the branch — often surfacing only as an "apparent loose end" compiler warning. **Always lead the line with the speaker prefix (`Derek Lawson: *laughs* …`) or `Narrator:`** so the `*` sits *inside* the line, never at its start.
 
 Rule of thumb: if it describes *what happens*, it's `Narrator:`; if it colours *how a line is spoken*, it's an inline `*emote*` on that character's dialogue — and it always carries dialogue with it.
+
+#### Don't convert every emote — each `Narrator:` line costs the player a click
+
+The split above is about *category*, not volume. Every `Narrator:` beat becomes its own dialogue block the player must advance past, so mechanically converting every gaze and gesture makes conversations feel like wading.
+
+Apply the rule with judgement:
+
+| Keep inline (delivery cues the TTS can act on) | Promote to `Narrator:` (events in the scene) |
+|---|---|
+| `*quietly*`, `*flatly*`, `*sharply*`, `*very evenly*` | Handing something over, reaching for a radio |
+| `*sighs*`, `*snorts*`, `*tired laugh*`, `*almost laughs*` | Crossing the room, stepping between the player and a door |
+| `*pause*`, `*slowly*`, `*breath*` (pacing for the TTS) | Looking up for the first time — where it marks the scene turning |
+| `*not looking up*`, `*without turning round*` (manner of delivery) | Having to look away because they're overcome |
+
+The test: **would losing this line cost the scene a beat, or just a bit of colour?** Beats get their own Narrator line. Colour rides along with the dialogue, where it also does useful work steering the voice.
+
+### Dialogue must be supported by the scenario
+
+Ink can assert anything. The engine only renders what the scenario actually defines, and the mismatch is invisible until playtest. Before signing off a conversation, check the ink against the scenario JSON:
+
+- **Movement vs `behavior`.** An NPC with no `behavior.patrol` never moves. Stage directions like *"without stopping"*, *"takes you down the row"*, or *"comes back with"* describe a character the player will never see. Either give the NPC a patrol, or make the stillness the characterisation — a ward sister who cannot leave the one bed that will kill someone in four minutes is more interesting than one who paces.
+- **Props.** Anything the dialogue draws attention to should exist as an object in that room, or the player will hunt for it. If it must not be takeable (because it would bypass a puzzle), add it as a `takeable: false` object rather than leaving it as narration.
+- **Handovers.** "Take it, it's yours" needs a `#give_item` tag *and* a matching entry in the speaking NPC's `itemsHeld`. The validator cross-references this — but only for the tag, not for the promise. A line that offers something and doesn't tag it fails silently.
+- **Geography.** Directions in dialogue ("east of reception", "down the south corridor") go stale the moment the layout changes. Re-read every direction after any connection edit.
+- **Sprites vs narration.** If a knot says a character has been taken away, hide them — `setVisible: false` on an event mapping — or the player walks back in and finds them standing there.
+- **Off-screen intentions.** A stationary NPC saying "I go into that meeting in five minutes" will still be standing there two hours later. Phrase intentions so they stay true for an unbounded night ("they keep moving the call").
+
+Legitimate exceptions: events genuinely off the map (other wards, the world outside), and post-mission debriefs describing what happened afterwards.
 
 ### Multi-Character Scenes
 
@@ -1093,6 +1147,23 @@ Navigation in normal mode:
 If you need section headers, use plain text without asterisks.
 
 **This is the most common cause of the emote bug** (see *§Emotes vs. Narration*): a flavour cue written as `*laughs*` on its own line is parsed as a choice. Lead every emote line with a speaker or `Narrator:` prefix so the `*` never sits at the start of the line.
+
+### Characters that change what ink compiles
+
+Ink treats several characters as syntax. Inside dialogue they either vanish or restructure the story, and only some of it surfaces as a compiler warning. `ruby scripts/validate_scenario.rb` checks all of these.
+
+| In dialogue | What ink does with it | Fix |
+|---|---|---|
+| `//` | Starts a comment. **Everything after it on the line is silently discarded.** Bites hardest on URLs and file paths. | Rephrase, or split the URL |
+| `*` at line start | Parses as a choice. A standalone `*sighs*` becomes a phantom choice button that can dead-end the branch | Attach the emote to a spoken line, or use `Narrator:` |
+| Unpaired `*` | Renders the asterisk to the player | Close the emote |
+| `**bold**` | Not supported; renders literally | Capitals or plain wording |
+| `->` | Reads as a divert | Use an en dash or "to" |
+| `{` `}` | Conditional / alternative syntax | Escape or rephrase |
+| `\|` inside `{}` | Alternative separator | Only use deliberately |
+| `[` `]` unbalanced in a choice | Swallows the rest of the line | Balance them |
+
+Safe: `£` and other UTF-8 (survives compilation intact), `--` for dashes, `#` on its own line as a tag, `>` at line start.
 
 ### Do NOT Ignore "Apparent Loose End" Warnings
 

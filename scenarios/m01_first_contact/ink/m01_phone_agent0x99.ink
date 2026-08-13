@@ -165,7 +165,7 @@ SSH brute force uses Hydra to test password lists against login prompts.
 
 The key is knowing the username and using good password lists. 
 
-Command format: hydra -l username -P passwordlist.txt ssh://target
+Command format: hydra -l username -P passwordlist.txt target ssh
 
 + [What if I don't have a password list?]
     You can try default wordlists, but you may need to search the office for clues.
