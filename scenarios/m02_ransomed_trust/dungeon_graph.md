@@ -96,22 +96,22 @@ flowchart TD
   action_talk_to_ward_nurse>"Hear from Sister Doyle what the outage costs -- and earn the safe code"]
   lock_infected_terminal["Infected Terminal<br/>Ransomware terminal"]
   infected_terminal{"Infected Terminal"}
-  lock_marcus_workstation["Marcus's Workstation<br/>Password lock"]
+  lock_gary_workstation["Gary's Workstation<br/>Password lock"]
   backup_server_ssh_notes{"Backup Server SSH Notes"}
-  marcus_s_workstation["Marcus's Workstation"]
-  printouts_on_marcus_s_desk{"Printouts on Marcus's Desk"}
-  marcus_s_password_sticky_note{"Marcus's Password Sticky Note"}
+  gary_s_workstation["Gary's Workstation"]
+  printouts_on_gary_s_desk{"Printouts on Gary's Desk"}
+  gary_s_password_sticky_note{"Gary's Password Sticky Note"}
   lock_vm_launcher_rooting_for_a_win["Vm Launcher Rooting For A Win"]
   photo_frame_emma_s_birthday{"Photo Frame - Emma's Birthday"}
-  marcus_s_email_archive_warning_7_of_7{"Marcus's Email Archive -- Warning 7 of 7"}
-  lock_lock_marcus_cooperation["Lock Marcus Cooperation"]
+  gary_s_email_archive_warning_7_of_7{"Gary's Email Archive -- Warning 7 of 7"}
+  lock_lock_gary_cooperation["Lock Gary Cooperation"]
   dr_kim_s_reply_21_may{"Dr. Kim's Reply -- 21 May"}
   network_diagram_whiteboard{"Network Diagram Whiteboard"}
   planted_network_device{"Planted Network Device"}
-  npc_marcus_webb{"Marcus Webb"}
+  npc_gary_whitlock{"Gary Whitlock"}
   server_room_keycard{"Server Room Keycard"}
   spare_contractor_lanyard{"Spare Contractor Lanyard"}
-  action_social_engineer_marcus>"Win Marcus over -- rapport, leverage, theft, or force"]
+  action_social_engineer_gary>"Win Gary over -- rapport, leverage, theft, or force"]
   vm_access_terminal["VM Access Terminal"]
   cyberchef_workstation{"CyberChef Workstation"}
   lock_hospital_recovery_console["Hospital Recovery Console"]
@@ -184,26 +184,26 @@ flowchart TD
   npc_sister_doyle --> action_talk_to_ward_nurse
   it_department --> lock_infected_terminal
   it_department --> infected_terminal
-  it_department --> lock_marcus_workstation
-  lock_marcus_workstation --> backup_server_ssh_notes
-  it_department --> marcus_s_workstation
-  it_department --> printouts_on_marcus_s_desk
-  it_department -.-> marcus_s_password_sticky_note
-  marcus_s_password_sticky_note -.-> lock_vm_launcher_rooting_for_a_win
+  it_department --> lock_gary_workstation
+  lock_gary_workstation --> backup_server_ssh_notes
+  it_department --> gary_s_workstation
+  it_department --> printouts_on_gary_s_desk
+  it_department -.-> gary_s_password_sticky_note
+  gary_s_password_sticky_note -.-> lock_vm_launcher_rooting_for_a_win
   it_department --> photo_frame_emma_s_birthday
   it_department --> lock_it_filing_cabinet
-  lock_it_filing_cabinet --> marcus_s_email_archive_warning_7_of_7
-  marcus_s_email_archive_warning_7_of_7 --> lock_lock_marcus_cooperation
+  lock_it_filing_cabinet --> gary_s_email_archive_warning_7_of_7
+  gary_s_email_archive_warning_7_of_7 --> lock_lock_gary_cooperation
   lock_it_filing_cabinet --> dr_kim_s_reply_21_may
   it_department --> network_diagram_whiteboard
   network_diagram_whiteboard --> lock_vm_launcher_rooting_for_a_win
   it_department --> planted_network_device
-  it_department --> npc_marcus_webb
-  npc_marcus_webb --> server_room_keycard
+  it_department --> npc_gary_whitlock
+  npc_gary_whitlock --> server_room_keycard
   server_room_keycard --> door_server_room
-  npc_marcus_webb -.-> spare_contractor_lanyard
+  npc_gary_whitlock -.-> spare_contractor_lanyard
   spare_contractor_lanyard -.-> lock_lock_guard_challenge
-  npc_marcus_webb --> action_social_engineer_marcus
+  npc_gary_whitlock --> action_social_engineer_gary
   server_room --> vm_access_terminal
   server_room --> cyberchef_workstation
   server_room --> lock_hospital_recovery_console
@@ -266,16 +266,16 @@ flowchart TD
   vmfl_submit_ghost_log_flag --> lock_press_terminal
   lock_hospital_recovery_console --> lock_press_terminal
 
-  class door_it_department,door_server_room,door_conference_room,lock_it_filing_cabinet,lock_emergency_storage_safe,lock_reception_terminal,reception_workstation_encrypted,lock_ehr_terminal_ward,ehr_terminal_offline,lock_lock_guard_challenge,lock_infected_terminal,lock_marcus_workstation,marcus_s_workstation,lock_vm_launcher_rooting_for_a_win,lock_lock_marcus_cooperation,lock_hospital_recovery_console,lock_entropy_staging_cache,entropy_staging_cache,pin_locked_safe,lock_kim_office_terminal,cto_workstation_encrypted,lock_dr_kim_s_safe,lock_press_terminal,lock_security_desk_terminal,security_desk_terminal_encrypted,lock_proftpd_exploitation_unlocked,lock_database_backup_accessible,lock_ghost_lore_unlocked lock
+  class door_it_department,door_server_room,door_conference_room,lock_it_filing_cabinet,lock_emergency_storage_safe,lock_reception_terminal,reception_workstation_encrypted,lock_ehr_terminal_ward,ehr_terminal_offline,lock_lock_guard_challenge,lock_infected_terminal,lock_gary_workstation,gary_s_workstation,lock_vm_launcher_rooting_for_a_win,lock_lock_gary_cooperation,lock_hospital_recovery_console,lock_entropy_staging_cache,entropy_staging_cache,pin_locked_safe,lock_kim_office_terminal,cto_workstation_encrypted,lock_dr_kim_s_safe,lock_press_terminal,lock_security_desk_terminal,security_desk_terminal_encrypted,lock_proftpd_exploitation_unlocked,lock_database_backup_accessible,lock_ghost_lore_unlocked lock
   class it_department,server_room,conference_room,reception_lobby,hospital_ward,emergency_equipment_storage,dr_kim_office,security_office,office_corridor,ward_approach,ward_hall room
-  class lock_pick_kit,reception_desk_visitor_log,hospital_founding_plaque,crisis_protocol_notice,infected_terminal,backup_server_ssh_notes,printouts_on_marcus_s_desk,marcus_s_password_sticky_note,photo_frame_emma_s_birthday,marcus_s_email_archive_warning_7_of_7,dr_kim_s_reply_21_may,network_diagram_whiteboard,planted_network_device,cyberchef_workstation,recovery_instructions_encoded,ghost_s_operational_manifesto,affiliate_handling_note,pin_cracker,dr_kim_s_desk_diary,zero_day_syndicate_invoice,dr_kim_s_signed_statement,ransomware_incorporated_proposal,night_security_post_log,key_cabinet_empty,night_rota,val_s_pocket_notebook,ward_board,nurse_s_handwritten_note item
-  class npc_bernie_nwosu,it_department_override_key,npc_sister_doyle,bank_staff_lanyard,npc_marcus_webb,server_room_keycard,spare_contractor_lanyard,offline_backup_encryption_keys,npc_dr_sarah_kim,npc_val_okonkwo key
-  class action_sign_in_at_reception,action_talk_to_ward_nurse,action_social_engineer_marcus,action_meet_dr_kim action
+  class lock_pick_kit,reception_desk_visitor_log,hospital_founding_plaque,crisis_protocol_notice,infected_terminal,backup_server_ssh_notes,printouts_on_gary_s_desk,gary_s_password_sticky_note,photo_frame_emma_s_birthday,gary_s_email_archive_warning_7_of_7,dr_kim_s_reply_21_may,network_diagram_whiteboard,planted_network_device,cyberchef_workstation,recovery_instructions_encoded,ghost_s_operational_manifesto,affiliate_handling_note,pin_cracker,dr_kim_s_desk_diary,zero_day_syndicate_invoice,dr_kim_s_signed_statement,ransomware_incorporated_proposal,night_security_post_log,key_cabinet_empty,night_rota,val_s_pocket_notebook,ward_board,nurse_s_handwritten_note item
+  class npc_bernie_nwosu,it_department_override_key,npc_sister_doyle,bank_staff_lanyard,npc_gary_whitlock,server_room_keycard,spare_contractor_lanyard,offline_backup_encryption_keys,npc_dr_sarah_kim,npc_val_okonkwo key
+  class action_sign_in_at_reception,action_talk_to_ward_nurse,action_social_engineer_gary,action_meet_dr_kim action
   class vm_access_terminal,vmch_submit_ssh_flag,vmch_submit_proftpd_flag,vmch_submit_database_flag,vmch_submit_ghost_log_flag vm
   class vmfl_submit_ssh_flag,vmfl_submit_proftpd_flag,vmfl_submit_database_flag,vmfl_submit_ghost_log_flag flag
 
   classDef optional stroke-dasharray:5 2
-  class lock_pick_kit,bank_staff_lanyard,marcus_s_password_sticky_note,spare_contractor_lanyard,pin_cracker,dr_kim_s_desk_diary,dr_kim_s_signed_statement,nurse_s_handwritten_note optional
+  class lock_pick_kit,bank_staff_lanyard,gary_s_password_sticky_note,spare_contractor_lanyard,pin_cracker,dr_kim_s_desk_diary,dr_kim_s_signed_statement,nurse_s_handwritten_note optional
   class node_start start
 ```
 
@@ -372,22 +372,22 @@ flowchart TD
   action_talk_to_ward_nurse>"Hear from Sister Doyle what the outage costs -- and earn the safe code"]
   lock_infected_terminal["Infected Terminal<br/>Ransomware terminal"]
   infected_terminal{"Infected Terminal"}
-  lock_marcus_workstation["Marcus's Workstation<br/>Password lock"]
+  lock_gary_workstation["Gary's Workstation<br/>Password lock"]
   backup_server_ssh_notes{"Backup Server SSH Notes"}
-  marcus_s_workstation["Marcus's Workstation"]
-  printouts_on_marcus_s_desk{"Printouts on Marcus's Desk"}
-  marcus_s_password_sticky_note{"Marcus's Password Sticky Note"}
+  gary_s_workstation["Gary's Workstation"]
+  printouts_on_gary_s_desk{"Printouts on Gary's Desk"}
+  gary_s_password_sticky_note{"Gary's Password Sticky Note"}
   lock_vm_launcher_rooting_for_a_win["Vm Launcher Rooting For A Win"]
   photo_frame_emma_s_birthday{"Photo Frame - Emma's Birthday"}
-  marcus_s_email_archive_warning_7_of_7{"Marcus's Email Archive -- Warning 7 of 7"}
-  lock_lock_marcus_cooperation["Lock Marcus Cooperation"]
+  gary_s_email_archive_warning_7_of_7{"Gary's Email Archive -- Warning 7 of 7"}
+  lock_lock_gary_cooperation["Lock Gary Cooperation"]
   dr_kim_s_reply_21_may{"Dr. Kim's Reply -- 21 May"}
   network_diagram_whiteboard{"Network Diagram Whiteboard"}
   planted_network_device{"Planted Network Device"}
-  npc_marcus_webb{"Marcus Webb"}
+  npc_gary_whitlock{"Gary Whitlock"}
   server_room_keycard{"Server Room Keycard"}
   spare_contractor_lanyard{"Spare Contractor Lanyard"}
-  action_social_engineer_marcus>"Win Marcus over -- rapport, leverage, theft, or force"]
+  action_social_engineer_gary>"Win Gary over -- rapport, leverage, theft, or force"]
   vm_access_terminal["VM Access Terminal"]
   cyberchef_workstation{"CyberChef Workstation"}
   lock_hospital_recovery_console["Hospital Recovery Console"]
@@ -467,26 +467,26 @@ flowchart TD
   npc_sister_doyle --> action_talk_to_ward_nurse
   it_department --> lock_infected_terminal
   it_department --> infected_terminal
-  it_department --> lock_marcus_workstation
-  lock_marcus_workstation --> backup_server_ssh_notes
-  it_department --> marcus_s_workstation
-  it_department --> printouts_on_marcus_s_desk
-  it_department -.-> marcus_s_password_sticky_note
-  marcus_s_password_sticky_note -.-> lock_vm_launcher_rooting_for_a_win
+  it_department --> lock_gary_workstation
+  lock_gary_workstation --> backup_server_ssh_notes
+  it_department --> gary_s_workstation
+  it_department --> printouts_on_gary_s_desk
+  it_department -.-> gary_s_password_sticky_note
+  gary_s_password_sticky_note -.-> lock_vm_launcher_rooting_for_a_win
   it_department --> photo_frame_emma_s_birthday
   it_department --> lock_it_filing_cabinet
-  lock_it_filing_cabinet --> marcus_s_email_archive_warning_7_of_7
-  marcus_s_email_archive_warning_7_of_7 --> lock_lock_marcus_cooperation
+  lock_it_filing_cabinet --> gary_s_email_archive_warning_7_of_7
+  gary_s_email_archive_warning_7_of_7 --> lock_lock_gary_cooperation
   lock_it_filing_cabinet --> dr_kim_s_reply_21_may
   it_department --> network_diagram_whiteboard
   network_diagram_whiteboard --> lock_vm_launcher_rooting_for_a_win
   it_department --> planted_network_device
-  it_department --> npc_marcus_webb
-  npc_marcus_webb --> server_room_keycard
+  it_department --> npc_gary_whitlock
+  npc_gary_whitlock --> server_room_keycard
   server_room_keycard --> door_server_room
-  npc_marcus_webb -.-> spare_contractor_lanyard
+  npc_gary_whitlock -.-> spare_contractor_lanyard
   spare_contractor_lanyard -.-> lock_lock_guard_challenge
-  npc_marcus_webb --> action_social_engineer_marcus
+  npc_gary_whitlock --> action_social_engineer_gary
   server_room --> vm_access_terminal
   server_room --> cyberchef_workstation
   server_room --> lock_hospital_recovery_console
@@ -566,7 +566,7 @@ flowchart TD
   lock_emergency_storage_safe -.-> aim_recover_offline_keys
   action_sign_in_at_reception -.-> aim_access_it_systems
   action_talk_to_ward_nurse -.-> aim_recover_offline_keys
-  action_social_engineer_marcus -.-> aim_cover_compromised
+  action_social_engineer_gary -.-> aim_cover_compromised
   action_meet_dr_kim -.-> aim_access_it_systems
   reception_desk_visitor_log -.-> aim_cover_compromised
   reception_workstation_encrypted -.-> aim_infiltrate_hospital
@@ -582,18 +582,18 @@ flowchart TD
   security_desk_terminal_encrypted -.-> aim_cover_compromised
   night_rota -.-> aim_unmask_inside_asset
 
-  class door_it_department,door_server_room,door_conference_room,lock_it_filing_cabinet,lock_emergency_storage_safe,lock_reception_terminal,reception_workstation_encrypted,lock_ehr_terminal_ward,ehr_terminal_offline,lock_lock_guard_challenge,lock_infected_terminal,lock_marcus_workstation,marcus_s_workstation,lock_vm_launcher_rooting_for_a_win,lock_lock_marcus_cooperation,lock_hospital_recovery_console,lock_entropy_staging_cache,entropy_staging_cache,pin_locked_safe,lock_kim_office_terminal,cto_workstation_encrypted,lock_dr_kim_s_safe,lock_press_terminal,lock_security_desk_terminal,security_desk_terminal_encrypted,lock_proftpd_exploitation_unlocked,lock_database_backup_accessible,lock_ghost_lore_unlocked lock
+  class door_it_department,door_server_room,door_conference_room,lock_it_filing_cabinet,lock_emergency_storage_safe,lock_reception_terminal,reception_workstation_encrypted,lock_ehr_terminal_ward,ehr_terminal_offline,lock_lock_guard_challenge,lock_infected_terminal,lock_gary_workstation,gary_s_workstation,lock_vm_launcher_rooting_for_a_win,lock_lock_gary_cooperation,lock_hospital_recovery_console,lock_entropy_staging_cache,entropy_staging_cache,pin_locked_safe,lock_kim_office_terminal,cto_workstation_encrypted,lock_dr_kim_s_safe,lock_press_terminal,lock_security_desk_terminal,security_desk_terminal_encrypted,lock_proftpd_exploitation_unlocked,lock_database_backup_accessible,lock_ghost_lore_unlocked lock
   class it_department,server_room,conference_room,reception_lobby,hospital_ward,emergency_equipment_storage,dr_kim_office,security_office,office_corridor,ward_approach,ward_hall room
-  class lock_pick_kit,reception_desk_visitor_log,hospital_founding_plaque,crisis_protocol_notice,infected_terminal,backup_server_ssh_notes,printouts_on_marcus_s_desk,marcus_s_password_sticky_note,photo_frame_emma_s_birthday,marcus_s_email_archive_warning_7_of_7,dr_kim_s_reply_21_may,network_diagram_whiteboard,planted_network_device,cyberchef_workstation,recovery_instructions_encoded,ghost_s_operational_manifesto,affiliate_handling_note,pin_cracker,dr_kim_s_desk_diary,zero_day_syndicate_invoice,dr_kim_s_signed_statement,ransomware_incorporated_proposal,night_security_post_log,key_cabinet_empty,night_rota,val_s_pocket_notebook,ward_board,nurse_s_handwritten_note item
-  class npc_bernie_nwosu,it_department_override_key,npc_sister_doyle,bank_staff_lanyard,npc_marcus_webb,server_room_keycard,spare_contractor_lanyard,offline_backup_encryption_keys,npc_dr_sarah_kim,npc_val_okonkwo key
-  class action_sign_in_at_reception,action_talk_to_ward_nurse,action_social_engineer_marcus,action_meet_dr_kim action
+  class lock_pick_kit,reception_desk_visitor_log,hospital_founding_plaque,crisis_protocol_notice,infected_terminal,backup_server_ssh_notes,printouts_on_gary_s_desk,gary_s_password_sticky_note,photo_frame_emma_s_birthday,gary_s_email_archive_warning_7_of_7,dr_kim_s_reply_21_may,network_diagram_whiteboard,planted_network_device,cyberchef_workstation,recovery_instructions_encoded,ghost_s_operational_manifesto,affiliate_handling_note,pin_cracker,dr_kim_s_desk_diary,zero_day_syndicate_invoice,dr_kim_s_signed_statement,ransomware_incorporated_proposal,night_security_post_log,key_cabinet_empty,night_rota,val_s_pocket_notebook,ward_board,nurse_s_handwritten_note item
+  class npc_bernie_nwosu,it_department_override_key,npc_sister_doyle,bank_staff_lanyard,npc_gary_whitlock,server_room_keycard,spare_contractor_lanyard,offline_backup_encryption_keys,npc_dr_sarah_kim,npc_val_okonkwo key
+  class action_sign_in_at_reception,action_talk_to_ward_nurse,action_social_engineer_gary,action_meet_dr_kim action
   class vm_access_terminal,vmch_submit_ssh_flag,vmch_submit_proftpd_flag,vmch_submit_database_flag,vmch_submit_ghost_log_flag vm
   class vmfl_submit_ssh_flag,vmfl_submit_proftpd_flag,vmfl_submit_database_flag,vmfl_submit_ghost_log_flag flag
   class aim_infiltrate_hospital,aim_access_it_systems,aim_cover_compromised,aim_exploit_entropy_backdoor,aim_restore_hospital_systems critical
   class aim_unmask_inside_asset,aim_recover_offline_keys aim
 
   classDef optional stroke-dasharray:5 2
-  class lock_pick_kit,bank_staff_lanyard,marcus_s_password_sticky_note,spare_contractor_lanyard,pin_cracker,dr_kim_s_desk_diary,dr_kim_s_signed_statement,nurse_s_handwritten_note optional
+  class lock_pick_kit,bank_staff_lanyard,gary_s_password_sticky_note,spare_contractor_lanyard,pin_cracker,dr_kim_s_desk_diary,dr_kim_s_signed_statement,nurse_s_handwritten_note optional
   class node_start start
 ```
 
@@ -709,22 +709,22 @@ flowchart TD
   rc_npc_sister_doyle_21("Sister Doyle")
   rc_obj22_22{"Bank Staff Lanyard"}
   rc_npc_nurse_raval_23("Nurse Raval")
-  rc_npc_mr_okafor_24("Mr Okafor")
+  rc_npc_mr_pryce_24("Mr Pryce")
   rc_npc_mrs_hargreaves_25("Mrs Hargreaves")
   rc_npc_ms_chen_26("Ms Chen")
   rc_infected_terminal_27{"Infected Terminal"}
-  rc_marcus_workstation_28[["Marcus's Workstation"]]
+  rc_gary_workstation_28[["Gary's Workstation"]]
   rc_obj29_29{"Backup Server SSH Notes"}
-  rc_marcus_desk_printouts_30{"Printouts on Marcus's Desk"}
-  rc_password_sticky_note_31{"Marcus's Password Sticky Note"}
+  rc_gary_desk_printouts_30{"Printouts on Gary's Desk"}
+  rc_password_sticky_note_31{"Gary's Password Sticky Note"}
   rc_obj32_32{"Photo Frame - Emma's Birthday"}
   rc_it_filing_cabinet_33[["IT Filing Cabinet"]]
-  rc_marcus_vindication_email_34{"Marcus's Email Archive -- Warning 7 of 7"}
+  rc_gary_vindication_email_34{"Gary's Email Archive -- Warning 7 of 7"}
   rc_kim_deferral_reply_35{"Dr. Kim's Reply -- 21 May"}
   rc_obj36_36{"CryptoSecure Recovery Services Document"}
   rc_obj37_37{"Network Diagram Whiteboard"}
   rc_ghost_terminal_device_38{"Planted Network Device"}
-  rc_npc_marcus_webb_39("Marcus Webb")
+  rc_npc_gary_whitlock_39("Gary Whitlock")
   rc_obj40_40{"Server Room Keycard"}
   rc_obj41_41{"Spare Contractor Lanyard"}
   rc_vm_launcher_rooting_for_a_win_42{"VM Access Terminal"}
@@ -799,24 +799,24 @@ flowchart TD
   hospital_ward --> rc_npc_sister_doyle_21
   rc_npc_sister_doyle_21 --> rc_obj22_22
   hospital_ward --> rc_npc_nurse_raval_23
-  hospital_ward --> rc_npc_mr_okafor_24
+  hospital_ward --> rc_npc_mr_pryce_24
   hospital_ward --> rc_npc_mrs_hargreaves_25
   hospital_ward --> rc_npc_ms_chen_26
   it_department --> rc_infected_terminal_27
-  it_department --> rc_marcus_workstation_28
-  rc_marcus_workstation_28 --> rc_obj29_29
-  it_department --> rc_marcus_desk_printouts_30
+  it_department --> rc_gary_workstation_28
+  rc_gary_workstation_28 --> rc_obj29_29
+  it_department --> rc_gary_desk_printouts_30
   it_department --> rc_password_sticky_note_31
   it_department --> rc_obj32_32
   it_department --> rc_it_filing_cabinet_33
-  rc_it_filing_cabinet_33 --> rc_marcus_vindication_email_34
+  rc_it_filing_cabinet_33 --> rc_gary_vindication_email_34
   rc_it_filing_cabinet_33 --> rc_kim_deferral_reply_35
   rc_it_filing_cabinet_33 --> rc_obj36_36
   it_department --> rc_obj37_37
   it_department --> rc_ghost_terminal_device_38
-  it_department --> rc_npc_marcus_webb_39
-  rc_npc_marcus_webb_39 --> rc_obj40_40
-  rc_npc_marcus_webb_39 --> rc_obj41_41
+  it_department --> rc_npc_gary_whitlock_39
+  rc_npc_gary_whitlock_39 --> rc_obj40_40
+  rc_npc_gary_whitlock_39 --> rc_obj41_41
   server_room --> rc_vm_launcher_rooting_for_a_win_42
   server_room --> rc_flag_station_dropsite_43
   server_room --> rc_cyberchef_workstation_44
@@ -858,8 +858,8 @@ flowchart TD
 
   class reception_lobby,hospital_ward,emergency_equipment_storage,dr_kim_office,security_office,office_corridor,ward_hall,ward_approach room
   class it_department,server_room,conference_room lock
-  class rc_reception_visitor_log_1,rc_obj2_2,rc_obj3_3,rc_reception_terminal_4,rc_obj7_7,rc_obj9_9,rc_obj10_10,rc_obj11_11,rc_obj12_12,rc_obj13_13,rc_obj14_14,rc_obj15_15,rc_ehr_terminal_ward_18,rc_obj19_19,rc_obj20_20,rc_obj22_22,rc_infected_terminal_27,rc_obj29_29,rc_marcus_desk_printouts_30,rc_password_sticky_note_31,rc_obj32_32,rc_marcus_vindication_email_34,rc_kim_deferral_reply_35,rc_obj36_36,rc_obj37_37,rc_ghost_terminal_device_38,rc_obj40_40,rc_obj41_41,rc_vm_launcher_rooting_for_a_win_42,rc_flag_station_dropsite_43,rc_cyberchef_workstation_44,rc_hospital_recovery_console_45,rc_obj46_46,rc_obj47_47,rc_ghost_manifesto_49,rc_obj50_50,rc_offline_backup_encryption_keys_52,rc_obj53_53,rc_obj54_54,rc_kim_office_terminal_55,rc_obj56_56,rc_obj57_57,rc_obj58_58,rc_obj60_60,rc_obj62_62,rc_obj63_63,rc_obj64_64,rc_obj65_65,rc_obj66_66,rc_obj67_67,rc_obj68_68,rc_press_terminal_69,rc_security_desk_terminal_72,rc_obj73_73,rc_obj74_74,rc_obj75_75,rc_obj77_77,rc_obj78_78,rc_obj79_79 item
-  class rc_npc_agent_hax_5,rc_npc_bernie_nwosu_6,rc_npc_agent_hax_8,rc_npc_ghost_16,rc_npc_agent_hax_17,rc_npc_sister_doyle_21,rc_npc_nurse_raval_23,rc_npc_mr_okafor_24,rc_npc_mrs_hargreaves_25,rc_npc_ms_chen_26,rc_npc_marcus_webb_39,rc_npc_dr_sarah_kim_61,rc_npc_hospital_comms_terminal_70,rc_npc_graham_reeves_71,rc_npc_val_okonkwo_76 npc
-  class rc_marcus_workstation_28,rc_it_filing_cabinet_33,rc_entropy_staging_cache_48,rc_emergency_storage_safe_51,rc_obj59_59 container
+  class rc_reception_visitor_log_1,rc_obj2_2,rc_obj3_3,rc_reception_terminal_4,rc_obj7_7,rc_obj9_9,rc_obj10_10,rc_obj11_11,rc_obj12_12,rc_obj13_13,rc_obj14_14,rc_obj15_15,rc_ehr_terminal_ward_18,rc_obj19_19,rc_obj20_20,rc_obj22_22,rc_infected_terminal_27,rc_obj29_29,rc_gary_desk_printouts_30,rc_password_sticky_note_31,rc_obj32_32,rc_gary_vindication_email_34,rc_kim_deferral_reply_35,rc_obj36_36,rc_obj37_37,rc_ghost_terminal_device_38,rc_obj40_40,rc_obj41_41,rc_vm_launcher_rooting_for_a_win_42,rc_flag_station_dropsite_43,rc_cyberchef_workstation_44,rc_hospital_recovery_console_45,rc_obj46_46,rc_obj47_47,rc_ghost_manifesto_49,rc_obj50_50,rc_offline_backup_encryption_keys_52,rc_obj53_53,rc_obj54_54,rc_kim_office_terminal_55,rc_obj56_56,rc_obj57_57,rc_obj58_58,rc_obj60_60,rc_obj62_62,rc_obj63_63,rc_obj64_64,rc_obj65_65,rc_obj66_66,rc_obj67_67,rc_obj68_68,rc_press_terminal_69,rc_security_desk_terminal_72,rc_obj73_73,rc_obj74_74,rc_obj75_75,rc_obj77_77,rc_obj78_78,rc_obj79_79 item
+  class rc_npc_agent_hax_5,rc_npc_bernie_nwosu_6,rc_npc_agent_hax_8,rc_npc_ghost_16,rc_npc_agent_hax_17,rc_npc_sister_doyle_21,rc_npc_nurse_raval_23,rc_npc_mr_pryce_24,rc_npc_mrs_hargreaves_25,rc_npc_ms_chen_26,rc_npc_gary_whitlock_39,rc_npc_dr_sarah_kim_61,rc_npc_hospital_comms_terminal_70,rc_npc_graham_reeves_71,rc_npc_val_okonkwo_76 npc
+  class rc_gary_workstation_28,rc_it_filing_cabinet_33,rc_entropy_staging_cache_48,rc_emergency_storage_safe_51,rc_obj59_59 container
   class node_start start
 ```

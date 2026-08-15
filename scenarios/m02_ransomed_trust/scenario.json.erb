@@ -22,7 +22,7 @@
 # NARRATIVE SPINE (gated story beats):
 #   ACT I   Talk your way past the desk. Bernie Nwosu holds the IT override key
 #           and will not hand it to a stranger. Social engineering or picks.
-#   ACT II  Marcus Webb holds the only working reader-card in the building.
+#   ACT II  Gary Whitlock holds the only working reader-card in the building.
 #           Four routes to it: rapport, leverage, theft, force.
 #   TURN    THE COVER BURNS. Someone phones security and pulls the player's
 #           booking. The consultant line stops working. Freedom of movement
@@ -79,9 +79,9 @@ end
 # Narrative Content Variables
 ransomware_note = "YOUR PATIENT RECORDS ARE ENCRYPTED. 47 PATIENTS ON LIFE SUPPORT. 12 HOURS OF BACKUP POWER. PAY 2.5 BTC OR WATCH THEM DIE. - RANSOMWARE INCORPORATED"
 
-marcus_warning_email = "From: Marcus Webb (IT Systems)\nTo: Dr. Sarah Kim (CTO)\nCC: Board Secretariat\nDate: 17 May\nSubject: URGENT -- ProFTPD backdoor on backup server (CVE-2010-4652)\n\nDr Kim,\n\nSeventh time of asking. The backup server is still running ProFTPD 1.3.5. That version carries a source-code backdoor -- CVE-2010-4652 -- which gives an attacker remote code execution with no credentials at all. It has been patchable since 2011.\n\nThis box holds every clinical backup we have. If it goes, the wards go with it.\n\nI have costed the remediation at £85,000. That is the whole ask. I am not asking for a project, I am asking for a server that is not fourteen years out of date.\n\nPlease put this in front of the board as CRITICAL and not as an IT wish-list item.\n\nMarcus"
+gary_warning_email = "From: Gary Whitlock (IT Systems)\nTo: Dr. Sarah Kim (CTO)\nCC: Board Secretariat\nDate: 17 May\nSubject: URGENT -- ProFTPD 1.3.3c backdoor on backup server\n\nDr Kim,\n\nSeventh time of asking. The backup server is still running ProFTPD 1.3.3c -- the trojaned source release from 2010. That build carries a backdoor in its own source code, which gives an attacker remote code execution with no credentials at all. A clean version has been available since 2010.\n\nThis box holds every clinical backup we have. If it goes, the wards go with it.\n\nI have costed the remediation at £85,000. That is the whole ask. I am not asking for a project, I am asking for a server that is not fourteen years out of date.\n\nPlease put this in front of the board as CRITICAL and not as an IT wish-list item.\n\nGary"
 
-board_reply_email = "From: Dr. Sarah Kim (CTO)\nTo: Marcus Webb (IT Systems)\nDate: 21 May\nSubject: RE: URGENT -- ProFTPD backdoor on backup server\n\nMarcus,\n\nNoted, and I do understand. The board reviewed it on Tuesday. The position is that the imaging replacement takes precedence this cycle and infrastructure security is deferred to FY25.\n\nI would ask you not to escalate this again outside the department. It does not help either of us.\n\nSarah"
+board_reply_email = "From: Dr. Sarah Kim (CTO)\nTo: Gary Whitlock (IT Systems)\nDate: 21 May\nSubject: RE: URGENT -- ProFTPD backdoor on backup server\n\nGary,\n\nNoted, and I do understand. The board reviewed it on Tuesday. The position is that the imaging replacement takes precedence this cycle and infrastructure security is deferred to FY25.\n\nI would ask you not to escalate this again outside the department. It does not help either of us.\n\nSarah"
 
 recovery_instructions_encoded = rot13("FULL RECOVERY REQUIRES OFFLINE + ONLINE KEYS--12-HOUR PROCESS IF MANUAL, INSTANT IF RANSOM PAID.")
 
@@ -94,7 +94,7 @@ boardroom_pin = "0417"
   "show_scenario_brief": "on_resume",
 
   "flags": {
-    "secgen_rooting_for_a_win": <%= vm_flags_json('secgen_rooting_for_a_win', ['flag{ssh_access_granted}', 'flag{proftpd_backdoor_exploited}', 'flag{database_backup_located}', 'flag{ghost_operational_log}']) %>
+    "hospital_backup_server": <%= vm_flags_json('hospital_backup_server', ['flag{ssh_access_granted}', 'flag{proftpd_backdoor_exploited}', 'flag{database_backup_located}', 'flag{ghost_operational_log}']) %>
   },
 
   "narrator": {
@@ -166,8 +166,8 @@ boardroom_pin = "0417"
           { "text": "" },
           { "text": "── PERSONNEL ──",                                     "style": "section-header" },
           { "text": "OFFLINE BACKUP KEYS RECOVERED — Independent recovery pathway available", "style": "entry", "condition": "globalVars.offline_keys_recovered" },
-          { "text": "MARCUS WEBB: Vindicated — Career protected by agent documentation", "style": "entry", "condition": "globalVars.marcus_protected" },
-          { "text": "MARCUS WEBB: Scapegoated — Position lost, career damaged",          "style": "entry", "condition": "!globalVars.marcus_protected" },
+          { "text": "MARCUS WEBB: Vindicated — Career protected by agent documentation", "style": "entry", "condition": "globalVars.gary_protected" },
+          { "text": "MARCUS WEBB: Scapegoated — Position lost, career damaged",          "style": "entry", "condition": "!globalVars.gary_protected" },
           { "text": "COVER BURNED: Booking pulled from the visitor system mid-operation", "style": "warning", "condition": "globalVars.cover_burned && !globalVars.cover_restored" },
           { "text": "COVER RE-ESTABLISHED: Access regained without incident",           "style": "entry", "condition": "globalVars.cover_restored" },
           { "text": "BERNIE NWOSU: Vouched for the agent when the paperwork vanished",  "style": "entry", "condition": "globalVars.bernie_vouched" },
@@ -233,7 +233,7 @@ boardroom_pin = "0417"
     {
       "aimId": "access_it_systems",
       "title": "Get Into IT",
-      "description": "The IT department is on a mechanical override key since the badge readers died. Marcus Webb is behind that door -- and he is holding the only card in the building that still opens the server room.",
+      "description": "The IT department is on a mechanical override key since the badge readers died. Gary Whitlock is behind that door -- and he is holding the only card in the building that still opens the server room.",
       "status": "locked",
       "order": 1,
       "unlockCondition": { "aimCompleted": "infiltrate_hospital" },
@@ -246,10 +246,10 @@ boardroom_pin = "0417"
           "status": "active"
         },
         {
-          "taskId": "talk_to_marcus",
-          "title": "Work Marcus Webb for the server room keycard",
+          "taskId": "talk_to_gary",
+          "title": "Work Gary Whitlock for the server room keycard",
           "type": "npc_conversation",
-          "targetNPC": "marcus_webb",
+          "targetNPC": "gary_whitlock",
           "status": "active"
         },
         {
@@ -266,14 +266,14 @@ boardroom_pin = "0417"
         },
         {
           "taskId": "learn_about_scapegoating",
-          "title": "Learn the board's plan to scapegoat Marcus",
+          "title": "Learn the board's plan to scapegoat Gary",
           "type": "manual",
           "status": "active",
           "optional": true
         },
         {
-          "taskId": "investigate_marcus_office",
-          "title": "Open Marcus's filing cabinet for proof he warned them",
+          "taskId": "investigate_gary_office",
+          "title": "Open Gary's filing cabinet for proof he warned them",
           "type": "manual",
           "status": "active",
           "optional": true
@@ -321,7 +321,7 @@ boardroom_pin = "0417"
           "taskId": "submit_ssh_flag",
           "title": "Get a foothold on the backup server and submit the SSH flag",
           "type": "submit_flags",
-          "targetFlags": ["secgen_rooting_for_a_win:flag_1"],
+          "targetFlags": ["hospital_backup_server:flag_1"],
           "targetCount": 1,
           "currentCount": 0,
           "showProgress": true,
@@ -332,7 +332,7 @@ boardroom_pin = "0417"
           "taskId": "submit_proftpd_flag",
           "title": "Exploit the ProFTPD backdoor and submit the flag",
           "type": "submit_flags",
-          "targetFlags": ["secgen_rooting_for_a_win:flag_2"],
+          "targetFlags": ["hospital_backup_server:flag_2"],
           "targetCount": 1,
           "currentCount": 0,
           "showProgress": true,
@@ -343,7 +343,7 @@ boardroom_pin = "0417"
           "taskId": "submit_database_flag",
           "title": "Locate the encrypted database backup and submit the flag",
           "type": "submit_flags",
-          "targetFlags": ["secgen_rooting_for_a_win:flag_3"],
+          "targetFlags": ["hospital_backup_server:flag_3"],
           "targetCount": 1,
           "currentCount": 0,
           "showProgress": true,
@@ -354,7 +354,7 @@ boardroom_pin = "0417"
           "taskId": "submit_ghost_log_flag",
           "title": "Recover Ghost's operational log and submit the flag",
           "type": "submit_flags",
-          "targetFlags": ["secgen_rooting_for_a_win:flag_4"],
+          "targetFlags": ["hospital_backup_server:flag_4"],
           "targetCount": 1,
           "currentCount": 0,
           "showProgress": true,
@@ -436,7 +436,7 @@ boardroom_pin = "0417"
       "unlockCondition": { "aimCompleted": "exploit_entropy_backdoor" },
       "missionConclusion": true,
       "requiresCompleted": [
-        "talk_to_marcus",
+        "talk_to_gary",
         "access_server_room",
         "submit_proftpd_flag",
         "submit_ghost_log_flag",
@@ -703,17 +703,17 @@ boardroom_pin = "0417"
               "eventPattern": "objective_task_completed:meet_dr_kim",
               "onceOnly": true,
               "setGlobal": { "dr_kim_met": true },
-              "sendTimedMessage": { "delay": 1500, "message": "Kim's vouched for you as far as she's able, which is verbally and no further. Marcus Webb is your next problem -- IT department, east of reception, behind an override lock. He knows exactly how they got in, and he's holding the only card that still opens the server room." }
+              "sendTimedMessage": { "delay": 1500, "message": "Kim's vouched for you as far as she's able, which is verbally and no further. Gary Whitlock is your next problem -- IT department, east of reception, behind an override lock. He knows exactly how they got in, and he's holding the only card that still opens the server room." }
             },
             {
-              "eventPattern": "objective_task_completed:talk_to_marcus",
+              "eventPattern": "objective_task_completed:talk_to_gary",
               "onceOnly": true,
               "setGlobal": { "cover_burned": true },
               "completeTask": "cover_burned_notified",
               "sendTimedMessage": { "delay": 4000, "message": "Stop. Listen to me carefully. Two minutes ago someone rang St. Catherine's security desk from an internal extension and told them no external consultant was booked tonight. Your name is off their system. Your booking is gone from the log." }
             },
             {
-              "eventPattern": "objective_task_completed:talk_to_marcus",
+              "eventPattern": "objective_task_completed:talk_to_gary",
               "onceOnly": true,
               "sendTimedMessage": { "delay": 11000, "message": "This wasn't the board and it wasn't Kim -- she'd have called me. Someone in that building watched you get as far as IT and decided to slow you down. Which tells me they know exactly what you're about to reach.\n\nPractical problem first: 'I'm the consultant, Dr Kim authorised me' is now a lie the guard can disprove. Get something that stands up -- a real staff lanyard, or somebody willing to vouch for you out loud. Then get to that server room." }
             },
@@ -721,7 +721,7 @@ boardroom_pin = "0417"
               "eventPattern": "item_picked_up:contractor_lanyard",
               "onceOnly": true,
               "setGlobal": { "staff_lanyard_obtained": true, "cover_restored": true },
-              "sendTimedMessage": { "delay": 1200, "message": "Blank contractor pass, real hospital stock. That's your standing back. Nobody has ever questioned one of those and that is exactly the sort of thing Marcus has been writing emails about." }
+              "sendTimedMessage": { "delay": 1200, "message": "Blank contractor pass, real hospital stock. That's your standing back. Nobody has ever questioned one of those and that is exactly the sort of thing Gary has been writing emails about." }
             },
             {
               "eventPattern": "item_picked_up:bank_staff_lanyard",
@@ -815,11 +815,11 @@ boardroom_pin = "0417"
               "sendTimedMessage": { "delay": 1500, "message": "That's the full backdoor chain -- SSH, ProFTPD, database, and Ghost's own operational logs. You've got everything ENTROPY had on this hospital. Now head to the Hospital Recovery Console in the server room and bring the patients' systems back online -- that's how we finish this." }
             },
             {
-              "eventPattern": "global_variable_changed:marcus_ko",
+              "eventPattern": "global_variable_changed:gary_ko",
               "condition": "value === true",
               "onceOnly": true,
               "completeTask": "obtain_password_hints",
-              "sendTimedMessage": { "delay": 2000, "message": "Marcus is down -- you won't be getting those password hints out of him now. Doesn't matter: he wrote them on a sticky note by his monitor. Grab it. Same weak credentials unlock the backup server over SSH." }
+              "sendTimedMessage": { "delay": 2000, "message": "Gary is down -- you won't be getting those password hints out of him now. Doesn't matter: he wrote them on a sticky note by his monitor. Grab it. Same weak credentials unlock the backup server over SSH." }
             },
             {
               "eventPattern": "global_variable_changed:insider_evidence_partial",
@@ -864,10 +864,10 @@ boardroom_pin = "0417"
               "sendTimedMessage": { "delay": 2000, "message": "That post log seals it. Badge SC-4471 is Graham Reeves -- the night security supervisor stationed on that comms terminal. He authorised a fire drill facilities never scheduled, and the call that pulled your booking came from an extension on his post. He is the inside asset. Your call how you handle him." }
             },
             {
-              "eventPattern": "item_picked_up:marcus_vindication_email",
+              "eventPattern": "item_picked_up:gary_vindication_email",
               "onceOnly": true,
-              "completeTask": "investigate_marcus_office",
-              "sendTimedMessage": { "delay": 1500, "message": "That's Marcus's proof -- he warned them six months out and they buried it. Hold onto it. If you decide to go public later, this is what clears his name." }
+              "completeTask": "investigate_gary_office",
+              "sendTimedMessage": { "delay": 1500, "message": "That's Gary's proof -- he warned them six months out and they buried it. Hold onto it. If you decide to go public later, this is what clears his name." }
             },
             {
               "eventPattern": "item_picked_up:offline_backup_encryption_keys",
@@ -886,7 +886,7 @@ boardroom_pin = "0417"
               "eventPattern": "global_variable_changed:board_coverup_email_found",
               "condition": "value === true",
               "onceOnly": true,
-              "sendTimedMessage": { "delay": 2000, "message": "That email is damning. The board was planning to scapegoat Marcus before the ink was even dry. Talk to Dr. Kim -- she needs to know what her board has decided to do." }
+              "sendTimedMessage": { "delay": 2000, "message": "That email is damning. The board was planning to scapegoat Gary before the ink was even dry. Talk to Dr. Kim -- she needs to know what her board has decided to do." }
             },
             {
               "eventPattern": "global_variable_changed:backup_restore_initiated",
@@ -1156,7 +1156,7 @@ boardroom_pin = "0417"
         },
         {
           "id": "patient_bed4",
-          "displayName": "Mr Okafor",
+          "displayName": "Mr Pryce",
           "npcType": "person",
           "position": { "x": 3.088, "y": 8.396 },
           "spriteSheet": "bed4",
@@ -1165,7 +1165,7 @@ boardroom_pin = "0417"
           "currentKnot": "start",
           "voice": {
             "name": "Rasalgethi",
-            "style": "Retired London bus engineer in his late sixties, on a ventilator. Nigerian-British -- Lagos vowels softened by forty years in south London. Very weak, very short of breath, four or five words at a time with long gaps. Dignified, not frightened.",
+            "style": "Retired London bus engineer in his late sixties, on a ventilator. White working-class south Londoner -- dry, flat, unhurried vowels. Very weak, very short of breath, four or five words at a time with long gaps. Dignified, not frightened.",
             "language": "en-GB"
           },
           "behavior": {
@@ -1280,25 +1280,25 @@ boardroom_pin = "0417"
       },
       "npcs": [
         {
-          "id": "marcus_webb",
-          "displayName": "Marcus Webb",
+          "id": "gary_whitlock",
+          "displayName": "Gary Whitlock",
           "npcType": "person",
           "position": { "x": 4, "y": 5 },
           "spriteSheet": "male_hacker_hood",
           "spriteTalk": "assets/characters/male_hacker_hood_talk.png",
           "spriteConfig": { "idleFrameRate": 6, "walkFrameRate": 10 },
-          "storyPath": "scenarios/m02_ransomed_trust/ink/m02_npc_marcus_webb.json",
+          "storyPath": "scenarios/m02_ransomed_trust/ink/m02_npc_gary_whitlock.json",
           "currentKnot": "start",
           "voice": {
             "name": "Charon",
             "style": "Hospital IT systems administrator, mid-thirties, running on vending machine coffee. Consistent Birmingham / Black Country accent throughout. Flat, tired, self-deprecating -- a man who has been right for six months and got nothing for it. Anger sits under the surface, not on top of it.",
             "language": "en-GB"
           },
-          "globalVarOnKO": "marcus_ko",
-          "taskOnKO": "talk_to_marcus",
-          "observations": "Marcus Webb has not moved from that chair since half ten. Four dead terminals in front of him and a printout of his own ignored emails on the desk, which tells you roughly how the night is going.",
+          "globalVarOnKO": "gary_ko",
+          "taskOnKO": "talk_to_gary",
+          "observations": "Gary Whitlock has not moved from that chair since half ten. Four dead terminals in front of him and a printout of his own ignored emails on the desk, which tells you roughly how the night is going.",
           "puzzle_graph_actions": [
-            { "id": "social_engineer_marcus", "label": "Win Marcus over -- rapport, leverage, theft, or force", "unlocks_aim": "cover_compromised" }
+            { "id": "social_engineer_gary", "label": "Win Gary over -- rapport, leverage, theft, or force", "unlocks_aim": "cover_compromised" }
           ],
           "itemsHeld": [
             {
@@ -1306,7 +1306,7 @@ boardroom_pin = "0417"
               "name": "Server Room Keycard",
               "takeable": true,
               "key_id": "server_room_keycard",
-              "observations": "Marcus's RFID card for the server room. The reader on that door is on an isolated controller, so this is the only credential in the building that still opens anything.",
+              "observations": "Gary's RFID card for the server room. The reader on that door is on an isolated controller, so this is the only credential in the building that still opens anything.",
               "puzzle_graph_role": "key",
               "puzzle_graph_unlocks": "server_room"
             },
@@ -1315,7 +1315,7 @@ boardroom_pin = "0417"
               "name": "Spare Contractor Lanyard",
               "takeable": true,
               "key_id": "contractor_lanyard",
-              "observations": "A blank contractor lanyard from Marcus's drawer -- the sort IT issue to hardware engineers. Real hospital stock, no name on it.",
+              "observations": "A blank contractor lanyard from Gary's drawer -- the sort IT issue to hardware engineers. Real hospital stock, no name on it.",
               "puzzle_graph_role": "key",
               "puzzle_graph_unlocks": "lock_guard_challenge",
               "puzzle_graph_optional": true
@@ -1348,25 +1348,25 @@ boardroom_pin = "0417"
         },
         {
           "type": "pc",
-          "id": "marcus_workstation",
-          "name": "Marcus's Workstation",
+          "id": "gary_workstation",
+          "name": "Gary's Workstation",
           "takeable": false,
           "locked": true,
           "lockType": "password",
           "requires": "Hospital1987",
           "postitNote": "one of the ones on the sticky note...",
           "showPostit": true,
-          "observations": "Marcus's admin workstation -- password locked. A sticky note is stuck to the monitor bezel.",
+          "observations": "Gary's admin workstation -- password locked. A sticky note is stuck to the monitor bezel.",
           "puzzle_graph_role": "lock",
-          "puzzle_graph_note": "Password reuse -- same weak credentials Marcus wrote on the sticky note also unlock his workstation",
+          "puzzle_graph_note": "Password reuse -- same weak credentials Gary wrote on the sticky note also unlock his workstation",
           "contents": [
             {
               "type": "text_file",
               "name": "Backup Server SSH Notes",
               "takeable": true,
               "readable": true,
-              "text": "BACKUP SERVER -- ACCESS NOTES (Marcus)\n\nHost: 192.168.100.50  (ProFTPD 1.3.5)\nSSH login still uses the old shared admin password -- I KNOW, I keep meaning to rotate it.\n\nReminder to self: the FTP service is the real problem. CVE-2010-4652 backdoor. I flagged this to the board SIX MONTHS ago.\n\nIf you're reading this and you're not me: yes, the password policy here is a disgrace. That's the point.",
-              "observations": "Marcus's own notes -- confirms the backup server password reuse and the ProFTPD vulnerability",
+              "text": "BACKUP SERVER -- ACCESS NOTES (Gary)\n\nHost: 192.168.100.50  (ProFTPD 1.3.3c)\nSSH login still uses the old shared admin password -- I KNOW, I keep meaning to rotate it.\n\nReminder to self: the FTP service is the real problem. It's the 1.3.3c backdoor -- the poisoned source release. I flagged this to the board SIX MONTHS ago.\n\nIf you're reading this and you're not me: yes, the password policy here is a disgrace. That's the point.",
+              "observations": "Gary's own notes -- confirms the backup server password reuse and the ProFTPD vulnerability",
               "puzzle_graph_role": "clue",
               "puzzle_graph_reveals": "password_reuse_same_weak_credential_across_workstation_and_ssh"
             }
@@ -1374,24 +1374,24 @@ boardroom_pin = "0417"
         },
         {
           "type": "notes",
-          "id": "marcus_desk_printouts",
-          "name": "Printouts on Marcus's Desk",
+          "id": "gary_desk_printouts",
+          "name": "Printouts on Gary's Desk",
           "sprite": "notes3",
           "takeable": false,
           "readable": true,
-          "text": "A squared-up stack of printed emails, all sent BY M. Webb. Warnings one through seven, in order, with the send dates highlighted.\n\nNo replies in the stack. He has printed only his own half of it.\n\nOn the top sheet, in biro: \"IF ANYONE ASKS LATER.\"",
+          "text": "A squared-up stack of printed emails, all sent BY M. Whitlock. Warnings one through seven, in order, with the send dates highlighted.\n\nNo replies in the stack. He has printed only his own half of it.\n\nOn the top sheet, in biro: \"IF ANYONE ASKS LATER.\"",
           "observations": "The stack of emails on his desk -- his side of the correspondence only, printed out at some point tonight. The replies, and the board's deferral, are not here. Those are in the locked filing cabinet.",
           "puzzle_graph_role": "clue",
           "puzzle_graph_reveals": "signals_the_filing_cabinet_holds_the_other_half_of_the_paper_trail"
         },
         {
           "type": "notes",
-          "name": "Marcus's Password Sticky Note",
+          "name": "Gary's Password Sticky Note",
           "id": "password_sticky_note",
           "takeable": true,
           "readable": true,
           "text": "Common passwords (embarrassing...):\nEmma2018\nHospital1987\nStCatherines\n\n(Need to improve password policy!)",
-          "observations": "Password hints for SSH access -- Marcus's shortcuts",
+          "observations": "Password hints for SSH access -- Gary's shortcuts",
           "puzzle_graph_role": "clue",
           "puzzle_graph_unlocks": "vm_launcher_rooting_for_a_win",
           "puzzle_graph_reveals": "ssh_password_candidates_for_backup_server",
@@ -1403,7 +1403,7 @@ boardroom_pin = "0417"
           "takeable": true,
           "readable": true,
           "text": "Photo of young girl with birthday cake.\nHandwritten on back: 'Emma - 7th birthday! 05/17/2018'",
-          "observations": "Marcus's daughter Emma - birthday 2018 (check if relevant to the PIN puzzle)",
+          "observations": "Gary's daughter Emma - birthday 2018 (check if relevant to the PIN puzzle)",
           "puzzle_graph_role": "clue",
           "puzzle_graph_reveals": "red_herring_emma_birthday_not_the_safe_pin"
         },
@@ -1420,16 +1420,16 @@ boardroom_pin = "0417"
           "contents": [
             {
               "type": "notes",
-              "id": "marcus_vindication_email",
-              "name": "Marcus's Email Archive -- Warning 7 of 7",
+              "id": "gary_vindication_email",
+              "name": "Gary's Email Archive -- Warning 7 of 7",
               "takeable": true,
               "readable": true,
-              "text": <%= marcus_warning_email.to_json %>,
-              "observations": "The seventh warning. Dated 17 May, sent to Dr. Kim and copied to the board secretariat. Show this to Marcus and he will know you have actually read his file.",
-              "onPickup": { "setVariable": { "marcus_evidence_recovered": true } },
+              "text": <%= gary_warning_email.to_json %>,
+              "observations": "The seventh warning. Dated 17 May, sent to Dr. Kim and copied to the board secretariat. Show this to Gary and he will know you have actually read his file.",
+              "onPickup": { "setVariable": { "gary_evidence_recovered": true } },
               "puzzle_graph_role": "clue",
-              "puzzle_graph_unlocks": "lock_marcus_cooperation",
-              "puzzle_graph_reveals": "leverage_route_to_marcus_plus_institutional_negligence_evidence"
+              "puzzle_graph_unlocks": "lock_gary_cooperation",
+              "puzzle_graph_reveals": "leverage_route_to_gary_plus_institutional_negligence_evidence"
             },
             {
               "type": "notes",
@@ -1458,7 +1458,7 @@ boardroom_pin = "0417"
           "name": "Network Diagram Whiteboard",
           "takeable": false,
           "readable": true,
-          "text": "HOSPITAL NETWORK DIAGRAM\n\nBackup Server:\n- ProFTPD 1.3.5\n- Port 21 (FTP)\n- IP: 192.168.100.50\n- Status: VULNERABLE (CVE-2010-4652)\n\nMarcus's note: 'WARNED THEM 6 MONTHS AGO!!!'",
+          "text": "HOSPITAL NETWORK DIAGRAM\n\nBackup Server:\n- ProFTPD 1.3.3c\n- Port 21 (FTP)\n- IP: 192.168.100.50\n- Status: VULNERABLE (1.3.3c source backdoor)\n\nGary's note: 'WARNED THEM 6 MONTHS AGO!!!'",
           "observations": "Network diagram showing the vulnerable ProFTPD backup server",
           "puzzle_graph_role": "clue",
           "puzzle_graph_unlocks": "vm_launcher_rooting_for_a_win",
@@ -1499,9 +1499,9 @@ boardroom_pin = "0417"
           "id": "vm_launcher_rooting_for_a_win",
           "name": "VM Access Terminal",
           "takeable": false,
-          "observations": "Terminal providing SSH access to the hospital backup server for investigation",
+          "observations": "Kali attack terminal -- your working box for reaching the hospital backup server over the network",
           "hacktivityMode": <%= vm_context && vm_context['hacktivity_mode'] ? 'true' : 'false' %>,
-          "vm": <%= vm_object('secgen_rooting_for_a_win', {"id":1,"title":"Hospital Backup Server","ip":"192.168.100.50","enable_console":true}) %>,
+          "vm": <%= vm_object('attack_vm', {"id":1,"title":"kali","ip":"192.168.100.50","enable_console":true}) %>,
           "puzzle_graph_role": "vm",
           "puzzle_graph_aim": "exploit_entropy_backdoor"
         },
@@ -1511,8 +1511,8 @@ boardroom_pin = "0417"
           "name": "SAFETYNET Drop-Site Terminal",
           "takeable": false,
           "observations": "Secure terminal for submitting intercepted intelligence and VM flags",
-          "acceptsVms": ["secgen_rooting_for_a_win"],
-          "flags": <%= flags_for_vm('secgen_rooting_for_a_win', ['flag{ssh_access_granted}', 'flag{proftpd_backdoor_exploited}', 'flag{database_backup_located}', 'flag{ghost_operational_log}']) %>,
+          "acceptsVms": ["hospital_backup_server"],
+          "flags": <%= flags_for_vm('hospital_backup_server', ['flag{ssh_access_granted}', 'flag{proftpd_backdoor_exploited}', 'flag{database_backup_located}', 'flag{ghost_operational_log}']) %>,
           "flagRewards": [
             {
               "type": "emit_event",
@@ -1635,7 +1635,7 @@ boardroom_pin = "0417"
           "takeable": false,
           "locked": true,
           "lockType": "flag",
-          "requires": "secgen_rooting_for_a_win:flag_4",
+          "requires": "hospital_backup_server:flag_4",
           "observations": "A hardened container bolted inside the rack, not on any hospital asset register. Ghost staged from here. The lock wants a verification string that only exists in the operational log on the backup server -- recover that flag and submit it at the drop-site to open this.",
           "puzzle_graph_role": "lock",
           "puzzle_graph_aim": "unmask_inside_asset",
@@ -1770,11 +1770,11 @@ boardroom_pin = "0417"
               "key_id": "kim_statement",
               "takeable": true,
               "readable": true,
-              "text": "STATEMENT OF FACT -- S. KIM, Chief Technology Officer, St. Catherine's Regional\n\nThe security remediation of the backup server was costed by M. Webb (IT Systems) at \u00a385,000 and formally escalated by him on seven occasions between May and November.\n\nIt was deferred on my recommendation. The decision was mine. Mr Webb discharged his responsibilities in full and was instructed by me, in writing, to stop escalating outside the department.\n\nAny characterisation of this incident as an implementation failure on his part is factually incorrect and I will say so under oath.\n\nSigned, S. Kim.",
-              "observations": "Kim's handwritten statement taking the budget decision onto her own name. Signed. This is what stops Marcus carrying it alone.",
+              "text": "STATEMENT OF FACT -- S. KIM, Chief Technology Officer, St. Catherine's Regional\n\nThe security remediation of the backup server was costed by M. Whitlock (IT Systems) at \u00a385,000 and formally escalated by him on seven occasions between May and November.\n\nIt was deferred on my recommendation. The decision was mine. Mr Whitlock discharged his responsibilities in full and was instructed by me, in writing, to stop escalating outside the department.\n\nAny characterisation of this incident as an implementation failure on his part is factually incorrect and I will say so under oath.\n\nSigned, S. Kim.",
+              "observations": "Kim's handwritten statement taking the budget decision onto her own name. Signed. This is what stops Gary carrying it alone.",
               "puzzle_graph_role": "clue",
               "puzzle_graph_optional": true,
-              "puzzle_graph_reveals": "kim_formally_absorbs_responsibility_protecting_marcus"
+              "puzzle_graph_reveals": "kim_formally_absorbs_responsibility_protecting_gary"
             }
           ]
         }
@@ -1807,7 +1807,7 @@ boardroom_pin = "0417"
           "name": "Dr. Kim's Desk Diary",
           "takeable": false,
           "readable": true,
-          "text": "Open on the desk, this week's page.\n\nTue -- Board, 09:00. Boardroom keypad <%= boardroom_pin %> (CHANGE THIS)\nWed -- Estates: emergency store safe still on the founding year. Flag at audit.\nThu -- M. Webb 1:1. Postponed (again).\nFri -- ?\n\nBottom of the page, pressed hard enough to score the paper: \"Should have listened in May.\"",
+          "text": "Open on the desk, this week's page.\n\nTue -- Board, 09:00. Boardroom keypad <%= boardroom_pin %> (CHANGE THIS)\nWed -- Estates: emergency store safe still on the founding year. Flag at audit.\nThu -- M. Whitlock 1:1. Postponed (again).\nFri -- ?\n\nBottom of the page, pressed hard enough to score the paper: \"Should have listened in May.\"",
           "observations": "Her working diary. Two access codes she has been meaning to change for months, and a line at the bottom she wrote for nobody but herself.",
           "observationDisplay": "gameDisplay",
           "onRead": { "setVariable": { "found_boardroom_code": true } },
@@ -1825,7 +1825,7 @@ boardroom_pin = "0417"
           "name": "Budget Report",
           "takeable": true,
           "readable": true,
-          "text": "FY2024 BUDGET REPORT\n\nIT Security Upgrade (Marcus Webb request): $85,000 - DEFERRED\nReason: Budget constraints, defer to next fiscal year\n\nMRI Equipment Purchase: $3,200,000 - APPROVED\nBoard vote: 7-2 in favor\n\nDr. Kim's note: 'We chose shiny technology over cybersecurity. I was wrong.'",
+          "text": "FY2024 BUDGET REPORT\n\nIT Security Upgrade (Gary Whitlock request): $85,000 - DEFERRED\nReason: Budget constraints, defer to next fiscal year\n\nMRI Equipment Purchase: $3,200,000 - APPROVED\nBoard vote: 7-2 in favor\n\nDr. Kim's note: 'We chose shiny technology over cybersecurity. I was wrong.'",
           "observations": "Evidence of institutional negligence -- budget cuts created vulnerability"
         },
         {
@@ -1851,7 +1851,7 @@ boardroom_pin = "0417"
               "name": "Zero Day Syndicate Invoice",
               "takeable": true,
               "readable": true,
-              "text": "ZERO DAY SYNDICATE - INVOICE #ZDS-2024-0847\n\nCLIENT: Ransomware Incorporated (Ghost)\nPROJECT: Healthcare Sector Exploit Package\nTARGET: St. Catherine's Regional Medical\n\nDELIVERABLES:\n- ProFTPD 1.3.5 Exploit: $25,000\n- Reconnaissance (214 hospitals): $15,000\n- Target Selection Consultation: $10,000\n- Deployment Guide: $5,000\n\nTOTAL: $55,000 (15% ENTROPY discount applied)\n\nARCHITECT APPROVAL: CONFIRMED\n\n[LORE: Zero Day Syndicate sold this exploit to Ghost specifically targeting St. Catherine's because of Marcus's documented warnings -- 'maximum educational impact'. The Architect personally approved the operation.]",
+              "text": "ZERO DAY SYNDICATE - INVOICE #ZDS-2024-0847\n\nCLIENT: Ransomware Incorporated (Ghost)\nPROJECT: Healthcare Sector Exploit Package\nTARGET: St. Catherine's Regional Medical\n\nDELIVERABLES:\n- ProFTPD 1.3.3c Backdoor Exploit: $25,000\n- Reconnaissance (214 hospitals): $15,000\n- Target Selection Consultation: $10,000\n- Deployment Guide: $5,000\n\nTOTAL: $55,000 (15% ENTROPY discount applied)\n\nARCHITECT APPROVAL: CONFIRMED\n\n[LORE: Zero Day Syndicate sold this exploit to Ghost specifically targeting St. Catherine's because of Gary's documented warnings -- 'maximum educational impact'. The Architect personally approved the operation.]",
               "observations": "LORE Fragment: Zero Day Syndicate sold the ProFTPD exploit to Ransomware Inc. -- and The Architect approved it",
               "onPickup": { "setVariable": { "lore_zds_invoice_found": true } },
               "puzzle_graph_role": "clue",
@@ -1930,7 +1930,7 @@ boardroom_pin = "0417"
           "name": "Conference Table Budget Papers",
           "takeable": false,
           "readable": true,
-          "text": "BUDGET MEETING MINUTES - MARCH 2024\n\nIT Security Upgrade Proposal:\nMarcus Webb presented $85,000 server security upgrade.\nBoard decision: DEFER to next fiscal year.\n\nRationale: 'Cybersecurity is important, but patient care technology takes priority. The MRI will save lives today.'",
+          "text": "BUDGET MEETING MINUTES - MARCH 2024\n\nIT Security Upgrade Proposal:\nGary Whitlock presented $85,000 server security upgrade.\nBoard decision: DEFER to next fiscal year.\n\nRationale: 'Cybersecurity is important, but patient care technology takes priority. The MRI will save lives today.'",
           "observations": "Budget meeting notes showing the decision-making process"
         },
         {
@@ -1946,8 +1946,8 @@ boardroom_pin = "0417"
           "name": "Board Liability Email",
           "takeable": true,
           "readable": true,
-          "text": "FROM: Hospital Board Chair\nTO: Legal Department\nRE: Incident Liability\n\nMarcus Webb's warnings are documented. We need to reframe this as his implementation failure, not our budget decision. Prepare termination paperwork and non-disparagement agreement.\n\n[This is stamped CONFIDENTIAL]",
-          "observations": "Damning email -- the board plans to blame Marcus and cover up their budget decision",
+          "text": "FROM: Hospital Board Chair\nTO: Legal Department\nRE: Incident Liability\n\nGary Whitlock's warnings are documented. We need to reframe this as his implementation failure, not our budget decision. Prepare termination paperwork and non-disparagement agreement.\n\n[This is stamped CONFIDENTIAL]",
+          "observations": "Damning email -- the board plans to blame Gary and cover up their budget decision",
           "onPickup": { "setVariable": { "board_coverup_email_found": true } }
         },
         {
@@ -1955,7 +1955,7 @@ boardroom_pin = "0417"
           "name": "Ransomware Incorporated Proposal",
           "takeable": false,
           "readable": true,
-          "text": "ZERO DAY SYNDICATE -- AFFILIATE PROGRAMME\n\nTarget: St. Catherine's Regional Medical Centre\nOperator: Ghost (Ransomware Incorporated)\nAttack vector: ProFTPD CVE-2010-4652 (unpatched since 2020)\n\nRansom: $87,000 (2.5 BTC)\nSyndicate cut: 30%\nOperator cut: 70%\n\nNOTE: Hospital has deferred all security upgrades. Unpatched systems confirmed. Success probability: 94%.\n\nThis document was printed from an encrypted channel -- someone inside this hospital is an ENTROPY affiliate.",
+          "text": "ZERO DAY SYNDICATE -- AFFILIATE PROGRAMME\n\nTarget: St. Catherine's Regional Medical Centre\nOperator: Ghost (Ransomware Incorporated)\nAttack vector: ProFTPD 1.3.3c source backdoor (unpatched since 2010)\n\nRansom: $87,000 (2.5 BTC)\nSyndicate cut: 30%\nOperator cut: 70%\n\nNOTE: Hospital has deferred all security upgrades. Unpatched systems confirmed. Success probability: 94%.\n\nThis document was printed from an encrypted channel -- someone inside this hospital is an ENTROPY affiliate.",
           "observations": "A printed briefing document -- someone was feeding ENTROPY information about the hospital's vulnerabilities",
           "onRead": { "setVariable": { "insider_evidence_partial": true } },
           "puzzle_graph_role": "clue",
@@ -2076,7 +2076,7 @@ boardroom_pin = "0417"
               "key_id": "val_notebook",
               "takeable": true,
               "readable": true,
-              "text": "NIGHT LOG -- V. OKONKWO\n\n22:40  Webb (IT) in. Told him to go home. He didn't.\n23:15  Dr Kim in. Looked through me.\n01:02  Ext. consultant expected -- Kim's authorisation, per reception.\n03:20  Reeves on his post again. Sensitive comms, apparently.\n       Not on my rota. Not on ANY rota I've ever been given.\n       Asked Sandra in Estates. She's never heard of him either.\n       Raised it twice. Told twice it's \"crisis protocol\".\n\nNote to self: get that in writing before someone asks me why I let him stand there all night.",
+              "text": "NIGHT LOG -- V. OKONKWO\n\n22:40  Whitlock (IT) in. Told him to go home. He didn't.\n23:15  Dr Kim in. Looked through me.\n01:02  Ext. consultant expected -- Kim's authorisation, per reception.\n03:20  Reeves on his post again. Sensitive comms, apparently.\n       Not on my rota. Not on ANY rota I've ever been given.\n       Asked Sandra in Estates. She's never heard of him either.\n       Raised it twice. Told twice it's \"crisis protocol\".\n\nNote to self: get that in writing before someone asks me why I let him stand there all night.",
               "observations": "Val's own notebook. She has been quietly logging Graham Reeves for weeks and nobody upstairs wants to hear it.",
               "observationDisplay": "gameDisplay",
               "onRead": { "setVariable": { "insider_evidence_partial": true } },
@@ -2223,16 +2223,16 @@ boardroom_pin = "0417"
 
     "paid_ransom": false,
     "exposed_hospital": false,
-    "marcus_protected": false,
+    "gary_protected": false,
     "kim_guilt_revealed": false,
     "ghost_deal_accepted": false,
 
-    "marcus_influence": 0,
-    "marcus_defensive": false,
-    "marcus_trusts_player": false,
+    "gary_influence": 0,
+    "gary_defensive": false,
+    "gary_trusts_player": false,
     "gave_keycard": false,
-    "marcus_evidence_recovered": false,
-    "marcus_gave_lanyard": false,
+    "gary_evidence_recovered": false,
+    "gary_gave_lanyard": false,
 
     "kim_influence": 0,
     "player_warned_kim": false,
@@ -2302,7 +2302,7 @@ boardroom_pin = "0417"
     "backup_restore_initiated": false,
 
     "receptionist_ko": false,
-    "marcus_ko": false,
+    "gary_ko": false,
     "dr_kim_ko": false,
     "ward_nurse_ko": false,
 

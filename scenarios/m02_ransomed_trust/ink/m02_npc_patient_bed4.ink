@@ -1,5 +1,5 @@
 // ===========================================
-// Ward Patient: Bed 4 -- Mr Okafor (ventilated, cardiac)
+// Ward Patient: Bed 4 -- Mr Pryce (ventilated, cardiac)
 // Mission 2: Ransomed Trust
 //
 // He can speak, barely -- four or five words between breaths. That is the
@@ -17,30 +17,30 @@ VAR read_chart = false
 }
 ~ spoke_to_player = true
 
-Narrator: Mr Okafor is awake. The ventilator beside him cycles on its own power; the monitor above the bed, which should be reporting him to the nurses' station, is dark.
+Narrator: Mr Pryce is awake. The ventilator beside him cycles on its own power; the monitor above the bed, which should be reporting him to the nurses' station, is dark.
 
 Narrator: His eyes track to you, then to the dead screen above the bed.
 
-Mr Okafor: ...you the one.
+Mr Pryce: ...you the one.
 
-Mr Okafor: *breath* Fixing it.
+Mr Pryce: *breath* Fixing it.
 
 * [I am. Systems should be back tonight.]
-    Mr Okafor: *long breath* Good.
-    Mr Okafor: Sister's been. Every fifteen minutes. *breath* All night.
-    Mr Okafor: She's tired. Tell someone.
+    Mr Pryce: *long breath* Good.
+    Mr Pryce: Sister's been. Every fifteen minutes. *breath* All night.
+    Mr Pryce: She's tired. Tell someone.
     -> hub
 
-* [Yes. How are you doing, Mr Okafor?]
+* [Yes. How are you doing, Mr Pryce?]
     Narrator: One hand moves, barely.
 
-    Mr Okafor: Breathing.
-    Mr Okafor: Machine's doing it. *breath* But it's getting done.
-    Mr Okafor: Forty years I fixed buses. *breath* Never trusted a thing with no gauge on it.
+    Mr Pryce: Breathing.
+    Mr Pryce: Machine's doing it. *breath* But it's getting done.
+    Mr Pryce: Forty years I fixed buses. *breath* Never trusted a thing with no gauge on it.
     -> hub
 
 * [Rest. I'll come back when it's done.]
-    Mr Okafor: *breath* Mm.
+    Mr Pryce: *breath* Mm.
     -> hub
 
 === hub ===
@@ -48,7 +48,7 @@ Mr Okafor: *breath* Fixing it.
     -> the_chart
 
 + [I'll let you rest.]
-    Mr Okafor: *breath* Go on.
+    Mr Pryce: *breath* Go on.
     #exit_conversation
     -> hub
 
@@ -61,12 +61,12 @@ Narrator: The monitor above the bed would have written this line every thirty se
 
 Narrator: He watches you read it.
 
-Mr Okafor: Fourteen minutes.
+Mr Pryce: Fourteen minutes.
 
-Mr Okafor: *breath* Long time, fourteen minutes.
+Mr Pryce: *breath* Long time, fourteen minutes.
 
 -> hub
 
 === returning ===
-Mr Okafor: *eyes open* ...still here.
+Mr Pryce: *eyes open* ...still here.
 -> hub

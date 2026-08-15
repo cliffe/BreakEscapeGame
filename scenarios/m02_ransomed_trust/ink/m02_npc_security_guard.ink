@@ -362,7 +362,7 @@ Val Okonkwo: Officially? "An IT incident." That's the phrase. I've had it four t
 
 Val Okonkwo: What I've worked out on my own is that somebody's locked up every computer in the building and wants paying, and that the lad in IT has been shouting about exactly this since about May.
 
-Val Okonkwo: Marcus. Nice lad. Bit intense. Been right for six months, which round here is basically a disciplinary offence.
+Val Okonkwo: Gary. Nice lad. Bit intense. Been right for six months, which round here is basically a disciplinary offence.
 
 + [Nobody listens to the people who tell them things they don't want to hear.]
     ~ influence += 8
@@ -460,7 +460,7 @@ Val Okonkwo: *steadily* I'm not going to be dramatic about it. But when they ask
 
 Val Okonkwo: Hang on -- server room's authorised IT personnel only. That's not a badge thing, that's a rule thing.
 
-* [I've got Marcus Webb's card and Marcus Webb's blessing. Ring him if you want.]
+* [I've got Gary Whitlock's card and Gary Whitlock's blessing. Ring him if you want.]
     Val Okonkwo: *pause* ...I would, but the phones in IT are as dead as everything else, aren't they.
     Val Okonkwo: Go on. I'm logging it with your description and the time.
     #exit_conversation

@@ -219,7 +219,7 @@ Bernie Nwosu: Which is why Estates dumped every mechanical override on my hook t
 
 Narrator: She unhooks a worn brass key and holds it a moment before letting go of it.
 
-Bernie Nwosu: IT's up on the main corridor -- straight through Ward Three, up the link, far door on the right. Marcus is in there and he's not come out since half ten, so knock properly.
+Bernie Nwosu: IT's up on the main corridor -- straight through Ward Three, up the link, far door on the right. Gary is in there and he's not come out since half ten, so knock properly.
 
 {was_honest:
     ~ bernie_influence += 2

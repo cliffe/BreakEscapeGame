@@ -1065,6 +1065,20 @@ Objectives structure the mission with `aims` (groups) containing `tasks` (indivi
 | `manual` | — | Completed only via `completeTask` in an event mapping |
 | `custom` | — | Custom completion logic |
 
+### How SecGen and Break Escape scenarios relate
+
+A CTF mission is two coupled files: the **SecGen scenario** (`SecGen/scenarios/**/*.xml`) that builds the VMs, and the **Break Escape scenario** (`scenario.json.erb`) that wraps them in narrative. They are joined by **names** and by **order**, and both joins fail silently.
+
+- The mission's `secgen_scenario` field points at the SecGen XML; Hacktivity builds it and matches it via `sec_gen_batches.scenario`.
+- Each SecGen `<system>` has a **`system_name`**. On build, flags are extracted into `flags_by_vm = { system_name => [flag, …] }` (`mission.rb#parse_flag_hints_xml`).
+- The ERB helpers look flags up **by `system_name`**: `vm_flags_json('<system_name>')`, `flags_for_vm('<system_name>')`, and every `"<system_name>:flag_N"` reference. **If the key isn't a real `system_name`, the live flags never resolve** — `flags_by_vm[key]` is `nil`, `vm_flags_json` returns `{}`, and it only breaks in Hacktivity mode. Mission 1 works because its key `shatter_server` *is* its target's `system_name`.
+- The **console is a separate lookup**: `vm_object('<system_name>', {title:…})` attaches the player's terminal to a VM — normally the **attacker/Kali** box (where they work), *not* the flag-bearing target. Console key ≠ flag key.
+- The second argument to each helper is the **standalone/dev fallback** only; live per-build flags replace it in Hacktivity mode.
+
+**Flag ordering is deterministic.** `flag_1..flag_N` are 1-indexed by array position, and that order is the **document order of the `<generator type="flag_generator"/>` nodes in the SecGen XML** (established through `system_reader.rb` → `system.rb` → `xml_marker_generator.rb`; the only randomness picks the flag *format*, never position/count). So reordering the `flag_generator`s, or moving one between `strings_to_leak` and `strings_to_pre_leak`, renumbers the flags — re-derive the mapping and fix the `submit_flags` after any such edit. The ordering is correct but *implicit* (nothing pins a flag to a document by name); the durable fix would be explicit flag IDs keyed by name rather than position.
+
+For a fully worked example — the four-flag mapping, the attacker-vs-target split, and the file:line anchors — see `scenarios/m02_ransomed_trust/VM_INTEGRATION.md`.
+
 ### Wiring VM flags — two failure modes that are silent
 
 Both of these compile, validate against the schema, and look correct in the dungeon graph. Neither shows up until someone plays to the end and finds the mission unfinishable.
@@ -1077,7 +1091,7 @@ There is nothing for a submission to match against, so the task stays open forev
 {
   "taskId": "submit_ssh_flag",
   "type": "submit_flags",
-  "targetFlags": ["secgen_rooting_for_a_win:flag_1"],
+  "targetFlags": ["hospital_backup_server:flag_1"],
   "targetCount": 1,
   "currentCount": 0,
   "showProgress": true,
@@ -1220,9 +1234,9 @@ Scenario files are `.json.erb` templates. Available helpers:
 | `<%= @random_password %>` | Random 8-char alphanumeric password (changes per render) |
 | `<%= @random_pin %>` | Random 4-digit PIN string |
 | `<%= @random_code %>` | Random 8-char hex code |
-| `<%= vm_object('vm_title', fallback_hash) %>` | Returns VM data as JSON; uses Hacktivity VM context or fallback |
-| `<%= flags_for_vm('vm_name', fallback_array) %>` | Returns flag array as JSON for a named VM |
-| `<%= vm_flags_json('vm_name', fallback_array) %>` | Alias for `flags_for_vm`; used in `flags:` top-level map |
+| `<%= vm_object('system_name', fallback_hash) %>` | Returns VM console data as JSON for the named SecGen `system_name` (usually the attacker/Kali box); Hacktivity context or fallback |
+| `<%= flags_for_vm('system_name', fallback_array) %>` | Returns the flag **array** as JSON for the named SecGen `system_name` (used in a flag-station's `flags:`) |
+| `<%= vm_flags_json('system_name', fallback_array) %>` | Returns the flag **map** `{ "flag_1": value, … }` for the named `system_name` (used in the top-level `flags:` block). Same lookup as `flags_for_vm`, different shape. When no VM context is present, builds the map from `fallback_array`; when context is present but the name has no flags, returns `{}` (surfacing a wrong `system_name` rather than masking it) |
 | `<%= base64_encode("text") %>` | Base64-encodes a string (for encoded notes puzzles) |
 | `<%= rot13("text") %>` | ROT13-encodes a string (for cipher puzzles) |
 

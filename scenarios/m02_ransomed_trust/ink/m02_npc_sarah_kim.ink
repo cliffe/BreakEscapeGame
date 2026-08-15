@@ -8,7 +8,7 @@
 // system that grants authorisation is behind the ransom screen. That is the
 // line that makes the whole mission make sense, and it comes from her.
 //
-// She gives: the boardroom code, the pointer to Marcus, a countersigned paper
+// She gives: the boardroom code, the pointer to Gary, a countersigned paper
 // badge that opens nothing, and the fire-drill seed (she never approved it).
 //
 // Her big consequence choice is the board vote. advised_board_pay /
@@ -22,7 +22,7 @@ EXTERNAL player_name()
 VAR kim_influence = 0
 VAR kim_guilt_revealed = false
 VAR topic_attack_vector = false
-VAR topic_marcus = false
+VAR topic_gary = false
 VAR topic_ransom_vote = false
 VAR topic_fire_drill = false
 VAR player_warned_kim = false
@@ -85,7 +85,7 @@ Dr. Sarah Kim: Forty-seven patients on generators. Twelve hours of fuel. And the
 
 Dr. Sarah Kim: The backup server. There is a flaw in the file transfer software on it -- old, publicly documented, patchable for years.
 
-Dr. Sarah Kim: I am not going to pretend I understand the technical detail. That is Marcus Webb's world and he has been trying to explain it to me since May.
+Dr. Sarah Kim: I am not going to pretend I understand the technical detail. That is Gary Whitlock's world and he has been trying to explain it to me since May.
 
 Dr. Sarah Kim: What I understood was the figure next to it. Eighty-five thousand pounds.
 
@@ -97,9 +97,9 @@ Dr. Sarah Kim: What I understood was the figure next to it. Eighty-five thousand
     ~ kim_guilt_revealed = true
     -> the_deferral
 
-* [Understood. Where's Marcus now?]
-    ~ topic_marcus = true
-    -> discuss_marcus
+* [Understood. Where's Gary now?]
+    ~ topic_gary = true
+    -> discuss_gary
 
 === the_deferral ===
 ~ kim_guilt_revealed = true
@@ -167,10 +167,10 @@ Dr. Sarah Kim: That is genuinely the extent of my power tonight. A signature on 
 
 Dr. Sarah Kim: Everything mechanical, Estates dumped on reception this morning -- back down through the ward, if you have not come that way. Bernie has the override keys on a hook and rather more authority than her job title suggests. Be nice to her.
 
-Dr. Sarah Kim: And the server room -- I cannot help you at all. That reader is on its own isolated controller, which is the one thing in this building that Marcus won an argument about, and it will only take a card that already exists. He has one. I do not.
+Dr. Sarah Kim: And the server room -- I cannot help you at all. That reader is on its own isolated controller, which is the one thing in this building that Gary won an argument about, and it will only take a card that already exists. He has one. I do not.
 
-+ [So my route is Marcus.]
-    Dr. Sarah Kim: Your route is Marcus.
++ [So my route is Gary.]
+    Dr. Sarah Kim: Your route is Gary.
     Dr. Sarah Kim: Far end of this corridor, behind the override lock. He has been in there since half past ten and I have not had the courage to walk down and knock.
     -> hub
 
@@ -183,8 +183,8 @@ Dr. Sarah Kim: And the server room -- I cannot help you at all. That reader is o
 // ===========================================
 
 === hub ===
-+ {not topic_marcus} [Tell me about Marcus Webb.]
-    -> discuss_marcus
++ {not topic_gary} [Tell me about Gary Whitlock.]
+    -> discuss_gary
 
 + {not topic_ransom_vote} [Talk me through this board vote.]
     -> explain_board_vote
@@ -198,10 +198,10 @@ Dr. Sarah Kim: And the server room -- I cannot help you at all. That reader is o
 + [What's the code for the boardroom?]
     -> boardroom_code
 
-+ {topic_marcus and not player_warned_kim} [Whatever happens tonight, Marcus doesn't carry this alone. I want that on the record.]
-    -> protect_marcus
++ {topic_gary and not player_warned_kim} [Whatever happens tonight, Gary doesn't carry this alone. I want that on the record.]
+    -> protect_gary
 
-+ {board_coverup_email_found and not player_warned_kim} [Your board chair has already written to Legal about Marcus. Did you know?]
++ {board_coverup_email_found and not player_warned_kim} [Your board chair has already written to Legal about Gary. Did you know?]
     -> board_coverup
 
 + {cover_burned and not cover_restored} [Someone's rung security and told them I was never booked.]
@@ -223,10 +223,10 @@ Dr. Sarah Kim: And the server room -- I cannot help you at all. That reader is o
 // TOPICS
 // ===========================================
 
-=== discuss_marcus ===
-~ topic_marcus = true
+=== discuss_gary ===
+~ topic_gary = true
 
-Dr. Sarah Kim: Marcus is the best administrator this hospital has and I have spent six months teaching him that being right is worthless here.
+Dr. Sarah Kim: Gary is the best administrator this hospital has and I have spent six months teaching him that being right is worthless here.
 
 Dr. Sarah Kim: He is going to be sacked. Not by me -- I do not think I get to make that decision any more -- but he is going to be sacked, and the paperwork will say something about implementation failure.
 
@@ -244,12 +244,12 @@ Dr. Sarah Kim: And the thing that will finish me, when I am old, is that he will
     Dr. Sarah Kim: If I go in there now I will be asking him to forgive me while his patients are on generators, and that is not an apology. That is management.
     -> hub
 
-=== protect_marcus ===
+=== protect_gary ===
 ~ player_warned_kim = true
 ~ kim_influence += 15
 # influence_increased
 #complete_task:learn_about_scapegoating
-#set_global:marcus_protected:true
+#set_global:gary_protected:true
 #give_item:notes:kim_statement
 
 Dr. Sarah Kim: You want it in writing.
@@ -273,7 +273,7 @@ Dr. Sarah Kim: If they want a name on this, they can have the correct one.
 === board_coverup ===
 ~ player_warned_kim = true
 #complete_task:learn_about_scapegoating
-#set_global:marcus_protected:true
+#set_global:gary_protected:true
 
 Narrator: You describe the email. Board chair to Legal. Reframe as implementation failure. Termination paperwork. Non-disparagement agreement.
 

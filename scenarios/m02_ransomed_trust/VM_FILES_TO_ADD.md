@@ -1,6 +1,6 @@
 # VM Files to Add - Mission 2: Ransomed Trust
 
-## SecGen VM: secgen_rooting_for_a_win
+## SecGen VM: hospital_backup_server
 
 ### File 1: `/root/.ghost_ops/equipment_manifest.txt`
 
@@ -36,7 +36,7 @@ EQUIPMENT ISSUED:
    - Target PIN discovered: 4729
    - Status: Concealed Week 6, ready for recovery
 
-3. ProFTPD Exploit Payload (CVE-2010-4652)
+3. ProFTPD Exploit Payload
    - Deployment: Week 6 via network bridge
    - Execution: Successful
    - Ransom note delivered: Confirmed
@@ -127,7 +127,7 @@ St. Catherine's Regional Medical Center.
 Files are encrypted with ROT13 and Base64 for basic obfuscation.
 Real encryption would draw attention during forensic analysis.
 
-The hospital's IT administrator (Marcus Webb) is NOT complicit.
+The hospital's IT administrator (Gary Whitlock) is NOT complicit.
 He warned management about vulnerabilities 6 months ago.
 They ignored him. Perfect scapegoat.
 
@@ -141,7 +141,7 @@ Desperation makes the best agents.
 
 These flags should be placed in the VM:
 
-1. **SSH Flag**: `/home/marcus/.ssh/authorized_keys` (comment)
+1. **SSH Flag**: `/home/gary/.ssh/authorized_keys` (comment)
    - `flag{ssh_access_granted}`
 
 2. **ProFTPD Flag**: `/etc/proftpd/proftpd.conf` (as comment)

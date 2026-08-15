@@ -39,7 +39,7 @@ so the ward's previously unused south wall works fine.
 
 - `ruby scripts/validate_scenario.rb scenarios/m02_ransomed_trust/scenario.json.erb` → schema passes, 1 informational warning (guard lockpick cutscene is deliberately repeatable, `cooldown: 30000`).
 - `./scripts/compile-ink.sh m02_ransomed_trust` → 15 files, 0 failures.
-- VM `secgen_rooting_for_a_win` provisioned with 4 flags, in this order:
+- VM `hospital_backup_server` provisioned with 4 flags, in this order:
   1. `flag_1` SSH foothold → task `submit_ssh_flag`
   2. `flag_2` ProFTPD backdoor → task `submit_proftpd_flag`
   3. `flag_3` database backup → task `submit_database_flag`
@@ -50,7 +50,7 @@ so the ward's previously unused south wall works fine.
 | Minigame | Object | Status |
 |---|---|---|
 | `ransomware_display` | 4 encrypted terminals | ✅ Implemented |
-| `password` lock | Marcus's Workstation | ✅ Implemented |
+| `password` lock | Gary's Workstation | ✅ Implemented |
 | `pin` lock | Boardroom door, emergency safe, Kim's safe | ✅ Implemented |
 | `key` lock + lockpick | IT department door, IT filing cabinet | ✅ Implemented |
 | `rfid` lock | Server room door | ✅ Implemented |
@@ -93,15 +93,15 @@ so the ward's previously unused south wall works fine.
 8. **Office Corridor → IT door (north)** — Unlock with the override key, or pick it → **task `open_it_department` complete**
    - Bernie's line of sight covers reception only, so picking the IT door no longer happens in front of her — `seen_picking_by_bernie` now only fires if the player picks something while still in the lobby
 9. **Any encrypted terminal** — Read a `ransomware_display` screen (reception, ward, CTO office, or IT) → `decoded_ransomware_note` set → handler fires **task `decode_ransomware_note` complete**
-10. **IT Department — Marcus Webb** — Any opening → **task `talk_to_marcus` complete** and **Server Room Keycard given**. Four routes:
-    - *Rapport* (`marcus_influence >= 25`) → `keycard_trusted`: card + credentials + **task `obtain_password_hints` complete**
-    - *Leverage* — open the filing cabinet first, take Warning 7 of 7 (`marcus_evidence_recovered`), then the hub option "Marcus. Look at this." → `show_the_email` → recovers him from **any** state including hostile, then `leverage_payoff` gives card + credentials
+10. **IT Department — Gary Whitlock** — Any opening → **task `talk_to_gary` complete** and **Server Room Keycard given**. Four routes:
+    - *Rapport* (`gary_influence >= 25`) → `keycard_trusted`: card + credentials + **task `obtain_password_hints` complete**
+    - *Leverage* — open the filing cabinet first, take Warning 7 of 7 (`gary_evidence_recovered`), then the hub option "Gary. Look at this." → `show_the_email` → recovers him from **any** state including hostile, then `leverage_payoff` gives card + credentials
     - *Transaction* (`influence 8–24`) → `keycard_conditional`: card only
-    - *Blame* (opening choice 3) → `open_blame`: card thrown across the desk, `marcus_defensive` set, no lanyard
-    - *KO fallback*: `taskOnKO: talk_to_marcus`; card + lanyard drop from `itemsHeld`; handler completes `obtain_password_hints` on `marcus_ko`
+    - *Blame* (opening choice 3) → `open_blame`: card thrown across the desk, `gary_defensive` set, no lanyard
+    - *KO fallback*: `taskOnKO: talk_to_gary`; card + lanyard drop from `itemsHeld`; handler completes `obtain_password_hints` on `gary_ko`
 11. **IT Department — Password Sticky Note** — Pick it up → handler completes **task `obtain_password_hints`** (redundant path; guarantees no soft-lock at any influence level)
-12. **IT Filing Cabinet** (key lock, pick it) — Take Marcus's Email Archive → handler completes **task `investigate_marcus_office`** *(optional)*
-13. **Marcus, or Kim, or the Boardroom email** — Any of three routes fires **task `learn_about_scapegoating`** + `marcus_protected` *(optional)*
+12. **IT Filing Cabinet** (key lock, pick it) — Take Gary's Email Archive → handler completes **task `investigate_gary_office`** *(optional)*
+13. **Gary, or Kim, or the Boardroom email** — Any of three routes fires **task `learn_about_scapegoating`** + `gary_protected` *(optional)*
 
 **Aim completes when:** 8, 9, 10, 11 are done (12, 13 optional).
 
@@ -110,14 +110,14 @@ so the ward's previously unused south wall works fine.
 ## Aim: Somebody Pulled Your Booking
 [Unlocks after: aim `access_it_systems` complete]
 
-14. **Automatic** — On `objective_task_completed:talk_to_marcus`, the handler sets `cover_burned` and sends two messages (4s and 11s) → **task `cover_burned_notified` complete**
+14. **Automatic** — On `objective_task_completed:talk_to_gary`, the handler sets `cover_burned` and sends two messages (4s and 11s) → **task `cover_burned_notified` complete**
 15. **Val Okonkwo (Security Office)** — Her `cover_challenge` knot now replaces the friendly greeting; the consultant line no longer works. Four ways through:
     - Show a lanyard (`staff_lanyard_obtained`) → `show_lanyard`
     - Bernie vouched (`bernie_vouched`) → `bernie_backs_you`
     - Earn it (`influence >= 20`) → `earn_it`
     - Attack her → `#hostile`, `guard_knocked_out` on KO
 16. **Any lanyard route** → **task `regain_freedom_of_movement` complete** via `cover_restored`:
-    - Marcus's hub option "I need something that holds up in a corridor" → contractor lanyard (**no influence requirement** — `lanyard_grudging` always fires)
+    - Gary's hub option "I need something that holds up in a corridor" → contractor lanyard (**no influence requirement** — `lanyard_grudging` always fires)
     - Sister Doyle's hub option → bank staff lanyard (**requires `showed_empathy`**)
     - Bernie's hub option → `bernie_vouches` (**requires `bernie_trusts_player`**)
     - Picking either lanyard off a KO'd NPC → handler `item_picked_up` mapping sets `cover_restored`
@@ -134,10 +134,10 @@ so the ward's previously unused south wall works fine.
 
 18. **Server Room — VM Access Terminal** — Interact → handler offers the scanning-and-exploitation field guide (`scanning_exploitation_guide_offered`)
 19. **VM** — SSH in with the reused credential (`Hospital1987`) → submit flag 1 at the drop-site → **task `submit_ssh_flag` complete**, `flag_ssh_submitted` set; handler offers vulnerability / exploitation / privesc guides
-20. **VM** — Exploit ProFTPD CVE-2010-4652 → submit flag 2 → **task `submit_proftpd_flag` complete**, `flag_proftpd_submitted` set; **Ghost calls** (`on_proftpd_exploited`)
+20. **VM** — Exploit ProFTPD the ProFTPD 1.3.3c backdoor → submit flag 2 → **task `submit_proftpd_flag` complete**, `flag_proftpd_submitted` set; **Ghost calls** (`on_proftpd_exploited`)
 21. **VM** — Locate the encrypted database backup → submit flag 3 → **task `submit_database_flag` complete**, `flag_database_submitted` set, `insider_db_window_found` set → **task `unmask_db_window` complete**; **Ghost calls** (`on_backup_located`, names the affiliate without naming them)
 22. **VM** — Recover Ghost's operational log → submit flag 4 → **task `submit_ghost_log_flag` complete**, `flag_ghost_log_submitted` + `insider_badge_id_found` + `backdoor_fully_exploited` set → **task `unmask_ghost_badge` complete**
-23. **Server Room — ENTROPY Staging Cache** — Now unlockable (flag lock on `secgen_rooting_for_a_win:flag_4`) → take Ghost's Operational Manifesto (`lore_ghosts_manifesto_found`) and the Affiliate Handling Note (`insider_method_confirmed`)
+23. **Server Room — ENTROPY Staging Cache** — Now unlockable (flag lock on `hospital_backup_server:flag_4`) → take Ghost's Operational Manifesto (`lore_ghosts_manifesto_found`) and the Affiliate Handling Note (`insider_method_confirmed`)
 
 **Aim completes when:** 19–22 are done. This aim gates the mission-conclusion aim.
 
@@ -165,7 +165,7 @@ so the ward's previously unused south wall works fine.
 33. **Boardroom — Hospital Communications Terminal** — Now unlocked (needs `backdoor_fully_exploited` **and** `ransom_decision_made`) → transmit or suppress → **task `decide_hospital_exposure` complete**, `exposed_hospital` set, **`mission_complete` set**
 34. **Closing debrief** — `closing_debrief_trigger` fires on `mission_complete` → person-chat debrief → `#complete_mission` → bond visualiser + credits
 
-**Server-side conclusion guard (`requiresCompleted`):** `talk_to_marcus`, `access_server_room`, `submit_proftpd_flag`, `submit_ghost_log_flag`, `initiate_backup_recovery`, `make_ransom_decision`, `decide_hospital_exposure`. The VM chain cannot be skipped.
+**Server-side conclusion guard (`requiresCompleted`):** `talk_to_gary`, `access_server_room`, `submit_proftpd_flag`, `submit_ghost_log_flag`, `initiate_backup_recovery`, `make_ransom_decision`, `decide_hospital_exposure`. The VM chain cannot be skipped.
 
 ---
 
@@ -179,10 +179,10 @@ so the ward's previously unused south wall works fine.
 | `dr_kim_met` | Handler, on `meet_dr_kim` |
 | `found_boardroom_code` | Kim's diary `onRead` or Kim's `boardroom_code` knot |
 | `decoded_ransomware_note` | Any ransomware terminal `onRead` |
-| `marcus_evidence_recovered` | Warning 7 of 7 `onPickup` |
-| `marcus_protected` | Marcus, Kim, or the boardroom email route |
-| `cover_burned` | Handler, on `talk_to_marcus` |
-| `staff_lanyard_obtained` / `cover_restored` | Marcus / Doyle lanyard, Bernie vouch, Val, guard KO, or server-room entry |
+| `gary_evidence_recovered` | Warning 7 of 7 `onPickup` |
+| `gary_protected` | Gary, Kim, or the boardroom email route |
+| `cover_burned` | Handler, on `talk_to_gary` |
+| `staff_lanyard_obtained` / `cover_restored` | Gary / Doyle lanyard, Bernie vouch, Val, guard KO, or server-room entry |
 | `bernie_vouched` | Bernie `bernie_vouches` |
 | `flag_ssh_submitted` … `flag_ghost_log_submitted` | Handler `setGlobal` on each flag task |
 | `backdoor_fully_exploited` | Handler, on `submit_ghost_log_flag` |
@@ -205,9 +205,9 @@ so the ward's previously unused south wall works fine.
 - [ ] Kim's office is **unlocked** (she invited you — no lockpicking her door)
 - [ ] Kim explicitly explains that she cannot grant access, and hands over a badge that opens nothing
 - [ ] IT door opens with the key **and** with picks; picking it in front of Bernie triggers her bark
-- [ ] Marcus surrenders the keycard on **all four** routes including the blame opening
-- [ ] Leverage route (`show_the_email`) recovers Marcus from `marcus_defensive`
-- [ ] Cover burn fires ~4s after `talk_to_marcus` completes, with the follow-up at ~11s
+- [ ] Gary surrenders the keycard on **all four** routes including the blame opening
+- [ ] Leverage route (`show_the_email`) recovers Gary from `gary_defensive`
+- [ ] Cover burn fires ~4s after `talk_to_gary` completes, with the follow-up at ~11s
 - [ ] Val's behaviour visibly changes: faster patrol, shorter dwell, `cover_challenge` knot
 - [ ] Ward is entered at the **bottom-right** door and exits **top-left** to the office corridor
 - [ ] Security Office reads as a room (desk terminal, empty key cabinet, night rota, chair), not a corridor
@@ -217,7 +217,7 @@ so the ward's previously unused south wall works fine.
 - [ ] All four flags submit and complete their tasks with progress counters
 - [ ] ENTROPY Staging Cache unlocks only after flag 4
 - [ ] Press terminal refuses to transmit before flag 4 **and** before the recovery decision
-- [ ] Debrief reflects: ransom choice, exposure choice, `marcus_protected`, Reeves outcome, `bernie_vouched`, `guard_knocked_out`, `advised_board_*` vs `paid_ransom`
+- [ ] Debrief reflects: ransom choice, exposure choice, `gary_protected`, Reeves outcome, `bernie_vouched`, `guard_knocked_out`, `advised_board_*` vs `paid_ransom`
 
 ### Optional Path
 
@@ -233,10 +233,10 @@ so the ward's previously unused south wall works fine.
 
 ### Edge Cases
 
-- [ ] **KO every NPC in turn** and confirm the mission still completes: Bernie (`sign_in_at_reception`), Kim (`meet_dr_kim`), Marcus (`talk_to_marcus` + handler completes `obtain_password_hints`), Doyle (`gather_pin_clues`), Val (`cover_restored`)
-- [ ] Reach Marcus by picking the IT door **without ever speaking to Bernie**, then return to her after the burn — her `first_meeting` still runs and still completes `sign_in_at_reception`
-- [ ] Re-open Marcus's conversation after leaving via "Nothing yet, I'll come back" — `met_marcus` routes to `returning`, not to an empty `first_meeting`
-- [ ] Accuse Marcus and push (`accuse_marcus_push`) — only offered once `gave_keycard` is true, so the server room is never stranded
+- [ ] **KO every NPC in turn** and confirm the mission still completes: Bernie (`sign_in_at_reception`), Kim (`meet_dr_kim`), Gary (`talk_to_gary` + handler completes `obtain_password_hints`), Doyle (`gather_pin_clues`), Val (`cover_restored`)
+- [ ] Reach Gary by picking the IT door **without ever speaking to Bernie**, then return to her after the burn — her `first_meeting` still runs and still completes `sign_in_at_reception`
+- [ ] Re-open Gary's conversation after leaving via "Nothing yet, I'll come back" — `met_gary` routes to `returning`, not to an empty `first_meeting`
+- [ ] Accuse Gary and push (`accuse_gary_push`) — only offered once `gave_keycard` is true, so the server room is never stranded
 - [ ] Accuse Kim and push — she goes hostile after `meet_dr_kim` has already completed
 - [ ] Reach the boardroom before the VM work is done — press terminal shows `relay_locked_investigation`
 - [ ] Complete the VM work but not the recovery decision — press terminal shows `relay_locked_incident`
@@ -253,7 +253,7 @@ so the ward's previously unused south wall works fine.
 | Room layout geometry | ✅ No world-space overlaps |
 | Objective task wiring | ✅ OK |
 | Dungeon graph | ✅ Regenerated, 4-hop critical path |
-| VM (`secgen_rooting_for_a_win`) | ⚠️ Flag order must match the `flags` block exactly |
+| VM (`hospital_backup_server`) | ⚠️ Flag order must match the `flags` block exactly |
 
 ### Console commands for manual testing
 
@@ -263,7 +263,7 @@ window.gameState.globalVariables.cover_burned = true;
 window.eventDispatcher.emit('global_variable_changed:cover_burned', { name: 'cover_burned', value: true });
 
 // Inspect an NPC's saved conversation state
-window.npcConversationStateManager.getNPCState('marcus_webb');
+window.npcConversationStateManager.getNPCState('gary_whitlock');
 
 // Reset a conversation for re-testing
 window.npcConversationStateManager.clearNPCState('receptionist');

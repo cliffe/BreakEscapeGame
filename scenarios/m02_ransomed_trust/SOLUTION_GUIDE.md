@@ -4,7 +4,7 @@
 > premise changed (the access-control server is encrypted, so nobody can *grant* access), the
 > aim/task IDs changed, Dr. Kim's office is now unlocked, the IT department is gated behind
 > Bernie Nwosu's override key, the boardroom is PIN-locked, a cover-burn beat was added after
-> `talk_to_marcus`, and several characters were renamed. Use `TESTING_WALKTHROUGH.md` as the
+> `talk_to_gary`, and several characters were renamed. Use `TESTING_WALKTHROUGH.md` as the
 > authoritative critical-path reference until this guide is rewritten.
 
 **Mission ID:** m02_ransomed_trust
@@ -55,7 +55,7 @@ Recover decryption keys and advise hospital board on ransom payment decision bef
 **Success Criteria:**
 - **Minimal (60%):** Recover both digital and physical encryption keys, make ransom decision
 - **Standard (80%):** Complete all VM challenges, all core in-game challenges, both moral choices
-- **Perfect (100%):** All VM flags, all LORE fragments, Marcus protected, never detected by guard
+- **Perfect (100%):** All VM flags, all LORE fragments, Gary protected, never detected by guard
 
 ---
 
@@ -75,9 +75,9 @@ Recover decryption keys and advise hospital board on ransom payment decision bef
    - Target: dr_sarah_kim in dr_kim_office
    - Unlocks: Access to IT infrastructure
 
-3. **Interview IT administrator Marcus Webb**
+3. **Interview IT administrator Gary Whitlock**
    - Type: NPC conversation
-   - Target: marcus_webb in it_department
+   - Target: gary_whitlock in it_department
    - Unlocks: Password hints, server room access options
 
 ---
@@ -87,11 +87,11 @@ Recover decryption keys and advise hospital board on ransom payment decision bef
 **Description:** Gain access to hospital's IT infrastructure and server room
 
 #### Tasks:
-1. **Gather SSH password hints from Marcus**
+1. **Gather SSH password hints from Gary**
    - Type: Collect items or NPC dialogue
    - Sources:
-     - Marcus's desk sticky notes (requires lockpicking)
-     - High-trust Marcus dialogue (social engineering)
+     - Gary's desk sticky notes (requires lockpicking)
+     - High-trust Gary dialogue (social engineering)
    - Hints: "Emma2018", "Hospital1987", "StCatherines"
 
 2. **Decode Base64 ransomware message**
@@ -102,7 +102,7 @@ Recover decryption keys and advise hospital board on ransom payment decision bef
 3. **Access the server room**
    - Type: Enter room
    - Methods:
-     - **High Trust:** Marcus gives server_room_keycard
+     - **High Trust:** Gary gives server_room_keycard
      - **Medium/Low Trust:** Lockpick door (medium difficulty)
 
 ---
@@ -120,7 +120,7 @@ Recover decryption keys and advise hospital board on ransom payment decision bef
 
 2. **Submit ProFTPD exploitation flag**
    - Type: Submit flags
-   - VM Challenge: Exploit ProFTPD 1.3.5 backdoor (CVE-2010-4652)
+   - VM Challenge: Exploit ProFTPD 1.3.3c backdoor
    - Flag: `flag{proftpd_backdoor_exploited}`
    - Reward: Shell access to backup server
 
@@ -153,7 +153,7 @@ Recover decryption keys and advise hospital board on ransom payment decision bef
    - Clue Locations:
      - **Clue 1:** Hospital founding plaque in reception_lobby: "Founded 1987"
      - **Clue 2:** Dr. Kim's sticky note: "Safe combination: founding year"
-     - **Red Herring:** Marcus's daughter photo: "Emma - 7th birthday! 05/17/2018"
+     - **Red Herring:** Gary's daughter photo: "Emma - 7th birthday! 05/17/2018"
    - Answer: **1987**
 
 3. **Crack PIN safe (code: 1987)**
@@ -217,7 +217,7 @@ Recover decryption keys and advise hospital board on ransom payment decision bef
 
      ┌───────────┐            ┌───────────┐
      │CONFERENCE │            │  SERVER   │ ▓ LOCKED (RFID keycard
-     │   ROOM    │            │   ROOM    │   from Marcus, or pick)
+     │   ROOM    │            │   ROOM    │   from Gary, or pick)
      │ 💻 Press  │            │ 💻 VM Term│
      │   Terminal│            │ 💻 Drop-  │
      │ 📦 Board  │            │    Site   │
@@ -233,7 +233,7 @@ Recover decryption keys and advise hospital board on ransom payment decision bef
      │   (1987)  │            ┌─────┴─────┐         ┌───────────┐
      │ 📦 ZDS    │   (E→)     │ RECEPTION │  (E→)   │    IT     │ ▓ LOCKED
      │   Invoice │───────────►│   LOBBY   │────────►│ DEPARTMENT│ (lockpick)
-     └───────────┘   dr_kim   │ 👤 Briefing         │ 👤 Marcus │
+     └───────────┘   dr_kim   │ 👤 Briefing         │ 👤 Gary │
                      ↔ recept │ 👤 Recept.│  reception│ 🔒 Filing │
                               │ 📦 Plaque │  ↔ IT     │   Cabinet │
                               │   "1987"  │         │ 📦 Pwd    │
@@ -330,28 +330,28 @@ Recover decryption keys and advise hospital board on ransom payment decision bef
 - Task `meet_dr_kim` completes
 - **Optional:** Browse budget documents (reveals hospital negligence)
 
-**Step 3:** Meet Marcus Webb (East door from Reception)
+**Step 3:** Meet Gary Whitlock (East door from Reception)
 - Enter it_department (door unlocked, tutorial lockpicking optional)
-- Talk to Marcus: Choose empathetic dialogue options
+- Talk to Gary: Choose empathetic dialogue options
 - Build trust by asking about warnings he sent (+10 influence)
 - Acknowledge he tried to prevent this (+15 influence)
-- Marcus explains ProFTPD vulnerability (CVE-2010-4652)
-- **Goal:** Get marcus_influence ≥ 40 for server room keycard
+- Gary explains ProFTPD vulnerability
+- **Goal:** Get gary_influence ≥ 40 for server room keycard
 
 **Step 4:** Gather Password Hints (Two Methods)
 
 **Method A: Social Engineering (High Trust Path)**
-- Continue Marcus dialogue
+- Continue Gary dialogue
 - Choose: "I need your help accessing the backup server"
-- Marcus shares password hints verbally:
+- Gary shares password hints verbally:
   - "Emma2018" (daughter's name + birth year)
   - "Hospital1987" (founding year)
   - "StCatherines" (hospital name)
-- Marcus gives server_room_keycard (skip lockpicking later!)
+- Gary gives server_room_keycard (skip lockpicking later!)
 - Task `obtain_password_hints` completes
 
 **Method B: Investigation (Low Trust Path)**
-- Lockpick Marcus's desk drawer (easy difficulty)
+- Lockpick Gary's desk drawer (easy difficulty)
 - Find password sticky notes
 - Read Emma's photo frame: "Emma - 7th birthday! 05/17/2018"
 - Task `obtain_password_hints` completes
@@ -381,7 +381,7 @@ Recover decryption keys and advise hospital board on ransom payment decision bef
   - Enter quickly before guard turns around
 
 **Step 7A:** Enter Server Room (High Trust - Easy)
-- If you have server_room_keycard from Marcus:
+- If you have server_room_keycard from Gary:
   - Use keycard on RFID reader
   - Door unlocks, enter immediately
   - Task `access_server_room` completes
@@ -407,14 +407,14 @@ Recover decryption keys and advise hospital board on ransom payment decision bef
 
 **VM Challenge 1: SSH Access**
 - IP: 192.168.100.50
-- Username: Try common usernames (root, admin, marcus, backup)
-- Password: Use hints from Marcus
+- Username: Try common usernames (root, admin, gary, backup)
+- Password: Use hints from Gary
   - Try: Emma2018 ✓ (likely correct)
   - Try: Hospital1987
   - Try: StCatherines
 - **Alternative:** Use Hydra for brute force:
   ```bash
-  hydra -l marcus -P /usr/share/wordlists/rockyou.txt ssh://192.168.100.50
+  hydra -l gary -P /usr/share/wordlists/rockyou.txt ssh://192.168.100.50
   ```
 - Once logged in via SSH:
   - Flag revealed: `flag{ssh_access_granted}`
@@ -424,8 +424,8 @@ Recover decryption keys and advise hospital board on ransom payment decision bef
   - **Reward:** ENTROPY server credentials intercepted
 
 **VM Challenge 2: ProFTPD Exploitation**
-- Service: ProFTPD 1.3.5 running on port 21
-- Vulnerability: CVE-2010-4652 (backdoor command)
+- Service: ProFTPD 1.3.3c running on port 21
+- Vulnerability: the ProFTPD 1.3.3c backdoor (backdoor command)
 - **Exploitation Steps:**
   ```bash
   # Connect to FTP service
@@ -487,7 +487,7 @@ Recover decryption keys and advise hospital board on ransom payment decision bef
 - **Clue 2:** Return to dr_kim_office
   - Find sticky note on desk: "Safe combination: founding year"
   - Confirms answer is 1987
-- **Red Herring:** Marcus's photo shows 2018 (wrong answer)
+- **Red Herring:** Gary's photo shows 2018 (wrong answer)
 - Task `gather_pin_clues` completes
 
 **Step 11:** Crack Emergency Storage Safe
@@ -653,18 +653,18 @@ Recover decryption keys and advise hospital board on ransom payment decision bef
 
 #### Key Differences:
 
-**Step 3 (Enhanced): Build Maximum Marcus Trust**
-- Spend extra time in Marcus dialogue
+**Step 3 (Enhanced): Build Maximum Gary Trust**
+- Spend extra time in Gary dialogue
 - Choose ALL empathetic options:
   - "You tried to warn them - this isn't your fault" (+15 influence)
   - "I'll document your warnings to protect you" (+15 influence)
   - "Dr. Kim should have listened to you" (+10 influence)
-- **Goal:** marcus_influence >= 40
-- **Reward:** Marcus gives server_room_keycard AND password hints verbally
-- **Bonus:** Marcus offers to distract guard for you (guard patrol disabled temporarily)
+- **Goal:** gary_influence >= 40
+- **Reward:** Gary gives server_room_keycard AND password hints verbally
+- **Bonus:** Gary offers to distract guard for you (guard patrol disabled temporarily)
 
 **Step 4 (Enhanced): Build Dr. Kim Rapport**
-- Return to dr_kim_office after meeting Marcus
+- Return to dr_kim_office after meeting Gary
 - Dialogue option: "I want to protect you from scapegoating"
 - Choose: "Document your efforts to improve security"
 - **Reward:** Dr. Kim provides admin passwords, safe combination (1987), emergency storage location
@@ -675,8 +675,8 @@ Recover decryption keys and advise hospital board on ransom payment decision bef
 - High influence dialogue options available:
   - "Dr. Kim authorized my full access" (influence >= 30)
   - "I'm here to save 47 patients - help me do my job" (influence >= 25)
-- **If marcus_influence >= 40:** Marcus vouches for you via radio
-  - Guard: "Marcus says you're legit. Alright, go ahead."
+- **If gary_influence >= 40:** Gary vouches for you via radio
+  - Guard: "Gary says you're legit. Alright, go ahead."
   - Guard steps aside
 - Zero combat, zero lockpicking at guard checkpoint
 
@@ -697,20 +697,20 @@ Recover decryption keys and advise hospital board on ransom payment decision bef
 **Initial Meeting:**
 - "I'm here to help with the ransomware crisis" → +10 influence, mission authorization
 - "What happened?" → Learn crisis details, neutral
-- "Where's your IT team?" → Directed to Marcus, neutral
+- "Where's your IT team?" → Directed to Gary, neutral
 
-**Mid-Mission (After Marcus Warnings Discovered):**
-- "Marcus warned you about this vulnerability" → -10 influence, Kim becomes defensive
+**Mid-Mission (After Gary Warnings Discovered):**
+- "Gary warned you about this vulnerability" → -10 influence, Kim becomes defensive
 - "I can protect you from scapegoating" → +15 influence, unlocks alliance
 - "You ignored security for budget reasons" → -20 influence, Kim hostile
 
 **Guilt Revelation (High Influence Path):**
 - Available if kim_influence >= 60
-- Kim admits: "I should have listened to Marcus. This is my fault."
+- Kim admits: "I should have listened to Gary. This is my fault."
 - Kim provides safe combination (1987), emergency storage location
-- Kim asks: "Can you keep Marcus out of this investigation?"
-  - "Yes, I'll protect him" → Marcus protected in debrief
-  - "No, truth must come out" → Marcus exposed but vindicated
+- Kim asks: "Can you keep Gary out of this investigation?"
+  - "Yes, I'll protect him" → Gary protected in debrief
+  - "No, truth must come out" → Gary exposed but vindicated
 
 **Variables Tracked:**
 - `kim_influence` (0-100)
@@ -719,7 +719,7 @@ Recover decryption keys and advise hospital board on ransom payment decision bef
 
 ---
 
-### Marcus Webb (IT Administrator)
+### Gary Whitlock (IT Administrator)
 **Location:** it_department
 **Role:** Password hints source, server room access, scapegoat victim
 
@@ -728,32 +728,32 @@ Recover decryption keys and advise hospital board on ransom payment decision bef
 **Key Dialogue Branches:**
 
 **Initial Meeting:**
-- "Did you see this attack coming?" → Marcus explains ProFTPD warnings
+- "Did you see this attack coming?" → Gary explains ProFTPD warnings
 - "Tell me about the vulnerability" → Technical details, +5 influence
-- "This isn't your fault" → +15 influence, Marcus opens up
+- "This isn't your fault" → +15 influence, Gary opens up
 
 **Password Hints (Unlocked at influence >= 40):**
-- Marcus: "I can share my password patterns if you need server access."
+- Gary: "I can share my password patterns if you need server access."
 - Provides: Emma2018, Hospital1987, StCatherines
 - Optional: Shows Emma's photo (daughter, 7th birthday 2018)
 
 **Server Room Keycard (Unlocked at influence >= 45):**
-- Marcus: "I trust you. Here's my server room keycard. Full access."
+- Gary: "I trust you. Here's my server room keycard. Full access."
 - Gives: server_room_keycard (RFID)
 - **Benefit:** Skip lockpicking, instant server room entry
 
 **Scapegoating (Mid-Mission Discovery):**
-- Find email in filing cabinet: "Board plans to fire Marcus, blame him for attack"
-- Return to Marcus with info:
-  - "I'll protect you - document your warnings" → marcus_protected = true
-  - "You should resign before they fire you" → Marcus leaves, loses keycard access
-  - "I can't help with that" → Marcus scapegoated in debrief
+- Find email in filing cabinet: "Board plans to fire Gary, blame him for attack"
+- Return to Gary with info:
+  - "I'll protect you - document your warnings" → gary_protected = true
+  - "You should resign before they fire you" → Gary leaves, loses keycard access
+  - "I can't help with that" → Gary scapegoated in debrief
 
 **Variables Tracked:**
-- `marcus_influence` (0-100)
-- `marcus_trusts_player` (boolean)
+- `gary_influence` (0-100)
+- `gary_trusts_player` (boolean)
 - `gave_keycard` (boolean)
-- `marcus_defensive` (boolean)
+- `gary_defensive` (boolean)
 
 ---
 
@@ -836,8 +836,8 @@ Recover decryption keys and advise hospital board on ransom payment decision bef
 - "Think about the hospital's history. When was it founded?"
 - "Check the reception area for historical information."
 
-**Marcus Protection Reminder (After reading email archive):**
-- "Marcus warned them months ago. You could document that to protect him."
+**Gary Protection Reminder (After reading email archive):**
+- "Gary warned them months ago. You could document that to protect him."
 - "Decision is yours, but scapegoating the whistleblower sends a bad message."
 
 ---
@@ -1013,10 +1013,10 @@ FULL RECOVERY REQUIRES OFFLINE + ONLINE KEYS—12-HOUR PROCESS IF MANUAL, INSTAN
 - **Credentials:** Username + password authentication
 
 **Solution Method 1: Password Hints (Recommended)**
-1. Gather password hints from Marcus (in-game)
+1. Gather password hints from Gary (in-game)
 2. Attempt SSH with common usernames:
    ```bash
-   ssh marcus@192.168.100.50
+   ssh gary@192.168.100.50
    # Try password: Emma2018 ✓ (likely correct)
 
    ssh root@192.168.100.50
@@ -1029,12 +1029,12 @@ FULL RECOVERY REQUIRES OFFLINE + ONLINE KEYS—12-HOUR PROCESS IF MANUAL, INSTAN
 4. Submit flag at drop-site terminal in-game
 
 **Solution Method 2: Hydra Brute Force**
-1. Create password wordlist from Marcus's hints:
+1. Create password wordlist from Gary's hints:
    ```bash
    echo "Emma2018" > passwords.txt
    echo "Hospital1987" >> passwords.txt
    echo "StCatherines" >> passwords.txt
-   echo "marcus2018" >> passwords.txt
+   echo "gary2018" >> passwords.txt
    echo "backup1987" >> passwords.txt
    ```
 2. Run Hydra:
@@ -1059,15 +1059,15 @@ FULL RECOVERY REQUIRES OFFLINE + ONLINE KEYS—12-HOUR PROCESS IF MANUAL, INSTAN
 
 **Scenario Details:**
 - **Target:** 192.168.100.50
-- **Service:** ProFTPD 1.3.5 (port 21)
-- **Vulnerability:** CVE-2010-4652 (backdoor command)
+- **Service:** ProFTPD 1.3.3c (port 21)
+- **Vulnerability:** the ProFTPD 1.3.3c backdoor (backdoor command)
 
 **Solution Method 1: Manual Exploitation**
 1. Connect to FTP service:
    ```bash
    nc 192.168.100.50 21
    ```
-2. Receive banner: `220 ProFTPD 1.3.5 Server`
+2. Receive banner: `220 ProFTPD 1.3.3c Server`
 3. Send backdoor command sequence:
    ```
    USER backdoor
@@ -1101,9 +1101,9 @@ FULL RECOVERY REQUIRES OFFLINE + ONLINE KEYS—12-HOUR PROCESS IF MANUAL, INSTAN
 **Solution Method 3: Searchsploit Research**
 1. Research vulnerability:
    ```bash
-   searchsploit proftpd 1.3.5
+   searchsploit proftpd 1.3.3c
    ```
-2. Find CVE-2010-4652 exploit script
+2. Find the ProFTPD 1.3.3c backdoor exploit script
 3. Download and execute exploit
 4. Retrieve flag
 
@@ -1184,7 +1184,7 @@ FULL RECOVERY REQUIRES OFFLINE + ONLINE KEYS—12-HOUR PROCESS IF MANUAL, INSTAN
    PHASE 1: RECONNAISSANCE
    - 214 hospitals scanned
    - 147 have critical vulnerabilities
-   - St. Catherine's selected: ProFTPD 1.3.5 backdoor (CVE-2010-4652)
+   - St. Catherine's selected: ProFTPD 1.3.3c backdoor
 
    PHASE 2: RISK ASSESSMENT
    - 47 patients on life support
@@ -1322,7 +1322,7 @@ TARGET: St. Catherine's Regional Medical Center
 
 DELIVERABLES:
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-1. ProFTPD 1.3.5 Exploit (CVE-2010-4652)     $25,000
+1. ProFTPD 1.3.3c Exploit     $25,000
    - Backdoor command injection
    - Shell access guaranteed
    - Bypass authentication
@@ -1413,7 +1413,7 @@ This is the **"Aha!" moment** that transforms Season 1 from isolated missions in
 - **Dr. Kim's Career:** Job secure, but guilt over payment
   - Board supports decision (lives saved)
   - Internal investigation clears her
-- **Marcus Webb:** Vindicated if protected, otherwise scapegoated
+- **Gary Whitlock:** Vindicated if protected, otherwise scapegoated
   - Depends on player choice to document warnings
 - **Security Posture:** Minimal improvement
   - $85K security upgrade postponed
@@ -1458,7 +1458,7 @@ This is the **"Aha!" moment** that transforms Season 1 from isolated missions in
   - Board blames her for deaths
   - Public scandal, media pressure
   - Replaced by cybersecurity-focused CTO
-- **Marcus Webb:** Vindicated if protected
+- **Gary Whitlock:** Vindicated if protected
   - Promoted to security leadership if player protected him
   - Otherwise scapegoated and fired
 - **Security Posture:** Major improvement
@@ -1467,7 +1467,7 @@ This is the **"Aha!" moment** that transforms Season 1 from isolated missions in
   - St. Catherine's becomes regional security model
 
 **Dr. Kim's Response:**
-> "We didn't pay. 4-6 deaths... but we denied them funding. I'll resign. This is my fault for ignoring Marcus's warnings."
+> "We didn't pay. 4-6 deaths... but we denied them funding. I'll resign. This is my fault for ignoring Gary's warnings."
 
 **Ghost's Response:**
 > "Disappointing. 4-6 deaths on your conscience. But I respect the principle. Healthcare sector needed this lesson. Next hospital won't make St. Catherine's mistakes."
@@ -1500,7 +1500,7 @@ This is the **"Aha!" moment** that transforms Season 1 from isolated missions in
 ### Choice 2: Hospital Exposure Decision
 **Trigger:** Closing debrief with Agent 0x99
 **Location:** Phone call (auto-triggered after ransom decision)
-**Context:** Dr. Kim ignored Marcus's warnings, budget cuts enabled attack
+**Context:** Dr. Kim ignored Gary's warnings, budget cuts enabled attack
 
 ---
 
@@ -1515,7 +1515,7 @@ This is the **"Aha!" moment** that transforms Season 1 from isolated missions in
   - Medical board investigation
   - Career effectively over
   - Personal guilt + public shame
-- **Marcus Webb's Fate:** Vindicated publicly
+- **Gary Whitlock's Fate:** Vindicated publicly
   - Whistleblower status
   - Job offers from other hospitals
   - Becomes cybersecurity advocate
@@ -1555,7 +1555,7 @@ This is the **"Aha!" moment** that transforms Season 1 from isolated missions in
   - Forced to implement security overhaul
   - Credibility damaged internally
   - Mandatory cybersecurity training
-- **Marcus Webb's Fate:** Promoted internally
+- **Gary Whitlock's Fate:** Promoted internally
   - Director of Cybersecurity (if protected by player)
   - $180K salary, full team
   - Otherwise: Quiet resignation
@@ -1590,7 +1590,7 @@ This is the **"Aha!" moment** that transforms Season 1 from isolated missions in
 | Metric | Expose Publicly | Quiet Resolution |
 |--------|----------------|------------------|
 | **Dr. Kim's Career** | Destroyed | Survives (damaged) |
-| **Marcus's Outcome** | National vindication | Internal promotion |
+| **Gary's Outcome** | National vindication | Internal promotion |
 | **St. Catherine's Security** | Improved | Improved |
 | **Sector-Wide Security** | +200 hospitals improve | 0 hospitals improve |
 | **Long-Term Deaths Prevented** | 200-600 (5 years) | 0 |
@@ -1603,7 +1603,7 @@ This is the **"Aha!" moment** that transforms Season 1 from isolated missions in
 
 ---
 
-### Choice 3: Marcus Protection (Mid-Mission)
+### Choice 3: Gary Protection (Mid-Mission)
 **Trigger:** Finding scapegoating email in IT filing cabinet
 **Location:** IT Department
 **Optional:** Yes (can skip this choice)
@@ -1613,43 +1613,43 @@ This is the **"Aha!" moment** that transforms Season 1 from isolated missions in
 > To: Legal Department
 > Re: Ransomware Incident - Liability Management
 >
-> IT Administrator Marcus Webb is to be terminated effective immediately following crisis resolution. Public statement will attribute attack to 'IT department security failures.' This protects the board from negligence claims regarding budget decisions."
+> IT Administrator Gary Whitlock is to be terminated effective immediately following crisis resolution. Public statement will attribute attack to 'IT department security failures.' This protects the board from negligence claims regarding budget decisions."
 
 **Player Options:**
 
-**Option A: Protect Marcus (Document His Warnings)**
-- Return to Marcus, tell him about email
+**Option A: Protect Gary (Document His Warnings)**
+- Return to Gary, tell him about email
 - Dialogue: "I'll document your warnings. You won't be scapegoated."
 - **Outcome:**
-  - Marcus provides additional cooperation (keycard, passwords)
-  - Documentation protects Marcus in investigation
-  - Debrief: Marcus vindicated, promoted to Director of Cybersecurity
+  - Gary provides additional cooperation (keycard, passwords)
+  - Documentation protects Gary in investigation
+  - Debrief: Gary vindicated, promoted to Director of Cybersecurity
   - Salary: $180K, full security team
-  - Global variable: `marcus_protected` = true
+  - Global variable: `gary_protected` = true
 
-**Option B: Warn Marcus to Resign**
-- Tell Marcus about email, advise resignation
+**Option B: Warn Gary to Resign**
+- Tell Gary about email, advise resignation
 - **Outcome:**
-  - Marcus resigns before firing
+  - Gary resigns before firing
   - Loses access to server room keycard
-  - Debrief: Marcus leaves healthcare, becomes consultant
-  - Global variable: `marcus_protected` = false
+  - Debrief: Gary leaves healthcare, becomes consultant
+  - Global variable: `gary_protected` = false
 
-**Option C: Ignore (Don't Tell Marcus)**
-- Don't mention email to Marcus
+**Option C: Ignore (Don't Tell Gary)**
+- Don't mention email to Gary
 - **Outcome:**
-  - Marcus scapegoated after mission
+  - Gary scapegoated after mission
   - Fired, reputation damaged
-  - Debrief: Marcus unemployed, bitter
-  - Global variable: `marcus_protected` = false
+  - Debrief: Gary unemployed, bitter
+  - Global variable: `gary_protected` = false
 
 **Consequences in Debrief:**
 
 **If Protected:**
-> Agent 0x99: "Marcus was vindicated. Your documentation of his warnings went public. He's now Director of Cybersecurity at Metro General Hospital. $180K salary, full team. You gave him his career back."
+> Agent 0x99: "Gary was vindicated. Your documentation of his warnings went public. He's now Director of Cybersecurity at Metro General Hospital. $180K salary, full team. You gave him his career back."
 
 **If Not Protected:**
-> Agent 0x99: "Marcus was fired. Board blamed him for security failures. He's unemployed, reputation ruined. We could have protected him."
+> Agent 0x99: "Gary was fired. Board blamed him for security failures. He's unemployed, reputation ruined. We could have protected him."
 
 ---
 
@@ -1657,14 +1657,14 @@ This is the **"Aha!" moment** that transforms Season 1 from isolated missions in
 
 **The closing debrief acknowledges ALL player choices:**
 
-**Example: Paid Ransom + Exposed Hospital + Protected Marcus**
-> Agent 0x99: "Let's review. You paid the ransom—1-2 deaths, systems restored fast. ENTROPY got funded, but you saved lives today. You exposed the hospital publicly—Dr. Kim's career is over, but 200 hospitals just upgraded security. And you protected Marcus—he's now running cybersecurity at Metro General. Messy, but effective."
+**Example: Paid Ransom + Exposed Hospital + Protected Gary**
+> Agent 0x99: "Let's review. You paid the ransom—1-2 deaths, systems restored fast. ENTROPY got funded, but you saved lives today. You exposed the hospital publicly—Dr. Kim's career is over, but 200 hospitals just upgraded security. And you protected Gary—he's now running cybersecurity at Metro General. Messy, but effective."
 
-**Example: Denied Ransom + Quiet Resolution + Ignored Marcus**
-> Agent 0x99: "Let's review. You denied the ransom—4-6 deaths, but ENTROPY got $0. That's courage. You kept it quiet—no sector-wide change, but Dr. Kim keeps her job. And Marcus? He was scapegoated. Fired, reputation destroyed. We could have protected him. Mixed bag, agent."
+**Example: Denied Ransom + Quiet Resolution + Ignored Gary**
+> Agent 0x99: "Let's review. You denied the ransom—4-6 deaths, but ENTROPY got $0. That's courage. You kept it quiet—no sector-wide change, but Dr. Kim keeps her job. And Gary? He was scapegoated. Fired, reputation destroyed. We could have protected him. Mixed bag, agent."
 
-**Example: Paid Ransom + Quiet Resolution + Protected Marcus**
-> Agent 0x99: "You paid the ransom, kept it quiet, protected Marcus. Lives saved, institution protected, whistleblower vindicated. Clean operation, professional execution. But ENTROPY got funded and other hospitals stay vulnerable. Sometimes I wonder if 'clean' is what we need."
+**Example: Paid Ransom + Quiet Resolution + Protected Gary**
+> Agent 0x99: "You paid the ransom, kept it quiet, protected Gary. Lives saved, institution protected, whistleblower vindicated. Clean operation, professional execution. But ENTROPY got funded and other hospitals stay vulnerable. Sometimes I wonder if 'clean' is what we need."
 
 ---
 
@@ -1689,20 +1689,20 @@ This is the **"Aha!" moment** that transforms Season 1 from isolated missions in
 
 ### Key Items (Critical Path)
 
-**Server Room Keycard** (Optional - High Marcus Trust)
+**Server Room Keycard** (Optional - High Gary Trust)
 - Type: Keycard
 - Name: "Server Room Access Keycard"
-- Source: Marcus Webb (marcus_influence >= 45)
+- Source: Gary Whitlock (gary_influence >= 45)
 - Function: Unlock server room door (bypass lockpicking)
-- Observations: "RFID keycard for server room - Marcus's personal access"
+- Observations: "RFID keycard for server room - Gary's personal access"
 
 **Password Sticky Notes**
 - Type: Notes
-- Name: "Marcus's Password Hints"
-- Source: Marcus's desk drawer (lockpick easy) OR Marcus dialogue
+- Name: "Gary's Password Hints"
+- Source: Gary's desk drawer (lockpick easy) OR Gary dialogue
 - Content: "Emma2018, Hospital1987, StCatherines"
 - Function: SSH password hints for VM challenge
-- Observations: "Sticky notes with password patterns - Marcus's weak security practice"
+- Observations: "Sticky notes with password patterns - Gary's weak security practice"
 
 **Offline Backup Encryption Keys**
 - Type: Notes (USB drive representation)
@@ -1776,23 +1776,23 @@ This is the **"Aha!" moment** that transforms Season 1 from isolated missions in
 **Emma's Photo Frame**
 - Type: Readable object
 - Name: "Photo Frame - Emma's Birthday"
-- Location: Marcus's desk (IT Department)
+- Location: Gary's desk (IT Department)
 - Content: "Emma - 7th birthday! 05/17/2018"
 - Observations: "Red herring - 2018 is NOT the safe combination"
 
-**Marcus Warning Email**
+**Gary Warning Email**
 - Type: Readable object (from filing cabinet)
-- Name: "Marcus's Security Warning Email Archive"
+- Name: "Gary's Security Warning Email Archive"
 - Location: IT filing cabinet (lockpick easy)
-- Content: Email chain showing Marcus warning Dr. Kim about ProFTPD vulnerability
-- Observations: "Evidence that Marcus tried to prevent the attack - use to protect him"
+- Content: Email chain showing Gary warning Dr. Kim about ProFTPD vulnerability
+- Observations: "Evidence that Gary tried to prevent the attack - use to protect him"
 
 **Scapegoating Email**
 - Type: Readable object (from filing cabinet)
 - Name: "Board Email - Liability Management"
 - Location: IT filing cabinet (lockpick easy)
-- Content: Board's plan to fire Marcus and blame him
-- Observations: "Evidence of planned scapegoating - tell Marcus to protect him"
+- Content: Board's plan to fire Gary and blame him
+- Observations: "Evidence of planned scapegoating - tell Gary to protect him"
 
 **Budget Cut Evidence**
 - Type: Readable object
@@ -1815,7 +1815,7 @@ This is the **"Aha!" moment** that transforms Season 1 from isolated missions in
 **Flag 2: ProFTPD Backdoor**
 - Type: Flag submission
 - Name: `flag{proftpd_backdoor_exploited}`
-- Source: VM terminal after CVE-2010-4652 exploit
+- Source: VM terminal after the ProFTPD 1.3.3c backdoor exploit
 - Function: Submit at drop-site terminal for progress
 - Reward: Shell access to backup server established
 
@@ -1841,7 +1841,7 @@ This is the **"Aha!" moment** that transforms Season 1 from isolated missions in
 **Time: 35-40 minutes**
 
 1. Spawn → Read founding plaque (1987) → Meet Dr. Kim (5 min)
-2. Meet Marcus → Lockpick desk → Get password hints (5 min)
+2. Meet Gary → Lockpick desk → Get password hints (5 min)
 3. Navigate to server room → Wait for guard patrol gap → Lockpick door (5 min)
 4. VM Terminal → SSH with Emma2018 → Submit flag 1 (3 min)
 5. Exploit ProFTPD → Submit flag 2 (3 min)
@@ -1859,7 +1859,7 @@ This is the **"Aha!" moment** that transforms Season 1 from isolated missions in
 **Skip:**
 - Flag 4 (Ghost's log)
 - All LORE fragments
-- Marcus protection
+- Gary protection
 - Base64/ROT13 challenges
 
 ---
@@ -1870,10 +1870,10 @@ This is the **"Aha!" moment** that transforms Season 1 from isolated missions in
 **Phase 1: Investigation & Trust Building (15 min)**
 1. Spawn → Read founding plaque, directory, sign-in log
 2. Meet Dr. Kim → Choose empathetic options → Build kim_influence
-3. Meet Marcus → ALL empathetic options → marcus_influence >= 45
-4. Marcus gives server_room_keycard + password hints
-5. Lockpick IT filing cabinet → LORE 2 + Marcus warning email + scapegoating email
-6. Return to Marcus → "I'll protect you" → marcus_protected = true
+3. Meet Gary → ALL empathetic options → gary_influence >= 45
+4. Gary gives server_room_keycard + password hints
+5. Lockpick IT filing cabinet → LORE 2 + Gary warning email + scapegoating email
+6. Return to Gary → "I'll protect you" → gary_protected = true
 
 **Phase 2: Server Room & VM Challenges (25 min)**
 7. Navigate to hallway_north → Use keycard (no guard confrontation)
@@ -1896,13 +1896,13 @@ This is the **"Aha!" moment** that transforms Season 1 from isolated missions in
 16. Make ransom decision (pay vs deny) - based on player ethics
 17. Debrief with Agent 0x99:
     - Make exposure decision (public vs quiet)
-    - Confirm Marcus protected
+    - Confirm Gary protected
 
 **Perfect Score Requirements:**
 - All 4 VM flags submitted
 - All 3 LORE fragments collected
 - Both moral choices made (any outcome)
-- Marcus protected (marcus_protected = true)
+- Gary protected (gary_protected = true)
 - Never detected by guard (stealth bonus)
 - Base64 + ROT13 decoded (educational completion)
 
@@ -1921,7 +1921,7 @@ This is the **"Aha!" moment** that transforms Season 1 from isolated missions in
 - **"Consequentialist"** - Deny ransom (deny ENTROPY funding)
 - **"Whistleblower"** - Expose hospital publicly
 - **"Diplomat"** - Quiet resolution (protect institution)
-- **"Protector"** - Save Marcus from scapegoating
+- **"Protector"** - Save Gary from scapegoating
 
 **Combat Achievements:**
 - **"No Mercy"** - Knock out security guard
@@ -1931,7 +1931,7 @@ This is the **"Aha!" moment** that transforms Season 1 from isolated missions in
 
 **Stealth Achievements:**
 - **"Ghost"** - Complete mission without being detected by guard
-- **"Social Engineer"** - Get server room keycard from Marcus (no lockpicking)
+- **"Social Engineer"** - Get server room keycard from Gary (no lockpicking)
 - **"Master Locksmith"** - Lockpick all containers and doors
 
 **Speedrun Achievements:**
@@ -1954,25 +1954,25 @@ This is the **"Aha!" moment** that transforms Season 1 from isolated missions in
 - Wait for guard to patrol to left end (waypoint 1)
 - Guard pauses 20 ticks at waypoint
 - Sprint to server room door during pause
-- OR build marcus_influence >= 45 to get keycard (skip lockpicking)
+- OR build gary_influence >= 45 to get keycard (skip lockpicking)
 - OR knock out guard (combat path)
 
 ### Mistake 3: Can't Log Into SSH (VM Challenge 1)
 **Problem:** Password not working
 **Solution:**
-- Ensure you collected password hints from Marcus
-- Try all username combinations: marcus, root, admin, backup
+- Ensure you collected password hints from Gary
+- Try all username combinations: gary, root, admin, backup
 - Try all password hints: Emma2018, Hospital1987, StCatherines
 - Use Hydra for brute force if manual attempts fail
 
-### Mistake 4: Marcus Won't Give Keycard
-**Problem:** marcus_influence too low
+### Mistake 4: Gary Won't Give Keycard
+**Problem:** gary_influence too low
 **Solution:**
 - Choose ALL empathetic dialogue options:
   - "This isn't your fault" (+15)
   - "You tried to warn them" (+15)
   - "I'll document your warnings" (+15)
-- Get marcus_influence >= 45 for keycard
+- Get gary_influence >= 45 for keycard
 - If already past dialogue, lockpick server room instead
 
 ### Mistake 5: Can't Find LORE Fragment 3
@@ -2006,7 +2006,7 @@ This is the **"Aha!" moment** that transforms Season 1 from isolated missions in
 
 **MAT - Malware & Attack Technologies**
 - Ransomware behavior and encryption
-- ProFTPD exploitation (CVE-2010-4652)
+- ProFTPD exploitation
 - Backdoor command injection
 - Attack lifecycle (recon → exploit → encryption → ransom)
 
@@ -2036,8 +2036,8 @@ This is the **"Aha!" moment** that transforms Season 1 from isolated missions in
 - System backup strategies
 
 **HF - Human Factors**
-- Social engineering (Marcus trust building)
-- Insider threat dynamics (Marcus scapegoating)
+- Social engineering (Gary trust building)
+- Insider threat dynamics (Gary scapegoating)
 - Organizational security culture
 - Budget pressures vs security trade-offs
 
@@ -2071,7 +2071,7 @@ LORE Fragment 3 (Zero Day Syndicate Invoice) reveals that ENTROPY cells are coor
 
 **Final Statistics (Perfect Run):**
 - **Rooms Explored:** 8/8
-- **NPCs Met:** 5/5 (Dr. Kim, Marcus, Guard, Agent 0x99, Ghost)
+- **NPCs Met:** 5/5 (Dr. Kim, Gary, Guard, Agent 0x99, Ghost)
 - **VM Flags:** 4/4
 - **LORE Fragments:** 3/3
 - **Moral Choices:** 3/3

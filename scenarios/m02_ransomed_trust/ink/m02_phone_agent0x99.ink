@@ -87,7 +87,7 @@ Agent HaX: Front desk first -- get yourself into their paper log, because the el
     -> support_hub
 
 + [Anything I should be careful of?]
-    Agent HaX: The institutional failure in there is going to make you angry. Marcus Webb warned them seven times and got told to stop escalating. Feel it later.
+    Agent HaX: The institutional failure in there is going to make you angry. Gary Whitlock warned them seven times and got told to stop escalating. Feel it later.
     Agent HaX: And be careful who you are rude to. You are going to need at least one of those people to vouch for you before the night is out, and you will not know which one until it's too late to fix.
     -> support_hub
 
@@ -127,8 +127,8 @@ Agent HaX: Front desk first -- get yourself into their paper log, because the el
 + {dr_kim_met and not flag_ssh_submitted and not hint_lockpick_given} [Any tips for getting into the server room?]
     -> hint_lockpick
 
-// Social engineering Marcus
-+ {dr_kim_met and not flag_ssh_submitted and not hint_password_given} [How do I get Marcus to cooperate?]
+// Social engineering Gary
++ {dr_kim_met and not flag_ssh_submitted and not hint_password_given} [How do I get Gary to cooperate?]
     -> hint_password
 
 // Optional field guide: lockpicking (offered early -- offices off reception are locked)
@@ -214,14 +214,14 @@ Agent HaX: So go and get that back from somebody who has a reason to give it.
 
 + [Give me the options.]
     Agent HaX: Three, that I can see from here.
-    Agent HaX: One. A real hospital lanyard. Marcus in IT has a drawer of blank contractor passes, and the ward office keeps agency lanyards. Either will stand up in a corridor at four in the morning.
+    Agent HaX: One. A real hospital lanyard. Gary in IT has a drawer of blank contractor passes, and the ward office keeps agency lanyards. Either will stand up in a corridor at four in the morning.
     Agent HaX: Two. Reception. If Bernie will log a correction under her own staff number, that beats an anonymous phone call, because control have actually met her.
     Agent HaX: Three. The officer in the security office. She is not an idiot and she has her own suspicions about somebody in that building. Give her a reason and she may make the call on her own judgement.
     -> support_hub
 
 + [And if none of them will help me?]
     Agent HaX: Then you go the long way round and you stay out of that corridor, and it costs you time you have not got.
-    Agent HaX: {staff_lanyard_obtained: You already have a pass, though. Use it.|I would start with IT. Marcus has every reason to want you in that server room.}
+    Agent HaX: {staff_lanyard_obtained: You already have a pass, though. Use it.|I would start with IT. Gary has every reason to want you in that server room.}
     -> support_hub
 
 + [Understood. I'll sort it.]
@@ -315,7 +315,7 @@ Agent HaX: You're still the one making the final choice at that terminal. Ghost'
 #speaker:agent_0x99
 ~ board_email_discussed = true
 
-Agent HaX: The board was planning to terminate Marcus and bury his warnings before anyone asked questions.
+Agent HaX: The board was planning to terminate Gary and bury his warnings before anyone asked questions.
 
 Agent HaX: That's not negligence anymore. That's deliberate cover-up of the conditions that created this crisis.
 
@@ -326,7 +326,7 @@ Agent HaX: That email is going to matter at the press terminal. Keep it in mind.
     Agent HaX: The hospital made two distinct failures. You'll decide which gets the full public record.
     -> support_hub
 
-+ [Marcus had no idea the board was planning this]
++ [Gary had no idea the board was planning this]
     Agent HaX: Probably not. He warned them in good faith.
     Agent HaX: If you want his vindication to be public, the press terminal is the mechanism.
     -> support_hub
@@ -348,10 +348,10 @@ Agent HaX: The night coordinator on reception is holding every mechanical overri
 
 Agent HaX: Then Dr. Kim, the CTO. She called us in and she is out of options, which makes her useful and slightly unpredictable.
 
-+ [What about Marcus Webb?]
++ [What about Gary Whitlock?]
     Agent HaX: IT administrator. Main corridor, far door, behind that override lock.
     Agent HaX: He warned them about this exact vulnerability seven times and got told to stop escalating. He is furious, guilty and holding the only working credential in the building.
-    Agent HaX: Desk first, Kim second, Marcus third. The order buys you goodwill you will want later.
+    Agent HaX: Desk first, Kim second, Gary third. The order buys you goodwill you will want later.
     -> support_hub
 
 + [Understood]
@@ -365,14 +365,14 @@ Agent HaX: The server room is the one door in that hospital where picks and char
 
 Agent HaX: RFID, on a standalone offline controller -- which is why it still works when nothing else does. It will only accept a card that already exists, and no new card can be issued, because the thing that issues them is encrypted.
 
-Agent HaX: Marcus has one. That is the entire route. Get it from him, or take it off him, but you are not getting past that reader any other way.
+Agent HaX: Gary has one. That is the entire route. Get it from him, or take it off him, but you are not getting past that reader any other way.
 
 + [And the IT department door itself?]
     Agent HaX: Standard pin tumbler on a mechanical override. Reception has the key, and your picks will do it if she won't.
     Agent HaX: One warning -- her desk faces that door. Picking a lock she has already offered you the key to is not a clever look.
     -> support_hub
 
-+ [What if Marcus won't play?]
++ [What if Gary won't play?]
     Agent HaX: Then give him a reason. He has a locked filing cabinet in there full of the warnings nobody read.
     Agent HaX: Put one of those in front of him and you stop being another person who wants something from him.
     -> support_hub
@@ -384,7 +384,7 @@ Agent HaX: Marcus has one. That is the entire route. Get it from him, or take it
 #speaker:agent_0x99
 ~ hint_password_given = true
 
-Agent HaX: Marcus has spent six months being treated as an overhead. Don't be the fifth person tonight to walk in and treat him as one.
+Agent HaX: Gary has spent six months being treated as an overhead. Don't be the fifth person tonight to walk in and treat him as one.
 
 Agent HaX: He does not want sympathy, he wants somebody to acknowledge he was right in writing. Give him that and he'll open every drawer he owns.
 
@@ -402,9 +402,9 @@ Agent HaX: And do not, whatever you do, ask him how he let this happen. He will 
 #speaker:agent_0x99
 ~ hint_vm_given = true
 
-Agent HaX: CVE-2010-4652. ProFTPD 1.3.5 backdoor. Remote code execution via a vulnerability in the source code itself.
+Agent HaX: The ProFTPD 1.3.3c backdoor. Remote code execution via a backdoor planted in the source code itself.
 
-Agent HaX: Patched in 2011. St. Catherine's is running a 2010 version. Your target.
+Agent HaX: A clean release shipped days later, back in 2010. St. Catherine's is still running the poisoned build. Your target.
 
 Agent HaX: The exploit gets you root on the backup server. From there, navigate the filesystem for encrypted database backups.
 
@@ -635,7 +635,7 @@ Agent HaX: This is what ENTROPY looks like across all six cells. Not opportunist
 
 Agent HaX: Conference room. Hospital communications terminal.
 
-Agent HaX: The board liability email. Marcus's six months of warnings. The full budget record.
+Agent HaX: The board liability email. Gary's six months of warnings. The full budget record.
 
 Agent HaX: Transmit and it's public record within the hour. Don't transmit and it stays internal.
 
@@ -643,7 +643,7 @@ Agent HaX: That's the last decision of this mission.
 
 + [What's the right choice here?]
     Agent HaX: Public exposure forces sector-wide change. Forty-three other hospitals on ENTROPY's reconnaissance list might patch before someone teaches them the same lesson.
-    Agent HaX: Quiet resolution protects St. Catherine's. Marcus's vindication stays an internal matter.
+    Agent HaX: Quiet resolution protects St. Catherine's. Gary's vindication stays an internal matter.
     Agent HaX: I'm not going to tell you which is right.
     -> support_hub
 
@@ -670,7 +670,7 @@ Agent HaX: That's the last decision of this mission.
     -> support_hub
 }
 {dr_kim_met and not flag_ssh_submitted:
-    Agent HaX: Marcus is your route to the server room, and cooperation gets you three things where theft only gets you one.
+    Agent HaX: Gary is your route to the server room, and cooperation gets you three things where theft only gets you one.
     -> support_hub
 }
 {flag_ssh_submitted and not offline_keys_recovered:

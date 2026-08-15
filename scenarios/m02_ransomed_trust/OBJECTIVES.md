@@ -13,7 +13,7 @@
 ### Tasks:
 - ✅ **Arrive at hospital reception** (auto-completes)
 - 🔒 **Meet Dr. Sarah Kim (Hospital CTO)**
-- 🔒 **Interview IT administrator Marcus Webb**
+- 🔒 **Interview IT administrator Gary Whitlock**
 
 ---
 
@@ -22,7 +22,7 @@
 **Description:** Gain access to hospital's IT infrastructure and server room
 
 ### Tasks:
-- 🔒 **Gather SSH password hints from Marcus**
+- 🔒 **Gather SSH password hints from Gary**
 - 🔒 **Decode Base64 ransomware message**
 - 🔒 **Access the server room**
 
@@ -69,7 +69,7 @@ Mission Start
 Objective 1: Infiltrate Hospital (Active)
     ├─ Task: Arrive at hospital ✅
     ├─ Task: Meet Dr. Kim
-    └─ Task: Interview Marcus
+    └─ Task: Interview Gary
     ↓
 Objective 2: Access IT Systems (Unlocks)
     ├─ Task: Gather password hints
@@ -113,7 +113,7 @@ Mission Complete
 **Objective 1:**
 - `arrive_at_hospital`
 - `meet_dr_kim`
-- `talk_to_marcus`
+- `talk_to_gary`
 
 **Objective 2:**
 - `obtain_password_hints`
@@ -151,7 +151,7 @@ Mission Complete
 - ✅ All 15 tasks complete
 - ✅ All 4 VM flags submitted
 - ✅ All 3 LORE fragments collected (optional)
-- ✅ Marcus protected (optional)
+- ✅ Gary protected (optional)
 - ✅ Never detected by guard (stealth bonus)
 
 ---
@@ -161,7 +161,7 @@ Mission Complete
 **PIN Safe Code:** 1987 (hospital founding year)
 **SSH Password Hints:** Emma2018, Hospital1987, StCatherines
 **VM Flags:** 4 total (SSH, ProFTPD, Database, Ghost Log)
-**Moral Choices:** Ransom (pay/deny), Exposure (public/quiet), Marcus (protect/ignore)
+**Moral Choices:** Ransom (pay/deny), Exposure (public/quiet), Gary (protect/ignore)
 
 ---
 

@@ -48,16 +48,16 @@ Speaker-tag convention: ink `#speaker:` keys resolve to NPCs by prefix (e.g.
 - **Current sprite:** `female_nurse2` (headshot: `female_nurse2_headshot.png`).
 - **Should look like:** A second nurse in scrubs, in motion bed-to-bed, distinct enough from the Ward Nurse to read as a different person at a glance.
 
-### Marcus Webb  *(IT admin — ally / potential scapegoat)*
-- **NPC id:** `marcus_webb` — **IT Department**
-- **Role:** The competent, ignored insider. Warned the board six months ago about the ProFTPD vulnerability and was overruled on budget. Source of the **server-room keycard** and SSH password hints, gated by rapport (`marcus_influence`). Carries a red-herring accusation path; the board plans to scapegoat him.
+### Gary Whitlock  *(IT admin — ally / potential scapegoat)*
+- **NPC id:** `gary_whitlock` — **IT Department**
+- **Role:** The competent, ignored insider. Warned the board six months ago about the ProFTPD vulnerability and was overruled on budget. Source of the **server-room keycard** and SSH password hints, gated by rapport (`gary_influence`). Carries a red-herring accusation path; the board plans to scapegoat him.
 - **Voice:** Charon — stressed, guilt-ridden, competent-but-ignored. **Australian accent (en-AU).** Mix of guilt and frustration.
 - **Current sprite:** `male_hacker_hood` (talk: `male_hacker_hood_talk.png`).
 - **Should look like:** Sleep-deprived IT administrator at a cluttered desk, hoodie, hunched over a **screen full of error messages**. Looks like he hasn't slept — because he hasn't.
 
 ### Dr. Sarah Kim  *(Hospital CTO — desperate authority)*
 - **NPC id:** `dr_sarah_kim` — **Dr. Kim's Office** (`#speaker:dr_kim`)
-- **Role:** Mission authorizer (grants access + admin badge) and the moral centre of the ransom dilemma. Carries budget-cut guilt (chose a $3.2M MRI over Marcus's $85K security ask). The player's ransom advice to her is now tracked and paid back in the debrief. Red-herring "are you the traitor?" path (she's negligent, not an affiliate).
+- **Role:** Mission authorizer (grants access + admin badge) and the moral centre of the ransom dilemma. Carries budget-cut guilt (chose a $3.2M MRI over Gary's $85K security ask). The player's ransom advice to her is now tracked and paid back in the debrief. Red-herring "are you the traitor?" path (she's negligent, not an affiliate).
 - **Voice:** Aoede — senior hospital executive under extreme pressure, authoritative but clearly guilty and frightened. British RP.
 - **Current sprite:** `female_blowse` (headshot: `female_blowse_headshot.png`).
 - **Should look like:** Hospital executive in professional attire (blouse), **pacing behind her desk, phone in hand**, visibly not slept in two days. Relief flickers when the player arrives, then straight back to fear.
@@ -69,7 +69,7 @@ Speaker-tag convention: ink `#speaker:` keys resolve to NPCs by prefix (e.g.
 All three are static, immovable in-bed sprites; the monitor above each bed is dark
 (central monitoring is encrypted). They exist to make the 47 abstract lives concrete.
 
-### Mr Okafor — Bed 4
+### Mr Pryce — Bed 4
 - **NPC id:** `patient_bed4` — **Patient Ward**
 - **Role:** Elderly cardiac patient, 67, on a **ventilator** (machine self-powered; monitoring feed dead). Interaction is narrated (BP/O2 read off the paper chart). *Continuity: Bed 4, ventilator — aligned across nurse dialogue and scenario.*
 - **Voice:** Charon — elderly, speaks very little, weak and breathless.
@@ -124,7 +124,7 @@ All three are static, immovable in-bed sprites; the monitor above each bed is da
 
 ### Hospital Comms Terminal
 - **NPC id:** `press_terminal_system` — **Conference Room** (phone, terminal theme; drives the `press_terminal` object)
-- **Role:** The exposure decision interface — transmit the board's cover-up + Marcus's warnings to the press, or keep it internal. Deliberately **not** ransomware-locked (green indicator light): it's the one working relay, and the mechanism of the mission's final moral choice.
+- **Role:** The exposure decision interface — transmit the board's cover-up + Gary's warnings to the press, or keep it internal. Deliberately **not** ransomware-locked (green indicator light): it's the one working relay, and the mechanism of the mission's final moral choice.
 - **Avatar:** `assets/npc/avatars/npc_hacker.png`.
 - **Should look like:** A secure communications terminal UI, not a character.
 
@@ -135,8 +135,8 @@ All three are static, immovable in-bed sprites; the monitor above each bed is da
 | Room | NPCs present |
 |------|--------------|
 | Reception lobby | Agent HaX (briefing, hidden) · Receptionist · Agent HaX (phone) · Ghost (phone, remote-triggered) · Agent HaX (debrief, hidden) |
-| Patient Ward | Ward Nurse · Staff Nurse (roaming) · Mr Okafor (Bed 4) · Mrs Hargreaves (Bed 2) · Ms Chen (Bed 5) |
-| IT Department | Marcus Webb |
+| Patient Ward | Ward Nurse · Staff Nurse (roaming) · Mr Pryce (Bed 4) · Mrs Hargreaves (Bed 2) · Ms Chen (Bed 5) |
+| IT Department | Gary Whitlock |
 | Server Room | — (VM/flag/recovery terminals only) |
 | Dr. Kim's Office | Dr. Sarah Kim |
 | Conference Room | Hospital Comms Terminal · Night Security Supervisor (inside asset) |

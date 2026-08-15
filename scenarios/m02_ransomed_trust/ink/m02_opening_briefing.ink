@@ -194,7 +194,7 @@ Agent HaX: This is a mission about people, {player_name()}. The lockpicks are wh
 
 + [Who's worth working on?]
     Agent HaX: Three names. The night coordinator on reception has the override keys and eleven years of institutional memory. Dr. Kim has guilt, which is a lever whether you like it or not.
-    Agent HaX: And Marcus Webb, their IT administrator. He flagged this exact weakness seven times and got told to stop escalating. He holds the server room card -- and that reader is on an isolated controller, so his card is the only working credential left in the entire building. Win him over.
+    Agent HaX: And Gary Whitlock, their IT administrator. He flagged this exact weakness seven times and got told to stop escalating. He holds the server room card -- and that reader is on an isolated controller, so his card is the only working credential left in the entire building. Win him over.
     -> final_instructions
 
 + [Understood. I'll talk my way in where I can.]
@@ -207,6 +207,10 @@ Agent HaX: This is a mission about people, {player_name()}. The lockpicks are wh
 
 === final_instructions ===
 #speaker:agent_0x99
+
+{not asked_ransomware:
+    Agent HaX: One name before you go in. The operative running this calls themselves Ghost -- Ransomware Incorporated's own hand, the one who encrypted the place and set the price against a body count. Cold, and precise about it.
+}
 
 Agent HaX: Two more things. Ghost is still in the wires, watching that network. If they reach out, don't expect threats. Expect arithmetic. Don't let it get in your head.
 

@@ -7,7 +7,7 @@
 // Variables synced from globalVars by engine at call-open
 VAR paid_ransom = false
 VAR exposed_hospital = false
-VAR marcus_protected = false
+VAR gary_protected = false
 VAR kim_guilt_revealed = false
 VAR ghost_deal_accepted = false
 VAR advised_board_pay = false
@@ -185,7 +185,7 @@ Agent HaX: We don't have a name. We have a philosophy, a signature, and now two 
 }
 
 {not flag_ghost_log_submitted and not lore_ghosts_manifesto_found:
-    Agent HaX: The exploit chain was exactly what Ghost's communications suggested -- CVE-2010-4652, fourteen years unpatched. Standard ENTROPY playbook.
+    Agent HaX: The exploit chain was exactly what Ghost's communications suggested -- the ProFTPD 1.3.3c backdoor, fourteen years unpatched. Standard ENTROPY playbook.
 }
 
 {ghost_deal_accepted:
@@ -329,7 +329,7 @@ Agent HaX: A Health and Social Care Committee inquiry. Forty-plus hospitals impl
 * [Did I do the right thing by exposing them?]
     -> exposure_reflection
 
-* [What happened to Dr. Kim and Marcus?]
+* [What happened to Dr. Kim and Gary?]
     -> npc_outcomes_exposed
 
 === exposure_reflection ===
@@ -359,7 +359,7 @@ Agent HaX: Reputation intact. Public unaware.
 * [Should I have exposed them?]
     -> quiet_resolution_reflection
 
-* [What happened to Dr. Kim and Marcus?]
+* [What happened to Dr. Kim and Gary?]
     -> npc_outcomes_quiet
 
 === quiet_resolution_reflection ===
@@ -387,15 +387,15 @@ Agent HaX: Dr. Kim resigned under pressure. Gave evidence to a select committee.
     Agent HaX: That took something. Not many executives do that.
 }
 
-Agent HaX: Marcus Webb...
+Agent HaX: Gary Whitlock...
 
-{marcus_protected:
-    -> marcus_protected_exposed
+{gary_protected:
+    -> gary_protected_exposed
 - else:
-    -> marcus_unprotected_exposed
+    -> gary_unprotected_exposed
 }
 
-=== marcus_protected_exposed ===
+=== gary_protected_exposed ===
 #speaker:agent_0x99
 
 Agent HaX: Vindicated. Your documentation of his warnings went public alongside everything else.
@@ -406,7 +406,7 @@ Agent HaX: He asked us to pass something on: "Tell the agent who documented my w
 
 -> ghost_status
 
-=== marcus_unprotected_exposed ===
+=== gary_unprotected_exposed ===
 #speaker:agent_0x99
 
 Agent HaX: He was fired within 48 hours of the attack. Scapegoated.
@@ -432,15 +432,15 @@ Agent HaX: Dr. Kim kept her position. Private reprimand, no public consequences.
     Agent HaX: She told me she'll never ignore an IT warning again. I believe her. Guilt is a better teacher than public shame, sometimes.
 }
 
-Agent HaX: Marcus Webb...
+Agent HaX: Gary Whitlock...
 
-{marcus_protected:
-    -> marcus_protected_quiet
+{gary_protected:
+    -> gary_protected_quiet
 - else:
-    -> marcus_unprotected_quiet
+    -> gary_unprotected_quiet
 }
 
-=== marcus_protected_quiet ===
+=== gary_protected_quiet ===
 #speaker:agent_0x99
 
 Agent HaX: You protected him. Your documentation went into the internal review.
@@ -449,7 +449,7 @@ Agent HaX: Promoted to Director of Cybersecurity. Full budget authority. He sent
 
 -> ghost_status
 
-=== marcus_unprotected_quiet ===
+=== gary_unprotected_quiet ===
 #speaker:agent_0x99
 
 Agent HaX: He was fired quietly. No public scapegoat narrative -- but the career's gone.
@@ -647,8 +647,8 @@ Agent HaX: One last section, and then I'll let you go. The people.
     }
 }
 
-{marcus_protected:
-    Agent HaX: And Marcus Webb has the thing he actually wanted, which was never his job. It was somebody senior saying, in writing, that he was right.
+{gary_protected:
+    Agent HaX: And Gary Whitlock has the thing he actually wanted, which was never his job. It was somebody senior saying, in writing, that he was right.
 }
 
 -> final_reflection

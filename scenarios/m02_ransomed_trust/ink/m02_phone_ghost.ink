@@ -62,7 +62,7 @@ Ghost: And I want you to sit with the word "drill" for a moment, because a drill
 
 Ghost: We're not here for profit. St. Catherine's ignored security warnings for six months.
 
-Ghost: Marcus Webb's email, May 17th: "ProFTPD vulnerability, critical severity, immediate patching required."
+Ghost: Gary Whitlock's email, May 17th: "ProFTPD vulnerability, critical severity, immediate patching required."
 
 Ghost: Hospital response: "Budget constraints. Defer to next fiscal year."
 
@@ -111,7 +111,7 @@ Ghost: They gambled with patient safety. We're making the stakes visible.
 
 Ghost: Justify? The math justifies itself.
 
-Ghost: St. Catherine's ignored Marcus's warnings. They chose shiny equipment over patient data security.
+Ghost: St. Catherine's ignored Gary's warnings. They chose shiny equipment over patient data security.
 
 Ghost: Now they face consequences. Expensive, painful, unforgettable.
 
@@ -122,7 +122,7 @@ Ghost: Now they face consequences. Expensive, painful, unforgettable.
 
 Ghost: I surveyed two hundred and fourteen hospitals. A hundred and forty-seven of them are carrying something critical and unpatched that they have already been warned about in writing.
 
-Ghost: Not ignorant. Warned. There is always a Marcus Webb. There is always a file of emails.
+Ghost: Not ignorant. Warned. There is always a Gary Whitlock. There is always a file of emails.
 
 Ghost: Consultants charge them a fortune for a report that goes in a drawer next to the last one. I charge rather less for a lesson that doesn't.
 
@@ -243,7 +243,7 @@ Ghost: £87,000 vs. human lives.
 
 Ghost: Decryption keys delivered. Systems restoring.
 
-Ghost: St. Catherine's board approved a £250,000 security budget within 24 hours. More than triple what Marcus requested.
+Ghost: St. Catherine's board approved a £250,000 security budget within 24 hours. More than triple what Gary requested.
 
 Ghost: That's what this was for.
 
@@ -361,17 +361,17 @@ Ghost: Time's running out. Choose wisely.
 #speaker:ghost
 
 > EXPLOIT SIGNATURE DETECTED
-> CVE-2010-4652 -- ST. CATHERINE'S BACKUP SERVER
+> PROFTPD 1.3.3c BACKDOOR -- ST. CATHERINE'S BACKUP SERVER
 
 Ghost: You just used my backdoor against me.
 
-Ghost: CVE-2010-4652. Fourteen years old. I wrote the exploitation script in 2021.
+Ghost: The 1.3.3c backdoor. Fourteen years old and still listening. I wrote my own build of the exploit in 2021.
 
 Ghost: Nobody patches what they don't understand.
 
 Ghost: We've been watching this network since 03:47. Every terminal you've accessed. Every room you've entered.
 
-Ghost: Marcus Webb. Dr. Kim. The ward nurse with the paper charts.
+Ghost: Gary Whitlock. Dr. Kim. The ward nurse with the paper charts.
 
 Ghost: We know everything that's happened in this building tonight.
 
@@ -475,7 +475,7 @@ Ghost: Clean recovery. Under an hour. Those patients have their systems before t
 === ghost_states_terms ===
 #speaker:ghost
 
-Ghost: The board liability email in the conference room. The budget documents. Marcus's six months of ignored warnings. All of it.
+Ghost: The board liability email in the conference room. The budget documents. Gary's six months of ignored warnings. All of it.
 
 Ghost: Upload them. Unredacted. To the press terminal in the conference room.
 
@@ -498,7 +498,7 @@ Ghost: They just didn't show their working.
 * [I accept. I'll upload the evidence. Give me the keys.]
     Ghost: Keys transmitted.
     Ghost: Conference room. Press terminal. Don't forget what you agreed to.
-    Ghost: Include Marcus Webb's emails specifically. The full six months. Not just the cover-up memo -- the timeline.
+    Ghost: Include Gary Whitlock's emails specifically. The full six months. Not just the cover-up memo -- the timeline.
     Ghost: The lesson requires the complete picture.
     #set_global:ghost_deal_accepted:true
     -> act3_deal_accepted

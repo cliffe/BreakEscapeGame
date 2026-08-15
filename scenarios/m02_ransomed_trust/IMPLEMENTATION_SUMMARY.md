@@ -190,7 +190,7 @@ The Ink source file needs updating with:
 **Reference**: See `GUARD_DIALOGUE_UPDATES.md` for complete Ink code
 
 ### 2. VM File Additions
-The SecGen VM `secgen_rooting_for_a_win` needs:
+The SecGen VM `hospital_backup_server` needs:
 - `/root/.ghost_ops/equipment_manifest.txt`
 - `/root/.ghost_ops/asset_instructions.txt`
 - `/root/.ghost_ops/README`

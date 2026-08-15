@@ -43,9 +43,9 @@ Mission 2 has **5 main objectives** (aims) with **15 total tasks**.
    - Target: `dr_sarah_kim`
    - Status: Locked → Unlocks after task 1
 
-3. **talk_to_marcus** - Interview IT administrator Marcus Webb
+3. **talk_to_gary** - Interview IT administrator Gary Whitlock
    - Type: `npc_conversation`
-   - Target: `marcus_webb`
+   - Target: `gary_whitlock`
    - Status: Locked → Unlocks after task 2
 
 ---
@@ -56,7 +56,7 @@ Mission 2 has **5 main objectives** (aims) with **15 total tasks**.
 **Description:** Gain access to hospital's IT infrastructure and server room
 
 #### Tasks:
-1. **obtain_password_hints** - Gather SSH password hints from Marcus
+1. **obtain_password_hints** - Gather SSH password hints from Gary
    - Type: `collect_items`
    - Target: `password_sticky_note` (or NPC dialogue)
    - Status: Locked
@@ -164,15 +164,15 @@ Mission 2 has **5 main objectives** (aims) with **15 total tasks**.
 
 ## Optional Content (Not Required for Completion)
 
-### Marcus Protection Choice
+### Gary Protection Choice
 **Type:** Optional moral choice (not a formal task)
 **Trigger:** Finding scapegoating email in IT filing cabinet
 **Options:**
-- Protect Marcus (document warnings) → `marcus_protected` = true
-- Warn Marcus to resign → `marcus_protected` = false
-- Ignore → `marcus_protected` = false
+- Protect Gary (document warnings) → `gary_protected` = true
+- Warn Gary to resign → `gary_protected` = false
+- Ignore → `gary_protected` = false
 
-**Impact:** Affects Marcus's career outcome in debrief
+**Impact:** Affects Gary's career outcome in debrief
 
 ### LORE Fragment Collection
 **Type:** Optional collectibles (not formal tasks)
@@ -200,7 +200,7 @@ Mission 2 has **5 main objectives** (aims) with **15 total tasks**.
 | **Objective Count** | 5 | 5 | ✅ Match |
 | **Task Count** | 15 | 15 | ✅ Match |
 | **Objective IDs** | infiltrate_hospital, access_it_systems, exploit_entropy_backdoor, recover_offline_keys, make_critical_decisions | Same | ✅ Match |
-| **Task IDs** | arrive_at_hospital, meet_dr_kim, talk_to_marcus, obtain_password_hints, decode_ransomware_note, access_server_room, submit_ssh_flag, submit_proftpd_flag, submit_database_flag, submit_ghost_log_flag, locate_safe, gather_pin_clues, crack_safe_pin, make_ransom_decision, decide_hospital_exposure | Same | ✅ Match |
+| **Task IDs** | arrive_at_hospital, meet_dr_kim, talk_to_gary, obtain_password_hints, decode_ransomware_note, access_server_room, submit_ssh_flag, submit_proftpd_flag, submit_database_flag, submit_ghost_log_flag, locate_safe, gather_pin_clues, crack_safe_pin, make_ransom_decision, decide_hospital_exposure | Same | ✅ Match |
 | **Unlock Conditions** | Progressive unlock structure | Documented | ✅ Match |
 | **Descriptions** | Clear, concise | Expanded with context | ✅ Consistent |
 
@@ -283,7 +283,7 @@ Players will see objectives in this order:
 - ✅ All 5 objectives complete (15/15 tasks)
 - ✅ All 4 VM flags submitted
 - ✅ All 3 LORE fragments collected (optional)
-- ✅ Marcus protected (optional moral choice)
+- ✅ Gary protected (optional moral choice)
 - ✅ Both moral decisions made with informed choices
 
 ---

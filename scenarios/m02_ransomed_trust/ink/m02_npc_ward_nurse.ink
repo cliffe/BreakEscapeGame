@@ -78,7 +78,7 @@ Sister Doyle: Because I've had four people through here tonight who weren't, and
 
 Narrator: She nods down the row as she talks, and does not lower her voice, because these are her patients and she is not going to discuss them as though they cannot hear.
 
-Sister Doyle: Bed four. Mr Okafor, sixty-seven, ventilated. The machine's on its own power so it keeps breathing for him whatever happens. It's the monitoring that fed the station, and the station's dark.
+Sister Doyle: Bed four. Mr Pryce, sixty-seven, ventilated. The machine's on its own power so it keeps breathing for him whatever happens. It's the monitoring that fed the station, and the station's dark.
 
 Sister Doyle: Bed two. Mrs Hargreaves, on ECMO. That's her heart and her lungs, both, sat in a box beside the bed. If that alarms and nobody's stood next to it, she has about four minutes.
 
@@ -234,7 +234,7 @@ Sister Doyle: If it's the emergency kit you're after -- far end of this ward, th
 
 // ===========================================
 // THE LANYARD -- cover-burn recovery, empathy-gated
-// (Redundant with Marcus's contractor pass, Bernie vouching, and Val's
+// (Redundant with Gary's contractor pass, Bernie vouching, and Val's
 //  own judgement -- so this is a reward, never a requirement.)
 // ===========================================
 
@@ -283,7 +283,7 @@ Sister Doyle: You want me to hand a hospital identity to a man I met an hour ago
 
 Sister Doyle: I've six critical beds and no monitoring. I cannot also be the one who decides who you are.
 
-Sister Doyle: Try IT -- up the link and along the main corridor. Marcus is in there, and he's the sort who'd rather be sacked for helping than for nothing.
+Sister Doyle: Try IT -- up the link and along the main corridor. Gary is in there, and he's the sort who'd rather be sacked for helping than for nothing.
 
 #exit_conversation
 -> hub

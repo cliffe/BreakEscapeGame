@@ -25,7 +25,7 @@ VAR cover_burned = false
 VAR cover_restored = false
 VAR insider_method_confirmed = false
 VAR bernie_vouched = false
-VAR marcus_protected = false
+VAR gary_protected = false
 
 VAR cover_probed = false
 VAR asked_guarding = false
@@ -180,7 +180,7 @@ Graham Reeves: Money. That's the first guess, always.
 
 Graham Reeves: Do you know what this hospital pays a night security supervisor to hold a building full of dying people together between ten at night and six in the morning?
 
-Graham Reeves: Less than the board spent on catering the meeting where they cut Marcus Webb's security budget. I know that because I stood outside that room, and I carried the trays out afterwards.
+Graham Reeves: Less than the board spent on catering the meeting where they cut Gary Whitlock's security budget. I know that because I stood outside that room, and I carried the trays out afterwards.
 
 Graham Reeves: I raised it. Not the catering -- the servers. I have been raising things in this building for eleven years. I was told to mind my post.
 
@@ -190,7 +190,7 @@ Graham Reeves: I raised it. Not the catering -- the servers. I have been raising
 * [So they came along and listened.]
     -> monologue_2
 
-* [Marcus was ignored too. He wrote seven emails. He didn't do this.]
+* [Gary was ignored too. He wrote seven emails. He didn't do this.]
     Graham Reeves: *nods slowly* No. He wrote his seven emails and he waited to be listened to, and in about a fortnight they will sack him for it.
     Graham Reeves: That's not a counter-argument. That's my closing statement.
     -> monologue_2
@@ -242,8 +242,8 @@ Graham Reeves: The point was that nobody in this sector will ever be able to say
 
 Narrator: He offers his wrists without being asked. Whatever else he is, he came to work tonight prepared to be caught.
 
-{marcus_protected:
-    Graham Reeves: *as you take his arm* The IT lad. Webb.
+{gary_protected:
+    Graham Reeves: *as you take his arm* The IT lad. Whitlock.
     Graham Reeves: If you've genuinely put his warnings on the record, then something came out of tonight that I couldn't have managed on my own. I'd like that noted.
 }
 
