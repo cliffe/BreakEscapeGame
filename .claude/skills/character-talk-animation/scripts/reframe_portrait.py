@@ -15,9 +15,15 @@ the border rather than keying every matching pixel anywhere in the image, so a
 coincidental magenta-ish pixel inside the character (unlikely, but not impossible)
 can't get cut out.
 
+The Break Escape dialogue cast faces RIGHT (three-quarter turn toward the right of
+the frame). Gemini is unreliable at honouring a left/right instruction in the prompt,
+so orientation is fixed here instead: pass --flip to mirror the character horizontally
+after keying. Gemini's default output for this prompt faces left, so --flip is the
+normal case, not the exception.
+
 Usage:
   reframe_portrait.py <portrait.png> [-o out.png] [--size 1024]
-                       [--bg-color 255,0,255] [--tolerance 40]
+                       [--bg-color 255,0,255] [--tolerance 40] [--flip]
 """
 import argparse
 from collections import deque
@@ -68,6 +74,11 @@ def main():
         "--tolerance", type=float, default=40,
         help="max RGB Euclidean distance from --bg-color still counted as background",
     )
+    ap.add_argument(
+        "--flip", action="store_true",
+        help="mirror horizontally so the character faces right (the cast convention). "
+             "Gemini's default output for this prompt faces left, so this is usually wanted.",
+    )
     args = ap.parse_args()
     bg_color = tuple(int(c) for c in args.bg_color.split(","))
 
@@ -93,6 +104,9 @@ def main():
 
     out = rgba.crop((left, top, left + side, top + side))
     out = out.resize((args.size, args.size), Image.LANCZOS)
+    if args.flip:
+        out = out.transpose(Image.FLIP_LEFT_RIGHT)
+        print("flipped horizontally: character now faces right")
     out.save(args.out or args.image)
     print(f"wrote {args.out or args.image} ({out.size[0]}x{out.size[1]})")
 
