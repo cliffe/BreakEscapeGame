@@ -43,6 +43,8 @@ The portrait must be recognisably the *same person* as the walk sprite, because 
 
 Use `mcp__nanobanana__gemini_generate_image` with `aspect_ratio: "1:1"` and `output_path` set to `<...>/characters/<name>_nonpixelart.png`. Pass the source sprite sheet as a `reference_images` entry so the outfit and colouring carry over.
 
+**Never attach a pixel-art sprite as `reference_images`.** Gemini copies the *style* of a reference, not just its content, so a low-res pixel sprite makes it render the whole portrait in blocky pixel-art — which fights this pipeline (PixelLab does the pixelation later, from a smooth source) and clashes with the rest of the cast. This bit for real on the m02 ward patients. When the only existing art is a pixel sprite, read it for details (hair colour, garment, blanket) and put those in the **text prompt** instead; leave `reference_images` empty. It is safe only when the reference is itself a smooth (non-pixel) portrait.
+
 Keep the prompt in this exact structure — it is tuned for this pipeline and the paragraph order matters. Substitute the bracketed parts only:
 
 ```
@@ -62,6 +64,7 @@ Notes:
 
 - **"Neutral expression"** is load-bearing — this becomes frame 0 (mouth closed).
 - **"three-quarter turn"** is load-bearing — a straight-on, camera-facing pose reads flat and doesn't match the rest of the dialogue cast.
+- **Do not try to fix orientation in the prompt.** The cast faces *right*, but Gemini is unreliable at honouring a left/right instruction and its default output for this prompt faces left. Leave the prompt as written and mirror the result with `--flip` in Step 1b — that is the reliable way to guarantee the character faces right.
 - **"hips up, including the waistline, belt, pockets and top of the trousers"** is load-bearing — cropping at the chest loses the waist/trouser detail that should be visible in frame, and a head-only crop leaves nothing for the body at all, so the 128px conversion loses the outfit entirely.
 - Keep the last five lines verbatim. They are what makes the output match the existing cast (`female_scientist`, `female_office_worker`, `female_spy`).
 - **Ask for a solid magenta background, never "transparent."** Gemini cannot actually produce transparency — asking for it just gets a fake checkerboard baked into RGB with alpha=255 throughout. Worse, that checkerboard's shade varies between generations and looks like real image content (white lab coats, skin highlights), so any brightness-based heuristic trying to key it out will eat into the character instead of the background — this happened for real on `female_nurse1` and `male_scientist` and shredded both portraits. A solid, saturated, off-palette colour like magenta has no ambiguity: Step 1b keys exactly that one RGB value, nothing else, so it can't be confused with clothing or skin. If the render comes back with any gradient, shadow, or pattern in the background instead of a flat colour, re-roll — Step 1b needs a genuinely uniform colour to key correctly.
@@ -76,12 +79,14 @@ Run this on every `<name>_nonpixelart.png`, immediately after Step 1, before sho
 
 ```bash
 python3 .claude/skills/character-talk-animation/scripts/reframe_portrait.py \
-  public/break_escape/assets/characters/<name>_nonpixelart.png
+  public/break_escape/assets/characters/<name>_nonpixelart.png --flip
 ```
 
-It does two things in one pass, both mandatory:
+It does three things in one pass, all mandatory:
 
-1. **Keys the solid magenta background to true alpha transparency.** It flood-fills inward from the image border over pixels close to the exact chroma-key colour (default `255,0,255`, tolerance 40), not a brightness heuristic — so it cannot be confused with a white lab coat, a pale stethoscope, or a skin highlight the way a "near-neutral" test could. Flood filling from the border (rather than keying every matching pixel image-wide) is still there as a second layer of safety in case a stray near-magenta pixel ever turns up inside the artwork.
+0. **`--flip` mirrors the character so it faces right**, the cast convention. Gemini's default output for this prompt faces left, so pass `--flip` every time unless a given render already came out facing right. (If the background colour isn't magenta, also pass `--bg-color`, e.g. a solid grey render needs `--bg-color 90,90,90` — sample the actual corner with `Image.open(path).getpixel((5,5))` first.)
+
+1. **Keys the solid background to true alpha transparency.** It flood-fills inward from the image border over pixels close to the exact chroma-key colour (default `255,0,255`, tolerance 40), not a brightness heuristic — so it cannot be confused with a white lab coat, a pale stethoscope, or a skin highlight the way a "near-neutral" test could. Flood filling from the border (rather than keying every matching pixel image-wide) is still there as a second layer of safety in case a stray near-magenta pixel ever turns up inside the artwork.
 2. **Reframes so the character fills the square**, cropping to the character's own bounding box rather than leaving Gemini's padding in. This is also the fix for the "ignores zoom out" problem above — do this instead of another Gemini round-trip.
 
 If the Gemini render used a background colour other than magenta for some reason, pass it explicitly: `--bg-color 0,255,0` (green) etc. — don't just rerun with the default and hope.
