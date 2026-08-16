@@ -396,10 +396,11 @@ Val Okonkwo: I've raised it twice. Twice I've been told it's "crisis protocol" b
     ~ influence += 10
     # influence_increased
     Val Okonkwo: *stops dead*
-    Val Okonkwo: He walked two men in high-vis through the lobby. Told Bernie they were facilities. Signed for them himself.
-    Val Okonkwo: I remember, because I asked him for their names and he smiled at me and said he'd already sorted it.
+    Val Okonkwo: I was mid-round when the alarm went. And a drill is the one night everybody moves the same direction -- out. Down the stairs, into the car park, you know the drill, that's the whole point of the drill.
+    Val Okonkwo: Bernie's two "facilities" lads went the other way. Up the north corridor, towards the comms relay and the server room. Against the entire building.
+    Val Okonkwo: I clocked it and I told myself facilities knew their own job. He smiled at me and said he'd sorted it.
     #set_global:insider_evidence_partial:true
-    Val Okonkwo: I have never liked being smiled at like that.
+    Val Okonkwo: Six weeks that's itched at me. Two men walking the wrong way through a fire.
     -> hub
 
 + [You've got all this written down?]

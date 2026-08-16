@@ -218,11 +218,11 @@ Gary Whitlock: And when they write this up and it says the administrator failed 
 === keycard_request ===
 Narrator: He pulls a lanyard out from under his collar and looks at it.
 
-Gary Whitlock: Funny thing. Every badge reader in this hospital is dead, because the thing that decides who's allowed where is sat behind the same ransom screen as everything else.
+Gary Whitlock: You'll have found every reader in the building dead on your way to me. So you already know the interesting bit is what's still alive.
 
-Gary Whitlock: Except the server room. That reader's on its own controller, isolated, no network. I argued for that in 2019 and I actually won one, for once.
+Gary Whitlock: This one. Server room reader's on its own controller -- isolated, no network, nothing on it worth encrypting. I argued for that in 2019 and I actually won, for once in my life. Turns out being right about one thing buys you exactly one working door.
 
-Gary Whitlock: So this is the only card in St Catherine's that still opens anything at all. And there is no way on earth to issue you one of your own, because the thing that issues them is encrypted.
+Gary Whitlock: So this card's the only credential in St Catherine's that opens anything at all tonight. And no, before you ask, nobody can cut you your own -- the machine that issues them went in the fire with the rest.
 
 {gary_influence >= 25:
     -> keycard_trusted
