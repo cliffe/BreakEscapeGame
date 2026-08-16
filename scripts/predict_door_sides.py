@@ -70,17 +70,19 @@ def tiles_for(rtype):
     return TYPE_TILES[rtype]
 
 def dims_for(room, rid=''):
-    # scenario `dimensions` override the tilemap, matching the engine
-    if 'dimensions' in room:
+    # The engine sizes rooms from the TILEMAP by type (core/rooms.js reads
+    # cache.tilemap.get(room.type)); the scenario `dimensions` field is IGNORED
+    # for layout. Only fall back to `dimensions` when a type has no tilemap.
+    t = tiles_for(room['type'])
+    if t is not None:
+        wt, ht = t
+    elif 'dimensions' in room:
         wt, ht = room['dimensions']['width'], room['dimensions']['height']
     else:
-        t = tiles_for(room['type'])
-        if t is None:
-            raise SystemExit(
-                f"room '{rid}' uses type '{room['type']}', which has no tilemap in "
-                f"public/break_escape/assets/rooms/ and no explicit \"dimensions\" in the "
-                f"scenario. Add dimensions to predict its doors.")
-        wt, ht = t
+        raise SystemExit(
+            f"room '{rid}' uses type '{room['type']}', which has no tilemap in "
+            f"public/break_escape/assets/rooms/ and no explicit \"dimensions\" in the "
+            f"scenario. Add a tilemap or dimensions to predict its doors.")
     return {'w': wt*TILE, 'stack': (ht-VISUAL_TOP)*TILE, 'wt': wt, 'ht': ht}
 
 def align(x, y):

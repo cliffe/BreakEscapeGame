@@ -510,7 +510,7 @@ boardroom_pin = "0417"
       },
       "door_sign": "Reception",
       "connections": {
-        "east": "ward_approach"
+        "east": "ward_vestibule"
       },
       "npcs": [
         {
@@ -1276,7 +1276,7 @@ boardroom_pin = "0417"
       "difficulty": "easy",
       "door_sign": "IT Department",
       "connections": {
-        "south": "office_corridor"
+        "south": "office_hall_east"
       },
       "npcs": [
         {
@@ -1733,7 +1733,7 @@ boardroom_pin = "0417"
       "locked": false,
       "door_sign": "CTO Office",
       "connections": {
-        "south": "office_corridor"
+        "south": "office_hall_mid"
       },
       "npcs": [
         {
@@ -1875,7 +1875,7 @@ boardroom_pin = "0417"
       "difficulty": "medium",
       "door_sign": "Boardroom",
       "connections": {
-        "south": "office_corridor"
+        "south": "office_hall_west"
       },
       "npcs": [
         {
@@ -2152,7 +2152,7 @@ boardroom_pin = "0417"
       "door_sign": "Main Corridor",
       "connections": {
         "south": "ward_hall",
-        "north": ["conference_room", "dr_kim_office", "it_department"],
+        "north": "office_hall_mid",
         "west": "security_office"
       },
       "npcs": [],
@@ -2162,12 +2162,47 @@ boardroom_pin = "0417"
           "name": "Ward Board",
           "takeable": false,
           "readable": true,
-          "text": "ST. CATHERINE'S -- CORRIDOR DIRECTORY\n\nBoardroom .................... this corridor, first door (KEYPAD)\nExecutive / CTO .............. this corridor, centre door\nIT Systems ................... this corridor, far door (OVERRIDE KEY)\nSecurity Office .............. west end of this corridor\nServer Room .................. through Security Office (RESTRICTED)\nWard 3 (Critical Care) ....... down the ward link, south\nEmergency Equipment Store .... far end of Ward 3\nReception .................... through Ward 3, ward approach\n\nHandwritten underneath, in biro: \"ALL READERS DOWN -- overrides at reception, sign them out, DO NOT PROP DOORS.\"",
+          "text": "ST. CATHERINE'S -- CORRIDOR DIRECTORY\n\nBoardroom .................... off this corridor, west landing (KEYPAD)\nExecutive / CTO .............. off this corridor, centre landing\nIT Systems ................... off this corridor, east landing (OVERRIDE KEY)\nSecurity Office .............. west end of this corridor\nServer Room .................. through Security Office (RESTRICTED)\nWard 3 (Critical Care) ....... down the ward link, south\nEmergency Equipment Store .... far end of Ward 3\nReception .................... through Ward 3, ward approach\n\nHandwritten underneath, in biro: \"ALL READERS DOWN -- overrides at reception, sign them out, DO NOT PROP DOORS.\"",
           "observations": "The corridor directory. Somebody has added the state of the access control system underneath in biro.",
           "puzzle_graph_role": "clue",
           "puzzle_graph_reveals": "map_orientation_and_confirmation_that_overrides_live_at_reception"
         }
       ]
+    },
+
+    "office_hall_west": {
+      "type": "hall_1x2gu",
+      "door_sign": "Boardroom Landing",
+      "connections": {
+        "east": "office_hall_mid",
+        "north": "conference_room"
+      },
+      "npcs": [],
+      "objects": []
+    },
+
+    "office_hall_mid": {
+      "type": "hall_1x2gu",
+      "door_sign": "Offices",
+      "connections": {
+        "south": "office_corridor",
+        "west": "office_hall_west",
+        "east": "office_hall_east",
+        "north": "dr_kim_office"
+      },
+      "npcs": [],
+      "objects": []
+    },
+
+    "office_hall_east": {
+      "type": "hall_1x2gu",
+      "door_sign": "IT Wing",
+      "connections": {
+        "west": "office_hall_mid",
+        "north": "it_department"
+      },
+      "npcs": [],
+      "objects": []
     },
 
     "ward_hall": {
@@ -2185,15 +2220,22 @@ boardroom_pin = "0417"
       "objects": []
     },
 
-    "ward_approach": {
-      "type": "hall_1x2gu",
-      "dimensions": {
-        "width": 10,
-        "height": 10
-      },
-      "door_sign": "Ward Approach",
+    "ward_vestibule": {
+      "type": "small_room_1x1gu",
+      "door_sign": "Ward Vestibule",
       "connections": {
         "west": "reception_lobby",
+        "east": "ward_approach"
+      },
+      "npcs": [],
+      "objects": []
+    },
+
+    "ward_approach": {
+      "type": "hall_1x2gu",
+      "door_sign": "Ward Approach",
+      "connections": {
+        "west": "ward_vestibule",
         "north": "hospital_ward"
       },
       "npcs": [],
