@@ -21,12 +21,20 @@ export default class PersonChatPortraits {
      * @param {Object} npc - NPC data with sprite information
      * @param {HTMLElement} portraitContainer - Container for portrait canvas
      * @param {string} background - Optional background image path
+     * @param {Object} options - Optional rendering tweaks
+     * @param {boolean} options.noShift - Skip the 20% "look-away" horizontal shift (used for the
+     *                                    small picture-in-picture self-view so the face stays centred)
+     * @param {boolean} options.sizeToContainer - Size the canvas to THIS container instead of the
+     *                                    full-screen #game-container (used for the PiP box)
      */
-    constructor(game, npc, portraitContainer, background = null) {
+    constructor(game, npc, portraitContainer, background = null, options = {}) {
         this.game = game;
         this.npc = npc;
         this.portraitContainer = portraitContainer;
         this.backgroundPath = background; // Optional background image path
+        this.noShift = !!options.noShift;             // PiP self-view: keep the face centred
+        this.sizeToContainer = !!options.sizeToContainer; // PiP self-view: size to its own box
+        this._resizeHandler = null;                   // Stored so destroy() can remove it (no leak)
         
         // Portrait settings
         this.spriteSize = 64; // Base sprite size
@@ -110,8 +118,9 @@ export default class PersonChatPortraits {
             this.updateCanvasSize();
             this.render();
             
-            // Handle window resize
-            window.addEventListener('resize', () => this.handleResize());
+            // Handle window resize (store the handler so destroy() can remove it — no leak)
+            this._resizeHandler = () => this.handleResize();
+            window.addEventListener('resize', this._resizeHandler);
             
             // Parallax animation will start automatically when background image loads
             
@@ -129,8 +138,8 @@ export default class PersonChatPortraits {
      * @returns {Object} Object with scale, baseWidth, and baseHeight
      */
     calculateOptimalScale() {
-        // Try to get the game-container (same as main game uses)
-        const gameContainer = document.getElementById('game-container');
+        // The PiP self-view sizes to its own small box; the full-screen portrait uses #game-container.
+        const gameContainer = this.sizeToContainer ? null : document.getElementById('game-container');
         const container = gameContainer || this.portraitContainer;
         
         if (!container) {
@@ -633,7 +642,7 @@ export default class PersonChatPortraits {
             // Shift sprite 20% away from the direction they're facing
             // Shifting left works for both flipped and non-flipped due to coordinate transform
             // NPCs (flipped) appear on right, Player (not flipped) appears on left
-            const shiftAmount = canvasWidth * 0.2;
+            const shiftAmount = this.noShift ? 0 : canvasWidth * 0.2;
             x -= shiftAmount;
             
             // Draw the sprite frame scaled to fill canvas with optional flip
@@ -794,7 +803,9 @@ export default class PersonChatPortraits {
             const scaledHeight = srcH * scale;
 
             // Center, then shift 20% away from the direction the character faces
-            let x = (canvasWidth - scaledWidth) / 2 - canvasWidth * 0.2;
+            // (skipped for the PiP self-view so the face stays centred in its small box)
+            const shift = this.noShift ? 0 : canvasWidth * 0.2;
+            let x = (canvasWidth - scaledWidth) / 2 - shift;
             const y = (canvasHeight - scaledHeight) / 2;
 
             this.ctx.imageSmoothingEnabled = false;
@@ -868,9 +879,18 @@ export default class PersonChatPortraits {
      * Destroy portrait and cleanup
      */
     destroy() {
-        // Stop parallax animation
+        // Stop parallax / mouth animation loop
         this.stopParallaxAnimation();
-        
+
+        // Remove the resize listener registered in init() (otherwise it leaks per conversation)
+        if (this._resizeHandler) {
+            window.removeEventListener('resize', this._resizeHandler);
+            this._resizeHandler = null;
+        }
+
+        // Drop the ttsManager reference so the animation loop's keep-alive check goes false
+        this.ttsManager = null;
+
         if (this.canvas && this.canvas.parentNode) {
             this.canvas.parentNode.removeChild(this.canvas);
         }

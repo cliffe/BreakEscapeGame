@@ -790,6 +790,35 @@ export default class NPCManager {
         console.warn(`⚠️ MinigameFramework not available for person-chat`);
       }
     }
+    // Check if this event should auto-open a person-chat VIDEO CALL.
+    // Works for any npcType (a "phone" NPC like Ghost can appear on a video call), because the
+    // person-chat portrait renders off spriteTalk/spriteSheet rather than the NPC's world sprite.
+    if (config.conversationMode === 'video-call') {
+      if (window.MinigameFramework) {
+        const knotToUse = config.targetKnot || config.knot || npc.currentKnot;
+
+        // Close any currently running minigame first
+        if (window.MinigameFramework.currentMinigame) {
+          window.MinigameFramework.endMinigame(false, null);
+        }
+
+        setTimeout(() => {
+          window.MinigameFramework.startMinigame('person-chat', null, {
+            npcId: npc.id,
+            startKnot: knotToUse,
+            background: config.background || null,
+            scenario: window.gameScenario,
+            disableClose: config.disableClose || false,
+            videoCall: true
+          });
+          console.log(`[NPCManager] Event '${eventPattern}' triggered for NPC '${npcId}' → person-chat VIDEO CALL`);
+        }, 500);
+
+        return;
+      } else {
+        console.warn(`⚠️ MinigameFramework not available for video-call`);
+      }
+    }
     // Check if this event should auto-open a phone-chat conversation
     if (config.conversationMode === 'phone-chat' && npc.npcType === 'phone') {
       if (window.MinigameFramework) {

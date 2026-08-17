@@ -53,6 +53,7 @@ export class PersonChatMinigame extends MinigameScene {
         this.title = params.title || 'Conversation';
         this.background = params.background; // Optional background image path from timedConversation
         this.startKnot = params.startKnot; // Optional knot to jump to (used for event-triggered conversations)
+        this.videoCall = params.videoCall || false; // Render as a framed video call with a player self-view PiP
         
         // Verify NPC exists
         const npc = this.npcManager.getNPC(this.npcId);
@@ -86,6 +87,13 @@ export class PersonChatMinigame extends MinigameScene {
 
         // TTS Manager for voice synthesis
         this.ttsManager = new TTSManager();
+
+        // Optional voice FX for this NPC (e.g. Ghost's masked encrypted-comms voice).
+        // Driven by the scenario NPC's "voice": { ..., "fx": "voice-distortion" | {custom} } config.
+        // Narrator/player lines are unaffected (they play under different speaker ids).
+        if (this.npc?.voice?.fx) {
+            this.ttsManager.setVoiceFX(this.npcId, this.npc.voice.fx);
+        }
 
         console.log(`🎭 PersonChatMinigame created for NPC: ${this.npcId}`);
     }
@@ -185,7 +193,8 @@ export class PersonChatMinigame extends MinigameScene {
             playerSprite: this.player,
             playerData: this.playerData,
             characters: this.characters,  // Pass multi-character support
-            background: this.background   // Optional background image path
+            background: this.background,  // Optional background image path
+            videoCall: this.videoCall     // Render as a framed video call with a self-view PiP
         }, this.npcManager);
 
         this.ui.render();
@@ -1492,6 +1501,12 @@ export class PersonChatMinigame extends MinigameScene {
                 timestamp: Date.now()
             });
             console.log(`📢 Emitted event: ${eventName}`);
+        }
+
+        // Tear down UI renderers/timers (portrait + video-call PiP) so their resize listeners
+        // and animation loops are released.
+        if (this.ui && typeof this.ui.destroy === 'function') {
+            this.ui.destroy();
         }
 
         // Clear NPC context

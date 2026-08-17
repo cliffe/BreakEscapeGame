@@ -1125,6 +1125,65 @@ end
 def check_common_issues(json_data, valid_item_types = nil)
   issues = []
 
+  # Validate a voice.fx config (Web Audio distortion/filtering applied to a speaker's TTS).
+  # Appends to `issues`. Keep the preset list in sync with TTSManager.VOICE_FX_PRESETS in
+  # public/break_escape/js/systems/tts-manager.js.
+  check_voice_fx = lambda do |fx, fx_path|
+    known_fx_presets = ['voice-distortion', 'radio', 'robot']
+    if fx.is_a?(String)
+      unless known_fx_presets.include?(fx)
+        issues << "❌ INVALID: '#{fx_path}' is an unknown voice FX preset '#{fx}'. Use one of: #{known_fx_presets.join(', ')}, or a custom object { highpass, lowpass, drive, ringMod: { frequency, mix }, makeup }."
+      end
+    elsif fx.is_a?(Hash)
+      allowed_fx_keys = ['highpass', 'lowpass', 'drive', 'ringMod', 'makeup']
+      unknown_keys = fx.keys - allowed_fx_keys
+      unless unknown_keys.empty?
+        issues << "⚠️ WARNING: '#{fx_path}' has unrecognised FX key(s): #{unknown_keys.join(', ')}. Recognised keys: #{allowed_fx_keys.join(', ')}."
+      end
+      ['highpass', 'lowpass', 'drive', 'makeup'].each do |k|
+        if fx.key?(k) && !fx[k].is_a?(Numeric)
+          issues << "❌ INVALID: '#{fx_path}/#{k}' must be a number."
+        end
+      end
+      ['highpass', 'lowpass'].each do |k|
+        if fx[k].is_a?(Numeric) && (fx[k] <= 0 || fx[k] > 20000)
+          issues << "⚠️ WARNING: '#{fx_path}/#{k}' = #{fx[k]}Hz is outside the sensible audio range (1–20000Hz)."
+        end
+      end
+      if fx['drive'].is_a?(Numeric) && (fx['drive'] < 0 || fx['drive'] > 100)
+        issues << "⚠️ WARNING: '#{fx_path}/drive' = #{fx['drive']} is outside the sensible range (0–100; ~6 subtle, ~20 heavy)."
+      end
+      if fx.key?('ringMod')
+        rm = fx['ringMod']
+        if !rm.is_a?(Hash)
+          issues << "❌ INVALID: '#{fx_path}/ringMod' must be an object { frequency, mix }."
+        else
+          if rm.key?('frequency')
+            if !rm['frequency'].is_a?(Numeric)
+              issues << "❌ INVALID: '#{fx_path}/ringMod/frequency' must be a number (Hz)."
+            elsif rm['frequency'] <= 0 || rm['frequency'] > 20000
+              issues << "⚠️ WARNING: '#{fx_path}/ringMod/frequency' = #{rm['frequency']}Hz is outside the sensible audio range (1–20000Hz)."
+            end
+          end
+          if rm.key?('mix')
+            if !rm['mix'].is_a?(Numeric)
+              issues << "❌ INVALID: '#{fx_path}/ringMod/mix' must be a number between 0 and 1."
+            elsif rm['mix'] < 0 || rm['mix'] > 1
+              issues << "❌ INVALID: '#{fx_path}/ringMod/mix' must be between 0 and 1 (got #{rm['mix']})."
+            end
+          end
+        end
+      end
+    else
+      issues << "❌ INVALID: '#{fx_path}' must be a preset name (string) or a config object { highpass, lowpass, drive, ringMod, makeup }."
+    end
+  end
+
+  # Player voice may also carry fx
+  if json_data['player'].is_a?(Hash) && json_data['player']['voice'].is_a?(Hash) && json_data['player']['voice'].key?('fx')
+    check_voice_fx.call(json_data['player']['voice']['fx'], 'player/voice/fx')
+  end
+
   # Recursive helper: check item type and all nested contents/itemsHeld
   # A type is valid if an exact asset file exists, OR if any numbered/variant file starting with
   # that type name exists (e.g. type "safe" is valid when safe1.png, safe2.png etc. exist).
@@ -1511,6 +1570,11 @@ def check_common_issues(json_data, valid_item_types = nil)
         room['npcs'].each_with_index do |npc, idx|
           path = "rooms/#{room_id}/npcs[#{idx}]"
 
+          # Validate optional voice FX (Web Audio distortion/filtering applied to this NPC's TTS).
+          if npc['voice'].is_a?(Hash) && npc['voice'].key?('fx')
+            check_voice_fx.call(npc['voice']['fx'], "#{path}/voice/fx")
+          end
+
           # Track person NPCs
           if npc['npcType'] == 'person' || (!npc['npcType'] && npc['position'])
             has_person_npcs = true
@@ -1646,16 +1710,22 @@ def check_common_issues(json_data, valid_item_types = nil)
 
                 # Phone NPC event mapping anti-patterns
                 if npc['npcType'] == 'phone'
-                  phone_chat_trigger = mapping['conversationMode'] == 'phone-chat' && mapping['targetKnot']
+                  # Supported event-driven conversation triggers for a phone NPC:
+                  #   - "phone-chat": opens the phone texting UI at targetKnot
+                  #   - "video-call": opens the person-chat overlay framed as a secure video call
+                  #     (see npc-manager.js video-call branch). Both jump straight to targetKnot via
+                  #     the minigame's startKnot path, which bypasses saved-state restoration, so
+                  #     targetKnot is honoured on an event/onceOnly trigger.
+                  phone_trigger_modes = ['phone-chat', 'video-call']
+                  phone_chat_trigger = phone_trigger_modes.include?(mapping['conversationMode']) && mapping['targetKnot']
 
-                  # conversationMode: "phone-chat" + targetKnot is the supported phone-terminal trigger pattern.
-                  # Any other conversationMode on a phone NPC is not supported.
-                  if mapping['conversationMode'] && mapping['conversationMode'] != 'phone-chat'
-                    issues << "❌ INVALID: '#{mapping_path}' is a phone NPC event mapping with 'conversationMode: \"#{mapping['conversationMode']}\"' — this field is not used for phone NPCs and has no effect. Remove it."
+                  # Any conversationMode outside the supported set is not used for phone NPCs.
+                  if mapping['conversationMode'] && !phone_trigger_modes.include?(mapping['conversationMode'])
+                    issues << "❌ INVALID: '#{mapping_path}' is a phone NPC event mapping with 'conversationMode: \"#{mapping['conversationMode']}\"' — this field is not used for phone NPCs and has no effect. Remove it (supported: 'phone-chat', 'video-call')."
                   end
 
-                  # targetKnot without conversationMode: "phone-chat" does NOT work after the first conversation.
-                  # After the first open, storyState is restored and currentKnot is bypassed entirely.
+                  # targetKnot without a supported conversation trigger does NOT work after the first
+                  # conversation. After the first open, storyState is restored and currentKnot is bypassed.
                   if mapping['targetKnot'] && !phone_chat_trigger
                     issues << "❌ INVALID: '#{mapping_path}' is a phone NPC event mapping with 'targetKnot' — this does NOT work after the first conversation. Once a storyState is saved, targetKnot is ignored on reopen. Correct pattern: use 'setGlobal' to set a flag, then add a conditional hub option in the Ink story: '+ {flag_var} [Ask about it] -> knot'. Also add 'sendTimedMessage' to notify the player that new content is available."
                   end

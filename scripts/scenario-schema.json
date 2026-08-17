@@ -372,7 +372,14 @@
           "properties": {
             "name": { "type": "string" },
             "style": { "type": "string" },
-            "language": { "type": "string" }
+            "language": { "type": "string" },
+            "fx": {
+              "description": "Optional Web Audio voice FX applied to this NPC's TTS (distortion/filtering). A preset name ('voice-distortion', 'radio', 'robot') or a custom object: { highpass, lowpass, drive, ringMod: { frequency, mix }, makeup }. See TTSManager.VOICE_FX_PRESETS.",
+              "oneOf": [
+                { "type": "string" },
+                { "type": "object", "additionalProperties": true }
+              ]
+            }
           }
         },
         "behavior": {
@@ -572,8 +579,8 @@
         "targetKnot": { "type": "string" },
         "conversationMode": {
           "type": "string",
-          "enum": ["person-chat", "phone-chat"],
-          "description": "Trigger a cutscene. 'person-chat' opens a full-screen overlay. 'phone-chat' opens the phone-chat minigame. Both require targetKnot."
+          "enum": ["person-chat", "phone-chat", "video-call"],
+          "description": "Trigger a cutscene. 'person-chat' opens a full-screen overlay. 'phone-chat' opens the phone-chat minigame. 'video-call' opens the person-chat overlay framed as a secure video call with a player self-view PiP (works for phone NPCs too). All require targetKnot."
         },
         "background": { "type": "string" },
         "disableClose": {

@@ -29,6 +29,12 @@ class TTSManager {
         this._amplitudeBuffer = null;
         this._ttsAudioRouted = false;
 
+        // Per-speaker voice FX (distortion / filtering). Keyed by npcId → profile object or preset name.
+        // The active profile is inserted into the graph as: source → [FX] → analyser → voiceGain.
+        this._fxProfiles = new Map();
+        this._activeFXProfile = null; // resolved profile object currently wired into the graph
+        this._fxChain = null;         // { input, output, nodes, oscs } of the live FX chain
+
         this.audio.volume = 1;
         this.audio.addEventListener('ended', () => {
             this.playing = false;
@@ -54,7 +60,11 @@ class TTSManager {
         // Stop any current playback
         this.stop();
 
-        // Shared graph: MediaElement → analyser → voiceGain (requires user gesture for ctx)
+        // Select the FX profile for this speaker (clean for narrator/player/unregistered NPCs).
+        // Done before routing so the graph is built with the right chain the first time.
+        this._setActiveFXProfile(this._resolveFXProfile(npcId));
+
+        // Shared graph: MediaElement → [FX] → analyser → voiceGain (requires user gesture for ctx)
         this._ensureAudioContext();
 
         try {
@@ -208,12 +218,14 @@ class TTSManager {
         this.preloadCache.clear();
         this.onEndedCallback = null;
 
+        this._disposeFXChain();
         try { this._mediaElementSource?.disconnect(); } catch (_) {}
         try { this._analyser?.disconnect(); } catch (_) {}
         this._mediaElementSource = null;
         this._analyser = null;
         this._amplitudeBuffer = null;
         this._ttsAudioRouted = false;
+        this._activeFXProfile = null;
     }
 
     /**
@@ -241,6 +253,40 @@ class TTSManager {
         return this.getAmplitude() > threshold;
     }
 
+    /**
+     * Register a voice-FX profile for a speaker (an NPC id). The FX is applied whenever TTS plays
+     * for that speaker. Pass null to clear. Profile may be a preset name (see VOICE_FX_PRESETS) or
+     * an object: { highpass, lowpass, drive, ringMod:{frequency,mix}, makeup }.
+     * @param {string} speakerId
+     * @param {string|Object|null} profile
+     */
+    setVoiceFX(speakerId, profile) {
+        if (!speakerId) return;
+        if (profile) this._fxProfiles.set(speakerId, profile);
+        else this._fxProfiles.delete(speakerId);
+    }
+
+    /**
+     * Resolve a registered profile (preset name or object) to a concrete FX profile object.
+     * @private
+     */
+    _resolveFXProfile(npcId) {
+        const raw = this._fxProfiles.get(npcId);
+        if (!raw) return null;
+        if (typeof raw === 'string') return TTSManager.VOICE_FX_PRESETS[raw] || null;
+        return raw;
+    }
+
+    /**
+     * Switch the active FX profile, rebuilding the graph if it changed and the graph is live.
+     * @private
+     */
+    _setActiveFXProfile(profile) {
+        if (profile === this._activeFXProfile) return;
+        this._activeFXProfile = profile || null;
+        if (this._ttsAudioRouted) this._connectGraph();
+    }
+
     /** @private */
     _ensureAudioContext() {
         if (this._ttsAudioRouted) return;
@@ -260,19 +306,126 @@ class TTSManager {
                 this._analyser.smoothingTimeConstant = 0.2;
                 this._amplitudeBuffer = new Uint8Array(this._analyser.frequencyBinCount);
             }
-            try { this._mediaElementSource.disconnect(); } catch (_) {}
-            try { this._analyser.disconnect(); } catch (_) {}
-            this._mediaElementSource.connect(this._analyser);
-            this._analyser.connect(MusicController.voiceGain);
+            this._connectGraph();
             this.audio.volume = 1;
             this._ttsAudioRouted = true;
         } catch (e) {
             console.warn('[TTS] Web Audio routing unavailable, mouth animation may be disabled:', e.message);
-            this._mediaElementSource = null;
+            // Do NOT null _mediaElementSource here: a MediaElementSource can only be created ONCE
+            // per <audio> element. If a later node constructor threw, the source is already bound —
+            // clearing the reference would make the next _ensureAudioContext() call
+            // createMediaElementSource() again → InvalidStateError, permanently killing routing.
+            // Keep the source; only reset the retryable analyser bits.
             this._analyser = null;
             this._amplitudeBuffer = null;
             this.audio.volume = this.volume;
         }
+    }
+
+    /**
+     * (Re)wire the shared graph: source → [FX chain, if any] → analyser → voiceGain.
+     * Safe to call repeatedly; disconnects existing links and rebuilds the FX chain each time.
+     * @private
+     */
+    _connectGraph() {
+        const ctx = MusicController?.context;
+        if (!ctx || !this._mediaElementSource || !this._analyser) return;
+
+        try { this._mediaElementSource.disconnect(); } catch (_) {}
+        try { this._analyser.disconnect(); } catch (_) {}
+        this._disposeFXChain();
+
+        let tail = this._mediaElementSource;
+        if (this._activeFXProfile) {
+            this._fxChain = this._buildFXChain(ctx, this._activeFXProfile);
+            if (this._fxChain) {
+                tail.connect(this._fxChain.input);
+                tail = this._fxChain.output;
+            }
+        }
+        tail.connect(this._analyser);
+        this._analyser.connect(MusicController.voiceGain);
+    }
+
+    /**
+     * Build an FX chain from a profile. Returns { input, output, nodes, oscs } or null.
+     * Chain order: input → highpass → lowpass → waveshaper(drive) → ringMod(dry/wet) → makeup → output.
+     * Every stage is optional; the whole thing degrades to a passthrough gain.
+     * @private
+     */
+    _buildFXChain(ctx, p) {
+        const nodes = [];
+        const oscs = [];
+        const push = n => { nodes.push(n); return n; };
+
+        const input = push(ctx.createGain());
+        let node = input;
+
+        if (p.highpass) {
+            const hp = push(ctx.createBiquadFilter());
+            hp.type = 'highpass'; hp.frequency.value = p.highpass; hp.Q.value = 0.707;
+            node.connect(hp); node = hp;
+        }
+        if (p.lowpass) {
+            const lp = push(ctx.createBiquadFilter());
+            lp.type = 'lowpass'; lp.frequency.value = p.lowpass; lp.Q.value = 0.707;
+            node.connect(lp); node = lp;
+        }
+        if (p.drive) {
+            const ws = push(ctx.createWaveShaper());
+            ws.curve = this._makeDistortionCurve(p.drive);
+            ws.oversample = '2x';
+            node.connect(ws); node = ws;
+        }
+        if (p.ringMod && p.ringMod.mix > 0) {
+            const freq = p.ringMod.frequency ?? 80;
+            const mix = Math.min(1, p.ringMod.mix);
+            const dry = push(ctx.createGain()); dry.gain.value = 1 - mix;
+            const ringIn = push(ctx.createGain()); ringIn.gain.value = 0; // baseline; oscillator swings it -1..1
+            const wet = push(ctx.createGain()); wet.gain.value = mix;
+            const sum = push(ctx.createGain());
+            const osc = ctx.createOscillator();
+            osc.type = 'sine'; osc.frequency.value = freq;
+            osc.connect(ringIn.gain); osc.start(); oscs.push(osc);
+            node.connect(dry); dry.connect(sum);
+            node.connect(ringIn); ringIn.connect(wet); wet.connect(sum);
+            node = sum;
+        }
+
+        const makeup = push(ctx.createGain());
+        makeup.gain.value = p.makeup ?? 1;
+        node.connect(makeup); node = makeup;
+
+        return { input, output: node, nodes, oscs };
+    }
+
+    /** @private */
+    _disposeFXChain() {
+        if (!this._fxChain) return;
+        for (const o of this._fxChain.oscs || []) {
+            try { o.stop(); } catch (_) {}
+            try { o.disconnect(); } catch (_) {}
+        }
+        for (const n of this._fxChain.nodes || []) {
+            try { n.disconnect(); } catch (_) {}
+        }
+        this._fxChain = null;
+    }
+
+    /**
+     * Standard waveshaper distortion curve. `amount` ~ 0 (clean) to ~50 (heavy).
+     * @private
+     */
+    _makeDistortionCurve(amount) {
+        const k = typeof amount === 'number' ? amount : 0;
+        const n = 44100;
+        const curve = new Float32Array(n);
+        const deg = Math.PI / 180;
+        for (let i = 0; i < n; i++) {
+            const x = (i * 2) / n - 1;
+            curve[i] = ((3 + k) * x * 20 * deg) / (Math.PI + k * Math.abs(x));
+        }
+        return curve;
     }
 
     /** @private */
@@ -280,5 +433,26 @@ class TTSManager {
         return `${npcId}|${text}`;
     }
 }
+
+/**
+ * Named voice-FX presets. Reference by name from a scenario NPC's voice config
+ * (e.g. "voice": { ..., "fx": "voice-distortion" }) or pass a custom object.
+ *
+ * Tuning knobs per profile:
+ *   highpass / lowpass — band-limit the voice (a tight band = telephone/radio feel)
+ *   drive              — waveshaper saturation (grit). ~0 clean, ~6 subtle, ~20 heavy
+ *   ringMod            — { frequency, mix }. Metallic/masked edge. mix is the most
+ *                        aggressive knob — lower it (or delete ringMod) to soften.
+ *   makeup             — output gain to compensate for level lost to filtering/drive
+ */
+TTSManager.VOICE_FX_PRESETS = {
+    // Anonymised, encrypted-comms voice: band-limited with a light metallic edge. Deliberately
+    // masked but still intelligible. Used for Ghost (ENTROPY) — a disguised/obscured speaker.
+    'voice-distortion': { highpass: 220, lowpass: 3400, drive: 6, ringMod: { frequency: 75, mix: 0.10 }, makeup: 1.6 },
+    // Clean radio/handset band with light grit, no ring mod.
+    'radio': { highpass: 500, lowpass: 3000, drive: 10, makeup: 1.5 },
+    // Heavier robotic/vocoder-ish edge.
+    'robot': { highpass: 150, lowpass: 3800, drive: 4, ringMod: { frequency: 50, mix: 0.35 }, makeup: 1.5 }
+};
 
 export default TTSManager;

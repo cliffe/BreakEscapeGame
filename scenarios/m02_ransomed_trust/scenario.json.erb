@@ -929,12 +929,14 @@ boardroom_pin = "0417"
           "phoneTheme": "terminal",
           "storyPath": "scenarios/m02_ransomed_trust/ink/m02_phone_ghost.json",
           "avatar": "assets/npc/avatars/npc_hacker.png",
+          "spriteTalk": "assets/characters/male_hacker_hood_talk.png",
           "phoneId": "ghost_terminal",
           "currentKnot": "start",
           "voice": {
             "name": "Iapetus",
             "style": "ENTROPY field operative. Deliberately unplaceable -- an educated English base with every regional marker sanded off, the way someone sounds when they have consciously trained their own accent out. Unhurried, precise, never raises the pitch. Speaks as though reading a conclusion they reached months ago and have no further doubts about.",
-            "language": "en-GB"
+            "language": "en-GB",
+            "fx": "voice-distortion"
           },
           "eventMappings": [
             {
@@ -963,7 +965,7 @@ boardroom_pin = "0417"
             {
               "eventPattern": "objective_task_completed:initiate_backup_recovery",
               "onceOnly": true,
-              "conversationMode": "phone-chat",
+              "conversationMode": "video-call",
               "targetKnot": "on_recovery_console"
             },
             {

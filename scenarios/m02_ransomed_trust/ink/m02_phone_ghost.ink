@@ -455,10 +455,17 @@ Ghost: It's relevant to what you decide when you reach that recovery console.
 === on_recovery_console ===
 #speaker:ghost
 
-> GHOST PROTOCOL: ACTIVE
-> OFFER INCOMING -- LISTEN CAREFULLY
+Ghost: Before you touch that console -- look up.
 
-Ghost: You're standing at the recovery console.
+Narrator: The terminal text goes dark. A video window opens in its place -- a hooded figure, backlit, the face held in deliberate shadow.
+
+Ghost: There. I have been a cursor to you all night. That was rather the point -- it is easier to despise a cursor.
+
+Ghost: But I won't make this particular offer from behind text. You can look at me while I make it.
+
+Ghost: Don't waste the effort on the hood. You get no name tonight, and no face. You get a person. That is the part they always leave out, and it is the only part that has ever mattered.
+
+Ghost: Now. You're standing at the recovery console.
 
 Ghost: I'm going to make you an offer. Once. Listen carefully.
 

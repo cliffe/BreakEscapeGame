@@ -30,6 +30,7 @@ export default class PersonChatUI {
         this.playerData = params.playerData || {};
         this.characters = params.characters || {}; // Multi-character support
         this.background = params.background; // Optional background image path
+        this.videoCall = params.videoCall || false; // Render as a framed video call with a self-view PiP
         
         // UI elements
         this.elements = {
@@ -48,6 +49,11 @@ export default class PersonChatUI {
         
         // Portrait renderer
         this.portraitRenderer = null;
+
+        // Video-call extras (only used when this.videoCall is true)
+        this.pipRenderer = null;        // Second portrait renderer showing the player's self-view
+        this.callTimerInterval = null;  // Interval driving the mm:ss call timer in the status bar
+        this.callStartTime = null;
         
         // State
         this.currentSpeaker = null; // Character ID
@@ -69,17 +75,22 @@ export default class PersonChatUI {
             
             // Create root container
             this.elements.root = document.createElement('div');
-            this.elements.root.className = 'person-chat-root';
-            
+            this.elements.root.className = 'person-chat-root' + (this.videoCall ? ' video-call-mode' : '');
+
             // Create main content area (portrait fills background + caption at bottom)
             this.createMainContent();
-            
+
             // Add to container
             this.container.appendChild(this.elements.root);
-            
+
             // Initialize portrait renderer
             this.initializePortrait();
-            
+
+            // Video-call framing: status bar + self-view picture-in-picture
+            if (this.videoCall) {
+                this.initVideoCallOverlay();
+            }
+
             console.log('✅ PersonChatUI rendered');
         } catch (error) {
             console.error('❌ Error rendering UI:', error);
@@ -212,7 +223,88 @@ export default class PersonChatUI {
             console.error('❌ Error initializing portrait:', error);
         }
     }
-    
+
+    /**
+     * Build the video-call chrome: a framed border, a top status bar (LIVE dot, secure-link
+     * label, NPC name, running call timer) and a picture-in-picture self-view of the player.
+     *
+     * The self-view is a second PersonChatPortraits bound to the player's talk sprite. It has no
+     * TTS wired to it, so it renders the first frame (mouth closed) statically — a "camera" of the
+     * player listening. Placed TOP-LEFT: NPC portraits render shifted to the right of the canvas,
+     * so the left corner is clear, and the caption owns the bottom third.
+     */
+    initVideoCallOverlay() {
+        try {
+            const npcName = this.npc?.displayName || 'CONTACT';
+
+            // --- Status bar ---
+            const statusBar = document.createElement('div');
+            statusBar.className = 'person-chat-vc-statusbar';
+            statusBar.innerHTML = `
+                <span class="person-chat-vc-live"><span class="person-chat-vc-dot"></span>LIVE</span>
+                <span class="person-chat-vc-link">SECURE VIDEO LINK</span>
+                <span class="person-chat-vc-peer"></span>
+                <span class="person-chat-vc-timer" id="vc-timer">00:00</span>
+            `;
+            // Set the (scenario-authored) peer name via textContent so a displayName containing
+            // <, & or " can't break out of the markup.
+            statusBar.querySelector('.person-chat-vc-peer').textContent = npcName;
+            this.elements.root.appendChild(statusBar);
+            this.elements.vcStatusBar = statusBar;
+            this.elements.vcTimer = statusBar.querySelector('#vc-timer');
+
+            // --- Picture-in-picture self-view (player) ---
+            const pip = document.createElement('div');
+            pip.className = 'person-chat-pip';
+
+            const pipCanvasContainer = document.createElement('div');
+            pipCanvasContainer.className = 'person-chat-pip-canvas';
+
+            const pipLabel = document.createElement('div');
+            pipLabel.className = 'person-chat-pip-label';
+            pipLabel.textContent = 'YOU';
+
+            pip.appendChild(pipCanvasContainer);
+            pip.appendChild(pipLabel);
+            this.elements.root.appendChild(pip);
+            this.elements.pip = pip;
+
+            // Player self-view renderer. Build a player-shaped NPC object for the renderer so it
+            // resolves the player's talk sprite and stays static (frame 0) with the face centred.
+            const playerNpc = {
+                id: 'player',
+                displayName: this.playerData.displayName || 'You',
+                spriteSheet: this.playerData.spriteSheet || 'hacker',
+                spriteTalk: this.playerData.spriteTalk || null,
+                spriteConfig: this.playerData.spriteConfig || {}
+            };
+            this.pipRenderer = new PersonChatPortraits(
+                this.game,
+                playerNpc,
+                pipCanvasContainer,
+                null,                                  // no background in the PiP
+                { noShift: true, sizeToContainer: true } // centre the face; size to the small box
+            );
+            this.pipRenderer.init();
+
+            // --- Call timer ---
+            this.callStartTime = Date.now();
+            const tick = () => {
+                if (!this.elements.vcTimer) return;
+                const s = Math.floor((Date.now() - this.callStartTime) / 1000);
+                const mm = String(Math.floor(s / 60)).padStart(2, '0');
+                const ss = String(s % 60).padStart(2, '0');
+                this.elements.vcTimer.textContent = `${mm}:${ss}`;
+            };
+            tick();
+            this.callTimerInterval = setInterval(tick, 1000);
+
+            console.log('📹 Video-call overlay initialised');
+        } catch (error) {
+            console.error('❌ Error initializing video-call overlay:', error);
+        }
+    }
+
     /**
      * Display dialogue text with speaker
      * @param {string} text - Dialogue text to display
@@ -315,7 +407,14 @@ export default class PersonChatUI {
             if (!this.portraitRenderer || !character) {
                 return;
             }
-            
+
+            // Video-call mode: the player never takes over the main frame — they live in the PiP
+            // self-view. Keep the remote party (NPC) on-screen even while the player's line shows,
+            // which is how a real video call looks and avoids two copies of the player's avatar.
+            if (this.videoCall && (characterId === 'player' || character.id === 'player')) {
+                return;
+            }
+
             // Update sprite data for current speaker
             if (characterId === 'player' || character.id === 'player') {
                 // Create player object for portrait rendering
@@ -453,6 +552,25 @@ export default class PersonChatUI {
         }
     }
     
+    /**
+     * Tear down renderers, timers and listeners. Called from the minigame's cleanup() so the
+     * portrait renderers (including the video-call PiP) release their resize listeners / rAF loops.
+     */
+    destroy() {
+        if (this.callTimerInterval) {
+            clearInterval(this.callTimerInterval);
+            this.callTimerInterval = null;
+        }
+        if (this.pipRenderer) {
+            this.pipRenderer.destroy();
+            this.pipRenderer = null;
+        }
+        if (this.portraitRenderer) {
+            this.portraitRenderer.destroy();
+            this.portraitRenderer = null;
+        }
+    }
+
     /**
      * Show a notification message with auto-fade
      * @param {string} message - Message to display

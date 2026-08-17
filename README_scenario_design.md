@@ -50,6 +50,7 @@ The validator performs three phases:
    - **NPC knockout resilience** — required tasks whose only completion path is a KO-vulnerable conversation (a `#complete_task` ink tag on a person NPC) with no `taskOnKO` or `eventMapping` fallback
    - NPC `timedConversation` using `knot` instead of `targetKnot`
    - Phone NPC pitfalls (`targetKnot` in eventMappings, `conversationMode` on phone NPCs, etc.)
+   - **Voice FX** (`voice.fx`) — unknown preset names, unrecognised custom-FX keys, and out-of-range values (e.g. `ringMod.mix` outside 0–1)
    - Task `targetNPC`, `targetRoom`, `targetObject` cross-references
    - `collection_group` on items without a matching task `targetGroup`, and vice-versa
    - Music events referencing undefined NPCs or global variables
@@ -813,7 +814,7 @@ In-world characters with sprites that the player can walk up to and interact wit
 | `spriteTalk` | Portrait image for dialogue box. Optional — defaults to `assets/characters/{spriteSheet}_talk.png`, then `{spriteSheet}_headshot.png`. Only set it for off-convention filenames. |
 | `storyPath` | Path to compiled Ink `.json` story file |
 | `currentKnot` | Starting Ink knot (usually `"start"`) |
-| `voice` | TTS voice for dialogue and barks: `{ "name": "...", "style": "...", "language": "en-GB" }`. See Casting Voices below |
+| `voice` | TTS voice for dialogue and barks: `{ "name": "...", "style": "...", "language": "en-GB" }`. Optional `fx` subfield applies Web Audio distortion — see Casting Voices and Voice FX below |
 | `globalVarOnKO` | Global variable name to set `true` when NPC is knocked out |
 | `taskOnKO` | Task ID to complete when NPC is knocked out |
 | `itemsHeld` | Items dropped when NPC is knocked out (do NOT give items an `id` field here — use `type` only) |
@@ -831,6 +832,42 @@ In-world characters with sprites that the player can walk up to and interact wit
 - **Name the accent explicitly and say "consistent … throughout".** Without it the model drifts mid-line. "British" is not an instruction; "consistent Belfast accent throughout" is.
 - **Write the style as a character brief, not adjectives.** Role, age, what the night has done to them, and how they speak under pressure. `"Ward sister, twenty years on the wards. Consistent Belfast accent throughout. Exhausted, dry, unsentimental about everything except her patients. Never raises her voice."` gives the model far more to work with than `"tired nurse"`.
 - **Spread the accents.** A cast that is uniformly RP sounds like one institution's senior management, not a hospital at four in the morning. Mix regional British (Scouse, Brummie, Yorkshire, Belfast, Estuary, MLE) with international where the character's history supports it, and let a character's accent carry their biography rather than decorating it.
+
+#### Voice FX (distortion / filtering)
+
+An optional `voice.fx` field runs an NPC's TTS through a Web Audio effects chain (band-limiting, saturation, ring modulation) for disguised, radio, or robotic voices. It applies everywhere that NPC speaks — person-chat, the video-call view, phone-chat, and barks — so a character sounds consistent across every contact. Narrator and player lines are never affected (they play under different speaker ids).
+
+Set it to a **preset name** or a **custom object**:
+
+```json
+"voice": {
+  "name": "Iapetus",
+  "style": "Deliberately unplaceable, sanded-off accent. Unhurried and precise.",
+  "language": "en-GB",
+  "fx": "voice-distortion"
+}
+```
+
+Presets (defined in `TTSManager.VOICE_FX_PRESETS`, `public/break_escape/js/systems/tts-manager.js`):
+
+| Preset | Use for |
+|--------|---------|
+| `voice-distortion` | A disguised / obscured speaker — band-limited encrypted-comms voice with a light metallic edge, still intelligible. Used by Ghost in `m02_ransomed_trust`. |
+| `radio` | Clean radio / handset band with light grit, no ring mod. |
+| `robot` | Heavier robotic / vocoder-ish edge. |
+
+Custom object (every field optional; the chain is `highpass → lowpass → drive → ringMod → makeup`):
+
+```json
+"fx": { "highpass": 220, "lowpass": 3400, "drive": 6, "ringMod": { "frequency": 75, "mix": 0.10 }, "makeup": 1.6 }
+```
+
+- `highpass` / `lowpass` — band-limit the voice in Hz (a tight band = telephone/radio feel).
+- `drive` — waveshaper saturation (grit). ~0 clean, ~6 subtle, ~20 heavy.
+- `ringMod` — `{ frequency, mix }`. Metallic/masked edge; `mix` is 0–1 and is the most aggressive knob (lower it, or drop `ringMod`, to soften).
+- `makeup` — output gain to compensate for level lost to filtering/drive.
+
+Keep FX restrained on speaking characters — heavy distortion fights the voice acting and hurts intelligibility. The validator checks that a preset name is known and that a custom object's fields are the right type and in range. FX is inert when server TTS is unavailable (there is no audio to process).
 
 #### Knockout resilience — the mission must survive a KO of *any* NPC
 

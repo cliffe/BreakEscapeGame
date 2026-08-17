@@ -339,6 +339,150 @@
     }
 } */
 
+/* ===========================================================================
+   VIDEO CALL MODE
+   A framed "secure video link": inset border + scanlines, a top status bar
+   (LIVE dot / secure-link label / peer name / call timer) and a picture-in-
+   picture self-view of the player in the top-left corner.
+   =========================================================================== */
+
+/* Framed border + subtle inner glow around the whole call */
+.person-chat-root.video-call-mode {
+    box-shadow:
+        inset 0 0 0 3px #2b6f4e,           /* hard pixel frame */
+        inset 0 0 0 5px #0b1a12,
+        inset 0 0 60px rgba(0, 0, 0, 0.7);  /* vignette */
+}
+
+/* Faint scanline overlay for the CRT/video feel (kept very subtle, non-interactive) */
+.person-chat-root.video-call-mode::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    z-index: 15;
+    pointer-events: none;
+    background: repeating-linear-gradient(
+        to bottom,
+        rgba(0, 0, 0, 0) 0px,
+        rgba(0, 0, 0, 0) 2px,
+        rgba(0, 0, 0, 0.10) 3px
+    );
+}
+
+/* Top status bar */
+.person-chat-vc-statusbar {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 20;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    padding: 8px 16px;
+    background: linear-gradient(to bottom, rgba(0, 0, 0, 0.85), rgba(0, 0, 0, 0));
+    font-family: 'VT323', 'Press Start 2P', monospace;
+    font-size: 20px;
+    letter-spacing: 0.08em;
+    color: #cfeede;
+    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.9);
+}
+
+.person-chat-vc-live {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    color: #ff5a5a;
+    font-weight: bold;
+}
+
+.person-chat-vc-dot {
+    width: 10px;
+    height: 10px;
+    background: #ff3b3b;
+    border-radius: 50%;
+    box-shadow: 0 0 6px #ff3b3b;
+    animation: vcPulse 1.4s ease-in-out infinite;
+}
+
+@keyframes vcPulse {
+    0%, 100% { opacity: 1; }
+    50%      { opacity: 0.25; }
+}
+
+.person-chat-vc-link {
+    color: #6fd39c;
+}
+
+.person-chat-vc-peer {
+    color: #ffffff;
+    font-weight: bold;
+    text-transform: uppercase;
+}
+
+/* Timer pushed to the far right */
+.person-chat-vc-timer {
+    margin-left: auto;
+    color: #6fd39c;
+    font-variant-numeric: tabular-nums;
+}
+
+/* Picture-in-picture self-view (player), top-left so it clears the NPC (drawn right) + caption */
+.person-chat-pip {
+    position: absolute;
+    top: 44px;
+    left: 16px;
+    z-index: 20;
+    width: 176px;
+    height: 132px; /* 4:3 webcam feel */
+    background: #000;
+    border: 2px solid #2b6f4e;
+    box-shadow: 0 0 0 1px #000, 0 4px 12px rgba(0, 0, 0, 0.6);
+    overflow: hidden;
+}
+
+.person-chat-pip-canvas {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background: #000;
+}
+
+.person-chat-pip-canvas canvas {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    image-rendering: pixelated;
+    image-rendering: crisp-edges;
+}
+
+.person-chat-pip-label {
+    position: absolute;
+    bottom: 2px;
+    right: 4px;
+    z-index: 21;
+    font-family: 'VT323', 'Press Start 2P', monospace;
+    font-size: 14px;
+    letter-spacing: 0.1em;
+    color: #ff9a4a;
+    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.95);
+}
+
+/* On small screens keep the PiP from crowding the portrait */
+@media (max-width: 768px) {
+    .person-chat-pip {
+        width: 120px;
+        height: 90px;
+    }
+    .person-chat-vc-statusbar {
+        font-size: 16px;
+        gap: 10px;
+    }
+}
+
 /* Animations */
 @keyframes fadeIn {
     from {

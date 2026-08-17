@@ -213,8 +213,13 @@ export default class PhoneChatUI {
 
         // --- Try server TTS first (only if NPC has a voice config) ---
         const npcId = this.currentNPCId;
-        const npcHasVoice = npcId && !!this.npcManager.getNPC(npcId)?.voice;
+        const npcData = npcId && this.npcManager.getNPC(npcId);
+        const npcHasVoice = !!npcData?.voice;
         if (npcHasVoice) {
+            // Apply this NPC's voice FX (e.g. Ghost's masked comms) so phone contacts match the video call.
+            if (npcData.voice.fx) {
+                this.ttsManager.setVoiceFX(npcId, npcData.voice.fx);
+            }
             try {
                 this.isPlaying = true;
                 this.currentPlayButton = playButton;
