@@ -2415,34 +2415,43 @@ export function createRoom(roomId, roomData, position) {
                     sprite.objectId = `${roomId}_${imageName}_${obj.id}`;
                     sprite.setInteractive({ useHandCursor: true });
                     
-                    // Check if this is a chair with wheels
-                    if (imageName.startsWith('chair-') && !imageName.startsWith('chair-waiting')) {
+                    // Check if this is a wheeled, spinnable prop.
+                    // Swivel props are named "<base>-rotate<N>" with 8 rotation frames
+                    // (chairs). The static crash cart (crash_cart1) is treated as a
+                    // swivel prop too — it swaps to the 8-direction cart sheet at runtime,
+                    // so every existing crash_cart1 placement rolls and spins like a chair.
+                    const rotateMatch = imageName.match(/^(.*)-rotate(\d+)$/);
+                    const isCrashCart = imageName === 'crash_cart1';
+                    if ((imageName.startsWith('chair-') && !imageName.startsWith('chair-waiting')) || rotateMatch || isCrashCart) {
                         sprite.hasWheels = true;
-                        
-                        // Check if this is a swivel chair
-                        if (imageName.startsWith('chair-exec-rotate') || 
-                            imageName.startsWith('chair-white-1-rotate') || 
-                            imageName.startsWith('chair-white-2-rotate')) {
+
+                        // Check if this is a swivel prop (rotating chair or crash cart)
+                        if (rotateMatch || isCrashCart) {
                             sprite.isSwivelChair = true;
-                            
-                            // Determine starting frame based on image name
-                            let frameNumber;
-                            if (imageName.startsWith('chair-exec-rotate')) {
-                                frameNumber = parseInt(imageName.replace('chair-exec-rotate', ''));
-                            } else if (imageName.startsWith('chair-white-1-rotate')) {
-                                frameNumber = parseInt(imageName.replace('chair-white-1-rotate', ''));
-                            } else if (imageName.startsWith('chair-white-2-rotate')) {
-                                frameNumber = parseInt(imageName.replace('chair-white-2-rotate', ''));
+
+                            // Determine the rotation base and starting frame
+                            let base, frameNumber;
+                            if (isCrashCart) {
+                                base = 'crash-cart-rotate';
+                                frameNumber = 1;
+                            } else {
+                                base = `${rotateMatch[1]}-rotate`;
+                                frameNumber = parseInt(rotateMatch[2]);
                             }
-                            
+
                             sprite.currentFrame = frameNumber - 1; // Convert to 0-based index
                             sprite.rotationSpeed = 0;
                             sprite.maxRotationSpeed = 0.15; // Slower maximum rotation speed
-                            sprite.originalTexture = imageName; // Store original texture name
+                            sprite.originalTexture = `${base}${frameNumber}`; // Rotation texture name
                             sprite.spinDirection = 0; // -1 for counter-clockwise, 1 for clockwise, 0 for no spin
-                            
+
+                            // Swap the static crash cart to its rotation sheet so its
+                            // dimensions (used for elevation + collision box below) match.
+                            if (isCrashCart && gameRef.textures.exists(sprite.originalTexture)) {
+                                sprite.setTexture(sprite.originalTexture);
+                            }
                         }
-                        
+
                         // Calculate elevation for chairs (same as other objects)
                         const roomTopY = position.y;
                         const backWallThreshold = roomTopY + (2 * 32); // Back wall is top 2 tiles

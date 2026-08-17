@@ -304,21 +304,16 @@ export function updateSwivelChairRotation() {
                 chair.currentFrame = 7; // Loop back to last frame (for counter-clockwise)
             }
             
-            // Set the texture based on current frame and chair type
+            // Set the texture based on current frame and prop type
             const frameIndex = Math.floor(chair.currentFrame) + 1; // Convert to 1-based index
-            let newTexture;
-            
-            // Determine texture prefix based on original texture
-            if (chair.originalTexture && chair.originalTexture.startsWith('chair-exec-rotate')) {
-                newTexture = `chair-exec-rotate${frameIndex}`;
-            } else if (chair.originalTexture && chair.originalTexture.startsWith('chair-white-1-rotate')) {
-                newTexture = `chair-white-1-rotate${frameIndex}`;
-            } else if (chair.originalTexture && chair.originalTexture.startsWith('chair-white-2-rotate')) {
-                newTexture = `chair-white-2-rotate${frameIndex}`;
-            } else {
-                // Fallback to exec chair if original texture is unknown
-                newTexture = `chair-exec-rotate${frameIndex}`;
-            }
+
+            // Derive the rotation base by stripping the trailing frame number from the
+            // original texture (e.g. "crash-cart-rotate1" -> "crash-cart-rotate"). This
+            // works for every "<base>-rotate<N>" prop: exec/white chairs, crash cart, etc.
+            const base = chair.originalTexture
+                ? chair.originalTexture.replace(/\d+$/, '')
+                : 'chair-exec-rotate';
+            const newTexture = `${base}${frameIndex}`;
             
             // Check if texture exists before setting
             if (game.textures.exists(newTexture)) {

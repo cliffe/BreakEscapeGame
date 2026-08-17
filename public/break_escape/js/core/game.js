@@ -170,6 +170,16 @@ export function preload() {
     this.load.image('hospital_chair_south', 'objects/hospital_chair_south.png');
     this.load.image('crash_cart1', 'objects/crash_cart1.png');
     this.load.image('crash_cart2', 'objects/crash_cart2.png');
+    // 8-direction crash cart rotation frames — crash_cart1 swaps to these at runtime so it
+    // rolls and spins like a swivel chair (see rooms.js / object-physics.js swivel handling).
+    this.load.image('crash-cart-rotate1', 'objects/crash-cart-rotate1.png');
+    this.load.image('crash-cart-rotate2', 'objects/crash-cart-rotate2.png');
+    this.load.image('crash-cart-rotate3', 'objects/crash-cart-rotate3.png');
+    this.load.image('crash-cart-rotate4', 'objects/crash-cart-rotate4.png');
+    this.load.image('crash-cart-rotate5', 'objects/crash-cart-rotate5.png');
+    this.load.image('crash-cart-rotate6', 'objects/crash-cart-rotate6.png');
+    this.load.image('crash-cart-rotate7', 'objects/crash-cart-rotate7.png');
+    this.load.image('crash-cart-rotate8', 'objects/crash-cart-rotate8.png');
     this.load.image('sanitizer_stand1', 'objects/sanitizer_stand1.png');
     this.load.image('sanitizer_stand2', 'objects/sanitizer_stand2.png');
     this.load.image('hospital_chart_board1', 'objects/hospital_chart_board1.png');
