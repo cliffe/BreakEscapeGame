@@ -54,6 +54,7 @@ import copy
 import json
 import os
 import subprocess
+import sys
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -244,6 +245,25 @@ def room6_floor(width: int, height: int) -> list[int]:
     ]
 
 
+def room6_hall_floor(width: int, height: int) -> list[int]:
+    """
+    room6 fill for a shallow through-corridor (e.g. a 2×1-GU hallway).
+
+    A full room is tall enough that its last tile row lands on room6's own
+    bottom row (the south-wall band). A hallway is only a few rows deep, so a
+    naive top-to-bottom fill would leave a plain floor row along the south edge
+    with no wall. Here the top rows keep room6's back-wall band and the bottom
+    row is pinned to room6's south-wall row (the bottom of the source sheet);
+    the collision walls layer carries the matching office south wall (91–100).
+    """
+    src_rows = list(range(height - 1)) + [ROOM6_SHEET_COLS - 1]  # last = room6 bottom row
+    return [
+        ROOM6_FIRSTGID + r * ROOM6_SHEET_COLS + x
+        for r in src_rows
+        for x in range(width)
+    ]
+
+
 def place_ward_posters(items: list, oid: int, placements: list[tuple[str, float, float]]) -> int:
     """Hang medical chart posters (same assets as room_hospital_ward) on the back wall."""
     for name, x, y in placements:
@@ -262,10 +282,16 @@ def build_room(
     conditional_items: list[dict],
     conditional_table_items: list[dict],
     use_room6: bool = False,
+    room_override: list[int] | None = None,
 ) -> dict:
     tmpl = TEMPLATES[template_key]
     w, h = tmpl["width"], tmpl["height"]
-    room_data = room6_floor(w, h) if use_room6 else list(tmpl["room"])
+    if room_override is not None:
+        room_data = list(room_override)
+    elif use_room6:
+        room_data = room6_floor(w, h)
+    else:
+        room_data = list(tmpl["room"])
 
     layers = [
         tile_layer("walls", 10, w, h, list(tmpl["walls"])),
@@ -1349,16 +1375,104 @@ def room_hospital_servers():
     )
 
 
+def room_hospital_hall():
+    """
+    2×1 GU (10×6) hospital corridor on room6 tiles — a shallow through-hallway.
+
+    Unlike the full-size hospital rooms, a corridor has no room to its south to
+    cover its bottom edge, so the south wall must be baked in: the room layer's
+    bottom row uses room6's south-wall band (via room6_hall_floor) and the walls
+    collision layer carries the office south wall (91–100, from the template).
+    Kept deliberately sparse — chart boards on the back wall, sanitizer stands,
+    a crash cart, floor plants — so the walkway stays clear.
+    """
+    oid = 1
+
+    tables: list[dict] = []
+    table_items: list[dict] = []
+    conditional_table_items: list[dict] = []
+
+    items = []
+    # Back-wall chart boards + posters (wall hangings; clear of NW/NE door corners)
+    items.append(make_obj("objects", "hospital_chart_board1", 110.0, 46.0, oid))
+    oid += 1
+    items.append(make_obj("objects", "hospital_chart_board2", 170.0, 46.0, oid))
+    oid += 1
+    oid = place_ward_posters(
+        items,
+        oid,
+        [
+            ("chart2", 82.0, 42.0),
+            ("chart", 210.0, 44.0),
+            ("chart2", 238.0, 42.0),
+        ],
+    )
+
+    # Sanitizer stands + bin (aesthetic props — fine near the south wall)
+    items.append(make_obj("objects", "sanitizer_stand1", 70.0, 122.0, oid))
+    oid += 1
+    items.append(make_obj("objects", "sanitizer_stand2", 250.0, 122.0, oid))
+    oid += 1
+    items.append(make_obj("objects", "bin2", 150.0, 120.0, oid))
+    oid += 1
+
+    # Crash cart parked along the corridor (feet above the bottom 2 rows: y < 128)
+    items.append(make_obj("objects", "crash_cart1", 128.0, 124.0, oid))
+    oid += 1
+
+    # Floor plants — pair on opposite ends (aesthetic; bottom rows OK)
+    items.append(make_obj("objects", "plant-large11-top-ani1", 44.0, 150.0, oid))
+    oid += 1
+    items.append(make_obj("objects", "plant-large12-top-ani3", 268.0, 150.0, oid))
+    oid += 1
+
+    conditional_items = []
+    # Notes slot on the back wall (a posted corridor notice / directory) — gives
+    # scenario notes objects a wall anchor instead of a fallback position.
+    conditional_items.append(make_obj("objects", "notes5", 145.0, 55.0, oid))
+    oid += 1
+    for name, x, y in [
+        ("fingerprint-brush-red", 150.0, 100.0),
+        ("bag14", 90.0, 116.0),
+        ("briefcase8", 214.0, 118.0),
+    ]:
+        conditional_items.append(make_obj("objects", name, x, y, oid))
+        oid += 1
+
+    return build_room(
+        name="room_hospital_hall",
+        template_key="10x6_hall",
+        tables=tables,
+        items=items,
+        table_items=table_items,
+        conditional_items=conditional_items,
+        conditional_table_items=conditional_table_items,
+        room_override=room6_hall_floor(10, 6),
+    )
+
+
 def main():
     # Hand-maintained (do not regenerate — edit .tmj in Tiled, then export JSON):
     #   room_hospital_office, room_hospital_cto_office, room_hospital_meeting
-    rooms = {
+    builders = {
         "small_office_room4_1x1gu": room_small_office_4,
         "room_security": room_security,
         "room_lab": room_lab,
         "room_hospital_reception": room_hospital_reception,
         "room_hospital_servers": room_hospital_servers,
+        "room_hospital_hall": room_hospital_hall,
     }
+    # Optionally restrict to specific rooms (argv) so already-updated rooms are
+    # not clobbered, e.g.  python3 scripts/generate_rooms.py room_hospital_hall
+    requested = sys.argv[1:]
+    if requested:
+        unknown = [r for r in requested if r not in builders]
+        if unknown:
+            raise SystemExit(f"Unknown room(s): {unknown}. Known: {list(builders)}")
+        rooms = {k: builders[k] for k in requested}
+    else:
+        rooms = builders
+
     for stem, builder in rooms.items():
         print(f"\nGenerating {stem}...")
         room = builder()

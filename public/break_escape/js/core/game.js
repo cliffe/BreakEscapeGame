@@ -81,6 +81,7 @@ export function preload() {
     this.load.tilemapTiledJSON('room_hospital_reception', 'rooms/room_hospital_reception.json'); // Hospital reception (room6)
     this.load.tilemapTiledJSON('room_hospital_meeting', 'rooms/room_hospital_meeting.json'); // Hospital conference room (room6)
     this.load.tilemapTiledJSON('room_hospital_servers', 'rooms/room_hospital_servers.json'); // Hospital server room (room6)
+    this.load.tilemapTiledJSON('room_hospital_hall', 'rooms/room_hospital_hall.json'); // Hospital corridor (room6, 2x1 GU, baked-in south wall)
 
     // Load room images (now using smaller 32px scale images)
     this.load.image('room_reception', 'tiles/rooms/room1.png');
