@@ -35,6 +35,13 @@ VAR insider_method_confirmed = false
 VAR guard_knocked_out = false
 VAR attacked_guard = false
 
+// Friendly-NPC knockouts -- set by globalVarOnKO. The debrief must own these
+// out loud rather than narrate the people as though they were never touched.
+VAR receptionist_ko = false
+VAR gary_ko = false
+VAR dr_kim_ko = false
+VAR ward_nurse_ko = false
+
 // Local
 VAR asked_about_the_call = false
 
@@ -632,6 +639,11 @@ Agent HaX: One last section, and then I'll let you go. The people.
     Agent HaX: The trust's opened a disciplinary about it. I have written to them. At some length.
 }
 
+{receptionist_ko:
+    Agent HaX: Bernadette Nwosu, night reception. You put her out cold behind her own desk and lifted the override key off her belt. Sixty-one, thirty years on that desk, never a mark on her.
+    Agent HaX: She's fine. She never saw who did it. That is not the same as it not having happened.
+}
+
 {cover_burned and not cover_restored:
     Agent HaX: Nobody vouched for you. You finished that job as an unidentified man in a hospital corridor, which is a thing I would rather you never had to do twice.
 }
@@ -645,6 +657,18 @@ Agent HaX: One last section, and then I'll let you go. The people.
         Agent HaX: Val Okonkwo on security had Reeves in her notebook for eight weeks and was told twice to leave it. Her contemporaneous log is now the spine of the case against him.
         Agent HaX: She has asked, through her union, that the record show she raised it. It will.
     }
+}
+
+{ward_nurse_ko:
+    Agent HaX: Sister Doyle, ward sister. You dropped her mid-shift -- forty-seven patients on backup power, and the one qualified pair of hands on the floor, on the floor. It held. It was not owed to you that it did.
+}
+
+{dr_kim_ko:
+    Agent HaX: And Dr. Kim. Whatever she signed off or looked away from, you knocked her senseless in her own office to take what you needed. She came round, she cooperated, she never named you. File that wherever you keep the things you'd rather not have done.
+}
+
+{gary_ko:
+    Agent HaX: Gary Whitlock came round in an ambulance with a keycard gone and a fair idea of who took it. The man who'd been right about everything for two years -- and the night's answer was to put him down and step over him. He knows. He hasn't said. That is a debt, not an acquittal.
 }
 
 {gary_protected:

@@ -33,7 +33,7 @@ These VMs are provisioned by the Break Escape game engine via SecGen integration
 - Network Protocols and Vulnerability
 - Penetration Testing Tools and Techniques
   </description>
-  <lab_sheet_url>https://cliffe.github.io/HacktivityLabSheets/labs/m01_first_contact/safetynet-field-guide-ssh-access-and-linux-basics/</lab_sheet_url>
+  <lab_sheet_url>https://cliffe.github.io/HacktivityLabSheets/labs/safetynet/ssh-access-and-linux-basics/</lab_sheet_url>
   <type>ctf-lab</type>
   <type>lab-sheet</type>
   <difficulty>easy</difficulty>

@@ -27,12 +27,12 @@ This folder contains source markdown for optional in-game field guides delivered
 
 ## Mirror Publishing (HacktivityLabSheets)
 Each guide is mirrored to hidden game-fragment pages:
-- `/_labs/m02_ransomed_trust/safetynet-field-guide-lockpicking.md`
-- `/_labs/m02_ransomed_trust/safetynet-field-guide-ssh-access-and-bruteforce.md`
-- `/_labs/m02_ransomed_trust/safetynet-field-guide-privilege-escalation.md`
-- `/_labs/m02_ransomed_trust/safetynet-field-guide-reconnaissance-and-network-mapping.md`
-- `/_labs/m02_ransomed_trust/safetynet-field-guide-vulnerability-analysis-and-attack-surface.md`
-- `/_labs/m02_ransomed_trust/safetynet-field-guide-proftpd-exploitation-workflow.md`
+- `/_labs/safetynet/lockpicking.md`
+- `/_labs/safetynet/ssh-access-and-bruteforce.md`
+- `/_labs/safetynet/privilege-escalation.md`
+- `/_labs/safetynet/reconnaissance-and-network-mapping.md`
+- `/_labs/safetynet/vulnerability-analysis-and-attack-surface.md`
+- `/_labs/safetynet/proftpd-exploitation-workflow.md`
 
 These pages must include:
 - `game_fragment: true`
