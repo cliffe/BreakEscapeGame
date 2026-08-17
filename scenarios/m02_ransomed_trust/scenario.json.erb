@@ -35,7 +35,7 @@
 # NEW MECHANICS (over m01):
 # - Cover-burn state change mid-mission (guard behaviour + dialogue both branch)
 # - Social-engineering gate with multiple redundant routes (no soft-locks)
-# - PIN safe cracking (4-digit puzzle) + pin-cracker fallback device
+# - PIN safe cracking (4-digit puzzle) + ENTROPY keypad oracle (Mastermind-style info-leak), lockpick-gated in a sealed case
 # - Flag-locked container (VM progress unlocks physical loot)
 # - Moral dilemma interface (ransom decision)
 # - Ransomware display minigame (infected terminals)
@@ -659,6 +659,14 @@ boardroom_pin = "0417"
               "takeable": true,
               "labUrl": "https://cliffe.github.io/HacktivityLabSheets/labs/m02_ransomed_trust/safetynet-field-guide-privilege-escalation/",
               "observations": "Enumerating sudo rights and moving into the user or root context that can reach restricted files"
+            },
+            {
+              "type": "lab-workstation",
+              "key_id": "m02_infoleak_field_note",
+              "name": "SAFETYNET Field Note: Information Leakage & the PIN Oracle",
+              "takeable": true,
+              "labUrl": "https://cliffe.github.io/HacktivityLabSheets/labs/m02_ransomed_trust/safetynet-field-note-information-leakage-and-the-pin-oracle/",
+              "observations": "How a device that leaks 'how close you got' turns a blind four-digit lock into a handful of deductions -- the Mastermind oracle, and why partial-feedback side channels break secrets far weaker than they look"
             }
           ],
           "timedMessages": [
@@ -874,6 +882,13 @@ boardroom_pin = "0417"
               "onceOnly": true,
               "setGlobal": { "offline_keys_recovered": true },
               "sendTimedMessage": { "delay": 1000, "message": "The offline backup encryption keys. Those are your alternative to paying the ransom. Now get to the recovery console in the server room -- that's the last step." }
+            },
+            {
+              "eventPattern": "global_variable_changed:pin_cracker_found",
+              "condition": "value === true",
+              "onceOnly": true,
+              "setGlobal": { "infoleak_note_offered": true },
+              "sendTimedMessage": { "delay": 2000, "message": "Hold on -- what you just pulled out of that case is one of theirs. An ENTROPY keypad oracle. It doesn't guess the safe code, it leaks it: every wrong try, it tells you how many digits are right and how many are simply present, and that feedback walks you straight in. Textbook information-leak attack -- it's the board game Mastermind wearing a hardware badge. Want the field note on how the oracle works? Say the word and it's on your terminal." }
             },
             {
               "eventPattern": "global_variable_changed:ransom_decision_made",
@@ -1707,13 +1722,45 @@ boardroom_pin = "0417"
           ]
         },
         {
-          "type": "pin-cracker",
-          "name": "PIN Cracker",
-          "takeable": true,
-          "observations": "SAFETYNET-issue keypad brute-forcer, left in the kit box on the shelf. Four digits is ten thousand combinations and it walks them in about two minutes. Slower than knowing the code, and it will not help you on any other lock in this building -- but it will open this one.",
-          "puzzle_graph_role": "tool",
-          "puzzle_graph_unlocks": "emergency_storage_safe",
-          "puzzle_graph_optional": true
+          "type": "safe",
+          "id": "entropy_field_case",
+          "name": "Sealed Equipment Case",
+          "takeable": false,
+          "locked": true,
+          "lockType": "key",
+          "keyPins": [55, 30, 60, 40],
+          "difficulty": "medium",
+          "observations": "A hard-shell case wedged in behind the medical shelves. Matte black, no hospital asset sticker, no dust on it -- it has been here days, not years. The latch is a cheap four-pin tumbler, and there is no key for it on any hook in this building. If you want inside, you pick it.",
+          "puzzle_graph_role": "lock",
+          "puzzle_graph_aim": "recover_offline_keys",
+          "puzzle_graph_optional": true,
+          "contents": [
+            {
+              "type": "pin-cracker",
+              "id": "pin_cracker",
+              "name": "PIN Cracker",
+              "takeable": true,
+              "observations": "Not SAFETYNET kit -- the matte casing is ENTROPY's, the same moulding as the network bridge someone planted in IT. It clamps over a four-digit keypad and turns the lock against itself: every wrong code you try, it reads the response and tells you how many digits were right in place, and how many were right but in the wrong slot. That leak alone collapses ten thousand combinations down to a handful of guesses. Mastermind, in silicon. Whoever stashed it was here to reach the offline keys before you were -- so turn their own tool on their own safe.",
+              "onPickup": { "setVariable": { "pin_cracker_found": true } },
+              "puzzle_graph_role": "tool",
+              "puzzle_graph_unlocks": "emergency_storage_safe",
+              "puzzle_graph_optional": true
+            },
+            {
+              "type": "notes",
+              "id": "entropy_asset_tag",
+              "name": "ENTROPY Asset Tag",
+              "takeable": true,
+              "readable": true,
+              "text": "ENTROPY // FIELD ASSET  R-4\n  keypad oracle, gen-3\n  battery 61%  |  cycles logged: 0\n\n  RETURN TO HANDLER AFTER USE.\n  Do not leave on site.\n\n  tasked: EMERG-STORE strongbox\n  objective: offline key custody --\n  recover or deny before restore window\n",
+              "observations": "A property tag zip-tied to the cracker. Someone on ENTROPY's payroll signed this device out, was told to bring it back, and was sent to this exact safe -- to take the offline keys, or make sure nobody else could. They got physically inside the building to do it. That is your inside asset, and this is them.",
+              "observationDisplay": "gameDisplay",
+              "onRead": { "setVariable": { "insider_evidence_partial": true } },
+              "puzzle_graph_role": "clue",
+              "puzzle_graph_aim": "unmask_inside_asset",
+              "puzzle_graph_reveals": "entropy_affiliate_was_physically_on_site_targeting_the_offline_keys"
+            }
+          ]
         },
         {
           "type": "notes",
@@ -2314,6 +2361,9 @@ boardroom_pin = "0417"
     "exploitation_guide_requested": false,
     "scanning_exploitation_guide_offered": false,
     "scanning_exploitation_guide_requested": false,
+    "pin_cracker_found": false,
+    "infoleak_note_offered": false,
+    "infoleak_note_requested": false,
 
     "ghost_contacted_player": false,
     "ghost_persuasion_attempted": false,

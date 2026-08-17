@@ -19,6 +19,7 @@ VAR scanning_guide_hint_given = false
 VAR vulnerability_guide_hint_given = false
 VAR exploitation_guide_hint_given = false
 VAR scanning_exploitation_guide_hint_given = false
+VAR infoleak_note_hint_given = false
 VAR ghost_reaction_discussed = false
 VAR ghost_deal_discussed = false
 VAR board_email_discussed = false
@@ -39,6 +40,7 @@ VAR scanning_guide_offered = false
 VAR vulnerability_guide_offered = false
 VAR exploitation_guide_offered = false
 VAR scanning_exploitation_guide_offered = false
+VAR infoleak_note_offered = false
 VAR board_coverup_email_found = false
 VAR ransom_decision_made = false
 VAR ghost_deal_accepted = false
@@ -162,6 +164,10 @@ Agent HaX: Front desk first -- get yourself into their paper log, because the el
 // Optional field guide: privilege escalation
 + {privesc_guide_offered and not privesc_guide_hint_given} [Can you send me the privilege escalation field guide?]
     -> request_privesc_guide
+
+// Optional field note: information leakage / PIN oracle (offered on finding the ENTROPY cracker)
++ {infoleak_note_offered and not infoleak_note_hint_given} [Can you send me the information-leak field note?]
+    -> request_infoleak_note
 
 // Encoding/decoding (useful throughout VM phase)
 + {flag_ssh_submitted and not hint_encoding_given} [I need help with encoding and decoding.]
@@ -458,6 +464,22 @@ Agent HaX: Enumerate with sudo -l first, then take the smallest step that reache
     Agent HaX: Least intrusive path that works. Don't kick down doors you can walk through.
     -> support_hub
 
+=== request_infoleak_note ===
+#speaker:agent_0x99
+~ infoleak_note_hint_given = true
+#set_variable:infoleak_note_requested:true
+#give_item:lab-workstation:m02_infoleak_field_note
+
+Agent HaX: Field note's on your terminal.
+
+Agent HaX: Clamp the cracker on and read the lights. Greens are the right digit in the right slot; ambers are the right digit in the wrong slot. Each guess you make, the pattern of lights rules out combinations -- four or five rows and the code has nowhere left to hide.
+
+Agent HaX: And take the lesson wider than one safe. Any system that tells an attacker how close they got is leaking. Build them so a wrong answer says nothing but "wrong".
+
++ [Received]
+    Agent HaX: Their tool, their safe, their keys. I do enjoy the symmetry. Go.
+    -> support_hub
+
 === request_scanning_guide ===
 #speaker:agent_0x99
 ~ scanning_guide_hint_given = true
@@ -549,7 +571,7 @@ Agent HaX: The answer's somewhere in the building. Check plaques, framed documen
     -> support_hub
 
 + [What if I can't find the PIN?]
-    Agent HaX: There should be a PIN cracker device in the storage room itself. Two minutes, covers all combinations. Last resort.
+    Agent HaX: Then you go in the noisy way. There's a sealed case in that storage room -- not hospital kit, no key for it in the building. Pick the latch; your picks will do it. Whoever left it there wanted that safe as badly as you do.
     -> support_hub
 
 + [Got it]
