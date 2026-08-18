@@ -79,9 +79,9 @@ AI researcher creating synthetic media, philosopher of post-truth reality.
 Former NSA analyst, weaponizing surveillance against itself.
 [See: big_brother.md](./big_brother.md)
 
-### **7. Crypto Locker** — Ransomware Incorporated
-Ransomware developer treating extortion as "business service."
-[See: crypto_locker.md](./crypto_locker.md)
+### **7. Ghost** — Ransomware Incorporated
+Current cell leader; ran Operation Resilience against St. Catherine's (m02). Cold, business-framed extortion escalated into accepting patient casualties as the "lesson." Succeeded founding leader Cipher King (Marcus Chen).
+[See: ransomware_incorporated.md](../../../03_entropy_cells/ransomware_incorporated.md)
 
 ### **8. Trojan Horse** — Supply Chain Saboteurs
 Supply chain security expert turned saboteur.
@@ -511,7 +511,7 @@ Each leader has memorable lines:
 
 **0day:** "Zero-day vulnerabilities are like secrets—only valuable until everyone knows."
 
-**Crypto Locker:** "We provide a service: teaching organizations to take backups seriously. The tuition is steep."
+**Ghost:** "We provide a service: teaching organizations to take backups seriously. The tuition is steep."
 
 ---
 

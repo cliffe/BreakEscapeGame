@@ -9,6 +9,11 @@
 
 ---
 
+> **⚠️ SAFETYNET ANALYST ANNOTATION — 2026 threat reassessment.**
+> The "Bypass Lists — Critical Infrastructure Protection" section below calls the hospital / emergency-services no-touch list "sacred" and "non-negotiable" — "If we cause deaths, we're terrorists, not demonstrators." That constraint has since been broken deliberately: Operation Resilience (Ransomware Incorporated, m02) targeted a hospital with patients on life support. The bypass list documents the founding ideal, not current rules of engagement. See `story_design/universe_bible/02_organisations/entropy/philosophy.md` §Propaganda vs. Operational Reality.
+
+---
+
 ## Executive Summary
 
 **Equilibrium.dll** is a Windows DLL side-loading backdoor designed for deployment on Industrial Control Systems (ICS) and SCADA environments controlling electrical grid operations.

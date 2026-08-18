@@ -8,6 +8,11 @@
 
 ---
 
+> **⚠️ SAFETYNET ANALYST ANNOTATION — 2026 threat reassessment.**
+> Note the contradiction the campaign turns on. This directive lists "ZERO human casualties" and "NO compromise of life safety systems" as MANDATORY limits (**Violation = Cell Dissolution**), and files healthcare records under Tier 2 with "ethical limits: no patient harm." Yet Operation Resilience (Ransomware Incorporated, m02 — Nov 2024, *before* this directive) had already attacked a life-support ward with projected fatalities under the Architect's own authorisation. Treat the "mandatory limits" as a fiction the Architect keeps in writing while approving lethal operations — the propaganda constraint, not the real rules of engagement. See `story_design/universe_bible/02_organisations/entropy/philosophy.md` §Propaganda vs. Operational Reality.
+
+---
+
 ```
 [ENCRYPTED COMMUNICATION - MAXIMUM SECURITY]
 [Encryption: AES-256-GCM + RSA-4096 hybrid]

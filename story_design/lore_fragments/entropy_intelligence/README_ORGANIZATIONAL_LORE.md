@@ -9,6 +9,11 @@ This collection contains internal ENTROPY documents that reveal the organization
 
 ---
 
+> **⚠️ 2026 THREAT REASSESSMENT — read before using these fragments.**
+> These fragments were written to present ENTROPY as *principled antagonists* with an absolute zero-casualty constraint. That framing is now the organisation's **founding ideology and public cover, not its current practice.** The campaign escalates: senior operations plan for and accept mass casualties with the Architect's sign-off — Operation Shatter (Social Fabric, m01) and Operation Resilience (Ransomware Incorporated, m02). When you use these documents, treat the zero-casualty / reversible-damage / "we are not terrorists" material as *authentic but superseded* — the ideal ENTROPY still sells recruits, which the missions then break. Canonical statement of the shift: `story_design/universe_bible/02_organisations/entropy/philosophy.md` §Propaganda vs. Operational Reality and `overview.md` §Threat Reassessment.
+
+---
+
 ## Fragment Categories
 
 ### 1. Training Materials (2 fragments)
@@ -164,7 +169,7 @@ This collection contains internal ENTROPY documents that reveal the organization
 - The Architect: Central figure, consistent philosophy
 - Phase 3 date: July 15, 2025 (consistent)
 - Asset payment ranges: $25K-$75K (consistent)
-- Zero casualty constraint (absolute, mentioned in all operational docs)
+- Zero casualty constraint (stated as absolute across the *founding-era* operational docs — since abandoned in practice; see 2026 Threat Reassessment above)
 
 ### External Connections
 
@@ -282,9 +287,9 @@ This collection contains internal ENTROPY documents that reveal the organization
 - Late game: Strategic planning, ideology (understand philosophy)
 
 **Moral Complexity:**
-- Present ENTROPY as principled antagonists, not mustache-twirling villains
-- Show constraints and ethics (zero casualties, reversible damage)
-- Let players debate: Are they completely wrong? Partially right?
+- Present ENTROPY as principled antagonists, not mustache-twirling villains — *at recruit and low-level-asset level.* This is where doubt, coercion and "there but for grace" belong.
+- Show the founding constraints and ethics (zero casualties, reversible damage) — then show operations and leadership breaking them. The gap between the rhetoric and the body count is the point.
+- Let players debate the ideas, but not negotiate with the operators — at the sharp end these are classic villains who have read philosophy (see 2026 Threat Reassessment).
 
 **Mission Integration:**
 - Phase 3 timeline creates urgency (July 15, 2025 deadline)

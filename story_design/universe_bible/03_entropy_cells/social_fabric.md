@@ -12,6 +12,8 @@
 **Estimated Size:** 50-70 operatives (content creators, bot operators, influencers, psychologists)
 **Threat Level:** High (Social Cohesion Threat, Democratic Integrity Risk)
 
+> **Canon note (m01 — First Contact).** This is the cell the player takes down in Mission 1, operating out of the **Viral Dynamics Media** cover company. The operative the player confronts is **Derek Lawson** (see Key Members) — cover job "Senior Marketing Manager," real role the cell's operations lead for **Operation Shatter**, answering to The Architect. m01 establishes Derek as the on-the-ground head of that operation, not a company officer; it does not name a separate Social Fabric cell leader above him, so treat the older specialist profiles below (Deepfake and the rest) as the cell's bench rather than its confirmed chain of command.
+
 ## Operational Model
 
 **Controlled Corporation:** Viral Dynamics Media is a legitimate-appearing social media marketing agency that creates actual marketing campaigns for real clients while conducting influence operations for ENTROPY.
@@ -22,7 +24,12 @@
 
 ## Key Members
 
-### **"Deepfake"** (Cell Leader)
+### **Derek Lawson** (Operations Lead — m01 antagonist)
+- **Cover / role:** Planted inside Viral Dynamics Media under the name Derek Lawson, cover job "Senior Marketing Manager." His real function was the cell's operations lead for Operation Shatter: he built the target lists, wrote the fake messages, and coordinated with Zero Day Syndicate. A mid-level cover, not a company officer. A former manager, Patricia Wells, investigated his after-hours server access and was fired for "performance issues" to protect him.
+- **Canon (m01 — First Contact).** The antagonist the player confronts. Planned **Operation Shatter**, a coordinated disinformation attack engineered to trigger mass panic, with pre-calculated casualty projections of 42–85 deaths in the first 24 hours, which he defended as "optimization — sixty deaths to save millions." Held a remote launch device for it. Cold and unrepentant under confrontation; named **The Architect** as the influence who "opened his eyes," while insisting he chose the path himself. A true believer, not a mercenary. Neutralised by the player at Viral Dynamics.
+- **Personality:** Articulate ideologue, no remorse, treats mass casualties as an acceptable teaching cost.
+
+### **"Deepfake"** (Synthetic Media Lead)
 - **Real Name:** Dr. Amanda Chen
 - **Background:** AI researcher specializing in generative adversarial networks (GANs) and synthetic media. Originally developed deepfake detection technology for social media companies. Became disillusioned watching platforms ignore deepfakes for engagement metrics. Decided: "If they won't stop synthetic media, I'll show them why they should have." Joined ENTROPY to accelerate information entropy.
 - **Expertise:** Machine learning, GANs, deepfake creation and detection, synthetic media, computer vision, AI

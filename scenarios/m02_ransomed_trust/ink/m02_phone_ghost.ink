@@ -320,8 +320,8 @@ Ghost: That's worth it. That's the mission. That's what ENTROPY is for.
     -> ghost_disconnects
 
 * [This isn't over. We're coming for the whole network.]
-    Ghost: Good luck. The Architect coordinates six cells. We're everywhere.
-    Ghost: Shut down one, five remain. Hydra principle.
+    Ghost: Good luck. The Architect coordinates a network you haven't finished counting. We're everywhere.
+    Ghost: Shut down one, the rest remain. Hydra principle.
     -> ghost_disconnects
 
 === ghost_disconnects ===

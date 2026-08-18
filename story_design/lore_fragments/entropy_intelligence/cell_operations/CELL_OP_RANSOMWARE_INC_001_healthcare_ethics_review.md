@@ -9,6 +9,11 @@
 
 ---
 
+> **⚠️ SAFETYNET ANALYST ANNOTATION — 2026 threat reassessment.**
+> This October 2024 review is the last gasp of Ransomware Incorporated's ethical framing — the tier system, auto-decryption, ransom-as-theatre with payments returned, and Cipher King's recommendation to pause and stay out of Phase 3. **It was overruled.** Six weeks later, Operation Resilience (m02, St. Catherine's Regional, 15 Nov 2024) ran a *real* extortion: a genuine 2.5 BTC demand on a live wallet, a 47-patient life-support ward encrypted, and a per-hour fatality projection filed as acceptable cost — "approved by The Architect." Treat every safeguard below as abandoned doctrine. (Resolved: "Cipher King" (Marcus Chen) is the *founding* cell leader who wrote this review; after the Valley Memorial near-death he urged a pause, was overruled by The Architect, and was replaced as cell leader by the hardliner **"Ghost"**, who ran Operation Resilience six weeks later. Ghost is now the canonical Ransomware Incorporated leader; Cipher King's later arc as a reluctant defector survives in the cell-operations gameplay guide.) See `story_design/universe_bible/02_organisations/entropy/philosophy.md` §Propaganda vs. Operational Reality.
+
+---
+
 ```
 ═══════════════════════════════════════════
     RANSOMWARE INCORPORATED

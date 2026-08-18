@@ -366,7 +366,7 @@ boardroom_pin = "0417"
     {
       "aimId": "unmask_inside_asset",
       "title": "Somebody Held The Door",
-      "description": "Ghost says an ENTROPY affiliate inside St. Catherine's confirmed the operational timing -- and the same person burned your cover. Three pieces of evidence will name them.",
+      "description": "Your cover did not burn by accident. Someone inside St. Catherine's made that call, and the same person has been feeding ENTROPY from the start. Start pulling the thread.",
       "status": "locked",
       "order": 4,
       "unlockCondition": { "aimCompleted": "cover_compromised" },
@@ -379,10 +379,20 @@ boardroom_pin = "0417"
         },
         {
           "taskId": "unmask_db_window",
-          "title": "Use the database backup to expose the fire-drill access window",
+          "title": "Use the database backup to expose the insider's access window",
           "type": "manual",
           "status": "active"
-        },
+        }
+      ]
+    },
+    {
+      "aimId": "identify_inside_asset",
+      "title": "Put A Name To The Badge",
+      "description": "The backdoor logs point at a single badge inside St. Catherine's. Recover the number ENTROPY recorded, then work out whose post it sits on.",
+      "status": "locked",
+      "order": 5,
+      "unlockCondition": { "aimCompleted": "exploit_entropy_backdoor" },
+      "tasks": [
         {
           "taskId": "unmask_ghost_badge",
           "title": "Recover the badge number from Ghost's operational log",
@@ -391,7 +401,7 @@ boardroom_pin = "0417"
         },
         {
           "taskId": "unmask_identify",
-          "title": "Match badge SC-4471 to the post it sits on",
+          "title": "Match the badge number to the security post it belongs to",
           "type": "manual",
           "status": "active"
         }
@@ -402,7 +412,7 @@ boardroom_pin = "0417"
       "title": "The Keys In The Safe",
       "description": "There is an offline key set in the emergency storage safe. Recover it and the ransom stops being the only way to bring the wards back.",
       "status": "locked",
-      "order": 5,
+      "order": 6,
       "unlockCondition": { "aimCompleted": "cover_compromised" },
       "tasks": [
         {
@@ -432,7 +442,7 @@ boardroom_pin = "0417"
       "title": "Bring The Wards Back",
       "description": "Choose how St. Catherine's recovers, and choose what the world is told about how it happened.",
       "status": "locked",
-      "order": 6,
+      "order": 7,
       "unlockCondition": { "aimCompleted": "exploit_entropy_backdoor" },
       "missionConclusion": true,
       "requiresCompleted": [
@@ -678,6 +688,40 @@ boardroom_pin = "0417"
             }
           ],
           "eventMappings": [
+<%# Phase 5: the "kept your word to Kim" beat, surfaced live at the moment of the ransom
+    decision, mirroring the debrief's four-way final_reflection cross-check of what the player
+    ADVISED Kim (advised_board_pay/refuse) vs how it actually ENDED (paid_ransom). Delivered as
+    non-interrupting handler texts with a delay, so they land after Ghost's on_recovery_console
+    video-call and the console's own 3s message rather than clobbering them (a video-call here
+    would seize the screen from Ghost). Guarded on !dr_kim_ko so a knocked-out Kim isn't quoted.
+    If the player never advised Kim, neither advised flag is set and none of the four fire.
+    The exposure / Gary reactions are intentionally left to the closing debrief, which fires
+    immediately after the press terminal and covers them in full — a live beat there would
+    collide with the debrief and, if the insider was never identified, the Reeves ambush. %>
+            {
+              "eventPattern": "objective_task_completed:make_ransom_decision",
+              "condition": "globalVars.advised_board_refuse && !globalVars.paid_ransom && !globalVars.dr_kim_ko",
+              "onceOnly": true,
+              "sendTimedMessage": { "delay": 9000, "message": "Dr Kim just messaged the team. You told her you'd bring the wards back without paying -- and you did. She held the board off on your word tonight, and you made good on it. People remember which of those two things you did." }
+            },
+            {
+              "eventPattern": "objective_task_completed:make_ransom_decision",
+              "condition": "globalVars.advised_board_refuse && globalVars.paid_ransom && !globalVars.dr_kim_ko",
+              "onceOnly": true,
+              "sendTimedMessage": { "delay": 9000, "message": "Word from Dr Kim. She held the board off because you told her you'd have the keys in time -- and in the end someone wrote the cheque anyway. She spent trust she didn't have to spare, on your word. That's a debt, not a betrayal. Just know it's there." }
+            },
+            {
+              "eventPattern": "objective_task_completed:make_ransom_decision",
+              "condition": "globalVars.advised_board_pay && globalVars.paid_ransom && !globalVars.dr_kim_ko",
+              "onceOnly": true,
+              "sendTimedMessage": { "delay": 9000, "message": "Dr Kim's noted the decision. You told her to pay and that's how it ended -- no surprises for her, your read held. That kind of consistency is why an insider trusts you the next time you need them to." }
+            },
+            {
+              "eventPattern": "objective_task_completed:make_ransom_decision",
+              "condition": "globalVars.advised_board_pay && !globalVars.paid_ransom && !globalVars.dr_kim_ko",
+              "onceOnly": true,
+              "sendTimedMessage": { "delay": 9000, "message": "Dr Kim clocked it. You told her to pay, then found a way that didn't need paying -- she'll have gone into that boardroom arguing for a cheque nobody had to write. A small thing. She noticed it anyway." }
+            },
             {
               "eventPattern": "conversation_closed:opening_briefing_cutscene",
               "onceOnly": true,
@@ -909,25 +953,32 @@ boardroom_pin = "0417"
               "onceOnly": true,
               "completeTask": "initiate_backup_recovery"
             },
+<%# Fast recovery (ransom 30 min): systems restored before the wards are at risk.
+    ward_recovering flips the ward crisis -> recovering (see readable textVariants). %>
             {
               "eventPattern": "global_variable_changed:backup_recovery_source",
               "condition": "value === 'ransom_payment'",
               "onceOnly": true,
-              "setGlobal": { "paid_ransom": true, "ransom_decision_made": true },
+              "setGlobal": { "paid_ransom": true, "ransom_decision_made": true, "ward_recovering": true },
               "completeTask": "make_ransom_decision"
             },
+<%# Slow recovery (offline keys, 12 h): NOT fast enough for Bed 4. Do NOT set
+    ward_recovering — the ward stays in crisis. Open the slow-path window: Mr Pryce
+    drops to distressed and the visible countdown starts (bed4_slow_path_window timer).
+    The player can save him by switching him to manual ventilation at the bedside. %>
             {
               "eventPattern": "global_variable_changed:backup_recovery_source",
               "condition": "value === 'offline_keys_only'",
               "onceOnly": true,
-              "setGlobal": { "paid_ransom": false, "ransom_decision_made": true },
+              "setGlobal": { "paid_ransom": false, "ransom_decision_made": true, "slow_path_window_open": true, "patient_bed4_state": "distressed" },
               "completeTask": "make_ransom_decision"
             },
+<%# Combined recovery (4 h): fast enough. ward_recovering as with ransom. %>
             {
               "eventPattern": "global_variable_changed:backup_recovery_source",
               "condition": "value === 'combined_recovery'",
               "onceOnly": true,
-              "setGlobal": { "paid_ransom": false, "ransom_decision_made": true },
+              "setGlobal": { "paid_ransom": false, "ransom_decision_made": true, "ward_recovering": true },
               "completeTask": "make_ransom_decision"
             },
             {
@@ -1129,6 +1180,25 @@ boardroom_pin = "0417"
               "puzzle_graph_unlocks": "lock_guard_challenge",
               "puzzle_graph_optional": true
             }
+          ],
+<%# Phase 3: Doyle is pinned at Bed 2 (Hargreaves' ECMO) with the monitoring dark, so
+    she can only call out about Bed 4 -- reinforcing why the player must act -- and voice
+    relief when the systems come back. Guarded on ward_nurse_ko. %>
+          "eventMappings": [
+            {
+              "eventPattern": "global_variable_changed:patient_bed4_state",
+              "condition": "value === 'distressed' && !globalVars.ward_nurse_ko",
+              "onceOnly": true,
+              "bark": "I can't leave Bed 2 -- someone get to Bed 4, now!",
+              "barkDelay": 500
+            },
+            {
+              "eventPattern": "global_variable_changed:ward_recovering",
+              "condition": "value === true && !globalVars.ward_nurse_ko",
+              "onceOnly": true,
+              "bark": "Monitors are back. I can see the whole row again. Thank God.",
+              "barkDelay": 3200
+            }
           ]
         },
         {
@@ -1169,7 +1239,21 @@ boardroom_pin = "0417"
             "enabled": true,
             "range": 16,
             "angle": 360
-          }
+          },
+<%# Phase 3: on Bed 4 deterioration Raval abandons her round and rushes to the bedside
+    (the ink save even narrates "a nurse is already coming down the row to take over").
+    Cosmetic urgency, NOT an auto-save — one nurse for 47 beds cannot be everywhere, which
+    is exactly why the player has to act. Guarded so a knocked-out nurse never reacts. %>
+          "eventMappings": [
+            {
+              "eventPattern": "global_variable_changed:patient_bed4_state",
+              "condition": "value === 'distressed' && !globalVars.ward_nurse_ko",
+              "onceOnly": true,
+              "bark": "Bed 4 -- I'm going. Out the way.",
+              "barkDelay": 200,
+              "patrolOverride": { "targetTile": { "x": 4, "y": 8 }, "speed": 150, "stopOnArrival": true }
+            }
+          ]
         },
         {
           "id": "patient_bed4",
@@ -1191,7 +1275,27 @@ boardroom_pin = "0417"
             "immovable": true,
             "collisionBox": "bottom_half"
           },
-          "observations": "An elderly patient in Bed 4. Connected to a ventilator that is still running. The monitoring screen above his bed is dark -- replaced by a paper chart clipped to the foot of the bed."
+          "observations": "An elderly patient in Bed 4. Connected to a ventilator that is still running. The monitoring screen above his bed is dark -- replaced by a paper chart clipped to the foot of the bed.",
+<%# Barks on deterioration. Distress = he calls out; critical = silent (past speaking);
+    attended = a weak thanks after the player (or events) stabilise him. The manual-
+    ventilation SAVE itself lives in his ink (m02_npc_patient_bed4), branched on state,
+    so the player can't pre-empt it. %>
+          "eventMappings": [
+            {
+              "eventPattern": "global_variable_changed:patient_bed4_state",
+              "condition": "value === 'distressed'",
+              "onceOnly": true,
+              "bark": "*gasping* Nurse... the machine...",
+              "barkDelay": 0
+            },
+            {
+              "eventPattern": "global_variable_changed:patient_bed4_state",
+              "condition": "value === 'attended'",
+              "onceOnly": true,
+              "bark": "*ragged* ...ta.",
+              "barkDelay": 0
+            }
+          ]
         },
         {
           "id": "patient_bed2",
@@ -1213,7 +1317,25 @@ boardroom_pin = "0417"
             "immovable": true,
             "collisionBox": "bottom_half"
           },
-          "observations": "Mrs Hargreaves in Bed 2 -- on ECMO life support. The machine beside her still runs on backup power, but the central monitoring that would alert staff to problems is offline."
+          "observations": "Mrs Hargreaves in Bed 2 -- on ECMO life support. The machine beside her still runs on backup power, but the central monitoring that would alert staff to problems is offline.",
+<%# Ambient deterioration only — she worsens as the night drags on (bed2_ambient_drift
+    timer) and recovers when the systems come back. Never fatal. %>
+          "eventMappings": [
+            {
+              "eventPattern": "global_variable_changed:patient_bed2_state",
+              "condition": "value === 'distressed'",
+              "onceOnly": true,
+              "bark": "*fainter now* ...it's harder... to see the numbers, love.",
+              "barkDelay": 1500
+            },
+            {
+              "eventPattern": "global_variable_changed:ward_recovering",
+              "condition": "value === true",
+              "onceOnly": true,
+              "bark": "*a shaky breath* ...there's me screen. There it is.",
+              "barkDelay": 2500
+            }
+          ]
         },
         {
           "id": "patient_bed5",
@@ -1235,7 +1357,39 @@ boardroom_pin = "0417"
             "immovable": true,
             "collisionBox": "bottom_half"
           },
-          "observations": "Ms Chen in Bed 5. Post-op, alert, watching what's happening around her in the ward with quiet concern."
+          "observations": "Ms Chen in Bed 5. Post-op, alert, watching what's happening around her in the ward with quiet concern.",
+<%# The witness. Alert and articulate, she narrates what is happening to the sicker
+    patients around her — the one voice on the ward that can. %>
+          "eventMappings": [
+            {
+              "eventPattern": "global_variable_changed:patient_bed4_state",
+              "condition": "value === 'distressed'",
+              "onceOnly": true,
+              "bark": "Bed 4's alarming. Nobody's coming — the desk can't see it. You. Do something.",
+              "barkDelay": 800
+            },
+            {
+              "eventPattern": "global_variable_changed:patient_bed4_deceased",
+              "condition": "value === true",
+              "onceOnly": true,
+              "bark": "...he's gone quiet. Oh, no. No. You were right there.",
+              "barkDelay": 1200
+            },
+            {
+              "eventPattern": "global_variable_changed:bed4_manually_stabilised",
+              "condition": "value === true",
+              "onceOnly": true,
+              "bark": "That's it. Keep the bag going. You just bought him the time nobody else could.",
+              "barkDelay": 1000
+            },
+            {
+              "eventPattern": "global_variable_changed:ward_recovering",
+              "condition": "value === true",
+              "onceOnly": true,
+              "bark": "The monitors are coming up. All down the row. Thank God.",
+              "barkDelay": 2000
+            }
+          ]
         }
       ],
       "objects": [
@@ -1247,6 +1401,12 @@ boardroom_pin = "0417"
           "locked": true,
           "lockType": "ransomware_display",
           "observations": "The bedside EHR terminal that should show patient vitals and medication records. The screen shows a ransom note on a black background instead. All six beds are running on paper charts.",
+          "observationVariants": [
+            {
+              "condition": "globalVars.ward_recovering",
+              "value": "The bedside EHR terminal has dropped the ransom note. A restore progress bar is crawling across the screen -- vitals and medication records coming back from clean backup."
+            }
+          ],
           "puzzle_graph_role": "lock",
           "puzzle_graph_aim": "infiltrate_hospital",
           "minigameData": {
@@ -1259,6 +1419,54 @@ boardroom_pin = "0417"
             "groupName": "Ransomware Incorporated",
             "supportPortal": "ransom1nc0rp0rated.onion"
           }
+        },
+<%# Bed 4 ventilator panel — the glanceable state surface for Mr Pryce. Pure display
+    (no globals set here); the SAVE is the player talking to Mr Pryce. textVariants and
+    observationVariants escalate with patient_bed4_state and flatline on death, mirroring
+    sis01's bed4 vitals monitor. %>
+        {
+          "type": "notes",
+          "name": "Bed 4 Ventilator Panel",
+          "takeable": false,
+          "readable": true,
+          "text": "VENTILATOR — BED 4 (T. PRYCE)\n\nMode: SIMV | Rate: 14 | FiO2: 40%\nStatus: RUNNING (backup power)\n\nCentral monitoring: OFFLINE\nRemote alarm relay: UNAVAILABLE\nLast nurse observation: 14 min ago (paper)",
+          "textVariants": [
+            {
+              "condition": "globalVars.patient_bed4_deceased",
+              "value": "VENTILATOR — BED 4 (T. PRYCE)\n\nNO SPONTANEOUS RESPIRATORY EFFORT\nCircuit: cycling | Patient effort: NONE\n\nStatus: NO OUTPUT DETECTED\nLocal alarm: CONTINUOUS\nCentral monitoring: OFFLINE"
+            },
+            {
+              "condition": "globalVars.ward_recovering",
+              "value": "VENTILATOR — BED 4 (T. PRYCE)\n\nMode: SIMV | Rate: 14 | FiO2: 40%\nStatus: RUNNING — central monitoring RESTORING\n\nRemote alarm relay: COMING BACK ONLINE\nStation view: re-establishing"
+            },
+            {
+              "condition": "globalVars.patient_bed4_state === 'attended'",
+              "value": "VENTILATOR — BED 4 (T. PRYCE)\n\nManual ventilation in progress at bedside.\nCircuit alarm: CLEARED | Patient effort: SUPPORTED\n\nStable under direct supervision.\nCentral monitoring: OFFLINE"
+            },
+            {
+              "condition": "globalVars.patient_bed4_state === 'critical'",
+              "value": ">>> VENTILATOR ALARM — BED 4 (T. PRYCE) <<<\n\nHIGH-PRESSURE / DESAT\nSpO2: 79% [CRITICAL] | Patient fighting circuit\n\nIMMEDIATE INTERVENTION REQUIRED\nLocal alarm: CRITICAL | Central monitoring: OFFLINE"
+            },
+            {
+              "condition": "globalVars.patient_bed4_state === 'distressed'",
+              "value": ">>> VENTILATOR ALARM — BED 4 (T. PRYCE) <<<\n\nCircuit desynchrony / rising airway pressure\nSpO2: 88% [LOW] | Rate mismatch\n\nURGENT REVIEW — no remote relay to the desk\nLocal alarm: ACTIVE | Central monitoring: OFFLINE"
+            }
+          ],
+          "observations": "The ventilator panel at Mr Pryce's bedside, running on backup power. Its numbers are steady for now.",
+          "observationVariants": [
+            {
+              "condition": "globalVars.patient_bed4_deceased",
+              "value": "The ventilator is still cycling, but the panel shows no patient effort at all. The alarm tone is continuous and flat."
+            },
+            {
+              "condition": "globalVars.patient_bed4_state === 'critical'",
+              "value": "The ventilator panel is a wall of red. The alarm is screaming and Mr Pryce is losing colour. He needs someone at the bedside now."
+            },
+            {
+              "condition": "globalVars.patient_bed4_state === 'distressed'",
+              "value": "The ventilator panel has gone into an alarm state — the tone is sharp and repeating, and there is no relay to carry it to the nurses' station."
+            }
+          ]
         },
         {
           "type": "notes",
@@ -1274,7 +1482,19 @@ boardroom_pin = "0417"
           "takeable": false,
           "readable": true,
           "text": "EMERGENCY OPERATIONS -- CURRENT STATUS\n\nPatients on backup power: 47\n  - Ventilators: 23\n  - ECMO (heart-lung support): 12\n  - Dialysis: 12\n\nBackup generator time remaining: 12 HRS\nStatistical fatality risk: 0.3% per hour\n\nALL STAFF: Paper MAR charts only. No electronic prescribing until systems restored.",
+          "textVariants": [
+            {
+              "condition": "globalVars.ward_recovering",
+              "value": "EMERGENCY OPERATIONS -- RECOVERING\n\nClinical systems: RESTORING FROM BACKUP\nCentral monitoring: COMING BACK ONLINE, WARD BY WARD\nElectronic prescribing: RE-ENABLING\n\nPatients on backup power: 47 -- monitoring being handed back to the station.\n\nALL STAFF: Stand down manual-obs escalation as monitors return."
+            }
+          ],
           "observations": "Whiteboard showing patient status -- 47 people depending on backup power",
+          "observationVariants": [
+            {
+              "condition": "globalVars.ward_recovering",
+              "value": "The status board is being updated -- systems restoring, monitoring coming back to the station ward by ward."
+            }
+          ],
           "observationDisplay": "gameDisplay"
         }
       ]
@@ -1632,7 +1852,19 @@ boardroom_pin = "0417"
           "takeable": false,
           "readable": true,
           "text": "EMERGENCY POWER STATUS\n\nBackup Generator: ACTIVE\nTime Remaining: 12 HOURS\n\nCritical Systems on Backup:\n- 47 Life Support Patients\n- Emergency Lighting\n- Core Medical Equipment\n\nWARNING: Systems will fail when backup power depletes",
-          "observations": "LED panel showing time pressure -- 12-hour window"
+          "textVariants": [
+            {
+              "condition": "globalVars.ward_recovering",
+              "value": "EMERGENCY POWER STATUS\n\nBackup Generator: ACTIVE\nMains clinical systems: RESTORING\n\nCritical Systems returning to mains:\n- Patient monitoring\n- EHR / prescribing\n- Core Medical Equipment\n\nBackup load easing as systems come back online."
+            }
+          ],
+          "observations": "LED panel showing time pressure -- 12-hour window",
+          "observationVariants": [
+            {
+              "condition": "globalVars.ward_recovering",
+              "value": "The LED panel has stopped counting down -- clinical systems are coming back to mains and the backup load is easing."
+            }
+          ]
         },
         {
           "type": "notes",
@@ -2020,7 +2252,7 @@ boardroom_pin = "0417"
           "observations": "The duty log for whoever is posted here -- badge #SC-4471, and an odd note about a fire drill six weeks ago that facilities never scheduled",
           "onRead": { "setVariable": { "inspected_asset_post": true } },
           "puzzle_graph_role": "clue",
-          "puzzle_graph_aim": "unmask_inside_asset",
+          "puzzle_graph_aim": "identify_inside_asset",
           "puzzle_graph_reveals": "badge_SC4471_on_this_post_authorised_the_fire_drill_device_planting"
         },
         {
@@ -2305,10 +2537,57 @@ boardroom_pin = "0417"
     }
   },
 
+<%# =========================================================================
+    Decision-weight timers — sparing use (see DECISION_WEIGHT_PLAN.md).
+    Mission success is NEVER gated on these; they only ever change patient state.
+    - bed2_ambient_drift : INVISIBLE. Mrs Hargreaves (ECMO) quietly worsens while the
+      player works, and recovers when the incident resolves. Never fatal.
+    - bed4_slow_path_window / bed4_death_window : the ONE visible countdown, and only
+      on the deliberately-slow offline-keys recovery. The player can save Mr Pryce by
+      switching him to manual ventilation (talk to him at the bedside) — that sets
+      bed4_manually_stabilised, which cancels both. Fast recovery (ward_recovering)
+      also cancels them. Losses, never game-over.
+========================================================================= %>
+  "timers": [
+    {
+      "id": "bed2_ambient_drift",
+      "label": "Patient Deterioration",
+      "delayMs": 600000,
+      "condition": "!globalVars.ward_recovering",
+      "setGlobal": { "patient_bed2_state": "distressed" },
+      "showCountdown": false,
+      "onceOnly": true
+    },
+    {
+      "id": "bed4_slow_path_window",
+      "label": "Bed 4 — critical",
+      "delayMs": 100000,
+      "startOnGlobal": "slow_path_window_open",
+      "condition": "!globalVars.bed4_manually_stabilised && !globalVars.ward_recovering",
+      "setGlobal": { "patient_bed4_state": "critical", "bed4_critical": true },
+      "showCountdown": true,
+      "onceOnly": true
+    },
+    {
+      "id": "bed4_death_window",
+      "label": "Bed 4 — failing",
+      "delayMs": 45000,
+      "startOnGlobal": "bed4_critical",
+      "condition": "!globalVars.bed4_manually_stabilised && !globalVars.ward_recovering",
+      "setGlobal": { "patient_bed4_deceased": true },
+      "showCountdown": true,
+      "onceOnly": true
+    }
+  ],
+
   "globalVariables": {
     "player_name": "Agent 0x00",
     "briefing_played": false,
     "mission_started": false,
+<%# ransomware_deployed gates the ransomware_display lockType. Without it the five
+    encrypted PCs (reception, ward, IT, etc.) show "Workstation is currently operational"
+    instead of the Ransomware Incorporated note. See sis01 for the reference pattern. %>
+    "ransomware_deployed": true,
     "agent_0x99_contacted": false,
     "dr_kim_met": false,
 
@@ -2394,6 +2673,15 @@ boardroom_pin = "0417"
     "backup_recovery_source": "",
     "recovery_eta_hours": 0,
     "backup_restore_initiated": false,
+
+<%# Decision-weight: enacted ward consequence (see DECISION_WEIGHT_PLAN.md) %>
+    "patient_bed4_state": "stable",
+    "patient_bed4_deceased": false,
+    "bed4_critical": false,
+    "bed4_manually_stabilised": false,
+    "patient_bed2_state": "stable",
+    "ward_recovering": false,
+    "slow_path_window_open": false,
 
     "receptionist_ko": false,
     "gary_ko": false,

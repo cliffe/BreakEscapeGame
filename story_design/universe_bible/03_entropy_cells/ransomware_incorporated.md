@@ -22,8 +22,9 @@
 
 ## Key Members
 
-### **"Crypto Locker"** (Cell Leader)
-- **Real Name:** Unknown (possibly Dimitri Volkov)
+### **"Ghost"** (Cell Leader)
+> **Canon (m02 — Ransomed Trust).** Ghost is the *current* cell leader. In November 2024 Ghost personally ran **Operation Resilience** against St. Catherine's Regional Medical Centre: a 47-patient life-support ward encrypted, a genuine 2.5 BTC ransom on a live wallet, and a per-hour fatality projection accepted as the cost of the "lesson," with initial access sourced from a Zero Day Syndicate ProFTPD exploit. Ghost took over from the founding leader **"Cipher King" (Marcus Chen)**, who urged a pause after the Valley Memorial near-death and was overruled by The Architect (see the cell's healthcare ethics review). Presents with no name and no face. Not to be confused with the *Ghost Protocol* cell.
+- **Real Name:** Unknown (no confirmed identity)
 - **Background:** Former security researcher who specialized in cryptography and malware analysis. Realized ransomware authors made more in one attack than he made in a year doing legitimate work. Decided: "If I can't beat them, I might as well be them—but more professional." Created "business-like" ransomware operation treating victims as "customers."
 - **Expertise:** Cryptography, ransomware development, malware obfuscation, encryption algorithms, exploit integration
 - **Notable Operations:** Developed "LockStock" ransomware family used in hundreds of attacks; ransomware that is so well-coded it's almost respected by security researchers
@@ -270,7 +271,7 @@
 ## LORE Collectibles
 
 ### Documents
-- **"Crypto Locker's Business Plan"** - Actual business plan treating ransomware as professional operation
+- **"Ghost's Business Plan"** - Actual business plan treating ransomware as professional operation
 - **"Target Acquisition Assessment"** - Analysis of potential victims with financial and security evaluation
 - **"Negotiator's Psychology Manual"** - Guide to victim manipulation and pressure tactics
 - **"Double Extortion Playbook"** - Procedures for data theft and leak threats
@@ -278,7 +279,7 @@
 - **"CryptoSecure Recovery Records"** - Evidence of company involvement in ransomware deployment
 
 ### Communications
-- **"Crypto Locker to The Architect"** - Discussion of ransomware's strategic value to ENTROPY
+- **"Ghost to The Architect"** - Discussion of ransomware's strategic value to ENTROPY
 - **"Victim Negotiations Transcripts"** - Actual negotiation exchanges (sanitized)
 - **"RaaS Affiliate Recruitment"** - Messages recruiting new ransomware operators
 - **"Healthcare Hunter Justification"** - Her attempting to justify targeting hospitals
@@ -297,7 +298,7 @@
 - **Cyber Insurance Analysis** - Target Acquisition's research on victim insurance
 
 ### Audio Logs
-- **"Crypto Locker's Business Philosophy"** - Explaining ransomware as "service"
+- **"Ghost's Business Philosophy"** - Explaining ransomware as "service"
 - **"Negotiator-Victim Call"** - Actual negotiation (demonstrates pressure tactics)
 - **"Healthcare Hunter's Rationalization"** - Attempting to justify patient endangerment
 - **"Payment Gateway Tutorial"** - Explaining cryptocurrency laundering process
@@ -360,12 +361,12 @@
 ### Business Relationships
 - **All ENTROPY Cells:** Ransomware operations provide funding for other operations
 - Ransomware Inc. is highly profitable, subsidizes less profitable cells
-- Crypto Locker reports financial performance to The Architect
+- Ghost reports financial performance to The Architect
 
 ### Tensions
 - **Healthcare Hunter's Methods:** Other cells uncomfortable with targeting hospitals
 - Some ENTROPY members see ransomware as crude compared to sophisticated operations
-- Crypto Locker's business focus sometimes conflicts with chaos goals
+- Ghost's business focus sometimes conflicts with chaos goals
 
 ## Scenario Design Notes
 
@@ -410,7 +411,7 @@
 
 ## Character Appearance Notes
 
-### Crypto Locker
+### Ghost
 Can appear in scenarios involving:
 - Major ransomware operations
 - Cell leadership and strategy
@@ -450,7 +451,7 @@ Can appear in scenarios involving:
 ### After First Player Encounter
 - **Status:** Active, more careful
 - **Operations:** Increased operational security
-- **Crypto Locker:** Aware of SAFETYNET focus
+- **Ghost:** Aware of SAFETYNET focus
 - **Tactics:** Evolve techniques to avoid detection patterns
 
 ### If Major Operation Disrupted
@@ -477,8 +478,8 @@ Can appear in scenarios involving:
 - CryptoSecure connection discovered
 - Coordination with law enforcement for major operation
 - Simultaneous takedown of RaaS platform and CryptoSecure
-- Crypto Locker and key members arrested or escape
+- Ghost and key members arrested or escape
 - Healthcare Hunter's operations exposed, public outrage
 - Ransomware Inc. severely disrupted but eventually rebuilds
-- Crypto Locker (if escaped) continues operations for other ENTROPY cells
+- Ghost (if escaped) continues operations for other ENTROPY cells
 - Long-term: Ransomware remains ongoing threat, requiring constant vigilance

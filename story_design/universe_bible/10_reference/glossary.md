@@ -430,7 +430,7 @@ Comprehensive reference for terminology, abbreviations, and designations used in
 **ENTROPY Operatives**
 - Tech-themed or ironic code names
 - Often puns or references
-- Examples: "Null Cipher," "0day," "Crypto Locker," "Bot Farm"
+- Examples: "Null Cipher," "0day," "Ghost," "Bot Farm"
 
 ---
 

@@ -8,6 +8,37 @@
 
 ---
 
+## ⚠️ Threat Reassessment — Campaign Escalation
+
+*Added August 2026. Supersedes the "leaderless idealist swarm" read implied by the original profile below.*
+
+The profile that follows was SAFETYNET's **first-contact assessment**: a decentralised, compartmentalised network of semi-autonomous cells, no confirmed leadership, a principled "accelerate entropy" ideology. Keep that text — it is still how ENTROPY *presents* itself and how recruits are sold the cause — but field evidence has forced a harder reading on three points. Treat the following as the current truth.
+
+### 1. The threat is escalating, and always meant to
+
+Successive operations show rising ambition and rising body counts, not random venting. Operations are pre-planned, resourced, and signed off up the chain. This is a coordinated criminal enterprise working through a strategy. Scale each scenario's stakes up accordingly, and let the campaign feel like it is climbing.
+
+### 2. They are villains, not misguided idealists
+
+ENTROPY's public framing — "we are educators, not terrorists", "zero casualties", "reversible damage" — is **propaganda and recruitment material**, not operational practice. Senior operatives knowingly plan for mass death and file it as acceptable cost:
+
+- **Operation Shatter (Social Fabric, m01):** Derek Lawson calculated 42–85 deaths in the first 24 hours from engineered panic, and called it "optimization — sixty deaths to save millions."
+- **Operation Resilience (Ransomware Incorporated, m02):** the operative "Ghost" kept a per-hour patient-death projection for a hospital on life support and ran the attack regardless, "approved by The Architect."
+
+Moral complexity still belongs at the edges — recruits and low-level assets are often desperate or deceived — but the people running operations are cold. Write them so players take a stance against a fanatic, not talk one down. See [philosophy.md](philosophy.md) §Propaganda vs. Operational Reality.
+
+### 3. The cells trade with each other — that is the point, not a contradiction
+
+The "limited communication / 70% don't know other cells exist" line describes **compartmentalisation of identities**, not isolation of capability. Underneath it runs a working internal economy:
+
+- **Zero Day Syndicate** is the arms dealer — primary exploit supplier to every cell.
+- **Ransomware Incorporated** is the profit centre — its ransoms subsidise leaner cells, financials reported up to The Architect.
+- **Crypto Anarchists (HashChain Exchange)** is the bank — the settlement and laundering layer.
+
+This holds together *because* the cells never meet. Value moves through pseudonymous brokers, cryptocurrency escrow, and reputation systems — the same trust-minimising machinery that makes real-world exploit markets, access brokers and RaaS ecosystems function. A Ransomware Inc. operator buys a Zero Day Syndicate exploit without ever learning who built it; compartmentalising the *people* is exactly what lets the *market* run. What earlier read as a leaderless swarm is a **brokered syndicate with central strategic direction (The Architect)**. The cell files already model this — see [zero_day_syndicate.md](../../03_entropy_cells/zero_day_syndicate.md) and [ransomware_incorporated.md](../../03_entropy_cells/ransomware_incorporated.md), §Inter-Cell Relationships.
+
+---
+
 ## Historical Context
 
 ENTROPY's origins remain murky, with SAFETYNET intelligence suggesting the organization emerged in the early 2020s during the global upheaval of pandemic-era digital transformation. The name "ENTROPY" may be self-chosen or could be a SAFETYNET designation based on their modus operandi—there is no consensus even within intelligence circles.
@@ -37,8 +68,8 @@ The truth likely combines elements of all theories, with different cells having 
 **Core Principles:**
 - Each scenario typically represents one cell or operation
 - Cells have significant autonomy in methods and targets
-- Limited communication between cells (security through compartmentalisation)
-- No known central leadership—either truly decentralized or leadership remains perfectly hidden
+- Limited *identity* exposure between cells (compartmentalisation) — but capability and value flow freely through brokers, escrow and reputation (see Threat Reassessment above)
+- Central strategic direction now attributed to **The Architect**; the earlier "no known leadership" was an incomplete picture, not true leaderlessness
 - Cells operate through **Controlled Corporations** and **Infiltration Operations** (see [operational_models.md](operational_models.md))
 
 **Cell Autonomy Levels:**
@@ -46,6 +77,8 @@ The truth likely combines elements of all theories, with different cells having 
 1. **Independent Cells** (70%): Operate with complete autonomy, may not know other cells exist
 2. **Networked Cells** (20%): Limited coordination with 1-2 other cells for resource sharing
 3. **Coordinated Operations** (10%): Multi-cell operations with temporary command structure
+
+*These percentages describe joint **operations**, not commerce. Routine service trade — exploits, laundering, purchased access — runs across almost all cells via brokers regardless of how many run joint ops (see Threat Reassessment).*
 
 **Cell Lifecycle:**
 
@@ -317,5 +350,5 @@ While ENTROPY has no overall hierarchy, individual cells maintain internal struc
 
 ---
 
-*Last Updated: November 2025*
+*Last Updated: August 2026 (Threat Reassessment added — escalation, casualty reality, inter-cell economy)*
 *Classification: SAFETYNET INTERNAL - Scenario Design Reference*

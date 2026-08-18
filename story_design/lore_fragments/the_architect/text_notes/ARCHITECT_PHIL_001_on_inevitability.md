@@ -8,6 +8,11 @@
 
 ---
 
+> **⚠️ SAFETYNET ANALYST ANNOTATION — 2026 threat reassessment.**
+> The Architect's "we are not the villains, we are the truth-tellers / we merely accelerate the timeline" self-image is exactly that — self-image. By late 2024 the same author was signing off operations engineered to kill (Operation Shatter, m01; Operation Resilience, m02). Hold both readings at once: sincere ideology *and* the cover story it has become. See `story_design/universe_bible/02_organisations/entropy/philosophy.md` §Propaganda vs. Operational Reality.
+
+---
+
 ```
 ═══════════════════════════════════════════
      OBSERVATIONS ON INEVITABILITY

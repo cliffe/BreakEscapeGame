@@ -634,7 +634,7 @@ Agent HaX: Make sure you understand what you're agreeing to before you initiate 
 
 Agent HaX: You've read Ghost's calculations. They projected deaths before the operation started and proceeded anyway.
 
-Agent HaX: This is what ENTROPY looks like across all six cells. Not opportunistic criminals. True believers with risk models.
+Agent HaX: This is what ENTROPY looks like across every cell we've uncovered. Not opportunistic criminals. True believers with risk models.
 
 + [How do you fight that?]
     Agent HaX: Evidence and consequences, long term.

@@ -7,6 +7,11 @@
 
 ---
 
+> **⚠️ SAFETYNET ANALYST ANNOTATION — 2026 threat reassessment.**
+> Authentic ENTROPY document, and an accurate record of the organisation's *founding doctrine* — no longer of its practice. The "zero casualties / reversible damage / institutional targets" constraints below, and the Architect's personal vow (Ch. 4) to "turn myself in" if anyone dies, were genuine through roughly 2024. Field evidence since shows operations that plan for and accept fatalities with the Architect's own sign-off: **Operation Shatter** (Social Fabric, m01 — 42–85 projected deaths, defended as "optimization") and **Operation Resilience** (Ransomware Incorporated, m02 — a 47-patient life-support ward attacked on a per-hour fatality projection, "approved by The Architect"). Read Chapter 3, "Why We Are Not Terrorists," as the story ENTROPY sells its recruits, not a rule it keeps. See `story_design/universe_bible/02_organisations/entropy/philosophy.md` §Propaganda vs. Operational Reality.
+
+---
+
 ## Chapter 1: Entropy and Systems
 
 ### The Second Law

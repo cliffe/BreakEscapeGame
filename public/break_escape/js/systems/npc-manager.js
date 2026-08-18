@@ -54,25 +54,50 @@ function safeEvaluateCondition(conditionStr, eventData) {
     }
   }
 
+  // Evaluate a single (non-&&) term. Supports:
+  //   negation:   "!globalVars.X" / "!value"
+  //   includes:   "data.prop.includes('sub')" / "globalVars.prop.includes('sub')"
+  //   comparison: "value OP literal" / "data.prop OP literal" / "globalVars.prop OP literal"
+  //   bare truthy:"value" / "data.prop" / "globalVars.prop"
+  function evaluateSingle(expr) {
+    expr = expr.trim();
+
+    // Negation
+    if (expr.startsWith('!')) {
+      return !evaluateSingle(expr.slice(1).trim());
+    }
+
+    // "<lhs>.includes('substring')"
+    const includesMatch = expr.match(/^(value|data\.\w+|globalVars\.\w+)\.includes\(['"]([^'"]*)['"]\)$/);
+    if (includesMatch) {
+      const lhs = resolveLHS(includesMatch[1]);
+      return !!(lhs && typeof lhs === 'string' && lhs.includes(includesMatch[2]));
+    }
+
+    // "<lhs> OP literal"
+    const compareMatch = expr.match(/^(value|name|data\.\w+|globalVars\.\w+)\s*(===|!==|>=|<=|>|<)\s*(.+)$/);
+    if (compareMatch) {
+      return applyOp(resolveLHS(compareMatch[1]), compareMatch[2], parseLiteral(compareMatch[3]));
+    }
+
+    // Bare truthy check on a recognised operand
+    if (/^(value|name|data\.\w+|globalVars\.\w+)$/.test(expr)) {
+      return !!resolveLHS(expr);
+    }
+
+    console.error(`❌ safeEvaluateCondition: unsupported condition term: "${expr}"`);
+    return false;
+  }
+
+  // Compound conditions: every &&-separated term must pass. (Single terms fall through
+  // to evaluateSingle unchanged, so existing "value === true" style conditions are
+  // evaluated identically to before — this only makes previously-dead compound/negation
+  // conditions work as their authors intended. Mirrors the timer/textVariant evaluators.)
   const s = conditionStr.trim();
-
-  // Pattern: "data.prop && data.prop.includes('substring')"
-  const andIncludesMatch = s.match(/^(data\.\w+)\s*&&\s*data\.(\w+)\.includes\(['"]([^'"]*)['"]\)$/);
-  if (andIncludesMatch) {
-    const lhs = resolveLHS(andIncludesMatch[1]);
-    return !!(lhs && typeof lhs === 'string' && lhs.includes(andIncludesMatch[3]));
+  if (s.includes('&&')) {
+    return s.split('&&').every(part => evaluateSingle(part));
   }
-
-  // Pattern: "value OP literal", "data.prop OP literal", or "globalVars.prop OP literal"
-  const compareMatch = s.match(/^(value|name|data\.\w+|globalVars\.\w+)\s*(===|!==|>=|<=|>|<)\s*(.+)$/);
-  if (compareMatch) {
-    const lhs = resolveLHS(compareMatch[1]);
-    const rhs = parseLiteral(compareMatch[3]);
-    return applyOp(lhs, compareMatch[2], rhs);
-  }
-
-  console.error(`❌ safeEvaluateCondition: unsupported condition format: "${conditionStr}"`);
-  return false;
+  return evaluateSingle(s);
 }
 
 export default class NPCManager {

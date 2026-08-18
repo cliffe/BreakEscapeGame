@@ -12,6 +12,29 @@ This philosophical framework serves multiple purposes:
 
 ---
 
+## Propaganda vs. Operational Reality
+
+*Added August 2026.*
+
+Everything in this file — the manifesto, the mercy-of-acceleration language, "we tear down not from hatred, but from hope" — is real, but it is **the story ENTROPY tells about itself**. It is recruitment copy and public cover. It is not how operations are actually run, and scenario writers should not mistake the one for the other.
+
+**The rhetoric:** no violence, no casualties, reversible damage, "we are not terrorists, we are educators." Some organisational documents go further and claim hard constraints — hospitals and emergency services on a permanent no-touch list.
+
+**The practice:** senior operatives plan for death and treat it as an acceptable line item.
+
+- **Derek Lawson / Operation Shatter (m01):** modelled 42–85 deaths from engineered panic in the first 24 hours and defended it as "optimization — sixty deaths to save millions." Written, by design, as a clear villain with no remorse.
+- **"Ghost" / Operation Resilience (m02):** attacked a hospital with 47 patients on life support, keeping a per-hour fatality projection, on an operation "approved by The Architect" — the same Architect the no-touch-list documents attribute the constraint to.
+
+The gap between the two is itself a design tool. Use it:
+
+1. **Recruits and low-level assets** may genuinely believe the rhetoric — this is where sympathy and "there but for grace" belong.
+2. **Operators and leadership** use the rhetoric to justify what the numbers already told them they would do — this is where players meet a fanatic, and the writing should let them take a stance, not negotiate an ideology.
+3. **The zero-casualty claim is a lie the organisation finds useful**, not a rule it keeps. Any scenario leaning on "ENTROPY would never hurt people" should treat that as ENTROPY's cover story — which the mission then breaks.
+
+Bottom line for writers: at the sharp end, ENTROPY are **classic villains who have read philosophy**. The ideas sound sincere and are sometimes half-right about systemic fragility; the people acting on them are willing to kill, and the campaign escalates that rather than softening it.
+
+---
+
 ## The ENTROPY Manifesto
 
 **"The Acceleration Manifesto"** (Circulated on darknet forums, authorship disputed)
@@ -382,5 +405,5 @@ ENTROPY's philosophy contains inherent contradictions that create internal tensi
 
 ---
 
-*Last Updated: November 2025*
+*Last Updated: August 2026 (Propaganda vs. Operational Reality section added)*
 *Classification: SAFETYNET INTERNAL - Scenario Design Reference*

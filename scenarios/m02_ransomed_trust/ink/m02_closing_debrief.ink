@@ -7,6 +7,12 @@
 // Variables synced from globalVars by engine at call-open
 VAR paid_ransom = false
 VAR exposed_hospital = false
+// Decision-weight: enacted ward outcome. ward_recovering distinguishes a fast recovery
+// (ransom or combined) from the slow offline-only restore; the Bed 4 vars carry whether
+// the player saved Mr Pryce by hand during the slow-path window.
+VAR ward_recovering = false
+VAR patient_bed4_deceased = false
+VAR bed4_manually_stabilised = false
 VAR gary_protected = false
 VAR kim_guilt_revealed = false
 VAR ghost_deal_accepted = false
@@ -211,9 +217,11 @@ Agent HaX: We don't have a name. We have a philosophy, a signature, and now two 
 
 {paid_ransom:
     -> ransom_paid_outcomes
-- else:
-    -> manual_recovery_outcomes
 }
+{ward_recovering:
+    -> combined_recovery_outcomes
+}
+-> manual_recovery_outcomes
 
 === ransom_paid_outcomes ===
 #speaker:agent_0x99
@@ -244,14 +252,32 @@ Agent HaX: The £87,000. You should know where it goes.
 
 -> entropy_funding_discussion
 
+=== combined_recovery_outcomes ===
+#speaker:agent_0x99
+
+Agent HaX: You ran the combined restore -- the keys off the backup server and the physical set out of the safe, together. Four hours. Systems back well inside the window.
+
+Agent HaX: Patient outcomes: 2 fatalities -- both critical before the attack, both ruled statistically probable regardless. The wards held.
+
+Agent HaX: And you paid ENTROPY nothing to get there. That is the closest thing to a clean result this night had in it. It cost you the legwork instead of costing them the win.
+
+-> entropy_funding_discussion
+
 === manual_recovery_outcomes ===
 #speaker:agent_0x99
 
-Agent HaX: You chose manual recovery. Eleven hours, thirty-four minutes. Just inside the window.
+Agent HaX: You went with the offline keys alone. Eleven hours, thirty-four minutes -- a full manual restore, right to the edge of the window.
 
-Agent HaX: Patient outcomes: 6 fatalities. Ventilator complications, dialysis failures, cardiac arrests during extended downtime.
+Agent HaX: Patient outcomes: 6 fatalities. Ventilator complications, dialysis failures, cardiac arrests during the extended downtime.
 
-* [6 people died because I refused to pay.]
+{patient_bed4_deceased:
+    Agent HaX: One of the six was the ventilated gentleman in Bed 4. Mr Pryce. His circuit went into alarm with no relay to carry it to the desk, and by the time a nurse got down the row it was over. You were in the building when it happened. I'm not putting that on you -- but you should know it was one of the ones a faster route home might have reached.
+}
+{bed4_manually_stabilised:
+    Agent HaX: It would have been seven. The ventilated man in Bed 4 -- Mr Pryce -- went into a high-pressure alarm with nothing to carry it to the station, and you bagged him by hand until a nurse could take the bag off you. He is alive because you were standing there when the machine turned on him. Sister Doyle asked me to make sure that was written down.
+}
+
+* [Those deaths are on the timeline I chose.]
     -> manual_recovery_guilt
 
 * [But ENTROPY got nothing. No operational funding.]
@@ -721,8 +747,12 @@ Agent HaX: You made a call under time pressure, with incomplete information, in 
         Agent HaX: 45 people are alive today. That's real. Those are real families not burying someone.
         Agent HaX: ENTROPY has funding. That's also real. Both things are true simultaneously.
     - else:
-        Agent HaX: You denied ENTROPY £87,000. Long-term, that matters.
-        Agent HaX: Six people died in the downtime. That also matters.
+        {ward_recovering:
+            Agent HaX: You denied ENTROPY £87,000 and still had the wards back in four hours. Two died who were most likely going regardless. That is about as well as this ends.
+        - else:
+            Agent HaX: You denied ENTROPY £87,000. Long-term, that matters.
+            Agent HaX: Six people died in the downtime. That also matters.
+        }
     }
     Agent HaX: I won't tell you which weighs more. I genuinely don't know. Neither does anyone who hasn't stood where you stood.
     -> mission_3_setup
@@ -752,7 +782,7 @@ Agent HaX: Operation Cyber Arsenal.
 === architect_tease ===
 #speaker:agent_0x99
 
-Agent HaX: The Architect runs all six cells. We don't know who they are yet.
+Agent HaX: The Architect runs the cells -- more of them than we've confirmed, and we don't know who they are yet.
 
 Agent HaX: But each mission reveals more. Social Fabric, Ransomware Incorporated -- patterns emerging in how the cells communicate, how they're structured.
 

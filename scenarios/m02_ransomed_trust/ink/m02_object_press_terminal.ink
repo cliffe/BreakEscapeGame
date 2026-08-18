@@ -1,5 +1,5 @@
 // ===========================================
-// PRESS TERMINAL — Mission 2: Ransomed Trust
+// PRESS TERMINAL -- Mission 2: Ransomed Trust
 // Break Escape - Physical Exposure Decision
 //
 // The player physically acts to expose or suppress the hospital's negligence.
@@ -22,6 +22,15 @@ EXTERNAL player_name()
 VAR backdoor_fully_exploited = false
 VAR ransom_decision_made = false
 
+// Phase 6 (low-risk): the base package below is always transmitted (the debrief's
+// exposed-path lines assume it went out, so it stays fixed). These optional pieces of
+// corroborating evidence are added to the transmission only if the player actually
+// found them, so a thorough investigation visibly sends a fuller case without changing
+// the base outcome or requiring a debrief rewrite.
+VAR lore_zds_invoice_found = false
+VAR lore_ghosts_manifesto_found = false
+VAR insider_asset_exposed = false
+
 === start ===
 #speaker:computer
 
@@ -34,13 +43,13 @@ VAR ransom_decision_made = false
 
 HOSPITAL COMMUNICATIONS TERMINAL
 
-Secure outgoing relay — St. Catherine's regional press network.
+Secure outgoing relay -- St. Catherine's regional press network.
 14 media recipients. 3 national health correspondents. SAFETYNET Evidence Archive.
 
 Available for transmission:
 - Board liability email (cover-up plan, Gary Whitlock scapegoating)
 - FY2024 Budget Report (£85,000 security deferred, £3.2 million MRI approved)
-- Gary Whitlock security advisory archive (May–November 2024, 7 formal warnings)
+- Gary Whitlock security advisory archive (May-November 2024, 7 formal warnings)
 - SAFETYNET forensic record (ENTROPY backdoor, decryption keys recovered)
 
 Transmission is irreversible. Once sent, this evidence enters permanent public record.
@@ -122,9 +131,12 @@ Gary Whitlock's warnings enter public record.
 
 TRANSMITTING...
 
-[SENT] Board liability email — Hospital Board Chair to Legal Department
-[SENT] FY2024 Budget Report — IT security deferral vs MRI approval
-[SENT] Gary Whitlock advisory archive — 7 warnings, 0 actioned responses, May–November 2024
+[SENT] Board liability email -- Hospital Board Chair to Legal Department
+[SENT] FY2024 Budget Report -- IT security deferral vs MRI approval
+[SENT] Gary Whitlock advisory archive -- 7 warnings, 0 actioned responses, May-November 2024
+{lore_zds_invoice_found:[SENT] Zero Day Syndicate procurement invoice -- exploit sourcing, ENTROPY affiliate chain}
+{lore_ghosts_manifesto_found:[SENT] Recovered operator manifesto -- pre-planned mortality calculations, signed off}
+{insider_asset_exposed:[SENT] Named inside asset -- Graham Reeves, badge SC-4471, authorised the fire-drill device planting}
 
 TRANSMISSION COMPLETE.
 
@@ -135,6 +147,10 @@ St. Catherine's board will face a public inquiry within 48 hours.
 Gary Whitlock's warnings are on record. His vindication is not an internal matter anymore.
 
 Forty-three other hospitals on ENTROPY's reconnaissance list will see this story. Some of them will patch their servers before anyone has to teach them the same lesson.
+
+{lore_zds_invoice_found or lore_ghosts_manifesto_found or insider_asset_exposed:
+This is no longer only a budget scandal at one hospital. The material you assembled reaches past the board and into ENTROPY itself -- and it is all now on the public record, attributed and timestamped.
+}
 
 #complete_task:decide_hospital_exposure
 #set_global:exposed_hospital:true
@@ -172,7 +188,7 @@ Evidence retained. No transmission.
 
 St. Catherine's board has privately committed to a full security overhaul. Gary Whitlock's employment situation will be resolved through internal channels.
 
-The sector-wide risk profile — 214 hospitals scanned, 147 with critical vulnerabilities — remains unpublished.
+The sector-wide risk profile -- 214 hospitals scanned, 147 with critical vulnerabilities -- remains unpublished.
 
 Other hospitals will not learn from this until something similar happens to them.
 

@@ -23,14 +23,54 @@ class ScenarioTimerUI {
     this.timers = scenario.timers || [];
     this.firedTimers = new Set();  // Track which timers have already fired
     this.startTime = Date.now();
-    
+
+    // Per-timer start times for startOnGlobal timers, so the countdown does not begin
+    // (and the widget stays hidden) until the timer's trigger global fires. Mirrors
+    // ScenarioTimerDispatcher's own tracking so the display matches the mechanic.
+    // null = dormant (waiting for startOnGlobal); number = epoch ms when started.
+    this._timerStartTimes = new Map();
+    this._eventSubs = [];
+
+    for (const timer of this.timers) {
+      if (!timer.startOnGlobal) continue;
+      const alreadySet = !!window.gameState?.globalVariables?.[timer.startOnGlobal];
+      this._timerStartTimes.set(timer.id, alreadySet ? Date.now() : null);
+      if (!alreadySet) {
+        const eventName = `global_variable_changed:${timer.startOnGlobal}`;
+        const handler = (payload) => {
+          const value = payload?.value ?? window.gameState?.globalVariables?.[timer.startOnGlobal];
+          if (value && this._timerStartTimes.get(timer.id) === null) {
+            this._timerStartTimes.set(timer.id, Date.now());
+          }
+        };
+        window.eventDispatcher?.on(eventName, handler);
+        this._eventSubs.push({ event: eventName, handler });
+      }
+    }
+
     // Create HUD display element
     this.createDisplay();
-    
+
     // Start tick loop for countdown update
     this.tickInterval = setInterval(() => this._tick(), 100);  // Update every 100ms
-    
+
     console.log(`⏱️ ScenarioTimerUI initialized with ${this.timers.length} timers`);
+  }
+
+  /**
+   * Resolve the epoch-ms start time a timer counts from.
+   * startOnGlobal timers count from when their global fired (or null if still dormant);
+   * all other timers count from scene construction.
+   * @private
+   * @param {Object} timer
+   * @returns {number|null} start time in ms, or null if the timer is dormant
+   */
+  _getTimerStartTime(timer) {
+    if (timer.startOnGlobal) {
+      const startedAt = this._timerStartTimes.get(timer.id);
+      return (startedAt === null || startedAt === undefined) ? null : startedAt;
+    }
+    return this.startTime;
   }
 
   /**
@@ -90,7 +130,13 @@ class ScenarioTimerUI {
       if (!timer.showCountdown) {
         continue;
       }
-      
+
+      // Skip if this is a startOnGlobal timer that has not started yet (still dormant).
+      // Without this, a deferred visible timer would leak its countdown from mission start.
+      if (timer.startOnGlobal && this._getTimerStartTime(timer) === null) {
+        continue;
+      }
+
       // Skip if condition doesn't pass (evaluate condition string against globalVars)
       if (timer.condition) {
         try {
@@ -208,9 +254,11 @@ class ScenarioTimerUI {
     
     // Show display
     this.displayElement.style.display = 'block';
-    
-    // Calculate time remaining
-    const elapsedMs = Date.now() - this.startTime;
+
+    // Calculate time remaining from this timer's own start (scene start, or the moment
+    // its startOnGlobal trigger fired). _getNextPendingTimer already excluded dormant timers.
+    const startTime = this._getTimerStartTime(nextTimer) ?? this.startTime;
+    const elapsedMs = Date.now() - startTime;
     const remainingMs = nextTimer.delayMs - elapsedMs;
     const remainingSec = Math.max(0, Math.ceil(remainingMs / 1000));
     
@@ -238,6 +286,10 @@ class ScenarioTimerUI {
   destroy() {
     if (this.tickInterval) {
       clearInterval(this.tickInterval);
+    }
+    if (this._eventSubs) {
+      this._eventSubs.forEach(sub => window.eventDispatcher?.off(sub.event, sub.handler));
+      this._eventSubs = [];
     }
     if (this.displayElement && this.displayElement.parentNode) {
       this.displayElement.parentNode.removeChild(this.displayElement);
