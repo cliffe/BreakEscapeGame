@@ -123,7 +123,7 @@ Agent 0x99: Now... St. Catherine's Hospital. The M2 connection.
 
 === victoria_discussion ===
 #speaker:agent_0x99
-Agent 0x99: Victoria Sterling. Codename "Cipher." CEO of WhiteHat Security, leader of Zero Day Syndicate.
+Agent 0x99: Victoria Sterling. Codename "Sable." Cover-CEO of WhiteHat Security and Zero Day's operational lead — she answered to 0day and the Architect, not the other way round.
 { victoria_fate() == "recruited":
     Agent 0x99: And now... your double agent.
     Agent 0x99: I'll be honest - that was a hell of a gambit. Recruiting her instead of arresting her.
@@ -140,6 +140,7 @@ Agent 0x99: Victoria Sterling. Codename "Cipher." CEO of WhiteHat Security, lead
     * [It was the right call]
         You: It was the right tactical decision given the strategic picture.
         ~ handler_trust = handler_trust + 10
+        # influence_increased
         Agent 0x99: I trust your judgment. You were there, you made the call.
         -> victoria_recruited_path
 }
@@ -155,6 +156,7 @@ Agent 0x99: Victoria Sterling. Codename "Cipher." CEO of WhiteHat Security, lead
         You: Angela Martinez. David Chen. Sarah Thompson. Marcus Gray. Jennifer Wu. Robert Patterson.
         You: They have justice now.
         ~ handler_trust = handler_trust + 10
+        # influence_increased
         Agent 0x99: [Quiet moment] Yes. Yes, they do.
         -> victoria_arrested_path
     * [One cell leader down]
@@ -162,11 +164,31 @@ Agent 0x99: Victoria Sterling. Codename "Cipher." CEO of WhiteHat Security, lead
         Agent 0x99: Agreed. Zero Day Syndicate is crippled without Victoria.
         -> victoria_arrested_path
 }
-{ (victoria_fate() != "recruited") && (victoria_fate() != "arrested"):
-    Agent 0x99: Victoria Sterling remains at large. She suspects SAFETYNET interest but has no proof of infiltration.
-    Agent 0x99: We have evidence, but without her in custody, prosecution is harder.
-    Agent 0x99: She'll likely go dark, reorganize, resurface under a new operation.
-    -> phase_2_discussion
+{ victoria_fate() == "ko":
+    Agent 0x99: Victoria Sterling went down on site. She's in a guarded hospital bed, not a boardroom.
+    Agent 0x99: We've got the evidence and the name either way. The Architect loses an operator — she just won't be talking to us about it.
+    * [She made her choice when she priced the premium]
+        You: She charged extra because hospitals can't defend themselves. Whatever put her in that bed, she earned the file we're building.
+        Agent 0x99: Hard to argue. The pricing model alone proves intent.
+        -> phase_2_discussion
+    * [We lost her as a source]
+        You: Unconscious, she tells us nothing. We had the case, not the network.
+        Agent 0x99: True. Evidence secured, intelligence lost. It's a trade, and you made it.
+        -> phase_2_discussion
+}
+{ victoria_fate() == "escaped":
+    Agent 0x99: Victoria Sterling is in the wind. She had a bag packed before you ever crossed the threshold.
+    Agent 0x99: We've got the case — the logs, the catalog, the directive. What we don't have is her.
+    * [The evidence was worth more than the collar]
+        You: The proof outlasts her. She's a signature on it now, and signatures don't run.
+        ~ handler_trust = handler_trust + 5
+        # influence_increased
+        Agent 0x99: A cold read, but a defensible one. She'll resurface. We'll be waiting with the file.
+        -> phase_2_discussion
+    * [She'll reorganise and resurface]
+        You: She goes dark, rebuilds, comes back under a new name. That's the cost of letting her walk.
+        Agent 0x99: It is. But she leaves knowing we can prove all of it. That changes how she moves.
+        -> phase_2_discussion
 }
 
 === victoria_recruited_path ===
@@ -238,6 +260,7 @@ Agent 0x99: "Chaos amplification factor: 3.7x" - they're CALCULATING the synergi
 * [This is campaign-level intelligence]
     You: This isn't just one mission. This is the key to the entire ENTROPY network.
     ~ handler_trust = handler_trust + 10
+    # influence_increased
     Agent 0x99: Exactly. You didn't just complete a mission. You gave us the map to their whole operation.
     -> architect_investigation
 
@@ -253,39 +276,39 @@ Agent 0x99: Thanks to you.
 === james_discussion ===
 #speaker:agent_0x99
 { james_fate() != "":
-    Agent 0x99: One more thing. James Park, Zero Day's senior consultant.
+    Agent 0x99: One more thing. Danny Foster, Zero Day's senior consultant.
     { james_fate() == "protected":
         Agent 0x99: You protected him. Framed his role as unwitting participation under Victoria's deception.
-        Agent 0x99: I've read your report. And I've read James's diary entries.
+        Agent 0x99: I've read your report. And I've read Danny's diary entries.
         Agent 0x99: I think... I think you made the right call.
-        Agent 0x99: James conducted legitimate pen testing under false pretenses. He was a tool Victoria used.
+        Agent 0x99: Danny conducted legitimate pen testing under false pretenses. He was a tool Victoria used.
         Agent 0x99: When he learned the truth, he was paralyzed by fear and guilt. That's human.
         { player_approach() == "diplomatic":
             Agent 0x99: Your diplomatic nuance - recognizing the complexity - that's why this field needs people like you.
         }
-        Agent 0x99: James reached out to SAFETYNET yesterday. Voluntarily. He's cooperating fully.
+        Agent 0x99: Danny reached out to SAFETYNET yesterday. Voluntarily. He's cooperating fully.
         Agent 0x99: He won't face charges. But he'll live with what happened. That's punishment enough.
         -> lore_discussion
     }
     { james_fate() == "exposed":
-        Agent 0x99: You exposed James's full involvement. The reconnaissance, the post-attack knowledge, the hush money.
+        Agent 0x99: You exposed Danny's full involvement. The reconnaissance, the post-attack knowledge, the hush money.
         Agent 0x99: He's been arrested. Charged with conspiracy after the fact and obstruction.
         Agent 0x99: His lawyers are arguing he was deceived, which... he was. Initially.
         Agent 0x99: But when he learned the truth and took Victoria's raise to stay quiet, that became a choice.
         { player_approach() == "aggressive":
             Agent 0x99: Your aggressive approach - all operatives face justice - is consistent. I respect that.
         }
-        Agent 0x99: James will likely get a reduced sentence compared to Victoria. Maybe 5-10 years instead of life.
+        Agent 0x99: Danny will likely get a reduced sentence compared to Victoria. Maybe 5-10 years instead of life.
         Agent 0x99: His cooperation since arrest is helping prosecution. But he'll still serve time.
         -> lore_discussion
     }
     { james_fate() == "ignored":
-        Agent 0x99: You documented James's situation but left his fate to his own choices.
+        Agent 0x99: You documented Danny's situation but left his fate to his own choices.
         Agent 0x99: Interesting approach. Not protecting, not exposing. Just... observing.
-        Agent 0x99: James made his choice. He came forward to SAFETYNET two days ago. Voluntarily.
+        Agent 0x99: Danny made his choice. He came forward to SAFETYNET two days ago. Voluntarily.
         Agent 0x99: He's cooperating. Providing testimony against Victoria. He'll likely avoid charges given the voluntary disclosure.
         { player_approach() == "cautious":
-            Agent 0x99: Your cautious approach - gather evidence, let the system decide - allowed James's own moral agency.
+            Agent 0x99: Your cautious approach - gather evidence, let the system decide - allowed Danny's own moral agency.
         }
         Agent 0x99: He made the right choice in the end. That says something about him.
         -> lore_discussion
@@ -369,7 +392,10 @@ Agent 0x99: Zero Day Syndicate is disrupted. Victoria Sterling
 { victoria_fate() == "recruited":
     is our asset
 }
-{ (victoria_fate() != "arrested") && (victoria_fate() != "recruited"):
+{ victoria_fate() == "ko":
+    is in a guarded hospital bed
+}
+{ (victoria_fate() != "arrested") && (victoria_fate() != "recruited") && (victoria_fate() != "ko"):
     has gone dark
 }
 .
@@ -412,12 +438,14 @@ Agent 0x99: They didn't get justice before. But because of what you did, they ha
 Agent 0x99: That matters.
 * [It does matter]
     ~ handler_trust = handler_trust + 5
+    # influence_increased
     You: It matters. That's why we do this work.
     Agent 0x99: Exactly. That's why we fight.
     -> final_words
 * [Thank you, Agent 0x99]
     You: Thank you for the support on this mission. Your guidance made the difference.
     ~ handler_trust = handler_trust + 10
+    # influence_increased
     Agent 0x99: [Warmly] Any time, {player_name()}. We're a team.
     -> final_words
 * [On to the next mission]
@@ -432,3 +460,4 @@ Agent 0x99: The fight against ENTROPY continues. But tonight, you've earned some
 [Transmission ends]
 [Mission 3 Complete: Ghost in the Machine]
 #mission_complete
+-> DONE

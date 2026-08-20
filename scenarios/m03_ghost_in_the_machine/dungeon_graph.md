@@ -8,20 +8,20 @@ Infiltrate Zero Day Syndicate posing as security researcher 'Alex Chen.' Meet Vi
 
 | Metric | Value |
 |---|---|
-| Story aims | 4 |
+| Story aims | 6 |
 | Total tasks | 17 (2 optional) |
 | VM flag challenges | 4 |
 | Physical locks | 7 |
 | AND-gate convergences | 0 |
 | Rooms | 7 |
-| Puzzle graph nodes / edges | 24 / 24 |
-| Story graph nodes / edges | 4 / 0 |
+| Puzzle graph nodes / edges | 25 / 25 |
+| Story graph nodes / edges | 6 / 5 |
 
 ## Critical Path
 
-0 hops through story aims — minimum mandatory sequence to reach mission completion:
+2 hops through story aims — minimum mandatory sequence to reach mission completion:
 
-****
+**Get Inside WhiteHat → Breach The Server Room → Moral Engagement**
 
 ## How to Read These Diagrams
 
@@ -81,14 +81,15 @@ flowchart TD
   lock_exec_filing_cabinet["Exec Filing Cabinet"]
   lock_server_filing_cabinet["Server Filing Cabinet"]
   lock_wall_safe_server["Wall Safe<br/>PIN lock"]
+  cyberchef_workstation{"CyberChef Workstation"}
   lock_victoria_computer["Executive Computer<br/>Password lock"]
-  vmch_submit_network_scan_flag["Submit network scan evidence"]
+  vmch_submit_network_scan_flag["Map the training network and submit the scan flag"]
   vmfl_submit_network_scan_flag{"Network Scan Flag"}
-  vmch_submit_ftp_flag["Submit FTP intelligence evidence"]
+  vmch_submit_ftp_flag["Pull the FTP intelligence and submit the flag"]
   vmfl_submit_ftp_flag{"Ftp Flag"}
-  vmch_submit_http_flag["Submit HTTP analysis evidence"]
+  vmch_submit_http_flag["Decode the pricing intel and submit the flag"]
   vmfl_submit_http_flag{"Http Flag"}
-  vmch_submit_distcc_flag["Submit distcc exploit evidence"]
+  vmch_submit_distcc_flag["Exploit the legacy distcc service and submit the flag"]
   vmfl_submit_distcc_flag{"Distcc Flag"}
   main_hallway("Main Hallway")
   executive_wing_hallway("Executive Wing Hallway")
@@ -106,6 +107,7 @@ flowchart TD
   lock_pick_kit --> lock_server_filing_cabinet
   server_room --> lock_server_filing_cabinet
   server_room --> lock_wall_safe_server
+  server_room --> cyberchef_workstation
   executive_office --> lock_exec_filing_cabinet
   executive_office --> lock_victoria_computer
   vmch_submit_network_scan_flag --> vmfl_submit_network_scan_flag
@@ -121,7 +123,7 @@ flowchart TD
 
   class door_conference_room_01,door_server_room,door_executive_office,lock_exec_filing_cabinet,lock_server_filing_cabinet,lock_wall_safe_server,lock_victoria_computer lock
   class conference_room_01,server_room,executive_office,reception_lobby,main_hallway,executive_wing_hallway,james_office room
-  class rfid_cloner,lock_pick_kit item
+  class rfid_cloner,lock_pick_kit,cyberchef_workstation item
   class vmch_submit_network_scan_flag,vmch_submit_ftp_flag,vmch_submit_http_flag,vmch_submit_distcc_flag vm
   class vmfl_submit_network_scan_flag,vmfl_submit_ftp_flag,vmfl_submit_http_flag,vmfl_submit_distcc_flag flag
   class node_start start
@@ -149,13 +151,21 @@ flowchart TD
   classDef critical  fill:#2a1500,stroke:#ffaa00,color:#ffdd88
   classDef start     fill:#003322,stroke:#00ffaa,color:#00ffaa
 
-  aim_main_mission{{"Zero Day Intelligence"}}
+  aim_act1_gain_access{{"Get Inside WhiteHat"}}
+  aim_act2_breach_server_room{{"Breach The Server Room"}}
+  aim_search_executive_office{{"Search Sterling's Office"}}
   aim_collect_lore{{"LORE Collection"}}
   aim_perfect_stealth{{"Perfect Stealth"}}
   aim_moral_choices{{"Moral Engagement"}}
 
+  aim_act1_gain_access -.-> aim_act2_breach_server_room
+  aim_act1_gain_access -.-> aim_search_executive_office
+  aim_act1_gain_access -.-> aim_collect_lore
+  aim_act1_gain_access -.-> aim_perfect_stealth
+  aim_act2_breach_server_room -.-> aim_moral_choices
 
-  class aim_main_mission,aim_collect_lore,aim_perfect_stealth,aim_moral_choices aim
+  class aim_act1_gain_access,aim_act2_breach_server_room,aim_moral_choices critical
+  class aim_search_executive_office,aim_collect_lore,aim_perfect_stealth aim
 ```
 
 ## Story + Puzzle (Integrated)
@@ -195,19 +205,22 @@ flowchart TD
   lock_exec_filing_cabinet["Exec Filing Cabinet"]
   lock_server_filing_cabinet["Server Filing Cabinet"]
   lock_wall_safe_server["Wall Safe<br/>PIN lock"]
+  cyberchef_workstation{"CyberChef Workstation"}
   lock_victoria_computer["Executive Computer<br/>Password lock"]
-  vmch_submit_network_scan_flag["Submit network scan evidence"]
+  vmch_submit_network_scan_flag["Map the training network and submit the scan flag"]
   vmfl_submit_network_scan_flag{"Network Scan Flag"}
-  vmch_submit_ftp_flag["Submit FTP intelligence evidence"]
+  vmch_submit_ftp_flag["Pull the FTP intelligence and submit the flag"]
   vmfl_submit_ftp_flag{"Ftp Flag"}
-  vmch_submit_http_flag["Submit HTTP analysis evidence"]
+  vmch_submit_http_flag["Decode the pricing intel and submit the flag"]
   vmfl_submit_http_flag{"Http Flag"}
-  vmch_submit_distcc_flag["Submit distcc exploit evidence"]
+  vmch_submit_distcc_flag["Exploit the legacy distcc service and submit the flag"]
   vmfl_submit_distcc_flag{"Distcc Flag"}
   main_hallway("Main Hallway")
   executive_wing_hallway("Executive Wing Hallway")
   james_office("James Office")
-  aim_main_mission{{"Zero Day Intelligence"}}
+  aim_act1_gain_access{{"Get Inside WhiteHat"}}
+  aim_act2_breach_server_room{{"Breach The Server Room"}}
+  aim_search_executive_office{{"Search Sterling's Office"}}
   aim_collect_lore{{"LORE Collection"}}
   aim_perfect_stealth{{"Perfect Stealth"}}
   aim_moral_choices{{"Moral Engagement"}}
@@ -224,6 +237,7 @@ flowchart TD
   lock_pick_kit --> lock_server_filing_cabinet
   server_room --> lock_server_filing_cabinet
   server_room --> lock_wall_safe_server
+  server_room --> cyberchef_workstation
   executive_office --> lock_exec_filing_cabinet
   executive_office --> lock_victoria_computer
   vmch_submit_network_scan_flag --> vmfl_submit_network_scan_flag
@@ -236,20 +250,26 @@ flowchart TD
   reception_lobby --> main_hallway
   main_hallway --> executive_wing_hallway
   executive_wing_hallway --> james_office
-  vmfl_submit_network_scan_flag -.-> aim_main_mission
-  vmfl_submit_ftp_flag -.-> aim_main_mission
-  vmfl_submit_http_flag -.-> aim_main_mission
-  vmfl_submit_distcc_flag -.-> aim_main_mission
-  lock_victoria_computer -.-> aim_main_mission
+  aim_act1_gain_access -.-> aim_act2_breach_server_room
+  aim_act1_gain_access -.-> aim_search_executive_office
+  aim_act1_gain_access -.-> aim_collect_lore
+  aim_act1_gain_access -.-> aim_perfect_stealth
+  aim_act2_breach_server_room -.-> aim_moral_choices
+  vmfl_submit_network_scan_flag -.-> aim_act2_breach_server_room
+  vmfl_submit_ftp_flag -.-> aim_act2_breach_server_room
+  vmfl_submit_http_flag -.-> aim_act2_breach_server_room
+  vmfl_submit_distcc_flag -.-> aim_act2_breach_server_room
+  lock_victoria_computer -.-> aim_search_executive_office
   lock_exec_filing_cabinet -.-> aim_collect_lore
   lock_wall_safe_server -.-> aim_collect_lore
 
   class door_conference_room_01,door_server_room,door_executive_office,lock_exec_filing_cabinet,lock_server_filing_cabinet,lock_wall_safe_server,lock_victoria_computer lock
   class conference_room_01,server_room,executive_office,reception_lobby,main_hallway,executive_wing_hallway,james_office room
-  class rfid_cloner,lock_pick_kit item
+  class rfid_cloner,lock_pick_kit,cyberchef_workstation item
   class vmch_submit_network_scan_flag,vmch_submit_ftp_flag,vmch_submit_http_flag,vmch_submit_distcc_flag vm
   class vmfl_submit_network_scan_flag,vmfl_submit_ftp_flag,vmfl_submit_http_flag,vmfl_submit_distcc_flag flag
-  class aim_main_mission,aim_collect_lore,aim_perfect_stealth,aim_moral_choices aim
+  class aim_act1_gain_access,aim_act2_breach_server_room,aim_moral_choices critical
+  class aim_search_executive_office,aim_collect_lore,aim_perfect_stealth aim
   class node_start start
 ```
 
@@ -335,28 +355,34 @@ flowchart TD
   rc_npc_agent_0x99_3("Agent 0x99")
   rc_npc_receptionist_4("Receptionist")
   rc_obj5_5{"Visitor Badge"}
-  rc_npc_agent_0x99_6("Agent 0x99")
-  rc_obj7_7{"SAFETYNET Field Guide: Lockpicking"}
-  rc_obj8_8{"SAFETYNET Field Guide: Network Exploitation"}
-  rc_npc_agent_0x99_9("Agent 0x99")
-  rc_npc_security_guard_10("Security Guard")
-  rc_obj11_11{"Presentation Materials"}
-  rc_obj12_12{"Conference Whiteboard"}
-  rc_npc_victoria_sterling_13("Victoria Sterling")
-  rc_server_filing_cabinet_14{"Filing Cabinet"}
-  rc_wall_safe_server_15{"Wall Safe"}
-  rc_obj16_16{"Server Room Whiteboard"}
-  rc_vm_launcher_zero_day_17{"VM Access Terminal"}
-  rc_cyberchef_workstation_18{"CyberChef Decoding Workstation"}
-  rc_flag_station_dropsite_19{"Drop-Site Terminal"}
-  rc_exec_filing_cabinet_20{"Filing Cabinet"}
-  rc_victoria_computer_21{"Executive Computer"}
-  rc_obj22_22{"Desk Drawer"}
-  rc_obj23_23{"Performance Review"}
-  rc_obj24_24{"Family Photo"}
-  rc_obj25_25{"James's Workstation"}
-  rc_obj26_26{"Certification Wall"}
-  rc_npc_agent_0x99_27("Agent 0x99")
+  rc_obj6_6{"Staff Access Badge"}
+  rc_npc_agent_0x99_7("Agent 0x99")
+  rc_obj8_8{"SAFETYNET Field Guide: RFID Cloning"}
+  rc_obj9_9{"SAFETYNET Field Guide: Lockpicking"}
+  rc_obj10_10{"SAFETYNET Field Guide: Reconnaissance and Network Mapping"}
+  rc_obj11_11{"SAFETYNET Field Guide: distcc Exploitation"}
+  rc_obj12_12{"SAFETYNET Field Guide: Encoding and Decoding with CyberChef"}
+  rc_npc_agent_0x99_13("Agent 0x99")
+  rc_npc_security_guard_14("Security Guard")
+  rc_obj15_15{"Presentation Materials"}
+  rc_obj16_16{"Conference Whiteboard"}
+  rc_npc_victoria_sterling_17("Victoria Sterling")
+  rc_obj18_18{"Executive Keycard"}
+  rc_server_filing_cabinet_19{"Filing Cabinet"}
+  rc_wall_safe_server_20{"Wall Safe"}
+  rc_obj21_21{"Server Room Whiteboard"}
+  rc_vm_launcher_zero_day_22{"VM Access Terminal"}
+  rc_cyberchef_workstation_23{"CyberChef Workstation"}
+  rc_flag_station_dropsite_24{"Drop-Site Terminal"}
+  rc_exec_filing_cabinet_25{"Filing Cabinet"}
+  rc_victoria_computer_26{"Executive Computer"}
+  rc_obj27_27{"Desk Drawer"}
+  rc_obj28_28{"Performance Review"}
+  rc_obj29_29{"Family Photo"}
+  rc_obj30_30{"James's Workstation"}
+  rc_obj31_31{"Certification Wall"}
+  rc_npc_danny_foster_32("Danny Foster")
+  rc_npc_agent_0x99_33("Agent 0x99")
 
   reception_lobby --> main_hallway
   main_hallway --> conference_room_01
@@ -369,32 +395,38 @@ flowchart TD
   reception_lobby --> rc_npc_agent_0x99_3
   reception_lobby --> rc_npc_receptionist_4
   rc_npc_receptionist_4 --> rc_obj5_5
-  reception_lobby --> rc_npc_agent_0x99_6
-  rc_npc_agent_0x99_6 --> rc_obj7_7
-  rc_npc_agent_0x99_6 --> rc_obj8_8
-  reception_lobby --> rc_npc_agent_0x99_9
-  main_hallway --> rc_npc_security_guard_10
-  conference_room_01 --> rc_obj11_11
-  conference_room_01 --> rc_obj12_12
-  conference_room_01 --> rc_npc_victoria_sterling_13
-  server_room --> rc_server_filing_cabinet_14
-  server_room --> rc_wall_safe_server_15
-  server_room --> rc_obj16_16
-  server_room --> rc_vm_launcher_zero_day_17
-  server_room --> rc_cyberchef_workstation_18
-  server_room --> rc_flag_station_dropsite_19
-  executive_office --> rc_exec_filing_cabinet_20
-  executive_office --> rc_victoria_computer_21
-  executive_office --> rc_obj22_22
-  james_office --> rc_obj23_23
-  james_office --> rc_obj24_24
-  james_office --> rc_obj25_25
-  james_office --> rc_obj26_26
-  james_office --> rc_npc_agent_0x99_27
+  rc_npc_receptionist_4 --> rc_obj6_6
+  reception_lobby --> rc_npc_agent_0x99_7
+  rc_npc_agent_0x99_7 --> rc_obj8_8
+  rc_npc_agent_0x99_7 --> rc_obj9_9
+  rc_npc_agent_0x99_7 --> rc_obj10_10
+  rc_npc_agent_0x99_7 --> rc_obj11_11
+  rc_npc_agent_0x99_7 --> rc_obj12_12
+  reception_lobby --> rc_npc_agent_0x99_13
+  main_hallway --> rc_npc_security_guard_14
+  conference_room_01 --> rc_obj15_15
+  conference_room_01 --> rc_obj16_16
+  conference_room_01 --> rc_npc_victoria_sterling_17
+  rc_npc_victoria_sterling_17 --> rc_obj18_18
+  server_room --> rc_server_filing_cabinet_19
+  server_room --> rc_wall_safe_server_20
+  server_room --> rc_obj21_21
+  server_room --> rc_vm_launcher_zero_day_22
+  server_room --> rc_cyberchef_workstation_23
+  server_room --> rc_flag_station_dropsite_24
+  executive_office --> rc_exec_filing_cabinet_25
+  executive_office --> rc_victoria_computer_26
+  executive_office --> rc_obj27_27
+  james_office --> rc_obj28_28
+  james_office --> rc_obj29_29
+  james_office --> rc_obj30_30
+  james_office --> rc_obj31_31
+  james_office --> rc_npc_danny_foster_32
+  james_office --> rc_npc_agent_0x99_33
 
   class reception_lobby,main_hallway,executive_wing_hallway,james_office room
   class conference_room_01,server_room,executive_office lock
-  class rc_obj1_1,rc_obj2_2,rc_obj5_5,rc_obj7_7,rc_obj8_8,rc_obj11_11,rc_obj12_12,rc_server_filing_cabinet_14,rc_wall_safe_server_15,rc_obj16_16,rc_vm_launcher_zero_day_17,rc_cyberchef_workstation_18,rc_flag_station_dropsite_19,rc_exec_filing_cabinet_20,rc_victoria_computer_21,rc_obj22_22,rc_obj23_23,rc_obj24_24,rc_obj25_25,rc_obj26_26 item
-  class rc_npc_agent_0x99_3,rc_npc_receptionist_4,rc_npc_agent_0x99_6,rc_npc_agent_0x99_9,rc_npc_security_guard_10,rc_npc_victoria_sterling_13,rc_npc_agent_0x99_27 npc
+  class rc_obj1_1,rc_obj2_2,rc_obj5_5,rc_obj6_6,rc_obj8_8,rc_obj9_9,rc_obj10_10,rc_obj11_11,rc_obj12_12,rc_obj15_15,rc_obj16_16,rc_obj18_18,rc_server_filing_cabinet_19,rc_wall_safe_server_20,rc_obj21_21,rc_vm_launcher_zero_day_22,rc_cyberchef_workstation_23,rc_flag_station_dropsite_24,rc_exec_filing_cabinet_25,rc_victoria_computer_26,rc_obj27_27,rc_obj28_28,rc_obj29_29,rc_obj30_30,rc_obj31_31 item
+  class rc_npc_agent_0x99_3,rc_npc_receptionist_4,rc_npc_agent_0x99_7,rc_npc_agent_0x99_13,rc_npc_security_guard_14,rc_npc_victoria_sterling_17,rc_npc_danny_foster_32,rc_npc_agent_0x99_33 npc
   class node_start start
 ```

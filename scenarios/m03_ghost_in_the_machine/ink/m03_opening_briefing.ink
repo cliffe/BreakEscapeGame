@@ -5,6 +5,10 @@ VAR handler_trust = 50
 VAR knows_m2_connection = false
 VAR mission_priority = ""
 VAR asked_about_victoria = false
+VAR asked_clone = false
+VAR asked_network = false
+VAR asked_cover = false
+VAR asked_learn = false
 
 === start ===
 #speaker:agent_0x99
@@ -17,6 +21,7 @@ Agent 0x99: Zero Day Syndicate. You heard of them?
     -> briefing_main
 * [The exploit marketplace]
     ~ handler_trust = handler_trust + 10
+    # influence_increased
     You: The exploit marketplace. They sell zero-day vulnerabilities.
     Agent 0x99: Exactly. And we've got evidence they're escalating.
     -> briefing_main
@@ -39,6 +44,7 @@ Agent 0x99: They've been selling exploits to other ENTROPY cells.
     You: Which ENTROPY cells are they selling to?
     Agent 0x99: Ransomware Incorporated, Social Fabric, Critical Mass... possibly others.
     ~ handler_trust = handler_trust + 5
+    # influence_increased
     -> st_catherines_connection
 * [What kind of exploits?]
     You: What kind of exploits are we talking about?
@@ -57,6 +63,7 @@ Agent 0x99: The ransomware that killed six people in critical care?
 * [Of course I remember]
     ~ knows_m2_connection = true
     ~ handler_trust = handler_trust + 5
+    # influence_increased
     You: Of course. The ProFTPD exploit. Patient monitoring systems went down.
     Agent 0x99: Right. We think Zero Day sold that exploit.
     -> mission_stakes
@@ -81,12 +88,14 @@ Agent 0x99: For $12,500. With a "healthcare premium" markup.
 }
 * [That's murder for profit]
     ~ handler_trust = handler_trust + 10
+    # influence_increased
     ~ player_approach = "cautious"
     You: That's not hacking. That's murder for profit.
     Agent 0x99: Exactly. And they're planning Phase 2.
     -> objectives
 * [We need to stop them]
     ~ handler_trust = handler_trust + 5
+    # influence_increased
     You: We need to shut them down. Now.
     Agent 0x99: Agreed. That's the mission.
     -> objectives
@@ -101,125 +110,92 @@ Agent 0x99: Your mission objectives:
 Agent 0x99: One - infiltrate WhiteHat Security and clone Victoria Sterling's executive keycard.
 Agent 0x99: Two - access their training network and gather intelligence on exploit sales.
 Agent 0x99: Three - find physical evidence linking Zero Day to the hospital attack.
-Agent 0x99: This mission will test your network reconnaissance skills, encoding analysis, and intelligence correlation.
-Agent 0x99: You'll practice nmap scanning, banner grabbing, and multi-layer decoding. Real pen testing work.
-* [Who's Victoria Sterling?]
+Agent 0x99: This tests your network recon, encoding analysis, and intelligence correlation - nmap scanning, banner grabbing, multi-layer decoding. Real pen testing work.
+Agent 0x99: Ask me whatever you need before you go in.
+-> briefing_hub
+
+=== briefing_hub ===
++ {not asked_about_victoria} [Who's Victoria Sterling?]
     ~ asked_about_victoria = true
-    -> victoria_briefing
-* [What's the training network?]
-    -> training_network_briefing
-* [How do I get in?]
-    -> cover_story
-* [What will I learn from this?]
-    -> learning_objectives
+    -> topic_victoria
++ {not asked_clone} [How do I clone her keycard?]
+    ~ asked_clone = true
+    -> topic_clone
++ {not asked_network} [What's the training network?]
+    ~ asked_network = true
+    -> topic_network
++ {not asked_cover} [How do I get in - what's my cover?]
+    ~ asked_cover = true
+    -> topic_cover
++ {not asked_learn} [What will I actually learn from this?]
+    ~ asked_learn = true
+    -> topic_learn
++ [That's everything - let's talk approach]
+    -> mission_approach
 
-=== learning_objectives ===
-#speaker:agent_0x99
-Agent 0x99: Good question. This mission is educational as well as operational.
-Agent 0x99: You'll learn network reconnaissance - using tools like nmap to identify services and vulnerabilities.
-Agent 0x99: Banner grabbing with netcat, understanding what information systems leak unintentionally.
-Agent 0x99: Encoding versus encryption - how to decode ROT13, hexadecimal, and Base64. Not security, just obfuscation.
-Agent 0x99: And the most important skill: correlating digital evidence with physical intelligence.
-Agent 0x99: Understanding the economics of the zero-day marketplace. How adversaries monetize vulnerabilities.
-Agent 0x99: By the end, you'll have practical penetration testing experience and insight into real-world exploit markets.
-* [Understood. I'm ready.]
-    Agent 0x99: Excellent. Let's go over the details.
-    -> victoria_briefing
-* [Sounds intense]
-    Agent 0x99: It is. But you're prepared for this. Let's continue the briefing.
-    -> victoria_briefing
-
-=== victoria_briefing ===
+=== topic_victoria ===
 #speaker:agent_0x99
 Agent 0x99: Victoria Sterling, CEO of WhiteHat Security. Former DEFCON speaker, respected researcher.
-Agent 0x99: And likely the operational lead for Zero Day Syndicate. Codename: "Cipher."
+Agent 0x99: And likely the operational lead for Zero Day Syndicate. Codename: "Sable."
 Agent 0x99: Smart, charismatic, ideologically committed to "free market vulnerability research."
-* [She rationalizes selling exploits as capitalism]
+* [So she's convinced herself selling hospital exploits is just economics?]
     ~ handler_trust = handler_trust + 5
-    You: So she's convinced herself selling hospital exploits is just economics?
-    Agent 0x99: Exactly. She's not a sociopath. She's a true believer.
-    Agent 0x99: Which might make her more dangerous.
-    -> clone_keycard_objective
-* [Can we turn her?]
+    # influence_increased
+    Agent 0x99: Exactly. She's not a sociopath. She's a true believer - which might make her more dangerous.
+    -> briefing_hub
+* [Any chance she's recruitable? As a double agent?]
     ~ handler_trust = handler_trust + 10
+    # influence_increased
     ~ player_approach = "diplomatic"
-    You: Any chance she's recruitable? As a double agent?
     Agent 0x99: Possible. If you can make her see the human cost of her philosophy.
     Agent 0x99: But that's optional. Primary mission is intelligence gathering.
-    -> clone_keycard_objective
-* [Got it. The mission?]
-    -> clone_keycard_objective
+    -> briefing_hub
++ [Got it.]
+    -> briefing_hub
 
-=== clone_keycard_objective ===
+=== topic_clone ===
 #speaker:agent_0x99
-Agent 0x99: You'll meet Victoria under the cover of a potential recruit consultation.
-Agent 0x99: While you're with her, clone her RFID executive keycard.
-Agent 0x99: That keycard will give you server room access after hours.
-* [How do I clone it?]
-    You: How does the RFID cloning work?
-    -> rfid_tutorial
-* [Sounds risky]
-    ~ player_approach = "cautious"
-    You: Cloning her card while she's watching? That's risky.
-    Agent 0x99: You'll need to be within 2 meters for about 10 seconds. Create a distraction if needed.
-    -> training_network_briefing
-* [I can handle it]
-    ~ player_approach = "aggressive"
-    ~ handler_trust = handler_trust + 5
-    You: I've done proximity ops before. I can handle it.
-    Agent 0x99: Good. Here's the technical details.
-    -> rfid_tutorial
-
-=== rfid_tutorial ===
-#speaker:agent_0x99
-Agent 0x99: We're providing you with an RFID cloner device. Pocket-sized.
-Agent 0x99: Get within 2 meters of Victoria for about 10 seconds. The device does the rest.
-Agent 0x99: It'll vibrate when the clone is complete. Then get some distance to be safe.
+Agent 0x99: You'll meet Victoria under the cover of a potential recruit. While you're with her, clone her RFID executive keycard - that's your server room access after hours.
+Agent 0x99: We're giving you a pocket-sized RFID cloner. Get within a couple of metres for about ten seconds; it vibrates when the clone's done, then get some distance.
 * [What if she notices?]
-    You: What if she notices something?
-    Agent 0x99: If questioned, say you're interested in their security research. Play curious recruit.
-    -> training_network_briefing
-* [Understood]
-    -> training_network_briefing
+    Agent 0x99: Play the curious recruit - you're interested in their research. The cloner stays passive until you trigger it.
+    -> briefing_hub
++ [Understood.]
+    -> briefing_hub
 
-=== training_network_briefing ===
+=== topic_network ===
 #speaker:agent_0x99
-Agent 0x99: Once you have server room access, you'll find their training network.
-Agent 0x99: It's a VM environment at 192.168.100.0/24. Zero Day uses it to test exploits before selling them.
-Agent 0x99: Run reconnaissance - port scanning, service enumeration, the usual.
+Agent 0x99: Once you're in the server room you'll find their training network - a VM environment at 192.168.100.0/24.
+Agent 0x99: Zero Day uses it to test exploits before selling them. Run reconnaissance - port scanning, service enumeration, the usual.
 * [What am I looking for specifically?]
-    You: What specific intel am I after?
-    Agent 0x99: Operational logs. Client communications. Evidence of the hospital attack.
-    Agent 0x99: And anything about Phase 2 - their future target list.
-    -> cover_story
-* [Standard pentest procedures]
+    Agent 0x99: Operational logs. Client communications. Evidence of the hospital attack. And anything about Phase 2 - their future target list.
+    -> briefing_hub
++ [Standard pentest procedures. Got it.]
     ~ handler_trust = handler_trust + 5
-    You: Standard penetration test procedures. Got it.
+    # influence_increased
     Agent 0x99: Exactly. Scan, enumerate, exploit if needed.
-    -> cover_story
-* [Ready for the cover story]
-    -> cover_story
+    -> briefing_hub
 
-=== cover_story ===
+=== topic_cover ===
 #speaker:agent_0x99
-Agent 0x99: Your cover: you're a cybersecurity researcher interested in Zero Day training programs.
-Agent 0x99: Victoria is meeting you to assess whether you're recruit material.
-Agent 0x99: Entry point: conference room meeting at 2 PM. Then you'll have until nightfall to prep.
-{ asked_about_victoria:
-    Agent 0x99: Be natural with Victoria. She's smart - she'll spot nervousness.
-}
-* [What's my background story?]
-    You: What's my background if she asks technical questions?
-    Agent 0x99: You're a freelance pentester. Worked with small firms, looking for bigger opportunities.
-    Agent 0x99: Interested in "the morally gray" side of security research. That'll appeal to her philosophy.
-    -> mission_approach
-* [When do I infiltrate the server room?]
-    You: When do I actually infiltrate the server room?
-    Agent 0x99: After the daytime meeting, there's a time skip to nighttime.
-    Agent 0x99: Most staff gone. Just a security guard on patrol. That's when you move.
-    -> mission_approach
-* [I understand the setup]
-    -> mission_approach
+Agent 0x99: Your cover: a cybersecurity researcher interested in Zero Day's training programs. Victoria's meeting you to size you up as recruit material.
+Agent 0x99: Entry point is a conference room meeting at 2 PM. After that you'll have until the building empties to prep.
+Agent 0x99: If she asks - you're a freelance pentester, small firms, looking for bigger opportunities, drawn to the "morally grey" side. That'll appeal to her.
+* [When do I hit the server room?]
+    Agent 0x99: After the daytime meeting. Most staff gone, just a security guard on patrol. That's when you move.
+    -> briefing_hub
++ [I understand the setup.]
+    Agent 0x99: Good. And be natural with her - she's smart, she'll spot nervousness.
+    -> briefing_hub
+
+=== topic_learn ===
+#speaker:agent_0x99
+Agent 0x99: Good question - this one's educational as well as operational.
+Agent 0x99: Network reconnaissance with nmap. Banner grabbing with netcat, and what systems leak unintentionally.
+Agent 0x99: Encoding versus encryption - decoding ROT13, hex, and Base64. That's obfuscation, not security.
+Agent 0x99: And the big one: correlating digital evidence with physical intelligence, and the economics of the zero-day marketplace.
++ [Understood.]
+    -> briefing_hub
 
 === mission_approach ===
 #speaker:agent_0x99
@@ -244,6 +220,7 @@ Agent 0x99: Your call. I trust your judgment.
     ~ mission_priority = "stealth"
     You: I'll read the situation. Stay flexible.
     ~ handler_trust = handler_trust + 10
+    # influence_increased
     Agent 0x99: Adaptability. That's why you're good at this.
     Agent 0x99: Trust your instincts. Call if you need guidance.
     -> final_instructions
@@ -270,6 +247,7 @@ Agent 0x99: Field Operations Rule 7 - "When infiltrating corporate environments,
 }
 * [I won't let you down]
     ~ handler_trust = handler_trust + 10
+    # influence_increased
     You: I'll get the evidence. Zero Day is going down.
     Agent 0x99: That's what I wanted to hear. Stay safe out there.
     -> deployment
@@ -283,10 +261,11 @@ Agent 0x99: Field Operations Rule 7 - "When infiltrating corporate environments,
 #speaker:agent_0x99
 Agent 0x99: Victoria will test you. Philosophical questions about security ethics.
 Agent 0x99: Play the curious researcher. Don't tip your hand.
-Agent 0x99: And if you find evidence of James Park's involvement...
+Agent 0x99: And if you find evidence of Danny Foster's involvement...
 Agent 0x99: He's a mid-level consultant. Might be innocent, might be complicit. Your call on what to do.
 * [I'll assess in the field]
     ~ handler_trust = handler_trust + 5
+    # influence_increased
     You: I'll make that judgment when I have the facts.
     Agent 0x99: Good answer. Collect evidence first, decide later.
     -> deployment
@@ -315,4 +294,4 @@ Agent 0x99: Remember: meet with Victoria, clone her keycard, then night infiltra
 Agent 0x99: Go get 'em, {player_name()}. Haxolottle out.
 [Transition: Fade to WhiteHat Security reception lobby, 2 PM]
 #start_gameplay
-#complete_task:briefing_received
+-> DONE

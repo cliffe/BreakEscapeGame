@@ -23,7 +23,7 @@ end
 # Narrative content variables
 whiteboard_message_encoded = rot13("MEET WITH THE ARCHITECT - PRIORITIZE INFRASTRUCTURE EXPLOITS")
 
-client_roster_content = "ACTIVE CLIENTS:\n- CIPHER (ransomware deployment)\n- GHOST (zero-day purchases)\n- VORTEX (credential harvesting)\n- ECLIPSE (industrial espionage)"
+client_roster_content = "ACTIVE CLIENTS:\n- OBSIDIAN (ransomware deployment)\n- GHOST (zero-day purchases)\n- VORTEX (credential harvesting)\n- ECLIPSE (industrial espionage)"
 client_roster_hex = hex_encode(client_roster_content)
 
 architect_directive = "Phase 2 targets critical infrastructure. Focus on healthcare, energy, water treatment. The hospital attack was just the beginning."
@@ -92,10 +92,12 @@ operational_log_content = "TRANSACTION LOG - Q3 2024\n\n[2024-09-15 14:32:11] Pr
           { "text": "ST. CATHERINE'S LINK: PROVEN — ProFTPD exploit traced to GHOST", "style": "entry" },
           { "text": "" },
           { "text": "── DECISIONS ──", "style": "section-header" },
-          { "text": "VICTORIA STERLING: RECRUITED — turned informant against The Architect", "style": "entry", "condition": "globalVars.victoria_recruited" },
-          { "text": "VICTORIA STERLING: ARRESTED — marketplace seized", "style": "entry", "condition": "!globalVars.victoria_recruited" },
-          { "text": "JAMES PARK: PROTECTED — innocent analyst shielded from fallout", "style": "entry", "condition": "globalVars.james_protected" },
-          { "text": "JAMES PARK: EXPOSED — career destroyed in the sweep", "style": "entry", "condition": "globalVars.james_exposed" },
+          { "text": "VICTORIA STERLING: TURNED — a cold asset now, not a convert", "style": "entry", "condition": "globalVars.victoria_recruited" },
+          { "text": "VICTORIA STERLING: ARRESTED — marketplace seized, the name kept from The Architect", "style": "entry", "condition": "globalVars.victoria_arrested" },
+          { "text": "VICTORIA STERLING: ESCAPED — the evidence stayed, she didn't", "style": "entry", "condition": "globalVars.victoria_escaped" },
+          { "text": "VICTORIA STERLING: NEUTRALISED — taken down on site", "style": "entry", "condition": "globalVars.victoria_ko" },
+          { "text": "DANNY FOSTER: PROTECTED — deceived analyst shielded from fallout", "style": "entry", "condition": "globalVars.james_protected" },
+          { "text": "DANNY FOSTER: EXPOSED — career destroyed in the sweep", "style": "entry", "condition": "globalVars.james_exposed" },
           { "text": "PERFECT STEALTH — never detected by security", "style": "entry", "condition": "globalVars.guard_detection_count === 0" },
           { "text": "" },
           { "text": "THE ARCHITECT: identity still unknown. Phase 2 looms.", "style": "warning" },
@@ -107,90 +109,126 @@ operational_log_content = "TRANSACTION LOG - Q3 2024\n\n[2024-09-15 14:32:11] Pr
 
   "objectives": [
     {
-      "aimId": "main_mission",
-      "title": "Zero Day Intelligence",
-      "description": "Gather evidence of Zero Day Syndicate's exploit marketplace operations",
+      "aimId": "act1_gain_access",
+      "title": "Get Inside WhiteHat",
+      "description": "Your visitor pass gets you as far as reception. Clone your way through the access control and get face to face with Victoria Sterling.",
       "status": "active",
       "order": 0,
       "tasks": [
         {
+          "taskId": "clone_reception_badge",
+          "title": "Clone a staff badge to reach the conference area",
+          "description": "Scan the receptionist's MIFARE badge with the RFID cloner, then emulate it at the conference room door",
+          "type": "custom",
+          "status": "active"
+        },
+        {
           "taskId": "meet_victoria",
           "title": "Meet Victoria Sterling",
-          "description": "Meet Victoria Sterling at WhiteHat Security",
+          "description": "Make contact with Victoria Sterling in the conference room",
           "type": "npc_conversation",
           "targetNPC": "victoria_sterling",
           "status": "active"
         },
         {
-          "taskId": "clone_reception_badge",
-          "title": "Clone Staff Access Badge",
-          "description": "Scan the receptionist's MIFARE badge with the RFID cloner to access the conference area",
+          "taskId": "clone_rfid_card",
+          "title": "Clone Victoria's executive keycard",
+          "description": "Get close enough to copy Victoria's custom-key executive keycard — your route into the server room",
+          "type": "custom",
+          "status": "active"
+        }
+      ]
+    },
+    {
+      "aimId": "act2_breach_server_room",
+      "title": "Breach The Server Room",
+      "description": "Come back once the building has emptied. Emulate Victoria's keycard, get onto the training network, and pull the evidence that ties Zero Day to St. Catherine's.",
+      "status": "locked",
+      "order": 1,
+      "unlockCondition": { "aimCompleted": "act1_gain_access" },
+      "tasks": [
+        {
+          "taskId": "submit_network_scan_flag",
+          "title": "Map the training network and submit the scan flag",
+          "description": "Submit flag{network_scan_complete} at drop-site terminal",
+          "type": "submit_flags",
+          "targetFlags": ["ghost_in_machine_vm_network:flag_1"],
+          "targetCount": 1,
+          "currentCount": 0,
+          "showProgress": true,
+          "status": "active"
+        },
+        {
+          "taskId": "submit_ftp_flag",
+          "title": "Pull the FTP intelligence and submit the flag",
+          "description": "Submit flag{ftp_intel_gathered} at drop-site terminal",
+          "type": "submit_flags",
+          "targetFlags": ["ghost_in_machine_vm_network:flag_2"],
+          "targetCount": 1,
+          "currentCount": 0,
+          "showProgress": true,
+          "status": "active"
+        },
+        {
+          "taskId": "submit_http_flag",
+          "title": "Decode the pricing intel and submit the flag",
+          "description": "Submit flag{pricing_intel_decoded} at drop-site terminal",
+          "type": "submit_flags",
+          "targetFlags": ["ghost_in_machine_vm_network:flag_3"],
+          "targetCount": 1,
+          "currentCount": 0,
+          "showProgress": true,
+          "status": "active"
+        },
+        {
+          "taskId": "submit_distcc_flag",
+          "title": "Exploit the legacy distcc service and submit the flag",
+          "description": "Submit flag{distcc_legacy_compromised} at drop-site terminal",
+          "type": "submit_flags",
+          "targetFlags": ["ghost_in_machine_vm_network:flag_4"],
+          "targetCount": 1,
+          "currentCount": 0,
+          "showProgress": true,
+          "status": "active"
+        },
+        {
+          "taskId": "find_operational_logs",
+          "title": "Recover Zero Day's operational transaction logs",
+          "description": "Exploit distcc to recover the operational transaction logs that name GHOST and St. Catherine's",
           "type": "custom",
           "status": "active"
         },
         {
-          "taskId": "clone_rfid_card",
-          "title": "Clone Victoria's Executive Keycard",
-          "description": "Clone Victoria Sterling's custom-key executive keycard for server room access",
-          "type": "custom",
-          "status": "locked"
-        },
-        {
-          "taskId": "submit_network_scan_flag",
-          "title": "Submit network scan evidence",
-          "description": "Submit flag{network_scan_complete} at drop-site terminal",
-          "type": "submit_flags",
-          "status": "locked"
-        },
-        {
-          "taskId": "submit_ftp_flag",
-          "title": "Submit FTP intelligence evidence",
-          "description": "Submit flag{ftp_intel_gathered} at drop-site terminal",
-          "type": "submit_flags",
-          "status": "locked"
-        },
-        {
-          "taskId": "submit_http_flag",
-          "title": "Submit HTTP analysis evidence",
-          "description": "Submit flag{pricing_intel_decoded} at drop-site terminal",
-          "type": "submit_flags",
-          "status": "locked"
-        },
-        {
-          "taskId": "submit_distcc_flag",
-          "title": "Submit distcc exploit evidence",
-          "description": "Submit flag{distcc_legacy_compromised} at drop-site terminal",
-          "type": "submit_flags",
-          "status": "locked"
-        },
-        {
           "taskId": "decode_whiteboard",
-          "title": "Decode Whiteboard Message",
+          "title": "Decode the server room whiteboard",
           "description": "Decode the ROT13 message on the server room whiteboard",
           "type": "custom",
-          "status": "locked"
-        },
+          "status": "active"
+        }
+      ]
+    },
+    {
+      "aimId": "search_executive_office",
+      "title": "Search Sterling's Office",
+      "description": "Sterling's private office holds the client roster and the paper trail. Get through the door and crack her machine.",
+      "status": "locked",
+      "order": 2,
+      "unlockCondition": { "aimCompleted": "act1_gain_access" },
+      "tasks": [
         {
           "taskId": "access_victoria_computer",
-          "title": "Access Victoria's Computer",
+          "title": "Crack Victoria's office computer",
           "description": "Crack the password on Victoria Sterling's executive office computer",
           "type": "unlock_object",
           "targetObject": "victoria_computer",
-          "status": "locked"
+          "status": "active"
         },
         {
           "taskId": "decode_client_roster",
-          "title": "Decode Client Roster",
+          "title": "Decode the client roster",
           "description": "Decode the hex-encoded client roster from Victoria's computer",
           "type": "custom",
-          "status": "locked"
-        },
-        {
-          "taskId": "find_operational_logs",
-          "title": "Find Operational Logs",
-          "description": "Exploit distcc to recover the operational transaction logs",
-          "type": "custom",
-          "status": "locked"
+          "status": "active"
         }
       ]
     },
@@ -198,8 +236,9 @@ operational_log_content = "TRANSACTION LOG - Q3 2024\n\n[2024-09-15 14:32:11] Pr
       "aimId": "collect_lore",
       "title": "LORE Collection",
       "description": "Discover hidden LORE fragments about ENTROPY and The Architect",
-      "status": "active",
-      "order": 1,
+      "status": "locked",
+      "order": 3,
+      "unlockCondition": { "aimCompleted": "act1_gain_access" },
       "tasks": [
         {
           "taskId": "lore_fragment_1",
@@ -230,8 +269,9 @@ operational_log_content = "TRANSACTION LOG - Q3 2024\n\n[2024-09-15 14:32:11] Pr
       "aimId": "perfect_stealth",
       "title": "Perfect Stealth",
       "description": "Complete the mission without being detected by the guard",
-      "status": "active",
-      "order": 2,
+      "status": "locked",
+      "order": 4,
+      "unlockCondition": { "aimCompleted": "act1_gain_access" },
       "tasks": [
         {
           "taskId": "zero_detection",
@@ -248,25 +288,26 @@ operational_log_content = "TRANSACTION LOG - Q3 2024\n\n[2024-09-15 14:32:11] Pr
       "title": "Moral Engagement",
       "description": "Engage with the moral complexity of the mission",
       "status": "locked",
-      "order": 3,
+      "order": 5,
       "missionConclusion": true,
-      "requiresCompleted": ["victoria_choice_made"],
+      "unlockCondition": { "aimCompleted": "act2_breach_server_room" },
+      "requiresCompleted": ["submit_distcc_flag", "victoria_choice_made"],
       "conclusionScreen": { "type": "bond_visualiser" },
       "tasks": [
         {
           "taskId": "james_choice_made",
-          "title": "Decide James Park's Fate",
-          "description": "Decide whether to protect James Park from collateral damage",
+          "title": "Decide Danny Foster's fate",
+          "description": "Decide whether to protect Danny Foster from the collateral damage of the sweep",
           "type": "custom",
-          "status": "locked",
+          "status": "active",
           "optional": true
         },
         {
           "taskId": "victoria_choice_made",
-          "title": "Decide Victoria's Fate",
+          "title": "Confront Victoria and decide her fate",
           "description": "Confront Victoria Sterling and decide her fate",
           "type": "custom",
-          "status": "locked"
+          "status": "active"
         }
       ]
     }
@@ -364,6 +405,8 @@ operational_log_content = "TRANSACTION LOG - Q3 2024\n\n[2024-09-15 14:32:11] Pr
           "position": {"x": 300, "y": 200},
           "storyPath": "scenarios/m03_ghost_in_the_machine/ink/m03_npc_receptionist.json",
           "currentKnot": "start",
+          "globalVarOnKO": "receptionist_ko",
+          "taskOnKO": "clone_reception_badge",
           "spriteSheet": "hacker-red",
           "spriteConfig": {
             "idleFrameStart": 20,
@@ -381,6 +424,14 @@ operational_log_content = "TRANSACTION LOG - Q3 2024\n\n[2024-09-15 14:32:11] Pr
               "name": "Visitor Badge",
               "takeable": true,
               "observations": "WhiteHat Security visitor badge — keep it visible inside the building"
+            },
+            {
+              "type": "keycard",
+              "card_id": "receptionist_badge",
+              "rfid_protocol": "MIFARE_Classic_Weak_Defaults",
+              "name": "Staff Access Badge",
+              "takeable": true,
+              "observations": "The receptionist's physical staff badge — opens the conference area. If you took it the hard way, you skipped cloning it."
             }
           ]
         },
@@ -395,19 +446,43 @@ operational_log_content = "TRANSACTION LOG - Q3 2024\n\n[2024-09-15 14:32:11] Pr
           "itemsHeld": [
             {
               "type": "lab-workstation",
+              "key_id": "m03_rfid_field_guide",
+              "name": "SAFETYNET Field Guide: RFID Cloning",
+              "takeable": true,
+              "labUrl": "https://cliffe.github.io/HacktivityLabSheets/labs/safetynet/rfid-cloning/",
+              "observations": "Read, crack, emulate: cloning MIFARE badges — weak-default cards in seconds, custom-key cards with a recovery attack"
+            },
+            {
+              "type": "lab-workstation",
               "key_id": "m03_lockpicking_field_guide",
               "name": "SAFETYNET Field Guide: Lockpicking",
               "takeable": true,
-              "labUrl": "https://cliffe.github.io/HacktivityLabSheets/labs/m03_ghost_in_the_machine/safetynet-field-guide-lockpicking/",
+              "labUrl": "https://cliffe.github.io/HacktivityLabSheets/labs/safetynet/lockpicking/",
               "observations": "Pin-tumbler lockpicking technique with operational notes on staying out of the guard's line of sight"
             },
             {
               "type": "lab-workstation",
-              "key_id": "m03_netexploit_field_guide",
-              "name": "SAFETYNET Field Guide: Network Exploitation",
+              "key_id": "m03_recon_field_guide",
+              "name": "SAFETYNET Field Guide: Reconnaissance and Network Mapping",
               "takeable": true,
-              "labUrl": "https://cliffe.github.io/HacktivityLabSheets/labs/m03_ghost_in_the_machine/safetynet-field-guide-network-exploitation/",
-              "observations": "Recon-to-exploitation chain: nmap host/service mapping, service enumeration, and exploiting a legacy service for the operational logs"
+              "labUrl": "https://cliffe.github.io/HacktivityLabSheets/labs/safetynet/reconnaissance-and-network-mapping/",
+              "observations": "nmap host and service discovery — map the training network before you touch it"
+            },
+            {
+              "type": "lab-workstation",
+              "key_id": "m03_netexploit_field_guide",
+              "name": "SAFETYNET Field Guide: distcc Exploitation",
+              "takeable": true,
+              "labUrl": "https://cliffe.github.io/HacktivityLabSheets/labs/safetynet/distcc-exploitation/",
+              "observations": "Exploit the legacy distcc daemon (CVE-2004-2687) for command execution and the operational logs"
+            },
+            {
+              "type": "lab-workstation",
+              "key_id": "m03_cyberchef_field_guide",
+              "name": "SAFETYNET Field Guide: Encoding and Decoding with CyberChef",
+              "takeable": true,
+              "labUrl": "https://cliffe.github.io/HacktivityLabSheets/labs/safetynet/encoding-and-decoding-with-cyberchef/",
+              "observations": "ROT13, Base64, hex and multi-layer decoding — encoding is not encryption"
             }
           ],
           "eventMappings": [
@@ -421,7 +496,7 @@ operational_log_content = "TRANSACTION LOG - Q3 2024\n\n[2024-09-15 14:32:11] Pr
               "eventPattern": "room_entered:server_room",
               "onceOnly": true,
               "setGlobal": { "netexploit_guide_offered": true },
-              "sendTimedMessage": { "delay": 2500, "message": "You're at the VM terminal. From here it's recon, enumerate, exploit — and a legacy service is your way to the operational logs. I can send a network exploitation field guide if you want the full chain. Say the word." }
+              "sendTimedMessage": { "delay": 2500, "message": "You're at the VM terminal. From here it's recon, enumerate, exploit — and the legacy distcc service is your way to the operational logs. I've got field guides on reconnaissance, the distcc exploit, and CyberChef decoding. Just ask." }
             },
             {
               "eventPattern": "objective_task_completed:clone_reception_badge",
@@ -471,12 +546,55 @@ operational_log_content = "TRANSACTION LOG - Q3 2024\n\n[2024-09-15 14:32:11] Pr
               "onceOnly": true
             },
             {
-              "eventPattern": "distcc_exploit_flag_submitted",
+              "eventPattern": "objective_task_completed:submit_distcc_flag",
               "targetKnot": "m2_revelation_call",
               "conversationMode": "phone-chat",
               "completeTask": "find_operational_logs",
-              "setGlobal": { "night_confrontation_ready": true },
+              "setGlobal": { "night_confrontation_ready": true, "flag_distcc_submitted": true },
               "onceOnly": true
+            },
+            {
+              "eventPattern": "global_variable_changed:victoria_ko",
+              "condition": "value === true",
+              "onceOnly": true,
+              "completeTask": "meet_victoria",
+              "setGlobal": { "victoria_fate": "ko" }
+            },
+            {
+              "eventPattern": "global_variable_changed:victoria_ko",
+              "condition": "value === true",
+              "onceOnly": true,
+              "completeTask": "clone_rfid_card"
+            },
+            {
+              "eventPattern": "global_variable_changed:victoria_ko",
+              "condition": "value === true && globalVars.night_confrontation_ready === true",
+              "onceOnly": true,
+              "setGlobal": { "victoria_choice_made": true }
+            },
+            {
+              "eventPattern": "objective_task_completed:submit_distcc_flag",
+              "condition": "globalVars.victoria_ko === true",
+              "onceOnly": true,
+              "setGlobal": { "victoria_choice_made": true }
+            },
+            {
+              "eventPattern": "global_variable_changed:whiteboard_seen",
+              "condition": "value === true",
+              "onceOnly": true,
+              "completeTask": "decode_whiteboard"
+            },
+            {
+              "eventPattern": "global_variable_changed:roster_seen",
+              "condition": "value === true",
+              "onceOnly": true,
+              "completeTask": "decode_client_roster"
+            },
+            {
+              "eventPattern": "global_variable_changed:usb_seen",
+              "condition": "value === true",
+              "onceOnly": true,
+              "completeTask": "lore_fragment_3"
             }
           ]
         },
@@ -599,6 +717,8 @@ operational_log_content = "TRANSACTION LOG - Q3 2024\n\n[2024-09-15 14:32:11] Pr
           "position": {"x": 400, "y": 300},
           "storyPath": "scenarios/m03_ghost_in_the_machine/ink/m03_npc_victoria.json",
           "currentKnot": "start",
+          "globalVarOnKO": "victoria_ko",
+          "taskOnKO": "victoria_choice_made",
           "spriteSheet": "hacker-red",
           "spriteConfig": {
             "idleFrameStart": 20,
@@ -608,7 +728,17 @@ operational_log_content = "TRANSACTION LOG - Q3 2024\n\n[2024-09-15 14:32:11] Pr
             "card_id": "victoria_keycard_clone",
             "rfid_protocol": "MIFARE_Classic_Custom_Keys",
             "name": "Executive Keycard"
-          }
+          },
+          "itemsHeld": [
+            {
+              "type": "keycard",
+              "card_id": "victoria_keycard_clone",
+              "rfid_protocol": "MIFARE_Classic_Custom_Keys",
+              "name": "Executive Keycard",
+              "takeable": true,
+              "observations": "Victoria's physical executive keycard — opens the server room. Taking it off her means you never needed to clone it."
+            }
+          ]
         }
       ]
     },
@@ -668,7 +798,8 @@ operational_log_content = "TRANSACTION LOG - Q3 2024\n\n[2024-09-15 14:32:11] Pr
           "takeable": false,
           "readable": true,
           "text": "<%= whiteboard_message_encoded %>",
-          "observations": "Whiteboard with encoded message - looks like ROT13"
+          "observations": "Whiteboard with an encoded message — the letters look scrambled but the word lengths hold. Looks like ROT13. Decode it on the CyberChef workstation.",
+          "onRead": { "setVariable": { "whiteboard_seen": true } }
         },
         {
           "type": "vm-launcher",
@@ -682,11 +813,11 @@ operational_log_content = "TRANSACTION LOG - Q3 2024\n\n[2024-09-15 14:32:11] Pr
         {
           "type": "workstation",
           "id": "cyberchef_workstation",
-          "name": "CyberChef Decoding Workstation",
-          "takeable": false,
-          "observations": "Workstation with decoding tools (ROT13, Base64, Hex)",
-          "storyPath": "scenarios/m03_ghost_in_the_machine/ink/m03_terminal_cyberchef.json",
-          "currentKnot": "start"
+          "name": "CyberChef Workstation",
+          "takeable": true,
+          "puzzle_graph_role": "tool",
+          "puzzle_graph_note": "Decoding tool — take it, then paste the whiteboard, client roster, and USB drive text in to reveal the intel",
+          "observations": "A laptop preloaded with CyberChef. Take it, then paste any encoded text you find — ROT13, Base64, Hex, and layered combinations all decode here."
         },
         {
           "type": "flag-station",
@@ -695,29 +826,7 @@ operational_log_content = "TRANSACTION LOG - Q3 2024\n\n[2024-09-15 14:32:11] Pr
           "takeable": false,
           "observations": "Terminal for submitting VM flags from Zero Day training network",
           "acceptsVms": ["ghost_in_machine_vm_network"],
-          "flags": <%= flags_for_vm('ghost_in_machine_vm_network', ['flag{network_scan_complete}', 'flag{ftp_intel_gathered}', 'flag{pricing_intel_decoded}', 'flag{distcc_legacy_compromised}']) %>,
-          "flagRewards": [
-            {
-              "type": "emit_event",
-              "event_name": "network_scan_flag_submitted",
-              "description": "Network scanning flag submitted"
-            },
-            {
-              "type": "emit_event",
-              "event_name": "ftp_intel_flag_submitted",
-              "description": "FTP intelligence flag submitted"
-            },
-            {
-              "type": "emit_event",
-              "event_name": "pricing_intel_flag_submitted",
-              "description": "Pricing intelligence flag submitted"
-            },
-            {
-              "type": "emit_event",
-              "event_name": "distcc_exploit_flag_submitted",
-              "description": "distcc exploitation flag submitted - triggers M2 revelation"
-            }
-          ]
+          "flags": <%= flags_for_vm('ghost_in_machine_vm_network', ['flag{network_scan_complete}', 'flag{ftp_intel_gathered}', 'flag{pricing_intel_decoded}', 'flag{distcc_legacy_compromised}']) %>
         }
       ],
       "npcs": []
@@ -782,14 +891,16 @@ operational_log_content = "TRANSACTION LOG - Q3 2024\n\n[2024-09-15 14:32:11] Pr
               "name": "Email Draft - Pricing Update",
               "takeable": false,
               "readable": true,
-              "text": "<%= base64_encode('Cipher - Updated pricing for Q4: ProFTPD RCE $15K, Apache Struts $20K. Healthcare premium remains +40%. -V') %>"
+              "text": "<%= base64_encode('Obsidian - Updated pricing for Q4: ProFTPD RCE $15K, Apache Struts $20K. Healthcare premium remains +40%. -V') %>"
             },
             {
               "type": "text_file",
               "name": "Client Roster",
               "takeable": true,
               "readable": true,
-              "text": "<%= client_roster_hex %>"
+              "text": "<%= client_roster_hex %>",
+              "observations": "Pairs of 0-9 and A-F — hexadecimal. Paste it into the CyberChef workstation and run From Hex.",
+              "onRead": { "setVariable": { "roster_seen": true } }
             }
           ]
         },
@@ -805,7 +916,9 @@ operational_log_content = "TRANSACTION LOG - Q3 2024\n\n[2024-09-15 14:32:11] Pr
               "name": "Hidden USB Drive",
               "takeable": true,
               "readable": true,
-              "text": "<%= lore_fragment_3_encoded %>"
+              "text": "<%= lore_fragment_3_encoded %>",
+              "observations": "Ends in '=' and uses only letters, numbers, + and / — Base64. But decode it once and it's still scrambled: it's layered. From Base64, then ROT13, on the CyberChef workstation.",
+              "onRead": { "setVariable": { "usb_seen": true } }
             }
           ]
         }
@@ -862,6 +975,22 @@ operational_log_content = "TRANSACTION LOG - Q3 2024\n\n[2024-09-15 14:32:11] Pr
       ],
       "npcs": [
         {
+          "id": "danny_foster",
+          "displayName": "Danny Foster",
+          "npcType": "person",
+          "position": {"x": 420, "y": 300},
+          "storyPath": "scenarios/m03_ghost_in_the_machine/ink/m03_james_choice.json",
+          "currentKnot": "james_confrontation",
+          "spriteSheet": "hacker",
+          "spriteConfig": {
+            "idleFrameStart": 20,
+            "idleFrameEnd": 23
+          },
+          "globalVarOnKO": "james_ko",
+          "taskOnKO": "james_choice_made",
+          "observations": "Danny Foster — a WhiteHat security analyst. He looks like a man who hasn't slept properly in weeks."
+        },
+        {
           "id": "james_choice_cutscene",
           "displayName": "Agent 0x99",
           "npcType": "phone",
@@ -891,18 +1020,31 @@ operational_log_content = "TRANSACTION LOG - Q3 2024\n\n[2024-09-15 14:32:11] Pr
     "victoria_trust": 50,
     "victoria_choice_made": false,
     "victoria_recruited": false,
+    "victoria_arrested": false,
+    "victoria_escaped": false,
     "james_innocence_confirmed": false,
     "james_warned": false,
     "james_protected": false,
     "james_exposed": false,
+    "james_ko": false,
     "handler_trust": 50,
     "guard_detection_count": 0,
     "guard_knocked_out": false,
+    "receptionist_ko": false,
+    "victoria_ko": false,
+    "victoria_fate": "",
+    "flag_distcc_submitted": false,
     "briefing_played": false,
     "night_confrontation_ready": false,
+    "whiteboard_seen": false,
+    "roster_seen": false,
+    "usb_seen": false,
     "lockpicking_guide_offered": false,
     "lockpicking_guide_requested": false,
     "netexploit_guide_offered": false,
-    "netexploit_guide_requested": false
+    "netexploit_guide_requested": false,
+    "rfid_guide_requested": false,
+    "recon_guide_requested": false,
+    "cyberchef_guide_requested": false
   }
 }
