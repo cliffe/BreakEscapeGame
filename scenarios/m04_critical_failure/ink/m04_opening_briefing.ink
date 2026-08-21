@@ -9,6 +9,8 @@ VAR player_approach = ""          // tactical, methodical, aggressive
 VAR handler_trust = 50            // 0-100 Handler's confidence in player
 VAR knows_full_threat = false     // Did player ask about chemical threat?
 VAR knows_entropy_cell = false    // Did player ask about Critical Mass?
+VAR asked_timeline = false        // Did player ask about the attack timeline?
+VAR asked_cover = false           // Did player ask about their cover story?
 VAR mission_priority = ""         // investigation, speed, stealth
 VAR combat_ready = false          // Player acknowledged combat risk
 VAR mission_briefed = false       // Briefing completed
@@ -58,17 +60,40 @@ Agent HaX: Three operatives compromised the SCADA network controlling battery ma
 
 Agent HaX: 240,000 residents depend on this grid.
 
-* [Thermal runaway—what's the threat?]
+-> briefing_hub
+
+// ===========================================
+// BRIEFING HUB
+// Topic questions are once-only and all funnel back here, so no single choice
+// can skip a thread. The only exit is "what are my orders?", which routes
+// through mission_stakes -> mission_objectives so the Architect / Social Fabric
+// coordination beat is always seen before deployment. This replaces the old
+// linear fan-out where the timeline branch reached mission_objectives without
+// ever passing through mission_stakes.
+// ===========================================
+
+=== briefing_hub ===
+#speaker:agent_0x99
+
++ {not knows_full_threat} [Thermal runaway—what's the threat?]
     ~ knows_full_threat = true
     ~ handler_trust += 5
     -> chemical_threat_explanation
 
-* [Critical Mass—what do we know about them?]
++ {not knows_entropy_cell} [Critical Mass—what do we know about them?]
     ~ knows_entropy_cell = true
     -> critical_mass_explanation
 
-* [Do we have a timeline for the attack?]
++ {not asked_timeline} [Do we have a timeline for the attack?]
+    ~ asked_timeline = true
     -> timeline_explanation
+
++ {not asked_cover} [What's my cover for getting in?]
+    ~ asked_cover = true
+    -> cover_identity_explanation
+
++ [I've got what I need. What are my orders?]
+    -> mission_stakes
 
 === chemical_threat_explanation ===
 #speaker:agent_0x99
@@ -84,7 +109,7 @@ Agent HaX: A chain battery fire and a hydrogen explosion. The grid drops for 240
 + [We have to stop them before they trigger it.]
     ~ handler_trust += 5
     Agent HaX: Exactly. That's the priority.
-    -> mission_stakes
+    -> briefing_hub
 
 + [Why attack grid storage?]
     -> entropy_ideology
@@ -107,7 +132,7 @@ Agent HaX: Blackout won't be on site. The man running Albion for him is a field 
 Agent HaX: Don't go in expecting to talk him round. He isn't confused about what happens to the night crew. He costed them.
 
 + [Understood. What's the plan?]
-    -> mission_objectives
+    -> briefing_hub
 
 + {not knows_full_threat} [What's the threat to the grid?]
     ~ knows_full_threat = true
@@ -129,6 +154,7 @@ Agent HaX: Three operatives on-site: codenames Cipher, Relay, and Static. Plus V
     -> combat_warning
 
 + [Understood. What's my cover?]
+    ~ asked_cover = true
     -> cover_identity_explanation
 
 === combat_warning ===
@@ -148,12 +174,12 @@ Agent HaX: I've authorized you for lethal force if necessary. But capture Voltag
     ~ handler_trust += 15
     ~ player_approach = "tactical"
     Agent HaX: Good. That's the right mindset.
-    -> mission_objectives
+    -> briefing_hub
 
 + [I'll avoid combat where possible. Smarter to stay undetected.]
     ~ player_approach = "methodical"
     Agent HaX: Smart. But be prepared—they're expecting interference.
-    -> mission_objectives
+    -> briefing_hub
 
 === entropy_ideology ===
 #speaker:agent_0x99
@@ -169,7 +195,7 @@ Agent HaX: But people die. That's what makes them dangerous.
 + [They're rationalizing murder as a public service.]
     ~ handler_trust += 5
     Agent HaX: Exactly. Don't let their rhetoric confuse you.
-    -> mission_stakes
+    -> briefing_hub
 
 === cover_identity_explanation ===
 #speaker:agent_0x99
@@ -184,7 +210,7 @@ Agent HaX: Use the cover to get inside. Vance doesn't know about the threat yet.
     -> chen_briefing_advice
 
 + [Understood. Once inside?]
-    -> mission_objectives
+    -> briefing_hub
 
 === chen_briefing_advice ===
 #speaker:agent_0x99
@@ -201,7 +227,7 @@ Agent HaX: I trust your judgment. You'll know when it's safe.
     ~ handler_trust += 10
     ~ player_approach = "methodical"
     Agent HaX: Good tactical thinking.
-    -> mission_objectives
+    -> briefing_hub
 
 === mission_stakes ===
 #speaker:agent_0x99

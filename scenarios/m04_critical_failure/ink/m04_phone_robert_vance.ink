@@ -1,5 +1,5 @@
 // ===========================================
-// ROBERT CHEN - PHONE SUPPORT
+// ROBERT VANCE - PHONE SUPPORT
 // Mission 4: Critical Failure
 // SCADA technical guidance, available once Vance is an ally.
 //
@@ -25,9 +25,9 @@ VAR chen_is_ally = false
 VAR chen_trust_level = 0
 VAR urgency_stage = 0
 
-// NOTE: attack_mechanism_known is NOT declared in scenario.json.erb's
-// globalVariables (the global is named attack_mechanism_understood). Until
-// Phase 4 reconciles the two names this always reads false.
+// Engine-owned, synced in from globalVariables. Declared in scenario.json.erb
+// as attack_mechanism_known and set true by the flag_4 drop-site eventMapping,
+// so the branches gated on it below do fire once the attack is mapped.
 VAR attack_mechanism_known = false
 
 EXTERNAL player_name()
@@ -42,7 +42,7 @@ EXTERNAL player_name()
 -> chen_phone_support_start
 
 === chen_not_yet_ally ===
-Robert Vance: I'm monitoring systems from the control room. Come and see me if you need something.
+Robert Vance: I'm monitoring systems from the ops desk. Come and see me if you need something.
 
 + [Understood.]
     #exit_conversation
@@ -51,7 +51,7 @@ Robert Vance: I'm monitoring systems from the control room. Come and see me if y
 
 === chen_phone_support_start ===
 {chen_support_calls == 1:
-    Robert Vance: {player_name()}. I'm on the control room desk with both screens up.
+    Robert Vance: {player_name()}. I'm on the ops desk with both screens up.
 - else:
     Robert Vance: Still here. Still watching it climb.
 }
@@ -66,24 +66,29 @@ Robert Vance: I'm monitoring systems from the control room. Come and see me if y
 + {not asked_charge_control} [How do the charge-control systems work?]
     ~ asked_charge_control = true
     ~ chen_trust_level += 3
+    # influence_increased
     -> charge_control_systems_explanation
 
 + {not asked_server_room} [I'm in the server room. What am I looking for?]
     ~ asked_server_room = true
     ~ chen_trust_level += 3
+    # influence_increased
     -> server_room_guidance
 
 + {not asked_disabling} [How do I disable their attack safely?]
     ~ asked_disabling = true
     ~ chen_trust_level += 3
+    # influence_increased
     -> safe_disabling_guidance
 
 + [What should I prioritise right now?]
     ~ chen_trust_level += 5
+    # influence_increased
     -> priority_guidance
 
 + [How urgent is this?]
     ~ chen_trust_level += 3
+    # influence_increased
     -> urgency_assessment
 
 + [That's everything for now.]

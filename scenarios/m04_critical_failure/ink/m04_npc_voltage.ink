@@ -73,7 +73,7 @@ Voltage: Nothing you say next is going to be new.
 You're good. Better than the usual SAFETYNET drones.
 
 {operatives_defeated >= 2:
-    You took out Cipher and Relay. Impressive.
+    You put two of my people down. Impressive.
 }
 {operatives_defeated == 1:
     You got past my people.
@@ -246,8 +246,6 @@ Voltage: You genuinely don't get to have both, and I'd think about it quickly.
 === choice_fight ===
 #speaker:voltage
 
-You: Then it's you. Get away from the laptop.
-
 Voltage: *closing the distance* You've picked the slow option.
 
 Narrator: He moves for the bench and you move for him, and the plant room stops being a place where anyone is talking.
@@ -263,8 +261,6 @@ Narrator: He moves for the bench and you move for him, and the plant room stops 
 === choice_arrest ===
 #speaker:voltage
 
-You: Hands off the bench. It's finished.
-
 Narrator: He looks at your hands, then at the door behind you, and does the arithmetic he has done all night.
 
 {operative_static_defeated:
@@ -274,6 +270,10 @@ Narrator: He looks at your hands, then at the door behind you, and does the arit
 }
 
 + [Blackout signed it. You countersigned. Tell that to a court.]
+    // DELIBERATE EXCEPTION to the engine-owns-voltage_captured rule in the header:
+    // the peaceful arrest has no KO, so globalVarOnKO never fires. This is the only
+    // signal that Voltage was taken alive, so ink sets it here and it syncs back.
+    // Every OTHER path leaves voltage_captured to the engine.
     ~ voltage_captured = true
     ~ voltage_confronted = true
     Voltage: *a long pause* ...A court.
