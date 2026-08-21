@@ -26,11 +26,28 @@
 # - Multi-vector attack disabling + Emergency Shutdown (ESD) minigame
 # - Critical tactical choices
 #
-# ROOM LAYOUT:
-#   Reception -> Operations Office -> Security Office
-#   SCADA Control Room -> Engineering Workshop (VM integration)
-#   Battery Hall 1 (Cipher) -> Battery Hall 2 / Inverter Room (Relay)
-#   Plant Room (Voltage + Static, ESD trigger) -> Loading Dock
+# ROOM LAYOUT (single spine; each lock is opened by the previous room's NPC):
+#
+#   main_entrance (guard)
+#     +-- S -> operations_office (Chen: Level 1 keycard)
+#                +-- S -> security_office            [key]  spare Level 1 in locker
+#                +-- E -> scada_control_room
+#                           +-- S -> battery_hall_1 (Cipher: drops Level 2)
+#                                      +-- S -> engineering_workshop  [rfid: Level 2]  VM + flag station
+#                                      +-- E -> battery_hall_2 / inverter room  [rfid: Level 1]  (Relay: drops Master)
+#                                                 +-- S -> plant_room  [rfid: Master]  (Voltage + Static, ESD)
+#                                                            +-- E -> loading_dock  [key]  Voltage's escape route
+#
+# Layout reworked 2026-08-21 (ALIGNMENT_PLAN Phase 1b) to clear four world-space
+# overlaps. Two structural changes, both of which also tightened the lock chain:
+#   * engineering_workshop had a SECOND door from scada_control_room that bypassed
+#     Cipher entirely; it now hangs only off battery_hall_1.
+#   * plant_room hung off battery_hall_1, so it sat next to the hall before the
+#     player had ever met Relay; it now hangs off battery_hall_2, which is what
+#     makes the Master keycard a genuine gate.
+# Verify with: ruby scripts/validate_scenario.rb (world-space overlap check is
+# the authority here; scripts/predict_door_sides.py uses a different layout model
+# and performs no overlap check).
 # ============================================================================
 
 # ERB Helper Methods
@@ -41,7 +58,7 @@ def base64_encode(text)
 end
 
 # Narrative Content Variables
-chen_warning_email = "From: Robert Chen\nTo: OT Security\nDate: 12 January\nSubject: Unscheduled Maintenance Crew\n\nTeam,\n\nOptiGrid Solutions sent a maintenance crew on Thursday night (not on our schedule). They had proper RFID credentials but I have no work order on file. They were in the BMS cabinet and the SCADA control room for over three hours.\n\nCan someone verify their authorisation before I escalate?\n\n-Robert"
+chen_warning_email = "From: Robert Vance\nTo: OT Security\nDate: 12 January\nSubject: Unscheduled Maintenance Crew\n\nTeam,\n\nOptiGrid Solutions sent a maintenance crew on Thursday night (not on our schedule). They had proper RFID credentials but I have no work order on file. They were in the BMS cabinet and the SCADA control room for over three hours.\n\nCan someone verify their authorisation before I escalate?\n\n-Robert"
 
 voltage_attack_note = "CRITICAL MASS OPERATION LOG\n\nPhase 2 complete. BMS interlock-bypass modules installed on rack banks A, B and C.\nThermal sensors falsified at the SCADA layer. Hydrogen venting and ESD interlocks disabled.\nRemote overcharge trigger armed.\n\nCoordination with Social Fabric confirmed - simultaneous infrastructure strikes across the region.\n\nTrigger scheduled: 0800 local. The racks tip into thermal runaway. Grid drops for 240,000. The hall goes up with it.\nFail-safe disabled. No automatic shutdown.\n\nThe Architect sends regards. Phase 3 begins after successful execution.\n\n- Voltage"
 
@@ -70,6 +87,20 @@ attack_schedule_encoded = base64_encode("ATTACK SEQUENCE:\n0800 - Remote overcha
         "fade": true
       },
       {
+        "comment": "The telemetry is confirmed false -- the mission turns here, and the clock starts.",
+        "trigger": "global_variable_changed:anomaly_detected",
+        "condition": "value === true",
+        "playlist": "threat",
+        "fade": true
+      },
+      {
+        "comment": "Hydrogen advisory: bank B is venting. Escalate and stay escalated until the shutdown.",
+        "trigger": "global_variable_changed:hydrogen_alarm",
+        "condition": "value === true",
+        "playlist": "spy-action",
+        "fade": true
+      },
+      {
         "trigger": "npc_hostile_state_changed",
         "condition": "isHostile === true",
         "playlist": "threat",
@@ -94,18 +125,26 @@ attack_schedule_encoded = base64_encode("ATTACK SEQUENCE:\n0800 - Remote overcha
         "disableClose": true,
         "fade": true,
         "credits": [
-          { "text": "MISSION COMPLETE", "style": "title", "condition": "globalVars.attack_prevented" },
+          { "text": "MISSION COMPLETE", "style": "title", "condition": "globalVars.attack_prevented && !globalVars.racks_vented" },
+          { "text": "COSTLY SUCCESS", "style": "title", "condition": "globalVars.attack_prevented && globalVars.racks_vented" },
           { "text": "CATASTROPHIC FAILURE", "style": "title", "condition": "!globalVars.attack_prevented" },
           { "text": "CRITICAL FAILURE", "style": "subtitle" },
           { "text": "" },
-          { "text": "ALBION ENERGY STORAGE: THERMAL RUNAWAY AVERTED — Emergency Shutdown engaged", "style": "entry", "condition": "globalVars.attack_prevented" },
-          { "text": "GRID HELD: 240,000 residents kept on supply", "style": "entry", "condition": "globalVars.attack_prevented" },
+          { "text": "ALBION ENERGY STORAGE: THERMAL RUNAWAY AVERTED — Emergency Shutdown engaged", "style": "entry", "condition": "globalVars.attack_prevented && !globalVars.racks_vented" },
+          { "text": "GRID HELD: 240,000 residents kept on supply", "style": "entry", "condition": "globalVars.attack_prevented && !globalVars.racks_vented" },
+          { "text": "ALL ELEVEN ON SITE WALKED OUT", "style": "entry", "condition": "globalVars.attack_prevented && !globalVars.racks_vented" },
+          { "text": "RACK BANK B LOST — banks A and C isolated in time", "style": "entry", "condition": "globalVars.racks_vented" },
+          { "text": "CASUALTIES: the Hall 2 night crew, and the dropped feed", "style": "warning", "condition": "globalVars.casualties_occurred" },
           { "text": "" },
           { "text": "── DECISIONS ──", "style": "section-header" },
           { "text": "VOLTAGE: CAPTURED — Critical Mass leadership in custody", "style": "entry", "condition": "globalVars.voltage_captured" },
-          { "text": "VOLTAGE: ESCAPED — fled via the loading dock", "style": "entry", "condition": "globalVars.voltage_escaped" },
-          { "text": "ROBERT CHEN: vindicated — his warning broke the case open", "style": "entry", "condition": "globalVars.chen_is_ally" },
+          { "text": "VOLTAGE: ESCAPED — you took the button and let him reach the dock", "style": "entry", "condition": "globalVars.voltage_escaped" },
+          { "text": "ROBERT VANCE: vindicated — his warning broke the case open", "style": "entry", "condition": "globalVars.chen_is_ally" },
+          { "text": "DISCLOSED IN FULL — the attack, the vulnerabilities, and how close it came", "style": "entry", "condition": "globalVars.disclosure_choice === 'full'" },
+          { "text": "CLASSIFIED — filed as a maintenance fault, patched quietly", "style": "entry", "condition": "globalVars.disclosure_choice === 'quiet'" },
+          { "text": "PARTIALLY DISCLOSED — an incident acknowledged, the details withheld", "style": "entry", "condition": "globalVars.disclosure_choice === 'partial'" },
           { "text": "" },
+          { "text": "BLACKOUT: signed the casualty model. Still at large.", "style": "warning" },
           { "text": "THE ARCHITECT: identity still unknown. Phase 3 looms.", "style": "warning" },
           { "text": "ENTROPY: Still operational. Cross-cell strikes continue.", "style": "warning" }
         ]
@@ -113,143 +152,191 @@ attack_schedule_encoded = base64_encode("ATTACK SEQUENCE:\n0800 - Remote overcha
     ]
   },
 
+  "narrator": {
+    "id": "narrator",
+    "skipTextValidation": true,
+    "voice": {
+      "name": "Algenib",
+      "style": "Cinematic noir detective voice over narrator.",
+      "language": "en-GB"
+    }
+  },
+
   "objectives": [
     {
-      "aimId": "infiltrate_facility",
-      "title": "Infiltrate Facility and Confirm Threat",
-      "description": "Enter the battery storage facility under cover and confirm ENTROPY infiltration",
+      "aimId": "get_inside",
+      "title": "Get Inside Albion Energy Storage",
+      "description": "Talk your way past the checkpoint and find someone on shift who knows the plant",
       "status": "active",
       "order": 0,
       "tasks": [
         {
           "taskId": "enter_facility",
-          "title": "Enter the energy storage facility",
+          "title": "Get past the entrance checkpoint",
           "type": "enter_room",
           "targetRoom": "main_entrance",
           "status": "active"
         },
         {
           "taskId": "meet_robert_chen",
-          "title": "Meet OT engineer Robert Chen",
+          "title": "Find the OT engineer on shift",
           "type": "npc_conversation",
           "targetNPC": "robert_chen",
-          "status": "locked"
-        },
-        {
-          "taskId": "find_infiltration_evidence",
-          "title": "Search for evidence of ENTROPY infiltration",
-          "type": "custom",
-          "status": "locked"
-        },
-        {
-          "taskId": "identify_scada_anomalies",
-          "title": "Confirm the falsified SCADA telemetry against the analog thermometer",
-          "type": "custom",
-          "status": "locked"
+          "status": "active"
         }
       ]
     },
     {
-      "aimId": "investigate_scada_compromise",
-      "title": "Investigate SCADA / BMS Compromise",
-      "description": "Analyse the compromised control systems and identify the attack mechanism",
+      "aimId": "confirm_the_lie",
+      "title": "Confirm the Telemetry Is Lying",
+      "description": "The control room says the racks are nominal. Find out whether that is true",
       "status": "locked",
+      "unlockCondition": { "aimCompleted": "get_inside" },
       "order": 1,
       "tasks": [
         {
-          "taskId": "locate_compromised_systems",
-          "title": "Access the engineering workshop",
-          "type": "enter_room",
-          "targetRoom": "engineering_workshop",
-          "status": "locked"
+          "taskId": "find_infiltration_evidence",
+          "title": "Search for evidence of unauthorised access",
+          "type": "custom",
+          "status": "active"
         },
         {
-          "taskId": "scan_scada_network",
-          "title": "Scan the SCADA/OT network for vulnerabilities",
+          "taskId": "identify_scada_anomalies",
+          "title": "Verify the rack temperatures independently",
           "type": "custom",
-          "status": "locked",
+          "status": "active"
+        }
+      ]
+    },
+    {
+      "aimId": "reach_the_workshop",
+      "title": "Reach the Engineering Workshop",
+      "description": "The workshop is the only place with a route onto the OT network — and it is behind a card you do not have",
+      "status": "locked",
+      "unlockCondition": { "aimCompleted": "confirm_the_lie" },
+      "order": 2,
+      "tasks": [
+        {
+          "taskId": "neutralize_operative_cipher",
+          "title": "Deal with the intruder in Battery Hall 1",
+          "type": "custom",
+          "status": "active"
+        },
+        {
+          "taskId": "locate_compromised_systems",
+          "title": "Get into the engineering workshop",
+          "type": "enter_room",
+          "targetRoom": "engineering_workshop",
+          "status": "active"
+        }
+      ]
+    },
+    {
+      "aimId": "map_the_attack",
+      "title": "Map the Attack on the OT Network",
+      "description": "Work the SCADA backup server from the workshop terminal and prove how they took control",
+      "status": "locked",
+      "unlockCondition": { "aimCompleted": "reach_the_workshop" },
+      "order": 3,
+      "tasks": [
+        {
+          "taskId": "scan_scada_network",
+          "title": "Map the OT network",
+          "type": "custom",
+          "status": "active",
           "optional": true
         },
         {
           "taskId": "submit_network_scan_flag",
-          "title": "Submit network scan evidence",
+          "title": "Submit evidence from the exposed status page",
           "type": "submit_flags",
-          "status": "locked"
+          "targetFlags": ["bms_jump_server:flag_1"],
+          "targetCount": 1,
+          "currentCount": 0,
+          "showProgress": true,
+          "status": "active"
         },
         {
           "taskId": "investigate_compromised_services",
-          "title": "Investigate compromised network services",
+          "title": "Enumerate what is listening",
           "type": "custom",
-          "status": "locked",
+          "status": "active",
           "optional": true
         },
         {
           "taskId": "submit_ftp_intel_flag",
-          "title": "Submit FTP intelligence evidence",
+          "title": "Submit the intelligence file from their FTP service",
           "type": "submit_flags",
-          "status": "locked"
+          "targetFlags": ["bms_jump_server:flag_2"],
+          "targetCount": 1,
+          "currentCount": 0,
+          "showProgress": true,
+          "status": "active"
         },
         {
-          "taskId": "submit_http_analysis_flag",
-          "title": "Submit HTTP analysis evidence",
+          "taskId": "submit_privesc_flag",
+          "title": "Submit privilege-escalation evidence",
           "type": "submit_flags",
-          "status": "locked"
+          "targetFlags": ["bms_jump_server:flag_3"],
+          "targetCount": 1,
+          "currentCount": 0,
+          "showProgress": true,
+          "status": "active"
         },
         {
           "taskId": "exploit_distcc_vulnerability",
-          "title": "Exploit the vulnerable BMS jump server",
+          "title": "Get a foothold on the BMS jump server",
           "type": "custom",
-          "status": "locked",
+          "status": "active",
           "optional": true
         },
         {
           "taskId": "submit_distcc_exploit_flag",
-          "title": "Submit exploitation evidence",
+          "title": "Submit proof of the distcc foothold",
           "type": "submit_flags",
-          "status": "locked"
-        },
-        {
-          "taskId": "neutralize_operative_cipher",
-          "title": "Neutralise the ENTROPY operative in Battery Hall 1",
-          "type": "custom",
-          "status": "locked"
-        },
-        {
-          "taskId": "neutralize_operative_relay",
-          "title": "Neutralise the ENTROPY operative in the inverter room",
-          "type": "custom",
-          "status": "locked"
+          "targetFlags": ["bms_jump_server:flag_4"],
+          "targetCount": 1,
+          "currentCount": 0,
+          "showProgress": true,
+          "status": "active"
         }
       ]
     },
     {
-      "aimId": "neutralize_attack_threat",
-      "title": "Neutralise Attack Threat",
-      "description": "Confront Critical Mass leadership and trigger Emergency Shutdown before 0800",
+      "aimId": "stop_the_runaway",
+      "title": "Stop the Thermal Runaway",
+      "description": "Everything between you and the hardwired shutdown is now a person who intends to use it",
       "status": "locked",
-      "order": 2,
+      "unlockCondition": { "aimCompleted": "map_the_attack" },
+      "order": 4,
       "missionConclusion": true,
-      "requiresCompleted": ["disable_attack_vectors"],
+      "requiresCompleted": ["identify_scada_anomalies", "confront_voltage", "disable_attack_vectors"],
       "conclusionScreen": { "type": "bond_visualiser" },
       "tasks": [
         {
-          "taskId": "confront_voltage",
-          "title": "Confront Voltage in the plant room",
+          "taskId": "neutralize_operative_relay",
+          "title": "Deal with the intruder in the inverter room",
           "type": "custom",
-          "status": "locked"
+          "status": "active"
+        },
+        {
+          "taskId": "confront_voltage",
+          "title": "Confront the cell leader in the plant room",
+          "type": "custom",
+          "status": "active"
         },
         {
           "taskId": "disable_attack_vectors",
-          "title": "Trigger Emergency Shutdown to stop the thermal runaway",
+          "title": "Force the shutdown before the racks go",
           "type": "custom",
-          "status": "locked"
+          "status": "active"
         },
         {
           "taskId": "report_to_0x99",
-          "title": "Report mission outcome to SAFETYNET",
+          "title": "Report the outcome to SAFETYNET",
           "type": "npc_conversation",
           "targetNPC": "agent_0x99_debrief",
-          "status": "locked"
+          "status": "active"
         }
       ]
     }
@@ -304,7 +391,7 @@ attack_schedule_encoded = base64_encode("ATTACK SEQUENCE:\n0800 - Remote overcha
       "npcs": [
         {
           "id": "opening_briefing_cutscene",
-          "displayName": "Agent 0x99",
+          "displayName": "Agent HaX",
           "npcType": "person",
           "position": { "x": 500, "y": 500 },
           "spriteSheet": "hacker",
@@ -334,12 +421,62 @@ attack_schedule_encoded = base64_encode("ATTACK SEQUENCE:\n0800 - Remote overcha
         },
         {
           "id": "agent_0x99",
-          "displayName": "Agent 0x99 'Haxolottle'",
+          "displayName": "Agent HaX",
           "npcType": "phone",
           "storyPath": "scenarios/m04_critical_failure/ink/m04_phone_agent0x99.json",
           "avatar": "assets/npc/avatars/npc_helper.png",
           "phoneId": "player_phone",
           "currentKnot": "first_call",
+          "itemsHeld": [
+            {
+              "type": "lab-workstation",
+              "key_id": "safetynet_field_guide_rfid_cloning",
+              "name": "SAFETYNET Field Guide: RFID Cloning",
+              "takeable": true,
+              "labUrl": "https://cliffe.github.io/HacktivityLabSheets/labs/safetynet/rfid-cloning/",
+              "observations": "Field guide to reading, cracking and emulating MIFARE access cards"
+            },
+            {
+              "type": "lab-workstation",
+              "key_id": "safetynet_field_guide_lockpicking",
+              "name": "SAFETYNET Field Guide: Lockpicking",
+              "takeable": true,
+              "labUrl": "https://cliffe.github.io/HacktivityLabSheets/labs/safetynet/lockpicking/",
+              "observations": "Field guide to pin tumbler locks and the two-tool technique"
+            },
+            {
+              "type": "lab-workstation",
+              "key_id": "safetynet_field_guide_recon_network_mapping",
+              "name": "SAFETYNET Field Guide: Reconnaissance and Network Mapping",
+              "takeable": true,
+              "labUrl": "https://cliffe.github.io/HacktivityLabSheets/labs/safetynet/reconnaissance-and-network-mapping/",
+              "observations": "Field guide to discovering hosts and mapping an unfamiliar network with Nmap"
+            },
+            {
+              "type": "lab-workstation",
+              "key_id": "safetynet_field_guide_vuln_analysis",
+              "name": "SAFETYNET Field Guide: Vulnerability Analysis and Attack Surface",
+              "takeable": true,
+              "labUrl": "https://cliffe.github.io/HacktivityLabSheets/labs/safetynet/vulnerability-analysis-and-attack-surface/",
+              "observations": "Field guide to enumerating services and reasoning about attack surface"
+            },
+            {
+              "type": "lab-workstation",
+              "key_id": "safetynet_field_guide_distcc",
+              "name": "SAFETYNET Field Guide: distcc Exploitation",
+              "takeable": true,
+              "labUrl": "https://cliffe.github.io/HacktivityLabSheets/labs/safetynet/distcc-exploitation/",
+              "observations": "Field guide to exploiting a legacy distccd service (CVE-2004-2687) for command execution"
+            },
+            {
+              "type": "lab-workstation",
+              "key_id": "safetynet_field_guide_cyberchef",
+              "name": "SAFETYNET Field Guide: Encoding and Decoding with CyberChef",
+              "takeable": true,
+              "labUrl": "https://cliffe.github.io/HacktivityLabSheets/labs/safetynet/encoding-and-decoding-with-cyberchef/",
+              "observations": "Field guide to spotting Base64 and ROT13 and decoding them with CyberChef"
+            }
+          ],
           "timedMessages": [
             {
               "delay": 3000,
@@ -349,6 +486,79 @@ attack_schedule_encoded = base64_encode("ATTACK SEQUENCE:\n0800 - Remote overcha
             }
           ],
           "eventMappings": [
+            {
+              "eventPattern": "room_entered:battery_hall_1",
+              "onceOnly": true,
+              "setGlobal": { "rfid_guide_offered": true },
+              "sendTimedMessage": { "delay": 2500, "message": "Those doors are RFID. If you're going to be cloning cards tonight I can push you the field guide for it — just ask." }
+            },
+            {
+              "eventPattern": "room_entered:security_office",
+              "onceOnly": true,
+              "setGlobal": { "lockpicking_guide_offered": true },
+              "sendTimedMessage": { "delay": 2000, "message": "That equipment locker is a pin tumbler. Say the word and I'll send you the lockpicking guide." }
+            },
+            {
+              "eventPattern": "room_entered:engineering_workshop",
+              "onceOnly": true,
+              "setGlobal": { "recon_guide_offered": true, "vuln_guide_offered": true, "server_room_reached": true },
+              "sendTimedMessage": { "delay": 3000, "message": "You're on the OT network now. I've got two guides for this — mapping the network, and reading the attack surface once you've mapped it. Ask and they're yours." }
+            },
+            {
+              "eventPattern": "objective_task_completed:submit_privesc_flag",
+              "onceOnly": true,
+              "setGlobal": { "distcc_guide_offered": true },
+              "sendTimedMessage": { "delay": 2000, "message": "That jump server is running a legacy distccd. It's the way in. I have a guide for it if you want it." }
+            },
+            {
+              "eventPattern": "global_variable_changed:lore_safehouse_address_found",
+              "condition": "value === true",
+              "onceOnly": true,
+              "setGlobal": { "cyberchef_guide_offered": true },
+              "sendTimedMessage": { "delay": 2000, "message": "That card in the go-bag is Base64. I can send you the decoding guide if you'd rather not eyeball it." }
+            },
+            {
+              "eventPattern": "global_variable_changed:operative_cipher_defeated",
+              "condition": "value === true",
+              "onceOnly": true,
+              "setGlobal": { "operatives_defeated": 1 }
+            },
+            {
+              "eventPattern": "global_variable_changed:operative_relay_defeated",
+              "condition": "value === true",
+              "onceOnly": true,
+              "setGlobal": { "operatives_defeated": 2 }
+            },
+            {
+              "eventPattern": "objective_task_completed:submit_distcc_exploit_flag",
+              "onceOnly": true,
+              "setGlobal": { "attack_mechanism_known": true }
+            },
+            {
+              "eventPattern": "global_variable_changed:voltage_captured",
+              "condition": "value === true",
+              "onceOnly": true,
+              "setGlobal": { "voltage_neutralised": true }
+            },
+            {
+              "eventPattern": "global_variable_changed:voltage_escaped",
+              "condition": "value === true",
+              "onceOnly": true,
+              "setGlobal": { "voltage_neutralised": true }
+            },
+            {
+              "eventPattern": "global_variable_changed:voltage_neutralised",
+              "condition": "value === true && globalVars.anomaly_detected === true",
+              "onceOnly": true,
+              "setGlobal": { "esd_authorized": true },
+              "sendTimedMessage": { "delay": 1200, "message": "He's out of the way and you've got the thermal confirmed. The ESD is yours — press it." }
+            },
+            {
+              "eventPattern": "global_variable_changed:anomaly_detected",
+              "condition": "value === true && globalVars.voltage_neutralised === true",
+              "onceOnly": true,
+              "setGlobal": { "esd_authorized": true }
+            },
             {
               "eventPattern": "global_variable_changed:evidence_maintenance_logs_found",
               "condition": "value === true",
@@ -370,12 +580,12 @@ attack_schedule_encoded = base64_encode("ATTACK SEQUENCE:\n0800 - Remote overcha
         },
         {
           "id": "robert_chen_phone",
-          "displayName": "Robert Chen",
+          "displayName": "Robert Vance",
           "npcType": "phone",
           "storyPath": "scenarios/m04_critical_failure/ink/m04_phone_robert_chen.json",
           "avatar": "assets/npc/avatars/npc_helper.png",
           "phoneId": "player_phone",
-          "currentKnot": "available_after_ally",
+          "currentKnot": "start",
           "timedMessages": [
             {
               "delay": 20000,
@@ -397,27 +607,35 @@ attack_schedule_encoded = base64_encode("ATTACK SEQUENCE:\n0800 - Remote overcha
         },
         {
           "id": "agent_0x99_debrief",
-          "displayName": "Agent 0x99",
-          "npcType": "phone",
+          "displayName": "Agent HaX",
+          "npcType": "person",
           "storyPath": "scenarios/m04_critical_failure/ink/m04_closing_debrief.json",
           "avatar": "assets/npc/avatars/npc_helper.png",
-          "phoneId": "player_phone",
           "currentKnot": "start",
-          "timedMessages": [
-            {
-              "delay": 2500,
-              "message": "Emergency Shutdown confirmed — the racks are isolating and cooling. You did it. Tap to open your debrief when you're clear of the hall.",
-              "type": "text",
-              "waitForEvent": "global_variable_changed:mission_complete"
-            }
-          ],
+          "position": { "x": 500, "y": 500 },
+          "spriteSheet": "female_spy",
+          "spriteTalk": "assets/characters/female_spy_talk.png",
+          "spriteConfig": {
+            "idleFrameRate": 6,
+            "walkFrameRate": 10
+          },
+          "voice": {
+            "name": "Aoede",
+            "style": "Professional intelligence handler in debrief. Speak with a consistent British Received Pronunciation accent throughout. Steady, mid-range pitch, unhurried — the emergency is over and she is choosing her words carefully.",
+            "language": "en-GB"
+          },
+          "behavior": {
+            "initiallyHidden": true
+          },
           "eventMappings": [
             {
               "eventPattern": "global_variable_changed:mission_complete",
               "condition": "value === true",
-              "onceOnly": true,
-              "conversationMode": "phone-chat",
+              "conversationMode": "person-chat",
               "targetKnot": "start",
+              "background": "assets/backgrounds/hq1.png",
+              "onceOnly": true,
+              "disableClose": true,
               "setGlobal": { "debrief_ready": true }
             }
           ]
@@ -455,7 +673,7 @@ attack_schedule_encoded = base64_encode("ATTACK SEQUENCE:\n0800 - Remote overcha
       "npcs": [
         {
           "id": "robert_chen",
-          "displayName": "Robert Chen",
+          "displayName": "Robert Vance",
           "npcType": "person",
           "position": { "x": 10, "y": 5 },
           "spriteSheet": "hacker",
@@ -468,6 +686,7 @@ attack_schedule_encoded = base64_encode("ATTACK SEQUENCE:\n0800 - Remote overcha
             "language": "en-GB"
           },
           "globalVarOnKO": "robert_chen_ko",
+          "taskOnKO": "meet_robert_chen",
           "puzzle_graph_actions": [
             { "id": "meet_robert_chen", "label": "Win Chen's trust and gain facility access", "unlocks_aim": "investigate_scada_compromise" }
           ],
@@ -527,7 +746,6 @@ attack_schedule_encoded = base64_encode("ATTACK SEQUENCE:\n0800 - Remote overcha
       "door_sign": "SCADA Control Room",
       "connections": {
         "west": "operations_office",
-        "east": "engineering_workshop",
         "south": "battery_hall_1"
       },
       "npcs": [],
@@ -572,19 +790,18 @@ attack_schedule_encoded = base64_encode("ATTACK SEQUENCE:\n0800 - Remote overcha
       "difficulty": "medium",
       "door_sign": "Engineering Workshop — Authorised Access Only",
       "connections": {
-        "north": "battery_hall_1",
-        "west": "scada_control_room"
+        "north": "battery_hall_1"
       },
       "npcs": [],
       "objects": [
         {
           "type": "vm-launcher",
-          "id": "vm_launcher_vulnerability_analysis",
+          "id": "vm_launcher_bms_jump_server",
           "name": "BMS Jump Server Terminal",
           "takeable": false,
           "observations": "Network terminal providing access to the BMS jump server for vulnerability analysis",
           "hacktivityMode": <%= vm_context && vm_context['hacktivity_mode'] ? 'true' : 'false' %>,
-          "vm": <%= vm_object('vulnerability_analysis', {
+          "vm": <%= vm_object('bms_jump_server', {
             "id": 1,
             "title": "BMS Jump Server",
             "ip": "192.168.100.10",
@@ -599,8 +816,8 @@ attack_schedule_encoded = base64_encode("ATTACK SEQUENCE:\n0800 - Remote overcha
           "name": "SAFETYNET Drop-Site Terminal",
           "takeable": false,
           "observations": "Secure terminal for submitting intercepted intelligence and VM flags",
-          "acceptsVms": ["vulnerability_analysis"],
-          "flags": <%= flags_for_vm('vulnerability_analysis', [
+          "acceptsVms": ["bms_jump_server"],
+          "flags": <%= flags_for_vm('bms_jump_server', [
             'flag{network_scan_complete}',
             'flag{ftp_intel_gathered}',
             'flag{http_analysis_complete}',
@@ -702,7 +919,7 @@ attack_schedule_encoded = base64_encode("ATTACK SEQUENCE:\n0800 - Remote overcha
               "name": "Incident Response Guide",
               "takeable": true,
               "readable": true,
-              "text": "FACILITY INCIDENT RESPONSE PROCEDURES\n\nThermal / Fire Emergency:\n1. Press the nearest hardwired ESD pushbutton\n2. Isolate the affected rack bank\n3. Notify Robert Chen immediately\n4. Evacuate if hydrogen alarm sounds\n\nSecurity Breach:\n1. Contact local law enforcement\n2. Secure critical systems\n3. Review camera footage",
+              "text": "FACILITY INCIDENT RESPONSE PROCEDURES\n\nThermal / Fire Emergency:\n1. Press the nearest hardwired ESD pushbutton\n2. Isolate the affected rack bank\n3. Notify Robert Vance immediately\n4. Evacuate if hydrogen alarm sounds\n\nSecurity Breach:\n1. Contact local law enforcement\n2. Secure critical systems\n3. Review camera footage",
               "observations": "Emergency response procedures manual"
             }
           ]
@@ -719,8 +936,7 @@ attack_schedule_encoded = base64_encode("ATTACK SEQUENCE:\n0800 - Remote overcha
       "connections": {
         "north": "scada_control_room",
         "south": "engineering_workshop",
-        "east": "battery_hall_2",
-        "west": "plant_room"
+        "east": "battery_hall_2"
       },
       "npcs": [
         {
@@ -836,7 +1052,8 @@ attack_schedule_encoded = base64_encode("ATTACK SEQUENCE:\n0800 - Remote overcha
       "ambientSound": "server_room_ventilation",
       "ambientVolume": 0.6,
       "connections": {
-        "west": "battery_hall_1"
+        "west": "battery_hall_1",
+        "south": "plant_room"
       },
       "npcs": [
         {
@@ -923,8 +1140,8 @@ attack_schedule_encoded = base64_encode("ATTACK SEQUENCE:\n0800 - Remote overcha
       "difficulty": "hard",
       "door_sign": "Inverter / Plant Room — Authorised Access Only",
       "connections": {
-        "east": "battery_hall_1",
-        "north": "loading_dock"
+        "north": "battery_hall_2",
+        "east": "loading_dock"
       },
       "npcs": [
         {
@@ -936,7 +1153,7 @@ attack_schedule_encoded = base64_encode("ATTACK SEQUENCE:\n0800 - Remote overcha
           "spriteTalk": "assets/characters/hacker-red-talk.png",
           "spriteConfig": { "idleFrameStart": 20, "idleFrameEnd": 23 },
           "storyPath": "scenarios/m04_critical_failure/ink/m04_npc_voltage.json",
-          "currentKnot": "confrontation_start",
+          "currentKnot": "start",
           "behavior": {
             "hostile": { "chaseSpeed": 145, "attackDamage": 22, "pauseToAttack": true }
           },
@@ -963,7 +1180,7 @@ attack_schedule_encoded = base64_encode("ATTACK SEQUENCE:\n0800 - Remote overcha
               "name": "Critical Mass Coordination Log",
               "takeable": true,
               "readable": true,
-              "text": "ENCRYPTED COMMUNICATION LOG\n\nFROM: Voltage (Critical Mass)\nTO: Cascade (Social Fabric)\n\nPhase 2 synchronisation confirmed.\n\nCritical Mass targets: power storage, generation, transit infrastructure\nSocial Fabric targets: public panic amplification, emergency-response disruption\n\nSimultaneous execution: 0800 local, all cells\n\nThe Architect's Phase 3: multi-city expansion\n\nThis is bigger than any single operation. We're proving the grid's fragility.",
+              "text": "ENCRYPTED COMMUNICATION LOG\n\nFROM: Voltage (Critical Mass)\nTO: Loom (Social Fabric)\n\nPhase 2 synchronisation confirmed.\n\nCritical Mass targets: power storage, generation, transit infrastructure\nSocial Fabric targets: public panic amplification, emergency-response disruption\n\nSimultaneous execution: 0800 local, all cells\n\nThe Architect's Phase 3: multi-city expansion\n\nThis is bigger than any single operation. We're proving the grid's fragility.",
               "observations": "Critical intelligence revealing cross-cell coordination and The Architect's larger plan",
               "onPickup": { "setVariable": { "lore_cross_cell_coordination_found": true } }
             }
@@ -984,8 +1201,8 @@ attack_schedule_encoded = base64_encode("ATTACK SEQUENCE:\n0800 - Remote overcha
             "interactionType": "esd_button",
             "label": "EMERGENCY SHUTDOWN - RACK BANKS A-C",
             "confirmDesc": "Initiate hardwired shutdown for Rack Banks A-C. Isolates the banks, forces hydrogen ventilation to maximum, and aborts the 0800 overcharge trigger. Irreversible without manual reset.",
-            "authVar": "anomaly_detected",
-            "unauthorizedText": "Before you isolate the banks: confirm the thermal hazard is real. Read the analog thermometer in the battery hall — don't trust the SCADA readout.",
+            "authVar": "esd_authorized",
+            "unauthorizedText": "The button is live, but you are not clear to use it. Two things first: confirm the thermal hazard is real against a physical instrument, and deal with the man behind you — press this with him conscious and he fires the trigger before the banks isolate.",
             "activatedVar": "attack_prevented",
             "alreadyActiveText": "Emergency shutdown already active. Rack banks A-C isolated. Thermal runaway aborted.",
             "confirmedText": "ISOLATED - COOLING ACTIVE - ATTACK ABORTED",
@@ -1010,7 +1227,7 @@ attack_schedule_encoded = base64_encode("ATTACK SEQUENCE:\n0800 - Remote overcha
           "name": "Facility Blueprints (Marked)",
           "takeable": true,
           "readable": true,
-          "text": "ALBION ENERGY STORAGE — MARKED LAYOUT\n\nCritical Mass tactical annotations:\n- Rack banks A, B, C: BYPASS MODULES INSTALLED\n- BMS / SCADA: COMPROMISED\n- Remote overcharge trigger: THIS ROOM\n- Escape route: loading dock (north exit)\n- Surveillance coverage: ALL AREAS\n\nVoltage's note: 'Clean operation. No casualties unless SAFETYNET interferes.'",
+          "text": "ALBION ENERGY STORAGE — MARKED LAYOUT\n\nCritical Mass tactical annotations:\n- Rack banks A, B, C: BYPASS MODULES INSTALLED\n- BMS / SCADA: COMPROMISED\n- Remote overcharge trigger: THIS ROOM\n- Escape route: loading dock (east exit)\n- Surveillance coverage: ALL AREAS\n\nVoltage's note: 'Night crew: 9 in Hall 2, 2 gatehouse. Feed casualties modelled at 40-60 (oxygen concentrators, dialysis, home ventilators). Acceptable. Signed off by Blackout, countersigned. Do not re-litigate this on site.'",
           "observations": "Tactical planning documents showing the complete attack infrastructure"
         },
         {
@@ -1030,7 +1247,7 @@ attack_schedule_encoded = base64_encode("ATTACK SEQUENCE:\n0800 - Remote overcha
       "dimensions": { "width": 8, "height": 8 },
       "door_sign": "Loading Dock",
       "connections": {
-        "south": "plant_room"
+        "west": "plant_room"
       },
       "npcs": [],
       "objects": [
@@ -1067,7 +1284,7 @@ attack_schedule_encoded = base64_encode("ATTACK SEQUENCE:\n0800 - Remote overcha
               "name": "Social Fabric Safehouse Card (Encoded)",
               "takeable": true,
               "readable": true,
-              "text": "<%= base64_encode('SOCIAL FABRIC — REGIONAL SAFEHOUSE\nUnit 14, Calder Wharf, Salford\nKnock pattern: 2-1-3\nAsk for \"Cascade\". Burn this after reading.') %>\n\n(Base64 — decode with CyberChef to read the safehouse address.)",
+              "text": "<%= base64_encode('SOCIAL FABRIC — REGIONAL SAFEHOUSE\nUnit 14, Calder Wharf, Salford\nKnock pattern: 2-1-3\nAsk for \"Loom\". Burn this after reading.') %>\n\n(Base64 — decode with CyberChef to read the safehouse address.)",
               "observations": "An encoded card from the go-bag — the next thread to pull on Social Fabric",
               "puzzle_graph_role": "clue",
               "puzzle_graph_reveals": "social_fabric_safehouse_address_lead",
@@ -1078,6 +1295,72 @@ attack_schedule_encoded = base64_encode("ATTACK SEQUENCE:\n0800 - Remote overcha
       ]
     }
   },
+
+  "timers": [
+<%# Thermal-runaway clock. Modelled on sis02_energy/scenario.json.erb:387-450, which is
+    the worked example for this engine feature (ScenarioTimerDispatcher + ScenarioTimerUI).
+
+    Both timers start when the player independently confirms the thermal hazard
+    (anomaly_detected, set by reading the analog thermometer against the falsified
+    SCADA readout) and are cancelled by the hardwired shutdown (attack_prevented).
+    Starting on anomaly_detected rather than mission start means the clock begins when
+    the player *knows*, so the pressure is always informed pressure.
+
+    DELIBERATE DIVERGENCE FROM sis02: its h2_evacuation timer fires a
+    `show_end_screen` action with outcome "failure" and a "Return to Missions" button,
+    which ends the run. m04 must NOT do that. Failure here is avoidable and
+    player-caused, but the mission still reaches an ending: the second timer sets
+    racks_vented / casualties_occurred and play continues to the debrief and the
+    bond_visualiser. See ALIGNMENT_PLAN.md "Decisions taken" #10.
+
+    m04's consequences are larger than sis02's single-facility evacuation: 240,000 on
+    the grid, the night crew in Hall 2, and the dropped feed. %>
+    {
+      "id": "h2_advisory",
+      "label": "H\u2082 Advisory \u2014 rack bank B",
+      "startOnGlobal": "anomaly_detected",
+      "delayMs": 1320000,
+      "cancelOnGlobal": "attack_prevented",
+      "setGlobal": { "hydrogen_alarm": true, "urgency_stage": 3 },
+      "showCountdown": true,
+      "onceOnly": true,
+      "actions": [
+        {
+          "type": "tint_objects",
+          "roomId": "battery_hall_1",
+          "textureKey": "batrack",
+          "color": 16729122,
+          "pulse": true
+        },
+        {
+          "type": "hint",
+          "title": "H\u2082 ADVISORY \u2014 RACK BANK B",
+          "message": "The hydrogen panel in Battery Hall 1 has gone amber. Bank B is venting. The hardwired ESD pushbutton is in the plant room \u2014 and the man holding the trigger is standing next to it."
+        }
+      ]
+    },
+<%# Second stage: the racks vent for real. This does NOT end the mission -- it sets the
+    partial-failure state, which the debrief and the credits branch on. The player can
+    still reach the ESD and still reaches an ending. %>
+    {
+      "id": "racks_vent",
+      "label": "Thermal runaway \u2014 rack bank B",
+      "startOnGlobal": "anomaly_detected",
+      "delayMs": 2400000,
+      "cancelOnGlobal": "attack_prevented",
+      "condition": "!globalVars.attack_prevented",
+      "setGlobal": { "racks_vented": true, "casualties_occurred": true, "urgency_stage": 4 },
+      "showCountdown": false,
+      "onceOnly": true,
+      "actions": [
+        {
+          "type": "hint",
+          "title": "THERMAL RUNAWAY \u2014 BANK B",
+          "message": "Bank B has gone. The hall is burning and the feed has dropped. It is not over \u2014 banks A and C are still holding, and the shutdown will still save them. Get to the button."
+        }
+      ]
+    }
+  ],
 
   "globalVariables": {
     "player_name": "Agent 0x00",
@@ -1094,7 +1377,6 @@ attack_schedule_encoded = base64_encode("ATTACK SEQUENCE:\n0800 - Remote overcha
     "anomaly_detected": false,
     "scada_anomalies_identified": false,
     "infiltration_confirmed": false,
-    "attack_mechanism_understood": false,
 
     "evidence_maintenance_logs_found": false,
     "evidence_camera_tampering_found": false,
@@ -1112,13 +1394,10 @@ attack_schedule_encoded = base64_encode("ATTACK SEQUENCE:\n0800 - Remote overcha
     "robert_chen_ko": false,
     "voltage_captured": false,
     "voltage_escaped": false,
-
-    "attack_trigger_secured": false,
-    "physical_bypass_disabled": false,
-    "scada_script_neutralized": false,
     "remote_trigger_disabled": false,
-    "attack_vectors_disabled": 0,
 
+    "esd_authorized": false,
+    "voltage_neutralised": false,
     "esd_activated": false,
     "mission_complete": false,
     "debrief_ready": false,
@@ -1131,7 +1410,28 @@ attack_schedule_encoded = base64_encode("ATTACK SEQUENCE:\n0800 - Remote overcha
     "lore_cross_cell_coordination_found": false,
     "lore_safehouse_address_found": false,
 
+    "rfid_guide_offered": false,
+    "rfid_guide_hint_given": false,
+    "lockpicking_guide_offered": false,
+    "lockpicking_guide_hint_given": false,
+    "recon_guide_offered": false,
+    "recon_guide_hint_given": false,
+    "vuln_guide_offered": false,
+    "vuln_guide_hint_given": false,
+    "distcc_guide_offered": false,
+    "distcc_guide_hint_given": false,
+    "cyberchef_guide_offered": false,
+    "cyberchef_guide_hint_given": false,
+
+    "server_room_reached": false,
+    "attack_mechanism_known": false,
+    "voltage_priority_discussed": false,
+    "operatives_defeated": 0,
+
     "urgency_stage": 1,
+    "hydrogen_alarm": false,
+    "racks_vented": false,
+    "casualties_occurred": false,
 
     "objectives_completed": 0,
     "optional_objectives_completed": 0,

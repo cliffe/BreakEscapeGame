@@ -77,6 +77,83 @@ Per `§Recommended NPC Structure`:
 - Exit conversations are 1–2 lines (`§Keep Exit Conversations Brief`).
 - No hard `-> END` except deliberate scenario endpoints (debrief/briefing).
 
+### 2c-bis. Starved knots — every re-enterable knot must keep an option (**Must-fix**)
+The most common runtime break in this codebase, and it **compiles cleanly**. A knot that
+can be entered more than once, but whose choices are *all* once-only (`*`) — or are `+`
+but *every one* is behind a `{condition}` — can present an **empty choice list** on a
+later visit. Ink then falls off the end of the knot and raises
+`RUNTIME ERROR: ran out of content`. See `README_ink_best_practices.md` §"The starved
+knot".
+
+Check every `.ink` file:
+
+1. **Find re-enterable knots.** For each knot, count inbound diverts
+   (`grep -c '\-> knot_name\b'`). Treat as re-enterable if inbound > 1, **or** it is named
+   as an NPC's `currentKnot` in `scenario.json.erb`, **or** any "anything else? / one more
+   thing…" option loops back to it. Entry knots are re-entered constantly — the engine
+   re-navigates to the current knot each time a conversation re-opens
+   (`phone-chat-minigame.js:478-482`).
+2. **Flag any such knot with no unconditional `+`.** Report as **Must-fix** with the knot
+   name and its inbound count. All-`*` is the classic case; all-`+`-but-all-gated is the
+   subtle one.
+3. **Recommend the fix:** make repeatable options sticky, guard the *content* with
+   `{not asked_x}` rather than retiring the *option* with `*`, and add one always-available
+   fallback (`+ [That's everything for now.]` → `#exit_conversation` → back to the hub).
+
+**Runtime is the authority here — do not try to settle this by reading.** Run both
+harnesses, using each NPC's declared `currentKnot` from `scenario.json.erb` as the entry
+knot:
+
+```bash
+node scripts/ink_runtime_check/inkcheck.js  <file.json> <entry_knot> [VAR=value ...]
+node scripts/ink_runtime_check/loopcheck.js <file.json> <entry_knot> [VAR=value ...]
+```
+
+- `inkcheck` walks the choice tree depth-first — good for broad coverage, but it **does
+  not reliably catch starvation**: it caps out before revisiting a hub enough times.
+- `loopcheck` drives the conversation 200 steps under six choice strategies and fails
+  **only on a runtime error, a fatal bad-knot, or a runaway**. A conversation reaching a
+  clean end (`-> END`) is reported, never failed — that is correct for briefings,
+  debriefs and one-shot conversations. Calibrated against **m01 (gold standard)**: all
+  seven files pass; m02 passes too.
+
+Using the declared `currentKnot` also catches the related bug where it names a knot the
+ink does not define — `ChoosePathString` throws, `person-chat-minigame.js:436-437` does
+not catch it, and the NPC is **silently mute** (this was true of two m04 NPCs, including
+the mission's climactic antagonist).
+
+**Static triage (optional, noisy).** The grep below lists knots with >1 inbound divert and
+no unconditional `+`. Treat it as a reading list, **not** findings: it has a high
+false-positive rate, because many inbound diverts are mutually exclusive branches on a
+linear path that legitimately ends. Run against m01 and m02 it flags ~20 knots, every one
+of them fine. Only report a knot after `loopcheck` produces an actual error for it.
+
+```bash
+python3 - <<'PY'
+import re, glob, os
+for p in sorted(glob.glob('scenarios/<name>/ink/*.ink')):
+    src = open(p).read()
+    knots, cur, buf = [], None, []
+    for l in src.split('\n'):
+        if l.startswith('==='):
+            if cur: knots.append((cur, buf))
+            cur, buf = re.sub(r'=', '', l).strip(), []
+        elif cur is not None: buf.append(l)
+    if cur: knots.append((cur, buf))
+    for name, buf in knots:
+        star  = sum(1 for l in buf if re.match(r'\s*\*\s*[\[{]', l))
+        stick = sum(1 for l in buf if re.match(r'\s*\+\s*(?!\{)\s*\[', l))  # unconditional +
+        inbound = len(re.findall(r'->\s*' + re.escape(name) + r'\b', src))
+        if star and stick == 0 and inbound > 1:
+            print(f'{os.path.basename(p):38s} {name:34s} inbound={inbound} *={star} uncond+={stick}')
+PY
+```
+
+The signal that separates a real starved knot from the false positives is whether the knot
+is genuinely re-entered **within one session** — i.e. it is an NPC entry knot, or a hub, or
+something an "anything else? / one more thing…" option loops back to. That is what
+`loopcheck` measures directly.
+
 ### 2d. Choices that matter — the core check (`§Making Choices Matter`)
 This is the reason the skill exists. For **each NPC**, judge whether its choices are consequential or flat.
 

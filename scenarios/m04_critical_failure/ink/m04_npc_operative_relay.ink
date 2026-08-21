@@ -1,176 +1,173 @@
 // ===========================================
-// OPERATIVE RELAY - COMBAT ENCOUNTER
+// OPERATIVE RELAY - ENTROPY, Inverter Room patrol
 // Mission 4: Critical Failure
-// Break Escape - ENTROPY Operative #2 (Inverter Room Patrol)
+//
+// Combat is NOT narrated here. The fight is owned by the engine's hostile
+// model (behavior.hostile + patrol route in scenario.json.erb, plus the
+// #hostile tag below). This script covers the detection beat, the
+// surrender/interrogation, and a coherent post-KO state.
+//
+// Relay carries the Master keycard, which gates the plant room and is on the
+// critical path -- it must remain recoverable however this resolves.
 // ===========================================
 
-// Variables for tracking combat state
+// Ink-owned state
 VAR relay_alerted_team = false
-VAR relay_defeated = false
 VAR radio_interrupted = false
-VAR player_health_low = false
-VAR player_defeated = false
+VAR relay_told_count = false
+VAR relay_told_devices = false
+VAR relay_secured_done = false
+
+// Engine-owned, synced in from globalVariables. NEVER assign from ink.
+VAR operative_relay_defeated = false
 
 // ===========================================
-// RELAY DETECTION
-// Location: Inverter Room
-// Optional Task 2.10: Neutralize Operative #2
+// ENTRY
 // ===========================================
 
 === start ===
+{operative_relay_defeated: -> relay_down}
+{radio_interrupted or relay_alerted_team: -> relay_standoff}
 -> relay_patrol_alert
 
+// ===========================================
+// DETECTION
+// ===========================================
+
 === relay_patrol_alert ===
-#speaker:operative_relay
+Narrator: She comes round the end of the inverter cabinets mid-stride and stops dead.
 
-// Triggered if Relay detects player
+ENTROPY Operative 'Relay': Inverter room's closed. Has been all week.
 
-Intruder in inverter room! Relay responding!
+* [Then why are you walking it?]
+    ENTROPY Operative 'Relay': *already reaching for the radio* Because I'm meant to be.
+    -> relay_alerts_team
 
-// Radio call attempt
+* [Radio. Down. Now.]
+    ~ radio_interrupted = true
+    Narrator: Her hand stops halfway. She weighs it, and leaves the radio where it is.
+    ENTROPY Operative 'Relay': Easy.
+    -> relay_standoff
 
-{radio_interrupted:
-    // Player interrupts radio
-    -> relay_combat_silent
-- else:
-    // Radio call succeeds
+* [Three charge stations, all bypassed. Was that you?]
+    ~ radio_interrupted = true
+    Narrator: That stops her more effectively than the first option would have. She had not expected anyone to have looked.
+    ENTROPY Operative 'Relay': *slowly* ...You've been in the cabinets.
+    -> relay_standoff
 
-    All units, intruder in inverter room!
-
-    -> relay_combat_team_alerted
-}
-
-=== relay_combat_silent ===
-#speaker:operative_relay
-
-// Combat without team alert
-
-You're not getting to those rack banks!
-
-// Combat begins
-
--> relay_combat_sequence
-
-=== relay_combat_team_alerted ===
-#speaker:operative_relay
-
+=== relay_alerts_team ===
 ~ relay_alerted_team = true
 
-// Team alerted - backup may arrive
+ENTROPY Operative 'Relay': All units, inverter room. We have company.
 
-Voltage, we've got company!
+Narrator: She clips the radio back on her belt with the unhurried confidence of someone who expects to win this.
 
--> relay_combat_sequence
-
-=== relay_combat_sequence ===
-#speaker:operative_relay
-
-// Combat in progress
-
-{player_health_low:
-    Almost done with you!
-- else:
-    You picked the wrong fight!
-}
-
-// Combat continues
-
--> relay_combat_resolution
-
-=== relay_combat_resolution ===
-#speaker:operative_relay
-
-{relay_defeated:
-    -> relay_defeated_outcome
-}
-{player_defeated:
-    -> relay_victory
-}
-{not relay_defeated and not player_defeated:
-    -> relay_combat_sequence
-}
--> relay_combat_sequence
-
-=== relay_defeated_outcome ===
-#speaker:operative_relay
-
-~ relay_defeated = true
-
-// Relay incapacitated
-
-The attack... will still... happen...
-
-// Relay drops Master keycard, radio, bypass device schematics
-
-// TRIGGERS: Task 2.10 complete (optional)
-#complete_task:neutralize_operative_relay
-#exit_conversation
--> start
-
-=== relay_victory ===
-#speaker:operative_relay
-
-// Player defeated - respawn
-
-Stay out of Critical Mass operations.
-
-// Player respawns at checkpoint
-#player_defeated
+#hostile
 #exit_conversation
 -> start
 
 // ===========================================
-// OPTIONAL: RELAY SURRENDER/INTERROGATION
+// STANDOFF
 // ===========================================
 
-=== relay_surrender ===
-#speaker:operative_relay
+=== relay_standoff ===
+{operative_relay_defeated: -> relay_down}
 
-~ relay_defeated = true
+ENTROPY Operative 'Relay': You're not getting to those rack banks.
 
-Alright! I yield!
+* [I don't need to. I need you to understand what they'll do.]
+    -> relay_doubt
 
-* [How many of you are there?]
-    You: How many operatives are here?
-    -> relay_interrogation_count
+* [Walk away. I'm not here for you.]
+    ENTROPY Operative 'Relay': *shakes her head, almost friendly* No, you're really not going to be able to do that.
+    -> relay_refuses
 
-* [Where are the bypass devices?]
-    You: Where are the physical bypass devices?
-    -> relay_interrogation_devices
++ [Say nothing.]
+    Narrator: She reads the silence correctly.
+    -> relay_refuses
 
-* [Secure Relay and move on]
-    -> relay_secured
+=== relay_doubt ===
+ENTROPY Operative 'Relay': Thermal runaway in a sealed hall. I know exactly what they'll do.
 
-=== relay_interrogation_count ===
-#speaker:operative_relay
+ENTROPY Operative 'Relay': I did the modelling.
 
-Four of us. Cipher, me, Static, and Voltage.
+Narrator: There is no flinch in it. She is not a technician who was lied to; she costed this and came anyway.
 
-By now you probably already dealt with Cipher.
+* [You modelled the casualties and came anyway.]
+    ENTROPY Operative 'Relay': I modelled the grid.
+    ENTROPY Operative 'Relay': The casualties were a line in the same spreadsheet.
+    -> relay_refuses
 
-Good luck with Voltage. He doesn't surrender.
+* [Then you know the night crew is still in Hall 2.]
+    ENTROPY Operative 'Relay': *beat* They were told to clear at midnight.
+    ENTROPY Operative 'Relay': If they didn't, that's on them.
+    -> relay_refuses
 
--> relay_secured
+=== relay_refuses ===
+ENTROPY Operative 'Relay': Last chance to be somewhere else.
 
-=== relay_interrogation_devices ===
-#speaker:operative_relay
-
-Charge stations in Inverter Room. Three of them.
-
-We installed bypass hardware on all three. Remote controllable.
-
-You'd need to physically disconnect them.
-
--> relay_secured
-
-=== relay_secured ===
-#speaker:operative_relay
-
-~ relay_defeated = true
-
-// Relay restrained and secured
-
-// TRIGGERS: Task 2.10 complete (optional)
-#complete_task:neutralize_operative_relay
+#hostile
 #exit_conversation
 -> start
+
+// ===========================================
+// SUBDUED
+// ===========================================
+
+=== relay_down ===
+{relay_secured_done: -> relay_secured_hub}
+
+Narrator: She is down against the base of an inverter cabinet, one arm across her ribs, still doing arithmetic behind her eyes.
+
+ENTROPY Operative 'Relay': Fine. I yield.
+
+-> relay_interrogation
+
+=== relay_interrogation ===
+* {not relay_told_count} [How many of you are here?]
+    ~ relay_told_count = true
+    ENTROPY Operative 'Relay': Four. Cipher, me, Static, Voltage.
+    ENTROPY Operative 'Relay': If you got this far you've met Cipher.
+    ENTROPY Operative 'Relay': Voltage won't yield. Don't plan around it.
+    -> relay_interrogation
+
+* {not relay_told_devices} [Where are the bypass devices?]
+    ~ relay_told_devices = true
+    ENTROPY Operative 'Relay': Charge stations. Three of them, in here.
+    ENTROPY Operative 'Relay': Bypass hardware on all three, remote controllable. You'd have to physically pull them.
+    -> relay_interrogation
+
+* [Who gave you the casualty figure?]
+    ENTROPY Operative 'Relay': *closes her eyes* Blackout signs the models.
+    ENTROPY Operative 'Relay': Voltage just runs the site.
+    -> relay_interrogation
+
++ [Secure her and move on.]
+    #exit_conversation
+    -> relay_secure_her
+
+=== relay_secure_her ===
+~ relay_secured_done = true
+
+Narrator: You tie her off to the cabinet frame and lift the master card from her jacket.
+
+#complete_task:neutralize_operative_relay
+-> start
+
+=== relay_secured_hub ===
+Narrator: Relay is secured against the inverter cabinet, watching the hydrogen panel more than she watches you.
+
++ {not relay_told_count} [How many of you are here?]
+    ~ relay_told_count = true
+    ENTROPY Operative 'Relay': Four. Voltage is the one that matters.
+    -> relay_secured_hub
+
++ {not relay_told_devices} [Where are the bypass devices?]
+    ~ relay_told_devices = true
+    ENTROPY Operative 'Relay': Three charge stations, in here. Pull them by hand.
+    -> relay_secured_hub
+
++ [Leave her.]
+    #exit_conversation
+    ENTROPY Operative 'Relay': *watching the panel* Amber's not the one to worry about.
+    -> relay_secured_hub

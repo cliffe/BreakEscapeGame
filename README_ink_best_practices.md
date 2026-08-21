@@ -191,7 +191,17 @@ All Break Escape NPC conversations **must** follow this standard structure:
   - **Important**: State is NOT saved between game loads - the `*` choice will appear again in the next conversation session
   - **Example**: `* [Tell me about your background]`
 
-**At least one `+` choice must always be present in the hub** to ensure players can always exit the conversation.
+**At least one unconditional `+` choice must be present in *every knot that can be
+entered more than once*** — not just the knot literally named `hub`. If all of a
+re-enterable knot's choices are `*`, or are `+` but every one is behind a `{condition}`,
+then a later visit can find the choice list empty; ink then falls off the end of the
+knot and raises `RUNTIME ERROR: ran out of content`. This compiles cleanly and only
+fails at runtime. See "The starved knot" under [Anti-Patterns](#anti-patterns-avoid-these).
+
+A useful way to think about it: `*` does not mean "one-time question", it means
+"permanently retire this option" — including on the visit where it was the last option
+standing. Prefer `+` with a `{not asked_x}` guard, which retires the *content* while
+leaving the knot able to offer something.
 
 ### Player Choice Formatting
 
@@ -737,6 +747,64 @@ VAR quest_complete = false
 
 ## Anti-Patterns (Avoid These)
 
+❌ **The starved knot: a re-enterable knot where every choice is once-only (`*`)**
+
+This is the single most common way a Break Escape conversation breaks at runtime, and
+it compiles perfectly.
+
+```ink
+=== chen_provides_access ===
+Robert Chen: Here's a Level 1 keycard.
+
+* [Thanks. I'll start with the records]     // all three are once-only
+    -> end_professional
+* [I appreciate your cooperation]
+    -> end_grateful
+* {discussed_optigrid} [About those contractors...]
+    -> optigrid_details
+```
+
+*Problem: the knot has four inbound diverts. On the second arrival the first two
+choices are spent and the third is gated off, so the choice list is **empty**. Ink
+falls off the end of the knot and raises `RUNTIME ERROR: ran out of content`. In
+m04 this exact shape accounted for the great majority of ~1,700 failing paths across
+seven knots.*
+
+*Better: make the repeatable options sticky and guarantee at least one always-available
+exit. A hub must never be able to run dry.*
+```ink
+=== chen_provides_access ===
+{not chen_provided_keycard:
+    Robert Chen: Here's a Level 1 keycard.
+}
+
++ [Thanks. I'll start with the records]      // sticky
+    ~ chen_provided_keycard = true
+    -> end_professional
+
++ {discussed_optigrid} [About those contractors...]
+    -> optigrid_details
+
++ [That's everything for now.]               // always available: the safety net
+    #exit_conversation
+    -> chen_provides_access
+```
+
+**The rule:** *any knot that can be entered more than once needs at least one `+`
+choice that is never conditional.* Gate content with `{...}` conditions on sticky
+choices rather than relying on `*` to retire it — `*` retires the option permanently,
+including on the visit where it was your only remaining option.
+
+**Where it bites hardest:** a knot named as an NPC's `currentKnot`, any `hub`, and any
+knot that a "one more thing…" / "anything else?" option loops back to. The engine
+re-navigates to the current knot every time a conversation re-opens
+(`phone-chat-minigame.js:478-482`), so entry knots are re-entered constantly.
+
+**How to catch it:** a depth-first walk of the choice tree does *not* reliably find
+this — it caps out before revisiting a hub enough times to starve it. Drive the
+conversation for a few hundred steps under several choice strategies and assert the
+choice list never empties. See `scripts/ink_runtime_check/loopcheck.js`.
+
 ❌ **Hard Endings Without Hub**
 ```ink
 === conversation ===
@@ -775,13 +843,31 @@ VAR asked_passwords = false
 -> hub
 ```
 
-❌ **Mixing Exit and END**
+❌ **Mixing Exit and END — in a hub conversation**
 ```ink
 === hub ===
 + [Leave] #exit_conversation
   -> END
 ```
-*Problem: Confused state logic. Use `#exit_conversation` OR `-> END`, not both*
+*Problem: Confused state logic, and the NPC can never be talked to again. In a
+looping conversation use `#exit_conversation` and return to the hub.*
+
+✅ **…but a linear cutscene should end.** Opening briefings and closing debriefs are
+not hubs: they play once and stop. There, `#exit_conversation` followed by `-> END` is
+the correct pattern, and returning to `start` instead is a bug — `start`'s once-only
+choices are already spent, so it runs out of content.
+```ink
+=== mission_departure ===
+Agent HaX: Good luck. Go.
+
+#exit_conversation
+
+-> END
+```
+*Reference: `m01_opening_briefing.ink:224-225` and `m01_closing_debrief.ink:913-914`
+(gold standard); `m02_opening_briefing.ink:227-229` and `m02_closing_debrief.ink:809-811`
+follow the same pattern. Note `scripts/compile-ink.sh` warns on every `END` it sees; that
+heuristic cannot tell a cutscene from a hub, and m01 itself trips it.*
 
 ❌ **Conditional Without Variable**
 ```ink

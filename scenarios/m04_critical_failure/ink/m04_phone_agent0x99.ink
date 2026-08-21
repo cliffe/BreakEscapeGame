@@ -1,5 +1,5 @@
 // ===========================================
-// AGENT 0x99 - PHONE SUPPORT (HANDLER)
+// AGENT HaX - PHONE SUPPORT (HANDLER)
 // Mission 4: Critical Failure
 // Break Escape - Strategic Guidance Throughout Mission
 // ===========================================
@@ -10,6 +10,24 @@ VAR handler_confidence = 50            // 0-100 handler's confidence in mission 
 VAR server_room_reached = false
 VAR attack_mechanism_known = false
 VAR voltage_priority_discussed = false
+VAR server_room_advice_given = false
+
+// Field-guide exposure flags. Engine-owned: each _offered is set by an
+// eventMapping when the player actually meets the thing the guide is about
+// (m01 pattern -- guides are exposure-gated, never time-gated), and each
+// _hint_given is set here when the guide is handed over.
+VAR rfid_guide_offered = false
+VAR rfid_guide_hint_given = false
+VAR lockpicking_guide_offered = false
+VAR lockpicking_guide_hint_given = false
+VAR recon_guide_offered = false
+VAR recon_guide_hint_given = false
+VAR vuln_guide_offered = false
+VAR vuln_guide_hint_given = false
+VAR distcc_guide_offered = false
+VAR distcc_guide_hint_given = false
+VAR cyberchef_guide_offered = false
+VAR cyberchef_guide_hint_given = false
 
 // Game state variables
 VAR chen_is_ally = false
@@ -25,7 +43,122 @@ EXTERNAL player_name()
 // ===========================================
 
 === start ===
--> first_call
+{handler_contacted == 0: -> first_call}
+-> support_hub
+
+// ===========================================
+// SUPPORT HUB
+//
+// PHASE 1a SKELETON. Every call branch returns here instead of falling through
+// `#exit_conversation` into `-> start`, which re-entered `first_call` with its
+// once-only choices already consumed -- that is what made all 18 enumerated
+// paths error on the FIRST call, not on re-entry.
+//
+// The three event knots below (event_server_room_entered,
+// event_attack_mechanism_identified, player_guidance_request) were previously
+// ORPHANED: no eventMapping uses targetKnot, so nothing could reach them.
+// They are now reachable from this hub, gated on progress.
+//
+// PHASE 4 will rebuild this to the m02 standard
+// (m02_ransomed_trust/ink/m02_phone_agent0x99.ink:101-175): finer progress
+// gating, an always-on fallback, and exposure-gated field-guide offers with
+// #give_item:lab-workstation:<key>.
+// ===========================================
+
+=== support_hub ===
+// Progress-gated advice. Each option appears only once the player is actually
+// at that beat, and disappears once used -- so the hub always reflects where
+// they are, and never offers a hint for a problem they haven't met yet.
++ {server_room_reached and not server_room_advice_given} [I'm on the OT network. What am I looking at?]
+    -> event_server_room_entered
+
++ {attack_mechanism_known and not voltage_priority_discussed} [I've got their attack mechanism mapped.]
+    -> event_attack_mechanism_identified
+
++ {operatives_defeated >= 1 and not voltage_priority_discussed} [I've put one of their people down.]
+    -> operative_down_advice
+
+// ---- Field guides. Exposure-gated: offered by an eventMapping when the
+// ---- player meets the obstacle, handed over here on request.
++ {rfid_guide_offered and not rfid_guide_hint_given} [Send me the RFID cloning guide.]
+    -> request_rfid_guide
+
++ {lockpicking_guide_offered and not lockpicking_guide_hint_given} [Send me the lockpicking guide.]
+    -> request_lockpicking_guide
+
++ {recon_guide_offered and not recon_guide_hint_given} [Send me the network mapping guide.]
+    -> request_recon_guide
+
++ {vuln_guide_offered and not vuln_guide_hint_given} [Send me the attack surface guide.]
+    -> request_vuln_guide
+
++ {distcc_guide_offered and not distcc_guide_hint_given} [Send me the distcc guide.]
+    -> request_distcc_guide
+
++ {cyberchef_guide_offered and not cyberchef_guide_hint_given} [Send me the CyberChef decoding guide.]
+    -> request_cyberchef_guide
+
+// ---- Always available: the fallback that stops this hub ever running dry.
++ [I need guidance.]
+    -> player_guidance_request
+
++ [Nothing right now.]
+    #exit_conversation
+    Agent HaX: Line's open. Call it in when you have something.
+    -> support_hub
+
+// ===========================================
+// FIELD GUIDE HANDOVERS
+// Each sets its _hint_given so the offer retires, and pushes the
+// lab-workstation item into the player's inventory.
+// ===========================================
+
+=== request_rfid_guide ===
+~ rfid_guide_hint_given = true
+#give_item:lab-workstation:safetynet_field_guide_rfid_cloning
+Agent HaX: Sending it now. Read the card, crack the keys, emulate it at the reader — that's the whole shape of it.
+-> support_hub
+
+=== request_lockpicking_guide ===
+~ lockpicking_guide_hint_given = true
+#give_item:lab-workstation:safetynet_field_guide_lockpicking
+Agent HaX: On its way. Tension wrench first, then pick the pins one at a time. Don't force it.
+-> support_hub
+
+=== request_recon_guide ===
+~ recon_guide_hint_given = true
+#give_item:lab-workstation:safetynet_field_guide_recon_network_mapping
+Agent HaX: Sent. Find what's alive on that subnet before you touch anything.
+-> support_hub
+
+=== request_vuln_guide ===
+~ vuln_guide_hint_given = true
+#give_item:lab-workstation:safetynet_field_guide_vuln_analysis
+Agent HaX: Sent. Once you know what's listening, this tells you what's worth pushing on.
+-> support_hub
+
+=== request_distcc_guide ===
+~ distcc_guide_hint_given = true
+#give_item:lab-workstation:safetynet_field_guide_distcc
+Agent HaX: Sent. It's an old daemon that runs compile jobs for anyone who asks. That's your command execution.
+-> support_hub
+
+=== request_cyberchef_guide ===
+~ cyberchef_guide_hint_given = true
+#give_item:lab-workstation:safetynet_field_guide_cyberchef
+Agent HaX: Sent. Paste it in, hit Magic, and it'll tell you what it is.
+-> support_hub
+
+=== operative_down_advice ===
+{operatives_defeated >= 2:
+    Agent HaX: Two down. That's both halls clear, which means the only one left is the one who matters.
+- else:
+    Agent HaX: One down. Check them — these people carry the cards that open the doors they're standing in front of.
+}
+
+Agent HaX: And {player_name()} — the hall doesn't care who's winning. Watch the hydrogen panel.
+
+-> support_hub
 
 // ===========================================
 // FIRST CALL (Initial Contact)
@@ -37,19 +170,16 @@ EXTERNAL player_name()
 
 {player_name()}, status check. Are you inside the facility?
 
-* [Yes, I'm in. Met the facility manager]
+* [I'm inside. Met Robert Vance, the facility manager.]
     ~ handler_contacted += 1
-    You: I'm inside. Met Robert Chen, the facility manager.
     -> chen_status_inquiry
 
-* [Inside. Beginning investigation]
+* [Inside the facility. Beginning investigation now.]
     ~ handler_contacted += 1
-    You: Inside the facility. Beginning investigation now.
     -> investigation_update
 
-* [Any intel updates on my end?]
+* [I'm in. Anything new from your end?]
     ~ handler_contacted += 1
-    You: I'm in. Anything new from your end?
     -> intel_update
 
 === chen_status_inquiry ===
@@ -73,18 +203,15 @@ EXTERNAL player_name()
 === chen_cover_status ===
 #speaker:agent_0x99
 
-* [He's cooperative so far]
+* [Cooperative. Providing facility access.]
     ~ handler_confidence += 5
-    You: Cooperative. Providing facility access.
     -> chen_cooperation_acknowledged
 
-* [Skeptical but complying]
-    You: Skeptical, but he's complying with the audit cover.
+* [Skeptical, but he's complying with the audit cover.]
     -> chen_skeptical_acknowledged
 
-* [I revealed the real mission]
+* [I told him the truth about ENTROPY. He's fully on board.]
     ~ handler_confidence += 10
-    You: I told him the truth about ENTROPY. He's fully on board.
     -> chen_revealed_acknowledged
 
 === chen_cooperation_acknowledged ===
@@ -150,7 +277,7 @@ Stay sharp. These aren't amateurs. If you encounter hostiles, defend yourself.
 Call if you need guidance.
 
 #exit_conversation
--> start
+-> support_hub
 
 // ===========================================
 // EVENT: SERVER ROOM ENTERED
@@ -161,18 +288,17 @@ Call if you need guidance.
 #speaker:agent_0x99
 
 ~ server_room_reached = true
+~ server_room_advice_given = true
 ~ handler_confidence += 10
 
 {player_name()}, good work reaching the server room.
 
 That's their access point—SCADA network infrastructure runs through there.
 
-* [I see a VM terminal for network investigation]
-    You: There's a network investigation terminal here. SCADA backup server.
++ [There's a network investigation terminal here. SCADA backup server.]
     -> vm_guidance
 
-* [What am I looking for?]
-    You: What specifically should I investigate?
++ [What specifically should I investigate?]
     -> investigation_guidance
 
 === vm_guidance ===
@@ -213,7 +339,7 @@ Find it, analyze it, and we'll know how to disable their attack.
 Call when you've got intel.
 
 #exit_conversation
--> start
+-> support_hub
 
 // ===========================================
 // EVENT: ATTACK MECHANISM IDENTIFIED
@@ -228,14 +354,12 @@ Call when you've got intel.
 
 {player_name()}, I'm seeing your flag submissions. Outstanding work.
 
-You've identified their complete attack infrastructure. Three-vector approach: physical bypass devices, SCADA malware, remote trigger.
+You've identified their whole approach. They own the SCADA layer and they're holding a remote trigger on top of it.
 
-* [All three vectors need to be disabled]
-    You: All three attack vectors need to be neutralized to stop this.
++ [The software side is theirs. Anything I do from a terminal, they can undo.]
     -> three_vector_confirmation
 
-* [Where's the remote trigger?]
-    You: Where's the remote trigger mechanism?
++ [Where's the remote trigger mechanism?]
     -> trigger_location_discussion
 
 === three_vector_confirmation ===
@@ -245,7 +369,7 @@ You've identified their complete attack infrastructure. Three-vector approach: p
 
 Correct. Physical devices on the rack banks, malicious SCADA script, and their command laptop.
 
-Disable all three, and the attack is dead.
+Which is why the answer isn't software. There's a hardwired Emergency Shutdown pushbutton in the plant room -- physical contacts, no network path. It's the one thing they couldn't reach from SCADA. Press it and the attack is dead.
 
 -> voltage_priority_update
 
@@ -267,17 +391,14 @@ Listen carefully. Voltage is high-value intelligence.
 
 He knows about The Architect, multi-cell coordination, future operations.
 
-* [Prioritize capture over speed?]
-    You: Should I prioritize capturing Voltage even if it's riskier?
+* [Should I prioritize capturing Voltage even if it's riskier?]
     -> capture_vs_speed_guidance
 
-* [Understood. I'll attempt capture]
+* [Understood. I'll attempt to capture him.]
     ~ handler_confidence += 10
-    You: Understood. I'll attempt to capture him.
     -> capture_attempt_acknowledged
 
-* [Attack prevention comes first]
-    You: Attack prevention is priority one. Capture is secondary.
+* [Attack prevention is priority one. Capture is secondary.]
     -> attack_priority_acknowledged
 
 === capture_vs_speed_guidance ===
@@ -285,15 +406,14 @@ He knows about The Architect, multi-cell coordination, future operations.
 
 Your call on the ground. Here's the analysis:
 
-Capture Voltage: High intel value, but riskier engagement. He may threaten to trigger early.
+Going for him is high intel value and a riskier engagement — he's holding the trigger, and cornered he will use it.
 
-Prioritize attack disabling: Lower risk, guaranteed mission success, but we lose intelligence.
+Going for the shutdown is the safe play. The grid holds, but he walks out of that dock and we lose him.
 
 I trust your judgment. Choose based on the tactical situation.
 
-+ [I'll assess when I confront him]
++ [I'll make the call when I confront him. Tactical situation dependent.]
     ~ handler_confidence += 15
-    You: I'll make the call when I confront him. Tactical situation dependent.
     -> judgment_trusted
 
 === capture_attempt_acknowledged ===
@@ -330,7 +450,7 @@ One—neutralize Voltage and any remaining operatives in the plant room.
 
 Two—secure or destroy the remote trigger laptop.
 
-Three—disable physical bypass devices and SCADA malware.
+Three—get to the hardwired ESD pushbutton in the plant room and press it.
 
 {operatives_defeated >= 2:
     You've already taken down {operatives_defeated} operatives. You're doing this.
@@ -342,9 +462,8 @@ Three—disable physical bypass devices and SCADA malware.
     All three operatives are still active. Be ready for combat.
 }
 
-* [I'm ready. Moving to plant room]
+* [Ready. Moving to the plant room now.]
     ~ handler_confidence += 10
-    You: Ready. Moving to the plant room now.
     -> final_encouragement
 
 === final_encouragement ===
@@ -363,7 +482,7 @@ Three—disable physical bypass devices and SCADA malware.
 240,000 people are counting on you. Bring it home.
 
 #exit_conversation
--> start
+-> support_hub
 
 // ===========================================
 // OPTIONAL: PLAYER-INITIATED CALL (GUIDANCE REQUEST)
@@ -377,14 +496,21 @@ Three—disable physical bypass devices and SCADA malware.
 
 {player_name()}, go ahead. What do you need?
 
-* [What's my next priority?]
+// These are STICKY (+). As once-only (*) choices they were consumed after
+// three visits, and `guidance_call_end` routes back here ("One more thing...")
+// -- so a fourth visit found an empty choice list and ran out of content.
+// A guidance hub must always have something to offer.
++ [What's my next priority?]
     -> priority_guidance
 
-* [Intel update?]
++ [Intel update?]
     -> intel_status_update
 
-* [I'm stuck. Suggestions?]
++ [I'm stuck. Suggestions?]
     -> tactical_suggestions
+
++ [Nothing. Just checking in.]
+    -> guidance_call_end
 
 === priority_guidance ===
 #speaker:agent_0x99
@@ -441,17 +567,19 @@ Three—disable physical bypass devices and SCADA malware.
 
 What's the situation?
 
-* [Can't find the next area]
-    You: I can't find where to go next.
+// Sticky + a fallback: this knot is re-enterable from the guidance hub, and as
+// once-only choices it emptied on the fourth visit.
++ [I can't find where to go next.]
     -> navigation_help
 
-* [Combat encounter is difficult]
-    You: Having trouble with a combat encounter.
++ [Having trouble with a combat encounter.]
     -> combat_help
 
-* [VM challenge is confusing]
-    You: The VM network challenge is confusing.
++ [The VM network challenge is confusing.]
     -> vm_challenge_help
+
++ [Actually, I'm fine.]
+    -> guidance_call_end
 
 === navigation_help ===
 #speaker:agent_0x99
@@ -520,11 +648,12 @@ Finally, exploit vulnerable services to access attack control mechanisms.
 
 Anything else?
 
-* [No, I'm good]
-    You: No, I'm good. Thanks.
+// Sticky: this knot is re-entered every time the player loops the guidance
+// hub, so once-only choices leave it empty on the second pass.
++ [No, I'm good. Thanks.]
     -> call_final_end
 
-* [One more thing...]
++ [One more thing...]
     -> player_guidance_request
 
 === call_final_end ===
@@ -533,4 +662,4 @@ Anything else?
 Stay safe out there. Call if you need me.
 
 #exit_conversation
--> start
+-> support_hub

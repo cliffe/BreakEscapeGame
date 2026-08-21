@@ -1,3 +1,9 @@
+> ⚠️ **SUPERSEDED (2026-08-21).** These stage documents describe the original **water-treatment**
+> concept for m04 (chlorine dosing, Dec 2025). The mission was rebuilt as **grid battery storage**
+> (Albion Energy Storage) and then aligned to the m01 standard. They are kept for historical
+> reference only. The authoritative design is `scenarios/m04_critical_failure/ALIGNMENT_PLAN.md`;
+> the current implementation is the scenario and ink files themselves.
+
 # Mission 4: "Critical Failure" - Development Preparation
 
 **Mission ID:** m04_critical_failure

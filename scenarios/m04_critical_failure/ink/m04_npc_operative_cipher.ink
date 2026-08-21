@@ -1,184 +1,188 @@
 // ===========================================
-// OPERATIVE CIPHER - COMBAT ENCOUNTER
+// OPERATIVE CIPHER - ENTROPY, Battery Hall 1
 // Mission 4: Critical Failure
-// Break Escape - ENTROPY Operative #1 (Battery Hall 1 Guard)
+//
+// Combat is NOT narrated here. The fight is owned by the engine's hostile
+// model (behavior.hostile in scenario.json.erb + the #hostile tag below).
+// This script covers three things only:
+//   1. The detection beat, where the player can bluff, stall the radio, or
+//      blow it and turn Cipher hostile.
+//   2. The surrender/interrogation, reached when Cipher is subdued.
+//   3. A post-KO state so re-entering the conversation stays coherent.
+//
+// Cipher carries the Level 2 workshop keycard, which is on the critical
+// path -- it must remain recoverable however this resolves.
 // ===========================================
 
-// Variables for tracking combat state
+// Ink-owned state
 VAR cipher_alerted_team = false
-VAR cipher_defeated = false
 VAR radio_interrupted = false
-VAR player_health_low = false
-VAR player_defeated = false
+VAR cipher_told_voltage_location = false
+VAR cipher_told_attack_vectors = false
+VAR cipher_secured_done = false
+
+// Engine-owned, synced in from globalVariables. NEVER assign these from ink --
+// globalVarOnKO writes them and a two-way sync would clobber the engine value.
+VAR operative_cipher_defeated = false
 
 // ===========================================
-// CIPHER DETECTION
-// Location: Battery Hall 1
-// Optional Task 2.9: Neutralize Operative #1
+// ENTRY
 // ===========================================
 
 === start ===
+{operative_cipher_defeated: -> cipher_down}
+{radio_interrupted or cipher_alerted_team: -> cipher_standoff}
 -> cipher_detection
 
+// ===========================================
+// DETECTION
+// ===========================================
+
 === cipher_detection ===
-#speaker:operative_cipher
+Narrator: He is crouched at the end of the rack row with a panel open and a handset already half out of its clip.
 
-// Triggered when player detected by Operative #1
+ENTROPY Operative 'Cipher': Hey. Hey! This bay's locked off for maintenance.
 
-What the—hey! Security, we've got a problem!
+ENTROPY Operative 'Cipher': *thumb moving to the handset* Who signed you in?
 
-// Attempts radio call
-
-{radio_interrupted:
-    // Player stops radio call
-    You're fast. Won't help you.
-    -> cipher_combat_silent
-- else:
-    // Radio call succeeds
+* [Albion contracted me for the thermal survey. Check your list.]
+    ENTROPY Operative 'Cipher': *doesn't look at the list* There's no survey tonight.
+    ENTROPY Operative 'Cipher': And you came in the wrong door for one.
     -> cipher_alerts_team
-}
+
+* [Put the radio down.]
+    ~ radio_interrupted = true
+    Narrator: You close the distance before the handset clears its clip. He freezes with it against his chest.
+    ENTROPY Operative 'Cipher': *quietly* You're fast.
+    -> cipher_standoff
+
+* [Hall 2 is venting. You want to be on a radio right now?]
+    ~ radio_interrupted = true
+    Narrator: It lands. His eyes go to the hydrogen panel over your shoulder, and the handset stops moving.
+    ENTROPY Operative 'Cipher': ...That panel's amber.
+    ENTROPY Operative 'Cipher': That panel is not supposed to be amber.
+    -> cipher_standoff
+
+// ===========================================
+// HE GETS THE CALL OUT
+// ===========================================
 
 === cipher_alerts_team ===
-#speaker:operative_cipher
-
 ~ cipher_alerted_team = true
 
-// Radio transmission
+ENTROPY Operative 'Cipher': *into the handset* Voltage, Hall 1. We've got a live one.
 
-Voltage, security's here! Real security. We're compromised!
+Narrator: The handset squawks once and goes dead. He drops it and squares up.
 
-// Other operatives go on alert
+ENTROPY Operative 'Cipher': You picked the wrong facility.
 
--> cipher_combat_alerted
-
-=== cipher_combat_silent ===
-#speaker:operative_cipher
-
-// Combat without alerting team
-
-You're not stopping this!
-
-// Combat encounter begins
-
--> cipher_combat_sequence
-
-=== cipher_combat_alerted ===
-#speaker:operative_cipher
-
-// Combat with team alerted
-
-You picked the wrong facility to infiltrate.
-
-// Combat encounter - other operatives will be prepared
-
--> cipher_combat_sequence
-
-=== cipher_combat_sequence ===
-#speaker:operative_cipher
-
-// Combat in progress
-
-{player_health_low:
-    You're done!
-- else:
-    Critical Mass doesn't fail!
-}
-
-// Combat continues until resolution
-
--> cipher_combat_resolution
-
-=== cipher_combat_resolution ===
-#speaker:operative_cipher
-
-{cipher_defeated:
-    -> cipher_defeated_outcome
-}
-{player_defeated:
-    -> cipher_victory
-}
-{not cipher_defeated and not player_defeated:
-    -> cipher_combat_sequence
-}
--> cipher_combat_sequence
-
-=== cipher_defeated_outcome ===
-#speaker:operative_cipher
-
-~ cipher_defeated = true
-
-// Cipher incapacitated
-
-You won't... stop the attack...
-
-// Cipher drops Level 2 keycard, radio, intelligence document
-
-// TRIGGERS: Task 2.9 complete (optional)
-#complete_task:neutralize_operative_cipher
-#exit_conversation
--> start
-
-=== cipher_victory ===
-#speaker:operative_cipher
-
-// Player defeated - respawn
-
-Stay down.
-
-// Player respawns at checkpoint
-#player_defeated
+#hostile
 #exit_conversation
 -> start
 
 // ===========================================
-// OPTIONAL: CIPHER SURRENDER/INTERROGATION
-// If player subdues rather than defeats
+// STANDOFF - the radio is stalled, nothing is settled
 // ===========================================
 
-=== cipher_surrender ===
-#speaker:operative_cipher
+=== cipher_standoff ===
+{operative_cipher_defeated: -> cipher_down}
 
-~ cipher_defeated = true
+ENTROPY Operative 'Cipher': *handset still in his fist* So what happens now?
 
-Alright, alright! I'm done!
+* [Walk out. Leave the handset.]
+    ENTROPY Operative 'Cipher': *doesn't move* Can't do that.
+    -> cipher_refuses
 
-* [Where's Voltage?]
-    You: Where's Voltage?
-    -> cipher_interrogation_voltage
+* [Whatever Voltage told you this was, the racks vent hydrogen. People die.]
+    -> cipher_doubt
 
-* [What's the attack mechanism?]
-    You: What's the attack mechanism?
-    -> cipher_interrogation_attack
++ [Say nothing.]
+    Narrator: The pause stretches. He makes his decision before you make yours.
+    ENTROPY Operative 'Cipher': No.
+    -> cipher_refuses
 
-* [Secure Cipher and move on]
-    -> cipher_secured
+=== cipher_refuses ===
+ENTROPY Operative 'Cipher': I'm not walking. Not tonight.
 
-=== cipher_interrogation_voltage ===
-#speaker:operative_cipher
-
-Plant room. Final defensive position.
-
-Good luck getting past Relay and Static.
-
--> cipher_secured
-
-=== cipher_interrogation_attack ===
-#speaker:operative_cipher
-
-Three vectors. Physical bypasses on rack banks, SCADA malware, remote trigger.
-
-You'd have to disable all three to stop it.
-
--> cipher_secured
-
-=== cipher_secured ===
-#speaker:operative_cipher
-
-~ cipher_defeated = true
-
-// Cipher restrained and secured
-
-// TRIGGERS: Task 2.9 complete (optional)
-#complete_task:neutralize_operative_cipher
+#hostile
 #exit_conversation
 -> start
+
+=== cipher_doubt ===
+ENTROPY Operative 'Cipher': *flat* Nobody's in the halls at night.
+
+ENTROPY Operative 'Cipher': That's the whole point of doing it at night.
+
+Narrator: He says it like a line he has been given, and not one he has checked.
+
+* [There's a night crew in Hall 2. Go and look.]
+    ENTROPY Operative 'Cipher': *beat*
+    ENTROPY Operative 'Cipher': ...You're lying.
+    Narrator: He wants it to be a lie. He does not move to check.
+    -> cipher_refuses
+
+* [Ask him yourself. He's in the plant room.]
+    ENTROPY Operative 'Cipher': *raises the handset again* I will.
+    -> cipher_alerts_team
+
+// ===========================================
+// SUBDUED - interrogation hub
+// Reached when Cipher is down and the player talks to him.
+// ===========================================
+
+=== cipher_down ===
+{cipher_secured_done: -> cipher_secured_hub}
+
+Narrator: He is propped against the rack frame where he went down, breathing hard, one hand flat on the concrete.
+
+ENTROPY Operative 'Cipher': *thickly* Alright. Alright, I'm done.
+
+-> cipher_interrogation
+
+=== cipher_interrogation ===
+* {not cipher_told_voltage_location} [Where's Voltage?]
+    ~ cipher_told_voltage_location = true
+    ENTROPY Operative 'Cipher': Plant room. Final position.
+    ENTROPY Operative 'Cipher': Good luck getting there past Relay.
+    -> cipher_interrogation
+
+* {not cipher_told_attack_vectors} [How is the attack staged?]
+    ~ cipher_told_attack_vectors = true
+    ENTROPY Operative 'Cipher': We own the SCADA layer and Voltage holds the trigger. That's it. That's the whole thing.
+    ENTROPY Operative 'Cipher': Only thing we couldn't get at is the hardwired shutdown in the plant room. Which is where Voltage is standing.
+    -> cipher_interrogation
+
+* [Did you know it kills people?]
+    ENTROPY Operative 'Cipher': *long pause* I knew the number.
+    ENTROPY Operative 'Cipher': I signed for it same as everyone else.
+    -> cipher_interrogation
+
++ [Secure him and move on.]
+    #exit_conversation
+    -> cipher_secure_him
+
+=== cipher_secure_him ===
+~ cipher_secured_done = true
+
+Narrator: You zip his wrists to the rack frame and take the Level 2 card off his belt.
+
+#complete_task:neutralize_operative_cipher
+-> start
+
+=== cipher_secured_hub ===
+Narrator: Cipher is secured to the rack frame, wrists tied, watching you work.
+
++ {not cipher_told_voltage_location} [Where's Voltage?]
+    ~ cipher_told_voltage_location = true
+    ENTROPY Operative 'Cipher': Plant room. Go on, then.
+    -> cipher_secured_hub
+
++ {not cipher_told_attack_vectors} [How is the attack staged?]
+    ~ cipher_told_attack_vectors = true
+    ENTROPY Operative 'Cipher': SCADA layer's ours. Voltage has the trigger.
+    -> cipher_secured_hub
+
++ [Leave him.]
+    #exit_conversation
+    ENTROPY Operative 'Cipher': *says nothing*
+    -> cipher_secured_hub

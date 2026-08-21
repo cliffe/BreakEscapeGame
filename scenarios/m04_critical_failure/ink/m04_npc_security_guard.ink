@@ -9,14 +9,24 @@ VAR guard_suspicious = false
 VAR entry_method = ""            // credentials, smooth_talk, stealth
 
 // External variables (set by game)
+// NOTE: the engine binds exactly six externals (person-chat-conversation.js:96-129):
+// player_name, current_mission_id, npc_location, mission_phase,
+// operational_stress_level, equipment_status. chen_trust_level() was declared
+// here but is NOT bound by the engine, so it is removed -- read the synced
+// chen_trust_level global instead if this dialogue ever needs it.
 EXTERNAL player_name()
-EXTERNAL chen_trust_level()
 
 // ===========================================
 // ENTRY DIALOGUE
 // Location: Main Entrance
 // Task 1.1: Enter Facility
+//
+// The NPC declares currentKnot "start" (scenario.json.erb:332), so `start`
+// must exist -- without it ChoosePathString throws and the guard is mute.
 // ===========================================
+
+=== start ===
+-> security_guard_entry
 
 === security_guard_entry ===
 #speaker:security_guard
@@ -25,16 +35,13 @@ EXTERNAL chen_trust_level()
 
 Morning. Kind of early for visitors.
 
-* [Present state auditor credentials]
-    You: State grid-safety regulator. I'm here for an inspection.
+* [State grid-safety regulator. I'm here for an inspection.]
     -> guard_credentials_check
 
-* [I'm here for an inspection]
-    You: I'm here for an inspection of the facility.
+* [I'm here for an inspection of the facility.]
     -> guard_inspection_response
 
-* [Bypass guard, attempt stealth entry]
-    You: (Attempt to slip past the guard)
+* [(Attempt to slip past the guard)]
     -> guard_stealth_attempt
 
 === guard_credentials_check ===
@@ -52,12 +59,10 @@ Alright, sign in here.
 
 Mr. Chen mentioned something about a surprise inspection. He's not happy about it, fair warning.
 
-* [I'll keep that in mind. Thank you]
-    You: I'll keep that in mind. Thank you.
+* [I'll keep that in mind. Thank you.]
     -> guard_entry_granted
 
-* [It's routine. Where can I find him?]
-    You: It's routine procedure. Where can I find Mr. Chen?
+* [It's routine procedure. Where can I find Mr. Chen?]
     -> guard_directions
 
 === guard_directions ===
@@ -87,12 +92,10 @@ Go on through. Badge scanner there will let you in.
 
 Inspection? Nobody told me about any inspection.
 
-* [It's a surprise inspection. Check with your supervisor]
-    You: It's a surprise inspection. You can check with your supervisor if needed.
+* [It's a surprise inspection. You can check with your supervisor if needed.]
     -> guard_confused_allows
 
-* [Show credentials]
-    You: Here are my credentials.
+* [Here are my credentials.]
     -> guard_credentials_check
 
 === guard_confused_allows ===
@@ -115,16 +118,13 @@ Uh... okay. Sign in anyway. Cover my bases.
 
 Hey! Where do you think you're going?
 
-* [Run past guard]
-    You: (Sprint past the guard toward the door)
+* [(Sprint past the guard toward the door)]
     -> guard_alarm_raised
 
-* [Smooth talk out of situation]
-    You: Sorry, I'm testing your entry protocols. Part of the security audit.
+* [Sorry, I'm testing your entry protocols. Part of the security audit.]
     -> guard_smooth_talk
 
-* [Show credentials]
-    You: My apologies. Here are my credentials.
+* [My apologies. Here are my credentials.]
     -> guard_credentials_check
 
 === guard_alarm_raised ===
@@ -149,12 +149,11 @@ Security! We've got an intruder!
 
 Security audit? Testing entry protocols?
 
-* [Convince guard]
-    You: Yes, exactly. You challenged me appropriately. That's a pass.
+* [Yes, exactly. You challenged me appropriately. That's a pass.]
     -> guard_fooled
 
-* [Guard doesn't buy it]
-    // Guard remains skeptical
+* [Ask anyone. I'll wait.]
+    // He does not buy it.
     -> guard_demands_credentials
 
 === guard_fooled ===
@@ -162,8 +161,7 @@ Security audit? Testing entry protocols?
 
 Oh. Uh, okay. Should I still log you in?
 
-* [Yes, proper procedure]
-    You: Yes, that would be proper procedure.
+* [Yes, that would be proper procedure.]
     -> guard_entry_granted
 
 === guard_demands_credentials ===

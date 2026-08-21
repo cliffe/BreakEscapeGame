@@ -1,228 +1,199 @@
 // ===========================================
 // ROBERT CHEN - PHONE SUPPORT
 // Mission 4: Critical Failure
-// Break Escape - SCADA Technical Guidance (Available After Ally Status)
+// SCADA technical guidance, available once Chen is an ally.
+//
+// STRUCTURE: every branch returns to `support_hub`, which always presents at
+// least one sticky choice. The previous version fell through
+// `#exit_conversation` straight into `-> start`, which re-entered the
+// not-an-ally branch with no choice to stop on -- an infinite loop at every
+// entry point (>2000 continues, 0 choices).
+// See README_ink_best_practices.md:459-509 for the hub-return convention.
 // ===========================================
 
-// Variables for tracking support interactions
+// Ink-owned state
 VAR chen_support_calls = 0
 VAR guidance_provided = ""
+VAR asked_charge_control = false
+VAR asked_server_room = false
+VAR asked_disabling = false
 
-// Game state variables
+// Engine-owned, synced in from globalVariables.
+// chen_trust_level is deliberately incremented here -- that is real progression
+// and syncs back. chen_is_ally / urgency_stage are read only.
 VAR chen_is_ally = false
 VAR chen_trust_level = 0
 VAR urgency_stage = 0
+
+// NOTE: attack_mechanism_known is NOT declared in scenario.json.erb's
+// globalVariables (the global is named attack_mechanism_understood). Until
+// Phase 4 reconciles the two names this always reads false.
 VAR attack_mechanism_known = false
 
-// External variables (set by game)
 EXTERNAL player_name()
 
 // ===========================================
-// PHONE SUPPORT AVAILABILITY CHECK
-// Available only after chen_is_ally = true
+// ENTRY
 // ===========================================
 
 === start ===
+{not chen_is_ally: -> chen_not_yet_ally}
+~ chen_support_calls += 1
 -> chen_phone_support_start
 
-=== chen_phone_support_start ===
-#speaker:robert_chen
+=== chen_not_yet_ally ===
+Robert Vance: I'm monitoring systems from the control room. Come and see me if you need something.
 
-{not chen_is_ally:
-    // Chen not yet an ally - shouldn't be callable
-
-    I'm monitoring systems from the Control Room. Come see me if you need something.
-
++ [Understood.]
     #exit_conversation
--> start
+    Robert Vance: Right.
+    -> chen_not_yet_ally
+
+=== chen_phone_support_start ===
+{chen_support_calls == 1:
+    Robert Vance: {player_name()}. I'm on the control room desk with both screens up.
 - else:
-    // Chen is ally - provides technical support
-
-    ~ chen_support_calls += 1
-
-    {player_name()}, what do you need? I'm monitoring from the Control Room.
-
-    * [I need SCADA guidance]
-        You: I need some guidance on the SCADA systems.
-        -> scada_guidance_menu
-
-    * [What should I prioritize?]
-        You: What should I focus on right now?
-        -> priority_guidance
-
-    * [How urgent is the situation?]
-        You: How urgent is our timeline?
-        -> urgency_assessment
+    Robert Vance: Still here. Still watching it climb.
 }
 
-=== scada_guidance_menu ===
-#speaker:robert_chen
+-> support_hub
 
-~ chen_trust_level += 3
+// ===========================================
+// HUB
+// ===========================================
 
-What specifically?
-
-* [How do the charge-control systems work?]
-    You: Can you explain how the charge-control systems work?
+=== support_hub ===
++ {not asked_charge_control} [How do the charge-control systems work?]
+    ~ asked_charge_control = true
+    ~ chen_trust_level += 3
     -> charge_control_systems_explanation
 
-* [What am I looking for in the server room?]
-    You: I'm in the server room. What should I investigate?
++ {not asked_server_room} [I'm in the server room. What am I looking for?]
+    ~ asked_server_room = true
+    ~ chen_trust_level += 3
     -> server_room_guidance
 
-* [How do I disable their attack safely?]
-    You: How do I disable their attack mechanisms safely?
++ {not asked_disabling} [How do I disable their attack safely?]
+    ~ asked_disabling = true
+    ~ chen_trust_level += 3
     -> safe_disabling_guidance
 
-* [Never mind]
-    You: Never mind, I'm good for now.
++ [What should I prioritise right now?]
+    ~ chen_trust_level += 5
+    -> priority_guidance
+
++ [How urgent is this?]
+    ~ chen_trust_level += 3
+    -> urgency_assessment
+
++ [That's everything for now.]
+    #exit_conversation
     -> support_call_end
 
-=== charge_control_systems_explanation ===
-#speaker:robert_chen
+// ===========================================
+// GUIDANCE
+// ===========================================
 
+=== charge_control_systems_explanation ===
 ~ guidance_provided = "charge_control_systems"
 
-Three rack banks—A, B and C—each with their own BMS and cooling.
+Robert Vance: Three rack banks. A, B and C, each with its own BMS and its own cooling loop.
 
-They're automated via SCADA but have physical controls.
+Robert Vance: They're driven over SCADA, but every one of them has a physical control as well.
 
-If ENTROPY installed bypass devices, you'd need to disable both the digital control AND the physical hardware.
+Robert Vance: So if they've fitted bypass hardware, killing the digital side alone won't do it. You need the hardware out too.
 
-Careful sequence is critical—wrong order could trigger fail-safes.
+Robert Vance: And mind the order. Wrong sequence trips the fail-safes, and the fail-safes are half of what's keeping that hall cool.
 
-+ [That helps, thanks]
-    -> scada_guidance_menu
+-> support_hub
 
 === server_room_guidance ===
-#speaker:robert_chen
-
 ~ guidance_provided = "server_room"
 
 {attack_mechanism_known:
-    You already identified their attack infrastructure. Good work.
-
-    Now you need to disable it—SCADA malware, physical bypasses, and their trigger mechanism.
+    Robert Vance: You've already got their infrastructure mapped. That's the hard part done.
+    Robert Vance: Now it's the shutdown. Nothing you do from a terminal will hold -- they own that layer.
 - else:
-    The VM terminal there has access to our SCADA backup server.
-
-    That's where they would have installed their attack control mechanisms.
-
-    Scan the network, investigate compromised services, find their access points.
-
-    Submit any intelligence you find to the drop-site terminal.
+    Robert Vance: The terminal in there can reach our SCADA backup server.
+    Robert Vance: If they staged anything, they staged it on that box.
+    Robert Vance: Scan the network, look at what's listening, find where they got in. Anything you pull, put it through the drop-site terminal.
 }
 
-+ [Understood]
-    -> scada_guidance_menu
+-> support_hub
 
 === safe_disabling_guidance ===
-#speaker:robert_chen
-
 ~ guidance_provided = "disabling"
 
-Three attack vectors need to be neutralized:
+Robert Vance: One thing, and it isn't a keyboard.
 
-One: Physical bypass devices on the rack banks. Disconnect them manually at Inverter Room.
+Robert Vance: Every control path in this plant runs through SCADA, and SCADA is theirs. Delete their script and they'll push it again before you've closed the window.
 
-Two: Malicious SCADA script. Delete it from the backup server via the VM terminal.
+Robert Vance: The Emergency Shutdown pushbutton in the plant room is hardwired. Physical contacts straight to the bank isolators, no network in the middle. It's the one thing they could never touch.
 
-Three: Remote trigger mechanism. Secure and disable Voltage's command laptop.
+Robert Vance: Get to it and press it. That's the mission.
 
 {urgency_stage >= 3:
-    Be careful. We're running out of time.
+    Robert Vance: And be quick about it. I'm watching bank B climb while we talk.
 - else:
-    Don't rush. Methodical approach is safer than speed.
+    Robert Vance: Take it methodically. Rushing this is how you trip the thing you're trying to stop.
 }
 
-+ [Got it]
-    -> scada_guidance_menu
+-> support_hub
 
 === priority_guidance ===
-#speaker:robert_chen
-
-~ chen_trust_level += 5
-
 {not attack_mechanism_known:
-    Priority one: identify how they're compromising the SCADA network.
-
-    Use the VM terminal in the server room. Find their attack infrastructure.
+    Robert Vance: Find out how they're driving the SCADA network. Everything else waits on that.
+    Robert Vance: The terminal in the server room is your way in.
 }
 {attack_mechanism_known and urgency_stage >= 3:
-    We're in the final stages. You need to disable their attack vectors NOW.
-
-    Physical bypasses, SCADA malware, and the remote trigger. All three.
+    Robert Vance: We're past planning. Disable the vectors now -- physical, script, trigger.
 }
 {attack_mechanism_known and urgency_stage < 3:
-    You know what they did. Now disable it.
-
-    Three vectors: physical, digital, and the trigger mechanism.
+    Robert Vance: You know what they did. Now get to the ESD and press it.
 }
 
-+ [Thanks]
-    -> support_call_end
+-> support_hub
 
 === urgency_assessment ===
-#speaker:robert_chen
-
-~ chen_trust_level += 3
-
-// Chen checks SCADA displays
-
 {urgency_stage >= 4:
-    We're at critical levels. Rack temperatures are climbing toward the runaway threshold.
-
-    If you don't disable their attack soon, we'll have to do emergency shutdown—and that might trigger exactly what they want.
+    Robert Vance: Bad. Rack temperatures are climbing toward the runaway threshold.
+    Robert Vance: If we can't stop it at source we go to emergency shutdown, and a hard shutdown on a hot bank might do their job for them.
 }
 {urgency_stage == 3:
-    Charge parameters are drifting into yellow zones. We've got time, but not much.
-
-    Every minute those parameters drift closer to runaway thresholds.
+    Robert Vance: Charge parameters are drifting yellow. There's time. Not a lot.
 }
 {urgency_stage == 2:
-    Systems show anomalies but nothing critical yet.
-
-    We have time to be methodical. Use it wisely.
+    Robert Vance: Anomalies, nothing critical yet. Use the time while you've got it.
 }
 {urgency_stage < 2:
-    Systems are stable for now. But those parameters WILL drift if we don't stop them.
-
-    The attack is scheduled for 0800. You've got time, but not unlimited.
+    Robert Vance: Stable, for now. But it won't stay stable on its own.
+    Robert Vance: They've set it for 0800.
 }
 
-+ [Understood]
-    -> support_call_end
+-> support_hub
 
 === support_call_end ===
-#speaker:robert_chen
-
-~ chen_trust_level += 2
-
-Call if you need more guidance.
+Robert Vance: Call me if you need it.
 
 {urgency_stage >= 3:
-    But hurry. We're running out of time.
+    Robert Vance: And hurry.
 - else:
-    I'm monitoring systems from here.
+    Robert Vance: I'm not going anywhere.
 }
 
-#exit_conversation
--> start
+-> support_hub
 
 // ===========================================
-// EMERGENCY CALL (If Attack Partially Triggered)
+// EMERGENCY CALL (attack partially triggered)
+// Routed to by an eventMapping targetKnot, not fallen into.
 // ===========================================
 
 === chen_emergency_call ===
-#speaker:robert_chen
+Robert Vance: {player_name()}! Temperatures just spiked -- it's started!
 
-{player_name()}! Rack temperatures just spiked!
+Robert Vance: Bank B is going. You need those vectors down now, all of them.
 
-The attack's been triggered!
-
-You need to disable those vectors RIGHT NOW—physical bypasses, SCADA script, everything!
-
-// TRIGGERS: Emergency intervention mode
-
-#exit_conversation
--> start
++ [On it.]
+    #exit_conversation
+    Robert Vance: Go!
+    -> support_hub

@@ -1,209 +1,142 @@
 // ===========================================
-// OPERATIVE STATIC - VOLTAGE SUPPORT
+// OPERATIVE STATIC - ENTROPY, Voltage's backup (Plant Room)
 // Mission 4: Critical Failure
-// Break Escape - ENTROPY Operative #3 (Voltage's Backup)
+//
+// Combat is NOT narrated here. The fight is owned by the engine's hostile
+// model (behavior.hostile + the #hostile tag below). Static is the last body
+// between the player and Voltage, so this script is deliberately short: a
+// challenge, and a post-KO interrogation that is the mission's cleanest
+// source of Architect intelligence.
+//
+// NOTE: voltage_captured is ENGINE-owned (globalVarOnKO on the voltage NPC).
+// It is declared here so it syncs IN and can be read. It is never assigned --
+// assigning it would write a stale false back over the engine's true.
 // ===========================================
 
-// Variables for tracking combat state
-VAR static_defeated = false
+// Ink-owned state
+VAR static_challenged = false
+VAR static_told_architect = false
+VAR static_told_operations = false
+VAR static_secured_done = false
+
+// Engine-owned, synced in from globalVariables. NEVER assign these from ink.
 VAR voltage_captured = false
-VAR player_priority = ""
-VAR player_health_low = false
-VAR player_defeated = false
+VAR operative_static_defeated = false
 
 // ===========================================
-// STATIC CONFRONTATION
-// Location: Plant Room
-// Part of Task 3.1: Confront Voltage
+// ENTRY
 // ===========================================
 
 === start ===
+{operative_static_defeated: -> static_down}
+{static_challenged: -> static_standoff}
 -> static_voltage_support
 
+// ===========================================
+// THE CHALLENGE
+// ===========================================
+
 === static_voltage_support ===
-#speaker:operative_static
+~ static_challenged = true
 
-// During Voltage confrontation
+Narrator: He steps out from behind the plant room door frame, putting himself squarely between you and the man at the laptop.
 
-Voltage, we have company!
+ENTROPY Operative 'Static': Voltage. Company.
 
-{player_priority == "capture":
-    // Player trying to capture Voltage
+Narrator: Behind him, Voltage does not look up from the screen.
 
-    I've got your back!
+ENTROPY Operative 'Static': He doesn't need long. I just need you to be slow.
 
-    // Fights alongside Voltage
-    -> static_combat_support
-}
-{player_priority == "disable":
-    // Player prioritizing laptop trigger
+-> static_standoff
 
-    Go! I'll cover you!
+=== static_standoff ===
+{operative_static_defeated: -> static_down}
 
-    // Covers Voltage's escape
-    -> static_combat_delay
-}
-{player_priority != "capture" and player_priority != "disable":
-    // Default combat support
+* [You're standing in a room that's about to catch fire.]
+    ENTROPY Operative 'Static': *doesn't move* Then we'd better be quick.
+    -> static_refuses
 
-    -> static_combat_support
-}
--> static_combat_support
+* [He's not going to wait for you. Look at him.]
+    Narrator: For a fraction of a second, Static's eyes flick sideways to the laptop, and to the man who has still not looked up.
+    ENTROPY Operative 'Static': *evenly* He doesn't have to wait for me.
+    ENTROPY Operative 'Static': That's the job.
+    -> static_refuses
 
-=== static_combat_support ===
-#speaker:operative_static
++ [Move him.]
+    -> static_refuses
 
-// Fighting alongside Voltage
+=== static_refuses ===
+ENTROPY Operative 'Static': Not past me.
 
-You're outnumbered, agent!
-
-// Combat: Static + Voltage vs. Player
-
--> static_combat_sequence
-
-=== static_combat_delay ===
-#speaker:operative_static
-
-// Buying time for Voltage to escape
-
-You're not stopping this operation!
-
-// Combat: Static vs. Player (Voltage escaping)
-
--> static_combat_sequence
-
-=== static_combat_sequence ===
-#speaker:operative_static
-
-// Combat in progress
-
-{player_health_low:
-    Critical Mass prevails!
-}
-{not player_health_low and voltage_captured:
-    Voltage! No!
-}
-{not player_health_low and not voltage_captured:
-    For The Architect!
-}
-
-// Combat continues
-
--> static_combat_resolution
-
-=== static_combat_resolution ===
-#speaker:operative_static
-
-{static_defeated:
-    -> static_defeated_outcome
-}
-{player_defeated:
-    -> static_victory
-}
-{not static_defeated and not player_defeated:
-    -> static_combat_sequence
-}
--> static_combat_sequence
-
-=== static_defeated_outcome ===
-#speaker:operative_static
-
-~ static_defeated = true
-
-// Static incapacitated
-
-The Architect... will continue...
-
-// Static drops radio, encrypted communications device
-#exit_conversation
--> start
-
-=== static_victory ===
-#speaker:operative_static
-
-// Player defeated
-
-{voltage_captured:
-    // If Voltage was captured but player lost
-
-    Voltage is captured, but you're done.
-- else:
-    // Player defeated, Voltage status varies
-
-    Get out of here. This facility is ours.
-}
-
-// Player respawns
-#player_defeated
+#hostile
 #exit_conversation
 -> start
 
 // ===========================================
-// STATIC SURRENDER (Rare - Only if Voltage Captured)
+// SUBDUED
 // ===========================================
 
-=== static_surrender ===
-#speaker:operative_static
-
-~ static_defeated = true
+=== static_down ===
+{static_secured_done: -> static_secured_hub}
 
 {voltage_captured:
-    // If Voltage was captured
-
-    Fine. It's over. Voltage is down.
-
-    * [Who is The Architect?]
-        You: Who is The Architect?
-        -> static_interrogation_architect
-
-    * [How many operations are planned?]
-        You: How many operations like this are planned?
-        -> static_interrogation_operations
-
-    * [Secure Static]
-        -> static_secured
-
+    Narrator: He is on the floor of the plant room with his back to the wall, and he has already seen Voltage face down in cuffs across the room. Whatever he was holding out for is gone.
+    ENTROPY Operative 'Static': *hoarse* It's over, then.
 - else:
-    // If Voltage escaped
-
-    Voltage got away. That's what matters.
-
-    Do what you want with me.
-
-    -> static_secured
+    Narrator: He is on the floor with his back to the wall, and there is a door standing open at the far end of the plant room that was shut when you came in.
+    ENTROPY Operative 'Static': *with grim satisfaction* He got out. That's what the job was.
 }
 
-=== static_interrogation_architect ===
-#speaker:operative_static
+-> static_interrogation
 
-I don't know. None of us do.
+=== static_interrogation ===
+* {not static_told_architect} [Who is The Architect?]
+    ~ static_told_architect = true
+    ENTROPY Operative 'Static': Nobody's met them. That's the point of them.
+    ENTROPY Operative 'Static': Directives come down, cells execute. Blackout signs off Critical Mass, Loom runs Social Fabric.
+    ENTROPY Operative 'Static': Above that it's just a voice that's always right.
+    -> static_interrogation
 
-The Architect coordinates through encrypted channels. We never meet them.
+* {not static_told_operations} [How many operations like this are planned?]
+    ~ static_told_operations = true
+    ENTROPY Operative 'Static': Tonight? Every cell, 0800, simultaneous.
+    ENTROPY Operative 'Static': After tonight is Phase 3, and Phase 3 is multi-city.
+    ENTROPY Operative 'Static': This one was the small one.
+    -> static_interrogation
 
-Only Voltage has direct communication.
+* [Did anyone tell you the casualty number?]
+    ENTROPY Operative 'Static': *tired* Everyone knows the number.
+    ENTROPY Operative 'Static': You sign for it when you take the cell. That's what taking the cell means.
+    -> static_interrogation
 
--> static_secured
++ [Secure him and move on.]
+    #exit_conversation
+    -> static_secure_him
 
-=== static_interrogation_operations ===
-#speaker:operative_static
+=== static_secure_him ===
+~ static_secured_done = true
 
-More than you can stop.
+Narrator: You secure him to the pipework and check him for a radio.
 
-This was a test run. The Architect has cells in six cities.
-
-OptiGrid Solutions has access to dozens of facilities.
-
-You stopped this one. How many others can you stop?
-
--> static_secured
-
-=== static_secured ===
-#speaker:operative_static
-
-~ static_defeated = true
-
-// Static restrained
-
-// TRIGGERS: Part of Task 3.1 completion
-#exit_conversation
+// NOTE: there is no `neutralize_operative_static` task in scenario.json.erb --
+// Static is unscored backup, unlike Cipher and Relay. If Phase 2's aim
+// restructure gives him one, complete it here.
 -> start
+
+=== static_secured_hub ===
+Narrator: Static is tied off to the pipework, head back against the wall.
+
++ {not static_told_architect} [Who is The Architect?]
+    ~ static_told_architect = true
+    ENTROPY Operative 'Static': A voice that's always right. Nobody's met them.
+    -> static_secured_hub
+
++ {not static_told_operations} [How many operations like this are planned?]
+    ~ static_told_operations = true
+    ENTROPY Operative 'Static': Every cell, 0800. Then Phase 3, multi-city.
+    -> static_secured_hub
+
++ [Leave him.]
+    #exit_conversation
+    ENTROPY Operative 'Static': *says nothing*
+    -> static_secured_hub

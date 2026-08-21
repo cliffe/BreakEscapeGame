@@ -17,8 +17,12 @@ VAR operatives_defeated = 0
 VAR urgency_stage = 0
 
 // External variables (set by game)
+// The engine binds exactly six externals (person-chat-conversation.js:96-129):
+// player_name, current_mission_id, npc_location, mission_phase,
+// operational_stress_level, equipment_status.
+// `current_time()` was declared here but is NOT bound and was never called --
+// removed so nobody wires a call to it and gets a runtime error.
 EXTERNAL player_name()
-EXTERNAL current_time()
 
 // ===========================================
 // CONVERSATION 1: INITIAL MEETING (Task 1.2)
@@ -34,19 +38,16 @@ EXTERNAL current_time()
 
 A grid-safety audit at 4 AM? You regulator types have interesting schedules.
 
-* [Just doing my job, Mr. Chen]
++ [Just doing my job, Mr. Chen.]
     ~ chen_trust_level += 5
-    You: Just doing my job, Mr. Chen.
     -> chen_professional_response
 
-* [I apologize for the inconvenience]
++ [I apologize for the inconvenience. I know this is unexpected.]
     ~ chen_trust_level += 10
-    You: I apologize for the inconvenience. I know this is unexpected.
     -> chen_apologetic_response
 
-* [There have been concerns about this facility]
++ [There have been concerns about this facility. I need to conduct a thorough review.]
     ~ chen_trust_level -= 5
-    You: There have been concerns about this facility. I need to conduct a thorough review.
     -> chen_defensive_response
 
 === chen_professional_response ===
@@ -71,9 +72,8 @@ I appreciate that. Look, I know you're doing your job.
 
 It's just... we're understaffed, underfunded, and now I've got surprise inspections at dawn.
 
-+ [I understand. This won't take long]
++ [I understand the pressure you're under. I'll be as efficient as possible.]
     ~ chen_trust_level += 10
-    You: I understand the pressure you're under. I'll be as efficient as possible.
     -> chen_cooperation_gained
 
 + [Has there been unusual activity recently?]
@@ -88,12 +88,10 @@ Concerns? We passed our last three inspections with flying colors.
 
 Our safety record is spotless. Who's been talking?
 
-+ [It's routine, Mr. Chen. May I see employee records?]
-    You: Just routine procedure. May I see your employee records?
++ [Just routine procedure. May I see your employee records?]
     -> access_request_reluctant
 
-+ [I need to be frank with you about something]
-    You: Actually, I should be frank with you about why I'm really here.
++ [Actually, I should be frank with you about why I'm really here.]
     -> early_reveal_opportunity
 
 === access_request ===
@@ -125,9 +123,8 @@ Maintenance? We had OptiGrid Solutions in earlier this week for control system u
 
 Routine stuff, all contracted properly. Background checks passed.
 
-+ [OptiGrid Solutions? Can I see their access logs?]
++ [I'd like to review those access logs if possible.]
     ~ chen_trust_level += 5
-    You: I'd like to review those access logs if possible.
     -> optigrid_interest
 
 + [Any other contractors recently?]
@@ -142,12 +139,10 @@ Sure, I can pull those. They checked out—proper credentials.
 
 Is there a problem?
 
-+ [Just being thorough]
-    You: Just being thorough.
++ [Just being thorough.]
     -> chen_provides_access
 
-+ [Actually, there's something you should know]
-    You: Actually, there's something important you should know.
++ [Actually, there's something important you should know.]
     -> early_reveal_opportunity
 
 === contractors_inquiry ===
@@ -164,12 +159,10 @@ That's why this surprise audit is... frustrating. We're doing our best with limi
 
 Unusual activity? Not that I've noticed. Why?
 
-+ [Just part of the inspection process]
-    You: Standard question. Part of the inspection process.
++ [Standard question. Part of the inspection process.]
     -> chen_provides_access
 
-+ [I think we should talk privately]
-    You: I think we should have a private conversation about something.
++ [I think we should have a private conversation about something.]
     -> early_reveal_opportunity
 
 === chen_cooperation_gained ===
@@ -188,24 +181,28 @@ Employee records, maintenance logs, facility access—I'll get you whatever you 
 
 // Chen retrieves keycard from desk drawer
 
-Here's a facility keycard—Level 1 access. That'll get you into most areas.
+{not chen_provided_keycard:
+    Here's a facility keycard—Level 1 access. That'll get you into most areas.
 
-Restricted zones like the server room need higher clearance, but for an inspection you should be fine.
+    Restricted zones like the server room need higher clearance, but for an inspection you should be fine.
+}
 
-* [Thank you. I'll start with employee records]
+// STICKY. This knot is reached from contractors_inquiry, concerns_question,
+// chen_cooperation_gained and chen_accepts_audit. As once-only choices, a
+// second arrival found the first two consumed and the third gated off, leaving
+// an empty choice list and running out of content -- the cause of all 601
+// failing paths in this file.
++ [Thank you. I'll start reviewing employee records.]
     ~ chen_provided_keycard = true
-    You: Thank you. I'll start reviewing employee records.
     -> initial_meeting_end_professional
 
-* [I appreciate your cooperation]
++ [I appreciate your cooperation, Mr. Chen.]
     ~ chen_provided_keycard = true
     ~ chen_trust_level += 5
-    You: I appreciate your cooperation, Mr. Chen.
     -> initial_meeting_end_grateful
 
-* {discussed_optigrid} [About those OptiGrid technicians...]
++ {discussed_optigrid} [Before I start—about those OptiGrid technicians. I need the full details.]
     ~ chen_provided_keycard = true
-    You: Before I start—about those OptiGrid technicians. I need the full details.
     -> optigrid_details_request
 
 === optigrid_details_request ===
@@ -255,11 +252,10 @@ This facility is my responsibility. These people depend on us.
 
 Alright, you've got my attention. What's this really about?
 
-* [Tell Chen the truth about ENTROPY]
++ [Tell Chen the truth about ENTROPY]
     -> chen_early_reveal
 
-* [Never mind, continue with cover story]
-    You: Nothing. Just being cautious. Let's continue the inspection.
++ [Nothing. Just being cautious. Let's continue the inspection.]
     -> chen_maintains_cover
 
 === chen_early_reveal ===
@@ -282,14 +278,12 @@ You: They're planning an attack on your battery storage systems.
 
 ENTROPY? Here? At my facility?
 
-+ [Completely serious. Three operatives]
++ [Completely serious. At least three operatives targeting your battery management systems.]
     ~ chen_trust_level += 10
-    You: Completely serious. At least three operatives targeting your battery management systems.
     -> chen_processes_threat
 
-+ [The OptiGrid technicians—that was them]
++ [Those OptiGrid technicians you mentioned? That was them. They weren't contractors.]
     ~ chen_trust_level += 5
-    You: Those OptiGrid technicians you mentioned? That was them. They weren't contractors.
     -> chen_optigrid_realization
 
 === chen_processes_threat ===
@@ -299,12 +293,10 @@ My God. 240,000 people depend on this grid.
 
 How much time do we have?
 
-+ [Attack scheduled for 0800 hours]
-    You: Our intelligence shows an attack scheduled for 0800 hours.
++ [Our intelligence shows an attack scheduled for 0800 hours.]
     -> chen_timeline_reaction
 
-+ [I'm working to stop it, but I need your help]
-    You: I'm working to identify and stop the attack. But I need your help.
++ [I'm working to identify and stop the attack. But I need your help.]
     -> chen_commits_immediately
 
 === chen_optigrid_realization ===
@@ -318,14 +310,12 @@ I... I let them in. I signed off on their access.
 
 They had proper credentials, background checks... Oh God, what have I done?
 
-+ [You had no way of knowing. We need to act now]
++ [You had no way of knowing. Their credentials were forged. Focus on stopping them now.]
     ~ chen_trust_level += 15
-    You: You had no way of knowing. Their credentials were forged. Focus on stopping them now.
     -> chen_commits_to_helping
 
-+ [Don't blame yourself. Help me stop them]
++ [This isn't your fault. Help me stop them—that's what matters.]
     ~ chen_trust_level += 10
-    You: This isn't your fault. Help me stop them—that's what matters.
     -> chen_commits_to_helping
 
 === chen_timeline_reaction ===
@@ -408,8 +398,7 @@ Alright... well, you know where to find me if you need something.
 * [Examine the SCADA displays]
     -> scada_examination
 
-* {revealed_mission} [What am I looking at?]
-    You: Walk me through what I'm seeing.
+* {revealed_mission} [Walk me through what I'm seeing.]
     -> scada_technical_explanation
 
 === scada_examination ===
@@ -434,8 +423,7 @@ Alright... well, you know where to find me if you need something.
 * [This isn't sensor drift. The system is compromised]
     -> chen_realizes_threat
 
-* {not revealed_mission} [Mr. Chen, I need to tell you something]
-    You: Mr. Chen, I need to tell you something important.
+* {not revealed_mission} [Mr. Chen, I need to tell you something important.]
     -> chen_mission_reveal_forced
 
 === scada_technical_explanation ===
@@ -502,12 +490,10 @@ You: ENTROPY operatives have infiltrated your facility. They're planning to weap
 
 My God. How long do we have?
 
-+ [They're scheduled to execute at 0800 hours]
-    You: Our intelligence shows execution at 0800 hours.
++ [Our intelligence shows execution at 0800 hours.]
     -> chen_timeline_reaction_forced
 
-+ [I'm working to identify and stop the attack]
-    You: I'm working to stop it. But I need your help.
++ [I'm working to stop it. But I need your help.]
     -> chen_commits_to_stopping_attack
 
 === chen_timeline_reaction_forced ===
@@ -595,14 +581,12 @@ The server room. If they're accessing SCADA remotely, it's through our network i
     Be careful—if those operatives are still here...
 }
 
-* [I'll handle it]
++ [I'll handle it. Stay here and monitor the systems.]
     ~ chen_trust_level += 5
-    You: I'll handle it. Stay here and monitor the systems.
     -> scada_conversation_end_determined
 
-* [Thank you, Mr. Chen. I'll be careful]
++ [Thank you. I'll be careful.]
     ~ chen_trust_level += 10
-    You: Thank you. I'll be careful.
     -> scada_conversation_end_grateful
 
 === chen_commits_to_stopping_attack ===

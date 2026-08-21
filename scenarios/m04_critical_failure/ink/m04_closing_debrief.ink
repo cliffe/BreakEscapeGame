@@ -1,5 +1,5 @@
 // ===========================================
-// CLOSING DEBRIEF - AGENT 0x99
+// CLOSING DEBRIEF - AGENT HaX
 // Mission 4: Critical Failure
 // Break Escape - Mission Wrap-Up and Task Force Null Revelation
 // ===========================================
@@ -12,8 +12,11 @@ VAR mission_debriefed = false        // Debrief completed
 // Game state variables
 VAR voltage_captured = false
 VAR chen_trust_level = 0
-VAR attack_vectors_disabled = 0
 VAR operatives_defeated = 0
+
+// Engine-owned; set by the racks_vent timer. Read only.
+VAR racks_vented = false
+VAR casualties_occurred = false
 
 // External variables (set by game)
 EXTERNAL player_name()
@@ -25,22 +28,24 @@ EXTERNAL player_name()
 // ===========================================
 
 === start ===
-#complete_task:report_to_0x99
+// NOTE: #complete_task:report_to_0x99 used to fire HERE, on the first line of
+// the debrief. With the other two aim-3 tasks already done that completed the
+// mission-conclusion aim and raised the bond_visualiser *over* the debrief
+// before the player had read a word of it. It now fires in `mission_complete`,
+// the final knot.
 -> debrief_start
 
 === debrief_start ===
 #speaker:agent_0x99
 
-// Agent 0x99 on screen
+// Agent HaX on screen
 
 {player_name()}, report. What's the status?
 
-* [Attack prevented. Facility secure]
-    You: Attack prevented. All three vectors disabled. The facility is secure.
+* [Attack prevented. Emergency shutdown engaged, banks isolated.]
     -> debrief_attack_stopped
 
-* [Attack stopped. Voltage {voltage_captured: captured | escaped}]
-    You: Attack fully prevented. Voltage has been {voltage_captured: captured | neutralized. He escaped.}
+* [Attack fully prevented. Voltage has been {voltage_captured: captured | neutralized. He escaped.}]
     -> debrief_voltage_status
 
 === debrief_attack_stopped ===
@@ -92,12 +97,10 @@ This wasn't random.
 
 Social Fabric was ready with disinformation campaigns in three cities—they planned to amplify the panic from thermal runaway.
 
-* [The Architect is coordinating this]
-    You: The Architect. They're coordinating all of this.
+* [The Architect. They're coordinating all of this.]
     -> debrief_architect_revelation
 
-* [How extensive is the coordination?]
-    You: How extensive is this coordination?
+* [How extensive is this coordination?]
     -> debrief_scale_explanation
 
 === debrief_architect_revelation ===
@@ -141,12 +144,10 @@ Task Force Null.
 
 You're being assigned.
 
-* [What's the mission?]
-    You: What's Task Force Null's mission?
+* [What's Task Force Null's mission?]
     -> task_force_mission_explanation
 
-* [I'm ready]
-    You: I'm ready. When do we start?
+* [I'm ready. When do we start?]
     -> task_force_accepted
 
 === task_force_mission_explanation ===
@@ -173,31 +174,34 @@ Good. Task Force Null briefing is tomorrow at 0600.
 
 Now—there's one more decision to make.
 
-This facility is secure. Attack prevented. No casualties.
+{racks_vented:
+    Agent HaX: The banks are isolated, but Bank B went before you got to the button. Nine on the night crew in Hall 2. Two more on the feed before the grid caught up.
+    Agent HaX: You stopped the rest of it. I need you to hold on to that, because the number you're going to read tomorrow is not zero.
+- else:
+    Agent HaX: Eleven people on site tonight walked out of there. Forty-odd on that feed never knew they were on it.
+    Agent HaX: That's the whole job. That's what it looks like when it works.
+}
 
-But...
+Agent HaX: But...
 
 -> disclosure_decision
 
 === disclosure_decision ===
 #speaker:agent_0x99
 
-// Robert Chen present, listening
+// Robert Vance present, listening
 
 How do we handle this publicly?
 
 The facility manager needs to know our approach.
 
-* [Choice: Full Public Disclosure]
-    You: Full public disclosure. People have a right to know.
+* [Full public disclosure. People have a right to know.]
     -> disclosure_full_public
 
-* [Choice: Quiet Patch]
-    You: Classify the incident. Let the facility patch vulnerabilities quietly.
+* [Classify the incident. Let the facility patch vulnerabilities quietly.]
     -> disclosure_quiet
 
-* [Choice: Partial Disclosure]
-    You: Acknowledge a security incident without full details. Controlled narrative.
+* [Acknowledge a security incident without full details. Controlled narrative.]
     -> disclosure_partial
 
 === disclosure_full_public ===
@@ -207,7 +211,7 @@ The facility manager needs to know our approach.
 
 Full transparency. We reveal the attack attempt, facility vulnerabilities, and ENTROPY threat.
 
-// Robert Chen reacts
+// Robert Vance reacts
 
 #speaker:robert_chen
 
@@ -240,7 +244,7 @@ We classify the incident. Frame it as a "maintenance issue" that was resolved.
 
 Facility patches vulnerabilities quietly.
 
-// Robert Chen reacts
+// Robert Vance reacts
 
 #speaker:robert_chen
 
@@ -271,7 +275,7 @@ Approved.
 
 Acknowledge a "security incident" without full details. Controlled narrative.
 
-// Robert Chen reacts
+// Robert Vance reacts
 
 #speaker:robert_chen
 
@@ -310,7 +314,7 @@ Decision recorded.
     Controlled statement will be prepared for media.
 }
 
-// Robert Chen final words
+// Robert Vance final words
 
 #speaker:robert_chen
 
@@ -332,12 +336,10 @@ Decision recorded.
 
 #speaker:agent_0x99
 
-* [It was an honor, Mr. Chen]
-    You: It was an honor working with you, Mr. Chen.
+* [It was an honor working with you, Mr. Chen.]
     -> debrief_end_respectful
 
-* [Just doing my job]
-    You: Just doing my job.
+* [Just doing my job.]
     -> debrief_end_professional
 
 === debrief_end_respectful ===
@@ -380,8 +382,11 @@ Task Force Null briefing tomorrow at 0600.
 
 This is just the beginning.
 
-// TRIGGERS: Task 3.3 complete (report_to_0x99)
-// TRIGGERS: Mission complete event
-
+// Task 3.3 completes HERE, at the end of the debrief, so the bond_visualiser
+// conclusion screen is raised after the player has actually heard it.
+#complete_task:report_to_0x99
 #exit_conversation
--> start
+
+// Linear cutscene: terminate, do not loop back to `start`.
+// Pattern follows m02_closing_debrief.ink:809-811.
+-> END

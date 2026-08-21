@@ -1,357 +1,77 @@
-# Mission 4: "Critical Failure" - Implementation Status
+# Mission 4: "Critical Failure" — Implementation Status
 
 **Mission ID:** m04_critical_failure
-**Last Updated:** 2025-12-29
-**Current Status:** Dialogue & Compilation Complete (90%)
+**Setting:** Albion Energy Storage — 200 MWh grid-scale lithium-ion BESS
+**Last updated:** 2026-08-21
+
+> **The authoritative status document for this mission is [`ALIGNMENT_PLAN.md`](ALIGNMENT_PLAN.md).**
+> It carries the full current-state assessment, the phase-by-phase record of what has been
+> implemented, the decisions taken, and the outstanding work. This file is a summary only.
 
 ---
 
-## Overall Progress: 90% Complete
+## Corrections to the previous version of this file
 
-### ✅ Completed (90%)
+The version of this document dated 2025-12-29 was substantially wrong and has been replaced.
+For the record, because the same claims may have been repeated elsewhere:
 
-#### Planning Documentation (100% - Stages 1-9)
-- ✅ **Stage 1:** Narrative Structure (`stages/stage_1/story_arc.md` - 821 lines)
-- ✅ **Stage 2:** Atmosphere & Environment Design (`stages/stage_2/atmosphere_environment.md` - 1126 lines)
-- ✅ **Stage 3:** Character Development (`stages/stage_3/character_development.md` - 933 lines)
-- ✅ **Stage 4:** Objectives & Tasks (`stages/stage_4/objectives_tasks.md` - 1081 lines)
-- ✅ **Stage 5:** Room Design (`stages/stage_5/room_design.md` - 1468 lines)
-- ✅ **Stage 6:** Dialogue Planning (`stages/stage_6/dialogue_planning.md` - 1728 lines)
-- ✅ **Stage 7:** Asset Manifest (`stages/stage_7/asset_manifest.md` - 996 lines)
-- ✅ **Stage 8:** VM Integration (`stages/stage_8/vm_integration.md` - 806 lines)
-- ✅ **Stage 9:** Scenario Assembly Guide (`stages/stage_9_prep/SCENARIO_ASSEMBLY_GUIDE.md` - 1144 lines)
-
-**Total Planning Documentation:** ~9,297 lines
-
-#### Core Implementation Files (100%)
-- ✅ **scenario.json.erb** (931 lines)
-  - 3 objectives, 17 tasks (15 required, 2 optional)
-  - 9 rooms with complete object placement
-  - 8 NPCs (Robert Chen + 4 ENTROPY operatives + 3 phone contacts)
-  - VM integration with 4 flags
-  - 47 global variables
-  - **Validation:** 0 errors (vs M3's 46 errors)
-
-- ✅ **mission.json** (39 lines)
-  - Display metadata
-  - Difficulty: 2 (Intermediate)
-  - SecGen scenario: vulnerability_analysis
-  - 6 CyBOK knowledge areas mapped
-
-#### Ink Dialogue Scripts (100% - 12 scripts complete, compiled to JSON)
-
-#### Critical Path Scripts (6/6) ✅
-1. ✅ `ink/m04_opening_briefing.ink` (326 lines)
-   - Opening briefing with Agent 0x99
-   - Mission context, threat overview, combat introduction
-   - Chemical threat explanation, The Architect revelation
-
-2. ✅ `ink/m04_npc_robert_chen.ink` (635 lines)
-   - Initial meeting (defensive → alarmed → ally)
-   - SCADA anomaly discovery and mission reveal
-   - Trust system (0-100), early reveal option
-
-3. ✅ `ink/m04_npc_voltage.ink` (417 lines)
-   - Final confrontation with Critical Mass leader
-   - Capture vs. disable choice, leverage system
-   - Ideology explanation, The Architect intelligence
-
-4. ✅ `ink/m04_phone_agent0x99.ink` (510 lines)
-   - Phone support with event-triggered calls
-   - Handler confidence tracking (0-100)
-   - Strategic guidance, Voltage capture advice
-
-5. ✅ `ink/m04_closing_debrief.ink` (375 lines)
-   - Mission outcome debrief with Agent 0x99
-   - Task Force Null revelation and assignment
-   - Public disclosure choice (full/quiet/partial)
-
-6. ✅ `ink/m04_terminal_attack_trigger.ink` (369 lines)
-   - ENTROPY command laptop terminal interface
-   - Three-vector attack disabling sequence
-   - Operation intelligence files access
-
-#### Supporting Scripts (6/6) ✅
-7. ✅ `ink/m04_npc_security_guard.ink` (170 lines)
-   - Entry checkpoint social engineering
-   - Credentials, smooth talk, or stealth paths
-
-8. ✅ `ink/m04_phone_robert_chen.ink` (194 lines)
-   - SCADA technical support (post-ally)
-   - Dosing systems guidance, urgency assessment
-
-9. ✅ `ink/m04_terminal_scada_display.ink` (217 lines)
-   - SCADA monitoring terminal interface
-   - Urgency-based parameter display, anomaly detection
-
-10. ✅ `ink/m04_npc_operative_cipher.ink` (167 lines)
-    - Combat encounter with Operative #1 (Treatment Floor)
-    - Radio alert system, optional interrogation
-
-11. ✅ `ink/m04_npc_operative_relay.ink` (162 lines)
-    - Combat encounter with Operative #2 (Chemical Storage)
-    - Master keycard drop, optional interrogation
-
-12. ✅ `ink/m04_npc_operative_static.ink` (166 lines)
-    - Combat encounter with Operative #3 (Voltage support)
-    - Final battle backup, The Architect intelligence
-
-**Total Dialogue Lines:** 3,547 lines across all 12 scripts
-**Compilation Status:** ✅ All 12 files compile successfully to JSON (0 errors, 1 minor warning)
+- It described a **water treatment facility** with chlorine dosing. The mission was converted to
+  **grid battery storage** in June 2026 (`1a0d54d6`, `939a01b1`). No ink file has ever mentioned
+  chlorine. `mission.json` and `SOLUTION_GUIDE.md` carried the same stale framing.
+- It claimed **"90% complete"** and **"0 errors"**. The scenario did validate, but **9 of the 10
+  ink scripts failed at runtime** — the climactic antagonist and the handler were both unreachable,
+  and four objective tasks could never complete. Ink *compiling* is not evidence of ink *running*;
+  that distinction is why `scripts/ink_runtime_check/` now exists.
+- It listed `ink/m04_terminal_attack_trigger.ink` and `ink/m04_terminal_scada_display.ink` as
+  complete. **Neither file exists**; both were replaced by in-world display objects.
 
 ---
 
-## 🚧 In Progress / Not Started (10%)
+## Current state (verified 2026-08-21)
 
-### Asset Production (0%)
+| Check | Result |
+|---|---|
+| Validator errors | **0** |
+| Room world-space overlaps | **0** |
+| Objective-wiring warnings | **0** |
+| Ink file warnings | **0** |
+| Ink compile | **10 / 10** |
+| Ink runtime (DFS + long-loop, both harnesses) | **10 / 10 clean** |
+| Story critical path | **4 hops** across 5 staged aims |
 
-#### Character Sprites & Animations
-- ⬜ Robert Chen sprites (facility manager, ally)
-  - Idle, walk, talk, work_terminal animations
-  - ~30 animation frames
+### Implemented
+- **Ink layer** — all 10 scripts run clean. Conversations are hub-structured with sticky choices;
+  cutscenes terminate with `-> END`.
+- **Objectives** — 5 aims chained with `unlockCondition`, tasks `active` inside locked aims,
+  spoiler-safe titles, `missionConclusion` + `bond_visualiser`.
+- **Rooms** — single spine, no overlaps; each lock opened by the previous room's NPC.
+- **Canon** — escalated-bible reframe, Voltage as Blackout's lieutenant, named human cost,
+  branch-aware debrief and credits.
+- **Combat** — engine-owned via `behavior.hostile` + `#hostile`; no CYOA combat in ink.
+- **Clock** — two `timers` driving urgency and a partial-failure state that never ends the run.
+- **Agent HaX hub** — progress-gated, with six exposure-gated field guides.
+- **SecGen** — `secgen/m04_critical_failure.xml`, system `bms_jump_server`.
+- **Closing debrief** — event-driven hidden-person cutscene with an HQ background.
 
-- ⬜ Voltage sprites (Critical Mass leader)
-  - Idle, walk, talk, combat animations
-  - ~40 animation frames
-
-- ⬜ ENTROPY operative sprites (Cipher, Relay, Static)
-  - Idle, walk, combat animations
-  - ~90 animation frames total (30 each)
-
-- ⬜ Security Guard sprite
-  - Basic idle, walk, talk
-  - ~20 animation frames
-
-**Total Character Animation Frames:** ~180 frames
-
-#### Environment & UI Assets
-- ⬜ SCADA monitor displays (urgency stage progression)
-- ⬜ Water treatment facility background art
-- ⬜ Chemical storage hazard signage
-- ⬜ Attack trigger interface UI
-
-#### Audio Assets
-- ⬜ Voice acting (480-595 lines)
-- ⬜ Facility ambient sounds (SCADA systems, chemical processing)
-- ⬜ Alarm progression (Stage 1 → Stage 4 escalation)
-- ⬜ Combat sound effects
-- ⬜ Music tracks:
-  - Infiltration (tense investigation)
-  - Investigation (active analysis)
-  - Combat (action intensity)
-  - Crisis (maximum urgency)
-  - Resolution (relief)
-
-**Total Audio Files:** ~300-350 (including VO)
-
-### SecGen VM Scenario (0%)
-- ⬜ Create `vulnerability_analysis` SecGen scenario
-  - Network topology (192.168.100.10)
-  - Nmap scanning challenge
-  - FTP service with intelligence files
-  - HTTP service with SCADA data
-  - distcc vulnerability (CVE-2004-2687)
-  - sudo Baron privilege escalation (CVE-2021-3156)
-  - 4 flags placement
+### Outstanding
+1. **SecGen build verification.** Flag order/count and `vm_object('bms_jump_server', …)` are
+   inferred, not proven. Until a build confirms them the four flag tasks are unverified.
+   See ALIGNMENT_PLAN.md → Phase 4.
+2. **HacktivityLabSheets rebuild.** `distcc-exploitation` and `rfid-cloning` have valid front
+   matter but are absent from the built `_site`. Both field guides 404 until the site is rebuilt.
+3. **`SOLUTION_GUIDE.md`** still reflects the pre-rework mission.
+4. **Assets** — sprites, VO and bespoke music remain unproduced.
+5. **Open decisions** — see ALIGNMENT_PLAN.md → "Open decisions for the user".
 
 ---
 
-## Validation Results
+## Verification commands
 
-### Scenario File Quality
-- **Schema Validation:** ✅ PASSED (0 errors)
-- **ERB Rendering:** ✅ PASSED
-- **Room Connections:** ✅ All bidirectional
-- **NPC Schema:** ✅ All correct (displayName, npcType, etc.)
-- **VM Integration:** ✅ Properly configured
+```bash
+ruby scripts/validate_scenario.rb scenarios/m04_critical_failure/scenario.json.erb
+./scripts/compile-ink.sh m04_critical_failure
 
-**Comparison to Mission 3:**
-- M3 First Validation: 46 errors
-- M4 First Validation: 6 errors (room types only)
-- M4 Final Validation: 0 errors
-- **Improvement:** 100% (zero errors achieved)
-
----
-
-## File Inventory
-
-### Planning Documentation (9 files)
+# Runtime health -- compiling is NOT enough. Use each NPC's declared currentKnot.
+node scripts/ink_runtime_check/inkcheck.js  <file.json> <knot> [VAR=value ...]
+node scripts/ink_runtime_check/loopcheck.js <file.json> <knot> [VAR=value ...]
 ```
-/planning_notes/overall_story_plan/mission_initializations/m04_critical_failure/
-├── stages/
-│   ├── stage_1/
-│   │   └── story_arc.md (821 lines)
-│   ├── stage_2/
-│   │   └── atmosphere_environment.md (1126 lines)
-│   ├── stage_3/
-│   │   └── character_development.md (933 lines)
-│   ├── stage_4/
-│   │   └── objectives_tasks.md (1081 lines)
-│   ├── stage_5/
-│   │   └── room_design.md (1468 lines)
-│   ├── stage_6/
-│   │   └── dialogue_planning.md (1728 lines)
-│   ├── stage_7/
-│   │   └── asset_manifest.md (996 lines)
-│   ├── stage_8/
-│   │   └── vm_integration.md (806 lines)
-│   └── stage_9_prep/
-│       └── SCENARIO_ASSEMBLY_GUIDE.md (1144 lines)
-```
-
-### Implementation Files (26 files)
-```
-/scenarios/m04_critical_failure/
-├── scenario.json.erb (931 lines) ✅
-├── mission.json (39 lines) ✅
-├── IMPLEMENTATION_STATUS.md (this file) ✅
-└── ink/
-    ├── m04_opening_briefing.ink (326 lines) ✅
-    ├── m04_opening_briefing.json ✅
-    ├── m04_npc_robert_chen.ink (635 lines) ✅
-    ├── m04_npc_robert_chen.json ✅
-    ├── m04_npc_voltage.ink (417 lines) ✅
-    ├── m04_npc_voltage.json ✅
-    ├── m04_phone_agent0x99.ink (510 lines) ✅
-    ├── m04_phone_agent0x99.json ✅
-    ├── m04_closing_debrief.ink (375 lines) ✅
-    ├── m04_closing_debrief.json ✅
-    ├── m04_terminal_attack_trigger.ink (369 lines) ✅
-    ├── m04_terminal_attack_trigger.json ✅
-    ├── m04_npc_security_guard.ink (170 lines) ✅
-    ├── m04_npc_security_guard.json ✅
-    ├── m04_phone_robert_chen.ink (194 lines) ✅
-    ├── m04_phone_robert_chen.json ✅
-    ├── m04_terminal_scada_display.ink (217 lines) ✅
-    ├── m04_terminal_scada_display.json ✅
-    ├── m04_npc_operative_cipher.ink (167 lines) ✅
-    ├── m04_npc_operative_cipher.json ✅
-    ├── m04_npc_operative_relay.ink (162 lines) ✅
-    ├── m04_npc_operative_relay.json ✅
-    ├── m04_npc_operative_static.ink (166 lines) ✅
-    └── m04_npc_operative_static.json ✅
-```
-
----
-
-## Next Steps (Priority Order)
-
-### Immediate (Required for Playable Mission)
-1. ✅ **Create Ink Dialogue Scripts** COMPLETE
-   - All 12 scripts created (3,547 lines total)
-   - Critical path: 6/6 complete
-   - Supporting: 6/6 complete
-
-2. ✅ **Compile Ink to JSON** COMPLETE
-   - All 12 .ink files compiled to .json successfully
-   - 0 compilation errors (1 style warning in security_guard.ink)
-   - JSON files generated and ready for game engine integration
-
-3. **Test Dialogue in Game Engine** (Next Priority)
-   - Load mission in Break Escape
-   - Verify dialogue flow and branching
-   - Test variable systems (trust, confidence, leverage)
-
-### Short-term (Asset Production)
-4. **Character Sprites** (if available from art team)
-   - Robert Chen (priority - appears early and often)
-   - Voltage (final confrontation)
-   - ENTROPY operatives
-
-5. **SCADA Display UI**
-   - Urgency stage visual progression
-   - Critical for player feedback
-
-### Medium-term (Full Mission Polish)
-6. **Voice Acting**
-   - Record 480-595 voice lines
-   - Process and integrate audio files
-
-7. **Music & SFX**
-   - 5 music tracks
-   - Ambient facility sounds
-   - Combat sound effects
-
-8. **SecGen VM Scenario**
-   - Build vulnerability_analysis scenario
-   - Test 4-flag progression
-   - Verify difficulty calibration
-
----
-
-## Mission Statistics
-
-### Content Volume
-- **Total Planning Documentation:** ~9,297 lines
-- **Scenario Implementation:** 931 lines
-- **Dialogue Scripts:** 3,547 lines (12 Ink files)
-- **Total Code/Content:** ~13,775 lines
-
-### Gameplay Specifications
-- **Playtime:** 60-80 minutes (target)
-- **Difficulty:** Intermediate (Mission 4 of 10)
-- **Objectives:** 3
-- **Tasks:** 17 (15 required, 2 optional)
-- **Rooms:** 9
-- **NPCs:** 8
-- **Combat Encounters:** 3 (tutorial → optional → climactic)
-- **VM Flags:** 4
-- **Critical Choices:** 2 (capture vs. disable, public disclosure)
-
-### Learning Objectives (CyBOK)
-- **Knowledge Areas:** 6 (NS, SS, IS, AB, HF, IR)
-- **Technical Skills:**
-  - Network scanning (Nmap)
-  - Service enumeration (FTP, HTTP)
-  - Vulnerability exploitation (distcc, sudo Baron)
-  - SCADA/ICS security principles
-  - Incident response procedures
-
----
-
-## Quality Metrics
-
-### Validation Success
-- **Schema Errors:** 0 (target: 0-5)
-- **Improvement vs M3:** 100% (46 → 0 errors)
-- **First-attempt Quality:** Exceptional
-
-### Documentation Completeness
-- **Stage 1-9 Planning:** 100% ✅
-- **Scenario Implementation:** 100% ✅
-- **Dialogue Scripts:** 100% ✅
-- **Asset Production:** 0% ⬜
-
-### Overall Readiness
-- **Core Structure:** 100% (scenario.json.erb validated)
-- **Content:** 90% (dialogue created & compiled, needs assets)
-- **Polish:** 0% (needs VO, music, final testing)
-
----
-
-## Notes
-
-### Development Highlights
-- **Zero Validation Errors:** Following Stage 9 assembly guide resulted in perfect schema compliance on first full validation
-- **Planning Quality:** All 9 stages completed with comprehensive documentation before implementation
-- **Reference Architecture:** Followed M1/M2 patterns successfully for vm-launcher, flag-station, NPC structure
-- **Dialogue Completeness:** All 12 Ink scripts created (3,547 lines), exceeding initial estimates by 735%
-- **Branching Complexity:** Multi-variable dialogue systems (trust, confidence, leverage) with ~40+ unique conversation paths
-- **Ink Compilation:** All 12 files compile successfully with 0 errors after systematic syntax fixes
-  - Fixed: EXTERNAL vs VAR declarations, multi-branch conditionals, missing start knots, bullet point syntax
-  - Result: 12/12 JSON files generated and ready for game engine
-
-### Known Dependencies
-- **Ink Compiler:** Required for .ink → .json conversion
-- **SecGen Framework:** Required for vulnerability_analysis VM scenario
-- **Art Pipeline:** Character sprite production
-- **VO Pipeline:** Voice acting recording and processing
-
-### Risk Areas
-- **Combat System:** First mission with hostile NPCs - needs thorough gameplay testing
-- **SCADA Complexity:** Technical accuracy vs. gameplay accessibility balance
-- **Urgency Pacing:** Stage-based system (no timer) needs careful tuning to maintain tension
-
----
-
-**Status:** Dialogue implementation & compilation complete. All 12 Ink files successfully compiled to JSON. Core mission ready for engine testing. Awaiting asset production (sprites, VO, music) for full polish.
