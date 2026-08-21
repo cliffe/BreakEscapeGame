@@ -1,7 +1,7 @@
 // ===========================================
 // ROBERT CHEN - PHONE SUPPORT
 // Mission 4: Critical Failure
-// SCADA technical guidance, available once Chen is an ally.
+// SCADA technical guidance, available once Vance is an ally.
 //
 // STRUCTURE: every branch returns to `support_hub`, which always presents at
 // least one sticky choice. The previous version fell through

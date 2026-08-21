@@ -29,7 +29,7 @@
 # ROOM LAYOUT (single spine; each lock is opened by the previous room's NPC):
 #
 #   main_entrance (guard)
-#     +-- S -> operations_office (Chen: Level 1 keycard)
+#     +-- S -> operations_office (Vance: Level 1 keycard)
 #                +-- S -> security_office            [key]  spare Level 1 in locker
 #                +-- E -> scada_control_room
 #                           +-- S -> battery_hall_1 (Cipher: drops Level 2)
@@ -178,10 +178,10 @@ attack_schedule_encoded = base64_encode("ATTACK SEQUENCE:\n0800 - Remote overcha
           "status": "active"
         },
         {
-          "taskId": "meet_robert_chen",
+          "taskId": "meet_robert_vance",
           "title": "Find the OT engineer on shift",
           "type": "npc_conversation",
-          "targetNPC": "robert_chen",
+          "targetNPC": "robert_vance",
           "status": "active"
         }
       ]
@@ -274,8 +274,8 @@ attack_schedule_encoded = base64_encode("ATTACK SEQUENCE:\n0800 - Remote overcha
           "status": "active"
         },
         {
-          "taskId": "submit_privesc_flag",
-          "title": "Submit privilege-escalation evidence",
+          "taskId": "submit_http_analysis_flag",
+          "title": "Submit the HTTP-analysis evidence",
           "type": "submit_flags",
           "targetFlags": ["bms_jump_server:flag_3"],
           "targetCount": 1,
@@ -350,7 +350,7 @@ attack_schedule_encoded = base64_encode("ATTACK SEQUENCE:\n0800 - Remote overcha
       "name": "Your Phone",
       "takeable": true,
       "phoneId": "player_phone",
-      "npcIds": ["agent_0x99", "robert_chen_phone", "agent_0x99_debrief"],
+      "npcIds": ["agent_0x99", "robert_vance_phone", "agent_0x99_debrief"],
       "observations": "Your secure phone with encrypted connection to SAFETYNET"
     },
     {
@@ -505,7 +505,7 @@ attack_schedule_encoded = base64_encode("ATTACK SEQUENCE:\n0800 - Remote overcha
               "sendTimedMessage": { "delay": 3000, "message": "You're on the OT network now. I've got two guides for this — mapping the network, and reading the attack surface once you've mapped it. Ask and they're yours." }
             },
             {
-              "eventPattern": "objective_task_completed:submit_privesc_flag",
+              "eventPattern": "objective_task_completed:submit_http_analysis_flag",
               "onceOnly": true,
               "setGlobal": { "distcc_guide_offered": true },
               "sendTimedMessage": { "delay": 2000, "message": "That jump server is running a legacy distccd. It's the way in. I have a guide for it if you want it." }
@@ -579,17 +579,17 @@ attack_schedule_encoded = base64_encode("ATTACK SEQUENCE:\n0800 - Remote overcha
           ]
         },
         {
-          "id": "robert_chen_phone",
+          "id": "robert_vance_phone",
           "displayName": "Robert Vance",
           "npcType": "phone",
-          "storyPath": "scenarios/m04_critical_failure/ink/m04_phone_robert_chen.json",
+          "storyPath": "scenarios/m04_critical_failure/ink/m04_phone_robert_vance.json",
           "avatar": "assets/npc/avatars/npc_helper.png",
           "phoneId": "player_phone",
           "currentKnot": "start",
           "timedMessages": [
             {
               "delay": 20000,
-              "message": "It's Chen again. I pulled the rack trends from the historian — the cells are far hotter than the SCADA is admitting. Whatever you do, get to a hardwired ESD. The software won't save us.",
+              "message": "It's Vance again. I pulled the rack trends from the historian — the cells are far hotter than the SCADA is admitting. Whatever you do, get to a hardwired ESD. The software won't save us.",
               "type": "text",
               "waitForEvent": "global_variable_changed:chen_is_ally",
               "skipIfGlobal": "attack_prevented"
@@ -601,7 +601,7 @@ attack_schedule_encoded = base64_encode("ATTACK SEQUENCE:\n0800 - Remote overcha
               "condition": "value === true",
               "onceOnly": true,
               "setGlobal": { "chen_phone_available": true },
-              "sendTimedMessage": { "delay": 2000, "message": "It's Chen. I'm out of the building but I'm on comms. Call me if you need the engineering side — I can talk you through the BMS and the ESD." }
+              "sendTimedMessage": { "delay": 2000, "message": "It's Vance. I'm out of the building but I'm on comms. Call me if you need the engineering side — I can talk you through the BMS and the ESD." }
             }
           ]
         },
@@ -672,23 +672,23 @@ attack_schedule_encoded = base64_encode("ATTACK SEQUENCE:\n0800 - Remote overcha
       },
       "npcs": [
         {
-          "id": "robert_chen",
+          "id": "robert_vance",
           "displayName": "Robert Vance",
           "npcType": "person",
           "position": { "x": 10, "y": 5 },
           "spriteSheet": "hacker",
           "spriteConfig": { "idleFrameStart": 20, "idleFrameEnd": 23 },
-          "storyPath": "scenarios/m04_critical_failure/ink/m04_npc_robert_chen.json",
+          "storyPath": "scenarios/m04_critical_failure/ink/m04_npc_robert_vance.json",
           "currentKnot": "initial_meeting",
           "voice": {
             "name": "Charon",
             "style": "Conscientious, overworked OT engineer. Defensive at first, then alarmed and determined once he realises the threat is real.",
             "language": "en-GB"
           },
-          "globalVarOnKO": "robert_chen_ko",
-          "taskOnKO": "meet_robert_chen",
+          "globalVarOnKO": "robert_vance_ko",
+          "taskOnKO": "meet_robert_vance",
           "puzzle_graph_actions": [
-            { "id": "meet_robert_chen", "label": "Win Chen's trust and gain facility access", "unlocks_aim": "investigate_scada_compromise" }
+            { "id": "meet_robert_vance", "label": "Win Vance's trust and gain facility access", "unlocks_aim": "confirm_the_lie" }
           ],
           "itemsHeld": [
             {
@@ -706,7 +706,7 @@ attack_schedule_encoded = base64_encode("ATTACK SEQUENCE:\n0800 - Remote overcha
       "objects": [
         {
           "type": "pc",
-          "name": "Chen's BMS Monitoring Terminal",
+          "name": "Vance's BMS Monitoring Terminal",
           "takeable": false,
           "observations": "Battery Management System monitoring terminal showing rack status and access logs"
         },
@@ -716,7 +716,7 @@ attack_schedule_encoded = base64_encode("ATTACK SEQUENCE:\n0800 - Remote overcha
           "takeable": true,
           "readable": true,
           "text": <%= chen_warning_email.to_json %>,
-          "observations": "Chen's email about the unscheduled OptiGrid maintenance crew",
+          "observations": "Vance's email about the unscheduled OptiGrid maintenance crew",
           "puzzle_graph_role": "clue",
           "puzzle_graph_reveals": "optigrid_crew_unauthorised_three_hours_in_bms_cabinet",
           "onPickup": { "setVariable": { "evidence_maintenance_logs_found": true } }
@@ -734,7 +734,7 @@ attack_schedule_encoded = base64_encode("ATTACK SEQUENCE:\n0800 - Remote overcha
           "name": "Budget Cut Memo",
           "takeable": true,
           "readable": true,
-          "text": "MEMORANDUM\n\nFROM: Regional Infrastructure Budget Office\nTO: All Storage Sites\nRE: Budget Reductions\n\nAll sites must reduce operational budgets by 12%. Priority: keep export availability up. Deferrable: OT security upgrades, contractor oversight.\n\nChen's handwritten note: 'How am I supposed to keep the OT network safe with these cuts?'",
+          "text": "MEMORANDUM\n\nFROM: Regional Infrastructure Budget Office\nTO: All Storage Sites\nRE: Budget Reductions\n\nAll sites must reduce operational budgets by 12%. Priority: keep export availability up. Deferrable: OT security upgrades, contractor oversight.\n\nVance's handwritten note: 'How am I supposed to keep the OT network safe with these cuts?'",
           "observations": "Budget memo explaining the security gaps ENTROPY exploited"
         }
       ]
@@ -808,7 +808,7 @@ attack_schedule_encoded = base64_encode("ATTACK SEQUENCE:\n0800 - Remote overcha
             "enable_console": true
           }) %>,
           "puzzle_graph_role": "vm",
-          "puzzle_graph_aim": "investigate_scada_compromise"
+          "puzzle_graph_aim": "map_the_attack"
         },
         {
           "type": "flag-station",
@@ -851,7 +851,7 @@ attack_schedule_encoded = base64_encode("ATTACK SEQUENCE:\n0800 - Remote overcha
           "name": "Workshop Access Log",
           "takeable": true,
           "readable": true,
-          "text": "ENGINEERING WORKSHOP ACCESS LOG\n\nRecent Access:\nJan 9, 23:47 - OptiGrid Tech #1 (Badge: OG-4472)\nJan 9, 23:52 - OptiGrid Tech #2 (Badge: OG-4473)\nJan 10, 00:03 - OptiGrid Tech #3 (Badge: OG-4474)\n\nDuration: 3 hours 17 minutes\nPurpose: 'Network infrastructure maintenance'\n\nChen's note: 'No one told me about this work order.'",
+          "text": "ENGINEERING WORKSHOP ACCESS LOG\n\nRecent Access:\nJan 9, 23:47 - OptiGrid Tech #1 (Badge: OG-4472)\nJan 9, 23:52 - OptiGrid Tech #2 (Badge: OG-4473)\nJan 10, 00:03 - OptiGrid Tech #3 (Badge: OG-4474)\n\nDuration: 3 hours 17 minutes\nPurpose: 'Network infrastructure maintenance'\n\nVance's note: 'No one told me about this work order.'",
           "observations": "Access logs showing the ENTROPY operatives had 3+ hours on the OT network",
           "onPickup": { "setVariable": { "evidence_access_logs_found": true } }
         },
@@ -984,7 +984,7 @@ attack_schedule_encoded = base64_encode("ATTACK SEQUENCE:\n0800 - Remote overcha
           "readable": true,
           "important": true,
           "puzzle_graph_role": "clue",
-          "puzzle_graph_aim": "infiltrate_facility",
+          "puzzle_graph_aim": "confirm_the_lie",
           "puzzle_graph_reveals": "61C_actual_vs_28C_scada_sensor_falsification_confirmed",
           "observations": "Thermometer dial reads: 61°C\n\nAn old mechanical dial thermometer bolted to the wall by Rack Bank C. Not connected to any network. The SCADA HMI says 28°C.",
           "observationVariants": [
@@ -1195,7 +1195,7 @@ attack_schedule_encoded = base64_encode("ATTACK SEQUENCE:\n0800 - Remote overcha
           "takeable": false,
           "locked": false,
           "puzzle_graph_role": "lock",
-          "puzzle_graph_aim": "neutralize_attack_threat",
+          "puzzle_graph_aim": "stop_the_runaway",
           "observations": "A large red mushroom-head button in a yellow housing on the plant-room wall. Labelled: EMERGENCY SHUTDOWN — RACK BANKS A-C. This is the hardwired kill switch ENTROPY couldn't disable from SCADA. Pressing it isolates the banks and forces ventilation — stopping the thermal runaway.",
           "minigameData": {
             "interactionType": "esd_button",
@@ -1256,7 +1256,7 @@ attack_schedule_encoded = base64_encode("ATTACK SEQUENCE:\n0800 - Remote overcha
           "name": "Loading Dock Schedule",
           "takeable": false,
           "readable": true,
-          "text": "DELIVERY SCHEDULE — JANUARY\n\nJan 10: Module delivery (scheduled)\nJan 12: Coolant delivery (scheduled)\nJan 15: General supplies (scheduled)\n\nNote: OptiGrid van parked here Jan 9-10 (unscheduled). Chen questioned this.",
+          "text": "DELIVERY SCHEDULE — JANUARY\n\nJan 10: Module delivery (scheduled)\nJan 12: Coolant delivery (scheduled)\nJan 15: General supplies (scheduled)\n\nNote: OptiGrid van parked here Jan 9-10 (unscheduled). Vance questioned this.",
           "observations": "Delivery log showing ENTROPY's vehicle access point"
         },
         {
@@ -1391,7 +1391,7 @@ attack_schedule_encoded = base64_encode("ATTACK SEQUENCE:\n0800 - Remote overcha
     "operative_relay_defeated": false,
     "operative_static_defeated": false,
     "security_guard_ko": false,
-    "robert_chen_ko": false,
+    "robert_vance_ko": false,
     "voltage_captured": false,
     "voltage_escaped": false,
     "remote_trigger_disabled": false,

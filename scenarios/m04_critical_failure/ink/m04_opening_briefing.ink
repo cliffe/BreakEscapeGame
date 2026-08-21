@@ -178,7 +178,7 @@ Agent HaX: Your cover: grid-safety regulator conducting a surprise regulatory in
 
 Agent HaX: Forged credentials in your phone. Facility manager is Robert Vance—he's expecting an auditor today.
 
-Agent HaX: Use the cover to get inside. Chen doesn't know about the threat yet.
+Agent HaX: Use the cover to get inside. Vance doesn't know about the threat yet.
 
 + [Once I'm inside, should I brief the facility manager?]
     -> chen_briefing_advice
@@ -189,7 +189,7 @@ Agent HaX: Use the cover to get inside. Chen doesn't know about the threat yet.
 === chen_briefing_advice ===
 #speaker:agent_0x99
 
-Agent HaX: Your call. Chen's a career engineer—safety-focused, competent.
+Agent HaX: Your call. Vance's a career engineer—safety-focused, competent.
 
 Agent HaX: If you reveal the truth, he'll cooperate fully. SCADA expertise could help.
 
@@ -197,7 +197,7 @@ Agent HaX: But operational security risk. If operatives monitor him, cover's blo
 
 Agent HaX: I trust your judgment. You'll know when it's safe.
 
-+ [I'll assess Chen in person before deciding.]
++ [I'll assess Vance in person before deciding.]
     ~ handler_trust += 10
     ~ player_approach = "methodical"
     Agent HaX: Good tactical thinking.
@@ -312,8 +312,10 @@ Agent HaX: Good luck, {player_name()}. Bring those operatives down.
 // Pattern follows m02_opening_briefing.ink:227-229.
 //
 // NOTE: the old `#complete_task:opening_briefing` named a task that does not
-// exist in scenario.json.erb and did nothing. m02 uses `#unlock_aim:` +
-// `#start_gameplay` here instead -- Phase 2 (aim staging) should add those.
+// exist in scenario.json.erb and did nothing. It is removed. No `#unlock_aim`/
+// `#start_gameplay` tags are needed here: like m01 (the gold standard), this
+// mission stages aims declaratively via each aim's `unlockCondition` in
+// scenario.json.erb, so the first aim is already active when gameplay begins.
 #exit_conversation
 
 -> END

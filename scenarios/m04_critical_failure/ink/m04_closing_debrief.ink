@@ -18,6 +18,11 @@ VAR operatives_defeated = 0
 VAR racks_vented = false
 VAR casualties_occurred = false
 
+// Engine-owned; set true if the player knocked Robert Vance out. Read only.
+// Gates his debrief presence -- a man on the floor of his own control room
+// does not stand and deliver closing remarks.
+VAR robert_vance_ko = false
+
 // External variables (set by game)
 EXTERNAL player_name()
 
@@ -53,8 +58,11 @@ EXTERNAL player_name()
 
 Good work. Thermal runaway aborted, the banks are isolated, systems secured.
 
-{chen_trust_level >= 70:
-    Chen speaks highly of your work. Says you saved 240,000 lives.
+{chen_trust_level >= 70 and not robert_vance_ko:
+    Vance speaks highly of your work. Says you saved 240,000 lives.
+}
+{robert_vance_ko:
+    The facility manager's being treated by medics. He'll live. He won't be filing a commendation.
 }
 
 {voltage_captured:
@@ -211,17 +219,16 @@ The facility manager needs to know our approach.
 
 Full transparency. We reveal the attack attempt, facility vulnerabilities, and ENTROPY threat.
 
-// Robert Vance reacts
-
-#speaker:robert_chen
-
-{chen_trust_level >= 70:
-    It'll damage the facility's reputation, but... people have a right to know how close this came.
-- else:
-    The public backlash will be severe. But I understand the reasoning.
+{not robert_vance_ko:
+    // Robert Vance reacts
+    #speaker:robert_vance
+    {chen_trust_level >= 70:
+        It'll damage the facility's reputation, but... people have a right to know how close this came.
+    - else:
+        The public backlash will be severe. But I understand the reasoning.
+    }
+    #speaker:agent_0x99
 }
-
-#speaker:agent_0x99
 
 Consequences:
 - Public protected through awareness of infrastructure risks
@@ -244,17 +251,16 @@ We classify the incident. Frame it as a "maintenance issue" that was resolved.
 
 Facility patches vulnerabilities quietly.
 
-// Robert Vance reacts
-
-#speaker:robert_chen
-
-{chen_trust_level >= 70:
-    I understand the reasoning, but... is it right to hide this from the people we serve?
-- else:
-    Thank you. The facility can't afford the reputational damage right now.
+{not robert_vance_ko:
+    // Robert Vance reacts
+    #speaker:robert_vance
+    {chen_trust_level >= 70:
+        I understand the reasoning, but... is it right to hide this from the people we serve?
+    - else:
+        Thank you. The facility can't afford the reputational damage right now.
+    }
+    #speaker:agent_0x99
 }
-
-#speaker:agent_0x99
 
 Consequences:
 - Public uninformed of risk
@@ -275,17 +281,16 @@ Approved.
 
 Acknowledge a "security incident" without full details. Controlled narrative.
 
-// Robert Vance reacts
-
-#speaker:robert_chen
-
-{chen_trust_level >= 70:
-    A middle ground. People know something happened without full panic. I can work with that.
-- else:
-    Probably the most politically viable option.
+{not robert_vance_ko:
+    // Robert Vance reacts
+    #speaker:robert_vance
+    {chen_trust_level >= 70:
+        A middle ground. People know something happened without full panic. I can work with that.
+    - else:
+        Probably the most politically viable option.
+    }
+    #speaker:agent_0x99
 }
-
-#speaker:agent_0x99
 
 Consequences:
 - Moderate public awareness
@@ -314,36 +319,42 @@ Decision recorded.
     Controlled statement will be prepared for media.
 }
 
-// Robert Vance final words
+{not robert_vance_ko:
+    // Robert Vance final words
+    #speaker:robert_vance
+    {chen_trust_level >= 80:
+        Thank you.
 
-#speaker:robert_chen
+        I don't know your real name, but... thank you.
 
-{chen_trust_level >= 80:
-    Thank you.
+        You saved this facility. You saved 240,000 people.
+    }
+    {chen_trust_level >= 50 and chen_trust_level < 80:
+        You did good work here.
 
-    I don't know your real name, but... thank you.
-
-    You saved this facility. You saved 240,000 people.
-}
-{chen_trust_level >= 50 and chen_trust_level < 80:
-    You did good work here.
-
-    This facility won't forget it.
-}
-{chen_trust_level < 50:
-    I appreciate what you did, even if I don't fully understand it.
+        This facility won't forget it.
+    }
+    {chen_trust_level < 50:
+        I appreciate what you did, even if I don't fully understand it.
+    }
 }
 
 #speaker:agent_0x99
 
-* [It was an honor working with you, Mr. Chen.]
+* {not robert_vance_ko} [It was an honor working with you, Mr. Vance.]
     -> debrief_end_respectful
 
-* [Just doing my job.]
+* {not robert_vance_ko} [Just doing my job.]
     -> debrief_end_professional
 
+* {robert_vance_ko} [Make sure Vance gets the full credit when he comes round.]
+    -> debrief_end_ko
+
+* {robert_vance_ko} [Just doing my job.]
+    -> debrief_end_ko
+
 === debrief_end_respectful ===
-#speaker:robert_chen
+#speaker:robert_vance
 
 This facility's been operating on hope and duct tape for too long.
 
@@ -352,9 +363,18 @@ That changes now. I'll make sure of it.
 -> mission_complete
 
 === debrief_end_professional ===
-#speaker:robert_chen
+#speaker:robert_vance
 
 I'll begin implementing security overhauls immediately.
+
+-> mission_complete
+
+=== debrief_end_ko ===
+#speaker:agent_0x99
+
+Noted. It'll be in the report either way.
+
+The methods are a separate conversation. You put a facility manager on the floor of his own control room tonight.
 
 -> mission_complete
 

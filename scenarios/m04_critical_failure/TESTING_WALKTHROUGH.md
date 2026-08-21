@@ -39,7 +39,7 @@ lieutenant. → `enter_facility` completes.
 **2. Security guard.** Three routes: credentials, bluff, or slip past (raises the alarm).
 *Check:* the guard is not mute — his NPC declares `currentKnot: "start"` and the ink defines it.
 
-**3. Robert Vance, operations office.** → `meet_robert_chen` completes. He carries **Level 1**.
+**3. Robert Vance, operations office.** → `meet_robert_vance` completes. He hands you a **Level 1** keycard (or it drops if you KO him; a spare is in the security locker).
 *KO-safety:* `taskOnKO` covers the task, and a spare Level 1 sits in the security-office locker,
 so a KO'd Vance cannot strand the mission.
 

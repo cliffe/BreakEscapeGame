@@ -83,7 +83,7 @@ flowchart TD
   maintenance_work_orders{"Maintenance Work Orders"}
   npc_robert_vance{"Robert Vance"}
   facility_access_keycard_level_1{"Facility Access Keycard (Level 1)"}
-  action_meet_robert_chen>"Win Chen's trust and gain facility access"]
+  action_meet_robert_vance>"Win Vance's trust and gain facility access"]
   scada_control_room("SCADA Control Room")
   scada_hmi_main_display{"SCADA HMI — Main Display"}
   bms_jump_server_terminal["BMS Jump Server Terminal"]
@@ -102,8 +102,8 @@ flowchart TD
   vmfl_submit_network_scan_flag{"Network Scan Flag"}
   vmch_submit_ftp_intel_flag["Submit the intelligence file from their FTP service"]
   vmfl_submit_ftp_intel_flag{"Ftp Intel Flag"}
-  vmch_submit_privesc_flag["Submit privilege-escalation evidence"]
-  vmfl_submit_privesc_flag{"Privesc Flag"}
+  vmch_submit_http_analysis_flag["Submit the HTTP-analysis evidence"]
+  vmfl_submit_http_analysis_flag{"Http Analysis Flag"}
   vmch_submit_distcc_exploit_flag["Submit proof of the distcc foothold"]
   vmfl_submit_distcc_exploit_flag{"Distcc Exploit Flag"}
   security_office("Security Office")
@@ -118,7 +118,7 @@ flowchart TD
   operations_office --> npc_robert_vance
   npc_robert_vance --> facility_access_keycard_level_1
   facility_access_keycard_level_1 --> door_battery_hall_2
-  npc_robert_vance --> action_meet_robert_chen
+  npc_robert_vance --> action_meet_robert_vance
   scada_control_room --> scada_hmi_main_display
   engineering_workshop --> bms_jump_server_terminal
   security_office --> lock_security_equipment_locker
@@ -137,10 +137,10 @@ flowchart TD
   vmch_submit_network_scan_flag --> vmfl_submit_network_scan_flag
   vmch_submit_ftp_intel_flag --> vmfl_submit_ftp_intel_flag
   vmfl_submit_network_scan_flag -.-> vmch_submit_ftp_intel_flag
-  vmch_submit_privesc_flag --> vmfl_submit_privesc_flag
-  vmfl_submit_ftp_intel_flag -.-> vmch_submit_privesc_flag
+  vmch_submit_http_analysis_flag --> vmfl_submit_http_analysis_flag
+  vmfl_submit_ftp_intel_flag -.-> vmch_submit_http_analysis_flag
   vmch_submit_distcc_exploit_flag --> vmfl_submit_distcc_exploit_flag
-  vmfl_submit_privesc_flag -.-> vmch_submit_distcc_exploit_flag
+  vmfl_submit_http_analysis_flag -.-> vmch_submit_distcc_exploit_flag
   bms_jump_server_terminal --> vmch_submit_network_scan_flag
   main_entrance --> operations_office
   operations_office --> scada_control_room
@@ -151,9 +151,9 @@ flowchart TD
   class engineering_workshop,battery_hall_2,plant_room,main_entrance,operations_office,scada_control_room,battery_hall_1,loading_dock,security_office room
   class lock_pick_kit,maintenance_work_orders,scada_hmi_main_display,analog_thermometer_rack_bank_c_wall,h_gas_detector_panel,social_fabric_safehouse_card_encoded item
   class npc_robert_vance,facility_access_keycard_level_1,npc_entropy_operative_cipher,workshop_keycard_level_2,npc_entropy_operative_relay,master_keycard key
-  class action_meet_robert_chen action
-  class bms_jump_server_terminal,vmch_submit_network_scan_flag,vmch_submit_ftp_intel_flag,vmch_submit_privesc_flag,vmch_submit_distcc_exploit_flag vm
-  class vmfl_submit_network_scan_flag,vmfl_submit_ftp_intel_flag,vmfl_submit_privesc_flag,vmfl_submit_distcc_exploit_flag flag
+  class action_meet_robert_vance action
+  class bms_jump_server_terminal,vmch_submit_network_scan_flag,vmch_submit_ftp_intel_flag,vmch_submit_http_analysis_flag,vmch_submit_distcc_exploit_flag vm
+  class vmfl_submit_network_scan_flag,vmfl_submit_ftp_intel_flag,vmfl_submit_http_analysis_flag,vmfl_submit_distcc_exploit_flag flag
   class node_start start
 ```
 
@@ -232,7 +232,7 @@ flowchart TD
   maintenance_work_orders{"Maintenance Work Orders"}
   npc_robert_vance{"Robert Vance"}
   facility_access_keycard_level_1{"Facility Access Keycard (Level 1)"}
-  action_meet_robert_chen>"Win Chen's trust and gain facility access"]
+  action_meet_robert_vance>"Win Vance's trust and gain facility access"]
   scada_control_room("SCADA Control Room")
   scada_hmi_main_display{"SCADA HMI — Main Display"}
   bms_jump_server_terminal["BMS Jump Server Terminal"]
@@ -251,8 +251,8 @@ flowchart TD
   vmfl_submit_network_scan_flag{"Network Scan Flag"}
   vmch_submit_ftp_intel_flag["Submit the intelligence file from their FTP service"]
   vmfl_submit_ftp_intel_flag{"Ftp Intel Flag"}
-  vmch_submit_privesc_flag["Submit privilege-escalation evidence"]
-  vmfl_submit_privesc_flag{"Privesc Flag"}
+  vmch_submit_http_analysis_flag["Submit the HTTP-analysis evidence"]
+  vmfl_submit_http_analysis_flag{"Http Analysis Flag"}
   vmch_submit_distcc_exploit_flag["Submit proof of the distcc foothold"]
   vmfl_submit_distcc_exploit_flag{"Distcc Exploit Flag"}
   security_office("Security Office")
@@ -272,7 +272,7 @@ flowchart TD
   operations_office --> npc_robert_vance
   npc_robert_vance --> facility_access_keycard_level_1
   facility_access_keycard_level_1 --> door_battery_hall_2
-  npc_robert_vance --> action_meet_robert_chen
+  npc_robert_vance --> action_meet_robert_vance
   scada_control_room --> scada_hmi_main_display
   engineering_workshop --> bms_jump_server_terminal
   security_office --> lock_security_equipment_locker
@@ -291,10 +291,10 @@ flowchart TD
   vmch_submit_network_scan_flag --> vmfl_submit_network_scan_flag
   vmch_submit_ftp_intel_flag --> vmfl_submit_ftp_intel_flag
   vmfl_submit_network_scan_flag -.-> vmch_submit_ftp_intel_flag
-  vmch_submit_privesc_flag --> vmfl_submit_privesc_flag
-  vmfl_submit_ftp_intel_flag -.-> vmch_submit_privesc_flag
+  vmch_submit_http_analysis_flag --> vmfl_submit_http_analysis_flag
+  vmfl_submit_ftp_intel_flag -.-> vmch_submit_http_analysis_flag
   vmch_submit_distcc_exploit_flag --> vmfl_submit_distcc_exploit_flag
-  vmfl_submit_privesc_flag -.-> vmch_submit_distcc_exploit_flag
+  vmfl_submit_http_analysis_flag -.-> vmch_submit_distcc_exploit_flag
   bms_jump_server_terminal --> vmch_submit_network_scan_flag
   main_entrance --> operations_office
   operations_office --> scada_control_room
@@ -308,16 +308,20 @@ flowchart TD
   door_engineering_workshop -.-> aim_reach_the_workshop
   vmfl_submit_network_scan_flag -.-> aim_map_the_attack
   vmfl_submit_ftp_intel_flag -.-> aim_map_the_attack
-  vmfl_submit_privesc_flag -.-> aim_map_the_attack
+  vmfl_submit_http_analysis_flag -.-> aim_map_the_attack
   vmfl_submit_distcc_exploit_flag -.-> aim_map_the_attack
+  action_meet_robert_vance -.-> aim_confirm_the_lie
+  bms_jump_server_terminal -.-> aim_map_the_attack
+  analog_thermometer_rack_bank_c_wall -.-> aim_confirm_the_lie
+  lock_esd_pushbutton -.-> aim_stop_the_runaway
 
   class door_engineering_workshop,door_battery_hall_2,door_plant_room,lock_security_equipment_locker,lock_extraction_gobag,lock_esd_pushbutton,abandoned_extraction_go_bag lock
   class engineering_workshop,battery_hall_2,plant_room,main_entrance,operations_office,scada_control_room,battery_hall_1,loading_dock,security_office room
   class lock_pick_kit,maintenance_work_orders,scada_hmi_main_display,analog_thermometer_rack_bank_c_wall,h_gas_detector_panel,social_fabric_safehouse_card_encoded item
   class npc_robert_vance,facility_access_keycard_level_1,npc_entropy_operative_cipher,workshop_keycard_level_2,npc_entropy_operative_relay,master_keycard key
-  class action_meet_robert_chen action
-  class bms_jump_server_terminal,vmch_submit_network_scan_flag,vmch_submit_ftp_intel_flag,vmch_submit_privesc_flag,vmch_submit_distcc_exploit_flag vm
-  class vmfl_submit_network_scan_flag,vmfl_submit_ftp_intel_flag,vmfl_submit_privesc_flag,vmfl_submit_distcc_exploit_flag flag
+  class action_meet_robert_vance action
+  class bms_jump_server_terminal,vmch_submit_network_scan_flag,vmch_submit_ftp_intel_flag,vmch_submit_http_analysis_flag,vmch_submit_distcc_exploit_flag vm
+  class vmfl_submit_network_scan_flag,vmfl_submit_ftp_intel_flag,vmfl_submit_http_analysis_flag,vmfl_submit_distcc_exploit_flag flag
   class aim_get_inside,aim_confirm_the_lie,aim_reach_the_workshop,aim_map_the_attack,aim_stop_the_runaway critical
   class node_start start
 ```
@@ -418,7 +422,7 @@ flowchart TD
   rc_obj11_11{"SAFETYNET Field Guide: Encoding and Decoding with CyberChef"}
   rc_npc_robert_vance_12("Robert Vance")
   rc_npc_agent_hax_13("Agent HaX")
-  rc_obj14_14{"Chen's BMS Monitoring Terminal"}
+  rc_obj14_14{"Vance's BMS Monitoring Terminal"}
   rc_obj15_15{"Maintenance Work Orders"}
   rc_obj16_16{"Facility Layout Map"}
   rc_obj17_17{"Budget Cut Memo"}

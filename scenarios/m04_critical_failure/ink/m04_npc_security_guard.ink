@@ -57,12 +57,12 @@ Alright, sign in here.
 
 // Guard hands clipboard
 
-Mr. Chen mentioned something about a surprise inspection. He's not happy about it, fair warning.
+Mr. Vance mentioned something about a surprise inspection. He's not happy about it, fair warning.
 
 * [I'll keep that in mind. Thank you.]
     -> guard_entry_granted
 
-* [It's routine procedure. Where can I find Mr. Chen?]
+* [It's routine procedure. Where can I find Mr. Vance?]
     -> guard_directions
 
 === guard_directions ===

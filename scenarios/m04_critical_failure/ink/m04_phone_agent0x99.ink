@@ -188,7 +188,7 @@ Agent HaX: And {player_name()} — the hall doesn't care who's winning. Watch th
 {chen_is_ally:
     ~ handler_confidence += 15
 
-    Good. Chen's cooperation will be valuable—he knows those systems inside out.
+    Good. Vance's cooperation will be valuable—he knows those systems inside out.
 
     Use his SCADA expertise when you need it.
 - else:
@@ -263,7 +263,7 @@ Priority one: find how they're compromising the SCADA network.
 Look for server room access, network infrastructure, anything that explains remote control.
 
 {chen_is_ally:
-    Chen can point you to the right systems.
+    Vance can point you to the right systems.
 }
 
 + [Roger that. Moving to investigate]
@@ -519,7 +519,7 @@ Three—get to the hardwired ESD pushbutton in the plant room and press it.
     Get to the server room. That's where they accessed the SCADA network.
 
     {chen_is_ally:
-        Chen can tell you how to get there.
+        Vance can tell you how to get there.
     }
 }
 {server_room_reached and not attack_mechanism_known:
@@ -591,10 +591,10 @@ What's the situation?
         Check the operative you defeated—they may have had a keycard.
     }
     {operatives_defeated == 0 and chen_is_ally:
-        Chen can provide access if you ask him.
+        Vance can provide access if you ask him.
     }
     {operatives_defeated == 0 and not chen_is_ally:
-        Find a keycard or get Chen to provide access.
+        Find a keycard or get Vance to provide access.
     }
 }
 {server_room_reached:
@@ -619,7 +619,7 @@ Use cover. These operatives have training, but so do you.
 Stealth takedowns when possible. Direct engagement if necessary.
 
 {chen_is_ally:
-    Chen might have intel on operative locations if you ask.
+    Vance might have intel on operative locations if you ask.
 }
 
 + [Understood]
@@ -635,7 +635,7 @@ Then enumerate services—FTP and HTTP will have intelligence files.
 Finally, exploit vulnerable services to access attack control mechanisms.
 
 {chen_is_ally:
-    Chen can provide SCADA context if you need technical clarification.
+    Vance can provide SCADA context if you need technical clarification.
 }
 
 + [Got it, thanks]
