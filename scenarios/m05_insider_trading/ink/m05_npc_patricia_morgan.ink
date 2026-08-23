@@ -3,7 +3,7 @@
 // Chief Security Officer, Mission Handler
 // ===========================================
 
-VAR patricia_trust = 5            // 0-10 scale
+VAR patricia_influence = 5            // 0-10 scale
 VAR topic_investigation = false
 VAR topic_suspects = false
 VAR topic_company_politics = false
@@ -39,19 +39,22 @@ VAR torres_killed = false
 
     + [Glad to help. Fill me in on the situation.]
         You: Fill me in on what you've found so far.
-        ~ patricia_trust += 1
+        ~ patricia_influence += 1
+        # influence_increased
         -> briefing_details
 
     + [Let's skip the pleasantries. I need access.]
         You: I'm here to work, not chat. What access do I have?
         Patricia Morgan: Direct. I like it.
-        ~ patricia_trust += 1
+        ~ patricia_influence += 1
+        # influence_increased
         -> provide_access
 
     + [Agent 0x99 briefed me. 4.2 TB exfiltration — I know the basics.]
         You: I know the basics. Quantum crypto research, inside job.
         Patricia Morgan: Good. Then let's get to work.
-        ~ patricia_trust += 2
+        ~ patricia_influence += 2
+        # influence_increased
         -> provide_access
 }
 
@@ -88,7 +91,8 @@ Patricia Morgan: Dr. Sarah Chen leads the team. Five senior researchers. Two jun
 Patricia Morgan: All vetted. All trusted. Until now.
 
 + [I'll need to interview them]
-    ~ patricia_trust += 1
+    ~ patricia_influence += 1
+    # influence_increased
     You: Can you arrange access without tipping them off?
     Patricia Morgan: Already done. You're here as a "routine security audit."
     -> provide_access
@@ -158,9 +162,10 @@ Patricia Morgan: Internal investigation hit a wall. Insider's too sophisticated.
 
 Patricia Morgan: Access logs look legitimate. No obvious behavioral red flags.
 
-{patricia_trust >= 3:
+{patricia_influence >= 3:
     Patricia Morgan: Between you and me? I should have caught this sooner.
-    ~ patricia_trust += 1
+    ~ patricia_influence += 1
+    # influence_increased
 }
 
 -> hub
@@ -175,7 +180,7 @@ Patricia Morgan: David Torres - senior researcher. Top of his field.
 
 Patricia Morgan: Five others with varying levels of access.
 
-{patricia_trust >= 5:
+{patricia_influence >= 5:
     Patricia Morgan: Torres has been... distracted lately. Personal issues.
     Patricia Morgan: But distracted doesn't mean traitor.
 }
@@ -190,10 +195,11 @@ Patricia Morgan: CEO Jennifer Zhao wants this handled quietly.
 
 Patricia Morgan: No press. No prosecution if we can avoid it. Protect the DoD contracts.
 
-{patricia_trust >= 4:
+{patricia_influence >= 4:
     Patricia Morgan: I want justice. She wants damage control.
     Patricia Morgan: We'll see who wins.
-    ~ patricia_trust += 1
+    ~ patricia_influence += 1
+    # influence_increased
 }
 
 -> hub
@@ -219,11 +225,12 @@ You: [Share evidence summary]
 
 Patricia Morgan: Good work. Keep digging.
 
-{patricia_trust >= 6:
+{patricia_influence >= 6:
     Patricia Morgan: You're thorough. I appreciate that.
 }
 
-~ patricia_trust += 1
+~ patricia_influence += 1
+# influence_increased
 -> hub
 
 === significant_findings ===
@@ -238,7 +245,8 @@ Patricia Morgan: Be careful. When you confront him, you're on your own.
 Patricia Morgan: But... good work. Really.
 
 ~ torres_identified = true
-~ patricia_trust += 2
+~ patricia_influence += 2
+# influence_increased
 #set_global:torres_identified:true
 #complete_task:identify_torres
 -> hub
@@ -252,14 +260,16 @@ Patricia Morgan: What do you need?
     #give_item:notes:Employee Financial Records
     You: I need access to employee financial records.
     Patricia Morgan: I'll send you the files. Check your device.
-    ~ patricia_trust += 1
+    ~ patricia_influence += 1
+    # influence_increased
     -> hub
 
 + [I need a server room access override.]
     You: I need a server room access override.
     Patricia Morgan: Done. Security system updated.
     #unlock_room:server_room
-    ~ patricia_trust += 1
+    ~ patricia_influence += 1
+    # influence_increased
     -> hub
 
 + [Actually, that can wait.]

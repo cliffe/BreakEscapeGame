@@ -16,6 +16,7 @@ VAR evidence_level = 0 // 0-7+ evidence quality
 
 // Variables from Act 3 (Confrontation)
 VAR final_choice = "" // turn_double_agent, arrest, combat_nonlethal, combat_lethal, public_exposure
+VAR confront_stance = "" // sympathetic or hardline — how the player framed Torres in the confrontation
 VAR torres_turned = false
 VAR torres_arrested = false
 VAR torres_killed = false
@@ -52,18 +53,18 @@ Agent 0x99: Let's go through what happened.
 === mission_outcome_assessment ===
 #speaker:agent_0x99
 
-{objectives_completed >= 3:
-    Agent 0x99: All primary objectives completed. Operation Schrödinger stopped.
+{evidence_level >= 6:
+    Agent 0x99: Full evidence chain, insider stopped. Operation Schrödinger is dead.
     -> full_success_path
 }
 
-{objectives_completed == 2:
-    Agent 0x99: Two objectives completed. Partial success.
+{evidence_level >= 4 and evidence_level < 6:
+    Agent 0x99: You built enough to move and you closed it out. Solid work.
     -> partial_success_path
 }
 
-{objectives_completed < 2:
-    Agent 0x99: Minimal objectives achieved. This could have gone better.
+{evidence_level < 4:
+    Agent 0x99: You stopped the upload, but the case behind it is thin.
     -> minimal_success_path
 }
 
@@ -157,6 +158,11 @@ Agent 0x99: And David Torres...
 }
 
 {final_choice == "combat_nonlethal":
+    -> torres_arrested_no_treatment_path
+}
+
+// Defensive fallback: if the confrontation state never bridged, don't starve.
+{final_choice == "":
     -> torres_arrested_no_treatment_path
 }
 
@@ -531,6 +537,13 @@ Agent 0x99: {player_name}, one last thing.
 Agent 0x99: This mission put you in an impossible position. No clean read on Torres was ever going to be available to you.
 
 Agent 0x99: How you handled that... that's who you are as an agent.
+
+{confront_stance == "sympathetic":
+    Agent 0x99: You went in looking for the man underneath the espionage. That mattered, whatever you decided in the end.
+}
+{confront_stance == "hardline":
+    Agent 0x99: You never once let him hide behind the sob story. Cold, maybe. But you saw it clearly.
+}
 
 {handler_trust >= 70:
     Agent 0x99: I trust your judgment. Today proved that.

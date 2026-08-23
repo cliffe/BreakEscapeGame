@@ -42,12 +42,14 @@ VAR torres_killed = false
     + [Nice to meet you. What can you tell me about the breach?]
         You: What can you tell me about the data breach?
         ~ kevin_influence += 10
+        # influence_increased
         -> network_situation
 
     + [I'll need your help with technical access.]
         You: Server logs, network diagrams, that kind of thing.
         Kevin Park: Oh yeah, totally. Whatever you need.
         ~ kevin_influence += 5
+        # influence_increased
         ~ offered_help = true
         -> hub
 
@@ -76,11 +78,13 @@ Kevin Park: Pattern's too consistent. Same time every Friday. Same encrypted pro
     You: Why didn't you report it earlier?
     Kevin Park: I did! Patricia's been investigating for three weeks.
     ~ kevin_influence += 5
+    # influence_increased
     -> hub
 
 + [That's helpful. Thanks.]
     You: That's helpful. Thanks.
     ~ kevin_influence += 10
+    # influence_increased
     -> hub
 
 // ===========================================
@@ -115,6 +119,7 @@ Kevin Park: Pattern's too consistent. Same time every Friday. Same encrypted pro
 #speaker:kevin_park
 ~ topic_network = true
 ~ kevin_influence += 5
+# influence_increased
 
 Kevin Park: Our network's pretty standard. Corporate VPN, segmented VLANs.
 
@@ -123,6 +128,7 @@ Kevin Park: Server room's locked down - RFID badge access only. I can get you in
 {kevin_influence >= 15:
     Kevin Park: There's a terminal in the server room that logs all network traffic. Super useful.
     ~ kevin_influence += 5
+    # influence_increased
 }
 
 -> hub
@@ -131,6 +137,7 @@ Kevin Park: Server room's locked down - RFID badge access only. I can get you in
 #speaker:kevin_park
 ~ topic_torres = true
 ~ kevin_influence += 5
+# influence_increased
 
 Kevin Park: David? He's like, crazy smart. PhD in cryptography.
 
@@ -139,6 +146,7 @@ Kevin Park: Works late a lot. Always stressed. His wife's sick, so...
 {kevin_influence >= 20:
     Kevin Park: Saw him in the server room the other night. Just... standing there. Looking exhausted.
     ~ kevin_influence += 10
+    # influence_increased
 }
 
 -> hub
@@ -147,6 +155,7 @@ Kevin Park: Works late a lot. Always stressed. His wife's sick, so...
 #speaker:kevin_park
 ~ topic_security = true
 ~ kevin_influence += 5
+# influence_increased
 
 Kevin Park: Security's... not great. Budget cuts.
 
@@ -156,6 +165,7 @@ Kevin Park: We log access but don't monitor in real-time. PIN codes are weak.
     Kevin Park: Want a pro tip? Check the server room at night. Some people think the cameras have blind spots.
     Kevin Park: They're right.
     ~ kevin_influence += 5
+    # influence_increased
 }
 
 -> hub
@@ -175,6 +185,7 @@ You: Kevin, I need a favor. I need access to restricted areas.
 
     ~ badge_cloned = true
     ~ kevin_influence -= 5
+    # influence_decreased
 
     Kevin Park: Server hallway's all yours now.
     -> hub
@@ -196,6 +207,7 @@ You: Do you have a lockpick kit? For... legitimate security testing.
 
     Kevin Park: Don't tell anyone where you got it.
     ~ kevin_influence += 5
+    # influence_increased
     -> hub
 - else:
     Kevin Park: Dude, I barely know you. Ask me when we're cool.

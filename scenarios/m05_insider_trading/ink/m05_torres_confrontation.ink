@@ -5,6 +5,7 @@
 
 // Choice tracking
 VAR final_choice = ""  // "turn_double_agent", "arrest", "combat_nonlethal", "combat_lethal", "public_exposure"
+VAR confront_stance = ""  // "sympathetic" or "hardline" — how the player framed Torres, paid back in the debrief
 VAR torres_turned = false
 VAR torres_arrested = false
 VAR torres_killed = false
@@ -91,10 +92,14 @@ David Torres: Stage 3 cancer. $380,000 in debt.
 
 + [ENTROPY manipulated you. You didn't know what you were doing.]
     You: They lied. Told you it was for journalists, right?
+    ~ confront_stance = "sympathetic"
+    #set_global:confront_stance:sympathetic
     -> torres_knows_truth
 
 + [You knew exactly what you were doing.]
     You: The Architect's authorisation was explicit. The dispatch network. The casualty projection.
+    ~ confront_stance = "hardline"
+    #set_global:confront_stance:hardline
     -> torres_knows_truth
 
 === torres_knows_truth ===

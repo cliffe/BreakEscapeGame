@@ -100,7 +100,6 @@ The Recruiter: The Architect's office ran the numbers before signing off. Thirty
 The Recruiter: It's filed as an acceptable cost of acquisition. I didn't file it. I just recruited the man who could get us the schedule.
 
 ~ recruiter_persuasion_attempted = true
-#set_global:recruiter_persuasion_attempted:true
 
 * [That number was known before Torres ever touched the data.]
     The Recruiter: Known and signed. Yes.
@@ -146,11 +145,28 @@ The Recruiter: Nothing dramatic. You forget you ever heard the number forty-seve
 
 The Recruiter: In exchange, you get a clean report, a grateful handler, and one fewer thing keeping you up at night. Most agents take that trade without needing it spelled out.
 
+* [Fine. The file stays with you. I never heard the number forty-seven.]
+    -> recruiter_deal_taken
+
 * [Not interested. I'm taking the file to SAFETYNET.]
     -> recruiter_deal_refused
 
 * [No deal. Every one of those forty-seven is a name I'm going to find.]
     -> recruiter_deal_refused
+
+=== recruiter_deal_taken ===
+#speaker:recruiter
+~ recruiter_deal_accepted = true
+#set_global:recruiter_deal_accepted:true
+
+The Recruiter: Sensible. You'll get your clean report, and I'll get my quiet. That's the whole of the arrangement.
+
+The Recruiter: Handle Torres however suits you. The other forty-seven were never your problem to begin with.
+
+> CHANNEL TERMINATED
+
+#exit_conversation
+-> DONE
 
 === recruiter_deal_refused ===
 #speaker:recruiter

@@ -431,6 +431,7 @@ torres_journal_excerpt = "Met with the Recruiter again. Debt relief plus a stand
     "lore_collected": 0,
     "evidence_level": 0,
     "final_choice": "",
+    "confront_stance": "",
     "torres_turned": false,
     "torres_arrested": false,
     "torres_killed": false,
@@ -982,7 +983,7 @@ torres_journal_excerpt = "Met with the Recruiter again. Debt relief plus a stand
           "readable": true,
           "text": "<%= torres_journal_excerpt %>",
           "observations": "Torres' journal showing radicalization process",
-          "onPickup": { "setVariable": { "found_torres_journal": true, "evidence_level": "evidence_level + 1" } }
+          "onPickup": { "setVariable": { "found_torres_journal": true, "evidence_level": "evidence_level + 1", "lore_collected": "lore_collected + 1" } }
         }
       ]
     },
@@ -1123,7 +1124,7 @@ torres_journal_excerpt = "Met with the Recruiter again. Debt relief plus a stand
           "readable": true,
           "text": "OPERATION SCHRÖDINGER - UPLOAD SCHEDULE\n\nSTATUS: PENDING FINAL APPROVAL\n\nData Package: Project Heisenberg key material + 999 dispatch rollout schedule\nTarget: ENTROPY secure drop-site (retained, not resold)\nUpload Window: Tonight, 3:00 AM - 6:00 AM\n\nCompensation: debt relief + standing consultancy retainer\n\nFinal approval required from: The Architect\n\n[CRITICAL EVIDENCE - Exfiltration Plan]",
           "observations": "Torres' upload schedule showing final exfiltration timing and payment",
-          "onPickup": { "setVariable": { "evidence_level": "evidence_level + 1" } }
+          "onPickup": { "setVariable": { "evidence_level": "evidence_level + 1", "lore_collected": "lore_collected + 1" } }
         },
         {
           "type": "notes",
@@ -1133,7 +1134,7 @@ torres_journal_excerpt = "Met with the Recruiter again. Debt relief plus a stand
           "readable": true,
           "text": "PROJECT HEISENBERG - PACKAGE CONTENTS\n\n- quantum-safe_key_material_v3.tar.gpg - lattice-based key exchange parameters, production candidate set\n- dispatch_network_rollout_schedule.xlsx - National Emergency-Services Dispatch Network (999 call routing), phased cutover dates by region including key-rotation windows\n- handover_note.txt - sloppy admin credential note from the research portal\n\nImpact Assessment:\nAcquisition of this data will enable ENTROPY to:\n- Hold the dispatch network's key material during a rotation window\n- Force a degraded routing path for ambulance, fire and police dispatch\n- Integrate the capability directly - it is not being resold\n\nProjected casualties: 30-45 excess civilian deaths, first rollout wave\n\n[CRITICAL EVIDENCE - Data Contents]",
           "observations": "Manifest showing what Torres is staging and the projected casualties",
-          "onPickup": { "setVariable": { "evidence_level": "evidence_level + 1" } }
+          "onPickup": { "setVariable": { "evidence_level": "evidence_level + 1", "lore_collected": "lore_collected + 1" } }
         }
       ]
     }

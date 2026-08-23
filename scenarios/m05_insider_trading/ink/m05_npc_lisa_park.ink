@@ -3,7 +3,7 @@
 // Marketing Coordinator, Office Observer
 // ===========================================
 
-VAR lisa_rapport = 0              // 0-100 scale
+VAR lisa_influence = 0              // 0-100 scale
 VAR topic_office_mood = false
 VAR topic_torres_personal = false
 VAR topic_elena = false
@@ -38,14 +38,16 @@ VAR torres_killed = false
     Lisa Park: But I notice things. Office dynamics, you know?
 
     + [What have you noticed lately?]
-        ~ lisa_rapport += 10
+        ~ lisa_influence += 10
+        # influence_increased
         You: How's the mood been around here?
         -> office_mood
 
     + [I'm interested in David Torres. Do you know him?]
         You: Can you tell me about him?
         Lisa Park: David? Yeah, poor guy.
-        ~ lisa_rapport += 5
+        ~ lisa_influence += 5
+        # influence_increased
         -> torres_sympathy
 
     + [Thanks, but I need to focus on cleared personnel.]
@@ -69,9 +71,10 @@ Lisa Park: Tense. Everyone knows something's wrong.
 
 Lisa Park: People whispering. Suspicious looks. It's like a bad TV drama.
 
-{lisa_rapport >= 15:
+{lisa_influence >= 15:
     Lisa Park: David Torres especially. He looks exhausted. Stressed beyond belief.
-    ~ lisa_rapport += 5
+    ~ lisa_influence += 5
+    # influence_increased
 }
 
 -> hub
@@ -101,13 +104,14 @@ Lisa Park: People whispering. Suspicious looks. It's like a bad TV drama.
 === ask_office_mood ===
 #speaker:lisa_park
 ~ topic_office_mood = true
-~ lisa_rapport += 5
+~ lisa_influence += 5
+# influence_increased
 
 Lisa Park: Everyone's on edge. The cryptography team especially.
 
 Lisa Park: They know one of them did it. They're all looking at each other.
 
-{lisa_rapport >= 20:
+{lisa_influence >= 20:
     Lisa Park: Dr. Chen is taking it personally. She feels responsible.
     Lisa Park: Kevin's been digging through network logs like crazy.
 }
@@ -117,7 +121,8 @@ Lisa Park: They know one of them did it. They're all looking at each other.
 === ask_torres_personal ===
 #speaker:lisa_park
 ~ topic_torres_personal = true
-~ lisa_rapport += 10
+~ lisa_influence += 10
+# influence_increased
 
 Lisa Park: David's a sweetheart. Always polite. Remembers everyone's names.
 
@@ -125,11 +130,12 @@ Lisa Park: He has two kids. Sofia and Miguel. He talks about them all the time.
 
 Lisa Park: Or... he used to. He's been really quiet lately.
 
-{lisa_rapport >= 25:
+{lisa_influence >= 25:
     Lisa Park: His wife Elena is sick. Cancer, I think.
     Lisa Park: I saw him crying in the parking lot once. Last month.
     Lisa Park: Pretended I didn't see. Felt awful.
-    ~ lisa_rapport += 10
+    ~ lisa_influence += 10
+    # influence_increased
 }
 
 -> hub
@@ -142,12 +148,13 @@ Lisa Park: Or... he used to. He's been really quiet lately.
     Lisa Park: Elena? She came to the office Christmas party two years ago.
     Lisa Park: Beautiful woman. Really kind. You could see how much David loved her.
 
-    {lisa_rapport >= 30:
+    {lisa_influence >= 30:
         Lisa Park: Stage 3 cancer. Breast cancer, I think.
         Lisa Park: Experimental treatment. Insurance won't cover it.
         Lisa Park: David mentioned it once. $380,000.
         Lisa Park: I can't even imagine that kind of debt.
-        ~ lisa_rapport += 10
+        ~ lisa_influence += 10
+        # influence_increased
     }
     -> hub
 - else:
@@ -166,13 +173,15 @@ Lisa Park: Treatment costs a fortune. I don't know how they're managing.
 Lisa Park: He's been so stressed. Lost weight. Looks like he hasn't slept in months.
 
 + [That's rough. Thanks for the context]
-    ~ lisa_rapport += 10
+    ~ lisa_influence += 10
+    # influence_increased
     -> hub
 
 + [Personal problems don't excuse espionage]
     You: If he's the insider, circumstances don't matter.
     Lisa Park: *pause* Wow. Okay then.
-    ~ lisa_rapport -= 10
+    ~ lisa_influence -= 10
+    # influence_decreased
     #exit_conversation
     -> DONE
 

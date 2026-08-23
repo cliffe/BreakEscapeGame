@@ -319,6 +319,12 @@ Agent 0x99: Final exfiltration scheduled for tonight. You have 4 hours.
 
 Agent 0x99: Go get them.
 
+// Bridge briefing state to globals so the closing debrief can read it back.
+// (Ink VAR assignments do not propagate to globals on their own.)
+{player_approach != "": #set_global:player_approach:{player_approach}}
+{knows_full_stakes: #set_global:knows_full_stakes:true}
+#set_global:handler_trust:{handler_trust}
+
 #complete_task:receive_mission_briefing
 #start_gameplay
 -> END
