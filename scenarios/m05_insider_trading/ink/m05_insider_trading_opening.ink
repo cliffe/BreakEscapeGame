@@ -45,14 +45,14 @@ Someone on the inside is stealing it.
 === damage_assessment ===
 #speaker:agent_0x99
 
-Agent 0x99: 4.2 terabytes of classified quantum cryptography research.
+Agent 0x99: Project Heisenberg. Quantum-safe key material for the National Emergency-Services Dispatch Network — 999 call routing.
 
-Agent 0x99: 73% already exfiltrated. The rest goes out this weekend if we don't stop it.
+Agent 0x99: 73% of the package is already staged for exfiltration. The rest goes out within four hours if we don't stop it.
 
 + [What exactly was stolen?]
     -> stolen_data_details
 
-+ [Who's buying this data?]
++ [Who's this going to?]
     ~ knows_full_stakes = true
     -> buyers_and_stakes
 
@@ -62,13 +62,13 @@ Agent 0x99: 73% already exfiltrated. The rest goes out this weekend if we don't 
 === timeline_urgency ===
 #speaker:agent_0x99
 
-Agent 0x99: Final exfiltration scheduled for this weekend.
+Agent 0x99: Final exfiltration scheduled within four hours.
 
-Agent 0x99: Once the data reaches ENTROPY's network, it gets sold to foreign governments within 48 hours.
+Agent 0x99: Once ENTROPY has the full package, they integrate it directly. This isn't a sale — it's an acquisition.
 
 ~ knows_full_stakes = true
 
-+ [What happens if they sell it?]
++ [What do they want it for?]
     -> buyers_and_stakes
 
 + [I understand the urgency]
@@ -77,13 +77,13 @@ Agent 0x99: Once the data reaches ENTROPY's network, it gets sold to foreign gov
 === stolen_data_details ===
 #speaker:agent_0x99
 
-Agent 0x99: Quantum key distribution protocols. Military-grade encryption specs.
+Agent 0x99: Lattice-based key exchange parameters. The production candidate set.
 
-Agent 0x99: 14 zero-day vulnerabilities in competitor systems. DoD facility deployment schedules.
+Agent 0x99: And the rollout schedule — phased cutover dates, region by region, including the key-rotation windows.
 
-Agent 0x99: Everything needed to compromise US quantum cryptography for the next decade.
+Agent 0x99: Everything ENTROPY needs to compromise the dispatch network the moment it goes live.
 
-+ [Who's the buyer?]
++ [Why does ENTROPY want the dispatch network?]
     ~ knows_full_stakes = true
     -> buyers_and_stakes
 
@@ -93,17 +93,17 @@ Agent 0x99: Everything needed to compromise US quantum cryptography for the next
 === buyers_and_stakes ===
 #speaker:agent_0x99
 
-Agent 0x99: Chinese MSS. Russian GRU. Iranian IRGC.
+Agent 0x99: This isn't going to a foreign buyer. ENTROPY's Insider Threat Initiative is acquiring it and keeping it.
 
-Agent 0x99: Expected sale price: $68 million.
+Agent 0x99: If they hold the key material during a rotation window, they can force the dispatch network onto a degraded routing path. Every ambulance, fire and police call routed through it runs six to eleven minutes slower.
 
 {not knows_full_stakes:
     ~ knows_full_stakes = true
 }
 
-Agent 0x99: NSA's estimate? 12 to 40 intelligence officers compromised if this data gets out.
+Agent 0x99: Early modelling: thirty to forty-five excess civilian deaths in the first rollout wave. Cardiac arrests. Strokes. Structure fires. The calls where minutes decide it.
 
-Agent 0x99: Real people. Real casualties.
+Agent 0x99: Real people. Real casualties. Not officers in a briefing — people who call 999 and wait.
 
 + [We have to stop this]
     ~ handler_trust += 5
@@ -135,7 +135,7 @@ Agent 0x99: Two - Gather evidence. We need proof for prosecution or leverage for
 === turning_explanation ===
 #speaker:agent_0x99
 
-Agent 0x99: ENTROPY's Insider Threat Initiative has 23 active placements. 47 more targets under evaluation.
+Agent 0x99: ENTROPY's Insider Threat Initiative runs on a recruiter — a handler working under a corporate headhunting cover. 23 active placements. 47 more targets under evaluation.
 
 Agent 0x99: If we can turn this insider into a double agent, we map their entire network.
 
@@ -276,7 +276,7 @@ Agent 0x99: Final question - how are you approaching this?
 #speaker:agent_0x99
 
 {knows_full_stakes:
-    Agent 0x99: Remember - 12 to 40 lives depend on this mission.
+    Agent 0x99: Remember - thirty to forty-five lives depend on this mission. Civilians, not officers.
 }
 
 {player_approach == "cautious":
@@ -315,11 +315,9 @@ Agent 0x99: And {player_name}? Good luck.
 
 Agent 0x99: Quantum Dynamics, San Francisco. Wednesday afternoon, 4:30 PM.
 
-Agent 0x99: Final exfiltration scheduled Friday night. You have 48 hours.
+Agent 0x99: Final exfiltration scheduled for tonight. You have 4 hours.
 
 Agent 0x99: Go get them.
-
-[Visual: Fade to Quantum Dynamics corporate lobby]
 
 #complete_task:receive_mission_briefing
 #start_gameplay

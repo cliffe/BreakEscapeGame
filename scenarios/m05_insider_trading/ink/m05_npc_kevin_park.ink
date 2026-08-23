@@ -23,60 +23,63 @@ VAR torres_killed = false
 // ===========================================
 
 === start ===
-#speaker:kevin_park
+#complete_task:talk_to_kevin
 
 {first_meeting:
     ~ first_meeting = false
+    #speaker:narrator
     #display:kevin-casual
 
     A guy in his late 20s sits at a workstation, headphones on, fingers flying across the keyboard.
 
     He notices you and pulls off his headphones.
 
-    Kevin: Hey! You must be the security consultant. Kevin Park, IT sysadmin.
+    #speaker:kevin_park
+    Kevin Park: Hey! You must be the security consultant. Kevin Park, IT sysadmin.
 
-    Kevin: Finally someone who might actually fix our mess.
+    Kevin Park: Finally someone who might actually fix our mess.
 
-    + [Nice to meet you. You're aware of the situation?]
+    + [Nice to meet you. What can you tell me about the breach?]
         You: What can you tell me about the data breach?
         ~ kevin_influence += 10
         -> network_situation
 
-    + [I'll need your help with technical access]
+    + [I'll need your help with technical access.]
         You: Server logs, network diagrams, that kind of thing.
-        Kevin: Oh yeah, totally. Whatever you need.
+        Kevin Park: Oh yeah, totally. Whatever you need.
         ~ kevin_influence += 5
         ~ offered_help = true
         -> hub
 
-    + [Just point me to the network logs]
+    + [Just point me to the network logs. I'll take it from here.]
         You: I can take it from here.
-        Kevin: Sure, terminal's over there. Let me know if you need anything.
+        Kevin Park: Sure, terminal's over there. Let me know if you need anything.
         -> hub
 }
 
 {not first_meeting:
     #display:kevin-friendly
-    Kevin: What's up?
+    Kevin Park: What's up?
     -> hub
 }
 
 === network_situation ===
 #speaker:kevin_park
 
-Kevin: Yeah, someone's been uploading huge files at like 2 AM.
+Kevin Park: Yeah, someone's been uploading huge files at like 2 AM.
 
-Kevin: At first I thought it was legit remote work, but...
+Kevin Park: At first I thought it was legit remote work, but...
 
-Kevin: Pattern's too consistent. Same time every Friday. Same encrypted protocols.
+Kevin Park: Pattern's too consistent. Same time every Friday. Same encrypted protocols.
 
-+ [You suspected something was wrong?]
++ [Why didn't you report it earlier?]
     You: Why didn't you report it earlier?
-    Kevin: I did! Patricia's been investigating for three weeks.
+    Kevin Park: I did! Patricia's been investigating for three weeks.
     ~ kevin_influence += 5
     -> hub
 
-+ [That's helpful information]
++ [That's helpful. Thanks.]
+    You: That's helpful. Thanks.
     ~ kevin_influence += 10
     -> hub
 
@@ -86,25 +89,26 @@ Kevin: Pattern's too consistent. Same time every Friday. Same encrypted protocol
 
 === hub ===
 
-+ {not topic_network} [Ask about network infrastructure]
++ {not topic_network} [Walk me through the network infrastructure.]
     -> ask_network
 
-+ {not topic_torres} [Ask about David Torres]
++ {not topic_torres} [What's David Torres like?]
     -> ask_torres
 
-+ {not topic_security} [Ask about security gaps]
++ {not topic_security} [Where are the security gaps?]
     -> ask_security
 
-+ {kevin_influence >= 20 and not badge_cloned} [Request badge clone]
++ {kevin_influence >= 20 and not badge_cloned} [I need a copy of your badge.]
     -> request_badge_clone
 
-+ {kevin_influence >= 30} [Request lockpick]
++ {kevin_influence >= 30} [I need a lockpick set.]
     -> request_lockpick
 
-+ [That's all for now]
++ [That's everything for now. Catch you later.]
+    You: That's everything for now. Catch you later.
     #exit_conversation
     #speaker:kevin_park
-    Kevin: Cool, catch you later!
+    Kevin Park: Cool, catch you later!
     -> DONE
 
 === ask_network ===
@@ -112,12 +116,12 @@ Kevin: Pattern's too consistent. Same time every Friday. Same encrypted protocol
 ~ topic_network = true
 ~ kevin_influence += 5
 
-Kevin: Our network's pretty standard. Corporate VPN, segmented VLANs.
+Kevin Park: Our network's pretty standard. Corporate VPN, segmented VLANs.
 
-Kevin: Server room's locked down - RFID badge access only. I can get you in if you need.
+Kevin Park: Server room's locked down - RFID badge access only. I can get you in if you need.
 
 {kevin_influence >= 15:
-    Kevin: There's a terminal in the server room that logs all network traffic. Super useful.
+    Kevin Park: There's a terminal in the server room that logs all network traffic. Super useful.
     ~ kevin_influence += 5
 }
 
@@ -128,13 +132,12 @@ Kevin: Server room's locked down - RFID badge access only. I can get you in if y
 ~ topic_torres = true
 ~ kevin_influence += 5
 
-Kevin: David? He's like, crazy smart. PhD in cryptography.
+Kevin Park: David? He's like, crazy smart. PhD in cryptography.
 
-Kevin: Works late a lot. Always stressed. His wife's sick, so...
+Kevin Park: Works late a lot. Always stressed. His wife's sick, so...
 
 {kevin_influence >= 20:
-    Kevin: Between you and me, I think the stress is killing him.
-    Kevin: Saw him in the server room Friday night. Just... standing there. Looking exhausted.
+    Kevin Park: Saw him in the server room the other night. Just... standing there. Looking exhausted.
     ~ kevin_influence += 10
 }
 
@@ -145,13 +148,13 @@ Kevin: Works late a lot. Always stressed. His wife's sick, so...
 ~ topic_security = true
 ~ kevin_influence += 5
 
-Kevin: Security's... not great. Budget cuts.
+Kevin Park: Security's... not great. Budget cuts.
 
-Kevin: We log access but don't monitor in real-time. PIN codes are weak.
+Kevin Park: We log access but don't monitor in real-time. PIN codes are weak.
 
 {kevin_influence >= 25:
-    Kevin: Want a pro tip? Check the server room at night. Some people think the cameras have blind spots.
-    Kevin: They're right.
+    Kevin Park: Want a pro tip? Check the server room at night. Some people think the cameras have blind spots.
+    Kevin Park: They're right.
     ~ kevin_influence += 5
 }
 
@@ -163,21 +166,21 @@ Kevin: We log access but don't monitor in real-time. PIN codes are weak.
 You: Kevin, I need a favor. I need access to restricted areas.
 
 {kevin_influence >= 30:
-    Kevin: Say no more. Here's my badge.
-    Kevin: Just... don't tell Patricia I gave this to you, okay?
+    #give_item:keycard:Cloned Employee Badge
+    Kevin Park: Say no more. Here's my badge.
+    Kevin Park: Just... don't tell Patricia I gave this to you, okay?
 
-    #give_item:employee_badge
     #complete_task:clone_employee_badge
     #unlock_room:server_hallway
 
     ~ badge_cloned = true
     ~ kevin_influence -= 5
 
-    Kevin: Server hallway's all yours now.
+    Kevin Park: Server hallway's all yours now.
     -> hub
 - else:
-    Kevin: Uh... I don't know you well enough for that, man.
-    Kevin: Talk to me more, build some trust first.
+    Kevin Park: Uh... I don't know you well enough for that, man.
+    Kevin Park: Talk to me more, build some trust first.
     -> hub
 }
 
@@ -187,16 +190,15 @@ You: Kevin, I need a favor. I need access to restricted areas.
 You: Do you have a lockpick kit? For... legitimate security testing.
 
 {kevin_influence >= 40:
-    Kevin: *grins* "Security testing." Right.
-    Kevin: Actually, yeah. Left over from a pen test last year.
+    #give_item:lockpick
+    Kevin Park: *grins* "Security testing." Right.
+    Kevin Park: Actually, yeah. Left over from a pen test last year.
 
-    #give_item:lockpick:3
-
-    Kevin: Don't tell anyone where you got it.
+    Kevin Park: Don't tell anyone where you got it.
     ~ kevin_influence += 5
     -> hub
 - else:
-    Kevin: Dude, I barely know you. Ask me when we're cool.
+    Kevin Park: Dude, I barely know you. Ask me when we're cool.
     -> hub
 }
 
@@ -207,22 +209,21 @@ You: Do you have a lockpick kit? For... legitimate security testing.
 === on_evidence_discovered ===
 #speaker:kevin_park
 
-Kevin: Hey, did you find something? You look... intense.
+Kevin Park: Hey, did you find something? You look... intense.
 
 + [Just following leads]
     You: Nothing concrete yet.
-    Kevin: Cool, let me know if I can help.
+    Kevin Park: Cool, let me know if I can help.
     -> DONE
 
 + [I think I know who the insider is]
-    Kevin: Wait, seriously? Who?
+    Kevin Park: Wait, seriously? Who?
     + + [I can't share details yet]
-        Kevin: Right, right. Classified. Good luck.
+        Kevin Park: Right, right. Classified. Good luck.
         -> DONE
     + + [David Torres]
-        Kevin: *shocked* David? No way. He wouldn't...
-        Kevin: *pause* His wife. The medical bills. Shit.
-        Kevin: I should have seen it.
+        Kevin Park: *shocked* David? No way. He wouldn't...
+        Kevin Park: *pause* Shit. I should have seen it.
         -> DONE
 
 // ===========================================
@@ -232,30 +233,30 @@ Kevin: Hey, did you find something? You look... intense.
 === on_mission_complete ===
 #speaker:kevin_park
 
-Kevin: So... is it over?
+Kevin Park: So... is it over?
 
 {torres_turned:
     You: It's resolved. That's all I can say.
-    Kevin: But David's okay? He's not going to prison?
+    Kevin Park: But David's okay?
     You: He's cooperating. It's complicated.
-    Kevin: *relieved* Okay. Good. He's a good guy who made bad choices.
+    Kevin Park: *relieved* Okay. Good.
 }
 
 {torres_arrested:
     You: The insider's been arrested.
     {torres_identified:
-        Kevin: David? Damn. I can't believe it.
-        Kevin: But... yeah. I guess it makes sense.
+        Kevin Park: David? Damn. I can't believe it.
+        Kevin Park: But... yeah. I guess it makes sense.
     }
 }
 
 {torres_killed:
-    Kevin: I heard... someone died?
+    Kevin Park: I heard... someone died?
     You: Lethal force was necessary.
-    Kevin: *quiet* Okay. That's... that's heavy.
+    Kevin Park: *quiet* Okay. That's... that's heavy.
 }
 
-Kevin: Thanks for, you know, fixing this.
+Kevin Park: Thanks for, you know, fixing this.
 
 #exit_conversation
 -> DONE

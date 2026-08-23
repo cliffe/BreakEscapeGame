@@ -122,7 +122,7 @@ Agent 0x99: DoD deployment schedules. Zero-day exploits. Installation timelines.
 Agent 0x99: That 27% would have caused the casualties. You saved it.
 
 {knows_full_stakes:
-    Agent 0x99: Those 12 to 40 intelligence officers? Still alive. Because of you.
+    Agent 0x99: Those thirty to forty-five people who'd have waited too long for an ambulance? Still alive. Because of you.
 }
 
 -> torres_outcome
@@ -136,28 +136,32 @@ Agent 0x99: That 27% would have caused the casualties. You saved it.
 
 Agent 0x99: And David Torres...
 
-{torres_turned:
+{final_choice == "turn_double_agent":
     -> torres_turned_path
 }
 
-{torres_killed:
+{final_choice == "combat_lethal":
     -> torres_killed_path
 }
 
-{torres_arrested and not elena_treatment_funded:
-    -> torres_arrested_no_treatment_path
-}
-
-{torres_arrested and elena_treatment_funded:
-    -> torres_arrested_with_treatment_path
-}
-
-{entropy_program_exposed:
+{final_choice == "public_exposure":
     -> public_exposure_path
 }
 
+{final_choice == "arrest" and elena_treatment_funded:
+    -> torres_arrested_with_treatment_path
+}
+
+{final_choice == "arrest" and not elena_treatment_funded:
+    -> torres_arrested_no_treatment_path
+}
+
+{final_choice == "combat_nonlethal":
+    -> torres_arrested_no_treatment_path
+}
+
 // ===========================================
-// PATH 1: TORRES TURNED (S-Rank)
+// PATH 1: TORRES TURNED
 // ===========================================
 
 === torres_turned_path ===
@@ -280,7 +284,7 @@ Agent 0x99: Sofia and Miguel—ages 11 and 8—lost their father.
 Agent 0x99: No witness protection. No treatment coverage.
 
 {knows_full_stakes:
-    Agent 0x99: You saved 12 to 40 intelligence officers. At the cost of one family.
+    Agent 0x99: You stopped the dispatch network compromise. At the cost of one family.
 }
 
 Agent 0x99: That's the math. Doesn't make it easier.
@@ -524,15 +528,9 @@ Agent 0x99: Crypto Anarchists. HashChain Exchange. Cryptocurrency laundering.
 
 Agent 0x99: {player_name}, one last thing.
 
-Agent 0x99: This mission put you in an impossible position.
+Agent 0x99: This mission put you in an impossible position. No clean read on Torres was ever going to be available to you.
 
-Agent 0x99: David Torres was radicalized. He knew his actions would cause deaths.
-
-Agent 0x99: But ENTROPY targeted him because of medical debt. Weaponized his wife's cancer.
-
-Agent 0x99: He's both perpetrator and victim. Both guilty and sympathetic.
-
-Agent 0x99: How you handled that complexity... that's who you are as an agent.
+Agent 0x99: How you handled that... that's who you are as an agent.
 
 {handler_trust >= 70:
     Agent 0x99: I trust your judgment. Today proved that.
@@ -554,14 +552,12 @@ Agent 0x99: How you handled that complexity... that's who you are as an agent.
 Agent 0x99: Get some rest. Mission 6 briefs Monday.
 
 {knows_full_stakes:
-    Agent 0x99: And {player_name}? Those 12 to 40 officers you saved?
+    Agent 0x99: And {player_name}? The people who'd have waited too long for that ambulance?
     Agent 0x99: They'll never know your name. But they're alive.
     Agent 0x99: That's what we do this for.
 }
 
 Agent 0x99: Good work out there.
-
-[Fade to mission complete screen]
 
 #exit_conversation
 -> END

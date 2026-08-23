@@ -73,11 +73,11 @@ Enter flag from Bludit server reconnaissance:
 
 [Player enters: flag{bludit_server_discovered}]
 
-System: Verifying...
+Drop-Site Terminal: Verifying...
 
-System: ✓ FLAG VERIFIED
+Drop-Site Terminal: ✓ FLAG VERIFIED
 
-System: Reconnaissance data extracted:
+Drop-Site Terminal: Reconnaissance data extracted:
 - Bludit CMS version 3.9.2 (vulnerable to CVE-2019-16113)
 - Server hosted on Digital Vanguard infrastructure
 - Encrypted database containing ENTROPY communications
@@ -88,7 +88,7 @@ System: Reconnaissance data extracted:
 #unlock_task:exploit_directory_traversal
 
 + [Continue]
-    System: Intelligence level increased. Unlocking exploit path.
+    Drop-Site Terminal: Intelligence level increased. Unlocking exploit path.
     -> flag_submission_hub
 
 // ===========================================
@@ -105,23 +105,23 @@ Enter flag from directory traversal:
 
 [Player enters: flag{traversal_files_found}]
 
-System: Verifying...
+Drop-Site Terminal: Verifying...
 
-System: ✓ FLAG VERIFIED
+Drop-Site Terminal: ✓ FLAG VERIFIED
 
-System: File manifest extracted:
-- 73 encrypted archives (4.2 TB Project Heisenberg data)
-- Payment records: $45,000 transferred to David Torres
-- Meeting logs: Torres + "Recruiter" at Café Artemis (monthly)
-- Exfiltration timeline: Started 6 weeks ago
+Drop-Site Terminal: Staging manifest extracted:
+- quantum-safe_key_material_v3.tar.gpg — lattice-based key exchange parameters, production candidate set
+- dispatch_network_rollout_schedule.xlsx — National Emergency-Services Dispatch Network (999 call routing), phased cutover dates by region, marked DO NOT DISTRIBUTE OUTSIDE QDC / HOME OFFICE LIAISON
+- Transfer method: staged locally, pushed via encrypted channel to "The Recruiter" (TalentStack Executive Recruiting — cover entity)
+- Torres's own notes found alongside the manifest: Elena's bills, $380,000 and climbing
 
 ~ flag2_submitted = true
 #complete_task:submit_flag2_file_access
 #unlock_task:escalate_privileges
-#give_item:payment_records_document
+#give_item:notes:Data Package Staging Manifest
 
 + [Continue]
-    System: Payment records added to evidence. Digital trail established.
+    Drop-Site Terminal: Staging manifest added to evidence. The transfer chain to the Recruiter is established.
     -> flag_submission_hub
 
 // ===========================================
@@ -138,26 +138,26 @@ Enter flag from privilege escalation:
 
 [Player enters: flag{root_access_achieved}]
 
-System: Verifying...
+Drop-Site Terminal: Verifying...
 
-System: ✓ FLAG VERIFIED
+Drop-Site Terminal: ✓ FLAG VERIFIED
 
-System: Root access granted. Full database decrypted.
+Drop-Site Terminal: Root access granted. Full database decrypted.
 
-System: Torres recruitment timeline extracted:
+Drop-Site Terminal: Torres recruitment timeline extracted:
 - INITIAL CONTACT: 3 months ago (TalentStack "career consultation")
-- FINANCIAL PRESSURE: $180K medical debt identified
-- IDEOLOGICAL RADICALIZATION: Exposed to "accelerationist" philosophy
+- FINANCIAL PRESSURE: Elena's medical debt identified via financial distress screening
+- ACCESS EVALUATION: TS/SCI clearance, Project Heisenberg lead — high value target
 - GRADUAL COMPROMISE: Started with "harmless" financial data
-- FULL RECRUITMENT: 6 weeks ago (Operation Schrödinger approved)
+- FULL RECRUITMENT: 6 weeks ago (acquisition authorised by The Architect)
 
 ~ flag3_submitted = true
 #complete_task:submit_flag3_privilege_escalation
 #unlock_task:extract_architect_comms
-#give_item:recruitment_timeline_document
+#give_item:notes:Recruitment Timeline
 
 + [Continue]
-    System: Recruitment methodology exposed. ENTROPY pattern confirmed.
+    Drop-Site Terminal: Recruitment methodology exposed. ENTROPY pattern confirmed.
     -> flag_submission_hub
 
 // ===========================================
@@ -174,48 +174,60 @@ Enter flag from Architect's encrypted communications:
 
 [Player enters: flag{architect_approval_confirmed}]
 
-System: Verifying...
+Drop-Site Terminal: Verifying...
 
-System: ✓ FLAG VERIFIED - CRITICAL INTELLIGENCE
+Drop-Site Terminal: ✓ FLAG VERIFIED - CRITICAL INTELLIGENCE
 
-System: The Architect's Operation Schrödinger approval decoded:
+Drop-Site Terminal: The Architect's acquisition authorisation, decoded from base64:
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-FROM: The Architect
-TO: Insider Threat Initiative - "Recruiter"
-RE: Operation Schrödinger Authorization
+PROJECT HEISENBERG -- ACQUISITION AUTHORISATION
+Classification: ENTROPY EYES ONLY -- INSIDER THREAT INITIATIVE
 
-STATUS: APPROVED
+Subject: Quantum-safe key material, National Emergency-Services
+Dispatch Network (999 call routing) rollout schedule
+Source: D. Torres, CSO, Quantum Dynamics Corporation (recruited asset)
+Handler: The Recruiter (cover: TalentStack Executive Recruiting)
 
-ASSET: QD-001 (David Torres)
-VULNERABILITY SCORE: 94/100
-    - Financial: 35/35 (Medical debt, insurance denial)
-    - Access: 40/40 (TS/SCI, Project Heisenberg lead)
-    - Psychological: 19/25 (Moral flexibility moderate)
+DISPOSITION: This capability is not for resale. ENTROPY retains and
+integrates directly. No foreign buyer has been, or will be, offered
+this package.
 
-TARGET DATA: Project Heisenberg (4.2 TB)
-EXFILTRATION TIMELINE: 6 weeks
-PAYMENT: $200,000 USD (cryptocurrency)
+RECRUITER'S ASSESSMENT OF SOURCE:
+Torres was identified via financial distress screening. Wife's
+medical debt ($380,000, non-negotiable, insurer denied trial coverage)
+made him a high-probability convert. Two dependents (ages 11 and 8)
+increase compliance and reduce flight risk. Our operating philosophy
+holds: every person has a price. Torres's was cheaper than most --
+debt relief and a standing consultancy retainer. He is a line item,
+not a partner. Expect him to be unusable within 18 months; plan
+disposal accordingly.
 
-BUYERS CONFIRMED:
-    - Chinese MSS: $28M
-    - Russian GRU: $22M
-    - Iranian IRGC: $18M
-    TOTAL REVENUE: $68M
+OPERATIONAL IMPACT -- CASUALTY PROJECTION:
+Deployment of the compromised key material during the scheduled
+key-rotation window will require the dispatch network to fail over
+to a degraded routing path for an estimated 40-70 minutes per
+affected region. During this window, ambulance, fire, and police
+dispatch latency increases by an average of 6-11 minutes per call.
 
-CASUALTY PROJECTION: 12-40 intelligence officers
-    - Operational exposure: 60-90 days post-sale
-    - Asset expendable if compromised
+Modelled outcome across the twelve regions in the first rollout
+wave: projected 30-45 excess civilian deaths attributable to delayed
+emergency response during the degraded-routing interval, concentrated
+among cardiac, stroke, and structure-fire incidents where minutes
+are decisive.
 
-The Architect approves Operation Schrödinger.
-Proceed with radicalization and exfiltration.
+This figure has been reviewed and is filed as an acceptable cost of
+acquiring the capability. No mitigation is authorised that would
+also alert QDC or the Home Office liaison to the intrusion.
 
+AUTHORISATION: Proceed with acquisition and integration as staged.
+-- The Architect
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
 ~ flag4_submitted = true
 #complete_task:submit_flag4_architect_comms
 #unlock_aim:correlate_evidence
-#give_item:architect_approval_document
+#give_item:notes:Architect Approval Communications
 
 + [This is damning evidence]
     -> architect_analysis
@@ -223,13 +235,13 @@ Proceed with radicalization and exfiltration.
 === architect_analysis ===
 #speaker:computer
 
-System: CRITICAL INTELLIGENCE ACQUIRED
+Drop-Site Terminal: CRITICAL INTELLIGENCE ACQUIRED
 
 Analysis:
-- The Architect personally approved this operation
-- Casualty projections KNOWN and ACCEPTED by ENTROPY leadership
-- Asset classified as "expendable" (Torres considered disposable)
-- Proves premeditated espionage at organizational level
+- The Architect personally authorised the acquisition, casualty projection included
+- Torres is explicitly classified as "a line item, not a partner" — disposal already planned
+- Thirty to forty-five excess civilian deaths filed as an acceptable cost
+- Proves premeditated organisational responsibility, not a rogue insider acting alone
 
 Recommendation: Evidence sufficient for confrontation and prosecution.
 
@@ -237,15 +249,11 @@ Recommendation: Evidence sufficient for confrontation and prosecution.
 
 [Agent 0x99 contacts you immediately]
 
-Agent 0x99: {player_name}, I just saw the Architect comm. This is huge.
+Agent 0x99: {player_name}, I just read the Architect's authorisation. This is the whole case.
 
-Agent 0x99: Torres knew about the casualties. ENTROPY told him explicitly.
+Agent 0x99: Torres knew the casualty projection. The Recruiter told him explicitly what it would cost.
 
-Agent 0x99: But he's also "expendable" to them. They're using him.
-
-Agent 0x99: Both things can be true. He's complicit AND he's a victim.
-
-Agent 0x99: How you handle the confrontation - that's your call. Good luck.
+Agent 0x99: How you handle the confrontation — that's your call. Good luck.
 
 + [Understood]
     #exit_conversation
@@ -272,25 +280,24 @@ FLAGS SUBMITTED: {flag1_submitted:1|0} + {flag2_submitted:1|0} + {flag3_submitte
 
 {flag2_submitted:
     ✓ FLAG 2: File system access achieved
-       • Payment records: $45K to Torres
-       • Meeting logs with "Recruiter"
-    
+       • Staging manifest: quantum-safe key material + dispatch rollout schedule
+       • Transfer chain to "The Recruiter" confirmed
+
 }
 
 {flag3_submitted:
     ✓ FLAG 3: Privilege escalation successful
        • Full recruitment timeline extracted
        • 3-month radicalization process exposed
-    
+
 }
 
 {flag4_submitted:
-    ✓ FLAG 4: Architect communications decoded
-       • Operation approval confirmed
-       • Casualty projections: 12-40 officers
-       • Revenue projections: $68M total
-       • Torres classified as "expendable asset"
-    
+    ✓ FLAG 4: Architect authorisation decoded
+       • Acquisition of 999 dispatch network key material confirmed — not a sale
+       • Casualty projection: 30-45 excess civilian deaths, first rollout wave
+       • Torres classified as "a line item, not a partner"
+
 }
 
 {flag1_submitted and flag2_submitted and flag3_submitted and flag4_submitted:

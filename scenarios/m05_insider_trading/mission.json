@@ -1,8 +1,8 @@
 {
   "display_name": "Insider Trading",
-  "description": "Infiltrate Quantum Dynamics Corporation to identify and stop an insider threat. ENTROPY has recruited an employee to exfiltrate classified quantum cryptography research. You have 4 hours to find the insider, gather evidence, and stop Operation Schrödinger before 12-40 intelligence officers are compromised.",
+  "description": "Infiltrate Quantum Dynamics Corporation to identify and stop an insider threat. ENTROPY has recruited an employee to exfiltrate quantum-safe key material for the National Emergency-Services Dispatch Network. You have 4 hours to find the insider, gather evidence, and stop the acquisition before the 999 dispatch network's key-rotation window opens.",
   "difficulty_level": 2,
-  "secgen_scenario": "labs/introducing_attacks/1_intro_linux.xml",
+  "secgen_scenario": "m05_insider_trading",
   "collection": "season_1",
   "scenarioId": "m05_insider_trading",
   "title": "Insider Trading",
@@ -59,27 +59,27 @@
   "learning_objectives": [
     "Identify indicators of insider threats through behavioral analysis",
     "Correlate digital evidence (VM flags) with physical evidence (documents, interviews)",
-    "Exploit Bludit CMS CVE-2019-16113 for directory traversal and authentication bypass",
+    "Exploit Bludit CMS via brute-force credential recovery and authenticated image-upload remote code execution",
     "Navigate complex moral decisions with lasting consequences",
     "Understand ENTROPY's systematic recruitment and radicalization methodology"
   ],
 
   "vm_integration": {
-    "scenario_name": "intro_to_linux_security_lab",
+    "scenario_name": "m05_insider_trading",
     "provider": "SecGen",
     "flags": 4,
     "challenges": [
-      "Reconnaissance - Bludit CMS server discovery",
-      "Directory Traversal - CVE-2019-16113 exploitation",
-      "Privilege Escalation - Root access",
-      "Intelligence Extraction - Architect communications"
+      "Reconnaissance - leaked Bludit admin credentials",
+      "Web Exploitation - authenticated Bludit image-upload RCE",
+      "User Access - Torres' exfiltration staging manifest",
+      "Root - The Architect's acquisition authorisation"
     ]
   },
 
   "narrative_summary": {
     "act1": "Arrive at Quantum Dynamics as SAFETYNET security consultant. Meet CSO Patricia Morgan who briefs you on suspected insider threat. Begin investigation by interviewing employees and gathering access credentials.",
-    "act2": "Clone employee badge to access server areas. Exploit Bludit CMS server to extract digital evidence. Discover David Torres' radicalization through ENTROPY's Insider Threat Initiative. Find medical bills revealing wife's cancer as leverage point.",
-    "act3": "Correlate all evidence to identify Torres. Confront him with 5 choices: turn as double agent (S-rank), arrest with cooperation, arrest without cooperation, combat (lethal/non-lethal), or public exposure. Each choice has significant campaign consequences."
+    "act2": "Clone employee badge to access server areas. Exploit Bludit CMS server to extract digital evidence. Discover David Torres' radicalization through ENTROPY's Insider Threat Initiative. Find medical bills revealing wife's cancer as leverage point. The Recruiter calls directly, offering a deal to let her other targets go unwarned.",
+    "act3": "Correlate all evidence to identify Torres. Confront him with choices: turn as double agent, arrest with cooperation, arrest without cooperation, combat (which resolves to a post-KO choice), or public exposure. No ending is ranked above another — each carries its own consequences."
   },
 
   "key_npcs": [
@@ -111,7 +111,13 @@
       "id": "david_torres",
       "name": "David Torres",
       "role": "Cryptography Lead, ENTROPY Insider",
-      "importance": "Primary antagonist, subject of confrontation with 5 endings"
+      "importance": "Primary antagonist, subject of confrontation with multiple unranked endings"
+    },
+    {
+      "id": "recruiter",
+      "name": "The Recruiter",
+      "role": "ENTROPY Insider Threat Initiative Handler",
+      "importance": "Live phone antagonist, calls once Torres is identified and offers the player a deal"
     },
     {
       "id": "agent_0x99",
@@ -122,14 +128,14 @@
   ],
 
   "moral_complexity": {
-    "primary_dilemma": "Torres is both perpetrator (knowingly caused deaths) and victim (radicalized through medical debt). He's only 3 months into radicalization - early enough to potentially save.",
-    "entropy_portrayal": "Clearly evil radicals with systematic recruitment methodology. Calculate and approve casualties. View Torres as expendable asset.",
-    "player_agency": "5 ending paths with significant differences in campaign impact, Elena's treatment, and future intelligence gathering"
+    "primary_dilemma": "Torres is both perpetrator (knowingly enabled a lethal delay to emergency dispatch) and victim (radicalized through medical debt). He's only 3 months into radicalization - early enough to potentially save. The Recruiter argues the harder case: he made an informed choice, and forty-seven more candidates are already in her pipeline.",
+    "entropy_portrayal": "A systematic recruitment methodology run by people who calculate and approve civilian casualties as an acceptable cost. The Recruiter is unapologetic and persuasive, not a cartoon villain.",
+    "player_agency": "Multiple ending paths, unranked, with differences in campaign impact, Elena's treatment, and future intelligence gathering"
   },
 
   "version": "1.0.0",
   "created": "2026-01-03",
   "campaign_position": 5,
-  "prerequisites": ["m01_first_contact", "m02_power_struggle", "m03_cryptographic_truth", "m04_echoes_of_dissent"],
+  "prerequisites": ["m01_first_contact", "m02_ransomed_trust", "m03_ghost_in_the_machine", "m04_critical_failure"],
   "unlocks": ["m06_follow_the_money"]
 }
