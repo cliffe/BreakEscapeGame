@@ -22,8 +22,7 @@ reception_lobby (Agent 0x99, The Recruiter phone, briefing)     [start]
          ├─W─ break_room (Lisa Park, optional; ENTROPY pamphlet)
          ├─mid─ server_hallway [rfid: employee_badge]
          │        └─N─ server_room [password: server_password]
-         │                 ├─ Bludit VM + flag-station (4 flags)
-         │                 ├─ Drop-Site Terminal (3 physical evidence docs)
+         │                 ├─ Bludit VM launcher + Drop-Site Terminal flag-station (4 flags)
          │                 └─N─ data_center [key] (upload terminal, upload schedule)
          ├─left─ open_office_area (Kevin Park → badge/lockpick/cloner/Torres keycard)
          │         └─N─ torres_office [rfid: office_keycard] (Torres, medical bills, journal)
@@ -60,7 +59,7 @@ reception_lobby (Agent 0x99, The Recruiter phone, briefing)     [start]
 13. **Server Password Note (Open Office Area)** — Pick up → **completes `find_server_password`**.
 14. **Server Hallway** — Enter with the (cloned) Employee Badge [rfid: `employee_badge`].
 15. **Server Room** — Enter with the password [password: `server_password`] → **completes `access_server_room`**.
-16. **Bludit CMS VM + flag-station** — Launch the VM; submit flags at the **SAFETYNET Evidence Drop-Site** (`acceptsVms: qdc_research_server`):
+16. **Bludit CMS VM + flag-station** — Launch the VM; submit flags at the **SAFETYNET Drop-Site Terminal** (`acceptsVms: qdc_research_server`). The drop-site is a flag-submission station (m01 pattern), not a scripted terminal — each real flag captured on the box validates a stage of the case and fires its `flagN_submitted` reward:
 
 | Flag | Source | Task |
 |---|---|---|
@@ -71,18 +70,18 @@ reception_lobby (Agent 0x99, The Recruiter phone, briefing)     [start]
 
 Flag_4's recovered document carries the casualty projection: **30–45 excess civilian deaths, first rollout wave, 6–11 minute dispatch delay, twelve regions in the first rollout wave** — matches the figures Agent 0x99 gives in the opening briefing and the numbers Torres/the Recruiter cite in the confrontation.
 
-17. **Drop-Site Terminal (Server Room)** — Pick up the three physical documents (**Data Package Staging Manifest**, **Recruitment Timeline**, **Architect Approval Communications**) — each raises `evidence_level`.
-18. **Data Center** — Enter [key] → **completes `access_data_center`**. Pick up the **Upload Schedule** → **completes `find_upload_schedule`**.
-19. By this point `evidence_level` should be at least 7–8 (medical bills, journal, pamphlet, 3 drop-site docs, financial records, security log) — comfortably clears the `evidence_level >= 4` gate the mission brief describes and the `evidence_level >= 5` gate Patricia's dialogue needs to name Torres. Aim complete (all four flag submits + `access_data_center` + `find_upload_schedule`) → **`confront_insider` unlocks**.
+    Submitting flag_4 fires the handler eventMapping that sets `architect_approval_confirmed`. The recovered intel itself lives on the VM (the base64 Architect document in `/root`) and is summarised by Agent 0x99 — the drop-site does not re-narrate it.
+17. **Data Center** — Enter [key] → **completes `access_data_center`**. Pick up the **Upload Schedule** → **completes `find_upload_schedule`**.
+18. By this point `evidence_level` should be at least 5–6 (medical bills, journal, pamphlet, financial records, security log, upload schedule) — comfortably clears the `evidence_level >= 4` gate the mission brief describes and the `evidence_level >= 5` gate Patricia's dialogue needs to name Torres. Aim complete (all four flag submits + `access_data_center` + `find_upload_schedule`) → **`confront_insider` unlocks**.
 
 ## Aim 5 — Decide What Happens to Him  *(mission conclusion)*
 [Unlocks after: `exploit_infrastructure` complete]
 `missionConclusion: true` — `requiresCompleted: [confront_torres, make_critical_choice, submit_flag1, submit_flag2, submit_flag3, submit_flag4]` → `bond_visualiser`.
 
-20. **Identify Torres to Patricia** — Return to Patricia Office with `evidence_level >= 5` → choose "I want to compare notes on what I've found" → `significant_findings` branch → sets `torres_identified = true`, `patricia_trust += 2` → **completes `identify_torres`** (side objective — not in `requiresCompleted`, so it does not gate the conclusion). *No KO-safe fallback exists for this task* (validator flags this explicitly as acceptable: it is a side/lore objective, not on the critical path).
-21. `torres_identified` fires music cue (`spy-action`) and unlocks **The Recruiter**'s phone call (`eventMapping: global_variable_changed:torres_identified` → sends a timed "TalentStack Executive Recruiting" call). Optional but recommended before the confrontation — she offers her side of the moral argument (47 other targets already in the pipeline).
-22. **Confront David Torres (Torres Office)** — Talk to him → `confrontation_scene` → `torres_confrontation` → `torres_rationalization` → `evidence_revelation` → `final_choice_moment`. **task `confront_torres` completes** on encounter (`npc_conversation`, auto-completes) — reachable via the live conversation *or* the KO path (see below).
-23. **`final_choice_moment`** — four options, each sets `final_choice` and fires `#complete_task:confront_torres` again + `#complete_task:make_critical_choice` (except combat, which routes through `combat_offer` → hostile fight → `post_ko_choice`):
+19. **Identify Torres to Patricia** — Return to Patricia Office with `evidence_level >= 5` → choose "I want to compare notes on what I've found" → `significant_findings` branch → sets `torres_identified = true`, `patricia_trust += 2` → **completes `identify_torres`** (side objective — not in `requiresCompleted`, so it does not gate the conclusion). *No KO-safe fallback exists for this task* (validator flags this explicitly as acceptable: it is a side/lore objective, not on the critical path).
+20. `torres_identified` fires music cue (`spy-action`) and unlocks **The Recruiter**'s phone call (`eventMapping: global_variable_changed:torres_identified` → sends a timed "TalentStack Executive Recruiting" call). Optional but recommended before the confrontation — she offers her side of the moral argument (47 other targets already in the pipeline).
+21. **Confront David Torres (Torres Office)** — Talk to him → `confrontation_scene` → `torres_confrontation` → `torres_rationalization` → `evidence_revelation` → `final_choice_moment`. **task `confront_torres` completes** on encounter (`npc_conversation`, auto-completes) — reachable via the live conversation *or* the KO path (see below).
+22. **`final_choice_moment`** — four options, each sets `final_choice` and fires `#complete_task:confront_torres` again + `#complete_task:make_critical_choice` (except combat, which routes through `combat_offer` → hostile fight → `post_ko_choice`):
 
 | Choice | `final_choice` | Path |
 |---|---|---|
@@ -91,12 +90,12 @@ Flag_4's recovered document carries the casualty projection: **30–45 excess ci
 | "Drop the philosophy. Fight or surrender. Your choice." | (deferred) | `combat_offer` → hostile fight → KO → `post_ko_choice` |
 | "I'm exposing everything." | `public_exposure` | `public_exposure_path` → `public_exposure_consequence` |
 
-24. **Combat path detail** — choosing "fight or surrender" sets `#hostile:david_torres` and ends the conversation; Torres must be knocked out in a fight. His `eventMapping: npc_ko:david_torres` then opens `post_ko_choice`, offering a further choice:
+23. **Combat path detail** — choosing "fight or surrender" sets `#hostile:david_torres` and ends the conversation; Torres must be knocked out in a fight. His `eventMapping: npc_ko:david_torres` then opens `post_ko_choice`, offering a further choice:
     - **"Cuff him"** → `final_choice = combat_nonlethal`, `torres_arrested = true` → `post_ko_arrest`.
     - **"Leave him for cleanup"** → `final_choice = combat_lethal`, `torres_killed = true` → `post_ko_handoff`.
     Both set **`stop_final_exfiltration`** and complete `make_critical_choice` (also redundantly via `taskOnKO: make_critical_choice` and the handler's `completeTask: confront_torres` on `torres_ko`).
-25. All four live-path endings converge on **`stop_upload`**, which sets `stop_final_exfiltration` and branches epilogue dialogue on `torres_turned` / `torres_arrested` / `entropy_program_exposed`, then `-> END` (a standalone terminal ink, correctly not routed back through the hub).
-26. **Closing debrief (phone cutscene)** — `closing_debrief_trigger` fires on `global_variable_changed:final_choice` (`value !== ''`), `disableClose: true`. Credits scroll branches the "DAVID TORRES" line on `final_choice`, the "ELENA TORRES" line on `elena_treatment_funded`/`torres_killed`, and the "EVIDENCE" line on `entropy_program_exposed`.
+24. All four live-path endings converge on **`stop_upload`**, which sets `stop_final_exfiltration` and branches epilogue dialogue on `torres_turned` / `torres_arrested` / `entropy_program_exposed`, then `-> END` (a standalone terminal ink, correctly not routed back through the hub).
+25. **Closing debrief (phone cutscene)** — `closing_debrief_trigger` fires on `global_variable_changed:final_choice` (`value !== ''`), `disableClose: true`. Credits scroll branches the "DAVID TORRES" line on `final_choice`, the "ELENA TORRES" line on `elena_treatment_funded`/`torres_killed`, and the "EVIDENCE" line on `entropy_program_exposed`.
 
 **WIN:** `confront_torres` + `make_critical_choice` + all four `submit_flagN` complete → `confront_insider` mission-conclusion satisfied → `bond_visualiser`. Five distinct endings, all unranked:
 
@@ -114,11 +113,11 @@ Flag_4's recovered document carries the casualty projection: **30–45 excess ci
 | Global | Set by |
 |---|---|
 | `briefing_played` | opening cutscene |
-| `evidence_level` | medical bills, journal, pamphlet, 3 drop-site docs, financial records, security log (steps 8–19) — accumulates well past the `>=4`/`>=5` gates |
+| `evidence_level` | medical bills, journal, pamphlet, financial records, security log, upload schedule (steps 8–17) — accumulates past the `>=4`/`>=5` gates |
 | `torres_identified` | naming Torres to Patricia at `evidence_level >= 5` (step 20) — **starts spy-action music, unlocks the Recruiter's call** |
 | `flag1_submitted`…`flag4_submitted` | flag-station submissions (step 16) |
 | `architect_approval_confirmed` | flag4_submitted (HaX eventMapping) |
-| `final_choice` | the confrontation's terminal choice (step 23/24) |
+| `final_choice` | the confrontation's terminal choice (step 22/23) |
 | `torres_turned` / `torres_arrested` / `torres_killed` | resolution branch |
 | `elena_treatment_funded` | turn / cooperative-arrest deals only |
 | `entropy_program_exposed` | pamphlet pickup, or public-exposure ending |
@@ -170,18 +169,8 @@ Every named NPC has a working KO-first path to `missionConclusion`. Patricia's `
 
 ## Known Gaps
 
-- **6 missing item-type sprites** (Phase 1 added these item types; no `.png` has been generated yet). The validator reports these as `❌ INVALID` (schema-blocking for a full pass, though `validate_scenario.rb`'s overall run still reports "Validation complete" because these are asset warnings, not JSON-schema failures). Missing files, and where they belong:
-  - `assets/objects/employee_badge.png` — held by Kevin Park, `open_office_area`
-  - `assets/objects/payment_records_document.png` — held by Drop-Site Terminal, `server_room` ("Data Package Staging Manifest")
-  - `assets/objects/recruitment_timeline_document.png` — held by Drop-Site Terminal, `server_room` ("Recruitment Timeline")
-  - `assets/objects/architect_approval_document.png` — held by Drop-Site Terminal, `server_room` ("Architect Approval Communications")
-  - `assets/objects/research_badge.png` — held by Dr. Sarah Chen, `research_lab` ("Research Lab Badge")
-  - `assets/objects/financial_records_access.png` — held by Patricia Morgan, `patricia_office` ("Employee Financial Records")
-
-  These need pixel-art PNGs generated (128×128, matching the house style) — a separate asset task requiring sign-off on image-generation scope/cost before running. Not resolved in this pass.
-
+- **Item sprites** — all evidence and badge items reuse existing sprites: the documents (staging manifest, recruitment timeline, Architect communications, financial records) render as `notes`, and the badges (cloned employee badge, research lab badge) render as `keycard`. No new PNGs required; the validator reports zero `❌ INVALID` findings.
 - **3 doors without `puzzle_graph_unlocks` metadata** (`server_hallway`, `server_room`, `torres_office`) — the validator warns that the dungeon-graph key/door mapping is incomplete for these three locks (the keys themselves work fine in-game; this only affects the auto-generated graph's ability to draw the dependency edge). Cosmetic, not a gameplay defect.
-- **7 ink "speaker prefix" suggestions** in `m05_dropsite_terminal.ink` (`Target:`, `Exploit:`, `Classification:`, `Subject:`, `Source:`, `Handler:`, `Recommendation:`) — these are intentional in-document labels (leaked staging manifest / recruitment timeline formatting), not misattributed dialogue. No action needed.
 
 ## Development Status
 
@@ -190,7 +179,7 @@ Every named NPC has a working KO-first path to `missionConclusion`. Patricia's `
 | person-chat (5 NPCs) | ✅ Implemented |
 | phone-chat (briefing hub, Recruiter, closing debrief) | ✅ Implemented |
 | VM launcher + flag-station (Bludit CMS, 4 flags) | ✅ Implemented |
-| Item sprites | ⚠️ 6 missing — see Known Gaps |
+| Item sprites | ✅ Reuse notes/keycard sprites |
 
 ---
 

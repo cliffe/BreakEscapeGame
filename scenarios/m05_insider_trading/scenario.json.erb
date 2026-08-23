@@ -445,8 +445,6 @@ torres_journal_excerpt = "Met with the Recruiter again. Debt relief plus a stand
     "flag3_submitted": false,
     "flag4_submitted": false,
     "bludit_server_discovered": false,
-    "traversal_files_found": false,
-    "root_access_achieved": false,
     "architect_approval_confirmed": false,
     "recruiter_contacted_player": false,
     "recruiter_deal_offered": false,
@@ -799,14 +797,15 @@ torres_journal_excerpt = "Met with the Recruiter again. Debt relief plus a stand
               "name": "Torres Office Keycard",
               "key_id": "office_keycard",
               "takeable": true,
+              "puzzle_graph_unlocks": "torres_office",
               "observations": "Spare keycard for David Torres' office - Kevin has access to all offices for IT support"
             },
             {
               "type": "keycard",
-
               "name": "Cloned Employee Badge",
               "key_id": "employee_badge",
               "takeable": true,
+              "puzzle_graph_unlocks": "server_hallway",
               "observations": "A cloned copy of Kevin's employee RFID badge - grants access to the server hallway"
             }
           ]
@@ -820,6 +819,7 @@ torres_journal_excerpt = "Met with the Recruiter again. Debt relief plus a stand
           "takeable": true,
           "readable": true,
           "text": "<%= password_hint_sticky %>",
+          "puzzle_graph_unlocks": "server_room",
           "observations": "Sticky note with temporary server room password"
         },
         {
@@ -855,39 +855,7 @@ torres_journal_excerpt = "Met with the Recruiter again. Debt relief plus a stand
         "south": "server_hallway",
         "north": "data_center"
       },
-      "npcs": [
-        {
-          "id": "dropsite_terminal_npc",
-          "displayName": "Drop-Site Terminal",
-          "npcType": "person",
-          "position": { "x": 5, "y": 5 },
-          "storyPath": "scenarios/m05_insider_trading/ink/m05_dropsite_terminal.json",
-          "currentKnot": "start",
-          "itemsHeld": [
-            {
-              "type": "notes",
-
-              "name": "Data Package Staging Manifest",
-              "takeable": true,
-              "observations": "Recovered staging manifest tying Torres to the Recruiter and the dispatch-network package"
-            },
-            {
-              "type": "notes",
-
-              "name": "Recruitment Timeline",
-              "takeable": true,
-              "observations": "Recovered timeline documenting Torres' recruitment by ENTROPY"
-            },
-            {
-              "type": "notes",
-
-              "name": "Architect Approval Communications",
-              "takeable": true,
-              "observations": "Recovered communications showing The Architect's sign-off on the operation"
-            }
-          ]
-        }
-      ],
+      "npcs": [],
       "objects": [
         {
           "type": "vm-launcher",
@@ -901,9 +869,9 @@ torres_journal_excerpt = "Met with the Recruiter again. Debt relief plus a stand
         {
           "type": "flag-station",
           "id": "flag_station_evidence",
-          "name": "SAFETYNET Evidence Drop-Site",
+          "name": "SAFETYNET Drop-Site Terminal",
           "takeable": false,
-          "observations": "Secure terminal for submitting digital evidence and VM exploitation flags",
+          "observations": "Secure SAFETYNET terminal for submitting the flags you capture from Torres' Bludit CMS server. Each flag you recover on the box validates a stage of the exfiltration case.",
           "acceptsVms": ["qdc_research_server"],
           "flags": <%= flags_for_vm('qdc_research_server', ['flag{leaked_bludit_admin_credentials}', 'flag{bludit_authenticated_upload_rce}', 'flag{torres_staging_manifest}', 'flag{architect_acquisition_authorisation}']) %>,
           "flagRewards": [

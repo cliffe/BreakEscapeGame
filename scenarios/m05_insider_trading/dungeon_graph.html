@@ -142,7 +142,7 @@
       <tr><th>AND-gate convergences</th><td class="val">0</td></tr>
       <tr><th>Physical locks (puzzle)</th><td class="val">4</td></tr>
       <tr><th>Rooms</th><td class="val">9</td></tr>
-      <tr><th>Puzzle nodes / edges</th><td class="val">23 / 19</td></tr>
+      <tr><th>Puzzle nodes / edges</th><td class="val">26 / 25</td></tr>
       <tr><th>Story nodes / edges</th><td class="val">5 / 4</td></tr>
     </table>
   </div>
@@ -177,10 +177,13 @@
   server_room("Server Room")
   door_torres_office["Torres Office<br/>RFID lock"]
   torres_office("Torres Office")
-  npc_kevin_park{"Kevin Park"}
   open_office_area("Open Office Area")
+  server_password_sticky_note{"Server Password Sticky Note"}
+  npc_kevin_park{"Kevin Park"}
   lockpick_set{"Lockpick Set"}
   lock_patricia_filing_cabinet["Patricia Filing Cabinet"]
+  torres_office_keycard{"Torres Office Keycard"}
+  cloned_employee_badge{"Cloned Employee Badge"}
   vmch_submit_flag1["Submit Flag 1: Leaked Bludit admin credentials (recon)"]
   vmfl_submit_flag1{"Flag1 Flag"}
   vmch_submit_flag2["Submit Flag 2: Authenticated Bludit image-upload RCE"]
@@ -198,9 +201,15 @@
   door_server_hallway --> server_hallway
   door_server_room --> server_room
   door_torres_office --> torres_office
+  open_office_area --> server_password_sticky_note
+  server_password_sticky_note --> door_server_room
   open_office_area --> npc_kevin_park
   npc_kevin_park --> lockpick_set
   lockpick_set --> lock_patricia_filing_cabinet
+  npc_kevin_park --> torres_office_keycard
+  torres_office_keycard --> door_torres_office
+  npc_kevin_park --> cloned_employee_badge
+  cloned_employee_badge --> door_server_hallway
   patricia_office --> lock_patricia_filing_cabinet
   vmch_submit_flag1 --> vmfl_submit_flag1
   vmch_submit_flag2 --> vmfl_submit_flag2
@@ -217,7 +226,8 @@
 
   class door_server_hallway,door_server_room,door_torres_office,lock_patricia_filing_cabinet lock
   class server_hallway,server_room,torres_office,open_office_area,reception_lobby,main_corridor,patricia_office,break_room,research_lab room
-  class npc_kevin_park,lockpick_set key
+  class server_password_sticky_note item
+  class npc_kevin_park,lockpick_set,torres_office_keycard,cloned_employee_badge key
   class vmch_submit_flag1,vmch_submit_flag2,vmch_submit_flag3,vmch_submit_flag4 vm
   class vmfl_submit_flag1,vmfl_submit_flag2,vmfl_submit_flag3,vmfl_submit_flag4 flag
   class node_start start`,
@@ -276,10 +286,13 @@
   server_room("Server Room")
   door_torres_office["Torres Office<br/>RFID lock"]
   torres_office("Torres Office")
-  npc_kevin_park{"Kevin Park"}
   open_office_area("Open Office Area")
+  server_password_sticky_note{"Server Password Sticky Note"}
+  npc_kevin_park{"Kevin Park"}
   lockpick_set{"Lockpick Set"}
   lock_patricia_filing_cabinet["Patricia Filing Cabinet"]
+  torres_office_keycard{"Torres Office Keycard"}
+  cloned_employee_badge{"Cloned Employee Badge"}
   vmch_submit_flag1["Submit Flag 1: Leaked Bludit admin credentials (recon)"]
   vmfl_submit_flag1{"Flag1 Flag"}
   vmch_submit_flag2["Submit Flag 2: Authenticated Bludit image-upload RCE"]
@@ -302,9 +315,15 @@
   door_server_hallway --> server_hallway
   door_server_room --> server_room
   door_torres_office --> torres_office
+  open_office_area --> server_password_sticky_note
+  server_password_sticky_note --> door_server_room
   open_office_area --> npc_kevin_park
   npc_kevin_park --> lockpick_set
   lockpick_set --> lock_patricia_filing_cabinet
+  npc_kevin_park --> torres_office_keycard
+  torres_office_keycard --> door_torres_office
+  npc_kevin_park --> cloned_employee_badge
+  cloned_employee_badge --> door_server_hallway
   patricia_office --> lock_patricia_filing_cabinet
   vmch_submit_flag1 --> vmfl_submit_flag1
   vmch_submit_flag2 --> vmfl_submit_flag2
@@ -331,7 +350,8 @@
 
   class door_server_hallway,door_server_room,door_torres_office,lock_patricia_filing_cabinet lock
   class server_hallway,server_room,torres_office,open_office_area,reception_lobby,main_corridor,patricia_office,break_room,research_lab room
-  class npc_kevin_park,lockpick_set key
+  class server_password_sticky_note item
+  class npc_kevin_park,lockpick_set,torres_office_keycard,cloned_employee_badge key
   class vmch_submit_flag1,vmch_submit_flag2,vmch_submit_flag3,vmch_submit_flag4 vm
   class vmfl_submit_flag1,vmfl_submit_flag2,vmfl_submit_flag3,vmfl_submit_flag4 flag
   class aim_establish_access,aim_investigate_employees,aim_gather_evidence,aim_exploit_infrastructure,aim_confront_insider critical
@@ -430,25 +450,21 @@
   rc_obj18_18{"Torres Office Keycard"}
   rc_obj19_19{"Cloned Employee Badge"}
   rc_vm_launcher_bludit_20{"Bludit CMS Server Terminal"}
-  rc_flag_station_evidence_21{"SAFETYNET Evidence Drop-Site"}
-  rc_npc_drop_site_terminal_22("Drop-Site Terminal")
-  rc_obj23_23{"Data Package Staging Manifest"}
-  rc_obj24_24{"Recruitment Timeline"}
-  rc_obj25_25{"Architect Approval Communications"}
-  rc_medical_bills_26{"Medical Bills"}
-  rc_personal_journal_27{"Personal Journal"}
-  rc_npc_david_torres_28("David Torres")
-  rc_npc_dr_sarah_chen_29("Dr. Sarah Chen")
-  rc_obj30_30{"Research Access Badge"}
-  rc_obj31_31{"Research Lab Badge"}
-  rc_security_incident_log_32{"Security Incident Log"}
-  rc_patricia_filing_cabinet_33{"Locked Filing Cabinet"}
-  rc_npc_patricia_morgan_34("Patricia Morgan")
-  rc_obj35_35{"Visitor Badge"}
-  rc_obj36_36{"Employee Financial Records"}
-  rc_obj37_37{"Exfiltration Upload Terminal"}
-  rc_upload_schedule_38{"Upload Schedule"}
-  rc_data_package_manifest_39{"Data Package Manifest"}
+  rc_flag_station_evidence_21{"SAFETYNET Drop-Site Terminal"}
+  rc_medical_bills_22{"Medical Bills"}
+  rc_personal_journal_23{"Personal Journal"}
+  rc_npc_david_torres_24("David Torres")
+  rc_npc_dr_sarah_chen_25("Dr. Sarah Chen")
+  rc_obj26_26{"Research Access Badge"}
+  rc_obj27_27{"Research Lab Badge"}
+  rc_security_incident_log_28{"Security Incident Log"}
+  rc_patricia_filing_cabinet_29{"Locked Filing Cabinet"}
+  rc_npc_patricia_morgan_30("Patricia Morgan")
+  rc_obj31_31{"Visitor Badge"}
+  rc_obj32_32{"Employee Financial Records"}
+  rc_obj33_33{"Exfiltration Upload Terminal"}
+  rc_upload_schedule_34{"Upload Schedule"}
+  rc_data_package_manifest_35{"Data Package Manifest"}
 
   reception_lobby --> main_corridor
   reception_lobby --> patricia_office
@@ -480,29 +496,25 @@
   rc_npc_kevin_park_14 --> rc_obj19_19
   server_room --> rc_vm_launcher_bludit_20
   server_room --> rc_flag_station_evidence_21
-  server_room --> rc_npc_drop_site_terminal_22
-  rc_npc_drop_site_terminal_22 --> rc_obj23_23
-  rc_npc_drop_site_terminal_22 --> rc_obj24_24
-  rc_npc_drop_site_terminal_22 --> rc_obj25_25
-  torres_office --> rc_medical_bills_26
-  torres_office --> rc_personal_journal_27
-  torres_office --> rc_npc_david_torres_28
-  research_lab --> rc_npc_dr_sarah_chen_29
-  rc_npc_dr_sarah_chen_29 --> rc_obj30_30
-  rc_npc_dr_sarah_chen_29 --> rc_obj31_31
-  patricia_office --> rc_security_incident_log_32
-  patricia_office --> rc_patricia_filing_cabinet_33
-  patricia_office --> rc_npc_patricia_morgan_34
-  rc_npc_patricia_morgan_34 --> rc_obj35_35
-  rc_npc_patricia_morgan_34 --> rc_obj36_36
-  data_center --> rc_obj37_37
-  data_center --> rc_upload_schedule_38
-  data_center --> rc_data_package_manifest_39
+  torres_office --> rc_medical_bills_22
+  torres_office --> rc_personal_journal_23
+  torres_office --> rc_npc_david_torres_24
+  research_lab --> rc_npc_dr_sarah_chen_25
+  rc_npc_dr_sarah_chen_25 --> rc_obj26_26
+  rc_npc_dr_sarah_chen_25 --> rc_obj27_27
+  patricia_office --> rc_security_incident_log_28
+  patricia_office --> rc_patricia_filing_cabinet_29
+  patricia_office --> rc_npc_patricia_morgan_30
+  rc_npc_patricia_morgan_30 --> rc_obj31_31
+  rc_npc_patricia_morgan_30 --> rc_obj32_32
+  data_center --> rc_obj33_33
+  data_center --> rc_upload_schedule_34
+  data_center --> rc_data_package_manifest_35
 
   class reception_lobby,main_corridor,break_room,open_office_area,research_lab,patricia_office,data_center room
   class server_hallway,server_room,torres_office lock
-  class rc_obj1_1,rc_obj4_4,rc_obj5_5,rc_obj6_6,rc_obj7_7,rc_entropy_pamphlet_10,rc_server_password_note_12,rc_obj13_13,rc_obj15_15,rc_obj16_16,rc_obj17_17,rc_obj18_18,rc_obj19_19,rc_vm_launcher_bludit_20,rc_flag_station_evidence_21,rc_obj23_23,rc_obj24_24,rc_obj25_25,rc_medical_bills_26,rc_personal_journal_27,rc_obj30_30,rc_obj31_31,rc_security_incident_log_32,rc_patricia_filing_cabinet_33,rc_obj35_35,rc_obj36_36,rc_obj37_37,rc_upload_schedule_38,rc_data_package_manifest_39 item
-  class rc_npc_agent_0x99_2,rc_npc_agent_0x99_haxolottle_3,rc_npc_the_recruiter_8,rc_npc_agent_0x99_9,rc_npc_lisa_park_11,rc_npc_kevin_park_14,rc_npc_drop_site_terminal_22,rc_npc_david_torres_28,rc_npc_dr_sarah_chen_29,rc_npc_patricia_morgan_34 npc
+  class rc_obj1_1,rc_obj4_4,rc_obj5_5,rc_obj6_6,rc_obj7_7,rc_entropy_pamphlet_10,rc_server_password_note_12,rc_obj13_13,rc_obj15_15,rc_obj16_16,rc_obj17_17,rc_obj18_18,rc_obj19_19,rc_vm_launcher_bludit_20,rc_flag_station_evidence_21,rc_medical_bills_22,rc_personal_journal_23,rc_obj26_26,rc_obj27_27,rc_security_incident_log_28,rc_patricia_filing_cabinet_29,rc_obj31_31,rc_obj32_32,rc_obj33_33,rc_upload_schedule_34,rc_data_package_manifest_35 item
+  class rc_npc_agent_0x99_2,rc_npc_agent_0x99_haxolottle_3,rc_npc_the_recruiter_8,rc_npc_agent_0x99_9,rc_npc_lisa_park_11,rc_npc_kevin_park_14,rc_npc_david_torres_24,rc_npc_dr_sarah_chen_25,rc_npc_patricia_morgan_30 npc
   class node_start start`
     };
     const rendered = {};
