@@ -370,7 +370,7 @@ You cancel the upload — 97% complete, the last 3% stays secure — and radio i
 
 Torres wakes up in federal custody. Elena and the kids get a phone call, not a visit from a coroner.
 
-#complete_task:stop_final_exfiltration
+#set_global:final_choice:combat_nonlethal
 #exit_conversation
 -> END
 
@@ -381,7 +381,7 @@ You cancel the upload — 97% complete, the last 3% stays secure — and walk ou
 
 Whatever SAFETYNET's cleanup team decides to do with an unconscious ENTROPY asset is not a call you're sticking around for.
 
-#complete_task:stop_final_exfiltration
+#set_global:final_choice:combat_lethal
 #exit_conversation
 -> END
 
@@ -445,8 +445,6 @@ David Torres: I did this to save them. And you're going to destroy them anyway.
     David Torres: Done.
 }
 
-#complete_task:stop_final_exfiltration
-
 {torres_turned:
     #speaker:david_torres
     David Torres: What happens now?
@@ -479,6 +477,16 @@ David Torres: I did this to save them. And you're going to destroy them anyway.
 Mission complete. ENTROPY's operation stopped.
 
 The cost? That depends on the choice you made.
+
+{final_choice == "turn_double_agent":
+    #set_global:final_choice:turn_double_agent
+}
+{final_choice == "arrest":
+    #set_global:final_choice:arrest
+}
+{final_choice == "public_exposure":
+    #set_global:final_choice:public_exposure
+}
 
 #exit_conversation
 -> END

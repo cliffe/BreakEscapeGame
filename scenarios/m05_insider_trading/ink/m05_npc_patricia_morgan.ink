@@ -239,6 +239,7 @@ Patricia Morgan: But... good work. Really.
 
 ~ torres_identified = true
 ~ patricia_trust += 2
+#set_global:torres_identified:true
 #complete_task:identify_torres
 -> hub
 

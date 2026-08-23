@@ -607,6 +607,13 @@ torres_journal_excerpt = "Met with the Recruiter again. Debt relief plus a stand
               "sendTimedMessage": { "delay": 1500, "message": "You've got enough evidence correlated. Call me before you confront the insider." }
             },
             {
+              "eventPattern": "global_variable_changed:evidence_level",
+              "condition": "value >= 5 && globalVars.patricia_ko === true && globalVars.torres_identified !== true",
+              "onceOnly": true,
+              "setGlobal": { "torres_identified": true },
+              "sendTimedMessage": { "delay": 1500, "message": "Patricia's off comms, but the evidence names him for us — David Torres. I'm flagging him now. Go and confront him." }
+            },
+            {
               "eventPattern": "global_variable_changed:torres_identified",
               "condition": "value === true",
               "onceOnly": true,
@@ -941,6 +948,7 @@ torres_journal_excerpt = "Met with the Recruiter again. Debt relief plus a stand
               "eventPattern": "global_variable_changed:torres_identified",
               "condition": "value === true",
               "onceOnly": true,
+              "setVisible": true,
               "conversationMode": "person-chat",
               "targetKnot": "start",
               "background": "assets/backgrounds/hq1.png"
