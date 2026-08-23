@@ -1,7 +1,9 @@
 # Mission 5: "Insider Trading" — Testing Walkthrough
 
-> Reconciled against: dungeon_graph.md (regenerated same day by validate_scenario.rb).
+> Reconciled against: dungeon_graph.md (regenerated same day by validate_scenario.rb). Last updated: 2026-08-23.
 > Setting: Quantum Dynamics Corporation — quantum-safe cryptography research for the DoD.
+>
+> **Recent wiring fixes (2026-08-23):** the opening briefing now bridges `player_approach`, `knows_full_stakes` and `handler_trust` to globals so the closing debrief reads them (previously ink-VAR-only and silently dead); the debrief's success tier now keys on the live `evidence_level` instead of the never-set `objectives_completed`; `lore_collected` is wired on journal/upload/manifest as well as the pamphlet; a `confront_stance` (sympathetic/hardline) is set at the confrontation and paid back in the debrief; and the Recruiter's deal now has a real accept path.
 
 ## Prerequisites
 
@@ -78,8 +80,8 @@ Flag_4's recovered document carries the casualty projection: **30–45 excess ci
 [Unlocks after: `exploit_infrastructure` complete]
 `missionConclusion: true` — `requiresCompleted: [confront_torres, make_critical_choice, submit_flag1, submit_flag2, submit_flag3, submit_flag4]` → `bond_visualiser`.
 
-19. **Identify Torres to Patricia** — Return to Patricia Office with `evidence_level >= 5` → choose "I want to compare notes on what I've found" → `significant_findings` branch → sets `torres_identified = true`, `patricia_trust += 2` → **completes `identify_torres`** (side objective — not in `requiresCompleted`, so it does not gate the conclusion). *No KO-safe fallback exists for this task* (validator flags this explicitly as acceptable: it is a side/lore objective, not on the critical path).
-20. `torres_identified` fires music cue (`spy-action`) and unlocks **The Recruiter**'s phone call (`eventMapping: global_variable_changed:torres_identified` → sends a timed "TalentStack Executive Recruiting" call). Optional but recommended before the confrontation — she offers her side of the moral argument (47 other targets already in the pipeline).
+19. **Identify Torres to Patricia** — Return to Patricia Office with `evidence_level >= 5` → choose "I want to compare notes on what I've found" → `significant_findings` branch → sets `torres_identified = true`, `patricia_influence += 2` → **completes `identify_torres`** (side objective — not in `requiresCompleted`, so it does not gate the conclusion). *No KO-safe fallback exists for this task* (validator flags this explicitly as acceptable: it is a side/lore objective, not on the critical path).
+20. `torres_identified` fires music cue (`spy-action`) and unlocks **The Recruiter**'s phone call (`eventMapping: global_variable_changed:torres_identified` → sends a timed "TalentStack Executive Recruiting" call). Optional but recommended before the confrontation — she offers her side of the moral argument (47 other targets already in the pipeline). Her "every person has a price" deal now has a genuine **accept** path (`recruiter_deal_taken` → `recruiter_deal_accepted = true`) alongside the refuse/hang-up options; accepting changes only her return-call dialogue, not the mission outcome.
 21. **Confront David Torres (Torres Office)** — Talk to him → `confrontation_scene` → `torres_confrontation` → `torres_rationalization` → `evidence_revelation` → `final_choice_moment`. **task `confront_torres` completes** on encounter (`npc_conversation`, auto-completes) — reachable via the live conversation *or* the KO path (see below).
 22. **`final_choice_moment`** — four options, each sets `final_choice` and fires `#complete_task:confront_torres` again + `#complete_task:make_critical_choice` (except combat, which routes through `combat_offer` → hostile fight → `post_ko_choice`):
 
@@ -95,7 +97,7 @@ Flag_4's recovered document carries the casualty projection: **30–45 excess ci
     - **"Leave him for cleanup"** → `final_choice = combat_lethal`, `torres_killed = true` → `post_ko_handoff`.
     Both set **`stop_final_exfiltration`** and complete `make_critical_choice` (also redundantly via `taskOnKO: make_critical_choice` and the handler's `completeTask: confront_torres` on `torres_ko`).
 24. All four live-path endings converge on **`stop_upload`**, which sets `stop_final_exfiltration` and branches epilogue dialogue on `torres_turned` / `torres_arrested` / `entropy_program_exposed`, then `-> END` (a standalone terminal ink, correctly not routed back through the hub).
-25. **Closing debrief (phone cutscene)** — `closing_debrief_trigger` fires on `global_variable_changed:final_choice` (`value !== ''`), `disableClose: true`. Credits scroll branches the "DAVID TORRES" line on `final_choice`, the "ELENA TORRES" line on `elena_treatment_funded`/`torres_killed`, and the "EVIDENCE" line on `entropy_program_exposed`.
+25. **Closing debrief (phone cutscene)** — `closing_debrief_trigger` fires on `global_variable_changed:final_choice` (`value !== ''`), `disableClose: true`. Its success tier now branches on the live `evidence_level` (`>=6` full / `4–5` partial / `<4` minimal); the outcome branch on `final_choice` (with a defensive fallback if it is somehow empty); the approach-flavour lines on the now-bridged `player_approach`; the "still alive" payoff on `knows_full_stakes`; the trust-tier lines on `handler_trust`; and a `confront_stance` (sympathetic/hardline) callback. Credits scroll branches the "DAVID TORRES" line on `final_choice`, the "ELENA TORRES" line on `elena_treatment_funded`/`torres_killed`, and the "EVIDENCE" line on `entropy_program_exposed`.
 
 **WIN:** `confront_torres` + `make_critical_choice` + all four `submit_flagN` complete → `confront_insider` mission-conclusion satisfied → `bond_visualiser`. Five distinct endings, all unranked:
 
@@ -113,7 +115,13 @@ Flag_4's recovered document carries the casualty projection: **30–45 excess ci
 | Global | Set by |
 |---|---|
 | `briefing_played` | opening cutscene |
-| `evidence_level` | medical bills, journal, pamphlet, financial records, security log, upload schedule (steps 8–17) — accumulates past the `>=4`/`>=5` gates |
+| `player_approach` | opening briefing `mission_approach` choice, bridged at `deployment` (cautious/aggressive/diplomatic) — read by the debrief |
+| `knows_full_stakes` | opening briefing (asking about casualties), bridged at `deployment` — gates the debrief's "still alive" payoff |
+| `handler_trust` | opening briefing choices (starts 50), bridged at `deployment` — drives the debrief trust tiers |
+| `lore_collected` | pamphlet, journal, upload schedule, data package manifest — feeds the debrief's `>=2`/`>=4` LORE tiers |
+| `confront_stance` | the confrontation's framing choice (`sympathetic`/`hardline`) — paid back in the debrief |
+| `recruiter_deal_accepted` | Recruiter phone: `true` on the accept path, `false` on refusal — changes only her return-call dialogue |
+| `evidence_level` | medical bills, journal, pamphlet, financial records, security log, upload schedule (steps 8–17) — accumulates past the `>=4`/`>=5` gates and now drives the debrief success tier |
 | `torres_identified` | naming Torres to Patricia at `evidence_level >= 5` (step 20) — **starts spy-action music, unlocks the Recruiter's call** |
 | `flag1_submitted`…`flag4_submitted` | flag-station submissions (step 16) |
 | `architect_approval_confirmed` | flag4_submitted (HaX eventMapping) |
