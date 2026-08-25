@@ -19,7 +19,7 @@ There are two ways to run it: stand alone, or mounted inside an existing Rails a
 
 ### Stand alone (run on your own PC)
 
-The repo contains a small host Rails app with the engine mounted, so that you can run the game on your own PC, running the server locally. 
+The repo contains a small host Rails app with the engine mounted, so that you can run the game on your own PC, running the server locally.
 
 On a clean **Ubuntu 22.04** VM:
 
@@ -31,11 +31,14 @@ git clone https://github.com/cliffe/BreakEscape.git
 cd BreakEscape
 
 bundle install                              # installs Rails and everything else
-bundle exec rails db:create db:migrate db:seed
+bundle exec rails db:create db:migrate
+bundle exec rails db:seed                   # creates the missions from scenarios/
 ./start_server.sh
 ```
 
-Then visit <http://localhost:3000/break_escape/>, or `http://<vm-ip>:3000/break_escape/` from outside the VM.
+Then visit http://localhost:3000/break_escape/, or `http://<vm-ip>:3000/break_escape/` from outside the VM.
+
+There is no `install:migrations` step here: the bundled host app reads the engine's migrations directly. But you do need `db:seed` — without it the database has no missions and the mission list comes up empty.
 
 Standalone mode has no login — players are tracked as `DemoUser` records.
 
@@ -61,8 +64,10 @@ Then, from the host app:
 bundle install
 rails break_escape:install:migrations
 rails db:migrate
-rails db:seed  # Optional: creates missions from scenarios
+rails break_escape:seed  # creates the missions from scenarios/
 ```
+
+(The host app's own `rails db:seed` will not pick these up unless its `db/seeds.rb` loads the engine's, as Hacktivity's does.)
 
 And mount it in the host app's `config/routes.rb`:
 

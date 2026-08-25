@@ -46,7 +46,7 @@ ActiveRecord::Schema[7.0].define(version: 2026_05_25_000001) do
     t.datetime "updated_at", null: false
     t.integer "objectives_completed", default: 0
     t.integer "tasks_completed", default: 0
-    t.integer "vm_set_id"
+    t.bigint "vm_set_id"
     t.integer "total_tasks", default: 0, null: false
     t.integer "total_aims", default: 0, null: false
     t.datetime "mission_concluded_at"
