@@ -71,5 +71,8 @@ Rails.application.configure do
   # config.action_cable.disable_request_forgery_protection = true
 
   # Raise error when a before_action's only/except options reference missing actions.
-  config.action_controller.raise_on_missing_callback_actions = true
+  # (Rails 7.1+ only; the engine is locked to Rails 7.0, where this key is invalid.)
+  if Rails::VERSION::STRING >= "7.1"
+    config.action_controller.raise_on_missing_callback_actions = true
+  end
 end
