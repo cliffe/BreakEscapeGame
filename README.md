@@ -41,7 +41,7 @@ Standalone mode has no login — players are tracked as `DemoUser` records.
 
 **A note on Ruby versions.** The game runs on Ruby 2.7, 3.0 or 3.1. Ubuntu 22.04 installs 3.0 for you, which is why the instructions above use 22.04 and why you don't have to install Ruby yourself.
 
-Ruby 3.2 and newer will not work at the moment. Ubuntu 24.04 installs 3.2, so if that is what you have, install Ruby 3.1 alongside it with [rbenv](https://github.com/rbenv/rbenv) and use that instead.
+Ruby 3.2 and newer will not work without some tweaks/testing. Ubuntu 24.04 installs 3.2, so if that is what you have, install Ruby 3.1 alongside it with [rbenv](https://github.com/rbenv/rbenv) and use that instead.
 
 Why: `Gemfile.lock` records the exact versions of the third-party libraries the project was built and tested against. Two of them are older than Ruby 3.2 and cannot be installed on it, so `bundle install` stops with an error. It is those library versions that are out of date, not the game itself; updating them would lift the limit.
 
