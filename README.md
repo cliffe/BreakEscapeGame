@@ -1,10 +1,10 @@
 # BreakEscape Rails Engine
 
-Cybersecurity training escape room game as a mountable Rails Engine.
+Cyber security training escape room game as a mountable Rails Engine.
 
 ## Features
 
-- 24+ cybersecurity escape room scenarios
+- 24+ cyber security escape room scenarios
 - Server-side progress tracking with 2-table schema
 - Randomized passwords per game instance via ERB
 - JIT Ink script compilation for NPC dialogue
@@ -15,13 +15,47 @@ Cybersecurity training escape room game as a mountable Rails Engine.
 
 ## Installation
 
-In your Gemfile:
+There are two ways to run it: stand alone, or mounted inside an existing Rails app.
 
-```ruby
-gem 'break_escape', path: 'path/to/break_escape'
+### Stand alone (run on your own PC)
+
+The repo contains a small host Rails app with the engine mounted, so that you can run the game on your own PC, running the server locally. 
+
+On a clean **Ubuntu 22.04** VM:
+
+```bash
+sudo apt update
+sudo apt install -y git ruby-full build-essential libsqlite3-dev sqlite3
+
+git clone https://github.com/cliffe/BreakEscape.git
+cd BreakEscape
+
+bundle install                              # installs Rails and everything else
+bundle exec rails db:create db:migrate db:seed
+./start_server.sh
 ```
 
-Then:
+Then visit <http://localhost:3000/break_escape/>, or `http://<vm-ip>:3000/break_escape/` from outside the VM.
+
+Standalone mode has no login — players are tracked as `DemoUser` records.
+
+**A note on Ruby versions.** The game runs on Ruby 2.7, 3.0 or 3.1. Ubuntu 22.04 installs 3.0 for you, which is why the instructions above use 22.04 and why you don't have to install Ruby yourself.
+
+Ruby 3.2 and newer will not work at the moment. Ubuntu 24.04 installs 3.2, so if that is what you have, install Ruby 3.1 alongside it with [rbenv](https://github.com/rbenv/rbenv) and use that instead.
+
+Why: `Gemfile.lock` records the exact versions of the third-party libraries the project was built and tested against. Two of them are older than Ruby 3.2 and cannot be installed on it, so `bundle install` stops with an error. It is those library versions that are out of date, not the game itself; updating them would lift the limit.
+
+### Mounted in an existing Rails app
+
+Use this if you are embedding BreakEscape in Hacktivity or another Rails 7 app. The engine then uses the host app's `current_user`.
+
+In the **host app's** `Gemfile`, at the top level (not inside a `group` block), add — where the path is the repository root, i.e. the directory containing `break_escape.gemspec`, not one of the `break_escape` namespace directories inside it:
+
+```ruby
+gem 'break_escape', path: '../BreakEscape'
+```
+
+Then, from the host app:
 
 ```bash
 bundle install
@@ -30,27 +64,11 @@ rails db:migrate
 rails db:seed  # Optional: creates missions from scenarios
 ```
 
-## Mounting in Host App
-
-In your `config/routes.rb`:
+And mount it in the host app's `config/routes.rb`:
 
 ```ruby
 mount BreakEscape::Engine => "/break_escape"
 ```
-
-## Usage
-
-### Standalone Mode (Development)
-
-```bash
-export BREAK_ESCAPE_STANDALONE=true
-rails server
-# Visit http://localhost:3000/break_escape/
-```
-
-### Mounted Mode (Production)
-
-Mount in Hacktivity or another Rails app. The engine will use the host app's `current_user` via Devise.
 
 ## Configuration
 
@@ -80,19 +98,25 @@ end
 ## Architecture
 
 ### ERB Scenario Generation
+
 Scenarios are stored as `.json.erb` templates and rendered on-demand with randomized values:
+
 - `<%= random_password %>` - Generates unique password per game
 - `<%= random_pin %>` - Generates unique 4-digit PIN
 - `<%= random_code %>` - Generates unique hex code
 
 ### JIT Ink Compilation
+
 NPC dialogue scripts compile on first request (~300ms):
+
 1. Check if `.json` exists and is newer than `.ink`
 2. If needed, run `inklecate` to compile
 3. Cache compiled JSON for subsequent requests
 
 ### State Management
+
 Player state stored in JSONB column:
+
 - Current room and unlocked rooms
 - Inventory and collected items
 - NPC encounters
