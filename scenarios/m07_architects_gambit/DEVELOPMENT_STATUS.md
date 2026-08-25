@@ -1,24 +1,28 @@
 # Mission 7: "The Architect's Gambit" - Development Status
 
-**Last Updated:** 2026-01-11
-**Status:** ✅ 100% COMPLETE - FULLY PLAYABLE
+**Last Updated:** 2026-01-11 **Status:** ✅ 100% COMPLETE - FULLY PLAYABLE
 
 ## ✓ Completed Components
 
 ### 1. Scenario Foundation
+
 - ✓ `scenario.json.erb` - Complete with 7 rooms, all validation passing (0 schema errors)
 - ✓ `mission.json` - Mission metadata and CyBOK mappings
 - ✓ `README.md` - Complete design document for single-location branching architecture
 
 ### 2. Planning Documents
+
 All four branch planning documents complete:
+
 - ✓ `planning/stage_0_option_a_infrastructure.md` - Infrastructure Collapse branch
 - ✓ `planning/stage_0_option_b_data.md` - Data Apocalypse branch
 - ✓ `planning/stage_0_option_c_supply_chain.md` - Supply Chain Infection branch
 - ✓ `planning/stage_0_option_d_corporate.md` - Corporate Warfare branch
 
 ### 3. Ink Dialogue Files - ALL COMPILED ✅
+
 All 9 Ink files written and compiled to JSON (297KB total):
+
 - ✅ `ink/m07_opening_briefing.json` (45KB) - Initial mission briefing with 4-way choice
 - ✅ `ink/m07_director_morgan.json` (25KB) - Director Morgan dialogue
 - ✅ `ink/m07_architect_comms.json` (20KB) - The Architect's taunts (time-based)
@@ -30,6 +34,7 @@ All 9 Ink files written and compiled to JSON (297KB total):
 - ✅ `ink/m07_closing_debrief.json` (29KB) - End-of-mission debrief
 
 ### 4. Solution Guide
+
 - ✅ `SOLUTION_GUIDE.md` - Complete walkthrough with all paths documented
 
 ## ✅ All Issues Resolved
@@ -45,6 +50,7 @@ All Ink compilation issues have been fixed:
 ### Applied Solution Pattern
 
 **Global Variables:**
+
 ```ink
 // Each Ink file declares VAR for variables it needs
 VAR crisis_choice = ""
@@ -53,26 +59,30 @@ VAR flag1_submitted = false
 ```
 
 **Nested Conditionals:**
+
 ```ink
 {crisis_choice == "infrastructure":
     "Team Alpha handling supply chain." **T-MINUS 2:39**
-    + [Continue] -> next_section
+    - [Continue] -> next_section
 - else:
     "Team Bravo handling infrastructure." **T-MINUS 2:12**
-    + [Other choice] -> other_section
+    - [Other choice] -> other_section
 }
 ```
 
 ## 📊 Mission Architecture Summary
 
 ### Single-Location Design
+
 - **Location:** SAFETYNET Emergency Operations Center
 - **Rooms:** 6 shared + 1 conditional crisis terminal
 - **Branching:** ERB-based conditional content based on player's crisis choice
 - **VM Integration:** SecGen "putting_it_together" scenario with 4 flags
 
 ### Four Crisis Branches
+
 Each branch has:
+
 - Unique antagonist(s) with distinct motivations
 - 30-minute timer mechanic (some with dual timers)
 - VM exploitation pathway (same scenario, different narrative context)
@@ -81,6 +91,7 @@ Each branch has:
 - Intelligence recovery (Tomb Gamma coordinates, mole evidence)
 
 ### Key Features Implemented
+
 - ✓ 4-way impossible choice (forces player to accept casualties elsewhere)
 - ✓ The Architect taunts at specific timer intervals
 - ✓ Recruitment paths for sympathetic antagonists (Rachel, Adrian, Victoria)
@@ -93,6 +104,7 @@ Each branch has:
 ## ✅ Mission Complete - Ready for Production
 
 ### Completed Tasks
+
 1. ✅ All Ink compilation errors fixed
 2. ✅ All 9 Ink files compiled to JSON (297KB)
 3. ✅ Scenario validation passed (0 schema errors)
@@ -100,12 +112,14 @@ Each branch has:
 5. ✅ All 4 crisis branches fully implemented
 
 ### Ready For
+
 1. 🎮 Integration testing with game engine
 2. 🧪 Playtesting for balance and difficulty
 3. 🎭 Voice acting (if applicable)
 4. 🚀 Deployment to production environment
 
 ### Future Enhancements
+
 1. Team status updates (show other teams' progress during mission)
 2. Dynamic timer display integration
 3. Casualty visualization in debrief
@@ -159,6 +173,7 @@ Mission 7 explores the theme of **impossible choices** and **acceptable casualti
 - **The Architect as puppet master:** Taunts emphasize manipulation and futility
 
 ### Unique Challenges Per Branch
+
 - **Option A (Infrastructure):** Immediate civilian deaths, pure timer pressure
 - **Option B (Data):** Dual timer mechanic, prioritization choice within choice
 - **Option C (Supply Chain):** No immediate deaths, long-term consequences
@@ -166,10 +181,10 @@ Mission 7 explores the theme of **impossible choices** and **acceptable casualti
 
 ## 🐛 Validation Results
 
-**Scenario JSON Schema Validation:** ✅ PASSED (0 errors)
-**Ink Compilation:** ✅ COMPLETE (9/9 files, 0 errors)
+**Scenario JSON Schema Validation:** ✅ PASSED (0 errors) **Ink Compilation:** ✅ COMPLETE (9/9 files, 0 errors)
 
 Last validation run:
+
 ```bash
 ruby scripts/validate_scenario.rb scenarios/m07_architects_gambit/scenario.json.erb
 # Result: ✓ Schema validation passed! 0 errors.
@@ -177,6 +192,7 @@ ruby scripts/validate_scenario.rb scenarios/m07_architects_gambit/scenario.json.
 ```
 
 Ink compilation:
+
 ```bash
 ./bin/inklecate -o scenarios/m07_architects_gambit/ink/*.json scenarios/m07_architects_gambit/ink/*.ink
 # Result: All 9 files compiled successfully
@@ -185,8 +201,7 @@ Ink compilation:
 
 ---
 
-**Development Progress:** ✅ 100% Complete
-**Status:** Production-ready, fully playable
+**Development Progress:** ✅ 100% Complete **Status:** Production-ready, fully playable
 
 ## 📊 Final Statistics
 

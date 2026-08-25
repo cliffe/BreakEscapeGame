@@ -1,9 +1,6 @@
 # Mission 6: Follow the Money
 
-**Status:** Design Complete, Implementation Pending
-**ENTROPY Cell:** Crypto Anarchists
-**SecGen Scenario:** Hackme and Crack Me (password cracking)
-**Difficulty:** Tier 2 (Intermediate)
+**Status:** Design Complete, Implementation Pending **ENTROPY Cell:** Crypto Anarchists **SecGen Scenario:** Hackme and Crack Me (password cracking) **Difficulty:** Tier 2 (Intermediate)
 
 ## Mission Overview
 
@@ -49,6 +46,7 @@ Reception Lobby → Security Checkpoint → Trading Floor (central hub)
 ## VM Integration
 
 **SecGen Scenario:** Hackme and Crack Me
+
 - Crack passwords on multiple backend servers
 - Exploit credential reuse for lateral movement
 - Access financial database with transaction records
@@ -57,13 +55,13 @@ Reception Lobby → Security Checkpoint → Trading Floor (central hub)
 ## Campaign Integration
 
 **Connects to:**
+
 - M2 "Ransomed Trust" - Hospital ransomware payment traced
 - M5 "Insider Trading" - Corporate espionage payment traced
 - M7 "The Architect's Gambit" - Fund distribution triggers coordinated attack
 - M9 "Digital Archaeology" - Architect identity setup
 
-**Post-Mission Hook:**
-Financial analysis reveals massive fund transfer in 72 hours to all cells. Coordinated multi-cell attack imminent. Player must choose which operation to stop in M7.
+**Post-Mission Hook:** Financial analysis reveals massive fund transfer in 72 hours to all cells. Coordinated multi-cell attack imminent. Player must choose which operation to stop in M7.
 
 ## Implementation Tasks
 
