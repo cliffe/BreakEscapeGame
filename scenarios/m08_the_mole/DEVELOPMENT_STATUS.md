@@ -1,19 +1,21 @@
 # Mission 8: "The Mole" - Development Status
 
-**Last Updated:** 2026-01-11
-**Status:** 🔨 IN DEVELOPMENT - Core Design Complete
+**Last Updated:** 2026-01-11 **Status:** 🔨 IN DEVELOPMENT - Core Design Complete
 
 ---
 
 ## ✓ Completed Components
 
 ### 1. Mission Foundation
+
 - ✅ `README.md` - Complete mission design document (893 lines)
 - ✅ `mission.json` - Mission metadata, CyBOK mappings, campaign connections
 - ✅ `scenario.json.erb` - Complete 9-room SAFETYNET HQ layout (649 lines)
 
 ### 2. Location Design - SAFETYNET Headquarters "The Citadel"
+
 All 9 rooms fully designed with connections, NPCs, items, and clues:
+
 - ✅ Main Lobby (START) - Reception, security checkpoint, paranoid atmosphere
 - ✅ Director's Office - Director Cross, suspect dossiers, investigation briefing
 - ✅ Operations Floor - Agent Cipher's workspace, analyst stations
@@ -25,6 +27,7 @@ All 9 rooms fully designed with connections, NPCs, items, and clues:
 - ✅ Break Room - Agent 0x99, overheard conversations, timeline reconstruction
 
 ### 3. Investigation Mechanics
+
 - ✅ Evidence trail designed (30+ clues across all rooms)
 - ✅ Suspect interview system (3 NPCs: Cipher, Phantom, Nightshade)
 - ✅ Timeline reconstruction puzzle
@@ -33,6 +36,7 @@ All 9 rooms fully designed with connections, NPCs, items, and clues:
 - ✅ VM flag submission system
 
 ### 4. NPCs and Characters
+
 - ✅ Director Samantha Cross (first major appearance)
 - ✅ Agent 0x99 "Haxolottle" (emotionally devastated handler)
 - ✅ Agent 0x47 "Nightshade" (THE MOLE - ideological convert)
@@ -41,7 +45,9 @@ All 9 rooms fully designed with connections, NPCs, items, and clues:
 - ✅ Background agents (atmosphere)
 
 ### 5. Evidence System
+
 Comprehensive evidence trail leading to Nightshade:
+
 - ✅ Server access logs (Crypto Lab terminal, suspicious timing)
 - ✅ Encrypted ENTROPY communications (decoded file)
 - ✅ Psychological profile (ideological alignment warnings)
@@ -50,6 +56,7 @@ Comprehensive evidence trail leading to Nightshade:
 - ✅ Database catalog (reveals M7's true objective)
 
 ### 6. VM Integration - SecGen "Such a git"
+
 - ✅ GitList CVE-2018-1000533 exploitation terminal
 - ✅ 4 flags mapped to investigation evidence:
   - Flag 1: GitList vulnerability (SAFETYNET security gaps)
@@ -59,6 +66,7 @@ Comprehensive evidence trail leading to Nightshade:
 - ✅ Flag submission system integrated
 
 ### 7. Locks and Security
+
 - ✅ RFID lock (Server Room) - requires Director's keycard
 - ✅ Password lock (Security Archives) - "TrustNoOne" (found in break room)
 - ✅ Key lock (Interrogation Room) - Director's safe (PIN: 2407)
@@ -73,39 +81,33 @@ Comprehensive evidence trail leading to Nightshade:
    - ATHENA AI receptionist welcomes player
    - Security heightened, paranoia atmosphere
    - Sets investigation tone
-
-2. **m08_director_cross.ink** - Director's mission briefing
+1. **m08_director_cross.ink** - Director's mission briefing
    - Explains Mission 7 leak
    - Presents three suspects
    - Authorizes investigation
    - Emotional impact of betrayal
    - Recurring conversations
-
-3. **m08_agent_0x99.ink** - Handler's emotional struggle
+1. **m08_agent_0x99.ink** - Handler's emotional struggle
    - Worked with all suspects for years
    - Personal betrayal theme
    - Tactical support and guidance
    - Doubt and paranoia
-
-4. **m08_suspect_cipher.ink** - Interview with Cipher
+1. **m08_suspect_cipher.ink** - Interview with Cipher
    - Defensive, appears suspicious
    - Socially awkward, secretive
    - Red herring dialogue
    - Eventually cleared (working on classified encryption project)
-
-5. **m08_suspect_phantom.ink** - Interview with Phantom
+1. **m08_suspect_phantom.ink** - Interview with Phantom
    - Charismatic, deflective
    - Too many questions, unexplained absences
    - Second red herring
    - Eventually cleared (conducting unauthorized parallel investigation)
-
-6. **m08_suspect_nightshade.ink** - Initial interview with Nightshade
+1. **m08_suspect_nightshade.ink** - Initial interview with Nightshade
    - Appears cooperative and professional
    - Subtle tells for observant players
    - Pre-reveal tension
    - Too calm, too perfect
-
-7. **m08_nightshade_confrontation.ink** - Final interrogation (MAJOR SCENE)
+1. **m08_nightshade_confrontation.ink** - Final interrogation (MAJOR SCENE)
    - Evidence presentation
    - Nightshade's philosophy revealed: "Entropy is inevitable"
    - Insider Threat recruitment explanation
@@ -113,14 +115,14 @@ Comprehensive evidence trail leading to Nightshade:
    - Tomb Gamma coordinates revealed (47.2382° N, 112.5156° W)
    - Database theft revelation
    - Sets up Mission 9
-
-8. **m08_closing_debrief.ink** - Resolution with Director Cross
+1. **m08_closing_debrief.ink** - Resolution with Director Cross
    - Impact of player's choice (arrest/triple agent)
    - ENTROPY's success: global threat database stolen
    - Mission 9 authorization (Tomb Gamma exploration)
    - Campaign progression
 
 ### Phone Dialogues (0/2 complete)
+
 - **m08_phone_0x99.ink** - Handler support calls
 - **m08_phone_director.ink** - Director updates
 
@@ -129,6 +131,7 @@ Comprehensive evidence trail leading to Nightshade:
 ## 📊 Mission Statistics
 
 **Designed Components:**
+
 - **Rooms:** 9 complete
 - **NPCs:** 7 (5 major, 2 background)
 - **Items/Clues:** 30+ evidence pieces
@@ -138,6 +141,7 @@ Comprehensive evidence trail leading to Nightshade:
 - **Moral Choices:** 2 major decisions
 
 **Narrative Scale:**
+
 - **Estimated Dialogue:** ~15,000-20,000 words (8 Ink files)
 - **Investigation Depth:** 3 suspects, 30+ clues, multi-stage evidence correlation
 - **Campaign Impact:** HIGH - reveals database theft, sets up M9-10
@@ -147,16 +151,15 @@ Comprehensive evidence trail leading to Nightshade:
 ## 🐛 Known Issues
 
 ### 1. Scenario Validation Error
-**Issue:** Ruby validator throwing `undefined method '[]' for nil` error
-**Status:** Structure complete, minor validator compatibility issue
-**Impact:** Low - scenario file is comprehensive and follows established patterns
-**Fix Required:** Debug validator script or adjust specific field format
+
+**Issue:** Ruby validator throwing `undefined method '[]' for nil` error **Status:** Structure complete, minor validator compatibility issue **Impact:** Low - scenario file is comprehensive and follows established patterns **Fix Required:** Debug validator script or adjust specific field format
 
 ---
 
 ## 🔄 Next Steps
 
 ### Immediate (Required for Playability)
+
 1. **Write all 8 Ink dialogue files**
    - Opening briefing
    - Director Cross conversations
@@ -164,35 +167,31 @@ Comprehensive evidence trail leading to Nightshade:
    - 3 suspect interviews (Cipher, Phantom, Nightshade)
    - Nightshade confrontation (critical scene)
    - Closing debrief
-
-2. **Compile Ink files to JSON**
+1. **Compile Ink files to JSON**
    - Follow Mission 7's pattern (VAR declarations, no EXTERNAL)
    - Test for nested conditional issues
    - Ensure all knots properly referenced
-
-3. **Fix scenario validation**
+1. **Fix scenario validation**
    - Debug validator error
    - Ensure schema compliance
    - Test all room connections
-
-4. **Create solution guide**
+1. **Create solution guide**
    - Step-by-step investigation walkthrough
    - Evidence correlation guide
    - Suspect interview strategies
    - VM exploitation solutions
 
 ### Secondary (Polish)
+
 1. **Playtest investigation flow**
    - Verify evidence trail is discoverable
    - Test red herring effectiveness
    - Ensure Nightshade revelation is satisfying
-
-2. **Balance moral choice**
+1. **Balance moral choice**
    - Triple agent risk/reward clear
    - Both choices feel valid
    - Consequences for M9-10 meaningful
-
-3. **Review dialogue for consistency**
+1. **Review dialogue for consistency**
    - Director Cross's character established
    - Agent 0x99's emotional arc
    - Nightshade's philosophy compelling
@@ -235,11 +234,13 @@ Mission 8 explores the theme of **betrayal and paranoia**:
 - **Campaign Pivot:** Reveals The Architect's true plan, sets up finale
 
 ### Key Narrative Beats
+
 1. **Act 1:** Return to paranoid headquarters, briefed on betrayal
 2. **Act 2:** Investigate suspects, gather evidence, pattern emerges
 3. **Act 3:** Confront Nightshade, philosophical debate, impossible choice
 
 ### Educational Focus
+
 - **Human Factors:** Insider threat psychology, behavioral analysis
 - **Security Operations:** Internal threat hunting, forensic correlation
 - **Software Security:** Repository security, credential leakage
@@ -251,6 +252,7 @@ Mission 8 explores the theme of **betrayal and paranoia**:
 **Overall:** ~40% Complete
 
 **Completed:**
+
 - ✅ Core design (README, mission.json)
 - ✅ Location design (9 rooms, connections, items)
 - ✅ Evidence system (30+ clues placed)
@@ -258,14 +260,17 @@ Mission 8 explores the theme of **betrayal and paranoia**:
 - ✅ VM integration (GitList terminal, flags)
 
 **In Progress:**
+
 - 🔨 Ink dialogue system (0/8 files)
 
 **Pending:**
+
 - ⚠️ Scenario validation fix
 - ⚠️ Solution guide
 - ⚠️ Testing and playtesting
 
 **Estimated Time to Completion:** 4-6 hours
+
 - Ink dialogue: 3-4 hours
 - Validation/testing: 1 hour
 - Solution guide: 1 hour
@@ -275,7 +280,9 @@ Mission 8 explores the theme of **betrayal and paranoia**:
 ## 📝 Notes for Continuation
 
 ### Writing Nightshade's Confrontation
+
 **Critical Scene - Requires Special Attention:**
+
 - Nightshade is **not** a villain you love to hate - they're a true believer
 - Philosophy must be internally consistent and almost persuasive
 - "Entropy is inevitable, I'm just being honest about it"
@@ -284,11 +291,13 @@ Mission 8 explores the theme of **betrayal and paranoia**:
 - Choice must feel genuinely difficult: justice vs. intelligence
 
 ### Red Herring Suspects
+
 - **Cipher:** Brilliant but socially awkward, appears suspicious because working odd hours on classified encryption project
 - **Phantom:** Charismatic investigator, appears suspicious because conducting unauthorized parallel mole hunt
 - Both must feel plausibly guilty until cleared
 
 ### Evidence Trail Flow
+
 1. **Suspicion Phase:** All three seem suspicious
 2. **Elimination Phase:** Digital evidence clears Cipher and Phantom
 3. **Confirmation Phase:** Multiple evidence types converge on Nightshade
