@@ -1271,19 +1271,35 @@ export class PersonChatMinigame extends MinigameScene {
             // are not mistaken for speaker names (all NPC names here are multi-word).
             const stripSpeakerPrefix = s => /^(?:[A-Z][a-z]+ ){1,2}[A-Z][a-z]+:\s/.test(s) ? s.replace(/^[^:]+:\s*/, '') : s;
             const ttsText = stripSpeakerPrefix(line);
-            // Narrator lines use the 'narrator' voice; all other NPC lines use the current NPC
-            const ttsSpeakerId = block.isNarrator ? 'narrator' : this.npcId;
+            // Narrator lines use the 'narrator' voice. Other lines normally use the
+            // conversation's own NPC — but a multi-NPC conversation (line-prefix format,
+            // several registered speakers in one ink) must voice each speaker in their
+            // own voice. Guard: only override when the parsed speaker resolves to a
+            // registered NPC that actually has a voice block; otherwise fall back to the
+            // trigger NPC, so single-NPC scenarios (m01/m02/m07) are unchanged.
+            const ttsSpeakerId = block.isNarrator
+                ? 'narrator'
+                : (block.speaker && block.speaker !== 'player' && this.characters[block.speaker]?.voice
+                    ? block.speaker
+                    : this.npcId);
             const audioDuration = await this.ttsManager.play(ttsSpeakerId, ttsText);
             if (audioDuration && audioDuration > 0) {
                 // Use audio duration + buffer as advance delay
                 advanceDelay = audioDuration + 500;
             }
 
-            // Preload next line while current plays
+            // Preload next line while current plays. Resolve its speaker the same way
+            // so multi-NPC conversations preload against the correct voice.
             const nextLineIndex = lineIndex + 1;
             if (nextLineIndex < lines.length) {
                 const nextTtsText = stripSpeakerPrefix(lines[nextLineIndex]);
-                this.ttsManager.preload(this.npcId, nextTtsText);
+                const nextParsed = this.parseDialogueLine(lines[nextLineIndex]);
+                const nextSpeakerId = nextParsed && !nextParsed.isNarrator
+                    && nextParsed.speaker && nextParsed.speaker !== 'player'
+                    && this.characters[nextParsed.speaker]?.voice
+                    ? nextParsed.speaker
+                    : this.npcId;
+                this.ttsManager.preload(nextSpeakerId, nextTtsText);
             }
         }
 
