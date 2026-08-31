@@ -382,7 +382,7 @@ Advanced tools are available by requisition for specific mission requirements. T
 
 ### Budget Constraints
 
-SAFETYNET operates on black budgets, but funding isn't unlimited:
+SAFETYNET's funding is compartmentalised and its sources are not disclosed, but it is not unlimited:
 - Standard equipment is readily available
 - Specialized tools require justification
 - Consumables (lockpicks you break, USB devices you leave behind) come from finite pools

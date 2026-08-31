@@ -1,25 +1,28 @@
 # SAFETYNET Overview
 
-**Official Designation:** Security and Field-Engagement Technology Yielding National Emergency Taskforce
+**Official Designation:** Security And Field-Engagement Technology Yielding Nonaligned Emergency Taskforce
 **Known As:** SAFETYNET
 **Classification:** Covert Counter-Espionage Organisation
 **Founded:** [Classified] (Estimated late 1990s during the early internet boom)
 **Headquarters:** [Classified] (Players see glimpses in cutscene intros)
+**Secondary Sites:** Station houses on every inhabited continent; agents are briefed at one and extracted to whichever is nearest
 
 ## Mission Statement
 
-SAFETYNET exists to counter threats to digital infrastructure, protect national security interests, and neutralise the operations of hostile organisations—primarily ENTROPY. Our agents operate in the shadows, conducting offensive security operations authorised under [REDACTED] protocols.
+SAFETYNET exists to counter threats to digital infrastructure and neutralise the operations of hostile organisations—primarily ENTROPY. It answers to no capital and serves no flag. Operations are authorised internally, by SAFETYNET's own command, under [REDACTED] protocols; the only signature on a mission order is a SAFETYNET one.
+
+Agents deploy wherever the threat is. A grid in one country, a clearing house in another, a data centre in a third: the organisation treats all three as the same problem, because they are.
 
 ## The Shadow War
 
-SAFETYNET operates in a unique grey area of legality and morality. While their mission is ostensibly defensive—protecting critical infrastructure and national interests—their methods are decidedly offensive. They engage in:
+SAFETYNET operates in a unique grey area of legality and morality. The mission is ostensibly defensive—keeping critical infrastructure standing—but the methods are offensive. They engage in:
 
 - Pre-emptive infiltration of organisations suspected of ENTROPY ties
-- Offensive cyber operations against foreign and domestic targets
+- Offensive cyber operations against targets in any jurisdiction
 - Physical infiltration under false pretenses
 - Intelligence gathering that would make privacy advocates weep
 
-The organisation exists in a perpetual state of "plausible deniability." If an operation goes wrong, the agent was a rogue actor. If it succeeds, SAFETYNET quietly takes credit in classified briefings to parliamentary committees who can't talk about what they've heard.
+The organisation exists in a perpetual state of "plausible deniability." If an operation goes wrong, the agent was a private individual with unusual hobbies and no employer worth naming. If it goes right, nobody hears about it at all. There is no committee to brief, no minister to thank SAFETYNET in a corridor, no file that will be declassified in thirty years. The win is that the lights stayed on.
 
 ## Organisational Structure
 
@@ -33,26 +36,27 @@ The organisation operates on a strict need-to-know basis, with information compa
 - **Field Agents**: The boots on the ground (or fingers on keyboards)
 - **Technical Support**: The unsung heroes who keep the infrastructure running
 
-### Relationship with Governments
+### The Cost of Independence
 
-SAFETYNET's relationship with official government structures is deliberately murky:
+Answering to nobody is the organisation's defining advantage and its defining exposure. SAFETYNET can move across borders in an afternoon because no border belongs to it. The same fact means it has nothing to fall back on:
 
-- **Official Status**: Doesn't officially exist in any public government documentation
-- **Funding**: Allocated through black budgets buried in defense and intelligence spending
-- **Oversight**: Minimal and carefully controlled; only select committee members know of their existence
-- **Legal Authority**: Operates under classified executive orders and emergency powers acts
-- **International Operations**: Technically unauthorised, practically unstoppable
+- **No jurisdiction**: An agent has no authority anywhere. Every door that opens, opens because someone was persuaded, contracted, or deceived into opening it.
+- **No legal cover**: There is no warrant, no statute, no order to produce when things go wrong. A blown operation is simply a crime, and the person standing in the room committed it.
+- **No extraction rights**: Handlers can arrange a car, a flight and a new name. They cannot arrange a phone call that makes a detention end.
+- **No diplomatic protection**: Nobody is coming to a police station to collect you. Nobody would know which police station to try.
+- **No arbitration**: When SAFETYNET and a local authority want the same suspect, there is no channel to resolve it. SAFETYNET usually withdraws and lets the arrest happen.
+
+Field Handlers are expected to state this plainly to new agents rather than soften it. The Handbook devotes four pages to the subject and manages to be honest for all four, which agents find more unsettling than the alternative.
 
 ### Funding and Resources
 
-How does a non-existent organisation fund its operations?
+Funding is compartmentalised. Field agents are told what their operation may spend and nothing whatsoever about where the money came from; Operations Command is told a little more, and declines to say how much more.
 
-- **Black Budget Allocations**: Buried in legitimate defence spending under innocuous line items
-- **Asset Forfeiture**: Quietly seizing ENTROPY resources and cryptocurrencies
-- **Private Sector "Donations"**: Corporations that benefit from SAFETYNET protection contribute through complex financial arrangements
-- **Intelligence Trading**: Sharing information with allied agencies in exchange for resources
+What agents can observe is that the equipment budget never seems to be the constraint. Kit arrives, aircraft are chartered, front companies are capitalised and quietly wound up. Whatever is behind that machinery, it does not surface in a briefing.
 
-The result: SAFETYNET agents rarely want for equipment, but the budget office still complains about expense reports filed three days late.
+Asking is not forbidden. Agents ask constantly. The answers are a running joke in the station houses, ranging from "an old family trust" to "we sell the axolotl merchandise", and the joke works precisely because nobody has ever established which answer is the least true.
+
+The one place the money becomes visible is procurement, which pays for a chartered flight without comment and then queries an expense report filed three days late.
 
 ## Recruitment and Selection
 
@@ -75,11 +79,11 @@ The recruitment process involves:
 
 SAFETYNET follows several core principles:
 
-### "The Best Defense is a Pre-emptive Offense"
+### "The Best Defence is a Pre-emptive Offence"
 Don't wait for ENTROPY to strike—find them first, infiltrate their operations, and neutralise threats before they materialise.
 
 ### "Plausible Deniability is Your Shield"
-Every operation must have a legitimate cover story. If caught, you're a rogue actor, not a government agent.
+Every operation must have a legitimate cover story. There is nothing behind the cover to fall back on, so the cover has to hold.
 
 ### "Information is Victory"
 The goal isn't always to stop ENTROPY immediately—sometimes gathering intelligence on their methods, contacts, and objectives is more valuable.
@@ -95,6 +99,7 @@ Sometimes letting ENTROPY know they've been compromised is the point. Other time
 SAFETYNET has developed its own internal culture:
 
 - **Humour as Pressure Valve**: The inherent absurdity of their situation breeds dark humour and jokes about bureaucratic contradictions
+- **A House Style**: The organisation's centre of gravity is British and it shows—tea rotas taken seriously, understatement as a professional standard, and an internal prose style that reports a near-catastrophe as "a somewhat difficult evening". Agents recruited from anywhere else pick it up within a year and resent it for two.
 - **Professional Paranoia**: Trust, but verify. Then verify again. Then assume the verification was compromised.
 - **The Handbook Cult**: The Field Operations Handbook is simultaneously revered and mocked—agents quote contradictory sections to justify almost any action
 - **Cover Story Competition**: Agents share and critique each other's cover stories, with prizes for "most believable" and "most ridiculous that actually worked"
@@ -114,7 +119,7 @@ SAFETYNET has developed its own internal culture:
 **Narrative Role**: SAFETYNET provides the player's motivation and framework for each mission. They are:
 - The reason the player has access to tools and information
 - The source of mission objectives and constraints
-- The explanation for why infiltration is "authorised"
+- The explanation for why infiltration is "authorised"—which means authorised by SAFETYNET, and by nobody else
 
 **Handler Characterisation**: When writing handler dialogue:
 - Keep it professional but allow personality to show through
@@ -130,7 +135,7 @@ SAFETYNET has developed its own internal culture:
 - Extraction protocol (how the mission ends)
 
 **Maintaining Immersion**:
-- Players are SAFETYNET agents, not criminals—frame objectives as legitimate security operations
+- Players are SAFETYNET agents—frame objectives as legitimate security operations carried out under a cover that is doing real work
 - The tension between "legal" cover and illegal reality creates interesting moral ambiguity
 - SAFETYNET's competence varies by plot necessity (they can provide good intel or miss obvious things)
 
@@ -142,7 +147,8 @@ SAFETYNET has developed its own internal culture:
 
 ### Common Pitfalls to Avoid
 
-- **Over-explaining**: SAFETYNET's exact legal status and history should remain somewhat mysterious
+- **Over-explaining**: SAFETYNET's exact standing, funding and history should remain mysterious; agents genuinely do not know, so neither should the player
+- **Attaching it to a state**: SAFETYNET is not any country's agency. Never write it as sanctioned, hosted, tolerated, or disowned by a government—the question does not come up in this world
 - **Making them villains**: They're morally grey but fundamentally trying to protect people
 - **Perfect competence**: Intelligence agencies make mistakes; use this for plot complications
 - **Ignoring the cover story**: The player's cover should matter and create constraints

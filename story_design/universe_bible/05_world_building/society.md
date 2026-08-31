@@ -536,21 +536,26 @@ The average citizen in Break Escape's world lives their regular life, largely ob
 - Continued access for intelligence
 - Leverage for future attacks
 
-### What Government Knows But Won't Say
+### What Never Reaches The Public
 
-**Classified Threats:**
-- SAFETYNET existence
-- ENTROPY organization
+**Kept out of view:**
+- ENTROPY as an organisation, rather than as a run of unrelated incidents
 - Nation-state cyber warfare
 - Critical infrastructure vulnerabilities
 - Surveillance capabilities
+- SAFETYNET
 
-**Why Classified:**
-- National security
-- Sources and methods
-- Prevent panic
-- Diplomatic considerations
-- Competitive advantage
+**Why it stays that way:**
+- Operators who disclose a breach lose customers, so most disclose as little as the rules allow
+- Naming an adversary means admitting one got in
+- Infrastructure vulnerabilities are cheaper to keep quiet than to fix
+- Panic is expensive and nobody is rewarded for causing it
+
+SAFETYNET is a special case, and not because anyone is protecting it. It goes unnoticed because
+the people who encounter an agent meet a consultant, an auditor, or a contractor with a work
+order, and have no reason to remember the visit afterwards. The concealment is not granted by
+anybody. It is done, over and over, by agents in the field, and it holds exactly as long as they
+keep doing it well.
 
 **Effect on Society:**
 - Public remains vulnerable

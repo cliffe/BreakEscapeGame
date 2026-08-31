@@ -22,7 +22,7 @@ Comprehensive reference for terminology, abbreviations, and designations used in
 ### Organization
 
 **SAFETYNET**
-- Full name: Security and Field-Engagement Technology Yielding National Emergency Taskforce
+- Full name: Security And Field-Engagement Technology Yielding Nonaligned Emergency Taskforce
 - Covert counter-espionage organization protecting digital infrastructure
 - Primary mission: Neutralize ENTROPY operations
 
@@ -380,7 +380,7 @@ Comprehensive reference for terminology, abbreviations, and designations used in
 
 ### Organizations (In-Universe)
 
-**SAFETYNET** - Security and Field-Engagement Technology Yielding National Emergency Taskforce
+**SAFETYNET** - Security And Field-Engagement Technology Yielding Nonaligned Emergency Taskforce
 **ENTROPY** - (Name may be SAFETYNET designation; true name unknown)
 
 ### Game Mechanics

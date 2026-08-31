@@ -13,7 +13,7 @@ Beneath the surface of normal society, two organizations wage a covert war for c
 #### SAFETYNET's Mission
 **Stated Purpose:**
 - Protect digital infrastructure
-- Counter cyber threats to national security
+- Counter cyber threats to critical infrastructure, wherever they surface
 - Neutralize ENTROPY operations
 - Defend critical systems
 - Maintain stability

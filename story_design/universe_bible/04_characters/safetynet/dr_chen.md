@@ -62,7 +62,7 @@
 
 **Why She Stays**:
 - Intellectually challenging work daily
-- Direct impact on national security
+- Work that measurably keeps infrastructure standing
 - Access to latest threats and technologies
 - Freedom to develop innovative solutions
 - Collaborative environment with field agents
@@ -84,8 +84,8 @@
 **Chief Technical Analyst** (Year 0 to Present):
 - Oversees all technical analysis operations
 - Briefs agents on complex exploits
-- Develops organizational technical capabilities
-- Represents SAFETYNET at inter-agency technical meetings
+- Develops organisational technical capabilities
+- Fronts SAFETYNET at industry and research gatherings, always under cover
 - Still personally handles most interesting problems
 
 ### Notable Contributions

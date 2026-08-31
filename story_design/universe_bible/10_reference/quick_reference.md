@@ -3,7 +3,7 @@
 ## Organizations at a Glance
 
 ### SAFETYNET
-**What:** Security and Field-Engagement Technology Yielding National Emergency Taskforce
+**What:** Security And Field-Engagement Technology Yielding Nonaligned Emergency Taskforce
 **Role:** Covert counter-espionage organization protecting digital infrastructure
 **Structure:** Agent designation 0x00 series (field analysts), 0x90+ series (senior operatives)
 **Mission:** Neutralize ENTROPY operations through offensive security operations

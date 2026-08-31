@@ -15,7 +15,7 @@ Agents quote the Handbook to justify nearly any action. The key is finding the r
 
 The Handbook's introduction (which agents skip) outlines core principles:
 
-1. **Protect National Security Interests**: Prevent threats to critical infrastructure and national security
+1. **Protect Critical Infrastructure**: Prevent threats to the systems populations depend on, in any jurisdiction
 2. **Maintain Operational Security**: Protect agent identities and SAFETYNET operations
 3. **Operate Within Legal Frameworks**: Conduct operations with appropriate authorisation*
 4. **Minimise Collateral Impact**: Avoid unnecessary harm to civilians and innocent organisations

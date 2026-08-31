@@ -66,7 +66,7 @@ Leave this deliberately vague. LORE fragments can hint at deeper history, but ne
 ### SAFETYNET Founded: [CLASSIFIED]
 
 **Official Record:**
-> "SAFETYNET was established under [REDACTED] authorization to counter emerging cyber threats to national security and critical infrastructure. Exact date: [CLASSIFIED]."
+> "SAFETYNET was established under [REDACTED] to counter emerging cyber threats to critical infrastructure, across borders and outside them. Exact date: [CLASSIFIED]."
 
 **What We Can Infer:**
 - Likely late 1990s or early 2000s

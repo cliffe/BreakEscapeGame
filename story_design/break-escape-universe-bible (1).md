@@ -1,5 +1,9 @@
 # Break Escape: Universe Bible & Scenario Design Guide
 
+> **SUPERSEDED (noted 2026-08-30).** This single-file draft dates from Nov 2025 and has been
+> replaced by the structured bible in `universe_bible/`. Where the two disagree, `universe_bible/`
+> wins. Retained for history only — do not write new canon here.
+
 ---
 
 ## Table of Contents
@@ -57,7 +61,7 @@ As a rookie agent specialising in cyber security, you're thrust into the field, 
 
 ### SAFETYNET
 
-**Official Designation:** Security and Field-Engagement Technology Yielding National Emergency Taskforce  
+**Official Designation:** Security And Field-Engagement Technology Yielding Nonaligned Emergency Taskforce  
 **Known As:** SAFETYNET  
 **Classification:** Covert Counter-Espionage Organisation  
 **Founded:** [Classified]  

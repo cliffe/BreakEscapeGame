@@ -1,5 +1,11 @@
 # Grid Down - Complete Scenario
 
+> **Canon note (2026-08-30):** "Blackout" is **Dr. James Mercer**, per
+> `03_entropy_cells/critical_mass.md`. This document previously called him Michael
+> Bradford; the names have been reconciled. This file remains an illustrative design
+> sketch — where it differs from the cell file or from `m07_architects_gambit`, those win.
+
+
 ## Scenario Overview
 
 **Type**: Defensive Operations / Infrastructure Defense
@@ -75,7 +81,7 @@ SAFETYNET has 90 minutes to identify the insider, stop the attack, and prevent c
 - Resists sharing access initially
 - "This is a secure facility. Who authorized you?"
 
-**4. Michael Bradford (Systems Contractor - actually BLACKOUT)**
+**4. Dr. James Mercer (Systems Contractor - actually BLACKOUT)**
 - Calm, almost too helpful
 - Offers to "assist" with investigation
 - Subtly tries to steer player away from certain systems
@@ -101,7 +107,7 @@ SAFETYNET has 90 minutes to identify the insider, stop the attack, and prevent c
 **Player Must Determine:**
 1. Is this technical failure or attack? (Attack - evidence in logs)
 2. Is attack ongoing or staged? (Ongoing - commands still being sent)
-3. Is there an insider? (Yes - will discover Bradford)
+3. Is there an insider? (Yes - will discover Mercer)
 4. How long until critical failure? (Countdown timer appears: 75 minutes)
 
 ---
@@ -208,7 +214,7 @@ SAFETYNET has 90 minutes to identify the insider, stop the attack, and prevent c
 - Multiple unauthorized accesses
 - Pattern shows insider with legitimate credentials
 - **Puzzle**: Correlate access times with attack events
-- **Discovery**: Contractor "Bradford" access aligns with every attack action
+- **Discovery**: Contractor "Mercer" access aligns with every attack action
 
 **Intrusion Detection:**
 - Find how attacker maintains persistence
@@ -251,7 +257,7 @@ SAFETYNET has 90 minutes to identify the insider, stop the attack, and prevent c
 ### Evidence Correlation
 
 **Clue 1: Access Patterns**
-- Bradford's credentials used during all attack events
+- Mercer's credentials used during all attack events
 - Location: Network Operations Center logs
 
 **Clue 2: Technical Knowledge**
@@ -263,7 +269,7 @@ SAFETYNET has 90 minutes to identify the insider, stop the attack, and prevent c
 - Location: Network traffic analysis
 
 **Clue 4: Behavioral Indicators**
-- Bradford attempting to misdirect investigation
+- Mercer attempting to misdirect investigation
 - Overly calm during crisis
 - Offers to "help" in ways that slow player
 - Location: Player observation during interactions
@@ -271,27 +277,27 @@ SAFETYNET has 90 minutes to identify the insider, stop the attack, and prevent c
 **Clue 5: Physical Evidence**
 - USB device in contractor workspace (if investigated)
 - Contains Critical Mass tools and documentation
-- Location: Bradford's temporary office (requires investigation)
+- Location: Mercer's temporary office (requires investigation)
 
 ---
 
-### Bradford (Blackout) Reveals Himself
+### Mercer (Blackout) Reveals Himself
 
-**Trigger**: When player has gathered sufficient evidence and approaches Bradford OR attempts to access his workstation
+**Trigger**: When player has gathered sufficient evidence and approaches Mercer OR attempts to access his workstation
 
 **Scene: Confrontation Begins**
 
-> **Player**: "Bradford, your access credentials match every attack event. The traffic from your workstation goes to known ENTROPY infrastructure. Who are you really?"
+> **Player**: "Mercer, your access credentials match every attack event. The traffic from your workstation goes to known ENTROPY infrastructure. Who are you really?"
 >
-> **Bradford**: *Pause. Expression shifts from helpful to cold.* "I was wondering when you'd figure it out. Took you longer than I expected, Agent. Yes, SAFETYNET. I know who you are."
+> **Mercer**: *Pause. Expression shifts from helpful to cold.* "I was wondering when you'd figure it out. Took you longer than I expected, Agent. Yes, SAFETYNET. I know who you are."
 >
-> **Bradford**: "Critical Mass. We don't attack infrastructure—we reveal its fragility. This grid has been vulnerable for years. We're just... demonstrating inevitability."
+> **Mercer**: "Critical Mass. We don't attack infrastructure—we reveal its fragility. This grid has been vulnerable for years. We're just... demonstrating inevitability."
 
 **Player realizes:**
-- Bradford is "Blackout," Critical Mass cell leader
+- Mercer is "Blackout," Critical Mass cell leader
 - Attack has been in motion for weeks
 - Peak demand failure is deliberate timing
-- Bradford has prepared multiple fallback attacks
+- Mercer has prepared multiple fallback attacks
 
 ---
 
@@ -299,12 +305,12 @@ SAFETYNET has 90 minutes to identify the insider, stop the attack, and prevent c
 
 **Choice 1: Innocent Staff Member Was Manipulated**
 
-**Situation**: Sarah (SCADA Engineer) unknowingly helped Bradford by providing credentials when he claimed to be "testing backup systems."
+**Situation**: Sarah (SCADA Engineer) unknowingly helped Mercer by providing credentials when he claimed to be "testing backup systems."
 
 **Options:**
 - **A**: Report her (by the book, she may face consequences for negligence)
 - **B**: Protect her (compassionate, she was tricked)
-- **C**: Use her help to counter Bradford (strategic, requires her cooperation)
+- **C**: Use her help to counter Mercer (strategic, requires her cooperation)
 
 **Impact:**
 - A: By the book, loses potential ally
@@ -334,12 +340,12 @@ SAFETYNET has 90 minutes to identify the insider, stop the attack, and prevent c
 **Situation**: 2 million people are potentially at risk. Notify public to prepare or keep quiet to avoid panic?
 
 **Options:**
-- **A**: Notify immediately (ethical, causes panic, Bradford might accelerate)
+- **A**: Notify immediately (ethical, causes panic, Mercer might accelerate)
 - **B**: Wait until attack stopped (practical, risk to unprepared citizens)
 - **C**: Selective notification (hospitals, emergency services only)
 
 **Impact:**
-- A: Panic but preparedness, Bradford may escalate
+- A: Panic but preparedness, Mercer may escalate
 - B: Calm but risky, focus on resolution
 - C: Balanced, protects critical facilities
 
@@ -359,9 +365,9 @@ SAFETYNET has 90 minutes to identify the insider, stop the attack, and prevent c
 **Category**: The Architect
 **Content**: "The Architect to Critical Mass cell leaders: 'Infrastructure attacks are demonstrations, not goals. Each successful attack proves societal fragility. When populations lose trust in essential services, chaos becomes self-sustaining. You need not destroy everything—only show it CAN be destroyed.'"
 
-**Fragment 4: Bradford's Workstation (Encrypted)**
+**Fragment 4: Mercer's Workstation (Encrypted)**
 **Category**: Villain Background
-**Content**: "'Blackout' (Real name: Michael Bradford): Former grid engineer, disillusioned after infrastructure vulnerabilities he reported were ignored for budget reasons. Recruited by Critical Mass when city experienced minor blackout due to exact vulnerabilities he'd warned about. Sees himself as prophet, not terrorist."
+**Content**: "'Blackout' (Real name: Dr. James Mercer): Former grid engineer, disillusioned after infrastructure vulnerabilities he reported were ignored for budget reasons. Recruited by Critical Mass when city experienced minor blackout due to exact vulnerabilities he'd warned about. Sees himself as prophet, not terrorist."
 
 **Fragment 5: Physical Evidence (USB Device)**
 **Category**: Historical Context
@@ -373,7 +379,7 @@ SAFETYNET has 90 minutes to identify the insider, stop the attack, and prevent c
 
 **Primary:**
 - ☐ Stop attack on SCADA systems
-- ☐ Identify insider threat (Bradford/Blackout)
+- ☐ Identify insider threat (Mercer/Blackout)
 - ☐ Secure backup systems
 - ☐ Prevent grid cascade failure
 - ☐ Gather evidence of ENTROPY involvement
@@ -393,19 +399,19 @@ SAFETYNET has 90 minutes to identify the insider, stop the attack, and prevent c
 
 ### The Final Attack Stage
 
-**Situation**: Bradford realizes he's been discovered and activates final attack sequence
+**Situation**: Mercer realizes he's been discovered and activates final attack sequence
 
-**Bradford's Monologue:**
+**Mercer's Monologue:**
 
-> **Bradford**: "You think you've won? Agent, this isn't about one grid, one night. It's about inevitability. The second law of thermodynamics: entropy always increases. Order degrades to chaos. I'm just a catalyst."
+> **Mercer**: "You think you've won? Agent, this isn't about one grid, one night. It's about inevitability. The second law of thermodynamics: entropy always increases. Order degrades to chaos. I'm just a catalyst."
 >
-> **Bradford**: "I reported vulnerabilities in this system three years ago. Ignored. Budget constraints. 'Acceptable risk.' Well, tonight we find out if it was acceptable."
+> **Mercer**: "I reported vulnerabilities in this system three years ago. Ignored. Budget constraints. 'Acceptable risk.' Well, tonight we find out if it was acceptable."
 >
-> **Bradford**: "You can stop me. Maybe. But there are dozens like me in Critical Mass. Hundreds of vulnerable infrastructures. Eventually, entropy wins. It always does."
+> **Mercer**: "You can stop me. Maybe. But there are dozens like me in Critical Mass. Hundreds of vulnerable infrastructures. Eventually, entropy wins. It always does."
 
 **Attack Escalation:**
 - Remote access activated (SCADA Queen joining attack)
-- Dead man's switch revealed (if Bradford arrested, attack accelerates)
+- Dead man's switch revealed (if Mercer arrested, attack accelerates)
 - Multiple substations now targeted simultaneously
 - Time to cascade: 25 minutes
 
@@ -440,7 +446,7 @@ SAFETYNET has 90 minutes to identify the insider, stop the attack, and prevent c
 
 ---
 
-### Confrontation with Bradford/Blackout
+### Confrontation with Mercer/Blackout
 
 **Player Options:**
 
@@ -448,34 +454,34 @@ SAFETYNET has 90 minutes to identify the insider, stop the attack, and prevent c
 
 **Option A: Immediate Arrest**
 
-> **Player**: "Bradford, you're under arrest. Security, restrain him now."
+> **Player**: "Mercer, you're under arrest. Security, restrain him now."
 
 **Mechanics:**
-- Bradford arrested before he can escalate
+- Mercer arrested before he can escalate
 - Dead man's switch triggers (attack accelerates slightly)
 - Must resolve technical challenges without his input
 - Ethical, safe, harder technical path
 
-**Bradford's Response:**
+**Mercer's Response:**
 > "You're making a mistake, Agent. Only I know where all the backdoors are. But sure, do it your way. Good luck."
 
 **Debrief Impact**:
-> **Agent 0x99**: "Clean arrest. Bradford is in federal custody. The dead man's switch complicated things, but you handled it. Professional work under pressure."
+> **Agent 0x99**: "Clean arrest. Mercer is in federal custody. The dead man's switch complicated things, but you handled it. Professional work under pressure."
 
 ---
 
 **Option B: Force Cooperation**
 
-> **Player**: "Help me stop this attack, Bradford. Now. Or I ensure you're charged with terrorism and 2 million counts of attempted manslaughter."
+> **Player**: "Help me stop this attack, Mercer. Now. Or I ensure you're charged with terrorism and 2 million counts of attempted manslaughter."
 
 **Mechanics:**
 - Coerced cooperation
-- Bradford provides technical assistance
+- Mercer provides technical assistance
 - Easier technical challenges
 - Morally grey approach
-- Bradford may sabotage if not watched
+- Mercer may sabotage if not watched
 
-**Bradford's Response:**
+**Mercer's Response:**
 > "Threatening me? Fine. I'll help. But this proves my point—even your agency uses force when systems fail. Chaos just beneath the order."
 
 **Debrief Impact**:
@@ -485,20 +491,20 @@ SAFETYNET has 90 minutes to identify the insider, stop the attack, and prevent c
 
 **Option C: Negotiate/Recruit**
 
-> **Player**: "Bradford, Critical Mass is using you. You reported these vulnerabilities—you wanted them fixed. Help me prove that's still possible. Work with us."
+> **Player**: "Mercer, Critical Mass is using you. You reported these vulnerabilities—you wanted them fixed. Help me prove that's still possible. Work with us."
 
 **Mechanics:**
-- Requires evidence of Bradford's original warnings
+- Requires evidence of Mercer's original warnings
 - Appeal to his original intentions
 - Can flip him against Critical Mass
 - Highest difficulty social engineering
 - Success: Ongoing asset, complete intelligence
 - Failure: He refuses, leads to Option A or B
 
-**Bradford's Response (Success):**
+**Mercer's Response (Success):**
 > "I... You read my reports. Three years ago. Before Critical Mass found me. Before I gave up on the system. Maybe... maybe it's not too late to fix this the right way."
 
-**Bradford's Response (Failure):**
+**Mercer's Response (Failure):**
 > "Nice try, Agent. But I chose this path with eyes open. The system can't be fixed from inside. Entropy is inevitable."
 
 **Debrief Impact (Success)**:
@@ -508,17 +514,17 @@ SAFETYNET has 90 minutes to identify the insider, stop the attack, and prevent c
 
 **Option D: Combat/Forceful Shutdown**
 
-> **Player**: *Physically restrains Bradford and manually shuts down his systems*
+> **Player**: *Physically restrains Mercer and manually shuts down his systems*
 
 **Mechanics:**
-- Combat encounter (brief, Bradford is engineer not fighter)
+- Combat encounter (brief, Mercer is engineer not fighter)
 - Immediate shutdown of his access
 - Dead man's switch activates (attack worsens)
 - Must resolve all technical challenges under maximum pressure
 - Fastest resolution but hardest technical path
 
 **Debrief Impact**:
-> **Agent 0x99**: "Decisive action. Bradford neutralized, systems secured, grid stable. The use of force was... justified given the crisis. Effective crisis response, Agent."
+> **Agent 0x99**: "Decisive action. Mercer neutralized, systems secured, grid stable. The use of force was... justified given the crisis. Effective crisis response, Agent."
 
 ---
 
@@ -527,26 +533,26 @@ SAFETYNET has 90 minutes to identify the insider, stop the attack, and prevent c
 **Perfect Success:**
 - All substations operational
 - Zero service interruptions
-- Bradford arrested or recruited
+- Mercer arrested or recruited
 - Complete evidence collected
 - SCADA Queen connection severed
 
 **Good Success:**
 - Minimal outages (< 10,000 affected)
 - Grid stabilized
-- Bradford dealt with
+- Mercer dealt with
 - Evidence secured
 
 **Partial Success:**
 - Significant outages but no cascade
 - Grid ultimately stable
-- Bradford arrested
+- Mercer arrested
 - Some evidence lost
 
 **Failure (Rare, requires very poor choices):**
 - Regional blackout
 - Cascading failures
-- Bradford escapes in chaos
+- Mercer escapes in chaos
 - Mission failure
 
 ---
@@ -556,13 +562,13 @@ SAFETYNET has 90 minutes to identify the insider, stop the attack, and prevent c
 **Primary:**
 - ☐ Stop final attack sequence
 - ☐ Prevent grid cascade
-- ☐ Deal with Bradford/Blackout
+- ☐ Deal with Mercer/Blackout
 - ☐ Secure all SCADA systems
 - ☐ Neutralize remote access (SCADA Queen)
 
 **Bonus:**
 - ★ Zero outages
-- ★ Recruit Bradford as asset
+- ★ Recruit Mercer as asset
 - ★ Identify SCADA Queen's location
 - ★ Recover all Critical Mass attack tools
 - ★ Preserve evidence for prosecution
@@ -577,7 +583,7 @@ SAFETYNET has 90 minutes to identify the insider, stop the attack, and prevent c
 >
 > **Director Netherton**: "Textbook emergency response under unprecedented pressure. Lives saved, infrastructure protected, ENTROPY cell leader captured. Commendation logged."
 >
-> **Agent 0x99**: "Bradford is cooperating. His technical knowledge of infrastructure vulnerabilities is... concerning and valuable. He's identified six other grids with similar weaknesses. We're moving to secure them. I'm updating your specialization in ICS/SCADA Security and Incident Response."
+> **Agent 0x99**: "Mercer is cooperating. His technical knowledge of infrastructure vulnerabilities is... concerning and valuable. He's identified six other grids with similar weaknesses. We're moving to secure them. I'm updating your specialization in ICS/SCADA Security and Incident Response."
 
 ---
 
@@ -587,7 +593,7 @@ SAFETYNET has 90 minutes to identify the insider, stop the attack, and prevent c
 >
 > **Director Netherton**: "Acceptable losses given the timeline and scope. Critical Mass tested our response capabilities. You proved we can adapt and defend under pressure."
 >
-> **Agent 0x99**: "Bradford is in federal custody. Critical Mass lost a cell leader and their attack failed. The substations can be restored within 6 hours. Your work under pressure was solid."
+> **Agent 0x99**: "Mercer is in federal custody. Critical Mass lost a cell leader and their attack failed. The substations can be restored within 6 hours. Your work under pressure was solid."
 
 ---
 
@@ -595,15 +601,15 @@ SAFETYNET has 90 minutes to identify the insider, stop the attack, and prevent c
 
 > **Agent 0x99**: "You flipped Blackout. A Critical Mass cell leader. Agent, do you understand the intelligence value here?"
 >
-> **Director Netherton**: "Per Section 19, Paragraph 7: You are now responsible for this asset. Bradford will assist in securing infrastructure vulnerabilities while under SAFETYNET supervision. Risky. Bold. Potentially brilliant."
+> **Director Netherton**: "Per Section 19, Paragraph 7: You are now responsible for this asset. Mercer will assist in securing infrastructure vulnerabilities while under SAFETYNET supervision. Risky. Bold. Potentially brilliant."
 >
-> **Agent 0x99**: "Bradford is providing complete infrastructure attack methodologies. We're learning how Critical Mass identifies targets, develops exploits, and times attacks. This could protect thousands of installations. Well done."
+> **Agent 0x99**: "Mercer is providing complete infrastructure attack methodologies. We're learning how Critical Mass identifies targets, develops exploits, and times attacks. This could protect thousands of installations. Well done."
 
 ---
 
 ### Ending D: Hard-Won Victory
 
-> **Agent 0x99**: "Grid is stable. Bradford is in custody. But we took damage—substations 7, 12, and 19 offline, about 50,000 people in the dark. The attack was stopped, but at a cost."
+> **Agent 0x99**: "Grid is stable. Mercer is in custody. But we took damage—substations 7, 12, and 19 offline, about 50,000 people in the dark. The attack was stopped, but at a cost."
 >
 > **Director Netherton**: "The cascade was prevented. That was priority one. The local outages are inconvenient but manageable. Emergency services have backup power. You made hard calls under pressure."
 >
@@ -615,9 +621,9 @@ SAFETYNET has 90 minutes to identify the insider, stop the attack, and prevent c
 
 > **Agent 0x99**: "One more thing, Agent. We traced the remote access connection—SCADA Queen was operating from a Critical Mass safe house in [location]. Local authorities raided it, but she'd already evacuated. She's still out there."
 >
-> **Agent 0x99**: "Bradford's interrogation revealed this was a test. Critical Mass is mapping vulnerabilities across national infrastructure. Power grids, water systems, transportation networks—they're systematically identifying weaknesses. This wasn't about one blackout. It was about proving they COULD cause blackouts at will."
+> **Agent 0x99**: "Mercer's interrogation revealed this was a test. Critical Mass is mapping vulnerabilities across national infrastructure. Power grids, water systems, transportation networks—they're systematically identifying weaknesses. This wasn't about one blackout. It was about proving they COULD cause blackouts at will."
 >
-> **Agent 0x99**: "The Architect sent Bradford a message before the operation: 'Demonstrate fragility. Society's order is maintained by infrastructure they take for granted. Show them how thin that line is.' They're not trying to destroy civilization—they're trying to destabilize trust in it."
+> **Agent 0x99**: "The Architect sent Mercer a message before the operation: 'Demonstrate fragility. Society's order is maintained by infrastructure they take for granted. Show them how thin that line is.' They're not trying to destroy civilization—they're trying to destabilize trust in it."
 >
 > **Agent 0x99**: "We're coordinating with infrastructure security across the country. Your work here created a defensive playbook. Rest up, Agent. Critical Mass won't stop with one failed operation."
 

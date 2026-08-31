@@ -41,7 +41,7 @@ Examples:
 
 ## What You Do
 
-You've recently joined **SAFETYNET**, a covert counter-espionage organisation dedicated to protecting digital infrastructure and national security.
+You've recently joined **SAFETYNET**, a secret international organisation dedicated to protecting digital infrastructure. It belongs to no country and answers to no government. Its authority is entirely its own, which is another way of saying it has none—and it operates everywhere regardless.
 
 ### Primary Mission
 
@@ -178,11 +178,11 @@ Haxolottle is a veteran agent who's seen it all and has a peculiar fondness for 
 
 ### Your Advantages
 
-**Legitimacy:**
-- Legal cover for operations (mostly)
-- Can request legitimate access
-- Authority to investigate
-- Cooperation from some targets
+**Credibility:**
+- Cover identities that stand up to scrutiny
+- Can request access as a consultant, auditor or contractor
+- Front companies with genuine clients and real reputations
+- Cooperation from some targets, freely given because the cover earned it
 
 **Resources:**
 - SAFETYNET's accumulated intelligence
@@ -363,10 +363,10 @@ While SAFETYNET represents "the good guys," field operations involve ethical com
 
 **Justifications:**
 - Greater good (preventing attacks)
-- Legal framework (mostly legitimate authorization)
+- Contracts and covers that make most of what you do defensible
 - Minimizing harm (non-lethal methods preferred)
 - Legitimate targets (ENTROPY, not innocents)
-- Oversight (SAFETYNET command approval)
+- Oversight (SAFETYNET command approval, such as it is)
 
 **Questions you'll face:**
 - Is this infiltration justified?
@@ -442,7 +442,7 @@ When writing for Agent 0x00:
 - **[Setting](setting.md)** - The world you operate in
 - **[Tone & Atmosphere](tone_and_atmosphere.md)** - How the narrative feels
 - **[Agent 0x00 Character Profile](../04_characters/safetynet/agent_0x00.md)** - Detailed character information
-- **[SAFETYNET Overview](../02_organisations/safetynet/overview.md)** - Your organization
+- **[SAFETYNET Overview](../02_organisations/safetynet/overview.md)** - Your organisation
 - **[ENTROPY Overview](../02_organisations/entropy/overview.md)** - Your adversary
 
 ---

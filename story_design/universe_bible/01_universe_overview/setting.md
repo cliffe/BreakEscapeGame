@@ -4,6 +4,12 @@
 
 Break Escape takes place in a contemporary world—our world—where cyber security threats have become the primary battlefield for international espionage and criminal enterprise. The year is the present day, the technology is current, and the threats are real. But beneath the surface of legitimate business and government operations, two secret organisations wage a shadow war that most citizens never know exists.
 
+### Where This Happens
+
+Everywhere. SAFETYNET operates without regard to borders, and so does ENTROPY. Missions open and close at a SAFETYNET site—the primary headquarters or one of the station houses scattered across the continents—and the work in between happens wherever the target is: a Rotterdam logistics yard, a Singapore exchange, a substation in the Baltic, an office park outside Denver.
+
+The agency's centre of gravity is British. Its working language is English, its paperwork reads like a Whitehall memo that has been through several careful hands, and its house culture travels with the agents who deploy from it. That is a matter of custom rather than allegiance. SAFETYNET is not a British organisation, or any other country's.
+
 ### The Surface World
 
 To the average person, this is a normal world:
@@ -84,7 +90,7 @@ In the contemporary world, cyber security has become the primary battlefield for
 - A single skilled hacker can impact millions
 - Attacks can be launched from anywhere in the world
 - Attribution is difficult and time-consuming
-- Defense must succeed every time; offense only needs to succeed once
+- Defence must succeed every time; offence only needs to succeed once
 
 **3. Dual-Use Technology**
 - The same tools used for security testing can be used for attacks
@@ -120,10 +126,10 @@ The battles fought in the shadows have real-world consequences:
 - Identity theft destroys lives
 - Surveillance enables oppression
 
-**National Security:**
-- Classified data breaches compromise defense
-- Supply chain attacks undermine security
-- Foreign interference threatens sovereignty
+**Strategic Harm:**
+- Classified data breaches compromise defence
+- Supply chain attacks undermine whole industries
+- Interference in one state's systems destabilises its neighbours
 - Insider threats penetrate sensitive systems
 
 ---
@@ -150,7 +156,7 @@ Most people don't know about SAFETYNET or ENTROPY specifically, but they're awar
 - Nation-states conduct cyber operations
 - Consultants help secure systems
 
-What they don't realize is how organized and pervasive the threat is, or that a secret organization works to counter it.
+What they don't realise is how organised and pervasive the threat is, or that a secret organisation works to counter it.
 
 ### The Cover Story
 
@@ -252,7 +258,7 @@ Similarly, ENTROPY has quietly spread:
 ### The Balance of Power
 
 Neither side has overwhelming advantage:
-- SAFETYNET has legitimacy and resources
+- SAFETYNET has reach, patience and resources
 - ENTROPY has initiative and unpredictability
 - Battles are won and lost by both sides
 - The war continues without decisive victory
