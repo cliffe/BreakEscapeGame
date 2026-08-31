@@ -19,9 +19,9 @@ VAR player_name = "Agent 0x00"
 // ================================================
 
 === start ===
-Agent 0x99: {player_name}, great work on the previous missions. But now we need to answer the big question.
+Agent HaX: {player_name}, great work on the previous missions. But now we need to answer the big question.
 
-Agent 0x99: Where's the money coming from?
+Agent HaX: Where's the money coming from?
 
 + [Following the financial trail?]
     -> financial_investigation
@@ -35,11 +35,11 @@ Agent 0x99: Where's the money coming from?
 // ================================================
 
 === money_explanation ===
-Agent 0x99: Think about it. The hospital ransomware from Mission 2? $2.4 million paid.
+Agent HaX: Think about it. The hospital ransomware from Mission 2? $2.4 million paid.
 
-Agent 0x99: The corporate espionage data from Mission 5? $847,000 in cryptocurrency.
+Agent HaX: The corporate espionage data from Mission 5? $847,000 in cryptocurrency.
 
-Agent 0x99: All ENTROPY cells are funded. Someone's coordinating the finances.
+Agent HaX: All ENTROPY cells are funded. Someone's coordinating the finances.
 
 -> financial_investigation
 
@@ -48,9 +48,9 @@ Agent 0x99: All ENTROPY cells are funded. Someone's coordinating the finances.
 // ================================================
 
 === financial_investigation ===
-Agent 0x99: Our blockchain analysts traced the cryptocurrency payments. And they all lead to one place.
+Agent HaX: Our blockchain analysts traced the cryptocurrency payments. And they all lead to one place.
 
-Agent 0x99: HashChain Exchange. A cryptocurrency trading platform run by ENTROPY's Crypto Anarchists cell.
+Agent HaX: HashChain Exchange. A cryptocurrency trading platform run by ENTROPY's Crypto Anarchists cell.
 
 + [How does the exchange fit in?]
     ~ asked_about_exchange = true
@@ -61,11 +61,11 @@ Agent 0x99: HashChain Exchange. A cryptocurrency trading platform run by ENTROPY
     -> architect_fund_hint
 
 === exchange_role ===
-Agent 0x99: HashChain isn't just a trading platform. It's the financial hub for all ENTROPY operations.
+Agent HaX: HashChain isn't just a trading platform. It's the financial hub for all ENTROPY operations.
 
-Agent 0x99: They provide mixing services—converting Bitcoin to untraceable privacy coins like Monero, then back again.
+Agent HaX: They provide mixing services—converting Bitcoin to untraceable privacy coins like Monero, then back again.
 
-Agent 0x99: Every cell funnels money through them. It's the perfect money laundering infrastructure.
+Agent HaX: Every cell funnels money through them. It's the perfect money laundering infrastructure.
 
 -> crypto_anarchists
 
@@ -74,9 +74,9 @@ Agent 0x99: Every cell funnels money through them. It's the perfect money launde
 // ================================================
 
 === crypto_anarchists ===
-Agent 0x99: The Crypto Anarchists are true believers. "Financial freedom through cryptography."
+Agent HaX: The Crypto Anarchists are true believers. "Financial freedom through cryptography."
 
-Agent 0x99: They think government control of money is tyranny. Cryptocurrency is liberation.
+Agent HaX: They think government control of money is tyranny. Cryptocurrency is liberation.
 
 + [So they're ideologically motivated?]
     -> ideology_discussion
@@ -86,9 +86,9 @@ Agent 0x99: They think government control of money is tyranny. Cryptocurrency is
     -> mission_objectives
 
 === ideology_discussion ===
-Agent 0x99: Absolutely. Their leader calls himself "Satoshi Nakamoto II"—obviously not the real Bitcoin creator.
+Agent HaX: Absolutely. Their leader calls himself "Satoshi Nakamoto II"—obviously not the real Bitcoin creator.
 
-Agent 0x99: But here's the thing: they're not just running an exchange. They're funding terrorism in the name of accelerating the collapse of centralized finance.
+Agent HaX: But here's the thing: they're not just running an exchange. They're funding terrorism in the name of accelerating the collapse of centralized finance.
 
 -> leadership_discussion
 
@@ -97,11 +97,11 @@ Agent 0x99: But here's the thing: they're not just running an exchange. They're 
 // ================================================
 
 === leadership_discussion ===
-Agent 0x99: Two key targets:
+Agent HaX: Two key targets:
 
-Agent 0x99: "Satoshi Nakamoto II"—the CEO. True believer, charismatic leader, probably unreachable for recruitment.
+Agent HaX: "Satoshi Nakamoto II"—the CEO. True believer, charismatic leader, probably unreachable for recruitment.
 
-Agent 0x99: Dr. Elena Volkov—the CTO. Brilliant cryptographer. Former academic. And... potentially recruitable.
+Agent HaX: Dr. Elena Volkov—the CTO. Brilliant cryptographer. Former academic. And... potentially recruitable.
 
 + [Why would she help us?]
     ~ asked_about_elena = true
@@ -113,11 +113,11 @@ Agent 0x99: Dr. Elena Volkov—the CTO. Brilliant cryptographer. Former academic
     -> architect_fund_hint
 
 === elena_background ===
-Agent 0x99: Elena's a genius. Published 37 papers on cryptography. 2,847 citations.
+Agent HaX: Elena's a genius. Published 37 papers on cryptography. 2,847 citations.
 
-Agent 0x99: She built HashChain's privacy infrastructure. But our psychological profile suggests moral conflict.
+Agent HaX: She built HashChain's privacy infrastructure. But our psychological profile suggests moral conflict.
 
-Agent 0x99: She designed these systems for "financial freedom." Now they're being used for ransomware, espionage, funding attacks.
+Agent HaX: She designed these systems for "financial freedom." Now they're being used for ransomware, espionage, funding attacks.
 
 + [Think she'll flip?]
     -> recruitment_possibility
@@ -125,16 +125,16 @@ Agent 0x99: She designed these systems for "financial freedom." Now they're bein
     -> arrest_option
 
 === recruitment_possibility ===
-Agent 0x99: It's possible. If you can show her the full scope of what her work is enabling—the casualties, the attacks—she might turn.
+Agent HaX: It's possible. If you can show her the full scope of what her work is enabling—the casualties, the attacks—she might turn.
 
-Agent 0x99: A cryptographer of her caliber would be a massive intelligence asset.
+Agent HaX: A cryptographer of her caliber would be a massive intelligence asset.
 
 -> mission_objectives
 
 === arrest_option ===
-Agent 0x99: Then we arrest her and eliminate her expertise from ENTROPY's network.
+Agent HaX: Then we arrest her and eliminate her expertise from ENTROPY's network.
 
-Agent 0x99: But {player_name}, if there's any chance of recruitment, it's worth trying. Her knowledge could crack multiple cells.
+Agent HaX: But {player_name}, if there's any chance of recruitment, it's worth trying. Her knowledge could crack multiple cells.
 
 -> mission_objectives
 
@@ -143,11 +143,11 @@ Agent 0x99: But {player_name}, if there's any chance of recruitment, it's worth 
 // ================================================
 
 === architect_fund_hint ===
-Agent 0x99: That's what we need you to find out.
+Agent HaX: That's what we need you to find out.
 
-Agent 0x99: Our blockchain analysis shows all ENTROPY payments flowing into HashChain's mixers...
+Agent HaX: Our blockchain analysis shows all ENTROPY payments flowing into HashChain's mixers...
 
-Agent 0x99: But then the trail goes dark. Privacy coins make it nearly impossible to track from the outside.
+Agent HaX: But then the trail goes dark. Privacy coins make it nearly impossible to track from the outside.
 
 + [So I need access to their internal records?]
     ~ asked_about_architect_fund = true
@@ -157,16 +157,16 @@ Agent 0x99: But then the trail goes dark. Privacy coins make it nearly impossibl
     -> evidence_targets
 
 === internal_access ===
-Agent 0x99: Exactly. Their financial database, transaction logs, wallet recovery keys.
+Agent HaX: Exactly. Their financial database, transaction logs, wallet recovery keys.
 
-Agent 0x99: The blockchain is public, but their internal mixing records will show us where the money actually goes.
+Agent HaX: The blockchain is public, but their internal mixing records will show us where the money actually goes.
 
 -> evidence_targets
 
 === evidence_targets ===
-Agent 0x99: Look for destination wallets, fund allocations, anything connecting to other ENTROPY cells.
+Agent HaX: Look for destination wallets, fund allocations, anything connecting to other ENTROPY cells.
 
-Agent 0x99: If there's a master fund coordinating everything, it'll be in their records.
+Agent HaX: If there's a master fund coordinating everything, it'll be in their records.
 
 -> mission_objectives
 
@@ -175,13 +175,13 @@ Agent 0x99: If there's a master fund coordinating everything, it'll be in their 
 // ================================================
 
 === mission_objectives ===
-Agent 0x99: Your mission objectives:
+Agent HaX: Your mission objectives:
 
-Agent 0x99: One—Infiltrate HashChain Exchange as a compliance auditor. Perfect cover for financial investigation.
+Agent HaX: One—Infiltrate HashChain Exchange as a compliance auditor. Perfect cover for financial investigation.
 
-Agent 0x99: Two—Access their backend servers and crack passwords to reach financial records.
+Agent HaX: Two—Access their backend servers and crack passwords to reach financial records.
 
-Agent 0x99: Three—Map the complete ENTROPY financial network. Every cell, every wallet, every transaction.
+Agent HaX: Three—Map the complete ENTROPY financial network. Every cell, every wallet, every transaction.
 
 + [How do I access the servers?]
     -> technical_approach
@@ -195,11 +195,11 @@ Agent 0x99: Three—Map the complete ENTROPY financial network. Every cell, ever
 // ================================================
 
 === technical_approach ===
-Agent 0x99: Their server room is password-protected. Typical crypto-themed passwords—we'll provide hints.
+Agent HaX: Their server room is password-protected. Typical crypto-themed passwords—we'll provide hints.
 
-Agent 0x99: Once you crack the first server, look for credential reuse. System admins get lazy.
+Agent HaX: Once you crack the first server, look for credential reuse. System admins get lazy.
 
-Agent 0x99: Your VM access terminal will let you practice password cracking against their infrastructure.
+Agent HaX: Your VM access terminal will let you practice password cracking against their infrastructure.
 
 + [What am I looking for in the financial data?]
     -> financial_targets
@@ -207,11 +207,11 @@ Agent 0x99: Your VM access terminal will let you practice password cracking agai
     -> cover_story
 
 === financial_targets ===
-Agent 0x99: Transaction records connecting Mission 2's ransomware and Mission 5's espionage payments.
+Agent HaX: Transaction records connecting Mission 2's ransomware and Mission 5's espionage payments.
 
-Agent 0x99: Wallet addresses for all ENTROPY cells.
+Agent HaX: Wallet addresses for all ENTROPY cells.
 
-Agent 0x99: And anything about coordinated funding—a master fund distributing money to multiple operations.
+Agent HaX: And anything about coordinated funding—a master fund distributing money to multiple operations.
 
 -> cover_story
 
@@ -220,11 +220,11 @@ Agent 0x99: And anything about coordinated funding—a master fund distributing 
 // ================================================
 
 === npc_strategy ===
-Agent 0x99: Build rapport with Elena. She's your best intelligence source and potential recruit.
+Agent HaX: Build rapport with Elena. She's your best intelligence source and potential recruit.
 
-Agent 0x99: Satoshi is a true believer—useful for understanding their ideology, but unlikely to cooperate.
+Agent HaX: Satoshi is a true believer—useful for understanding their ideology, but unlikely to cooperate.
 
-Agent 0x99: The traders and analysts are mostly innocent. They think they work at a legitimate exchange.
+Agent HaX: The traders and analysts are mostly innocent. They think they work at a legitimate exchange.
 
 -> cover_story
 
@@ -233,11 +233,11 @@ Agent 0x99: The traders and analysts are mostly innocent. They think they work a
 // ================================================
 
 === cover_story ===
-Agent 0x99: You're a compliance auditor from FinCEN—Financial Crimes Enforcement Network.
+Agent HaX: You're a compliance auditor from FinCEN—Financial Crimes Enforcement Network.
 
-Agent 0x99: Cryptocurrency exchanges face constant regulatory scrutiny. Your audit is completely normal.
+Agent HaX: Cryptocurrency exchanges face constant regulatory scrutiny. Your audit is completely normal.
 
-Agent 0x99: Elena will meet you as CTO. She'll provide access to systems for "compliance verification."
+Agent HaX: Elena will meet you as CTO. She'll provide access to systems for "compliance verification."
 
 + [What if they see through the cover?]
     -> cover_backup
@@ -245,9 +245,9 @@ Agent 0x99: Elena will meet you as CTO. She'll provide access to systems for "co
     -> final_briefing
 
 === cover_backup ===
-Agent 0x99: Your credentials are genuine—we have real FinCEN paperwork. HashChain has no reason to suspect.
+Agent HaX: Your credentials are genuine—we have real FinCEN paperwork. HashChain has no reason to suspect.
 
-Agent 0x99: And even if they do? You'll be inside their systems before they can react.
+Agent HaX: And even if they do? You'll be inside their systems before they can react.
 
 -> final_briefing
 
@@ -256,11 +256,11 @@ Agent 0x99: And even if they do? You'll be inside their systems before they can 
 // ================================================
 
 === resources ===
-Agent 0x99: You'll have phone contact with me throughout the mission.
+Agent HaX: You'll have phone contact with me throughout the mission.
 
-Agent 0x99: SAFETYNET flag station in their server room for submitting intelligence.
+Agent HaX: SAFETYNET flag station in their server room for submitting intelligence.
 
-Agent 0x99: And {player_name}—I've uploaded password cracking tools and dictionaries to your VM environment.
+Agent HaX: And {player_name}—I've uploaded password cracking tools and dictionaries to your VM environment.
 
 + [What about physical tools?]
     -> physical_tools
@@ -268,9 +268,9 @@ Agent 0x99: And {player_name}—I've uploaded password cracking tools and dictio
     -> final_briefing
 
 === physical_tools ===
-Agent 0x99: RFID badge cloner for accessing restricted areas. You'll find one inside—these crypto types love their security toys.
+Agent HaX: RFID badge cloner for accessing restricted areas. You'll find one inside—these crypto types love their security toys.
 
-Agent 0x99: Everything else you need should be available as an "auditor." Leverage your cover.
+Agent HaX: Everything else you need should be available as an "auditor." Leverage your cover.
 
 -> final_briefing
 
@@ -279,11 +279,11 @@ Agent 0x99: Everything else you need should be available as an "auditor." Levera
 // ================================================
 
 === final_briefing ===
-Agent 0x99: {player_name}, this is a critical mission.
+Agent HaX: {player_name}, this is a critical mission.
 
-Agent 0x99: We've been fighting individual ENTROPY cells. This is our chance to understand the entire financial infrastructure.
+Agent HaX: We've been fighting individual ENTROPY cells. This is our chance to understand the entire financial infrastructure.
 
-Agent 0x99: Map the network. Find where the money goes. And if you can recruit Elena? That's a strategic intelligence win.
+Agent HaX: Map the network. Find where the money goes. And if you can recruit Elena? That's a strategic intelligence win.
 
 + [What if I find something bigger than individual cells?]
     -> bigger_picture
@@ -293,20 +293,20 @@ Agent 0x99: Map the network. Find where the money goes. And if you can recruit E
     -> deployment
 
 === bigger_picture ===
-Agent 0x99: Then we've struck gold.
+Agent HaX: Then we've struck gold.
 
-Agent 0x99: If there's a central fund coordinating all ENTROPY operations, that's the kind of intelligence that could let us move against multiple cells simultaneously.
+Agent HaX: If there's a central fund coordinating all ENTROPY operations, that's the kind of intelligence that could let us move against multiple cells simultaneously.
 
-Agent 0x99: Follow the money. It always tells the truth.
+Agent HaX: Follow the money. It always tells the truth.
 
 -> deployment
 
 === final_advice ===
-Agent 0x99: Remember: Elena is brilliant but conflicted. Appeal to her ethics, not her ideology.
+Agent HaX: Remember: Elena is brilliant but conflicted. Appeal to her ethics, not her ideology.
 
-Agent 0x99: Satoshi is a true believer. Understand his perspective but don't expect conversion.
+Agent HaX: Satoshi is a true believer. Understand his perspective but don't expect conversion.
 
-Agent 0x99: And crack those passwords carefully—you'll need access to multiple servers to piece together the complete network.
+Agent HaX: And crack those passwords carefully—you'll need access to multiple servers to piece together the complete network.
 
 -> deployment
 
@@ -315,15 +315,16 @@ Agent 0x99: And crack those passwords carefully—you'll need access to multiple
 // ================================================
 
 === deployment ===
-Agent 0x99: One more thing: we're racing the clock.
+Agent HaX: One more thing: we're racing the clock.
 
-Agent 0x99: Our intelligence suggests a major fund distribution happening soon. If ENTROPY moves money to all cells simultaneously, they're coordinating something big.
+Agent HaX: Our intelligence suggests a major fund distribution happening soon. If ENTROPY moves money to all cells simultaneously, they're coordinating something big.
 
-Agent 0x99: Get inside. Map the network. Find the fund. And make the critical choices about assets and recruitment.
+Agent HaX: Get inside. Map the network. Find the fund. And make the critical choices about assets and recruitment.
 
-Agent 0x99: HashChain Exchange is the financial heart of ENTROPY. Let's see if we can stop it from beating.
+Agent HaX: HashChain Exchange is the financial heart of ENTROPY. Let's see if we can stop it from beating.
 
 ~ mission_accepted = true
 
+#complete_task:receive_briefing
 #exit_conversation
--> END
+-> DONE

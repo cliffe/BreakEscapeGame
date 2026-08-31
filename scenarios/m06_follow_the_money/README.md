@@ -1,6 +1,6 @@
 # Mission 6: Follow the Money
 
-**Status:** Design Complete, Implementation Pending **ENTROPY Cell:** Crypto Anarchists **SecGen Scenario:** Hackme and Crack Me (password cracking) **Difficulty:** Tier 2 (Intermediate)
+**Status:** Implemented — validator clean (0 errors, 0 warnings) **ENTROPY Cell:** Crypto Anarchists **SecGen Scenario:** Hackme and Crack Me (password cracking) **Difficulty:** Tier 2 (Intermediate)
 
 ## Mission Overview
 
@@ -63,19 +63,43 @@ Reception Lobby → Security Checkpoint → Trading Floor (central hub)
 
 **Post-Mission Hook:** Financial analysis reveals massive fund transfer in 72 hours to all cells. Coordinated multi-cell attack imminent. Player must choose which operation to stop in M7.
 
-## Implementation Tasks
+## Implementation Status
 
-- [ ] Write 9 Ink dialogue scripts (opening, NPCs, phone contacts, confrontations)
-- [ ] Compile Ink scripts to JSON
-- [ ] Create complete scenario.json.erb with all rooms and objects
-- [ ] Add password cracking mechanics and hints
-- [ ] Implement blockchain transaction visualization
-- [ ] Test progression path from infiltration to confrontation
-- [ ] Validate schema compliance
-- [ ] Integration testing with M2/M5 connections
+- [x] 7 Ink dialogue scripts written and compiled
+- [x] Complete `scenario.json.erb` — 9 rooms, 6 NPCs, aims with `unlockCondition` chaining
+- [x] Password cracking wired to 4 VM flags with `targetFlags` + handler `setGlobal` bridges
+- [x] RFID (`cto_badge`, `executive_badge`), password (server room) and PIN (safe) locks
+- [x] Field guides delivered on request via Agent HaX's `support_hub`, exposure-gated
+- [x] KO resilience — `taskOnKO` + `globalVarOnKO` on every person NPC, with handler fallbacks
+- [x] Opening cutscene (`timedConversation` + `skipIfGlobal`), closing debrief, credits
+- [x] Schema, ink, objective-wiring and room-geometry validation all clean
+- [ ] Playtest end-to-end against a live `hackme_crack_me_lab` VM
+
+## Locks and Keys
+
+| Lock | Type | Key | Clue location |
+|------|------|-----|---------------|
+| Server room door | `password` | `bitcoin2025` | IT New Starter Checklist, security checkpoint |
+| Elena's office | `rfid` | `cto_badge` | Elena hands it over at trust ≥ 25, or clone it with the trading-floor cloner |
+| Executive wing | `rfid` | `executive_badge` | Spare badge in the data centre |
+| Executive safe (optional) | `pin` | `2140` | Architect's email (Elena's office) and the manifesto margin note |
+
+## Field Guides
+
+Offered by Agent HaX only after the player meets the thing each guide explains, and handed
+over on request through a `support_hub` choice — never pushed into the inventory.
+
+| Guide | Offered on | Lab sheet |
+|-------|-----------|-----------|
+| Password cracking | Picking up Elena's wordlist | `ssh-access-and-bruteforce` |
+| Privilege escalation / credential reuse | Submitting flag 1 | `privilege-escalation` |
+| Reconnaissance | First interacting with the VM launcher | `reconnaissance-and-network-mapping` |
+| RFID cloning | Entering the security checkpoint | `rfid-cloning` |
 
 ## Design Notes
 
 This mission is the financial hub connecting all previous operations and revealing the scope of The Architect's coordination. Password cracking theme teaches credential security. Elena Volkov is a recruitable asset who can provide ongoing intelligence if turned. The discovery of The Architect's Fund creates urgency leading into M7's crisis.
 
-PIN Code for Satoshi's Safe: **2140** (Bitcoin's max supply in millions - thematic easter egg)
+PIN code for the executive safe: **2140** — the year the last bitcoin is mined. Clued twice: in The Architect's email in Elena's office, and in the CEO's own margin note on the manifesto in his office.
+
+The safe is optional. Skipping it costs the player The Architect's identity file, and the closing debrief acknowledges the gap rather than pretending they have it.
