@@ -1,0 +1,1395 @@
+<%
+# ============================================================================
+# MISSION 7: THE ARCHITECT'S GAMBIT - SCENARIO FILE
+# ============================================================================
+# Break Escape - Season 1: The Architect's Shadow
+#
+# Rebuilt for the DELEGATION model (see ALIGNMENT_PLAN.md v2).
+# The authoritative identifier contract for this mission is CONTRACT.md.
+# Anything in this file that names an NPC, room, object, global, flag, task or
+# ink knot is fixed by CONTRACT.md. Do not rename without updating that file.
+#
+# WP1 SCOPE (this pass): rooms, room types, connections, the lock chain,
+# objects, starting inventory, NPC blocks (id / displayName / npcType /
+# storyPath / currentKnot / position / patrol / los), globalVariables and the
+# engine countdown timers.
+#
+# DELIBERATELY ABSENT — owned by later work packages:
+#   WP2  objectives + tasks, flagRewards, taskOnKO / globalVarOnKO
+#   WP6  itemsHeld field guides on agent_0x99, dialogue eventMappings
+#   WP7  Architect taunt eventMappings, Morrison / Park barks
+#   WP9  voice blocks, the music block, narrator block
+#
+# ROOM LAYOUT (grid units; 1 GU = 5 x 4 tiles = 160 x 128 px)
+#
+#                                   [SCADA Control]      (2x1 GU, password)
+#                                          |
+#   [Security Checkpoint]--[Ops Floor]--[Server Room]    (2x2 GU each, rfid on Server)
+#         START                              |
+#                                   [Backup Generator Room]   (4x2 GU, key+lockpick)
+#                                          |
+#                                   [Underground Cable Vault] (2x1 GU, pin)
+#
+#   Verified overlap-free by scripts/validate_scenario.rb and
+#   scripts/predict_door_sides.py. Room boxes in GU:
+#     security_checkpoint (0,0)-(2,2)   operations_floor (2,0)-(4,2)
+#     server_room         (4,0)-(6,2)   scada_control    (4,-1)-(6,0)
+#     generator_room      (4,2)-(8,4)   cable_vault      (4,4)-(6,5)
+#
+# LOCK CHAIN — every gate has a redundant source so no KO strands the run:
+#   rfid     server_room     <- Morrison's badge      | badge printer (checkpoint)
+#   key      generator_room  <- maintenance key (ops) | lockpick (start inventory)
+#   pin      cable_vault     <- maintenance log       | Elena Rodriguez
+#   password scada_control   <- Elena Rodriguez       | netcat C2 traffic (VM flag 2)
+#   flag     crisis_control_system <- scada_attack_host:flag_4  (win condition)
+#
+# THE COUNTDOWN is a REAL engine timer (top-level "timers", see
+# js/ui/scenario-timer-dispatcher.js). It runs on a 2:1 scale — thirty minutes
+# of fiction over sixty real minutes — and it never fails the mission. It sets
+# narrative globals only. The redirect window is closed by
+# `redirect_window_closed`, written by EITHER the timer OR flag3_submitted
+# (WP2 wires the flag route). Ink reads that one boolean and nothing else.
+# ============================================================================
+
+require 'base64'
+
+def base64_encode(text)
+  Base64.strict_encode64(text)
+end
+
+def rot13(text)
+  text.tr('A-Za-z', 'N-ZA-Mn-za-m')
+end
+
+# --- Secrets -----------------------------------------------------------------
+# Written on the maintenance log in the generator room, and spoken by Elena.
+vault_pin = "4703"
+
+# SCADA control room door. Elena gives it; the netcat C2 traffic (VM flag 2)
+# carries it as the redundant source.
+scada_password = "CascadeWindow19"
+%>
+{
+  "scenario_brief": "Four ENTROPY operations went live inside the same sixty seconds. SAFETYNET has one agent in range and one tactical team. You are the agent, and you are already on the approach road to a regional grid control facility outside Portland where a cascade script on a local timer is thirty minutes from taking the lights out across three states -- 8.4 million people, 147 substations, in winter. The team can reach exactly one of the other three crises. You decide which. Two go unanswered, and somebody will read out what happened at both.",
+
+  "show_scenario_brief": "on_resume",
+
+  "startRoom": "security_checkpoint",
+
+  "flags": {
+    "scada_attack_host": <%= vm_flags_json('scada_attack_host', ['flag{nfs_coordination_traffic}', 'flag{netcat_c2_intercepted}', 'flag{root_on_attack_host}', 'flag{cascade_scripts_terminated}']) %>
+  },
+
+<%# WP9 -- Narrator voice. Every ink file in this mission carries Narrator: scene
+    beats; without this block they render silently. Shape copied from m01. %>
+  "narrator": {
+    "id": "narrator",
+    "skipTextValidation": true,
+    "voice": {
+      "name": "Algenib",
+      "style": "Cinematic thriller narrator. Consistent British Received Pronunciation accent throughout -- do not shift to any other accent. Low, unhurried, grave. A building full of machinery that is about to be used against people.",
+      "language": "en-GB"
+    }
+  },
+
+<%# WP9 -- Dynamic music. Structure copied from m02_ransomed_trust.
+    Beat map:
+      approach / briefing ......... cutscene   (until the team is committed)
+      inside, clock running ....... noir       (on team_assigned)
+      Morrison or Park turns ...... threat     (back to noir when they are down)
+      the control room ............ spy-action (room_entered:scada_control -- Mercer)
+      the grid holds .............. end        (grid_saved)
+      debrief closes .............. victory + credits
+    'victory' auto-opens the Bond Visualiser (bond-visualiser.js:1590), so it is
+    held back until the debrief has actually finished -- the m01/m02 pattern. %>
+  "music": {
+    "events": [
+      {
+        "trigger": "game_loaded",
+        "condition": "!globalVars.team_assigned",
+        "playlist": "cutscene",
+        "fade": false
+      },
+      {
+        "trigger": "game_loaded",
+        "condition": "globalVars.team_assigned === true",
+        "playlist": "noir",
+        "fade": false
+      },
+      {
+        "trigger": "global_variable_changed:team_assigned",
+        "condition": "value === true",
+        "playlist": "noir",
+        "fade": true
+      },
+      {
+        "trigger": "npc_hostile_state_changed",
+        "condition": "isHostile === true",
+        "playlist": "threat",
+        "fade": true
+      },
+      {
+        "trigger": "all_hostiles_ko",
+        "playlist": "noir",
+        "fade": true
+      },
+      {
+        "trigger": "room_entered:scada_control",
+        "playlist": "spy-action",
+        "fade": true
+      },
+      {
+        "trigger": "global_variable_changed:grid_saved",
+        "condition": "value === true",
+        "playlist": "end",
+        "fade": true
+      },
+      {
+        "trigger": "conversation_closed:closing_debrief",
+        "playlist": "victory",
+        "track": "Entropy Failsafe",
+        "autoStop": true,
+        "disableClose": true,
+        "fade": true,
+        "credits": [
+          { "text": "MISSION COMPLETE", "style": "title" },
+          { "text": "THE ARCHITECT'S GAMBIT", "style": "subtitle" },
+          { "text": "" },
+          { "text": "PACIFIC NORTHWEST REGIONAL GRID: SEQUENCE ABORTED", "style": "entry", "condition": "globalVars.grid_saved" },
+          { "text": "CUSTOMERS AFFECTED: 0 of 8,400,000 — 147 substations held", "style": "entry", "condition": "globalVars.grid_saved" },
+          { "text": "CASCADE SEQUENCE RAN TO COMPLETION — three states dark", "style": "warning", "condition": "!globalVars.grid_saved" },
+          { "text": "" },
+          { "text": "── THE TRIAGE ──", "style": "section-header" },
+          { "text": "TACTICAL TEAM: Operation Fracture — voter records exfiltrated, Social Fabric cluster seized intact", "style": "entry", "condition": "globalVars.team_assignment === 'fracture'" },
+          { "text": "TACTICAL TEAM: Operation Trojan Horse — 840 signing keys burned, no backdoor shipped", "style": "entry", "condition": "globalVars.team_assignment === 'trojan_horse' && !globalVars.team_redirected" },
+          { "text": "TACTICAL TEAM: Operation Trojan Horse, redirected mid-flight — injection stopped at 30%, dispatch keys reached first", "style": "entry", "condition": "globalVars.team_redirected" },
+          { "text": "TACTICAL TEAM: Operation Meltdown — 4,200 hospitals ran a normal night", "style": "entry", "condition": "globalVars.team_assignment === 'meltdown'" },
+          { "text": "TACTICAL TEAM: Never committed — stood by in Denver for the duration", "style": "warning", "condition": "!globalVars.team_assignment" },
+          { "text": "PROJECTION CORRECTED: Trojan Horse dormancy nine days, not ninety — EHR and dispatch keys on the manifest", "style": "entry", "condition": "globalVars.projection_revised" },
+          { "text": "PROJECTION UNCHALLENGED: Two copies of the correction were in the building; neither was read", "style": "warning", "condition": "!globalVars.projection_revised" },
+          { "text": "" },
+          { "text": "── INSIDE THE FACILITY ──", "style": "section-header" },
+          { "text": "DR. JAMES MERCER (BLACKOUT): Detained — signed casualty projection in evidence", "style": "entry", "condition": "globalVars.mercer_fate === 'arrested'" },
+          { "text": "DR. JAMES MERCER (BLACKOUT): Neutralised at the console — questioning deferred", "style": "warning", "condition": "globalVars.mercer_ko || globalVars.mercer_fate === 'ko'" },
+          { "text": "DR. JAMES MERCER (BLACKOUT): Left the building during the abort — no trace", "style": "warning", "condition": "globalVars.mercer_fate === 'escaped' && !globalVars.mercer_ko" },
+          { "text": "MERCER ON RECORD: Named the dead he had already costed", "style": "entry", "condition": "globalVars.mercer_stance === 'condemned'" },
+          { "text": "MERCER ON RECORD: Argued his arithmetic to the end", "style": "entry", "condition": "globalVars.mercer_stance === 'reasoned'" },
+          { "text": "MERCER ON RECORD: Said nothing", "style": "entry", "condition": "globalVars.mercer_stance === 'silent'" },
+          { "text": "MERCER TOLD: He was the diversion, not the operation", "style": "entry", "condition": "globalVars.mercer_told_diversion" },
+          { "text": "ELENA RODRIGUEZ: Turned — cooperating, contractor survey work now evidence", "style": "entry", "condition": "globalVars.elena_outcome === 'turned'" },
+          { "text": "ELENA RODRIGUEZ: Left the site before the abort — whereabouts unknown", "style": "warning", "condition": "globalVars.elena_outcome === 'fled'" },
+          { "text": "ELENA RODRIGUEZ: Neutralised — never questioned", "style": "warning", "condition": "globalVars.elena_ko || globalVars.elena_outcome === 'ko'" },
+          { "text": "JAKE MORRISON: Talked, and handed over the zone badge", "style": "entry", "condition": "globalVars.morrison_resolved === 'talked'" },
+          { "text": "JAKE MORRISON: Neutralised on shift", "style": "warning", "condition": "globalVars.morrison_ko || globalVars.morrison_resolved === 'ko'" },
+          { "text": "JAKE MORRISON: Evaded — still on the checkpoint desk, still on their payroll", "style": "warning", "condition": "globalVars.morrison_resolved === 'evaded'" },
+          { "text": "THOMAS PARK: Talked — the transfer switch was left intact", "style": "entry", "condition": "globalVars.park_resolved === 'talked'" },
+          { "text": "THOMAS PARK: Neutralised in the vault", "style": "warning", "condition": "globalVars.park_ko || globalVars.park_resolved === 'ko'" },
+          { "text": "THOMAS PARK: Evaded — walked out through the plant riser", "style": "warning", "condition": "globalVars.park_resolved === 'evaded'" },
+          { "text": "" },
+          { "text": "── RECOVERED ──", "style": "section-header" },
+          { "text": "TOMB GAMMA: Dossier recovered — the Architect's workshop, no coordinates on file", "style": "entry", "condition": "globalVars.found_tomb_gamma" },
+          { "text": "MOLE INTERCEPT: Evidence recovered — SAFETYNET tasking read before it was sent", "style": "entry", "condition": "globalVars.found_mole_evidence" },
+          { "text": "" },
+          { "text": "── ON THE RECORD ──", "style": "section-header" },
+          { "text": "AGENT 0x00: Defended the call — the triage was sound on what was known", "style": "entry", "condition": "globalVars.debrief_stance === 'defended'" },
+          { "text": "AGENT 0x00: Owned the two that went unanswered", "style": "entry", "condition": "globalVars.debrief_stance === 'owned'" },
+          { "text": "AGENT 0x00: Refused the premise — one agent, four operations, no fourth option", "style": "entry", "condition": "globalVars.debrief_stance === 'refused'" },
+          { "text": "AGENT 0x00: Would take the same decision again", "style": "entry", "condition": "globalVars.debrief_stance === 'hardened'" },
+          { "text": "" },
+          { "text": "THE ARCHITECT: At large. He chose the night, and the questions you were given.", "style": "warning" },
+          { "text": "ENTROPY: Still operational.", "style": "warning" }
+        ]
+      }
+    ]
+  },
+
+  "startItemsInInventory": [
+    {
+      "type": "phone",
+      "name": "Your Phone",
+      "takeable": true,
+      "phoneId": "player_phone",
+      "npcIds": ["agent_0x99", "the_architect"],
+      "observations": "Your secure phone. Agent HaX on one end of it, and a countdown overlay you did not ask for on the other."
+    },
+    {
+      "type": "lockpick",
+      "name": "Lock Pick Kit",
+      "takeable": true,
+      "observations": "SAFETYNET field pick kit. The fallback for the maintenance door if the key never turns up -- or if the man carrying it is face down on the checkpoint floor.",
+      "puzzle_graph_role": "tool",
+      "puzzle_graph_unlocks": ["generator_room"],
+      "puzzle_graph_optional": true
+    }
+  ],
+
+  "player": {
+    "id": "player",
+    "displayName": "Agent 0x00",
+    "spriteSheet": "male_hacker_hood_down",
+    "spriteTalk": "assets/characters/male_hacker_hood_down_talk.png",
+    "spriteConfig": {
+      "idleFrameRate": 6,
+      "walkFrameRate": 10
+    }
+  },
+
+<%# ---------------------------------------------------------------------------
+    OBJECTIVES (WP2). Task ids are fixed by CONTRACT.md S8 and must not be
+    renamed -- ink packages reference them in #complete_task tags, and taskOnKO
+    / requiresCompleted reference them here.
+
+    Aim chain: commit_the_team -> reach_the_control_network -> {below_ground
+    (side branch), reach_the_control_room -> take_the_attack_host ->
+    end_the_sequence}. The vault aim hangs off the network aim rather than
+    sitting in the chain, because the vault is optional lore and must never gate
+    the conclusion.
+
+    Aim `status: "locked"` is presentation only -- objectives-manager.js:412 and
+    :543 auto-reveal a locked parent aim when one of its tasks completes -- so a
+    locked aim can never strand a task. Every task therefore ships `active`.
+
+    Anything a player can legitimately walk past (Morrison, Elena, Park, the
+    vault, the lore drops) is `optional: true`, so aim completion never depends
+    on content the player was allowed to skip.
+
+    mission_complete and grid_saved are set from shut_down_the_cascade's
+    onComplete.setGlobal -- the terminal, never a KO-able conversation.
+%>
+  "objectives": [
+    {
+      "aimId": "commit_the_team",
+      "title": "Commit The Team And Get Inside",
+      "description": "One tactical team, three crises it could answer, and a guard between you and the floor. Read all three briefs before you call it -- nobody is going to ask you twice.",
+      "status": "active",
+      "order": 0,
+      "tasks": [
+        {
+          "taskId": "assign_tactical_team",
+          "title": "Tell HaX where to send the tactical team",
+          "type": "npc_conversation",
+          "targetNPC": "agent_0x99",
+          "status": "active"
+        },
+        {
+          "taskId": "clear_the_checkpoint",
+          "title": "Get past Jake Morrison on the checkpoint desk",
+          "type": "npc_conversation",
+          "targetNPC": "jake_morrison",
+          "status": "active",
+          "optional": true
+        },
+        {
+          "taskId": "reach_operations_floor",
+          "title": "Reach the operations floor",
+          "type": "enter_room",
+          "targetRoom": "operations_floor",
+          "status": "active"
+        }
+      ]
+    },
+    {
+      "aimId": "reach_the_control_network",
+      "title": "Get Onto The Control Network",
+      "description": "The server hall is badge-controlled and the cascade is being driven from a host on the other side of that door. Get in, get a working box, and start pulling whatever the attackers left behind.",
+      "status": "locked",
+      "order": 1,
+      "unlockCondition": { "aimCompleted": "commit_the_team" },
+      "tasks": [
+        {
+          "taskId": "breach_server_room",
+          "title": "Get through the server zone badge reader",
+          "type": "unlock_room",
+          "targetRoom": "server_room",
+          "status": "active"
+        },
+        {
+          "taskId": "question_elena",
+          "title": "Find out what Elena Rodriguez was told she was doing here",
+          "type": "npc_conversation",
+          "targetNPC": "elena_rodriguez",
+          "status": "active",
+          "optional": true
+        },
+        {
+          "taskId": "recover_coordination_traffic",
+          "title": "Mount the exposed NFS export and submit what is on it",
+          "type": "submit_flags",
+          "targetFlags": ["scada_attack_host:flag_1"],
+          "targetCount": 1,
+          "currentCount": 0,
+          "showProgress": true,
+          "status": "active"
+        },
+        {
+          "taskId": "intercept_c2_channel",
+          "puzzle_graph_unlocks": "scada_control",
+          "title": "Enumerate the host's services and submit the command channel flag",
+          "type": "submit_flags",
+          "targetFlags": ["scada_attack_host:flag_2"],
+          "targetCount": 1,
+          "currentCount": 0,
+          "showProgress": true,
+          "status": "active"
+        }
+      ]
+    },
+    {
+      "aimId": "trace_the_intrusion",
+      "title": "Trace How They Got In",
+      "description": "The control stack did not reach the breakers by wishing. Something physical was put in this building months ago. Follow it down through the plant.",
+      "status": "locked",
+      "order": 2,
+      "unlockCondition": { "aimCompleted": "reach_the_control_network" },
+      "tasks": [
+        {
+          "taskId": "secure_generator_room",
+          "title": "Get into the backup generator hall",
+          "type": "enter_room",
+          "targetRoom": "generator_room",
+          "status": "active"
+        },
+        {
+          "taskId": "recover_vault_pin",
+          "title": "Work out the plant keypad code for the vault door",
+          "type": "custom",
+          "targetObject": "maintenance_log",
+          "status": "active"
+        },
+        {
+          "taskId": "neutralise_park",
+          "title": "Deal with whoever is working the trunk runs",
+          "type": "npc_conversation",
+          "targetNPC": "thomas_park",
+          "status": "active",
+          "optional": true
+        },
+        {
+          "taskId": "search_cable_vault",
+          "title": "Get down into the cable vault",
+          "type": "enter_room",
+          "targetRoom": "cable_vault",
+          "status": "active",
+          "optional": true
+        },
+        {
+          "taskId": "recover_mole_evidence",
+          "title": "Bring back whatever they printed and left behind down there",
+          "type": "collect_items",
+          "targetItemIds": ["mole_intercept_evidence", "tomb_gamma_dossier"],
+          "targetCount": 2,
+          "currentCount": 0,
+          "showProgress": true,
+          "status": "active",
+          "optional": true
+        }
+      ]
+    },
+    {
+      "aimId": "reach_the_control_room",
+      "title": "Get Into The Control Room",
+      "description": "The master console for 147 substations is behind a password nobody left lying about, and there is someone already sitting at it.",
+      "status": "locked",
+      "order": 3,
+      "unlockCondition": { "aimCompleted": "reach_the_control_network" },
+      "tasks": [
+        {
+          "taskId": "reach_scada_control",
+          "title": "Get through the SCADA control room door",
+          "type": "enter_room",
+          "targetRoom": "scada_control",
+          "status": "active"
+        },
+        {
+          "taskId": "confront_mercer",
+          "title": "Face the man at the master console",
+          "type": "npc_conversation",
+          "targetNPC": "james_mercer",
+          "status": "active"
+        }
+      ]
+    },
+    {
+      "aimId": "take_the_attack_host",
+      "title": "Take The Attack Host Off The Board",
+      "description": "The sequence is local, it is scheduled, and the console will not accept an abort while the host driving it is still on the network. Own that host outright, then take it apart.",
+      "status": "locked",
+      "order": 4,
+      "unlockCondition": { "aimCompleted": "reach_the_control_room" },
+      "tasks": [
+        {
+          "taskId": "escalate_on_attack_host",
+          "title": "Escalate to root on the attack host and submit the flag",
+          "type": "submit_flags",
+          "targetFlags": ["scada_attack_host:flag_3"],
+          "targetCount": 1,
+          "currentCount": 0,
+          "showProgress": true,
+          "status": "active"
+        },
+        {
+          "taskId": "terminate_cascade_scripts",
+          "title": "Kill the running attack processes and lock out remote access",
+          "type": "submit_flags",
+          "targetFlags": ["scada_attack_host:flag_4"],
+          "targetCount": 1,
+          "currentCount": 0,
+          "showProgress": true,
+          "status": "active"
+        }
+      ]
+    },
+    {
+      "aimId": "end_the_sequence",
+      "title": "Stop The Sequence And Report",
+      "description": "With the host off the network the console will finally take an abort. Then somebody has to say out loud what happened at the two crises you did not send the team to.",
+      "status": "locked",
+      "order": 5,
+      "unlockCondition": { "aimCompleted": "take_the_attack_host" },
+      "missionConclusion": true,
+      "requiresCompleted": [
+        "assign_tactical_team",
+        "breach_server_room",
+        "reach_scada_control",
+        "escalate_on_attack_host",
+        "terminate_cascade_scripts",
+        "shut_down_the_cascade",
+        "take_the_debrief"
+      ],
+      "conclusionScreen": { "type": "bond_visualiser" },
+      "tasks": [
+        {
+          "taskId": "shut_down_the_cascade",
+          "title": "Abort the scheduled sequence at the cascade control system",
+          "type": "unlock_object",
+          "targetObject": "crisis_control_system",
+          "status": "active",
+          "onComplete": {
+            "setGlobal": {
+              "grid_saved": true,
+              "mission_complete": true
+            }
+          }
+        },
+        {
+          "taskId": "take_the_debrief",
+          "title": "Take the debrief",
+          "type": "npc_conversation",
+          "targetNPC": "closing_debrief",
+          "status": "active"
+        }
+      ]
+    }
+  ],
+
+<%# ---------------------------------------------------------------------------
+    THE COUNTDOWN. Real engine timers, narrative only -- nothing here can fail
+    the mission. delayMs is real time; the fiction is 30 minutes, the clock is
+    60, so one fictional minute is two real ones.
+      T-30 briefing               0 min   (briefing ink, not a timer)
+      T-20 architect_t20_played  20 min
+      T-10 architect_t10_played  40 min   AND redirect_window_closed
+      T-5  architect_t5_played   50 min
+      T-1  architect_t1_played   58 min
+      T-0  countdown_expired     60 min   (pressure only; grid_saved is unaffected)
+    All six start on `team_assigned` so the clock begins when the player has
+    actually made the delegation call, and all six are cancelled by `grid_saved`
+    so a finished mission stops shouting. WP2 must ALSO set
+    redirect_window_closed from flag3_submitted -- the progress gate is the
+    guarantee that the window closes even for a very fast run.
+%>
+  "timers": [
+    {
+      "id": "architect_taunt_t20",
+      "label": "Cascade in 20:00",
+      "delayMs": 1200000,
+      "startOnGlobal": "team_assigned",
+      "cancelOnGlobal": "grid_saved",
+      "setGlobal": { "architect_t20_played": true },
+      "showCountdown": true,
+      "onceOnly": true
+    },
+    {
+      "id": "redirect_window_close",
+      "label": "Cascade in 10:00",
+      "delayMs": 2400000,
+      "startOnGlobal": "team_assigned",
+      "cancelOnGlobal": "grid_saved",
+      "setGlobal": { "architect_t10_played": true, "redirect_window_closed": true },
+      "showCountdown": true,
+      "onceOnly": true
+    },
+    {
+      "id": "architect_taunt_t5",
+      "label": "Cascade in 05:00",
+      "delayMs": 3000000,
+      "startOnGlobal": "team_assigned",
+      "cancelOnGlobal": "grid_saved",
+      "setGlobal": { "architect_t5_played": true },
+      "showCountdown": true,
+      "onceOnly": true
+    },
+    {
+      "id": "architect_taunt_t1",
+      "label": "Cascade in 01:00",
+      "delayMs": 3480000,
+      "startOnGlobal": "team_assigned",
+      "cancelOnGlobal": "grid_saved",
+      "setGlobal": { "architect_t1_played": true },
+      "showCountdown": true,
+      "onceOnly": true
+    },
+    {
+      "id": "cascade_zero",
+      "label": "Cascade",
+      "delayMs": 3600000,
+      "startOnGlobal": "team_assigned",
+      "cancelOnGlobal": "grid_saved",
+      "setGlobal": { "countdown_expired": true },
+      "showCountdown": true,
+      "onceOnly": true
+    }
+  ],
+
+  "rooms": {
+
+    "security_checkpoint": {
+      "type": "room_security",
+      "door_sign": "Security Checkpoint",
+      "connections": {
+        "east": "operations_floor"
+      },
+      "npcs": [
+        {
+          "_comment": "Opening briefing cutscene. Netherton in the car, on the approach road. Hidden NPC, fires once on load. WP3 writes the ink; WP9 adds the voice block.",
+          "id": "opening_briefing_cutscene",
+          "displayName": "Director Magnus Netherton",
+          "npcType": "person",
+          "position": { "x": 500, "y": 500 },
+          "spriteSheet": "male_spy",
+          "spriteTalk": "assets/characters/male_spy_talk.png",
+          "spriteConfig": { "idleFrameRate": 6, "walkFrameRate": 10 },
+          "storyPath": "scenarios/m07_architects_gambit/ink/m07_opening_briefing.json",
+          "voice": {
+            "name": "Charon",
+            "style": "SAFETYNET director reading a night that has already happened. Consistent British Received Pronunciation accent throughout -- do not shift to any other accent. Low, deliberate, unhurried even under a countdown. He does not raise his voice and he does not soften anything.",
+            "language": "en-GB"
+          },
+          "currentKnot": "start",
+          "behavior": { "initiallyHidden": true },
+          "timedConversation": {
+            "delay": 0,
+            "targetKnot": "start",
+            "background": "assets/backgrounds/hq1.png",
+            "waitForEvent": "game_loaded",
+            "skipIfGlobal": "briefing_played",
+            "setGlobalOnStart": "briefing_played"
+          }
+        },
+        {
+          "_comment": "Agent HaX -- handler, phone NPC on player_phone, reachable from every room. Runs the delegation, the redirect window, the five field guides and the per-stage VM hints. WP6 adds itemsHeld and the hub gating; WP9 adds the voice block.",
+          "id": "agent_0x99",
+          "displayName": "Agent HaX",
+          "npcType": "phone",
+          "phoneId": "player_phone",
+          "avatar": "assets/characters/female_spy_headshot.png",
+          "storyPath": "scenarios/m07_architects_gambit/ink/m07_phone_agent_0x99.json",
+          "voice": {
+            "name": "Aoede",
+            "style": "Intelligence handler on a secure line, running four crises at once with one agent in range. Consistent British Received Pronunciation accent throughout -- do not shift to any other accent. Quick, dry, clipped. Fond of the agent and audibly under strain, which she handles by getting drier rather than louder.",
+            "language": "en-GB"
+          },
+          "currentKnot": "start",
+<%# WP2 STATE BRIDGES on the handler. Two jobs only:
+      (a) turn engine-observed progress into the globals CONTRACT.md S6 says the
+          hub and the ink read, so nothing depends on a conversation being had;
+      (b) acknowledge a knockout out loud and point at the redundant source, so
+          a KO never leaves the player staring at a lock with no route.
+    A flag reward can carry exactly one set_global, so the secondary narrative
+    globals are derived here from flagN_submitted.
+    WP6 owns the hub's own dialogue eventMappings and appends to this array. %>
+          "eventMappings": [
+            {
+              "_comment": "The delegation is what starts the countdown timers. Latched here as well as in ink so the clock cannot fail to start.",
+              "eventPattern": "objective_task_completed:assign_tactical_team",
+              "onceOnly": true,
+              "setGlobal": { "team_assigned": true }
+            },
+            {
+              "_comment": "Flag 1 -- the coordination traffic. This is the second, KO-proof source of the projection revision; Elena is the first.",
+              "eventPattern": "global_variable_changed:flag1_submitted",
+              "condition": "value === true",
+              "onceOnly": true,
+              "setGlobal": { "found_coordination_traffic": true, "projection_revised": true },
+              "sendTimedMessage": { "delay": 1500, "message": "Four operations, one schedule, one authority -- and the TechForge manifest has EHR- and CAD- vendors on it with a nine-day dormancy, not the ninety you were briefed. The projection you were given was understated. If you want to move the team, say so now." }
+            },
+            {
+              "_comment": "Flag 2 -- the C2 channel carries the SCADA door password. Redundant with Elena.",
+              "eventPattern": "global_variable_changed:flag2_submitted",
+              "condition": "value === true",
+              "onceOnly": true,
+              "setGlobal": { "scada_password_found": true },
+              "sendTimedMessage": { "delay": 1500, "message": "Their own command channel is passing the control room password in clear. That door is open to you now whether or not anyone in there wants to help." }
+            },
+            {
+              "_comment": "Flag 3 closes the redirect window from the progress side. CONTRACT.md S5: the boolean is written by the 40-minute timer OR by flag3_submitted, so the door shuts for a fast player and a slow one alike.",
+              "eventPattern": "global_variable_changed:flag3_submitted",
+              "condition": "value === true",
+              "onceOnly": true,
+              "setGlobal": { "redirect_window_closed": true }
+            },
+            {
+              "eventPattern": "global_variable_changed:flag4_submitted",
+              "condition": "value === true",
+              "onceOnly": true,
+              "sendTimedMessage": { "delay": 1500, "message": "Attack host is down and locked out. The cascade control system in the control room will take an abort now. Go and give it one." }
+            },
+            {
+              "_comment": "recover_vault_pin is a custom task with two sources -- the maintenance log's onRead and Elena's dialogue. Both write vault_pin_found, so the task completes from either.",
+              "eventPattern": "global_variable_changed:vault_pin_found",
+              "condition": "value === true",
+              "onceOnly": true,
+              "completeTask": "recover_vault_pin"
+            },
+            {
+              "_comment": "KO acknowledgement -- Morrison. His badge is one of two RFID sources.",
+              "eventPattern": "global_variable_changed:morrison_ko",
+              "condition": "value === true",
+              "onceOnly": true,
+              "sendTimedMessage": { "delay": 2000, "message": "Morrison is down. Take the badge off him -- and if you would rather not go through his pockets, the contractor badge printer behind his desk is still logged in as the day shift." }
+            },
+            {
+              "_comment": "KO acknowledgement -- Elena. She held the vault PIN and the control room password; both have a second source.",
+              "eventPattern": "global_variable_changed:elena_ko",
+              "condition": "value === true",
+              "onceOnly": true,
+              "sendTimedMessage": { "delay": 2000, "message": "She is not talking now. Whatever she knew, you get the hard way: the vault keypad code is on the maintenance log in the generator hall, and the control room password is going over their own command channel. Neither of those needs her." }
+            },
+            {
+              "eventPattern": "global_variable_changed:park_ko",
+              "condition": "value === true",
+              "onceOnly": true,
+              "sendTimedMessage": { "delay": 2000, "message": "Park is out of it. The vault is yours to search -- and whatever he was down there to cut, he has not finished cutting." }
+            },
+            {
+              "eventPattern": "global_variable_changed:mercer_ko",
+              "condition": "value === true",
+              "onceOnly": true,
+              "sendTimedMessage": { "delay": 2000, "message": "Mercer is on the floor. Nothing about the sequence changes -- it is scheduled, it is local, and it never needed him awake. Finish the host." }
+            },
+<%# WP6 -- field-guide exposure gates. Each sets a *_guide_offered global the
+      first time the player hits the obstacle the guide explains; the hub then
+      surfaces the delivery choice. No guide is ever offered before its obstacle. %>
+            {
+              "_comment": "RFID guide -- offered when the player first tries the badge door into the server room.",
+              "eventPattern": "door_unlock_attempt",
+              "condition": "data.connectedRoom === 'server_room'",
+              "onceOnly": true,
+              "setGlobal": { "rfid_guide_offered": true },
+              "sendTimedMessage": { "delay": 1500, "message": "That reader wants a server-zone badge. Morrison's carrying one, and the contractor printer at the checkpoint will run you a fresh one. Either way you clone it, not borrow it -- want the RFID field guide?" }
+            },
+            {
+              "_comment": "Lockpicking guide -- offered when the player first tries the keyed door into the generator room.",
+              "eventPattern": "door_unlock_attempt",
+              "condition": "data.connectedRoom === 'generator_room'",
+              "onceOnly": true,
+              "setGlobal": { "lockpicking_guide_offered": true },
+              "sendTimedMessage": { "delay": 1500, "message": "Keyed lock. The maintenance key's on the ops floor, but you're carrying picks and that door will open to them. Say the word if you want the lockpicking field guide." }
+            },
+            {
+              "_comment": "Recon guide -- offered on entering the server room, where the network work begins.",
+              "eventPattern": "room_entered:server_room",
+              "onceOnly": true,
+              "setGlobal": { "recon_guide_offered": true },
+              "sendTimedMessage": { "delay": 2500, "message": "You're on their control network now. Before you exploit anything, map it -- want the recon and network mapping field guide?" }
+            },
+            {
+              "_comment": "Scanning/exploitation guide -- offered when the player first interacts with the Kali vm-launcher.",
+              "eventPattern": "object_interacted",
+              "condition": "data.objectType === 'vm-launcher'",
+              "onceOnly": true,
+              "setGlobal": { "scanning_guide_offered": true },
+              "sendTimedMessage": { "delay": 1500, "message": "That's your attack box. Fingerprint before you fire -- want the scanning and exploitation field guide?" }
+            },
+            {
+              "_comment": "Privesc guide -- offered once flag 2 is in, i.e. the player has a foothold and next needs root.",
+              "eventPattern": "global_variable_changed:flag2_submitted",
+              "condition": "value === true",
+              "onceOnly": true,
+              "setGlobal": { "privesc_guide_offered": true },
+              "sendTimedMessage": { "delay": 4000, "message": "A user shell won't stop their processes -- you'll need root next. Want the privilege escalation field guide?" }
+            }
+          ],
+          "itemsHeld": [
+            {
+              "type": "lab-workstation",
+              "key_id": "m07_rfid_field_guide",
+              "name": "SAFETYNET Field Guide: RFID Cloning",
+              "takeable": true,
+              "labUrl": "https://cliffe.github.io/HacktivityLabSheets/labs/safetynet/rfid-cloning/"
+            },
+            {
+              "type": "lab-workstation",
+              "key_id": "m07_lockpicking_field_guide",
+              "name": "SAFETYNET Field Guide: Lockpicking",
+              "takeable": true,
+              "labUrl": "https://cliffe.github.io/HacktivityLabSheets/labs/safetynet/lockpicking/"
+            },
+            {
+              "type": "lab-workstation",
+              "key_id": "m07_recon_field_guide",
+              "name": "SAFETYNET Field Guide: Reconnaissance and Network Mapping",
+              "takeable": true,
+              "labUrl": "https://cliffe.github.io/HacktivityLabSheets/labs/safetynet/reconnaissance-and-network-mapping/"
+            },
+            {
+              "type": "lab-workstation",
+              "key_id": "m07_scanning_field_guide",
+              "name": "SAFETYNET Field Guide: Scanning and Exploitation",
+              "takeable": true,
+              "labUrl": "https://cliffe.github.io/HacktivityLabSheets/labs/safetynet/scanning-and-exploitation/"
+            },
+            {
+              "type": "lab-workstation",
+              "key_id": "m07_privesc_field_guide",
+              "name": "SAFETYNET Field Guide: Privilege Escalation",
+              "takeable": true,
+              "labUrl": "https://cliffe.github.io/HacktivityLabSheets/labs/safetynet/privilege-escalation/"
+            }
+          ]
+        },
+        {
+          "_comment": "Jake Morrison -- bought facility guard. Patrols the checkpoint floor with a directional LOS cone. Evade, talk past, or drop. room_security is 10x10 tiles; the circuit stays inside x 1.5-8.5, y 3-8.5 so the player can always get round behind him.",
+          "id": "jake_morrison",
+          "displayName": "Jake Morrison",
+          "npcType": "person",
+          "position": { "x": 2, "y": 4 },
+          "spriteSheet": "male_security_guard",
+          "spriteTalk": "assets/characters/male_security_guard_talk.png",
+          "spriteConfig": { "idleFrameRate": 6, "walkFrameRate": 10 },
+          "storyPath": "scenarios/m07_architects_gambit/ink/m07_npc_jake_morrison.json",
+          "voice": {
+            "name": "Puck",
+            "style": "A facility guard six months into taking money he has stopped being able to explain. Consistent working-class American accent, Pacific Northwest, throughout -- do not shift to any other accent. Flat, low, a little too casual. Talks like a man rehearsing an answer he has already given himself.",
+            "language": "en-US"
+          },
+          "currentKnot": "start",
+          "globalVarOnKO": "morrison_ko",
+          "taskOnKO": "clear_the_checkpoint",
+          "observations": "The guard on the checkpoint desk. He is not watching the doors, he is watching the clock, and he has been doing it for about six months.",
+          "behavior": {
+            "patrol": {
+              "enabled": true,
+              "waypoints": [
+                <%# Desk end -- long dwell, back to the badge reader %>
+                { "x": 2, "y": 4, "dwellTime": 6000 },
+                <%# Along the north side of the floor %>
+                { "x": 5, "y": 3, "dwellTime": 1500 },
+                <%# East wall, facing the door the player wants %>
+                { "x": 8, "y": 4, "dwellTime": 5000 },
+                <%# Down the east side %>
+                { "x": 8, "y": 8, "dwellTime": 1500 },
+                <%# South sweep %>
+                { "x": 5, "y": 8, "dwellTime": 3000 },
+                <%# Back up the west side to the desk %>
+                { "x": 2, "y": 8, "dwellTime": 1500 }
+              ],
+              "waypointMode": "sequential",
+              "loop": true,
+              "speed": 70
+            }
+          },
+          "los": {
+            "enabled": true,
+            "range": 150,
+            "angle": 130,
+            "visualize": true
+          },
+          "itemsHeld": [
+            {
+              "type": "keycard",
+              "name": "Facility Access Badge -- Server Zone",
+              "takeable": true,
+              "key_id": "server_zone_badge",
+              "observations": "Morrison's badge. It opens the server zone, which a checkpoint guard's badge has no business doing, and the renewal stamp on the back is dated the same month a maintenance contractor called Mercer stopped needing an escort.",
+              "puzzle_graph_role": "key",
+              "puzzle_graph_unlocks": "server_room"
+            }
+          ]
+        }
+      ],
+      "objects": [
+        {
+          "_comment": "Redundant RFID source. Works whether Morrison is talked round, evaded or unconscious.",
+          "type": "workstation",
+          "id": "badge_printer",
+          "name": "Visitor Badge Printer",
+          "takeable": false,
+          "interactable": true,
+          "observations": "The contractor badge printer behind the desk. It is still logged in as the day shift, because logging out means logging back in, and nobody has done that since the building opened.",
+          "puzzle_graph_role": "key",
+          "puzzle_graph_unlocks": "server_room",
+          "puzzle_graph_optional": true,
+          "triggerOnInteract": [
+            {
+              "type": "set_global",
+              "key": "badge_obtained",
+              "value": true
+            },
+            {
+              "type": "give_item",
+              "item": {
+                "type": "keycard",
+                "id": "printed_contractor_badge",
+                "name": "Printed Contractor Badge",
+                "takeable": true,
+                "key_id": "server_zone_badge",
+                "observations": "A contractor badge you printed yourself, on the facility's own stock, with the facility's own signing key. Valid until somebody audits the printer queue."
+              }
+            }
+          ]
+        },
+        {
+          "type": "notes",
+          "id": "visitor_log",
+          "name": "Audited Visitor Log",
+          "takeable": false,
+          "readable": true,
+          "observations": "The bound visitor log. FERC compliance requires it, so it is immaculate -- which is exactly why it is worth reading.",
+          "observationDisplay": "gameDisplay",
+          "text": "PACIFIC NORTHWEST REGIONAL GRID CONTROL -- VISITOR AND CONTRACTOR LOG\n(FERC CIP-004 retention: 3 years. Do not remove from the desk.)\n\n... entries 1-214 omitted ...\n\n215  14 JUN  J. MERCER          OptiGrid Solutions   SCADA stack -- scheduled maintenance   ESCORT: J. MORRISON\n216  15 JUN  J. MERCER          OptiGrid Solutions   SCADA stack -- scheduled maintenance   ESCORT: J. MORRISON\n217  15 JUN  E. RODRIGUEZ       OptiGrid Solutions   Server hall -- cabling survey          ESCORT: J. MORRISON\n218  16 JUN  J. MERCER          OptiGrid Solutions   SCADA stack -- scheduled maintenance   ESCORT: NONE / CREDENTIALS RENEWED\n\n... entries 219-388 omitted ...\n\nHandwritten in the margin beside 218, in a different pen: \"who signed this off??\"",
+          "onRead": { "setVariable": { "visitor_log_read": true } },
+          "puzzle_graph_role": "clue",
+          "puzzle_graph_reveals": "morrison_renewed_mercers_credentials"
+        },
+        {
+          "type": "smartscreen",
+          "id": "checkpoint_evacuation_board",
+          "name": "Evacuation Status Board",
+          "takeable": false,
+          "readable": true,
+          "observations": "The muster board. Somebody has been crossing names off it in marker, fast, and then stopped partway down.",
+          "text": "SITE EVACUATION -- IN PROGRESS\nMUSTER POINT: NORTH CAR PARK\n\nOPERATIONS ............ 31 / 34 CLEAR\nENGINEERING ........... 12 / 12 CLEAR\nFACILITIES ............  6 /  6 CLEAR\nSECURITY .............. 5 / 6 CLEAR\nCONTRACTORS ........... UNKNOWN\n\nDO NOT RE-ENTER THE BUILDING WITHOUT SITE CONTROLLER AUTHORISATION."
+        }
+      ]
+    },
+
+    "operations_floor": {
+      "type": "room_office",
+      "door_sign": "Operations Floor",
+      "connections": {
+        "west": "security_checkpoint",
+        "east": "server_room"
+      },
+      "npcs": [],
+      "objects": [
+        {
+          "_comment": "Primary source for the generator room key lock. Lockpick in the start inventory is the redundant route.",
+          "type": "key",
+          "id": "generator_maintenance_key",
+          "name": "Plant Maintenance Key",
+          "takeable": true,
+          "key_id": "generator_maintenance_key",
+          "keyPins": [40, 25, 55, 30],
+          "observations": "A stubby mechanical key on a tagged fob, left in the tray on the shift supervisor's desk. The tag says PLANT / GEN HALL. The supervisor is in the north car park.",
+          "puzzle_graph_role": "key",
+          "puzzle_graph_unlocks": "generator_room",
+          "onPickup": { "setVariable": { "maintenance_key_found": true } }
+        },
+        {
+          "type": "command_board",
+          "id": "situation_board",
+          "name": "Grid Situation Board",
+          "takeable": false,
+          "readable": true,
+          "observations": "The wall-sized situation board the whole floor works from. Every panel on it is amber.",
+          "observationDisplay": "gameDisplay",
+          "text": "PACIFIC NORTHWEST REGIONAL GRID CONTROL -- LIVE STATUS\n\nSERVED POPULATION .............. 8,412,000  (WA / OR / N.CAL)\nSUBSTATIONS UNDER CONTROL ......       147\nAUTOMATED REBALANCING .......... DISABLED BY OPERATOR (unauthorised)\nBREAKER CONTROL ................ REMOTE SESSION ACTIVE -- SOURCE NOT RECOGNISED\nSITE BACKUP GENERATION ......... ONLINE, 72 HOUR RATING\n\nSCHEDULED SEQUENCE -- PENDING\n  01  SEATTLE METRO      open critical breakers\n  02  PORTLAND          absorb shed load\n  03  OREGON            safety shutdown, sequential\n  04  NORTHERN CAL      load imbalance trip\n\nOUTSIDE TEMPERATURE: -2 C"
+        },
+        {
+          "type": "chart",
+          "id": "substation_map",
+          "name": "147-Substation Wall Map",
+          "takeable": false,
+          "readable": true,
+          "observations": "The regional substation map, three metres wide. Twenty-three of the transformer symbols have been circled in red marker by somebody who did not have long.",
+          "text": "Regional transmission map. The twenty-three circled transformers are the ones the sequence over-temperatures first. Handwritten beneath, in the same red marker: \"THESE ARE NOT STOCK ITEMS. 4-7 DAYS EACH. WE DO NOT HAVE 23.\""
+        },
+        {
+          "type": "pc",
+          "id": "ops_floor_workstation",
+          "name": "Abandoned Operator Workstation",
+          "takeable": false,
+          "observations": "An operator position, chair pushed back, coffee still warm. The screen is still logged in to the read-only grid view."
+        }
+      ]
+    },
+
+    "server_room": {
+      "type": "room_servers",
+      "locked": true,
+      "lockType": "rfid",
+      "requires": "server_zone_badge",
+      "difficulty": "medium",
+      "door_sign": "Server Hall -- Restricted",
+      "connections": {
+        "west": "operations_floor",
+        "north": "scada_control",
+        "south": "generator_room"
+      },
+      "npcs": [
+        {
+          "_comment": "Elena Rodriguez -- the conflicted one. Source of the revision intel, the vault PIN and the SCADA password, all of which have a redundant second source so a KO does not strand the run.",
+          "id": "elena_rodriguez",
+          "displayName": "Elena Rodriguez",
+          "npcType": "person",
+          "position": { "x": 6, "y": 5 },
+          "spriteSheet": "female_scientist",
+          "spriteTalk": "assets/characters/female_scientist_talk.png",
+          "spriteConfig": { "idleFrameRate": 6, "walkFrameRate": 10 },
+          "storyPath": "scenarios/m07_architects_gambit/ink/m07_npc_elena_rodriguez.json",
+          "voice": {
+            "name": "Leda",
+            "style": "A contract electrical engineer who worked out an hour ago what her cabling survey was for. Consistent Californian American accent with Mexican-American Spanish inflection throughout -- do not shift to any other accent. Frightened and entirely competent at the same time: the technical sentences come out steady and fast, the ones about herself do not.",
+            "language": "en-US"
+          },
+          "currentKnot": "start",
+          "globalVarOnKO": "elena_ko",
+          "taskOnKO": "question_elena",
+          "observations": "An electrical engineer in a contractor fleece, working a rack terminal with her back to the door. She has not run, and she has not called anyone.",
+<%# WP9 -- Elena is the PRIMARY source of the SCADA control room password; the
+    netcat C2 channel (flag 2) is the redundant one, annotated on the
+    intercept_c2_channel task. The graph generator only bridges NPC actions to
+    aims, so the door itself is mapped from the flag task. %>
+          "puzzle_graph_actions": [
+            { "id": "question_elena", "label": "Get the SCADA control room password from Elena", "unlocks_aim": "reach_the_control_room" }
+          ]
+        }
+      ],
+      "objects": [
+        {
+          "type": "vm-launcher",
+          "id": "vm_launcher_attack_terminal",
+          "name": "VM Access Terminal",
+          "takeable": false,
+          "observations": "A Kali box on the maintenance VLAN -- your working machine for reaching the host that is running the cascade.",
+          "hacktivityMode": <%= vm_context && vm_context['hacktivity_mode'] ? 'true' : 'false' %>,
+          "vm": <%= vm_object('attack_vm', {"id":1,"title":"kali","ip":"192.168.100.50","enable_console":true}) %>,
+          "puzzle_graph_role": "vm"
+        },
+        {
+          "type": "flag-station",
+          "id": "flag_station_safetynet_relay",
+          "name": "SAFETYNET Relay Terminal",
+          "takeable": false,
+          "observations": "Secure relay for submitting recovered intelligence back to SAFETYNET. Everything you pull off the attack host goes through here.",
+<%# WP9 -- graph edge for the SCADA control room door. Flag 2 is the netcat C2
+    intercept, and its payload is the control room password (CONTRACT.md S2 and
+    S4) -- the redundant route past Elena, who is the primary source and can be
+    knocked out. The generator only reads puzzle_graph_unlocks from objects and
+    items, so the relay the flag is submitted at carries the annotation. %>
+          "puzzle_graph_unlocks": "scada_control",
+          "acceptsVms": ["scada_attack_host"],
+          "flags": <%= flags_for_vm('scada_attack_host', ['flag{nfs_coordination_traffic}', 'flag{netcat_c2_intercepted}', 'flag{root_on_attack_host}', 'flag{cascade_scripts_terminated}']) %>,
+<%# flagRewards is INDEX-PARALLEL to flags (games_controller.rb:1748) -- one
+    reward object per flag, in order. set_global is forwarded to the client
+    untouched (games_controller.rb:1781) and applied by applyActions().
+    emit_event is NOT used: only sudo_flag_submitted is hard-bridged in
+    systems/interactions.js, so an emitted event would never reach a global and
+    every ink branch gated on one would stay shut.
+    The secondary narrative globals (found_coordination_traffic,
+    projection_revised, scada_password_found, redirect_window_closed) hang off
+    these four booleans as eventMappings on agent_0x99, because one flag can
+    carry exactly one reward. %>
+          "flagRewards": [
+            {
+              "type": "set_global",
+              "key": "flag1_submitted",
+              "value": true,
+              "description": "NFS coordination traffic recovered -- four operations, one schedule, one authority"
+            },
+            {
+              "type": "set_global",
+              "key": "flag2_submitted",
+              "value": true,
+              "description": "netcat C2 channel intercepted -- override codes and the SCADA control room password"
+            },
+            {
+              "type": "set_global",
+              "key": "flag3_submitted",
+              "value": true,
+              "description": "root on the attack host -- the box driving the countdown is yours"
+            },
+            {
+              "type": "set_global",
+              "key": "flag4_submitted",
+              "value": true,
+              "description": "cascade scripts terminated and remote access locked out"
+            }
+          ]
+        },
+        {
+          "type": "servers",
+          "id": "scada_backup_server",
+          "name": "SCADA Backup Server",
+          "takeable": false,
+          "observations": "The backup server for the control stack. Its NFS export is world-readable, which is a configuration nobody chose and everybody inherited -- and it is the reason there is anything to find tonight."
+        },
+        {
+          "type": "notes",
+          "id": "rack_cabling_note",
+          "name": "Cabling Survey Note",
+          "takeable": false,
+          "readable": true,
+          "observations": "A survey note clipped to the rack door, in a careful engineer's hand.",
+          "text": "Rack 4 -- OptiGrid cabling survey, 15 JUN\n\nRun from rack 4 down the plant riser to the cable vault. Vault door is on the plant keypad, not the badge system -- code is on the maintenance log in the generator hall, per site standard.\n\nNote for the file: I was told this survey was for the demonstration outage only. If anything gets left in place after, that is not what I signed for.\n\n-- E.R."
+        }
+      ]
+    },
+
+    "scada_control": {
+      "type": "room_control_1x2gu",
+      "locked": true,
+      "lockType": "password",
+      "requires": "<%= scada_password %>",
+      "difficulty": "medium",
+      "door_sign": "SCADA Control -- Authorised Personnel",
+      "connections": {
+        "south": "server_room"
+      },
+      "npcs": [
+        {
+          "_comment": "Dr. James Mercer -- 'Blackout'. Cold. Not recruitable. The player picks a stance, not an outcome. No lethal player firearm in this scene.",
+          "id": "james_mercer",
+          "displayName": "Dr. James Mercer",
+          "npcType": "person",
+          "position": { "x": 7, "y": 3 },
+          "spriteSheet": "male_scientist",
+          "spriteTalk": "assets/characters/male_scientist_talk.png",
+          "spriteConfig": { "idleFrameRate": 6, "walkFrameRate": 10 },
+          "storyPath": "scenarios/m07_architects_gambit/ink/m07_npc_james_mercer.json",
+          "voice": {
+            "name": "Iapetus",
+            "style": "An engineer in his late fifties who costed the deaths himself and signed the page. Consistent General American accent, Pacific Northwest, throughout -- do not shift to any other accent. Professorial and unhurried, a lecturer's cadence, pausing where a lecturer pauses. Never defensive, because he does not think he is being accused of anything he has not already conceded.",
+            "language": "en-US"
+          },
+          "currentKnot": "start",
+          "globalVarOnKO": "mercer_ko",
+          "taskOnKO": "confront_mercer",
+          "observations": "A man in his late fifties at the master console, working unhurriedly, the way somebody works when they have already decided how the evening ends."
+        },
+        {
+          "_comment": "Hidden debrief trigger. Netherton takes the debrief in this room. Fires on global_variable_changed:mission_complete -- WP8 owns the eventMapping and the ink.",
+          "id": "closing_debrief",
+          "displayName": "Director Magnus Netherton",
+          "npcType": "person",
+          "position": { "x": 500, "y": 500 },
+          "spriteSheet": "male_spy",
+          "spriteTalk": "assets/characters/male_spy_talk.png",
+          "spriteConfig": { "idleFrameRate": 6, "walkFrameRate": 10 },
+          "storyPath": "scenarios/m07_architects_gambit/ink/m07_closing_debrief.json",
+          "voice": {
+            "name": "Charon",
+            "style": "SAFETYNET director reading a night that has already happened. Consistent British Received Pronunciation accent throughout -- do not shift to any other accent. Low, deliberate, unhurried even under a countdown. He does not raise his voice and he does not soften anything.",
+            "language": "en-GB"
+          },
+          "currentKnot": "start",
+          "behavior": { "initiallyHidden": true },
+<%# WP9 -- the debrief trigger itself. mission_complete is written by the
+    shut_down_the_cascade task's onComplete, from the terminal, so it cannot be
+    lost to a knockout. onceOnly keeps the scene to a single playing at the end. %>
+          "eventMappings": [
+            {
+              "eventPattern": "global_variable_changed:mission_complete",
+              "condition": "value === true",
+              "conversationMode": "person-chat",
+              "targetKnot": "start",
+              "background": "assets/backgrounds/hq3.png",
+              "onceOnly": true
+            }
+          ]
+        },
+        {
+          "_comment": "The Architect. Comms only, per canon -- he hijacks the player's own handset rather than appearing. Reachable from any room because he is a phone NPC on player_phone.",
+          "id": "the_architect",
+          "displayName": "The Architect",
+          "npcType": "phone",
+          "phoneId": "player_phone",
+          "phoneTheme": "terminal",
+          "avatar": "assets/characters/male_hacker_hood_headshot.png",
+          "storyPath": "scenarios/m07_architects_gambit/ink/m07_architect_comms.json",
+          "voice": {
+            "name": "Enceladus",
+            "style": "ENTROPY's planner, on a handset he took without being invited. Deliberately unplaceable -- an educated English base with every regional marker sanded off, and consistent throughout. Quiet, slow, faintly amused. Nothing that happens tonight surprises him, including losing, and he never lifts the pitch.",
+            "language": "en-GB",
+            "fx": "voice-distortion"
+          },
+          "currentKnot": "start"
+        }
+      ],
+      "objects": [
+        {
+          "_comment": "THE WIN CONDITION. Flag-locked on scada_attack_host:flag_4. WP2 attaches the completion wiring; nothing else in the mission opens this.",
+          "type": "scada_historian",
+          "id": "crisis_control_system",
+          "name": "Cascade Control System",
+          "takeable": false,
+          "locked": true,
+          "lockType": "flag",
+          "requires": "scada_attack_host:flag_4",
+          "observations": "The master control position for 147 substations. The scheduled sequence is loaded and pending. It will not accept an abort from this console until the host driving it has been taken off the network -- which is not a thing you can do from a chair in this room.",
+<%# WP2 -- WHY THIS OBJECT HAS `contents`, AND IT IS NOT DECORATION.
+    shut_down_the_cascade is an `unlock_object` task, and objectives-manager.js
+    completes those only on the `item_unlocked` event. For a non-door lockable,
+    unlock-system.js emits `item_unlocked` ONLY inside the
+    `if (scenarioData.contents)` branch (unlock-system.js:718-741). A flag-locked
+    object with no contents unlocks silently, the task never completes, and
+    because shut_down_the_cascade is in requiresCompleted the mission conclusion
+    can never be recorded.
+    So the abort produces a printed confirmation. The console prints it, the
+    engine emits the event, the task completes, and the task's onComplete sets
+    grid_saved and mission_complete -- from the terminal, never from a
+    conversation anyone can knock out. %>
+          "contents": [
+            {
+              "type": "text_file",
+              "name": "Sequence Abort Confirmation",
+              "takeable": true,
+              "readable": true,
+              "observations": "The console printed it without being asked. Grid control keeps paper for exactly this.",
+              "observationDisplay": "gameDisplay",
+              "text": "PACIFIC NORTHWEST REGIONAL GRID CONTROL\nAUTOMATED SEQUENCE -- ABORT ACCEPTED\n\nSCHEDULED OPERATIONS CANCELLED ............ 147 / 147\nBREAKER STATE ............................. NOMINAL\nLOAD SHED EVENTS .......................... 0\nCUSTOMERS AFFECTED ........................ 0\n\nOriginating host no longer reachable on the control VLAN.\nAbort authorised at this console.\n\nNothing happened tonight. That is the whole of it, and it is\nthe only version of tonight that 8.4 million people will ever\nread about."
+            }
+          ],
+          "puzzle_graph_role": "lock"
+        },
+        {
+          "type": "smartscreen",
+          "id": "cascade_countdown_display",
+          "name": "Cascade Countdown Display",
+          "takeable": false,
+          "readable": true,
+          "observations": "The countdown, four feet wide, in red. It is not a warning. It is a schedule.",
+          "text": "AUTOMATED SEQUENCE -- ARMED\nEXECUTION PENDING\n\nThe sequence is local. It does not phone home, it cannot be paused from outside this building, and it does not care whether anyone is watching it."
+        },
+        {
+          "_comment": "The casualty projection. The single most portable prop in the mission -- Mercer has read it and signed it; Elena has not seen it.",
+          "type": "text_file",
+          "id": "casualty_projection",
+          "name": "Signed Casualty Projection",
+          "takeable": true,
+          "readable": true,
+          "observations": "A printed projection on the console beside Mercer, signed and dated in his own hand. He did not hide it.",
+          "observationDisplay": "gameDisplay",
+          "text": "OPERATION BLACKOUT -- PROJECTED HUMAN COST, FIRST 72 HOURS\nPrepared and reviewed by: J. Mercer\n\nHospitals -- life support failure, delayed response .......... 120 - 180\nTraffic -- signal failure, collisions in darkness ............  40 -  65\nExposure -- hypothermia, elderly and vulnerable .............  80 - 140\n                                                              ---------\nTOTAL .......................................................  240 - 385\n\nPlant destroyed: $2.4bn. Wider economic damage: $18bn.\nWater treatment fails at 48 hours. Restoration 4-7 days -- transformers are not stock items.\n\nReviewer's note, handwritten at the foot of the page:\n\"Twice now the warnings have been costed and declined. This is the third submission. It will be read.\"",
+          "onPickup": { "setVariable": { "casualty_projection_found": true } },
+          "puzzle_graph_role": "clue",
+          "puzzle_graph_reveals": "mercer_read_and_signed_the_casualty_projection"
+        }
+      ]
+    },
+
+    "generator_room": {
+      "type": "room_battery_hall",
+      "locked": true,
+      "lockType": "key",
+      "requires": "generator_maintenance_key",
+      "keyPins": [40, 25, 55, 30],
+      "difficulty": "medium",
+      "door_sign": "Backup Generation Hall",
+      "connections": {
+        "north": "server_room",
+        "south": "cable_vault"
+      },
+      "npcs": [],
+      "objects": [
+        {
+          "_comment": "Primary source of the cable vault PIN. Elena is the redundant source.",
+          "type": "notes",
+          "id": "maintenance_log",
+          "name": "Plant Maintenance Log",
+          "takeable": false,
+          "readable": true,
+          "observations": "The plant log, chained to the wall beside the transfer switch. Every entry is initialled. The site standard is to write the keypad code in it, because the alternative is an engineer locked out of the vault at three in the morning.",
+          "observationDisplay": "gameDisplay",
+          "text": "BACKUP GENERATION HALL -- PLANT MAINTENANCE LOG\n\n02 JUN  Weekly load test, gensets 1-3. Pass. -- T.O.\n09 JUN  Weekly load test, gensets 1-3. Pass. -- T.O.\n15 JUN  Cable vault opened for OptiGrid cabling survey. Escorted. -- T.O.\n16 JUN  Transfer switch firmware -- vendor update applied out of window. NOT MY CALL. -- T.O.\n\nSTANDING NOTE (do not remove):\n  Cable vault keypad: <%= vault_pin %>\n  The vault is on the plant keypad, NOT the badge system. If the badge system\n  is down you can still get in. If the keypad is down, phone Facilities and wait.",
+          "onRead": { "setVariable": { "vault_pin_found": true } },
+          "puzzle_graph_role": "key",
+          "puzzle_graph_unlocks": "cable_vault"
+        },
+        {
+          "_comment": "Park's sabotage target. WP7 may wire barks/state onto this; WP1 places it only.",
+          "type": "batrack",
+          "id": "backup_transfer_switch",
+          "name": "Backup Power Transfer Switch",
+          "takeable": false,
+          "readable": true,
+          "observations": "The automatic transfer switch -- the thing that moves the building onto its own generators when the grid drops it. Somebody has already had the cover off.",
+          "text": "AUTOMATIC TRANSFER SWITCH -- ATS-1\nSTATUS: ARMED / AUTO\n\nThe cover screws are on the floor. There is a fresh jumper across the control terminals and a length of cable coiled underneath it that is not part of the installation. Whoever left it there did not finish, and did not take their tools."
+        },
+        {
+          "type": "servers",
+          "id": "genset_control_panel",
+          "name": "Genset Control Panel",
+          "takeable": false,
+          "observations": "Three generators, 72 hours of rating between them, all reading ready. For the moment."
+        }
+      ]
+    },
+
+    "cable_vault": {
+      "type": "room_archive_1x2gu",
+      "locked": true,
+      "lockType": "pin",
+      "requires": "<%= vault_pin %>",
+      "difficulty": "medium",
+      "door_sign": "Underground Cable Vault",
+      "connections": {
+        "north": "generator_room"
+      },
+      "npcs": [
+        {
+          "_comment": "Thomas Park -- Critical Mass sabotage tech. Cold, hostile, static, reacts on entry. WP7 owns hostility (#hostile + engine KO only).",
+          "id": "thomas_park",
+          "displayName": "Thomas Park",
+          "npcType": "person",
+          "position": { "x": 7, "y": 3 },
+          "spriteSheet": "male_telecom",
+          "spriteTalk": "assets/characters/male_telecom_talk.png",
+          "spriteConfig": { "idleFrameRate": 6, "walkFrameRate": 10 },
+          "storyPath": "scenarios/m07_architects_gambit/ink/m07_npc_thomas_park.json",
+          "voice": {
+            "name": "Rasalgethi",
+            "style": "A plant maintenance technician sent to break the one thing that would have held the load. Consistent Korean-American accent, Pacific Northwest, throughout -- do not shift to any other accent. Practical, terse, hands-first. Not a believer, and increasingly aware of it.",
+            "language": "en-US"
+          },
+          "currentKnot": "start",
+          "globalVarOnKO": "park_ko",
+          "taskOnKO": "neutralise_park",
+          "observations": "A man crouched over the trunk runs with a cable cutter and no particular hurry. He hears the door and does not turn round.",
+          "los": {
+            "enabled": true,
+            "range": 160,
+            "angle": 140,
+            "visualize": true
+          }
+        }
+      ],
+      "objects": [
+        {
+          "type": "cable",
+          "id": "vault_trunk_runs",
+          "name": "Trunk Cable Runs",
+          "takeable": false,
+          "readable": true,
+          "observations": "The trunk runs out to the regional substations, and one splice in the middle of them that is six months newer than everything around it.",
+          "text": "The splice is neat, labelled with the site's own tape, and carries a small inline device nobody put on an asset register. This is the physical half of the intrusion -- the backdoors in the control stack had to reach the breakers somehow, and this is how."
+        },
+        {
+          "_comment": "Lore drop 1 -- Tomb Gamma. Referenced as the Architect's workshop. NO map coordinates: notable_locations.md deliberately leaves the location unspecified.",
+          "type": "notes",
+          "id": "tomb_gamma_dossier",
+          "name": "Recovered Site Reference -- 'Tomb Gamma'",
+          "takeable": true,
+          "readable": true,
+          "observations": "A printout stuffed behind the splice housing, mostly redacted by whoever printed it.",
+          "observationDisplay": "gameDisplay",
+          "text": "// recovered fragment -- ENTROPY internal reference\n\nSITE DESIGNATION: TOMB GAMMA\nSTATUS: ACTIVE\nCLASS: workshop\nLOCATION: [REDACTED AT SOURCE -- string not present in this copy]\n\nannotation, unsigned:\n  \"The Architect's workshop. Where entropy is refined.\"\n  \"Everything the cells field has been through Gamma first. Including the people.\"\n\nThere is a coordinate field in the record structure. It is empty. Somebody\nstripped it before this copy was made, which is itself worth reporting.",
+          "onPickup": { "setVariable": { "found_tomb_gamma": true } },
+          "puzzle_graph_role": "clue",
+          "puzzle_graph_reveals": "tomb_gamma_is_the_architects_workshop"
+        },
+        {
+          "_comment": "Lore drop 2 -- THE MOLE. The timestamp is the reveal: it predates the tasking order. This is the payload the whole third act turns on.",
+          "type": "text_file",
+          "id": "mole_intercept_evidence",
+          "name": "Intercepted Mail -- Deployment Confirmed",
+          "takeable": true,
+          "readable": true,
+          "observations": "An intercept pulled off the compromised host and printed here, on this side of the wire, by somebody who wanted a paper copy.",
+          "observationDisplay": "gameDisplay",
+          "text": "From:    [REDACTED]@safetynet.gov\nTo:      architect@entropy.onion\nSubject: Deployment confirmed\n\n\"Four targets, simultaneous. 0x00 to Portland. One team uncommitted --\nthey'll have to choose. Window: thirty minutes.\"\n\n-- end of message --\n\nCheck the header time against the tasking order in your own case file.\n\nThis was sent BEFORE the deployment was made.\n\nThe leak was not the operation timing. The leak was the agent.",
+          "onPickup": { "setVariable": { "found_mole_evidence": true } },
+          "puzzle_graph_role": "clue",
+          "puzzle_graph_reveals": "the_mole_leaked_the_agent_before_the_tasking_order"
+        }
+      ]
+    }
+  },
+
+<%# ---------------------------------------------------------------------------
+    STATE CONTRACT. CONTRACT.md is the authority; this block must match it
+    exactly. Every ink file VAR-declares what it reads and writes it back with
+    #set_global. Nothing may be added here without adding it to CONTRACT.md.
+%>
+  "globalVariables": {
+    "player_name": "Agent 0x00",
+
+<%# --- Act structure ------------------------------------------------------ %>
+    "briefing_played": false,
+    "mission_complete": false,
+
+<%# --- The delegation ----------------------------------------------------- %>
+    "team_assignment": "",
+    "team_assigned": false,
+    "projection_revised": false,
+    "team_redirected": false,
+    "redirect_window_closed": false,
+
+<%# --- The countdown (engine timers, narrative only) ---------------------- %>
+    "architect_t20_played": false,
+    "architect_t10_played": false,
+    "architect_t5_played": false,
+    "architect_t1_played": false,
+    "countdown_expired": false,
+
+<%# --- NPC outcomes ------------------------------------------------------- %>
+    "morrison_resolved": "",
+    "elena_outcome": "",
+    "mercer_fate": "",
+    "mercer_stance": "",
+    "mercer_told_diversion": false,
+    "park_resolved": "",
+
+<%# --- Debrief (WP8: player's stance on their own triage decision) -------- %>
+    "debrief_stance": "",
+
+<%# --- Knockout latches (globalVarOnKO targets, wired by WP2) ------------- %>
+    "morrison_ko": false,
+    "elena_ko": false,
+    "mercer_ko": false,
+    "park_ko": false,
+
+<%# --- VM progress (flagRewards set_global, wired by WP2) ----------------- %>
+    "flag1_submitted": false,
+    "flag2_submitted": false,
+    "flag3_submitted": false,
+    "flag4_submitted": false,
+    "found_coordination_traffic": false,
+
+<%# --- Lock-chain latches (redundant sources; hub gating) ----------------- %>
+    "badge_obtained": false,
+    "maintenance_key_found": false,
+    "vault_pin_found": false,
+    "scada_password_found": false,
+    "visitor_log_read": false,
+    "casualty_projection_found": false,
+
+<%# --- Win condition and lore --------------------------------------------- %>
+    "grid_saved": false,
+    "found_tomb_gamma": false,
+    "found_mole_evidence": false,
+
+<%# --- Field guide gating (WP6 offers; two latches per guide) ------------- %>
+    "rfid_guide_offered": false,
+    "rfid_guide_hint_given": false,
+    "lockpicking_guide_offered": false,
+    "lockpicking_guide_hint_given": false,
+    "recon_guide_offered": false,
+    "recon_guide_hint_given": false,
+    "scanning_guide_offered": false,
+    "scanning_guide_hint_given": false,
+    "privesc_guide_offered": false,
+    "privesc_guide_hint_given": false
+  }
+}

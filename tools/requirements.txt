@@ -1,0 +1,4 @@
+# Requirements for BreakEscape tools
+
+# PixelLab to Phaser sprite sheet converter
+Pillow>=10.0.0

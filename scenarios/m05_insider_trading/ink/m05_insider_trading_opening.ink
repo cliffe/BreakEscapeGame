@@ -1,0 +1,338 @@
+// ===========================================
+// Mission 5: "Insider Trading" - Opening Briefing
+// Act 1: Interactive Cutscene
+// ===========================================
+
+// Variables for tracking player choices
+VAR player_approach = ""          // cautious, aggressive, diplomatic
+VAR mission_priority = ""          // thoroughness, speed, stealth
+VAR knows_full_stakes = false      // Did player ask about casualties?
+VAR knows_insider_profile = false  // Did player ask about insider psychology?
+VAR handler_trust = 50            // Agent 0x99's confidence (0-100)
+
+// External variables (set by game)
+VAR player_name = "Agent 0x00"
+
+// ===========================================
+// OPENING
+// ===========================================
+
+=== start ===
+Narrator: A SAFETYNET briefing room. Director Netherton stands at the head of the table. Beside him, a man in a lab coat -- the service's own insider-threat specialist -- has three monitors of access logs open.
+
+Director Magnus Netherton: Agent 0x00. This one is close to home in a way I dislike. Someone inside a defence contractor is selling secrets from the inside. I've brought Nightshade in because catching a mole is precisely his trade -- learn from him. HaX will run you on the ground.
+
+Agent 0x47 'Nightshade': *pleasantly* Insiders are easy to romanticise and hard to catch, because they don't break in -- they're already trusted. You don't hunt the break-in. You hunt the pattern: the access that's a little too broad, the hours that are a little too odd, the calm of someone who's decided the rules don't apply to them. Find whose behaviour stopped matching their story.
+
+Director Magnus Netherton: Sound advice. HaX -- the detail.
+
+#speaker:agent_0x99
+
+{player_name}, we have a critical situation developing.
+
+Quantum Dynamics Corporation in San Francisco. Quantum cryptography research for the Department of Defense.
+
+Someone on the inside is stealing it.
+
++ [How much has been compromised?]
+    ~ handler_trust += 5
+    You: What's the damage so far?
+    -> damage_assessment
+
++ [What's the timeline?]
+    You: How much time do we have?
+    -> timeline_urgency
+
++ [I'm ready. What's the mission?]
+    ~ handler_trust += 10
+    ~ player_approach = "direct"
+    You: Give me the objectives. I'll handle it.
+    Agent 0x99: Good. Let's get straight to it.
+    -> mission_objectives
+
+=== damage_assessment ===
+#speaker:agent_0x99
+
+Agent 0x99: Project Heisenberg. Quantum-safe key material for the National Emergency-Services Dispatch Network — 999 call routing.
+
+Agent 0x99: 73% of the package is already staged for exfiltration. The rest goes out within four hours if we don't stop it.
+
++ [What exactly was stolen?]
+    -> stolen_data_details
+
++ [Who's this going to?]
+    ~ knows_full_stakes = true
+    -> buyers_and_stakes
+
++ [Continue]
+    -> mission_objectives
+
+=== timeline_urgency ===
+#speaker:agent_0x99
+
+Agent 0x99: Final exfiltration scheduled within four hours.
+
+Agent 0x99: Once ENTROPY has the full package, they integrate it directly. This isn't a sale — it's an acquisition.
+
+~ knows_full_stakes = true
+
++ [What do they want it for?]
+    -> buyers_and_stakes
+
++ [I understand the urgency]
+    -> mission_objectives
+
+=== stolen_data_details ===
+#speaker:agent_0x99
+
+Agent 0x99: Lattice-based key exchange parameters. The production candidate set.
+
+Agent 0x99: And the rollout schedule — phased cutover dates, region by region, including the key-rotation windows.
+
+Agent 0x99: Everything ENTROPY needs to compromise the dispatch network the moment it goes live.
+
++ [Why does ENTROPY want the dispatch network?]
+    ~ knows_full_stakes = true
+    -> buyers_and_stakes
+
++ [Continue]
+    -> mission_objectives
+
+=== buyers_and_stakes ===
+#speaker:agent_0x99
+
+Agent 0x99: This isn't going to a foreign buyer. ENTROPY's Insider Threat Initiative is acquiring it and keeping it.
+
+Agent 0x99: If they hold the key material during a rotation window, they can force the dispatch network onto a degraded routing path. Every ambulance, fire and police call routed through it runs six to eleven minutes slower.
+
+{not knows_full_stakes:
+    ~ knows_full_stakes = true
+}
+
+Agent 0x99: Early modelling: thirty to forty-five excess civilian deaths in the first rollout wave. Cardiac arrests. Strokes. Structure fires. The calls where minutes decide it.
+
+Agent 0x99: Real people. Real casualties. Not officers in a briefing — people who call 999 and wait.
+
++ [We have to stop this]
+    ~ handler_trust += 5
+    You: Then let's not let that happen.
+    -> mission_objectives
+
++ [What's the mission?]
+    -> mission_objectives
+
+// ===========================================
+// MISSION OBJECTIVES
+// ===========================================
+
+=== mission_objectives ===
+#speaker:agent_0x99
+
+Agent 0x99: Your objectives:
+
+Agent 0x99: One - Identify the insider. Quantum Dynamics' CSO narrowed it to 8 suspects in the cryptography division.
+
+Agent 0x99: Two - Gather evidence. We need proof for prosecution or leverage for turning them.
+
++ [Turning them?]
+    -> turning_explanation
+
++ [What's the third objective?]
+    -> third_objective
+
+=== turning_explanation ===
+#speaker:agent_0x99
+
+Agent 0x99: ENTROPY's Insider Threat Initiative runs on a recruiter — a handler working under a corporate headhunting cover. 23 active placements. 47 more targets under evaluation.
+
+Agent 0x99: If we can turn this insider into a double agent, we map their entire network.
+
+~ knows_insider_profile = true
+
+Agent 0x99: Three - Stop the final exfiltration. Prevent that last 27% from leaving the building.
+
++ [How do I get inside?]
+    -> cover_story
+
++ [What if the insider won't cooperate?]
+    -> non_cooperation
+
+=== third_objective ===
+#speaker:agent_0x99
+
+Agent 0x99: Three - Stop the final exfiltration. Prevent that last 27% from leaving.
+
++ [What's my cover?]
+    -> cover_story
+
++ [Tell me about turning the insider]
+    -> turning_explanation
+
+=== non_cooperation ===
+#speaker:agent_0x99
+
+Agent 0x99: Then you arrest them. Standard espionage charges.
+
+{not knows_insider_profile:
+    Agent 0x99: But understand - ENTROPY targets vulnerable people. Financial desperation, ideological manipulation.
+    ~ knows_insider_profile = true
+}
+
+Agent 0x99: The real enemy is ENTROPY. The insider might be a victim too.
+
++ [I'll make the call when I see the situation]
+    ~ player_approach = "diplomatic"
+    ~ handler_trust += 5
+    -> cover_story
+
++ [Justice is justice. They made their choice]
+    ~ player_approach = "aggressive"
+    -> cover_story
+
+// ===========================================
+// COVER STORY & ENTRY
+// ===========================================
+
+=== cover_story ===
+#speaker:agent_0x99
+
+Agent 0x99: You're going in as an external security consultant. SAFETYNET cover identity.
+
+Agent 0x99: Chief Security Officer Patricia Morgan is expecting you. Former Marine, 15 years FBI Cyber Division.
+
+Agent 0x99: She'll provide access, but corporate politics are... tense. CEO wants this handled quietly.
+
++ [Understood. Any other contacts?]
+    -> npc_briefing
+
++ [What resources do I have?]
+    -> resources_briefing
+
+=== npc_briefing ===
+#speaker:agent_0x99
+
+Agent 0x99: Dr. Sarah Chen leads the cryptography team. Brilliant scientist, protective of her people.
+
+Agent 0x99: Kevin Park - IT systems administrator. He's your best bet for technical access. Build rapport.
+
+Agent 0x99: Lisa Park in marketing might have useful intel. She's observant about office dynamics.
+
++ [Got it. What about equipment?]
+    -> resources_briefing
+
++ [I'm ready to begin]
+    -> mission_approach
+
+=== resources_briefing ===
+#speaker:agent_0x99
+
+Agent 0x99: Standard kit - lockpicks, RFID cloner, CyberChef workstation for decoding evidence.
+
+Agent 0x99: We've also set up a drop-site terminal in the server room. Secure channel for submitting intelligence.
+
+{knows_insider_profile:
+    Agent 0x99: The insider uses a personal Bludit CMS server for ENTROPY communications. Exploit it and you'll find evidence.
+- else:
+    Agent 0x99: Intel suggests the insider uses encrypted dead drops. Find their method and exploit it.
+    ~ knows_insider_profile = true
+}
+
++ [Bludit CMS? I can work with that]
+    You: CVE-2019-16113. Directory traversal, auth bypass.
+    Agent 0x99: Exactly. Four flags hidden in that server. Get them all.
+    -> mission_approach
+
++ [I'll figure out their communication method]
+    -> mission_approach
+
+// ===========================================
+// MISSION APPROACH - CRITICAL CHOICE
+// ===========================================
+
+=== mission_approach ===
+#speaker:agent_0x99
+
+Agent 0x99: Final question - how are you approaching this?
+
++ [Careful and thorough. Investigation takes time]
+    ~ player_approach = "cautious"
+    ~ mission_priority = "thoroughness"
+    You: I'll be methodical. Document everything, interview everyone.
+    Agent 0x99: Smart. This is a puzzle, not a raid. Take your time.
+    -> final_instructions
+
++ [Fast and direct. Stop that exfiltration]
+    ~ player_approach = "aggressive"
+    ~ mission_priority = "speed"
+    You: Identify the insider, stop the upload, get out.
+    Agent 0x99: Speed is good. But don't miss critical evidence.
+    -> final_instructions
+
++ [Adaptive. I'll read the situation on site]
+    ~ player_approach = "diplomatic"
+    ~ mission_priority = "stealth"
+    ~ handler_trust += 5
+    You: I'll adapt based on what I find. Flexibility is key.
+    Agent 0x99: Good instincts. Trust your judgment.
+    -> final_instructions
+
+// ===========================================
+// FINAL INSTRUCTIONS & DEPLOYMENT
+// ===========================================
+
+=== final_instructions ===
+#speaker:agent_0x99
+
+{knows_full_stakes:
+    Agent 0x99: Remember - thirty to forty-five lives depend on this mission. Civilians, not officers.
+}
+
+{player_approach == "cautious":
+    Agent 0x99: Your methodical approach should serve you well. But watch the clock.
+}
+{player_approach == "aggressive":
+    Agent 0x99: Move fast, but don't compromise the investigation. We need solid evidence.
+}
+{player_approach == "diplomatic":
+    Agent 0x99: Adapt as needed. The insider might surprise you - be ready for anything.
+}
+
+Agent 0x99: I'll be available by phone. Report findings, request guidance, submit VM flags to the drop-site.
+
++ [Any last advice?]
+    -> last_advice
+
++ [I'm ready to deploy]
+    -> deployment
+
+=== last_advice ===
+#speaker:agent_0x99
+
+Agent 0x99: Yeah - don't assume you know the insider's story until you see all the evidence.
+
+{knows_insider_profile:
+    Agent 0x99: ENTROPY weaponizes suffering. Remember that.
+}
+
+Agent 0x99: And {player_name}? Good luck.
+
+-> deployment
+
+=== deployment ===
+#speaker:agent_0x99
+
+Agent 0x99: Quantum Dynamics, San Francisco. Wednesday afternoon, 4:30 PM.
+
+Agent 0x99: Final exfiltration scheduled for tonight. You have 4 hours.
+
+Agent 0x99: Go get them.
+
+// Bridge briefing state to globals so the closing debrief can read it back.
+// (Ink VAR assignments do not propagate to globals on their own.)
+{player_approach != "": #set_global:player_approach:{player_approach}}
+{knows_full_stakes: #set_global:knows_full_stakes:true}
+#set_global:handler_trust:{handler_trust}
+
+#complete_task:receive_mission_briefing
+#start_gameplay
+-> END

@@ -1,0 +1,270 @@
+// ===========================================
+// Mission 5: NPC - Lisa Park
+// Marketing Coordinator, Office Observer
+// ===========================================
+
+VAR lisa_influence = 0              // 0-100 scale
+VAR topic_office_mood = false
+VAR topic_torres_personal = false
+VAR topic_elena = false
+VAR first_meeting = true
+
+// External variables
+VAR player_name = "Agent 0x00"
+VAR torres_identified = false
+VAR torres_turned = false
+VAR torres_arrested = false
+VAR torres_killed = false
+
+// ===========================================
+// INITIAL MEETING
+// ===========================================
+
+=== start ===
+#complete_task:talk_to_lisa
+
+{first_meeting:
+    ~ first_meeting = false
+    #speaker:narrator
+    #display:lisa-friendly
+
+    A woman in her early 30s sits in the break room, coffee in hand, looking out the window.
+
+    #speaker:lisa_park
+    Lisa Park: Hey! You're the security person, right?
+
+    Lisa Park: Lisa Park, marketing. I don't have access to the secret crypto stuff.
+
+    Lisa Park: But I notice things. Office dynamics, you know?
+
+    + [What have you noticed lately?]
+        ~ lisa_influence += 10
+        # influence_increased
+        You: How's the mood been around here?
+        -> office_mood
+
+    + [I'm interested in David Torres. Do you know him?]
+        You: Can you tell me about him?
+        Lisa Park: David? Yeah, poor guy.
+        ~ lisa_influence += 5
+        # influence_increased
+        -> torres_sympathy
+
+    + [Thanks, but I need to focus on cleared personnel.]
+        You: Sorry, limited time.
+        Lisa Park: Oh, totally get it. Good luck!
+        #exit_conversation
+        -> DONE
+}
+
+{not first_meeting:
+    #display:lisa-casual
+    Lisa Park: Hey again!
+    -> hub
+}
+
+=== office_mood ===
+#speaker:lisa_park
+~ topic_office_mood = true
+
+Lisa Park: Tense. Everyone knows something's wrong.
+
+Lisa Park: People whispering. Suspicious looks. It's like a bad TV drama.
+
+{lisa_influence >= 15:
+    Lisa Park: David Torres especially. He looks exhausted. Stressed beyond belief.
+    ~ lisa_influence += 5
+    # influence_increased
+}
+
+-> hub
+
+// ===========================================
+// CONVERSATION HUB
+// ===========================================
+
+=== hub ===
+
++ {not topic_office_mood} [How's the office mood these days?]
+    -> ask_office_mood
+
++ {not topic_torres_personal} [Tell me about David Torres.]
+    -> ask_torres_personal
+
++ {not topic_elena} [What do you know about Torres' wife?]
+    -> ask_elena
+
++ [That's all, thanks.]
+    You: That's all, thanks.
+    #exit_conversation
+    #speaker:lisa_park
+    Lisa Park: Anytime! I'll be here if you need me.
+    -> DONE
+
+=== ask_office_mood ===
+#speaker:lisa_park
+~ topic_office_mood = true
+~ lisa_influence += 5
+# influence_increased
+
+Lisa Park: Everyone's on edge. The cryptography team especially.
+
+Lisa Park: They know one of them did it. They're all looking at each other.
+
+{lisa_influence >= 20:
+    Lisa Park: Dr. Chen is taking it personally. She feels responsible.
+    Lisa Park: Kevin's been digging through network logs like crazy.
+}
+
+-> hub
+
+=== ask_torres_personal ===
+#speaker:lisa_park
+~ topic_torres_personal = true
+~ lisa_influence += 10
+# influence_increased
+
+Lisa Park: David's a sweetheart. Always polite. Remembers everyone's names.
+
+Lisa Park: He has two kids. Sofia and Miguel. He talks about them all the time.
+
+Lisa Park: Or... he used to. He's been really quiet lately.
+
+{lisa_influence >= 25:
+    Lisa Park: His wife Elena is sick. Cancer, I think.
+    Lisa Park: I saw him crying in the parking lot once. Last month.
+    Lisa Park: Pretended I didn't see. Felt awful.
+    ~ lisa_influence += 10
+    # influence_increased
+}
+
+-> hub
+
+=== ask_elena ===
+#speaker:lisa_park
+~ topic_elena = true
+
+{topic_torres_personal:
+    Lisa Park: Elena? She came to the office Christmas party two years ago.
+    Lisa Park: Beautiful woman. Really kind. You could see how much David loved her.
+
+    {lisa_influence >= 30:
+        Lisa Park: Stage 3 cancer. Breast cancer, I think.
+        Lisa Park: Experimental treatment. Insurance won't cover it.
+        Lisa Park: David mentioned it once. $380,000.
+        Lisa Park: I can't even imagine that kind of debt.
+        ~ lisa_influence += 10
+        # influence_increased
+    }
+    -> hub
+- else:
+    Lisa Park: David's wife? She's sick. Cancer.
+    Lisa Park: That's all I know.
+    -> hub
+}
+
+=== torres_sympathy ===
+#speaker:lisa_park
+
+Lisa Park: His wife Elena has cancer. Stage 3.
+
+Lisa Park: Treatment costs a fortune. I don't know how they're managing.
+
+Lisa Park: He's been so stressed. Lost weight. Looks like he hasn't slept in months.
+
++ [That's rough. Thanks for the context]
+    ~ lisa_influence += 10
+    # influence_increased
+    -> hub
+
++ [Personal problems don't excuse espionage]
+    You: If he's the insider, circumstances don't matter.
+    Lisa Park: *pause* Wow. Okay then.
+    ~ lisa_influence -= 10
+    # influence_decreased
+    #exit_conversation
+    -> DONE
+
+// ===========================================
+// EVENT-TRIGGERED: Player Identifies Torres
+// ===========================================
+
+=== on_torres_identified ===
+#speaker:lisa_park
+
+{torres_identified:
+    Lisa Park: I heard... David Torres is the insider?
+
+    + [Where did you hear that?]
+        Lisa Park: Office gossip travels fast.
+        Lisa Park: Is it true?
+        -> confirm_torres
+
+    + [I can't discuss the investigation]
+        Lisa Park: Right. Sorry. Classified.
+        -> DONE
+}
+
+=== confirm_torres ===
+
++ [Yes. He's been stealing classified research]
+    Lisa Park: *shocked* No. David wouldn't...
+    Lisa Park: *pause* But Elena. The money.
+    Lisa Park: God. That's tragic.
+    -> emotional_response
+
++ [The evidence points to him]
+    Lisa Park: I don't want to believe it.
+    Lisa Park: But I guess desperation makes people do terrible things.
+    -> DONE
+
+=== emotional_response ===
+#speaker:lisa_park
+
+Lisa Park: What happens to his kids? Sofia and Miguel?
+
+Lisa Park: If David goes to prison, Elena's dying, who takes care of them?
+
++ [That's not my concern]
+    Lisa Park: *quietly* Right. Just the mission.
+    #exit_conversation
+    -> DONE
+
++ [I don't have answers for that]
+    You: I'm trying to do the right thing. It's complicated.
+    Lisa Park: Yeah. I bet it is.
+    -> DONE
+
+// ===========================================
+// EVENT-TRIGGERED: Mission Complete
+// ===========================================
+
+=== on_mission_complete ===
+#speaker:lisa_park
+
+{torres_turned:
+    Lisa Park: I heard David's cooperating with the government. Witness protection?
+    Lisa Park: And Elena's treatment will be covered?
+    You: That's the arrangement.
+    Lisa Park: *relieved* Oh thank god. Those kids need their parents.
+}
+
+{torres_arrested:
+    Lisa Park: David's been arrested.
+    Lisa Park: *sad* Elena and the kids...
+    Lisa Park: This is just awful.
+}
+
+{torres_killed:
+    Lisa Park: Someone died?
+    Lisa Park: *horrified* David?
+    Lisa Park: *starts crying* Oh god. Elena. The kids.
+    Lisa Park: I need a minute.
+    #exit_conversation
+    -> DONE
+}
+
+Lisa Park: Thanks for handling this. I know it wasn't easy.
+
+#exit_conversation
+-> DONE

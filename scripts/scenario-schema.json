@@ -1,0 +1,917 @@
+{
+  "title": "Break Escape Scenario Schema",
+  "description": "Schema for validating Break Escape scenario.json.erb files",
+  "type": "object",
+  "required": ["scenario_brief", "startRoom", "rooms"],
+  "properties": {
+    "scenario_brief": {
+      "type": "string",
+      "description": "Brief description of the scenario"
+    },
+    "endGoal": {
+      "type": "string",
+      "description": "Optional end goal description"
+    },
+    "version": {
+      "type": "string",
+      "description": "Optional version string"
+    },
+    "startRoom": {
+      "type": "string",
+      "description": "ID of the starting room"
+    },
+    "startPosition": {
+      "type": "object",
+      "description": "Optional tile coordinates where the player spawns in the startRoom. If omitted the player is placed at the room centre.",
+      "properties": {
+        "x": { "type": "number", "description": "Tile column (0 = left wall)" },
+        "y": { "type": "number", "description": "Tile row (0 = top wall)" }
+      },
+      "required": ["x", "y"],
+      "additionalProperties": false
+    },
+    "show_scenario_brief": {
+      "type": "string",
+      "description": "When to show the scenario brief (e.g. 'on_resume')"
+    },
+    "flags": {
+      "type": "object",
+      "description": "Top-level VM flag data, keyed by VM name. Use ERB helper vm_flags_json() to populate.",
+      "additionalProperties": true
+    },
+    "music": {
+      "type": "object",
+      "description": "Music system configuration. Events trigger music changes based on game events.",
+      "properties": {
+        "events": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "trigger": { "type": "string" },
+              "track": { "type": "string" },
+              "volume": { "type": "number" },
+              "loop": { "type": "boolean" },
+              "fadeIn": { "type": "number" },
+              "fadeOut": { "type": "number" }
+            }
+          }
+        }
+      }
+    },
+    "startItemsInInventory": {
+      "type": "array",
+      "description": "Items that start in player inventory",
+      "items": { "$ref": "#/definitions/item" }
+    },
+    "globalVariables": {
+      "type": "object",
+      "description": "Global Ink variables",
+      "additionalProperties": {
+        "oneOf": [
+          { "type": "boolean" },
+          { "type": "number" },
+          { "type": "string" }
+        ]
+      }
+    },
+    "player": {
+      "type": "object",
+      "description": "Player configuration",
+      "properties": {
+        "id": { "type": "string" },
+        "displayName": { "type": "string" },
+        "spriteSheet": { "type": "string" },
+        "spriteTalk": { "type": "string" },
+        "spriteConfig": {
+          "type": "object",
+          "properties": {
+            "idleFrameStart": { "type": "integer" },
+            "idleFrameEnd": { "type": "integer" },
+            "idleFrameRate": { "type": "number" },
+            "walkFrameStart": { "type": "integer" },
+            "walkFrameEnd": { "type": "integer" },
+            "walkFrameRate": { "type": "number" }
+          }
+        }
+      }
+    },
+    "objectives": {
+      "type": "array",
+      "description": "Mission objectives",
+      "items": { "$ref": "#/definitions/objective" }
+    },
+    "rooms": {
+      "type": "object",
+      "description": "Map of room IDs to room definitions",
+      "additionalProperties": { "$ref": "#/definitions/room" }
+    },
+    "narrator": {
+      "type": "object",
+      "description": "Optional narrator NPC that appears in multiple scenarios (e.g., for cutscenes or narration)",
+      "properties": {
+        "id": { "type": "string" },
+        "displayName": { "type": "string" },
+        "storyPath": { "type": "string" },
+        "currentKnot": { "type": "string" },
+        "voice": {
+          "type": "object",
+          "description": "TTS voice configuration",
+          "additionalProperties": true
+        }
+      }
+    },
+    "timers": {
+      "type": "array",
+      "description": "Optional timer system configuration for the scenario (array of timer objects)",
+      "items": {
+        "type": "object",
+        "additionalProperties": true
+      }
+    }
+  },
+  "definitions": {
+    "objective": {
+      "type": "object",
+      "required": ["aimId", "title", "status", "order"],
+      "properties": {
+        "aimId": { "type": "string" },
+        "title": { "type": "string" },
+        "description": { "type": "string" },
+        "status": {
+          "type": "string",
+          "enum": ["active", "locked", "completed"]
+        },
+        "order": { "type": "integer" },
+        "unlockCondition": {
+          "type": "object",
+          "properties": {
+            "aimCompleted": { "type": "string" },
+            "aimsCompleted": {
+              "type": "array",
+              "items": { "type": "string" },
+              "description": "Array variant of aimCompleted -- unlocks when ALL listed aims are completed"
+            }
+          }
+        },
+        "missionConclusion": {
+          "type": "boolean",
+          "description": "When true, completing this aim records mission_concluded_at on the server. At most one aim per scenario should have this flag."
+        },
+        "requiresCompleted": {
+          "type": "array",
+          "items": { "type": "string" },
+          "description": "Server-side gate: task IDs that must already be completed before mission_concluded_at is written. Prevents conclusion being recorded if prerequisite tasks were bypassed."
+        },
+        "conclusionScreen": {
+          "type": "object",
+          "description": "Defines which overlay to show when the mission concludes. Used on first completion (if not already shown by triggerOnInteract) and on reload.",
+          "properties": {
+            "type": {
+              "type": "string",
+              "enum": ["end_screen", "bond_visualiser"],
+              "description": "end_screen: shows the standard mission complete overlay. bond_visualiser: opens the fullscreen SAFETYNET audio visualiser."
+            },
+            "bondVisualiserOpts": {
+              "type": "object",
+              "description": "Options forwarded to BondVisualiser.open() when type is bond_visualiser.",
+              "additionalProperties": true
+            }
+          },
+          "required": ["type"]
+        },
+        "tasks": {
+          "type": "array",
+          "items": { "$ref": "#/definitions/task" }
+        }
+      }
+    },
+    "task": {
+      "type": "object",
+      "required": ["taskId", "title", "type", "status"],
+      "properties": {
+        "taskId": { "type": "string" },
+        "title": { "type": "string" },
+        "type": {
+          "type": "string",
+          "enum": ["collect_items", "unlock_room", "unlock_object", "enter_room", "npc_conversation", "submit_flags", "custom", "manual"]
+        },
+        "status": {
+          "type": "string",
+          "enum": ["active", "locked", "completed"]
+        },
+        "optional": {
+          "type": "boolean",
+          "description": "If true, this task does not block aim completion"
+        },
+        "targetRoom": { "type": "string" },
+        "targetObject": { "type": "string" },
+        "targetNPC": { "type": "string" },
+        "targetItems": {
+          "type": "array",
+          "items": { "type": "string" }
+        },
+        "targetItemIds": {
+          "type": "array",
+          "items": { "type": "string" },
+          "description": "Specific item IDs (distinct from targetItems which matches item types)"
+        },
+        "targetGroup": {
+          "type": "string",
+          "description": "Matches collection_group field on items for group-collection tracking"
+        },
+        "targetFlags": {
+          "type": "array",
+          "items": { "type": "string" },
+          "description": "Array of flag identifiers to submit (e.g., ['desktop-flag1', 'kali-flag1'])"
+        },
+        "targetCount": { "type": "integer" },
+        "currentCount": { "type": "integer" },
+        "showProgress": { "type": "boolean" },
+        "onComplete": {
+          "type": "object",
+          "properties": {
+            "unlockTask": { "type": "string" },
+            "unlockAim": { "type": "string" },
+            "setGlobal": {
+              "type": "object",
+              "description": "Global variables to set when this task completes",
+              "additionalProperties": true
+            }
+          }
+        }
+      }
+    },
+    "room": {
+      "type": "object",
+      "required": ["type", "connections"],
+      "properties": {
+        "type": {
+          "type": "string",
+          "enum": [
+            "room_reception",
+            "room_office",
+            "room_office3_meeting",
+            "room_office4_meeting",
+            "room_office5_it",
+            "room_ceo",
+            "room_closet",
+            "room_break",
+            "room_meeting",
+            "room_it",
+            "room_servers",
+            "room_security",
+            "room_control_1x2gu",
+            "room_archive_1x2gu",
+            "room_library_1x2gu",
+            "room_battery_hall",
+            "room_hospital_ward",
+            "room_hospital_reception",
+            "room_hospital_office",
+            "room_hospital_cto_office",
+            "room_hospital_meeting",
+            "room_hospital_servers",
+            "room_hospital_hall",
+            "room_lab",
+            "small_room_1x1gu",
+            "small_room_storage_1x1gu",
+            "small_office_room1_1x1gu",
+            "small_office_room2_1x1gu",
+            "small_office_room3_1x1gu",
+            "small_room_closet_east_connections_only_1x1gu",
+            "hall_1x2gu"
+          ]
+        },
+        "connections": {
+          "type": "object",
+          "description": "Room connections (direction -> room_id or array of room_ids)",
+          "additionalProperties": {
+            "oneOf": [
+              { "type": "string" },
+              { "type": "array", "items": { "type": "string" } }
+            ]
+          }
+        },
+        "locked": { "type": "boolean" },
+        "lockType": {
+          "type": "string",
+          "enum": ["key", "pin", "rfid", "password", "bluetooth", "flag", "ransomware_display", "network_architecture", "alarm_panel"]
+        },
+        "requires": {
+          "oneOf": [
+            { "type": "string" },
+            { "type": "array", "items": { "type": "string" } }
+          ]
+        },
+        "keyPins": {
+          "type": "array",
+          "items": { "type": "integer" }
+        },
+        "difficulty": {
+          "type": "string",
+          "enum": ["easy", "medium", "hard", "tutorial"]
+        },
+        "door_sign": { "type": "string" },
+        "ambientSound": {
+          "type": "string",
+          "description": "Audio asset key for ambient room sound"
+        },
+        "ambientVolume": {
+          "type": "number",
+          "description": "Volume for ambient sound (0.0-1.0)",
+          "minimum": 0,
+          "maximum": 1
+        },
+        "objects": {
+          "type": "array",
+          "items": { "$ref": "#/definitions/item" }
+        },
+        "npcs": {
+          "type": "array",
+          "items": { "$ref": "#/definitions/npc" }
+        }
+      }
+    },
+    "npc": {
+      "type": "object",
+      "required": ["id", "displayName", "npcType"],
+      "properties": {
+        "id": { "type": "string" },
+        "displayName": { "type": "string" },
+        "npcType": {
+          "type": "string",
+          "enum": ["person", "phone"]
+        },
+        "position": {
+          "type": "object",
+          "properties": {
+            "x": { "type": "number" },
+            "y": { "type": "number" },
+            "elevation": {
+              "type": "number",
+              "description": "Optional elevation value (32 = 1 tile height) for z-ordering when objects need to appear in front of or behind other sprites"
+            }
+          },
+          "required": ["x", "y"],
+          "additionalProperties": false
+        },
+        "spriteSheet": { "type": "string" },
+        "spriteTalk": { "type": "string" },
+        "spriteConfig": {
+          "type": "object",
+          "properties": {
+            "idleFrameStart": { "type": "integer" },
+            "idleFrameEnd": { "type": "integer" },
+            "idleFrameRate": { "type": "number" },
+            "walkFrameStart": { "type": "integer" },
+            "walkFrameEnd": { "type": "integer" },
+            "walkFrameRate": { "type": "number" }
+          }
+        },
+        "voice": {
+          "type": "object",
+          "description": "TTS voice configuration for the NPC",
+          "properties": {
+            "name": { "type": "string" },
+            "style": { "type": "string" },
+            "language": { "type": "string" },
+            "fx": {
+              "description": "Optional Web Audio voice FX applied to this NPC's TTS (distortion/filtering). A preset name ('voice-distortion', 'radio', 'robot') or a custom object: { highpass, lowpass, drive, ringMod: { frequency, mix }, makeup }. See TTSManager.VOICE_FX_PRESETS.",
+              "oneOf": [
+                { "type": "string" },
+                { "type": "object", "additionalProperties": true }
+              ]
+            }
+          }
+        },
+        "behavior": {
+          "type": "object",
+          "description": "NPC behavior configuration",
+          "properties": {
+            "initiallyHidden": {
+              "type": "boolean",
+              "description": "If true, NPC is hidden until triggered by an event. Use for cutscene-only NPCs."
+            },
+            "immovable": {
+              "type": "boolean",
+              "description": "If true, sets Phaser.Physics.Arcade.Components.Immovable on the NPC body -- the NPC cannot be pushed by player or other collision forces. Use for stationary bed/chair NPCs."
+            },
+            "hostile": {
+              "description": "Hostile configuration. Set to true (boolean) for default settings, or an object with chaseSpeed/attackDamage/pauseToAttack for custom values.",
+              "oneOf": [
+                { "type": "boolean" },
+                {
+                  "type": "object",
+                  "properties": {
+                    "chaseSpeed": { "type": "number" },
+                    "attackDamage": { "type": "number" },
+                    "pauseToAttack": { "type": "boolean" }
+                  }
+                }
+              ]
+            },
+            "collisionBox": {
+              "type": "string",
+              "enum": ["bottom_half"],
+              "description": "Shrinks the physics body for static-sprite NPCs. 'bottom_half' restricts collision to the lower half of the sprite -- useful for tall prop-style NPCs where only the base should be solid."
+            },
+            "patrol": {
+              "type": "object",
+              "properties": {
+                "enabled": { "type": "boolean" },
+                "speed": { "type": "number", "minimum": 1 },
+                "loop": { "type": "boolean" },
+                "pauseForPlayer": { "type": "boolean" },
+                "waypointMode": {
+                  "type": "string",
+                  "enum": ["sequential", "random", "pingpong"]
+                },
+                "changeDirectionInterval": { "type": "number" },
+                "waypoints": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "x": { "type": "number" },
+                      "y": { "type": "number" },
+                      "dwellTime": { "type": "number", "minimum": 0 }
+                    }
+                  }
+                },
+                "route": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "room": { "type": "string" },
+                      "waypoints": {
+                        "type": "array",
+                        "items": {
+                          "type": "object",
+                          "properties": {
+                            "x": { "type": "number" },
+                            "y": { "type": "number" },
+                            "dwellTime": { "type": "number", "minimum": 0 }
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "observations": {
+          "type": "string",
+          "description": "Descriptive text shown in the world UI hover label when the player looks at this NPC, and as flavour text in notes/minigames. Falls back to displayName if absent."
+        },
+        "disableClose": {
+          "type": "boolean",
+          "description": "If true, hides the close button and suppresses Esc for this NPC's conversation/minigame -- for forced cutscene-style interactions the player cannot skip."
+        },
+        "los": {
+          "type": "object",
+          "description": "Line-of-sight detection cone configuration. When enabled, the NPC can detect the player within the specified range and angle.",
+          "properties": {
+            "enabled": { "type": "boolean", "description": "Activates LOS processing for this NPC" },
+            "range": { "type": "number", "description": "Detection radius in pixels" },
+            "angle": { "type": "number", "description": "Field-of-view width in degrees" },
+            "visualize": { "type": "boolean", "description": "Draw the detection cone on screen" }
+          },
+          "additionalProperties": false
+        },
+        "globalVarOnKO": {
+          "type": "string",
+          "description": "Name of global variable to set to true when this NPC is knocked out. Must be defined in scenario.globalVariables."
+        },
+        "taskOnKO": {
+          "type": "string",
+          "description": "Task ID to complete when this NPC is knocked out. Must exist in objectives."
+        },
+        "storyPath": { "type": "string" },
+        "currentKnot": { "type": "string" },
+        "avatar": { "type": "string" },
+        "phoneId": { "type": "string" },
+        "phoneTheme": {
+          "type": "string",
+          "enum": ["terminal"],
+          "description": "Optional visual theme for the phone-chat minigame. 'terminal' uses a black-screen CRT aesthetic with phosphor green text."
+        },
+        "unlockable": {
+          "type": "array",
+          "items": { "type": "string" }
+        },
+        "externalVariables": {
+          "type": "object",
+          "additionalProperties": true
+        },
+        "persistentVariables": {
+          "type": "object",
+          "additionalProperties": true
+        },
+        "timedMessages": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "delay": { "type": "integer" },
+              "message": { "type": "string" },
+              "type": { "type": "string" },
+              "targetKnot": { "type": "string" },
+              "waitForEvent": {
+                "type": "string",
+                "description": "Event pattern to wait for before sending this timed message"
+              }
+            }
+          }
+        },
+        "timedConversation": {
+          "type": "object",
+          "properties": {
+            "delay": { "type": "integer" },
+            "targetKnot": { "type": "string" },
+            "background": { "type": "string" },
+            "waitForEvent": {
+              "type": "string",
+              "description": "Event pattern to wait for before starting the conversation"
+            },
+            "skipIfGlobal": {
+              "type": "string",
+              "description": "Name of a global variable -- if true, skip this conversation. Prevents briefing replay on resume. See m01_first_contact for usage."
+            },
+            "setGlobalOnStart": {
+              "type": "string",
+              "description": "Name of a global variable to set to true when conversation starts. Used with skipIfGlobal to mark as seen."
+            }
+          }
+        },
+        "eventMappings": {
+          "type": "array",
+          "items": { "$ref": "#/definitions/eventMapping" }
+        },
+        "itemsHeld": {
+          "type": "array",
+          "items": { "$ref": "#/definitions/item" }
+        }
+      }
+    },
+    "eventMapping": {
+      "type": "object",
+      "required": ["eventPattern"],
+      "properties": {
+        "eventPattern": { "type": "string" },
+        "condition": { "type": "string" },
+        "onceOnly": { "type": "boolean" },
+        "maxTriggers": { "type": "integer" },
+        "cooldown": { "type": "integer" },
+        "bark": {
+          "type": "string",
+          "description": "Text to bark above the NPC with a speech bubble (and TTS if NPC has voice)"
+        },
+        "message": {
+          "type": "string",
+          "description": "Alias for bark (legacy)"
+        },
+        "barkDelay": {
+          "type": "number",
+          "minimum": 0,
+          "description": "Milliseconds to wait before showing the bark (default 0). Use to stagger multi-NPC responses."
+        },
+        "targetKnot": { "type": "string" },
+        "conversationMode": {
+          "type": "string",
+          "enum": ["person-chat", "phone-chat", "video-call"],
+          "description": "Trigger a cutscene. 'person-chat' opens a full-screen overlay. 'phone-chat' opens the phone-chat minigame. 'video-call' opens the person-chat overlay framed as a secure video call with a player self-view PiP (works for phone NPCs too). All require targetKnot."
+        },
+        "background": { "type": "string" },
+        "disableClose": {
+          "type": "boolean",
+          "description": "If true, player cannot close this conversation"
+        },
+        "patrolOverride": {
+          "type": "object",
+          "description": "Override current patrol -- NPC walks directly to targetTile",
+          "required": ["targetTile"],
+          "properties": {
+            "targetTile": {
+              "type": "object",
+              "required": ["x", "y"],
+              "properties": {
+                "x": { "type": "number" },
+                "y": { "type": "number" }
+              },
+              "additionalProperties": false
+            },
+            "speed": { "type": "number", "minimum": 1 },
+            "stopOnArrival": { "type": "boolean" }
+          },
+          "additionalProperties": false
+        },
+        "setPatrolSpeed": {
+          "type": "number",
+          "minimum": 1,
+          "description": "Change the NPC's patrol speed (pixels/second) from this point on"
+        },
+        "setDwellMultiplier": {
+          "type": "number",
+          "minimum": 0,
+          "exclusiveMinimum": true,
+          "description": "Multiply all patrol waypoint dwell times (e.g. 0.3 = 30% of normal pause)"
+        },
+        "setVisible": {
+          "type": "boolean",
+          "description": "Show or hide the NPC sprite"
+        },
+        "sendTimedMessage": {
+          "type": "object",
+          "properties": {
+            "delay": { "type": "integer" },
+            "message": { "type": "string" }
+          }
+        },
+        "setGlobal": { "type": "object" },
+        "completeTask": {},
+        "unlockTask": {},
+        "unlockAim": {},
+        "_comment": { "type": "string" }
+      }
+    },
+    "item": {
+      "type": "object",
+      "required": ["type", "name"],
+      "properties": {
+        "type": {
+          "type": "string",
+          "description": "Sprite name for this item. Any valid sprite asset name is accepted. Certain types have special engine behaviour: 'pc' (file container), 'safe'/'suitcase'/'briefcase'/'bin'/'bin1' (locked containers), 'vm-launcher' (VM terminal), 'launch-device' (launch/abort prop), 'flag-station' (flag submission), 'lockpick'/'key'/'keycard'/'rfid_cloner'/'pin-cracker'/'bluetooth_scanner'/'fingerprint_kit' (security tools), 'notes'/'notes2'/'notes4'/'notes5'/'text_file'/'chalkboard' (readable content). Can be combined with 'observations' for any sprite."
+        },
+        "id": { "type": "string" },
+        "name": { "type": "string" },
+        "takeable": { "type": "boolean" },
+        "readable": { "type": "boolean" },
+        "interactable": { "type": "boolean" },
+        "active": { "type": "boolean" },
+        "locked": { "type": "boolean" },
+        "position": {
+          "description": "Position of the object. Can be coordinates {x, y, elevation?} or 'as-type:typename' to use another type's placement slots.",
+          "oneOf": [
+            {
+              "type": "object",
+              "properties": {
+                "x": { "type": "number" },
+                "y": { "type": "number" },
+                "elevation": {
+                  "type": "number",
+                  "description": "Optional elevation value (32 = 1 tile height) for z-ordering when objects need to appear in front of or behind other sprites"
+                }
+              },
+              "required": ["x", "y"],
+              "additionalProperties": false
+            },
+            {
+              "type": "string",
+              "pattern": "^as-type:.+$",
+              "description": "Use placement slots of another type (e.g., 'as-type:pc' to place a laptop at PC positions)"
+            }
+          ]
+        },
+        "observations": { "type": "string" },
+        "observationDisplay": {
+          "type": "string",
+          "description": "Display mode for observation text: 'gameDisplay' for modal dialog, or omit for toast notification",
+          "enum": ["gameDisplay"]
+        },
+        "observationVariants": {
+          "type": "array",
+          "description": "Optional runtime observation variants resolved in order by condition against globalVars.",
+          "items": {
+            "type": "object",
+            "required": ["condition", "value"],
+            "properties": {
+              "condition": { "type": "string" },
+              "value": { "type": "string" }
+            },
+            "additionalProperties": false
+          }
+        },
+        "spriteVariants": {
+          "type": "array",
+          "description": "Optional runtime sprite variants resolved in order by condition against globalVars. Overrides the default sprite texture when a condition matches.",
+          "items": {
+            "type": "object",
+            "required": ["condition", "value"],
+            "properties": {
+              "condition": { "type": "string" },
+              "value": { "type": "string" }
+            },
+            "additionalProperties": false
+          }
+        },
+        "text": { "type": "string" },
+        "textVariants": {
+          "type": "array",
+          "description": "Optional runtime readable text variants resolved in order by condition against globalVars.",
+          "items": {
+            "type": "object",
+            "required": ["condition", "value"],
+            "properties": {
+              "condition": { "type": "string" },
+              "value": { "type": "string" }
+            },
+            "additionalProperties": false
+          }
+        },
+        "voice": { "type": "string" },
+        "ttsVoice": {
+          "type": "object",
+          "description": "Text-to-speech voice config for phone voicemail items",
+          "additionalProperties": true
+        },
+        "sender": { "type": "string" },
+        "timestamp": { "type": "string" },
+        "avatar": { "type": "string" },
+        "sprite": {
+          "type": "string",
+          "description": "Override sprite for this item (e.g., on vm-launcher or launch-device)"
+        },
+        "collection_group": {
+          "type": "string",
+          "description": "Groups items for task.targetGroup tracking. Items sharing a collection_group are tracked together."
+        },
+        "onRead": {
+          "type": "object",
+          "description": "Actions to fire when the item is read",
+          "properties": {
+            "setVariable": {
+              "type": "object",
+              "description": "Global variables to set when item is read. Must be defined in scenario.globalVariables.",
+              "additionalProperties": true
+            }
+          }
+        },
+        "onPickup": {
+          "type": "object",
+          "description": "Actions to fire when the item is picked up",
+          "properties": {
+            "setVariable": {
+              "type": "object",
+              "description": "Global variables to set when item is picked up. Must be defined in scenario.globalVariables.",
+              "additionalProperties": true
+            }
+          }
+        },
+        "lockType": {
+          "type": "string",
+          "enum": ["key", "pin", "rfid", "password", "bluetooth", "flag", "ransomware_display", "network_architecture", "alarm_panel"]
+        },
+        "requires": {
+          "oneOf": [
+            { "type": "string" },
+            { "type": "array", "items": { "type": "string" } }
+          ]
+        },
+        "key_id": { "type": "string" },
+        "keyPins": {
+          "type": "array",
+          "items": { "type": "integer" }
+        },
+        "card_id": { "type": "string" },
+        "difficulty": {
+          "type": "string",
+          "enum": ["easy", "medium", "hard", "tutorial"]
+        },
+        "passwordHint": { "type": "string" },
+        "showHint": { "type": "boolean" },
+        "showKeyboard": { "type": "boolean" },
+        "maxAttempts": { "type": "integer" },
+        "postitNote": { "type": "string" },
+        "showPostit": { "type": "boolean" },
+        "hasFingerprint": { "type": "boolean" },
+        "fingerprintOwner": { "type": "string" },
+        "fingerprintDifficulty": {
+          "type": "string",
+          "enum": ["easy", "medium", "hard"]
+        },
+        "mac": { "type": "string" },
+        "canScanBluetooth": { "type": "boolean" },
+        "phoneId": { "type": "string" },
+        "npcIds": {
+          "type": "array",
+          "items": { "type": "string" }
+        },
+        "hacktivityMode": { "type": "boolean" },
+        "vm": {
+          "type": "object",
+          "properties": {
+            "id": { "type": "integer" },
+            "title": { "type": "string" },
+            "ip": { "type": "string" },
+            "enable_console": { "type": "boolean" }
+          }
+        },
+        "acceptsVms": {
+          "type": "array",
+          "items": { "type": "string" }
+        },
+        "flags": {
+          "type": "array",
+          "items": { "type": "string" }
+        },
+        "flagRewards": {
+          "type": "array",
+          "items": { "$ref": "#/definitions/flagReward" }
+        },
+        "mode": {
+          "type": "string",
+          "description": "Operational mode for launch-device items (e.g., 'launch-abort')"
+        },
+        "onAbort": {
+          "type": "object",
+          "description": "Actions to fire when launch is aborted",
+          "additionalProperties": true
+        },
+        "onLaunch": {
+          "type": "object",
+          "description": "Actions to fire when launch is confirmed",
+          "additionalProperties": true
+        },
+        "abortConfirmText": {
+          "type": "string",
+          "description": "Player-facing text for the abort confirmation dialog on launch-device"
+        },
+        "launchConfirmText": {
+          "type": "string",
+          "description": "Player-facing text for the launch confirmation dialog on launch-device"
+        },
+        "itemsHeld": {
+          "type": "array",
+          "items": { "$ref": "#/definitions/item" }
+        },
+        "contents": {
+          "type": "array",
+          "items": { "$ref": "#/definitions/item" }
+        },
+        "triggerOnInteract": {
+          "type": "array",
+          "description": "Actions fired when player interacts with this object",
+          "items": {
+            "type": "object",
+            "properties": {
+              "type": {
+                "type": "string",
+                "enum": ["set_global", "emit_event", "complete_task", "unlock_task", "unlock_aim", "confirm_action", "unlock_object", "unlock_door", "give_item", "tint_objects", "show_end_screen"]
+              },
+              "key": { "type": "string" },
+              "value": {},
+              "event_name": { "type": "string" },
+              "task_id": { "type": "string" },
+              "aim_id": { "type": "string" },
+              "text": { 
+                "type": "string",
+                "description": "Confirmation text (for confirm_action)"
+              },
+              "onConfirm": {
+                "type": "array",
+                "description": "Actions to execute on confirmation (for confirm_action)",
+                "items": { "type": "object" }
+              },
+              "objectId": { "type": "string" },
+              "room_id": { "type": "string" },
+              "item": { "type": "object" },
+              "roomId": { "type": "string" },
+              "textureKey": { "type": "string" },
+              "color": { "type": "number" },
+              "pulse": { "type": "boolean" },
+              "title": { "type": "string" },
+              "body": { "type": "string" },
+              "buttonText": { "type": "string" },
+              "outcome": { "type": "string" }
+            }
+          }
+        }
+      }
+    },
+    "flagReward": {
+      "type": "object",
+      "required": ["type"],
+      "properties": {
+        "type": {
+          "type": "string",
+          "enum": ["give_item", "unlock_door", "emit_event", "reveal_secret", "complete_task", "set_global"]
+        },
+        "item_name": { "type": "string" },
+        "target_room": { "type": "string" },
+        "event_name": { "type": "string" },
+        "taskId": { "type": "string" },
+        "description": { "type": "string" },
+        "key": {
+          "type": "string",
+          "description": "Global variable name to set (used with type: 'set_global')"
+        },
+        "value": {
+          "description": "Value to assign to the global variable (used with type: 'set_global')"
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,182 @@
+/* Dusting Minigame Styles */
+
+.dusting-container {
+    width: 75% !important;
+    height: 75% !important;
+    padding: 20px;
+}
+
+.dusting-game-container {
+    width: 100%;
+    height: 60%;
+    margin: 0 auto 20px auto;
+    background: #1a1a1a;
+    border: 2px solid #333;
+    box-shadow: 0 0 15px rgba(0, 0, 0, 0.5) inset;
+    position: relative;
+    overflow: hidden;
+    border: 2px solid #333;
+}
+
+.dusting-grid-background {
+    width: 100%;
+    height: 100%;
+    position: absolute;
+    top: 0;
+    left: 0;
+    background-size: 20px 20px;
+    background-repeat: repeat;
+    z-index: 1;
+}
+
+.dusting-tools-container {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    z-index: 3;
+}
+
+.dusting-tool-button {
+    padding: 8px 12px;
+    border: none;
+    border: 2px solid #333;
+    cursor: pointer;
+    font-size: 20px;
+    font-weight: bold;
+    color: white;
+    transition: opacity 0.2s, transform 0.1s;
+    opacity: 0.7;
+}
+
+.dusting-tool-button:hover {
+    opacity: 0.9;
+    transform: scale(1.05);
+}
+
+.dusting-tool-button.active {
+    opacity: 1;
+    box-shadow: 0 0 8px rgba(255, 255, 255, 0.3);
+}
+
+.dusting-tool-fine {
+    background-color: #3498db;
+}
+
+.dusting-tool-medium {
+    background-color: #2ecc71;
+}
+
+.dusting-tool-wide {
+    background-color: #e67e22;
+}
+
+.dusting-particle-container {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    z-index: 2;
+}
+
+.dusting-particle {
+    position: absolute;
+    width: 3px;
+    height: 3px;
+    border: 2px solid #333;
+    pointer-events: none;
+    z-index: 2;
+}
+
+.dusting-progress-container {
+    position: absolute;
+    bottom: 10px;
+    left: 10px;
+    right: 10px;
+    background: rgba(0, 0, 0, 0.8);
+    padding: 10px;
+    border: 2px solid #333;
+    color: white;
+    font-family: 'GNF', monospace;
+    font-size: 20px;
+    z-index: 3;
+}
+
+.dusting-grid-cell {
+    position: absolute;
+    background: #000;
+    border: 1px solid #222;
+    cursor: crosshair;
+}
+
+.dusting-cell-clean {
+    background: black !important;
+    box-shadow: none !important;
+}
+
+.dusting-cell-light-dust {
+    background: #444 !important;
+    box-shadow: inset 0 0 3px rgba(255,255,255,0.2) !important;
+}
+
+.dusting-cell-fingerprint {
+    background: #0f0 !important;
+    box-shadow: inset 0 0 5px rgba(0,255,0,0.5), 0 0 5px rgba(0,255,0,0.3) !important;
+}
+
+.dusting-cell-medium-dust {
+    background: #888 !important;
+    box-shadow: inset 0 0 4px rgba(255,255,255,0.3) !important;
+}
+
+.dusting-cell-heavy-dust {
+    background: #ccc !important;
+    box-shadow: inset 0 0 5px rgba(255,255,255,0.5) !important;
+}
+
+.dusting-progress-found {
+    color: #2ecc71;
+}
+
+.dusting-progress-over-dusted {
+    color: #e74c3c;
+}
+
+.dusting-progress-normal {
+    color: #fff;
+}
+
+/* Dusting Game Success/Failure Messages */
+.dusting-success-message {
+    font-weight: bold;
+    font-size: 24px;
+    margin-bottom: 10px;
+    color: #2ecc71;
+}
+
+.dusting-success-quality {
+    font-size: 20px;
+    margin-bottom: 15px;
+    color: #fff;
+}
+
+.dusting-success-details {
+    font-size: 20px;
+    color: #aaa;
+}
+
+.dusting-failure-message {
+    font-weight: bold;
+    margin-bottom: 10px;
+    color: #e74c3c;
+}
+
+.dusting-failure-subtitle {
+    font-size: 20px;
+    margin-top: 5px;
+    color: #fff;
+} 
