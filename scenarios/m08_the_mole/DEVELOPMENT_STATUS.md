@@ -1,6 +1,19 @@
 # Mission 8: "The Mole" - Development Status
 
-**Last Updated:** 2026-01-11 **Status:** 🔨 IN DEVELOPMENT - Core Design Complete
+**Last Updated:** 2026-08-31 **Status:** ✅ PLAYABLE DRAFT — validator clean, 12 ink files compile, critical path complete
+
+> **2026-08-31 rebuild.** The scenario was rebuilt from the ground up to the
+> current schema (m07 house style). `validate_scenario.rb` now passes with
+> **zero errors**; all 12 ink files compile clean; the dungeon graph generates;
+> the room layout is overlap-free. The notes below this banner are the ORIGINAL
+> 2026-01 design log and are partly superseded — see `ALIGNMENT_PLAN.md`
+> (Implementation Log) for what is actually built, the resolved decisions
+> (real VM `such_a_git`, existing assets), the room/sprite mapping, the
+> new-asset improvement plan, and the remaining work packages.
+
+---
+
+## Original design log (2026-01, partly superseded)
 
 ---
 

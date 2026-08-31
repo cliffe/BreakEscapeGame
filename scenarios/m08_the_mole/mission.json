@@ -2,7 +2,7 @@
   "display_name": "The Mole",
   "description": "Someone inside SAFETYNET leaked Mission 7's operational details to ENTROPY. Return to headquarters to identify the traitor among your colleagues—before they can strike again.",
   "difficulty_level": 2,
-  "secgen_scenario": "ctf/such_a_git.xml",
+  "secgen_scenario": "m08_the_mole",
   "collection": "season_1",
   "id": "m08_the_mole",
   "title": "Mission 8: The Mole",
@@ -100,7 +100,7 @@
     }
   ],
   "secgen": {
-    "scenario": "Such a git",
+    "scenario": "m08_the_mole (Break Escape SAFETYNET: Mission 8 — The Mole VMs)",
     "vulnerabilities": [
       "GitList CVE-2018-1000533 (directory traversal)",
       "Leaked credentials in repository",
@@ -129,11 +129,11 @@
   },
   "keyNPCs": [
     {
-      "name": "Director Samantha Cross",
+      "name": "Director Magnus Netherton",
       "role": "SAFETYNET Director",
       "affiliation": "SAFETYNET",
-      "firstAppearance": true,
-      "significance": "Mission authority, organizational perspective"
+      "firstAppearance": false,
+      "significance": "Mission authority; the familiar director from m07, hunting the leak that burned his agent"
     },
     {
       "name": "Agent 0x99 'Haxolottle'",
@@ -262,7 +262,8 @@
       "Poor confrontation outcome"
     ]
   },
-  "developmentStatus": "Initial Design",
-  "version": "0.1.0",
-  "lastUpdated": "2026-01-11"
+  "developmentStatus": "Feature-complete Draft",
+  "version": "0.3.0",
+  "estimated_duration_minutes": 70,
+  "lastUpdated": "2026-08-31"
 }

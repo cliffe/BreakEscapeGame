@@ -1,0 +1,25 @@
+// ================================================
+// Mission 8: The Mole
+// Opening briefing cutscene - ATHENA welcomes the player into the Citadel
+// Speaker: ATHENA (building AI)
+// Entry knot: start
+// ================================================
+
+VAR player_name = "Agent 0x00"
+
+=== start ===
+Narrator: SAFETYNET headquarters. They call it the Citadel, and it has never lived up to the name less than it does tonight. Every badge reader blinks red. Nobody makes eye contact. The safest building in the service, and everyone inside it is afraid of the person at the next desk.
+
+ATHENA: Welcome back, Agent 0x00. Security posture is Level Red. I have logged your entry, your route, and the precise time you crossed the threshold. Everyone's, actually. It's rather the point.
+
+You: What happened here?
+
+ATHENA: Mission 7 happened. And then somebody read the after-action report and realised the enemy already had a copy before we wrote it.
+
+ATHENA: The leak came from inside this building. Director Cross is waiting for you in her office. She has three names. One of them got your colleagues killed.
+
+ATHENA: A word of advice, from the only voice in here with no stake in the outcome: whoever it is has maximum access and years of practice. The moment they know you are hunting, they vanish. Be quiet. Be quick.
+
+ATHENA: The Director's office is north. Do try not to trust anyone on the way.
+#exit_conversation
+-> DONE

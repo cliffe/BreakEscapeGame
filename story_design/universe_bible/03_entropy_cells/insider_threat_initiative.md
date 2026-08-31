@@ -70,6 +70,17 @@
 - **Personality:** Calm under pressure, meticulous, genuinely cares about asset welfare (they're valuable resources)
 - **Signature:** Sophisticated tradecraft and counter-surveillance measures
 
+### **Agent 0x47 "Nightshade"** — the SAFETYNET mole (Mission 8)
+- **Cover identity:** Trusted SAFETYNET operations specialist and cryptographic analyst, maximum clearance, mission-planning access. Trained in the same cohort as Agent 0x00. Impeccable service record — *no marks on his file at all*, which is precisely what should have worried his director.
+- **Recruitment:** Ideological, during SAFETYNET training ~15 years before Mission 8. Not bought — convinced. The Initiative targets the disillusioned young idealist and waits; Nightshade was placed and left dormant for a decade and a half. Compensation: none. Belief was the payment.
+- **Philosophy:** Accelerationist. "Order is a candle in a hurricane." Genuinely believes entropy is inevitable and that shielding people from collapse only makes the eventual collapse worse. Flagged a year before M8 by SAFETYNET psychologist **Dr Chen** ("ideological drift"; see `04_characters/dr_chen.md`) — a warning Director Netherton sealed and ignored.
+- **What he did (Mission 7 → 8):** Leaked SAFETYNET's Mission 7 deployment — team assignments, timing, and **the identity of the on-the-ground agent** — before the tasking order was even issued. Two field agents died at the crises the team could not reach. The four M7 attacks were cover: the real prize was the **exfiltration of SAFETYNET's Global Threat Database** (every catalogued vulnerability), which Nightshade enabled through a door he left open. He knew the casualty trade and made it with his eyes open.
+- **Opsec failure (how he's caught):** Credentials committed into SAFETYNET's internal GitList repository and never scrubbed; access logs placing his account on the mission plan 48 hours before M7; encrypted correspondence (`nightshade_deep_state` ↔ `architect@entropy.onion`) left on a home directory he could have wiped years earlier — arguably a subconscious wish to be found by someone who'd understand it.
+- **Personality:** Calm to the point of eeriness — the still pond in a frightened building. Warm, articulate, unrepentant. Argues his case like a man who has rehearsed it alone for years; the mission presents the argument and **rejects** it.
+- **Player-facing appearances:** Seeded as a **trusted technical colleague** in the briefings/debriefs of Missions 2–6 (sprite `male_scientist`), so his Mission 8 betrayal lands on someone the player has worked beside. Never flagged as suspect before M8. In M5 he ironically briefs the player on *how to catch an insider* — describing the exact behavioural tells that later expose him.
+- **Fate (player choice, M8):** Arrested (trial) **or** turned triple agent (intelligence at moral cost). Either way he gives up **Tomb Gamma** (Montana), the Architect's workshop and the database's destination — the setup for M9/M10. If turned, he may resurface as a live-wire asset in later missions.
+- **Sprite/voice canon:** `male_scientist`; voice **Charon** (calm, deliberate RP).
+
 ### **"Red Tape"** (NEW)
 - **Real Name:** Gerald Mitchell
 - **Background:** 30-year civil service veteran who understood government bureaucracy intimately. Passed over for promotions repeatedly despite competence. Grew bitter watching incompetent political appointees promoted while career civil servants were ignored. Recruited by ENTROPY with promise of "making them pay attention."
@@ -335,13 +346,14 @@ The Insider Threat Initiative's most insidious operation involves systematic inf
 
 ## Example Scenarios
 
-### **"The Mole"** (Infiltrated)
+### **"The Mole"** — **Mission 8 (canonical)**
 **Scenario Type:** Insider Threat Investigation
-**Setup:** Legitimate defense contractor has ENTROPY sleeper agent placed years ago, now stealing classified information.
-**Player Objective:** Identify infiltrator among thousands of employees without alerting them
-**Educational Focus:** Insider threat detection, behavioral analysis, access control, audit log analysis, investigations
-**Difficulty:** Very Hard—agent has years of legitimate history, trusted by organization
-**Twist:** Agent was placed before recent security improvements—appears as long-term trusted employee
+**Setup:** The sleeper is inside **SAFETYNET itself**. After the Mission 7 leak kills two field agents, Agent 0x00 returns to SAFETYNET HQ ("The Citadel") to identify the mole among three suspects. The traitor is **Agent 0x47 "Nightshade"** (see Key Members above), placed during training ~15 years earlier.
+**Player Objective:** Prove the mole's identity — quietly — via internal investigation and exploitation of SAFETYNET's own (ironically vulnerable) GitList server, then confront and decide his fate.
+**Educational Focus:** Insider-threat detection, behavioural analysis, audit-log correlation, version-control secret leakage (GitList CVE-2018-1000533 / arg-injection RCE), credential-in-history, sudo privilege escalation.
+**Difficulty:** Intermediate (Tier 2). Nightshade has a flawless record and maximum access; two innocent suspects (Cipher, Phantom) are genuine red herrings.
+**Twist:** The Mission 7 attacks were cover — ENTROPY's real prize was the exfiltration of SAFETYNET's **Global Threat Database** (every catalogued vulnerability worldwide), which the mole enabled. Nightshade gives up the Architect's workshop location (**Tomb Gamma**, Montana), setting up M9/M10.
+**Reference:** `scenarios/m08_the_mole/` (CONTRACT.md, SOLUTION_GUIDE.md).
 
 ### **"Recruitment Drive"** (Controlled)
 **Scenario Type:** Corporate Infiltration
