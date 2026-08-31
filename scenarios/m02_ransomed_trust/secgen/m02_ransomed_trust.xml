@@ -9,7 +9,7 @@
   <description>
 # Mission 2: Ransomed Trust
 
-St. Catherine's Regional Medical Center has been hit by ransomware. Forty-seven patients on life support systems are at risk. Ghost has encrypted critical hospital systems and is demanding $87,000 in Bitcoin.
+St. Catherine's Regional Medical Center has been hit by ransomware. Forty-seven patients on life support systems are at risk. Ghost has encrypted critical hospital systems and is demanding £150,000 in Bitcoin.
 
 You have been deployed to investigate the attack and restore hospital operations. Intelligence suggests Ghost infiltrated the network weeks ago via an insider — codename "Asset #47" — who planted equipment and exploited an unpatched ProFTPD vulnerability on the hospital's backup server.
 
@@ -265,7 +265,7 @@ ASSET DETAILS:
 Asset ID: #47
 Cover: Hospital Security Guard (Night Shift)
 Handler: Ghost
-Payment: $8,700 (10% of projected ransom)
+Payment: £15,000 (10% of projected ransom)
 Status: ACTIVE
 
 EQUIPMENT ISSUED:
@@ -361,11 +361,11 @@ PHASE 3 - POST-ATTACK (Current):
 - Maintain security guard role
 
 PAYMENT SCHEDULE:
-- Phase 1 completion: $3,000 (PAID)
-- Phase 2 completion: $2,500 (PAID)
-- Equipment deployment: $2,000 (PAID)
-- Final payment: $1,200 (on ransom collection)
-Total: $8,700
+- Phase 1 completion: £5,000 (PAID)
+- Phase 2 completion: £4,500 (PAID)
+- Equipment deployment: £3,500 (PAID)
+- Final payment: £2,000 (on ransom collection)
+Total: £15,000
 
 Your daughter's medical bills will be covered regardless.
 Ghost keeps his promises.

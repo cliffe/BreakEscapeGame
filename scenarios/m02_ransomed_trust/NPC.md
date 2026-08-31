@@ -57,7 +57,7 @@ Speaker-tag convention: ink `#speaker:` keys resolve to NPCs by prefix (e.g.
 
 ### Dr. Sarah Kim  *(Hospital CTO — desperate authority)*
 - **NPC id:** `dr_sarah_kim` — **Dr. Kim's Office** (`#speaker:dr_kim`)
-- **Role:** Mission authorizer (grants access + admin badge) and the moral centre of the ransom dilemma. Carries budget-cut guilt (chose a $3.2M MRI over Gary's $85K security ask). The player's ransom advice to her is now tracked and paid back in the debrief. Red-herring "are you the traitor?" path (she's negligent, not an affiliate).
+- **Role:** Mission authorizer (grants access + admin badge) and the moral centre of the ransom dilemma. Carries budget-cut guilt (chose a £3.2M MRI over Gary's £85K security ask). The player's ransom advice to her is now tracked and paid back in the debrief. Red-herring "are you the traitor?" path (she's negligent, not an affiliate).
 - **Voice:** Aoede — senior hospital executive under extreme pressure, authoritative but clearly guilty and frightened. British RP.
 - **Current sprite:** `female_blowse` (headshot: `female_blowse_headshot.png`).
 - **Should look like:** Hospital executive in professional attire (blouse), **pacing behind her desk, phone in hand**, visibly not slept in two days. Relief flickers when the player arrives, then straight back to fear.

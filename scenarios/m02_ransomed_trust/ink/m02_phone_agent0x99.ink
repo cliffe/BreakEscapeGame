@@ -300,7 +300,7 @@ Agent HaX: In exchange: you publish the board's negligence from the press termin
 Narrator: A pause.
 
 #speaker:agent_0x99
-Agent HaX: Ghost gets exactly what they wanted without spending £87,000.
+Agent HaX: Ghost gets exactly what they wanted without spending £150,000.
 
 Agent HaX: You're still the one making the final choice at that terminal. Ghost's deal doesn't override your judgment.
 
@@ -583,7 +583,7 @@ Agent HaX: The answer's somewhere in the building. Check plaques, framed documen
 
 Agent HaX: You have both key types. That means independent recovery is genuinely on the table.
 
-Agent HaX: Pay the ransom: 1-2 patient deaths, £87,000 funds ENTROPY's next operation.
+Agent HaX: Pay the ransom: 1-2 patient deaths, £150,000 funds ENTROPY's next operation.
 
 Agent HaX: Manual recovery: 4-6 patient deaths, ENTROPY gets nothing. The hospital recovers independently.
 

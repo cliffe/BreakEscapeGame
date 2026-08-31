@@ -37,7 +37,7 @@ You: I found the payment receipt in the server room. "Asset #47" — that's you,
 Guard: *freezes, hand moving toward radio*
 Guard: How did you... who are you working for?
 Guard: You don't understand. They have my daughter. Medical bills I can't pay.
-Guard: Ghost said $8,700 would cover her treatment. I just had to look the other way.
+Guard: Ghost said £15,000 would cover her treatment. I just had to look the other way.
 
 + [You still betrayed 47 patients on life support]
     -> guilt_trip

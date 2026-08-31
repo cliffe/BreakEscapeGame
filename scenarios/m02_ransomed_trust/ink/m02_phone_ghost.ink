@@ -148,7 +148,7 @@ Ghost: This board will triple their security budget inside a month. So will fort
 
 Ghost: Here's what happens next.
 
-Ghost: Pay 2.5 BTC -- £87,000. Systems restored in 2-4 hours. 1-2 patient deaths, statistical minimum.
+Ghost: Pay £150,000 in Bitcoin. Systems restored in 2-4 hours. 1-2 patient deaths, statistical minimum.
 
 Ghost: Don't pay. Manual recovery takes 12 hours. 4-6 patient deaths. Malpractice lawsuits. Hospital reputation destroyed.
 
@@ -216,7 +216,7 @@ Ghost: Still working? Time's running out.
 
 Ghost: 47 patients. Backup power failing. Families watching monitors.
 
-Ghost: £87,000 vs. human lives.
+Ghost: £150,000 vs. human lives.
 
 * [This is psychological manipulation.]
     Ghost: This is reality. 0.3% per hour. The clock doesn't care about your feelings.
@@ -270,7 +270,7 @@ Ghost: Those deaths are on your conscience. You could have paid. You chose ideol
 * [YOU attacked the hospital. YOU encrypted patient records. This is YOUR fault.]
     -> ghost_rejects_responsibility
 
-* [£87,000 denied. No funding for your next attack.]
+* [£150,000 denied. No funding for your next attack.]
     -> ghost_acknowledges_loss
 
 === ghost_rejects_responsibility ===
@@ -287,7 +287,7 @@ Ghost: We exploited it. They enabled it. The blame is shared whether you accept 
 === ghost_acknowledges_loss ===
 #speaker:ghost
 
-Ghost: £87,000 lost. Operational setback acknowledged.
+Ghost: £150,000 lost. Operational setback acknowledged.
 
 Ghost: But St. Catherine's board approved £400,000 emergency security budget -- panic response.
 
@@ -420,7 +420,7 @@ Ghost: That's not a threat. It's a capability demonstration. You should understa
 
 * [What is it you actually want from this?]
     Ghost: The board to face what they chose. The negligence on public record.
-    Ghost: The £87,000 is operational funding. The lesson is the point.
+    Ghost: The £150,000 is operational funding. The lesson is the point.
     -> act2_reveal
 
 === act2_reveal ===
@@ -488,7 +488,7 @@ Ghost: Upload them. Unredacted. To the press terminal in the conference room.
 
 Ghost: Public record. Journalist distribution. Permanent.
 
-Ghost: Not £87,000. The lesson.
+Ghost: Not £150,000. The lesson.
 
 Ghost: I planned this operation for fourteen months.
 

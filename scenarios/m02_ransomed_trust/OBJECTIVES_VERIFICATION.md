@@ -146,8 +146,8 @@ Mission 2 has **5 main objectives** (aims) with **15 total tasks**.
    - Type: `custom`
    - Location: Ransom Interface Terminal (server_room)
    - Options:
-     - **Pay Ransom:** 2.5 BTC ($87K), 1-2 patient deaths, 2-4 hour recovery
-     - **Manual Recovery:** $0 to ENTROPY, 4-6 patient deaths, 12-hour recovery
+     - **Pay Ransom:** £150,000 in Bitcoin, 1-2 patient deaths, 2-4 hour recovery
+     - **Manual Recovery:** £0 to ENTROPY, 4-6 patient deaths, 12-hour recovery
    - Global Variable: `paid_ransom` (true/false)
    - Status: Locked
 

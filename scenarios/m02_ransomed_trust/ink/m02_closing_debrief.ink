@@ -234,7 +234,7 @@ Agent HaX: 45 patients survived. The coroner's office ruled the deaths statistic
 
 * [45 people are alive because we moved fast.]
     Agent HaX: Yes. That's real. Those families don't have funerals.
-    Agent HaX: But the £87,000 is already gone. You should know where it went.
+    Agent HaX: But the £150,000 is already gone. You should know where it went.
     -> entropy_funding_discussion
 
 * [2 people died. That's not nothing.]
@@ -242,13 +242,13 @@ Agent HaX: 45 patients survived. The coroner's office ruled the deaths statistic
     Agent HaX: Medical review concluded the attack accelerated what would have happened anyway. I'm not sure that's the comfort it's supposed to be.
     -> ransom_paid_funding
 
-* [What does £87,000 actually buy them?]
+* [What does £150,000 actually buy them?]
     -> entropy_funding_discussion
 
 === ransom_paid_funding ===
 #speaker:agent_0x99
 
-Agent HaX: The £87,000. You should know where it goes.
+Agent HaX: The £150,000. You should know where it goes.
 
 -> entropy_funding_discussion
 
@@ -301,7 +301,7 @@ Agent HaX: Medical review: 4 of the 6 had terminal diagnoses -- life expectancy 
 === manual_recovery_vindication ===
 #speaker:agent_0x99
 
-Agent HaX: You denied ENTROPY £87,000. No operational funding for Ransomware Incorporated.
+Agent HaX: You denied ENTROPY £150,000. No operational funding for Ransomware Incorporated.
 
 Agent HaX: Ghost's next hospital target -- delayed. Possibly cancelled. And we have no transaction to trace, which means they have less financial signal to hide behind.
 
@@ -315,7 +315,7 @@ Agent HaX: Ghost's next hospital target -- delayed. Possibly cancelled. And we h
 #speaker:agent_0x99
 
 {paid_ransom:
-    Agent HaX: 2.5 BTC. HashChain Exchange, Monero mixing, multi-hop routing. The trail goes cold within hours.
+    Agent HaX: Paid in Bitcoin. HashChain Exchange, Monero mixing, multi-hop routing. The trail goes cold within hours.
     Agent HaX: Ransomware Incorporated has operational funding for their next two or three operations.
 }
 {not paid_ransom:
@@ -748,9 +748,9 @@ Agent HaX: You made a call under time pressure, with incomplete information, in 
         Agent HaX: ENTROPY has funding. That's also real. Both things are true simultaneously.
     - else:
         {ward_recovering:
-            Agent HaX: You denied ENTROPY £87,000 and still had the wards back in four hours. Two died who were most likely going regardless. That is about as well as this ends.
+            Agent HaX: You denied ENTROPY £150,000 and still had the wards back in four hours. Two died who were most likely going regardless. That is about as well as this ends.
         - else:
-            Agent HaX: You denied ENTROPY £87,000. Long-term, that matters.
+            Agent HaX: You denied ENTROPY £150,000. Long-term, that matters.
             Agent HaX: Six people died in the downtime. That also matters.
         }
     }

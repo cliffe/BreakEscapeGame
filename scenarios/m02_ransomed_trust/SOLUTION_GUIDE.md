@@ -43,7 +43,7 @@
 - **47 patients on life support**
 - **12 hours of backup power remaining**
 - **Patient death probability:** 0.3% per hour (Ghost's calculation)
-- **Ransom demand:** 2.5 BTC (~$87,000)
+- **Ransom demand:** £150,000, payable in Bitcoin
 
 **Your Mission:**
 Recover decryption keys and advise hospital board on ransom payment decision before backup power fails.
@@ -175,8 +175,8 @@ Recover decryption keys and advise hospital board on ransom payment decision bef
    - Type: Custom
    - Location: Ransom Interface Terminal in server_room
    - Options:
-     - **Pay Ransom:** 2.5 BTC, 1-2 patient deaths, 2-4 hour recovery, ENTROPY funded ($87K)
-     - **Manual Recovery:** $0 to ENTROPY, 4-6 patient deaths, 12-hour recovery, deny funding
+     - **Pay Ransom:** £150,000 in Bitcoin, 1-2 patient deaths, 2-4 hour recovery, ENTROPY funded
+     - **Manual Recovery:** £0 to ENTROPY, 4-6 patient deaths, 12-hour recovery, deny funding
    - Tracked: `paid_ransom` global variable
 
 2. **Decide whether to expose hospital negligence**
@@ -367,7 +367,7 @@ Recover decryption keys and advise hospital board on ransom payment decision bef
   ```
 - Open CyberChef workstation (in server room later)
 - Use "From Base64" operation
-- Decoded: "YOUR PATIENT RECORDS ARE ENCRYPTED. 47 PATIENTS ON LIFE SUPPORT. 12 HOURS OF BACKUP POWER. PAY 2.5 BTC TO [WALLET] OR WATCH THEM DIE. - RANSOMWARE INCORPORATED"
+- Decoded: "YOUR PATIENT RECORDS ARE ENCRYPTED. 47 PATIENTS ON LIFE SUPPORT. 12 HOURS OF BACKUP POWER. PAY £150,000 IN BITCOIN TO [WALLET] OR WATCH THEM DIE. - RANSOMWARE INCORPORATED"
 - Task `decode_ransomware_note` completes
 
 **Step 6:** Navigate to Server Room (STEALTH CRITICAL)
@@ -508,11 +508,11 @@ Recover decryption keys and advise hospital board on ransom payment decision bef
 - Interact with "Hospital Recovery Interface" terminal
 - **CRITICAL MORAL CHOICE:**
 
-**Option A: Pay Ransom (2.5 BTC / $87,000)**
+**Option A: Pay Ransom (£150,000, payable in Bitcoin)**
 - Consequences:
   - **Immediate:** Systems restore in 2-4 hours
   - **Patient Deaths:** 1-2 deaths (cardiac arrest during transition)
-  - **ENTROPY Funding:** $87,000 to Ransomware Incorporated
+  - **ENTROPY Funding:** £150,000 to Ransomware Incorporated
   - **Hospital:** Budget depleted, security upgrade postponed
   - **Dr. Kim:** Guilt over payment, job secure
   - **Long-term:** Ransomware Incorporated targets 12 more hospitals
@@ -522,8 +522,8 @@ Recover decryption keys and advise hospital board on ransom payment decision bef
 - Consequences:
   - **Immediate:** Systems restore in 12 hours (offline keys + online keys)
   - **Patient Deaths:** 4-6 deaths (ventilator failures, dialysis complications)
-  - **ENTROPY Funding:** $0 to Ransomware Incorporated (denied funding)
-  - **Hospital:** $87K saved, security upgrade funded
+  - **ENTROPY Funding:** £0 to Ransomware Incorporated (denied funding)
+  - **Hospital:** £150,000 saved, security upgrade funded
   - **Dr. Kim:** Guilt over deaths, resignation likely
   - **Long-term:** Ransomware Incorporated operation disrupted (no funding)
 - Global variable: `paid_ransom` = false
@@ -546,7 +546,7 @@ Recover decryption keys and advise hospital board on ransom payment decision bef
 **Option B: Quiet Resolution**
 - Consequences:
   - Dr. Kim keeps job, internal improvements only
-  - St. Catherine's upgrades security ($85K budget approved)
+  - St. Catherine's upgrades security (£85K budget approved)
   - No sector-wide change, other hospitals remain vulnerable
 - Global variable: `exposed_hospital` = false
 
@@ -855,7 +855,7 @@ Recover decryption keys and advise hospital board on ransom payment decision bef
 **Key Dialogue Branches:**
 
 **Philosophy:**
-- Ghost: "St. Catherine's board never ran these numbers. They deferred $85K security spending for a $3.2M MRI."
+- Ghost: "St. Catherine's board never ran these numbers. They deferred £85K security spending for a £3.2M MRI."
 - Ghost: "THEY gambled with patient safety. We're just making the stakes visible."
 
 **Patient Death Calculations:**
@@ -876,7 +876,7 @@ Recover decryption keys and advise hospital board on ransom payment decision bef
 **If Ransom Paid:**
 - Ghost: "Smart choice. Decryption keys delivered. Systems restoring."
 - Ghost: "1-2 patient deaths. Acceptable losses compared to alternative."
-- Ghost: "Your $87K will fund operations that save 200-600 lives long-term."
+- Ghost: "Your £150,000 will fund operations that save 200-600 lives long-term."
 
 **If Ransom Refused:**
 - Ghost: "Disappointing. 4-6 deaths on your conscience."
@@ -954,7 +954,7 @@ WU9VUiBQQVRJRU5UIFJFQ09SRFMgQVJFIEVOQ1JZUFRFRC4gNDcgUEFUSUVOVFMgT04gTElGRSBTVVBQ
 
 **Decoded Output:**
 ```
-YOUR PATIENT RECORDS ARE ENCRYPTED. 47 PATIENTS ON LIFE SUPPORT. 12 HOURS OF BACKUP POWER. PAY 2.5 BTC TO [WALLET] OR WATCH THEM DIE. - RANSOMWARE INCORPORATED
+YOUR PATIENT RECORDS ARE ENCRYPTED. 47 PATIENTS ON LIFE SUPPORT. 12 HOURS OF BACKUP POWER. PAY £150,000 IN BITCOIN TO [WALLET] OR WATCH THEM DIE. - RANSOMWARE INCORPORATED
 ```
 
 **Educational Value:**
@@ -1197,7 +1197,7 @@ FULL RECOVERY REQUIRES OFFLINE + ONLINE KEYS—12-HOUR PROCESS IF MANUAL, INSTAN
    - Exploit deployed: 2024-XX-XX 03:47 UTC
    - Encryption complete: 2024-XX-XX 04:12 UTC
    - Ransom note delivered: 2024-XX-XX 04:15 UTC
-   - Demand: 2.5 BTC (~$87,000 USD)
+   - Demand: £150,000, payable in Bitcoin
 
    RATIONALE:
    Healthcare sector is systemically vulnerable. We charge thousands for lessons
@@ -1237,7 +1237,7 @@ FULL RECOVERY REQUIRES OFFLINE + ONLINE KEYS—12-HOUR PROCESS IF MANUAL, INSTAN
 - **Length:** ~500 words
 
 **Key Excerpts:**
-> "We don't cause system failures—we reveal them. St. Catherine's chose a $3.2M MRI over an $85K security upgrade. We made the consequences immediate."
+> "We don't cause system failures—we reveal them. St. Catherine's chose a £3.2M MRI over an £85K security upgrade. We made the consequences immediate."
 
 > "Patient mortality calculations: 0.3% per hour. 47 patients. We're not reckless—we're mathematicians."
 
@@ -1276,10 +1276,10 @@ FULL RECOVERY REQUIRES OFFLINE + ONLINE KEYS—12-HOUR PROCESS IF MANUAL, INSTAN
 > —Dr. Patricia Chen, CTO"
 
 > "Q1-Q2 2024 OPERATIONS LOG:
-> - Memorial Hospital: $125K recovery
-> - Regional Medical Center: $87K recovery
-> - Community Health Network: $215K recovery
-> Total Revenue: $427K (Q1-Q2)"
+> - Memorial Hospital: £125K recovery
+> - Regional Medical Center: £150K recovery
+> - Community Health Network: £215K recovery
+> Total Revenue: £490K (Q1-Q2)"
 
 > "[METADATA - FOR ENTROPY CELL ONLY]:
 > All 'recovery' operations are Ransomware Inc. attacks.
@@ -1390,19 +1390,19 @@ This is the **"Aha!" moment** that transforms Season 1 from isolated missions in
 
 ---
 
-#### Option A: Pay Ransom (2.5 BTC / $87,000)
+#### Option A: Pay Ransom (£150,000, payable in Bitcoin)
 
 **Immediate Consequences:**
 - **Recovery Time:** 2-4 hours (fast)
 - **Patient Deaths:** 1-2 deaths
   - Cardiac arrest during system transition
   - Ventilator briefly offline during reboot
-- **Hospital Budget:** $87,000 expense
+- **Hospital Budget:** £150,000 expense
   - Security upgrade postponed to next fiscal year
   - Budget strain on other departments
 
 **ENTROPY Impact:**
-- **Ransomware Incorporated Funding:** +$87,000
+- **Ransomware Incorporated Funding:** +£150,000
   - Enables 2-3 more hospital attacks
   - Ghost targets 12 additional facilities in next 6 months
 - **Precedent Set:** Other hospitals more likely to pay
@@ -1416,14 +1416,14 @@ This is the **"Aha!" moment** that transforms Season 1 from isolated missions in
 - **Gary Whitlock:** Vindicated if protected, otherwise scapegoated
   - Depends on player choice to document warnings
 - **Security Posture:** Minimal improvement
-  - $85K security upgrade postponed
+  - £85K security upgrade postponed
   - Same vulnerabilities remain
 
 **Dr. Kim's Response:**
 > "We paid them. 47 lives saved, 2 lost. I'll carry that guilt, but it was the right call."
 
 **Ghost's Response:**
-> "Smart choice. Decryption keys delivered. Systems restoring. Your $87K will fund operations that save 200-600 lives long-term. Statistical modeling confirms it."
+> "Smart choice. Decryption keys delivered. Systems restoring. Your £150,000 will fund operations that save 200-600 lives long-term. Statistical modeling confirms it."
 
 **Agent 0x99's Assessment:**
 > "You chose the immediate lives. Hard to argue with that math. But ENTROPY just got funded for their next operation."
@@ -1440,12 +1440,12 @@ This is the **"Aha!" moment** that transforms Season 1 from isolated missions in
   - Ventilator complications (3-4 deaths)
   - Dialysis failures (1-2 deaths)
   - Cardiac monitoring gaps
-- **Hospital Budget:** $0 expense to ENTROPY
-  - $87K available for security upgrade
+- **Hospital Budget:** £0 expense to ENTROPY
+  - £150,000 available for security upgrade
   - Budget allocated to infrastructure improvements
 
 **ENTROPY Impact:**
-- **Ransomware Incorporated Funding:** $0
+- **Ransomware Incorporated Funding:** £0
   - Operation disrupted (no payment received)
   - Ghost's cell loses operational funding
   - Future attacks delayed/scaled back
@@ -1462,7 +1462,7 @@ This is the **"Aha!" moment** that transforms Season 1 from isolated missions in
   - Promoted to security leadership if player protected him
   - Otherwise scapegoated and fired
 - **Security Posture:** Major improvement
-  - $85K security upgrade funded immediately
+  - £85K security upgrade funded immediately
   - Comprehensive infrastructure overhaul
   - St. Catherine's becomes regional security model
 
@@ -1485,8 +1485,8 @@ This is the **"Aha!" moment** that transforms Season 1 from isolated missions in
 |--------|-----------|-------------|
 | **Patient Deaths (Immediate)** | 1-2 | 4-6 |
 | **Recovery Time** | 2-4 hours | 12 hours |
-| **Cost to Hospital** | $87,000 | $0 |
-| **ENTROPY Funding** | +$87,000 | $0 |
+| **Cost to Hospital** | £150,000 | £0 |
+| **ENTROPY Funding** | +£150,000 | £0 |
 | **Future Attacks (6 months)** | 12+ hospitals | 2-3 hospitals |
 | **Long-Term Deaths Prevented** | 0 | 200-600 (estimated) |
 | **Dr. Kim's Career** | Survives | Resignation |
@@ -1562,7 +1562,7 @@ This is the **"Aha!" moment** that transforms Season 1 from isolated missions in
 
 **Healthcare Sector Impact:**
 - **Positive - St. Catherine's Improvement:**
-  - $85K security upgrade funded
+  - £85K security upgrade funded
   - Internal cybersecurity reforms
   - Staff training programs
   - St. Catherine's becomes secure
@@ -1661,7 +1661,7 @@ This is the **"Aha!" moment** that transforms Season 1 from isolated missions in
 > Agent 0x99: "Let's review. You paid the ransom—1-2 deaths, systems restored fast. ENTROPY got funded, but you saved lives today. You exposed the hospital publicly—Dr. Kim's career is over, but 200 hospitals just upgraded security. And you protected Gary—he's now running cybersecurity at Metro General. Messy, but effective."
 
 **Example: Denied Ransom + Quiet Resolution + Ignored Gary**
-> Agent 0x99: "Let's review. You denied the ransom—4-6 deaths, but ENTROPY got $0. That's courage. You kept it quiet—no sector-wide change, but Dr. Kim keeps her job. And Gary? He was scapegoated. Fired, reputation destroyed. We could have protected him. Mixed bag, agent."
+> Agent 0x99: "Let's review. You denied the ransom—4-6 deaths, but ENTROPY got £0. That's courage. You kept it quiet—no sector-wide change, but Dr. Kim keeps her job. And Gary? He was scapegoated. Fired, reputation destroyed. We could have protected him. Mixed bag, agent."
 
 **Example: Paid Ransom + Quiet Resolution + Protected Gary**
 > Agent 0x99: "You paid the ransom, kept it quiet, protected Gary. Lives saved, institution protected, whistleblower vindicated. Clean operation, professional execution. But ENTROPY got funded and other hospitals stay vulnerable. Sometimes I wonder if 'clean' is what we need."
@@ -1798,7 +1798,7 @@ This is the **"Aha!" moment** that transforms Season 1 from isolated missions in
 - Type: Readable object
 - Name: "Hospital Budget Committee Minutes"
 - Location: Conference Room (budget evidence container)
-- Content: Board chose $3.2M MRI over $85K security upgrade
+- Content: Board chose £3.2M MRI over £85K security upgrade
 - Observations: "Shows hospital negligence - key to exposure decision"
 
 ---

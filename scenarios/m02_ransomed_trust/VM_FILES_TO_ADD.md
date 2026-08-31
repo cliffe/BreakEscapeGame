@@ -18,7 +18,7 @@ ASSET DETAILS:
 Asset ID: #47
 Cover: Hospital Security Guard (Night Shift)
 Handler: Ghost
-Payment: $8,700 (10% of projected ransom)
+Payment: £15,000 (10% of projected ransom)
 Status: ACTIVE
 
 EQUIPMENT ISSUED:
@@ -91,12 +91,12 @@ PHASE 3 - POST-ATTACK (Current):
 - Maintain security guard role
 
 PAYMENT SCHEDULE:
-- Phase 1 completion: $3,000 (PAID)
-- Phase 2 completion: $2,500 (PAID)
-- Equipment deployment: $2,000 (PAID)
-- Final payment: $1,200 (on ransom collection)
+- Phase 1 completion: £5,000 (PAID)
+- Phase 2 completion: £4,500 (PAID)
+- Equipment deployment: £3,500 (PAID)
+- Final payment: £2,000 (on ransom collection)
 
-Total: $8,700
+Total: £15,000
 
 EMERGENCY PROTOCOLS:
 -------------------

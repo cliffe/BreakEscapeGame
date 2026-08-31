@@ -77,7 +77,7 @@ def rot13(text)
 end
 
 # Narrative Content Variables
-ransomware_note = "YOUR PATIENT RECORDS ARE ENCRYPTED. 47 PATIENTS ON LIFE SUPPORT. 12 HOURS OF BACKUP POWER. PAY 2.5 BTC OR WATCH THEM DIE. - RANSOMWARE INCORPORATED"
+ransomware_note = "YOUR PATIENT RECORDS ARE ENCRYPTED. 47 PATIENTS ON LIFE SUPPORT. 12 HOURS OF BACKUP POWER. PAY £150,000 IN BITCOIN OR WATCH THEM DIE. - RANSOMWARE INCORPORATED"
 
 gary_warning_email = "From: Gary Whitlock (IT Systems)\nTo: Dr. Sarah Kim (CTO)\nCC: Board Secretariat\nDate: 17 May\nSubject: URGENT -- ProFTPD 1.3.3c backdoor on backup server\n\nDr Kim,\n\nSeventh time of asking. The backup server is still running ProFTPD 1.3.3c -- the trojaned source release from 2010. That build carries a backdoor in its own source code, which gives an attacker remote code execution with no credentials at all. A clean version has been available since 2010.\n\nThis box holds every clinical backup we have. If it goes, the wards go with it.\n\nI have costed the remediation at £85,000. That is the whole ask. I am not asking for a project, I am asking for a server that is not fourteen years out of date.\n\nPlease put this in front of the board as CRITICAL and not as an IT wish-list item.\n\nGary"
 
@@ -159,7 +159,7 @@ boardroom_pin = "0417"
           { "text": "PATIENT DEATHS: 6 (ventilator and dialysis complications — extended downtime)", "style": "entry", "condition": "!globalVars.paid_ransom" },
           { "text": "" },
           { "text": "── DECISION ──",                                      "style": "section-header" },
-          { "text": "RANSOM PAID: £87,000 to Ransomware Incorporated — ENTROPY funded",   "style": "entry", "condition": "globalVars.paid_ransom" },
+          { "text": "RANSOM PAID: £150,000 to Ransomware Incorporated — ENTROPY funded",   "style": "entry", "condition": "globalVars.paid_ransom" },
           { "text": "RANSOM REFUSED: Offline backup keys used — ENTROPY denied funding",  "style": "entry", "condition": "!globalVars.paid_ransom" },
           { "text": "HOSPITAL EXPOSED: Negligence on public record — Health and Social Care Committee to take evidence", "style": "entry", "condition": "globalVars.exposed_hospital" },
           { "text": "QUIET RESOLUTION: Negligence kept confidential — St. Catherine's reputation intact",  "style": "entry", "condition": "!globalVars.exposed_hospital" },
@@ -744,7 +744,7 @@ boardroom_pin = "0417"
               "condition": "value === true",
               "onceOnly": true,
               "completeTask": "decode_ransomware_note",
-              "sendTimedMessage": { "delay": 1500, "message": "Note decoded -- 'Ransomware Incorporated', $87k in Bitcoin, 12-hour clock. That's our adversary. Get into the server room and work the backup box." }
+              "sendTimedMessage": { "delay": 1500, "message": "Note decoded -- 'Ransomware Incorporated', £150,000 in Bitcoin, 12-hour clock. That's our adversary. Get into the server room and work the backup box." }
             },
             {
               "eventPattern": "room_entered:hospital_ward",
@@ -1128,8 +1128,8 @@ boardroom_pin = "0417"
           "minigameData": {
             "organisation": "St. Catherine's Regional Medical Centre",
             "encryptedSystems": "Patient registration | Appointment scheduling | Admissions records | Front-desk workstations",
-            "ransomAmount": "£87,000",
-            "ransomBitcoin": "2.5 BTC",
+            "ransomAmount": "£150,000",
+            "ransomBitcoin": "payable in BTC at prevailing rate",
             "walletAddress": "bc1q7cyrfmckn2ewz5m78ts6jt9lcfhfwcvzefm27k",
             "timerHours": 12,
             "groupName": "Ransomware Incorporated",
@@ -1412,8 +1412,8 @@ boardroom_pin = "0417"
           "minigameData": {
             "organisation": "St. Catherine's Regional Medical Centre",
             "encryptedSystems": "47 life-support patients | EHR terminals | Patient monitoring | Medication records",
-            "ransomAmount": "£87,000",
-            "ransomBitcoin": "2.5 BTC",
+            "ransomAmount": "£150,000",
+            "ransomBitcoin": "payable in BTC at prevailing rate",
             "walletAddress": "bc1q7cyrfmckn2ewz5m78ts6jt9lcfhfwcvzefm27k",
             "timerHours": 12,
             "groupName": "Ransomware Incorporated",
@@ -1575,8 +1575,8 @@ boardroom_pin = "0417"
           "minigameData": {
             "organisation": "St. Catherine's Regional Medical Centre",
             "encryptedSystems": "Patient records | Backup server | All workstations",
-            "ransomAmount": "£87,000",
-            "ransomBitcoin": "2.5 BTC",
+            "ransomAmount": "£150,000",
+            "ransomBitcoin": "payable in BTC at prevailing rate",
             "walletAddress": "bc1q7cyrfmckn2ewz5m78ts6jt9lcfhfwcvzefm27k",
             "timerHours": 12,
             "groupName": "Ransomware Incorporated",
@@ -1805,7 +1805,7 @@ boardroom_pin = "0417"
                 "bullets": [
                   "Recovery time: 30 minutes (instant decryption key delivery).",
                   "Patient risk: Minimal -- systems restored before backup power fails.",
-                  "Cost: $87,000 to Ransomware Incorporated funds future attacks.",
+                  "Cost: £150,000 to Ransomware Incorporated funds future attacks.",
                   "Intelligence value: Ghost escapes -- no trail, no arrest, no deterrent."
                 ]
               },
@@ -1822,7 +1822,7 @@ boardroom_pin = "0417"
                 "bullets": [
                   "Recovery time: 12 hours -- manual restoration of encrypted patient records.",
                   "Patient risk: Statistical -- 0.3% fatality per hour on life support.",
-                  "Cost: $0 to ENTROPY -- denies ransom funding for future operations.",
+                  "Cost: £0 to ENTROPY -- denies ransom funding for future operations.",
                   "Prerequisite: Offline backup keys must be recovered from PIN safe first."
                 ]
               },
@@ -1839,7 +1839,7 @@ boardroom_pin = "0417"
                 "bullets": [
                   "Recovery time: 4 hours -- both key types accelerate decryption significantly.",
                   "Patient risk: Low -- well within backup power window.",
-                  "Cost: $0 to ENTROPY -- no ransom payment required.",
+                  "Cost: £0 to ENTROPY -- no ransom payment required.",
                   "Prerequisite: Both VM exploitation flags AND offline backup keys required."
                 ]
               }
@@ -2075,8 +2075,8 @@ boardroom_pin = "0417"
           "minigameData": {
             "organisation": "St. Catherine's Regional Medical Centre",
             "encryptedSystems": "Executive workstation | Board records | Financial systems | Administrative email",
-            "ransomAmount": "£87,000",
-            "ransomBitcoin": "2.5 BTC",
+            "ransomAmount": "£150,000",
+            "ransomBitcoin": "payable in BTC at prevailing rate",
             "walletAddress": "bc1q7cyrfmckn2ewz5m78ts6jt9lcfhfwcvzefm27k",
             "timerHours": 12,
             "groupName": "Ransomware Incorporated",
@@ -2106,7 +2106,7 @@ boardroom_pin = "0417"
           "name": "Budget Report",
           "takeable": true,
           "readable": true,
-          "text": "FY2024 BUDGET REPORT\n\nIT Security Upgrade (Gary Whitlock request): $85,000 - DEFERRED\nReason: Budget constraints, defer to next fiscal year\n\nMRI Equipment Purchase: $3,200,000 - APPROVED\nBoard vote: 7-2 in favor\n\nDr. Kim's note: 'We chose shiny technology over cybersecurity. I was wrong.'",
+          "text": "FY2024 BUDGET REPORT\n\nIT Security Upgrade (Gary Whitlock request): £85,000 - DEFERRED\nReason: Budget constraints, defer to next fiscal year\n\nMRI Equipment Purchase: £3,200,000 - APPROVED\nBoard vote: 7-2 in favour\n\nDr. Kim's note: 'We chose shiny technology over cybersecurity. I was wrong.'",
           "observations": "Evidence of institutional negligence -- budget cuts created vulnerability"
         },
         {
@@ -2211,7 +2211,7 @@ boardroom_pin = "0417"
           "name": "Conference Table Budget Papers",
           "takeable": false,
           "readable": true,
-          "text": "BUDGET MEETING MINUTES - MARCH 2024\n\nIT Security Upgrade Proposal:\nGary Whitlock presented $85,000 server security upgrade.\nBoard decision: DEFER to next fiscal year.\n\nRationale: 'Cybersecurity is important, but patient care technology takes priority. The MRI will save lives today.'",
+          "text": "BUDGET MEETING MINUTES - MARCH 2024\n\nIT Security Upgrade Proposal:\nGary Whitlock presented £85,000 server security upgrade.\nBoard decision: DEFER to next fiscal year.\n\nRationale: 'Cybersecurity is important, but patient care technology takes priority. The MRI will save lives today.'",
           "observations": "Budget meeting notes showing the decision-making process"
         },
         {
@@ -2219,7 +2219,7 @@ boardroom_pin = "0417"
           "name": "Conference Whiteboard",
           "takeable": false,
           "readable": true,
-          "text": "FY2024 BUDGET ALLOCATION\n\nIT Security: $85K --> $50K (CUT 40%)\nMRI Equipment: $3.2M (APPROVED)\n\nBoard priorities: Patient care equipment > Infrastructure security",
+          "text": "FY2024 BUDGET ALLOCATION\n\nIT Security: £85K --> £50K (CUT 40%)\nMRI Equipment: £3.2M (APPROVED)\n\nBoard priorities: Patient care equipment > Infrastructure security",
           "observations": "Whiteboard showing budget cuts that enabled the ransomware attack"
         },
         {
@@ -2236,7 +2236,7 @@ boardroom_pin = "0417"
           "name": "Ransomware Incorporated Proposal",
           "takeable": false,
           "readable": true,
-          "text": "ZERO DAY SYNDICATE -- AFFILIATE PROGRAMME\n\nTarget: St. Catherine's Regional Medical Centre\nOperator: Ghost (Ransomware Incorporated)\nAttack vector: ProFTPD 1.3.3c source backdoor (unpatched since 2010)\n\nRansom: $87,000 (2.5 BTC)\nSyndicate cut: 30%\nOperator cut: 70%\n\nNOTE: Hospital has deferred all security upgrades. Unpatched systems confirmed. Success probability: 94%.\n\nThis document was printed from an encrypted channel -- someone inside this hospital is an ENTROPY affiliate.",
+          "text": "ZERO DAY SYNDICATE -- AFFILIATE PROGRAMME\n\nTarget: St. Catherine's Regional Medical Centre\nOperator: Ghost (Ransomware Incorporated)\nAttack vector: ProFTPD 1.3.3c source backdoor (unpatched since 2010)\n\nRansom: £150,000 (payable in Bitcoin at the prevailing rate)\nSyndicate cut: 30%\nOperator cut: 70%\n\nNOTE: Hospital has deferred all security upgrades. Unpatched systems confirmed. Success probability: 94%.\n\nThis document was printed from an encrypted channel -- someone inside this hospital is an ENTROPY affiliate.",
           "observations": "A printed briefing document -- someone was feeding ENTROPY information about the hospital's vulnerabilities",
           "onRead": { "setVariable": { "insider_evidence_partial": true } },
           "puzzle_graph_role": "clue",
@@ -2384,8 +2384,8 @@ boardroom_pin = "0417"
           "minigameData": {
             "organisation": "St. Catherine's Regional Medical Centre",
             "encryptedSystems": "Access control | Door logs | Badge issuing | CCTV index",
-            "ransomAmount": "£87,000",
-            "ransomBitcoin": "2.5 BTC",
+            "ransomAmount": "£150,000",
+            "ransomBitcoin": "payable in BTC at prevailing rate",
             "walletAddress": "bc1q7cyrfmckn2ewz5m78ts6jt9lcfhfwcvzefm27k",
             "timerHours": 12,
             "groupName": "Ransomware Incorporated",

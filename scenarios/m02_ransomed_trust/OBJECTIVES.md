@@ -56,7 +56,7 @@
 **Description:** Decide how to recover hospital systems and handle the crisis
 
 ### Tasks:
-- 🔒 **Decide on ransom payment** (Pay 2.5 BTC vs Manual Recovery)
+- 🔒 **Decide on ransom payment** (Pay £150,000 vs Manual Recovery)
 - 🔒 **Decide whether to expose hospital negligence** (Public vs Quiet)
 
 ---
