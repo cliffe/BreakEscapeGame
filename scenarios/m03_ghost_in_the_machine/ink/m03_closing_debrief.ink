@@ -267,7 +267,7 @@ Agent 0x99: "Chaos amplification factor: 3.7x" - they're CALCULATING the synergi
 === architect_investigation ===
 #speaker:agent_0x99
 Agent 0x99: SAFETYNET Command is escalating this to top priority.
-Agent 0x99: Phase 2 prevention is now inter-agency. FBI, CISA, NSA. We're briefing them all.
+Agent 0x99: The Phase 2 target list is already moving. Not with our name on it -- it'll reach the operators as an anonymous advisory from a research outfit nobody's heard of. They'll act on it. They always do.
 Agent 0x99: 427 energy substations will get hardened defenses. 15 hospitals will get emergency security assessments.
 Agent 0x99: We can't stop ENTROPY entirely - they're too distributed - but we can protect the Phase 2 targets.
 Agent 0x99: Thanks to you.

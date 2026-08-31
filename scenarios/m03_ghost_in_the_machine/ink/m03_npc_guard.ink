@@ -199,7 +199,7 @@ Security Guard: [Shocked] SAFETYNET? Like... the government agency?
     ~ guard_influence = guard_influence + 30
     # influence_increased
     ~ guard_suspicious = false
-    You: [Show SAFETYNET credentials] I need your cooperation. National security matter.
+    You: [Show SAFETYNET credentials] I need your cooperation. People die if this goes wrong.
     Security Guard: [Stunned] Holy shit. Yeah, okay, whatever you need.
     Security Guard: Ms. Sterling... she's involved in something?
     -> safetynet_cooperation
@@ -209,11 +209,11 @@ Security Guard: [Shocked] SAFETYNET? Like... the government agency?
     You: This is classified. You cannot tell anyone I was here. Not even Victoria Sterling.
     Security Guard: [Nervous] Yeah, understood. I... I won't say anything.
     -> safetynet_cooperation
-* [Help me and you're a patriot. Hinder me and you're an accomplice.]
+* [Help me and you're on the right side. Hinder me and you're an accomplice.]
     ~ guard_influence = guard_influence + 25
     # influence_increased
     ~ guard_suspicious = false
-    You: Help me, you're helping your country. Get in my way, you're obstructing a federal investigation.
+    You: Help me, you're helping the people this is aimed at. Get in my way, you're obstructing an active investigation.
     Security Guard: [Intimidated] I'm not getting in the way. Do what you need to do.
     -> safetynet_cooperation
 

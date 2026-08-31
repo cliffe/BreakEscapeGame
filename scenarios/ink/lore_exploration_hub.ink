@@ -168,7 +168,7 @@ Haxolottle: And some are just using the philosophy as cover for criminal enterpr
     -> lore_hub_handler
 
 === philosophy_danger_assessment ===
-Haxolottle: Haxolottle: The true believers, without question.
+Haxolottle: The true believers, without question.
 
 Haxolottle: Criminals can be caught, assets seized, organizations dismantled. Nihilists burn out eventually—chaos for its own sake is exhausting.
 
@@ -317,7 +317,7 @@ Haxolottle: It's one of the biggest intelligence gaps we have. How do decentrali
 ~ handler_influence += 5
 ~ conversation_depth += 1
 
-Haxolottle: SAFETYNET's mission? Officially, we're the Security and Field-Engagement Technology Yielding National Emergency Taskforce.
+Haxolottle: SAFETYNET's mission? Officially, we're the Security And Field-Engagement Technology Yielding Nonaligned Emergency Taskforce.
 
 Haxolottle: *grins* Unofficially, we're the people who stop ENTROPY from burning down digital civilization.
 
@@ -341,28 +341,26 @@ Haxolottle: The philosophy is "best defense is a preemptive offense." Don't wait
     -> lore_hub_handler
 
 === legal_authority_question ===
-Haxolottle: Haxolottle: Complicated question. Complicated answer.
+Haxolottle: Short answer? We haven't got one.
 
-Haxolottle: We operate under classified executive orders and emergency powers acts. Technically legal, practically untested in court, definitely not something the public knows about.
+Haxolottle: There's no warrant behind you. No statute, no charter anyone could produce in a courtroom. When you walk into a building, you walk in because somebody believed the story you told them at the desk.
 
-Haxolottle: When we infiltrate a facility under false pretenses, we're relying on national security exemptions and carefully worded authorizations that would make privacy advocates's heads explode.
+Haxolottle: That's what the cover actually is. Not paperwork with a seal on it. A consultant, a contractor, an auditor with a clipboard and a plausible reason to be near the server room. The access is real because the story held, and for no other reason.
 
-Haxolottle: The cover story—you're a security consultant, you're a contractor, you're running authorized penetration tests—that's partly about operational security and partly about legal deniability.
-
-Haxolottle: If an operation goes wrong, SAFETYNET doesn't officially exist. You're a rogue actor. It's not fair, but it's how the system works.
+Haxolottle: Which is why we're careful about what we do once we're inside. There's nothing underneath us to catch anybody. If the story stops holding, it stops holding everywhere at once.
 
 ~ handler_influence += 10
 ~ discussed_moral_complexity = true
 -> lore_hub_handler
 
 === oversight_question ===
-Haxolottle: Haxolottle: Officially? Select committee members in certain governments. People with security clearances so high they probably don't exist on paper.
+Haxolottle: The Command Council. People like Director Netherton.
 
-Haxolottle: Practically? We're overseen by SAFETYNET Command Council—people like Director Netherton. They report to... someone. I'm not cleared to know the full chain of command, and honestly, I'm okay with that.
+Haxolottle: That's the list. I know how that sounds.
 
-Haxolottle: What matters is: we have rules of engagement. We have ethical guidelines. The handbook isn't just bureaucratic nonsense—it's our attempt to do this work responsibly.
+Haxolottle: There's no board above them, no inspectorate, nobody who turns up once a year to read our files and tell us we've overstepped. If we get this wrong, the correction has to come from inside the building or it doesn't come at all.
 
-Haxolottle: We're given enormous power and minimal oversight. That makes our internal ethics and judgment critically important. It's why they're so careful about recruitment.
+Haxolottle: So the rules of engagement aren't bureaucracy. They're the only thing in the structure doing that job. It's also why recruitment takes as long as it does — they're not checking whether you can do the work. They're checking what you'd do when nobody could stop you.
 
 ~ handler_influence += 12
 ~ discussed_moral_complexity = true
@@ -783,13 +781,13 @@ Director Netherton: You have questions regarding operational context, Agent?
 ~ discussed_safetynet_mission = true
 ~ director_influence += 8
 
-Netherton: SAFETYNET's mandate, as outlined in founding charter section 1.2, is protection of critical infrastructure and national security interests through proactive counter-espionage operations.
+Netherton: SAFETYNET's mandate, as outlined in founding charter section 1.2, is the protection of critical infrastructure through proactive counter-espionage operations. Wherever that infrastructure happens to be.
 
-We operate under classified legal authorities. Our existence is not publicly acknowledged. Our successes are invisible. Our failures would be catastrophic.
+We hold no commission from anyone. Our existence is not acknowledged, because there is no one whose place it would be to acknowledge it. Our successes are invisible. Our failures would be catastrophic.
 
 The responsibility is enormous. The oversight is minimal. Therefore, our adherence to operational protocols and ethical guidelines is paramount.
 
-We are not vigilantes. We are not above the law. We operate in the gray areas the law cannot effectively address, with the understanding that our power must be exercised responsibly.
+We are not vigilantes. The law does not reach where we work, and that is not the same thing as being above it. We operate where it cannot, on the understanding that our power is exercised responsibly or not at all.
 
 ~ director_influence += 8
 ~ discussed_moral_complexity = true

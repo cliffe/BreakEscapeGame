@@ -242,7 +242,7 @@ Dr. Chen: We don't stay ahead. Not consistently. That's the uncomfortable truth.
 
 Dr. Chen: What we do is stay adaptive. They develop new malware, we develop new detection. They find new exploits, we patch and harden. It's constant evolution.
 
-Dr. Chen: We have advantages they don't. Resources. Infrastructure. Legal authority to acquire cutting-edge tech. Talent pool.
+Dr. Chen: We have advantages they don't. Resources. Infrastructure. Suppliers who take the money and don't ask what it's for. Talent pool.
 
 Dr. Chen: But they're innovative. Decentralized. Fast. They can deploy experimental tech without approval committees and safety reviews.
 

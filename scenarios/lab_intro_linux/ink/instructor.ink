@@ -867,7 +867,7 @@ Legal status: Hydra itself is legal to possess and use in authorized security te
 
 In this training: You're attacking lab systems we control, with explicit permission. This is legal and ethical training.
 
-In SAFETYNET operations: You'll have authorization for your targets. Still legally gray area, but covered by classified operational authorities.
+In SAFETYNET operations: Your target is cleared by Command before you go. There's no statute behind that clearance -- the cover is what you have, and it is the whole of what you have.
 
 In the real world: Never, ever use these tools against systems without written authorization. Penetration testers get contracts. Bug bounty hunters follow program rules. Hobbyists practice in their own isolated labs.
 
