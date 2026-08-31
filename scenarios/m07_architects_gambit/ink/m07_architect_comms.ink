@@ -1,300 +1,292 @@
-// Mission 7: The Architect's Gambit - The Architect Communications
-// Time-based taunts from the mysterious ENTROPY mastermind
+// ===========================================
+// m07 The Architect's Gambit -- THE ARCHITECT (comms only)
+// NPC id: the_architect   displayName: The Architect
+//
+// Canon (masterminds/the_architect.md:11): never directly encountered.
+// He exists as intercepted communications. He has no body in this mission.
+// He arrives by hijacking the player's own handset, on the countdown.
+//
+// Five taunts (T-30 / T-20 / T-10 / T-5 / T-1) plus a sign-off after the grid
+// holds. Every taunt after the first reads team_assignment, because the needle
+// is not that the player might lose -- it is that he watched them choose, and
+// he can name the two operations they left.
+//
+// He does not gloat when the player wins. Success was never the variable.
+// ===========================================
 
-// Global variables (synced with scenario.json.erb)
-VAR crisis_choice = ""
-VAR architect_t30_shown = false
-VAR architect_t20_shown = false
-VAR architect_t10_shown = false
-VAR architect_t05_shown = false
-VAR architect_t01_shown = false
+// Synced from globalVariables by the engine at call-open
+VAR team_assignment = ""
+VAR team_assigned = false
+VAR team_redirected = false
+VAR projection_revised = false
+VAR redirect_window_closed = false
+VAR architect_t20_played = false
+VAR architect_t10_played = false
+VAR architect_t5_played = false
+VAR architect_t1_played = false
+VAR countdown_expired = false
+VAR grid_saved = false
 
-// Local variables for these communications
-VAR architect_success_shown = false
-VAR architect_failure_shown = false
+// Local -- which transmissions this handset has already carried
+VAR heard_t30 = false
+VAR heard_t20 = false
+VAR heard_t10 = false
+VAR heard_t5 = false
+VAR heard_t1 = false
+VAR heard_signoff = false
 
-=== architect_comms ===
-// Entry point - this will be called at specific timer intervals
-// The game engine should call specific knots based on timer
-
--> t30_message
-
-=== t30_message ===
-~ architect_t30_shown = true
-
-Your phone vibrates. An encrypted message from an unknown sender appears on your screen.
-
-The sender ID shows only: **THE ARCHITECT**
-
-{crisis_choice == "infrastructure":
-    "Agent 0x00. I've been watching your career with interest. Let's see if you're as capable as your reputation suggests." #speaker:The Architect
-
-    "You chose infrastructure. Pragmatic. Lives over data, over money. Admirable, in its way."
+=== start ===
+{grid_saved and not heard_signoff:
+    -> sign_off
 }
-
-{crisis_choice == "data":
-    "Agent 0x00. Welcome to the game." #speaker:The Architect
-
-    "Democracy is an illusion built on public faith. You chose to protect that illusion. Interesting."
+{architect_t1_played and not heard_t1:
+    -> taunt_t1
 }
-
-{crisis_choice == "supply_chain":
-    "Agent 0x00. So you're the one they sent." #speaker:The Architect
-
-    "Supply chain attacks are beautiful, aren't they? One compromise, millions infected. Efficiency. You chose to prevent future suffering over present deaths. Utilitarian."
+{architect_t5_played and not heard_t5:
+    -> taunt_t5
 }
-
-{crisis_choice == "corporate":
-    "Agent 0x00. I've been expecting you." #speaker:The Architect
-
-    "Capitalism built on insecure foundations. You chose to protect those foundations. Shareholders over citizens. Bold choice."
+{architect_t10_played and not heard_t10:
+    -> taunt_t10
 }
-
-The message continues:
-
-"Let's see if you can stop entropy tonight. Spoiler: you can't. You can only delay it."
-
-**T-MINUS 30 MINUTES**
-
-+ [Ignore the message] -> END
-+ [Trace the source] -> trace_attempt
-
-=== trace_attempt ===
-You attempt to trace the message source.
-
-**TRACE FAILED:** Routing through 47 proxy servers across 14 countries. Source: Unknown.
-
-The Architect sends another message:
-
-"Nice try. But I'm always three steps ahead." #speaker:The Architect
-
--> END
-
-=== t20_message ===
-~ architect_t20_shown = true
-
-Another encrypted message from THE ARCHITECT.
-
-{crisis_choice == "infrastructure":
-    "You chose infrastructure. But tell me - do you know what's happening at the other three targets right now?" #speaker:The Architect
-
-    "Team Charlie is failing. Corporate zero-day attacks are deploying. Healthcare ransomware locking hospitals. People will die from delayed surgeries."
-
-    "Did you choose correctly?"
+{architect_t20_played and not heard_t20:
+    -> taunt_t20
 }
-
-{crisis_choice == "data":
-    "You chose to protect data. Noble. But data isn't alive, Agent 0x00. People at the other targets are." #speaker:The Architect
-
-    "Team Alpha is failing. Right now, the Pacific Northwest power grid is cascading toward failure. 240-385 deaths over 72 hours."
-
-    "Was it worth it? Protecting voter records while people freeze in the dark?"
+{not heard_t30:
+    -> taunt_t30
 }
+-> dead_air
 
-{crisis_choice == "supply_chain":
-    "You chose long-term threat over immediate deaths. Interesting priorities." #speaker:The Architect
+// ===========================================
+// T-30 -- first contact. He is establishing a baseline.
+// ===========================================
 
-    "Team Bravo is containing infrastructure. But Team Charlie is failing. Economic damage mounting. Healthcare systems being ransomwared."
+=== taunt_t30 ===
+~ heard_t30 = true
+Narrator: Your handset lights without ringing. The call is already connected, and has been for some seconds.
 
-    "47 million future infections prevented. How many die tonight because you chose tomorrow over today?"
-}
+The Architect: Agent 0x00. Don't look for the trace. It isn't there.
 
-{crisis_choice == "corporate":
-    "You chose corporations over civilians. The market over mortality." #speaker:The Architect
+The Architect: I've read your file. Files are written by people who need you to be a particular shape. I prefer to watch.
 
-    "Team Alpha succeeded on infrastructure - well done, them. But Team Bravo is failing catastrophically. Voter database breach complete. Disinformation deploying. Democracy is about to shatter."
++ [Who am I speaking to?]
+    The Architect: Someone with thirty minutes of your attention and no interest in wasting it.
+    -> t30_close
++ [I don't take calls from ENTROPY.]
+    The Architect: You took this one.
+    -> t30_close
 
-    "You saved shareholder value. Was that worth the constitutional crisis?"
-}
+=== t30_close ===
+The Architect: There is a decision in front of you tonight. Make it however you like. I only want to see it made.
 
-**T-MINUS 20 MINUTES**
+Narrator: The line drops. Your handset reports no call in the log.
 
-+ [Focus on the mission] -> END
-+ [Respond to The Architect] -> respond_attempt
+#exit_conversation
+-> DONE
 
-=== respond_attempt ===
-You type a response message.
+// ===========================================
+// T-20 -- he names what was left. Reads team_assignment.
+// ===========================================
 
-**DELIVERY FAILED:** Sender address does not accept incoming communications.
+=== taunt_t20 ===
+~ heard_t20 = true
+Narrator: The handset cuts across the facility alarm. Same voice, same absence of hurry.
 
-The Architect sends another line:
+The Architect: You've sent your team.
 
-"I don't need your words, Agent. Your choices speak volumes." #speaker:The Architect
-
--> END
-
-=== t10_message ===
-~ architect_t10_shown = true
-
-Another message. The Architect's taunts are getting more philosophical.
-
-"The beauty of entropy is its inevitability." #speaker:The Architect
-
-{crisis_choice == "infrastructure":
-    "Even if you stop this power grid attack, something else fails. Someone else dies. Infrastructure decays. Systems collapse."
-
-    "Marcus believes in exposing vulnerabilities. Do you know what's tragic? He's RIGHT. The power grid IS vulnerable. You're just delaying the inevitable blackout."
-}
-
-{crisis_choice == "data":
-    "Even if you stop the breach, even if you wipe the narratives - the distrust persists. Truth is already dead. I killed it."
-
-    "Rachel believes she's exposing corruption. Specter believes in information freedom. They're both tools. As are you."
-}
-
-{crisis_choice == "supply_chain":
-    "Software updates are built on trust. One betrayal, that trust shatters forever. Even if you stop this, who will update their systems now?"
-
-    "Adrian believes supply chains are vulnerable. He's correct. You're not fixing the vulnerability - just preventing this exploitation."
-}
-
-{crisis_choice == "corporate":
-    "Corporations prioritize profit over security. Always have, always will. Even if you save them tonight, they'll never invest properly in defense."
-
-    "Victoria believes in corporate accountability. Marcus believes in profit. I believe in entropy. Who's right?"
-}
-
-"You can't win, Agent 0x00. You can only choose which way to lose."
-
-**T-MINUS 10 MINUTES**
-
-+ [Stay focused] -> END
-
-=== t05_message ===
-~ architect_t05_shown = true
-
-The messages are coming faster now.
-
-"T-minus 5 minutes. Let me ask you a philosophical question." #speaker:The Architect
-
-{crisis_choice == "infrastructure":
-    "Marcus believes his cause justifies casualties. Do you believe yours does? You accepted economic collapse elsewhere to save these lives."
-
-    "What's the calculus? 240 lives saved here, 80-140 lost to healthcare ransomware there? Did you maximize survival, or just minimize visible blood on your hands?"
-}
-
-{crisis_choice == "data":
-    "You chose to protect democracy. But what IS democracy when the public doesn't trust elections? When data is weaponized?"
-
-    "You can stop the breach OR the disinformation. Not both. Choose which lie to preserve."
-}
-
-{crisis_choice == "supply_chain":
-    "47 million systems. Think about that scale. Every hospital, every bank, every government agency."
-
-    "You chose this over immediate deaths. That's cold calculus, Agent. Utilitarian to the core. Are you comfortable with that choice?"
-}
-
-{crisis_choice == "corporate":
-    "47 zero-days. 12 corporations. $4.2 trillion market cap. All falling simultaneously."
-
-    "But you know what's interesting? Even if you save them, they'll never properly invest in security. Profits over protection. Always."
-}
-
-"Five minutes. Entropy accelerates."
-
-**T-MINUS 5 MINUTES**
-
-+ [Ignore The Architect] -> END
-
-=== t01_message ===
-~ architect_t01_shown = true
-
-Final message. One minute remaining.
-
-{crisis_choice == "infrastructure":
-    "Impressive. You're about to stop the blackout." #speaker:The Architect
-
-    "But this was never really about the power grid, was it? This was about forcing you to choose. About showing you that every victory comes with a cost elsewhere."
-
-    "Enjoy your pyrrhic victory, Agent."
-}
-
-{crisis_choice == "data":
-    "Even if you succeed here, the narratives will persist. Disinformation doesn't need deployment - it's already in people's minds." #speaker:The Architect
-
-    "You're fighting an information war you've already lost."
-}
-
-{crisis_choice == "supply_chain":
-    "You're about to prevent the largest supply chain attack in history. Congratulations." #speaker:The Architect
-
-    "But present-day casualties mount at other targets while you protect future systems. The math doesn't justify itself, does it?"
-}
-
-{crisis_choice == "corporate":
-    "Look at you, protecting the wealth of corporations while civilians suffer elsewhere." #speaker:The Architect
-
-    "But you know what? Economic stability matters too. Systems matter. You made a defensible choice, even if it feels dirty."
-}
-
-"One minute, Agent 0x00. Let's see how this plays out."
-
-**T-MINUS 1 MINUTE**
-
-+ [Final push] -> END
-
-=== success_message ===
-~ architect_success_shown = true
-
-After you neutralize the attack, one final message arrives.
-
-{crisis_choice == "infrastructure":
-    "Congratulations. You saved 8.4 million people from a blackout. Zero casualties from power grid failure. Meanwhile, at the targets you didn't choose: Corporate healthcare ransomware 80-140 deaths from delayed care, Social Fabric disinformation Democratic trust damaged, Supply Chain prevented by Team Alpha. Total casualties tonight: 80-140 deaths. You minimized death. Well done. But they still died. Was it worth it?" #speaker:The Architect
+{team_assignment == "fracture":
+    The Architect: Washington. A hundred and eighty-seven million records, and a great deal of shouting afterwards about legitimacy.
+    The Architect: Which leaves the software vendors, and it leaves San Francisco. Twelve companies. Eighty to a hundred and forty people, tonight, on your clock.
 - else:
-    {crisis_choice == "data":
-        "Impressive. You stopped both the data breach and the disinformation campaign. Democracy survives another day. Meanwhile, at the targets you didn't choose: Infrastructure 240-385 deaths from power grid blackout (Team Alpha failed), Corporate prevented by Team Bravo, Supply Chain partial success by Team Charlie. Total casualties tonight: 240-385 deaths. You saved democratic institutions. People died in the dark. Was that the right trade?" #speaker:The Architect
+    {team_assignment == "trojan_horse":
+        The Architect: The update pipeline. Interesting. Almost nobody picks the one with no bodies in the brief.
+        The Architect: So Washington goes unanswered, and San Francisco goes unanswered. A hundred and eighty-seven million records. Eighty to a hundred and forty dead by morning.
     - else:
-        {crisis_choice == "supply_chain":
-            "Well done. You prevented 47 million backdoor infections. Long-term national security preserved. Meanwhile, at the targets you didn't choose: Infrastructure partial success by Team Bravo (80-120 deaths), Data full success by Team Alpha (zero casualties), Corporate healthcare ransomware deployed (80-140 deaths). Total casualties tonight: 160-260 deaths. You chose future security over present lives. They died while you prevented tomorrow's crisis. Utilitarian calculus." #speaker:The Architect
+        {team_assignment == "meltdown":
+            The Architect: San Francisco. Of course. The number was largest and it was tonight.
+            The Architect: Washington stands open. So does the vendor pipeline. Nobody will notice the second one for a while.
         - else:
-            "Outstanding. All 47 zero-days neutralized. 4.2 trillion in market value preserved. Meanwhile, at the targets you didn't choose: Infrastructure full success by Team Alpha (zero casualties), Data both attacks succeeded (voter breach + disinformation, 20-40 deaths from civil unrest), Supply Chain partial success by Team Charlie. Total casualties tonight: 20-40 deaths. You saved shareholder wealth. People died in civil unrest over a compromised election. What did you really protect?" #speaker:The Architect
+            The Architect: Or you haven't. The clock does not care either way, and neither, particularly, do I.
         }
     }
 }
 
-The message continues:
++ [You're wasting my time.]
+    The Architect: Then you'll have spent it on something.
+    -> t20_close
++ [Say what you want to say.]
+    The Architect: I have.
+    -> t20_close
 
-"But here's what you should understand, Agent 0x00: Tonight was a test. A proof-of-concept. ENTROPY is just beginning."
-
-"You won your battle. But the war? The war is inevitable. Entropy always wins."
-
-"I'll be watching your career with great interest. Until we meet again."
-
-**-- THE ARCHITECT**
-
-+ [Report this to Director Morgan] -> END
-+ [Delete the message] -> END
-
-=== failure_message ===
-~ architect_failure_shown = true
-
-The timer hits zero. You failed to stop the attack in time.
-
-A final message from THE ARCHITECT arrives.
-
-{crisis_choice == "infrastructure":
-    "The grid is falling. Cascading failures across the Pacific Northwest. 8.4 million people in darkness. Over the next 72 hours: 240-385 deaths. Hospital generators failing. Traffic accidents. Hypothermia. You tried. But entropy won." #speaker:The Architect
+=== t20_close ===
+{team_assigned:
+    The Architect: Tell me, and answer honestly, because I'll know either way. Did you use a number to decide, or did you use your stomach?
 - else:
-    {crisis_choice == "data":
-        "The data is gone. 187 million voter records exfiltrated. Disinformation deploying across all platforms. Democracy is about to shatter. Civil unrest incoming. 20-40 deaths in the first week. Constitutional crisis unfolding. You failed to protect the foundation of your republic." #speaker:The Architect
+    The Architect: Choose slowly. I have all evening.
+}
+
+Narrator: Dead air, then the ordinary hiss of a handset that thinks it has been idle for twenty minutes.
+
+#exit_conversation
+-> DONE
+
+// ===========================================
+// T-10 -- the redirect window. Reads redirect_window_closed (boolean only).
+// ===========================================
+
+=== taunt_t10 ===
+~ heard_t10 = true
+Narrator: Your screen wakes on its own. The countdown behind it keeps running.
+
+{redirect_window_closed:
+    The Architect: Whatever you have just learnt, you've learnt it too late to move anybody. That happens.
+- else:
+    {projection_revised:
+        The Architect: You've found the discrepancy. Good. Now watch how long it takes you to act on it.
     - else:
-        {crisis_choice == "supply_chain":
-            "The backdoors are deployed. 47 million systems infected. Hospitals, banks, government agencies - all compromised. They won't know for 90 days. But when they discover it, the damage will be catastrophic. 240-420 billion over 10 years. You failed to prevent the largest supply chain attack in history." #speaker:The Architect
+        The Architect: The beauty of entropy is that it doesn't require me to win.
+    }
+}
+
+The Architect: Stop this, and something else fails. Someone else dies. You simply won't be in the room for it.
+
++ [Then I'll be in this one.]
+    The Architect: Yes. That's rather the point.
+    -> t10_close
++ [You're not as clever as you sound.]
+    The Architect: Very possibly. It has never been the requirement.
+    -> t10_close
+
+=== t10_close ===
+{redirect_window_closed:
+    The Architect: Doors close. It's the one thing they reliably do.
+- else:
+    The Architect: You still have a door open. I'd hurry, but that's your business.
+}
+
+Narrator: The call ends mid-syllable.
+
+#exit_conversation
+-> DONE
+
+// ===========================================
+// T-5 -- he asks the player to name what they abandoned.
+// ===========================================
+
+=== taunt_t5 ===
+~ heard_t5 = true
+Narrator: Five minutes on the display. The handset opens the line without asking.
+
+The Architect: Mercer believes in his cause. He would give you the figure and defend it to your face. That is worth something, even when the figure is monstrous.
+
+{team_assignment == "fracture":
+    The Architect: You covered the records. Say the other two out loud. Trojan Horse. Meltdown.
+- else:
+    {team_assignment == "trojan_horse":
+        The Architect: You covered the pipeline. Say the other two out loud. Fracture. Meltdown.
+    - else:
+        {team_assignment == "meltdown":
+            The Architect: You covered the twelve. Say the other two out loud. Fracture. Trojan Horse.
         - else:
-            "47 zero-days deployed simultaneously. Stock market crashing. Healthcare ransomware active. Banking systems freezing. 4.2 trillion in value destroyed. 80-140 deaths from delayed medical care. 140,000+ job losses incoming. You failed to protect the economic foundation of your country." #speaker:The Architect
+            The Architect: You covered nothing at all, which is its own answer, and a rarer one than you'd think.
         }
     }
 }
 
-"And the other operations? Mixed results, as predicted. But YOUR failure made everything worse."
++ [I made a call. I'll carry it.]
+    The Architect: Noted.
+    -> t5_close
++ [I'm not doing this with you.]
+    The Architect: No. You're doing it on your own, later. That's usually worse.
+    -> t5_close
 
-"This is entropy, Agent 0x00. Inevitable. Beautiful. Accelerating."
+=== t5_close ===
+The Architect: Do you believe in yours enough to name them? You will have to, eventually, to somebody with a tablet.
 
-"Better luck next time. If there is a next time."
+Narrator: Static. Then nothing.
 
-**-- THE ARCHITECT**
+#exit_conversation
+-> DONE
 
-+ [Face the consequences] -> END
+// ===========================================
+// T-1 -- the last minute. He is not measuring the grid.
+// ===========================================
 
--> END
+=== taunt_t1 ===
+~ heard_t1 = true
+Narrator: One minute. The handset is warm in your hand and the line is already open.
+
+{countdown_expired:
+    The Architect: Late. I did wonder.
+- else:
+    The Architect: Impressive. Genuinely. You've moved faster than the file suggested.
+}
+
+The Architect: But this was never about the power grid.
+
++ [Eight point four million people say otherwise.]
+    The Architect: They do. And I have written every one of them down.
+    -> t1_close
++ [Then what is it about?]
+    The Architect: You'll work it out. Probably tonight. Probably in a room with a tablet in it.
+    -> t1_close
+
+=== t1_close ===
+Narrator: He hangs up first. He has hung up first every time.
+
+#exit_conversation
+-> DONE
+
+// ===========================================
+// Sign-off -- after grid_saved. No gloating. No rattle.
+// ===========================================
+
+=== sign_off ===
+~ heard_signoff = true
+Narrator: The countdown reads zero and stays there. Your handset rings anyway.
+
+The Architect: You saved eight point four million people. I want to be clear that I'm not being sarcastic.
+
+{team_assignment == "fracture":
+    The Architect: I'll have the figures from Washington, the vendor pipeline and San Francisco by morning.
+- else:
+    {team_assignment == "trojan_horse":
+        {team_redirected:
+            The Architect: And you moved them. Late, but you moved them. That is a different result from the one I expected, and I do like those.
+        - else:
+            The Architect: I'll have the figures from Washington, the pipeline and San Francisco by morning.
+        }
+    - else:
+        {team_assignment == "meltdown":
+            The Architect: I'll have the figures from Washington, the vendor pipeline and San Francisco by morning.
+        - else:
+            The Architect: I'll have the figures from all three by morning.
+        }
+    }
+}
+
++ [You lost tonight.]
+    The Architect: I wasn't playing for tonight.
+    -> signoff_close
++ [Say it.]
+    The Architect: No. Let somebody in your own building say it. It lands harder.
+    -> signoff_close
+
+=== signoff_close ===
+The Architect: So will you have the figures. And then we'll both know the same thing about you.
+
+Narrator: The line goes quiet. Your call log holds no record of any of it.
+
+#exit_conversation
+-> DONE
+
+// ===========================================
+// Nothing scheduled. He is not available on request.
+// ===========================================
+
+=== dead_air ===
+Narrator: You bring the handset up. There is a carrier tone on a channel that should not have one, and nobody on it.
+
++ [Hang up.]
+    Narrator: The tone stops a half-second before you do.
+    #exit_conversation
+    -> DONE

@@ -1,448 +1,451 @@
-// Mission 7: The Architect's Gambit - Closing Debrief
-// End-of-mission debrief reviewing all four operations and their outcomes
+// ================================================
+// Mission 7: The Architect's Gambit
+// Closing debrief -- Director Magnus Netherton, SAFETYNET HQ, after the flight home
+//
+// Fired from global_variable_changed:mission_complete.
+//
+// Shape:
+//   start -> the_win -> covered_operation -> revision_payoff
+//         -> operations_gone_dark -> the_people
+//         -> the_coda (two information levels) -> debrief_hub
+//         -> the_stance -> handoff -> END
+//
+// Rules for this scene:
+//   - Nobody absolves the player. Not Netherton, not HaX, not the narration.
+//   - The two abandoned operations are read out by name and by number, always.
+//   - The win is real. The floor still drops out. Both.
+// ================================================
 
-// Global variables (synced with scenario.json.erb)
-VAR crisis_choice = ""
-VAR crisis_neutralized = false
+VAR player_name = "Agent 0x00"
+
+// The win
+VAR grid_saved = false
+VAR countdown_expired = false
+
+// The delegation
+VAR team_assignment = ""
+VAR team_redirected = false
+VAR projection_revised = false
+
+// People
+VAR mercer_fate = ""
+VAR mercer_stance = ""
+VAR mercer_told_diversion = false
+VAR elena_outcome = ""
+VAR morrison_resolved = ""
+VAR park_resolved = ""
+
+// Knockout latches
+VAR morrison_ko = false
+VAR elena_ko = false
+VAR mercer_ko = false
+VAR park_ko = false
+
+// Lore
 VAR found_tomb_gamma = false
 VAR found_mole_evidence = false
-VAR total_casualties = 0
-VAR player_operation_casualties = 0
-VAR other_operations_casualties = 0
 
-// Use crisis_neutralized for player success
-VAR player_success = false
+// Written back
+VAR debrief_stance = ""
 
-=== closing_debrief ===
-You're back at SAFETYNET Emergency Operations Center. The crisis room is quieter now, but the tension remains.
+// Local bookkeeping
+VAR asked_tomb = false
+VAR asked_how_he_knew = false
+VAR asked_what_now = false
 
-Director Morgan stands at the central display, reviewing after-action reports from all four operations.
 
-She looks up as you enter.
+// ================================================
+=== start ===
+#complete_task:take_the_debrief
 
-"Agent 0x00. Take a seat. We need to debrief." #speaker:Director Morgan
+Narrator: SAFETYNET headquarters. One flight, one debrief queue and no sleep since Portland, and the quiet room behind the operations floor has its lights down.
 
-You sit. She brings up a comprehensive tactical overview.
+Narrator: Director Magnus Netherton comes in with a tablet, in the same suit he was wearing when he put you on the aircraft.
 
-"Four simultaneous operations. Four different outcomes. Let's review."
+Director Magnus Netherton: {player_name}. Sit down. This will not take long and you have earned the right to sit down for it.
 
-+ [I'm ready.] -> operation_review
-+ [How bad is it?] -> casualty_summary
-+ [Did we stop The Architect?] -> architect_status
+-> the_win
 
-=== operation_review ===
-Director Morgan brings up the full operational map.
 
-"Here's what happened across all four targets tonight:" #speaker:Director Morgan
+// ================================================
+=== the_win ===
 
--> player_operation_outcome
+{grid_saved:
+    Director Magnus Netherton: The cascade sequence is terminated. All twenty-three transformers held. One hundred and forty-seven substations are carrying load and the regional operator is reporting nominal.
+    Director Magnus Netherton: Eight point four million people have power tonight. The projection on that desk said two hundred and forty to three hundred and eighty-five dead. That number is now zero.
+    Director Magnus Netherton: I am not going to qualify that. You did the thing. It is done.
+- else:
+    Director Magnus Netherton: The sequence was stopped. Late, and not tidily, but stopped. Eight point four million people have power tonight and the projection on that desk is a piece of paper about something that did not happen.
+}
 
-=== player_operation_outcome ===
-{crisis_choice == "infrastructure":
-    **OPERATION A: INFRASTRUCTURE COLLAPSE (Your Operation)**
+{countdown_expired:
+    Director Magnus Netherton: You went past his clock. He wanted you to notice that. The grid did not notice it at all.
+}
 
-    {player_success == true:
-        "You neutralized Marcus Chen's power grid attack. Zero casualties from the blackout. 8.4 million people kept their power." #speaker:Director Morgan
+Narrator: He lets that stand for a moment. Then he turns the tablet over.
 
-        "Outstanding work."
+Director Magnus Netherton: The other three operations went ahead on schedule. I have the first reporting from all of them.
 
-        ~ player_operation_casualties = 0
+-> covered_operation
+
+
+// ================================================
+// Which operation the tactical team actually covered.
+// ================================================
+=== covered_operation ===
+
+{
+    - team_assignment == "fracture":
+    -> covered_fracture
+- team_assignment == "trojan_horse":
+    { team_redirected:
+        -> covered_trojan_redirect
+    - else:
+        -> covered_trojan_direct
     }
-
-    {player_success == false:
-        "The power grid failed. Cascading blackouts across the Pacific Northwest." #speaker:Director Morgan
-
-        "Casualty count: 240-385 deaths over 72 hours. Hospital generators, traffic accidents, hypothermia exposure."
-
-        ~ player_operation_casualties = 312
-        ~ total_casualties = total_casualties + 312
-    }
-
-    -> other_operations_infrastructure
+- team_assignment == "meltdown":
+    -> covered_meltdown
+- else:
+    -> covered_none
 }
 
-{crisis_choice == "data":
-    **OPERATION B: DATA APOCALYPSE (Your Operation)**
+= covered_fracture
+Director Magnus Netherton: The team took the Washington data centre in eleven minutes. The exfiltration was already running. Sixty million voter records are gone and they are not coming back; those people will be dealing with it for the next several years.
+Director Magnus Netherton: They also took the Social Fabric cluster intact, before deployment. The narrative package never launched. What happened tonight is a breach, a hearing and a very bad year for the agency that hosted it.
+Director Magnus Netherton: It is not a constitutional crisis. The elections will run. That was not certain four hours ago.
+Director Magnus Netherton: Three Ghost Protocol operatives in custody. Their tasking traffic gives us the first hard line between Michael Reeves and The Architect. That is the first of those we have ever had.
+-> revision_payoff
 
-    {player_success == true:
-        "You stopped both the data breach and the disinformation campaign. Democracy secured. 187 million identities protected." #speaker:Director Morgan
+= covered_trojan_direct
+Director Magnus Netherton: The team reached TechForge before the injection run started. Hardware security modules seized. Eight hundred and forty signing keys burned and reissued. Two thousand four hundred vendors are having a miserable fortnight and no backdoor went anywhere.
+Narrator: He scrolls. He reads the next part more slowly than the rest.
+Director Magnus Netherton: The manifest was not what the brief said it was. A third of those keys sign electronic health record platforms. And computer-aided dispatch, in a substantial fraction of US counties. Nine-one-one call routing.
+Director Magnus Netherton: The dormancy field said ninety days. The staged payload was set to wake in nine.
+Narrator: He puts the tablet face down on the console.
+Director Magnus Netherton: You had no way to know what you were choosing. I would like it noted that you chose it anyway.
+-> revision_payoff
 
-        "Exceptional work under dual-timer pressure."
+= covered_trojan_redirect
+Director Magnus Netherton: The team went to Austin on your amended tasking. They arrived forty minutes behind the original window and the injection run was already going.
+Director Magnus Netherton: They stopped it at roughly thirty per cent. Fourteen million systems took a signed backdoor before the plug came out. Remediation is a national programme now, not an incident, and it starts Monday.
+Director Magnus Netherton: The health record and dispatch keys were sequenced late in the manifest. The team reached them first. Nobody's ambulance goes missing.
+Director Magnus Netherton: Ninety days was the brief. Nine was the truth. You found that out with the clock running and you moved a committed team on it.
+Narrator: He looks up for the first time since he started reading.
+Director Magnus Netherton: You changed your mind under a countdown. Most people cannot.
+-> revision_payoff
 
-        ~ player_operation_casualties = 0
-    }
+= covered_meltdown
+Director Magnus Netherton: The team took the TechCore security operations centre, twenty-fourth floor, and turned it around. Emergency mitigations pushed to all twelve client networks inside the deployment window.
+Director Magnus Netherton: The hospitals first, because that is what you were buying. No ransomware. No cancelled theatre lists. Four thousand two hundred hospitals ran a normal night and nobody died in one.
+Director Magnus Netherton: Eight of the twelve targets held clean. Four took damage. A bank lost a day of transaction processing, a retailer lost payments over a weekend, two lost intellectual property that will be for sale by next month. Markets moved about three per cent and are already recovering.
+Director Magnus Netherton: Two Digital Vanguard insiders arrested inside the SOC. Ashford was not with them. Ashford is never with them.
+-> revision_payoff
 
-    {player_success == false:
-        "Both attacks succeeded. 187 million voter records stolen. Disinformation campaign launched nationwide." #speaker:Director Morgan
+= covered_none
+Director Magnus Netherton: There is no tasking record for the tactical element. It stood by in Denver for the duration and it went nowhere.
+Director Magnus Netherton: I will need an explanation for that in writing. Not tonight.
+-> revision_payoff
 
-        "Casualty count: 20-40 deaths from civil unrest in first week. Constitutional crisis unfolding."
 
-        ~ player_operation_casualties = 30
-        ~ total_casualties = total_casualties + 30
-    }
+// ================================================
+// What the revision was worth -- for players who found it and did not
+// or could not act, and for players who never found it at all.
+// ================================================
+=== revision_payoff ===
 
-    -> other_operations_data
+{ projection_revised and team_redirected:
+    -> operations_gone_dark
 }
 
-{crisis_choice == "supply_chain":
-    **OPERATION C: SUPPLY CHAIN INFECTION (Your Operation)**
-
-    {player_success == true:
-        "You prevented all 47 million backdoor infections. Supply chain integrity maintained." #speaker:Director Morgan
-
-        "Zero immediate casualties. Long-term national security preserved."
-
-        ~ player_operation_casualties = 0
-    }
-
-    {player_success == false:
-        "Backdoors deployed to 47 million systems. Largest supply chain attack in history." #speaker:Director Morgan
-
-        "No immediate casualties, but long-term consequences: $240-420 billion damage projected over 10 years."
-
-        ~ player_operation_casualties = 0
-    }
-
-    -> other_operations_supply_chain
+{ projection_revised and not team_redirected:
+    Director Magnus Netherton: Your field notes say you established that the Trojan Horse projection was understated. Dispatch systems on the key manifest. Nine days of dormancy, not ninety.
+    Director Magnus Netherton: Timestamped an hour and six minutes before the tactical element was committed.
+    Agent HaX: I logged it. For what it is worth, {player_name}, you found the thing that was designed not to be findable. That is the part I would keep.
+    Agent HaX: The team not moving on it is a separate sentence, and I am not going to pretend it is the same one.
+    -> operations_gone_dark
 }
 
-{crisis_choice == "corporate":
-    **OPERATION D: CORPORATE WARFARE (Your Operation)**
-
-    {player_success == true:
-        "You neutralized all 47 zero-day exploits. $4.2 trillion in market value preserved. Zero healthcare ransomware." #speaker:Director Morgan
-
-        "Economic stability maintained."
-
-        ~ player_operation_casualties = 0
-    }
-
-    {player_success == false:
-        "47 zero-days deployed. Stock market crashed 12-18%. Healthcare ransomware active." #speaker:Director Morgan
-
-        "Casualty count: 80-140 deaths from delayed medical care. 140,000+ job losses imminent."
-
-        ~ player_operation_casualties = 110
-        ~ total_casualties = total_casualties + 110
-    }
-
-    -> other_operations_corporate
+{ team_assignment != "trojan_horse":
+    Director Magnus Netherton: One further note from analysis, added an hour ago. The Trojan Horse projection you were briefed with was wrong in two places, and wrong in the direction that made it easy to put down.
+    Director Magnus Netherton: The evidence for that was in this building tonight. Two independent copies of it. Nobody read them.
 }
 
-=== other_operations_infrastructure ===
-"The other three operations, handled by SAFETYNET rapid response teams:" #speaker:Director Morgan
+-> operations_gone_dark
 
-**TEAM ALPHA - SUPPLY CHAIN:** Full success. All backdoor injections prevented.
 
-**TEAM BRAVO - DATA APOCALYPSE:** Partial success. Data breach stopped at 13%, but disinformation campaign deployed. Civil unrest beginning. Estimated 20-40 casualties.
+// ================================================
+// The two that went unanswered. Always both. By name, by number.
+// ================================================
+=== operations_gone_dark ===
 
-~ other_operations_casualties = other_operations_casualties + 30
+Narrator: He picks the tablet up again and holds it at a slight distance, the way people do when they have decided to read something out rather than say it.
 
-**TEAM CHARLIE - CORPORATE WARFARE:** Failure. Healthcare ransomware deployed. 80-140 deaths from delayed care.
+Director Magnus Netherton: Two operations went unanswered. I am reading both.
 
-~ other_operations_casualties = other_operations_casualties + 110
-
-~ total_casualties = total_casualties + other_operations_casualties
-
--> casualty_total
-
-=== other_operations_data ===
-"The other three operations, handled by SAFETYNET rapid response teams:" #speaker:Director Morgan
-
-**TEAM ALPHA - INFRASTRUCTURE:** Failure. Power grid blackout occurred. 240-385 casualties from power failure.
-
-~ other_operations_casualties = other_operations_casualties + 312
-
-**TEAM BRAVO - CORPORATE WARFARE:** Full success. All zero-days neutralized. Zero economic damage.
-
-**TEAM CHARLIE - SUPPLY CHAIN:** Partial success. Some backdoors prevented, estimated 15 million systems infected (instead of 47M).
-
-~ total_casualties = total_casualties + other_operations_casualties
-
--> casualty_total
-
-=== other_operations_supply_chain ===
-"The other three operations, handled by SAFETYNET rapid response teams:" #speaker:Director Morgan
-
-**TEAM ALPHA - DATA APOCALYPSE:** Full success. Both data breach and disinformation prevented. Democracy secure.
-
-**TEAM BRAVO - INFRASTRUCTURE:** Partial success. Limited blackouts. Estimated 80-120 casualties (reduced from 240-385).
-
-~ other_operations_casualties = other_operations_casualties + 100
-
-**TEAM CHARLIE - CORPORATE WARFARE:** Failure. Healthcare ransomware deployed. 80-140 deaths from delayed care.
-
-~ other_operations_casualties = other_operations_casualties + 110
-
-~ total_casualties = total_casualties + other_operations_casualties
-
--> casualty_total
-
-=== other_operations_corporate ===
-"The other three operations, handled by SAFETYNET rapid response teams:" #speaker:Director Morgan
-
-**TEAM ALPHA - INFRASTRUCTURE:** Full success. Power grid secured. Zero blackout casualties.
-
-**TEAM BRAVO - DATA APOCALYPSE:** Catastrophic failure. Both attacks succeeded. 187M records stolen, disinformation deployed. 20-40 casualties from civil unrest.
-
-~ other_operations_casualties = other_operations_casualties + 30
-
-**TEAM CHARLIE - SUPPLY CHAIN:** Partial success. Most backdoors prevented. Estimated 8 million systems infected (instead of 47M).
-
-~ total_casualties = total_casualties + other_operations_casualties
-
--> casualty_total
-
-=== casualty_total ===
-Director Morgan displays the final casualty count.
-
-{total_casualties == 0:
-    "Combined casualties across all operations: ZERO." #speaker:Director Morgan
-
-    "This is unprecedented. Complete success. The Architect's coordinated attack failed."
-
-    "You chose the right operation, and the teams executed perfectly."
-
-    -> success_reflection
+{ team_assignment != "fracture":
+    -> dark_fracture ->
+}
+{ team_assignment != "trojan_horse":
+    -> dark_trojan ->
+}
+{ team_assignment != "meltdown":
+    -> dark_meltdown ->
 }
 
-{total_casualties > 0 and total_casualties < 100:
-    "Combined casualties across all operations: {total_casualties} deaths." #speaker:Director Morgan
+Narrator: He stops reading. He does not put the tablet down and he does not say anything to soften it, which is worse than if he had tried.
 
-    She pauses.
+-> the_people
 
-    "Every single one of those people had families. Lives. Futures."
 
-    "But given the scale of the attack - four simultaneous operations - this is... this is as good as we could have hoped for."
+= dark_fracture
+Director Magnus Netherton: Operation Fracture. The federal election security data centre, Washington. The exfiltration completed. One hundred and eighty-seven million voter records, full fidelity, forty-three states.
+Director Magnus Netherton: The Social Fabric package deployed ninety minutes behind the breach, as designed, and it is credible because the breach underneath it is real. Deepfaked confessions from named officials. Fabricated fraud evidence built out of genuine stolen records.
+Director Magnus Netherton: Two states have postponed. A third has certified a result that a third of its own population will never accept.
+Director Magnus Netherton: Twenty to forty dead in the disorder over the coming week. The records are on four darknet markets by the weekend and there is no version of the future in which they are not.
+->->
 
-    -> mixed_reflection
+= dark_trojan
+Director Magnus Netherton: Operation Trojan Horse. TechForge, Austin. The injection run completed. Forty-seven million systems have taken a signed, trusted, polymorphic backdoor.
+Director Magnus Netherton: For nine days, nothing will happen at all.
+Narrator: He pauses on the number. It is the only word he emphasises all night.
+Director Magnus Netherton: Nine. The brief said ninety. The brief also said no projected fatalities.
+Director Magnus Netherton: On day nine, computer-aided dispatch in eleven counties begins dropping emergency calls, in a pattern nobody attributes to an attack for another two days. Ninety to a hundred and sixty dead over the following month, spread thin enough that no single coroner sees a cluster.
+Director Magnus Netherton: Health record platforms will start leaking, then start altering. Remediation means rebuilding eighteen thousand hospitals from bare metal.
+{ projection_revised:
+    Agent HaX: You knew. You found it and it did not move.
+    Agent HaX: I am not saying that to punish you. I am saying it because somebody has to write it down, and it is going to be me.
+}
+->->
+
+= dark_meltdown
+Director Magnus Netherton: Operation Meltdown. Twelve targets, forty-seven zero-days, one command. Markets dropped fourteen per cent in the first session and trading halted on two exchanges. Banking transaction processing failed for eleven hours.
+Director Magnus Netherton: That is what the news led with, so I have led with it too.
+Director Magnus Netherton: The ransomware landed across four thousand two hundred hospitals. Eighteen thousand procedures cancelled in the first week. Eighty-seven million patient records gone.
+Director Magnus Netherton: Eighty to a hundred and forty people did not survive that week, because the operation they were booked for became a spreadsheet nobody could open.
+Director Magnus Netherton: They died tonight, on your clock, while you were in Portland saving a different eight million.
+->->
+
+
+// ================================================
+// The people in this building. Nobody who was knocked down
+// gets narrated as though they walked out.
+// ================================================
+=== the_people ===
+
+Director Magnus Netherton: The site, then. Shorter list.
+
+{
+    - mercer_ko or mercer_fate == "ko":
+    Director Magnus Netherton: Dr. James Mercer went out of that control room on a stretcher and into custody at the bottom of the stairs. He is concussed and he has not said a word since he came round. Medical first, interview after.
+- mercer_fate == "arrested":
+    Director Magnus Netherton: Dr. James Mercer is in custody and talking, which is more than I expected. He signed the two-hundred-and-forty-to-three-hundred-and-eighty-five projection. He read it and he signed it.
+- mercer_fate == "escaped":
+    Director Magnus Netherton: Dr. James Mercer left the site before the cordon closed. We have a name, a face and no idea which country he is in. He will surface. His sort always does.
+- else:
+    Director Magnus Netherton: Blackout is unaccounted for. Nobody in the response element put eyes on him.
 }
 
-{total_casualties >= 100 and total_casualties < 300:
-    "Combined casualties across all operations: {total_casualties} deaths." #speaker:Director Morgan
-
-    The weight of that number hangs in the air.
-
-    "Significant casualties. Multiple operations failed or partially succeeded."
-
-    "The Architect achieved some of their objectives tonight."
-
-    -> failure_reflection
+{
+    - mercer_stance == "condemned":
+    Director Magnus Netherton: You told him what he was. He recorded it in his own statement, which I find interesting.
+- mercer_stance == "reasoned":
+    Director Magnus Netherton: You argued with him. On the transcript it reads as though you were the only person in the room who thought he was worth arguing with.
+- mercer_stance == "silent":
+    Director Magnus Netherton: You gave him nothing. He appears to have found that harder than anything you could have said.
 }
 
-{total_casualties >= 300:
-    "Combined casualties across all operations: {total_casualties} deaths." #speaker:Director Morgan
-
-    She looks exhausted.
-
-    "This is catastrophic. Multiple operations failed. The Architect achieved most of their objectives."
-
-    "We need to understand what went wrong."
-
-    -> failure_reflection
+{ mercer_told_diversion:
+    Director Magnus Netherton: And you told him he was a diversion. That the substation was never the operation and he was the noise around it.
+    Director Magnus Netherton: He is a fanatic who has just been informed he was scenery. Whatever that does to a man, it is doing it now, in a cell, in Portland.
 }
 
-=== success_reflection ===
-"Agent 0x00, you made an impossible choice and got it RIGHT." #speaker:Director Morgan
-
-{found_tomb_gamma == true:
-    "And you recovered Tomb Gamma coordinates. That's our next target - The Architect's command center."
+{
+    - elena_ko or elena_outcome == "ko":
+    Director Magnus Netherton: Elena Rodriguez was found unconscious in the server room. She will be fine. She is also the only person on the ENTROPY side of this who was trying to stop it, which is going to make her statement an awkward document.
+- elena_outcome == "turned":
+    Director Magnus Netherton: Elena Rodriguez walked out and gave a statement without being asked twice. Six-hour blackout with a hospital carve-out was what she signed up for. She has read what she was actually part of.
+    Director Magnus Netherton: Analysis wants her. I have not decided.
+- elena_outcome == "fled":
+    Director Magnus Netherton: Elena Rodriguez left the site before the cordon. She took nothing and she disabled nothing on her way out, which tells me something.
+- else:
+    Director Magnus Netherton: No contact logged with the Critical Mass technician. She is in the wind with everything she knows.
 }
 
-{found_mole_evidence == true:
-    "You also found evidence of our mole. Internal Affairs is already investigating."
+{
+    - morrison_ko or morrison_resolved == "ko":
+    Director Magnus Netherton: The checkpoint guard is at Providence with a head injury. Jake Morrison. Contract security, forty-one, two children, no connection to any of this beyond a badge and a bad night.
+    Director Magnus Netherton: He renewed Mercer's credentials because a man in a lanyard asked him to. He will be told that was not his fault. It will take a while to land.
+- morrison_resolved == "talked":
+    Director Magnus Netherton: Jake Morrison is giving a full statement voluntarily and is extremely upset with himself about the credential renewal. Someone should tell him it was social engineering and not stupidity.
+- morrison_resolved == "evaded":
+    Director Magnus Netherton: The checkpoint guard never saw you. He is still at his post, and as far as he knows he had a quiet shift.
 }
 
-+ [What happens to ENTROPY now?] -> entropy_future
-+ [What about The Architect?] -> architect_status
-
-=== mixed_reflection ===
-"You made the best choice you could with the intelligence available." #speaker:Director Morgan
-
-"The casualties at unchosen operations - that's not your failure. That's The Architect's design. Forcing impossible choices."
-
-{found_tomb_gamma == true:
-    "But you recovered Tomb Gamma coordinates. That gives us our next move against The Architect."
+{
+    - park_ko or park_resolved == "ko":
+    Director Magnus Netherton: Thomas Park was recovered unconscious beside the backup transfer switch. He was ten minutes from disabling the only thing standing between this substation and a hard black start.
+- park_resolved == "talked":
+    Director Magnus Netherton: Thomas Park is in custody and cooperating. He has given us two Critical Mass safehouses already.
+- park_resolved == "evaded":
+    Director Magnus Netherton: Thomas Park is gone. The transfer switch is intact, which is the part that mattered, but he walked out of a building we had cordoned.
 }
 
-{found_mole_evidence == true:
-    "And the mole evidence you found - that's critical for preventing future leaks."
+-> the_coda
+
+
+// ================================================
+// Turn two of the twist. Two information levels.
+// ================================================
+=== the_coda ===
+
+Narrator: Netherton lowers the tablet. For a few seconds nobody in the room says anything.
+
+Agent HaX: Director. There is one more thing and it is not in the reporting yet.
+
+{ found_mole_evidence:
+    -> coda_full
+- else:
+    -> coda_thin
 }
 
-+ [Could I have done better?] -> second_guessing
-+ [What happens next?] -> next_steps
+= coda_full
+Agent HaX: {player_name} recovered an intercept from the cable vault. Outbound from a safetynet.gov address to The Architect. Four lines.
+Agent HaX: Four targets, simultaneous. 0x00 to Portland. One team uncommitted. They will have to choose. Window, thirty minutes.
+Narrator: The Director does not move.
+Agent HaX: I have checked the header time against our own tasking order three times, because I did not believe it the first two. The message predates the deployment by fifty-one minutes.
+Agent HaX: He had the assignment before we made it.
+Director Magnus Netherton: Then the leak was not the timing.
+Agent HaX: No, sir. The leak was the agent.
+Narrator: There is a particular quiet that arrives when several people work out the same thing at slightly different speeds.
+Agent HaX: The attack was never the point. Four operations, one clock, one team. He built a problem with no correct answer and he pointed a specific agent at it, and then he sat and watched what we protect when we can only protect one thing.
+Agent HaX: How fast we decide. Which numbers we believe. Which of the three we put down first, and how long it takes us.
+Agent HaX: He was not trying to beat you tonight. He was measuring you. And you gave him a clean reading.
+-> coda_close
 
-=== failure_reflection ===
-"Multiple operations failed tonight. The Architect achieved significant objectives." #speaker:Director Morgan
+= coda_thin
+Agent HaX: The taunts. He was calling you before the tactical element was even wheels-up, and he knew you were in Portland, and he knew there was one team and three targets he had not told anyone else about.
+Agent HaX: I have gone back through the tasking chain twice. There is no window in it where he could have learned any of that.
+Director Magnus Netherton: Then explain it.
+Agent HaX: I cannot, sir. That is the report.
+Narrator: Nobody fills the pause.
+Agent HaX: What I can tell you is what the shape of tonight was. Four operations, one clock, one team, and a set of numbers we did not derive ourselves. That is not an attack. That is a test with a controlled variable.
+Agent HaX: And the variable was you. There was somebody in that building who could have shown us how he set it up, and we did not find them.
+-> coda_close
 
-She's not blaming you - just stating facts.
-
-"The choice you made... in hindsight, was it the right one?"
-
-+ [I made the best decision I could.] -> defend_choice
-+ [I should have chosen differently.] -> regret_choice
-+ [The Architect designed this to be unwinnable.] -> blame_architect
-
-=== defend_choice ===
-"You did. You made the call based on available intelligence and your assessment of priorities." #speaker:Director Morgan
-
-"The casualties are on The Architect. Not you."
-
-{found_tomb_gamma == true or found_mole_evidence == true:
-    "And you recovered critical intelligence. That's valuable for future operations."
+= coda_close
+{ found_tomb_gamma:
+    Agent HaX: The other thing from the vault. Tomb Gamma. Active, classed as a workshop, and the coordinate field in the record has been stripped. Not redacted. Stripped, before the copy was made.
+    Agent HaX: "Everything the cells field has been through Gamma first. Including the people."
 }
+Director Magnus Netherton: Agent. Look at me.
+Director Magnus Netherton: Eight point four million people have power. That is not diminished by anything either of you has just said. He measured you. He did not beat you.
+Narrator: He says it with the flat certainty of a man reading a line he has decided to believe.
+-> debrief_hub
 
--> next_steps
 
-=== regret_choice ===
-"Second-guessing yourself in hindsight isn't helpful, Agent." #speaker:Director Morgan
+// ================================================
+// Hub -- optional questions, then the stance.
+// ================================================
+=== debrief_hub ===
 
-"You didn't have perfect information. Nobody did. The Architect designed it that way."
+- (options)
+Director Magnus Netherton: {&Anything you want on the record before I close this?|Something else?|Go on.|Ask it.}
 
--> next_steps
+* {found_mole_evidence and not asked_how_he_knew} [Who sent that message, sir?]
+    -> q_who_sent_it
+* {not found_mole_evidence and not asked_how_he_knew} [Then how did he know where I would be, sir?]
+    -> q_who_sent_it
+* {not asked_tomb} [Tomb Gamma. Is that a place we can go?]
+    -> q_tomb
+* {not asked_what_now} [What happens to me now?]
+    -> q_what_now
++ [Nothing on the record, sir. But I'll answer one thing.]
+    -> the_stance
 
-=== blame_architect ===
-"You're right. This was designed to be impossible. Four simultaneous attacks, one operator." #speaker:Director Morgan
-
-"The Architect wanted to prove that even our best couldn't stop them."
-
-{total_casualties > 0:
-    "And they partially succeeded. We took losses."
+= q_who_sent_it
+~ asked_how_he_knew = true
+{ found_mole_evidence:
+    Director Magnus Netherton: A safetynet.gov address with the local part removed before it reached us. That is deliberate and it is competent.
+    Director Magnus Netherton: Level five clearance sees the tasking board before a deployment is issued. Level five is not a large room.
+- else:
+    Director Magnus Netherton: I do not know that a message exists, Agent. I know what he knew and I know when he knew it, and those two facts do not fit in the same organisation.
 }
+Director Magnus Netherton: I have counted, and I do not like the number, and I am not saying it out loud in a building I did not secure myself.
+-> options
 
-{total_casualties == 0:
-    "But you proved them wrong. We stopped them."
+= q_tomb
+~ asked_tomb = true
+{ found_tomb_gamma:
+    Director Magnus Netherton: Not yet. We have a designation, a classification and an empty coordinate field. That is not a place, it is the outline of one.
+    Director Magnus Netherton: Somebody knows where it is. That somebody has been reading our tasking board.
+- else:
+    Director Magnus Netherton: The name is new to me. Log it in your field notes exactly as you heard it and do not put it in the operational summary.
 }
+-> options
 
--> next_steps
+= q_what_now
+~ asked_what_now = true
+Director Magnus Netherton: Regulation requires seventy-two hours of recovery leave after an operation of this classification. You will take it. That is not concern, it is section eleven.
+Narrator: He looks at the dark window for slightly longer than the sentence needed.
+Director Magnus Netherton: Then you will be read into something I would rather not be opening.
+-> options
 
-=== second_guessing ===
-"In hindsight, maybe. But you didn't have hindsight. You had 30 seconds to choose from four crisis scenarios." #speaker:Director Morgan
 
-"You did your job. The teams did theirs. Some succeeded, some didn't."
+// ================================================
+// The player's position on their own triage. Real state.
+// ================================================
+=== the_stance ===
 
-"That's the reality of coordinated attacks."
+Director Magnus Netherton: One question, then, and it goes in your file in your words rather than mine.
+Director Magnus Netherton: Three briefs. One team. You sent it where you sent it. What is your position on that?
 
--> next_steps
+* [I made the call on the numbers in front of me. I would make it again.]
+    #set_global:debrief_stance:defended
+    Director Magnus Netherton: Good. That is the answer the handbook wants and it is defensible in any review room you will ever sit in.
+    Director Magnus Netherton: It is also the answer he was hoping for, because it is the predictable one, and predictable is the thing he was shopping for tonight.
+    Director Magnus Netherton: Keep the discipline. Change the numbers you trust.
+    -> handoff
 
-=== casualty_summary ===
-Director Morgan pulls up the casualty report.
+* [Two operations went dark because of a choice I made. That is mine to carry.]
+    #set_global:debrief_stance:owned
+    Director Magnus Netherton: It is not, entirely. But I have watched agents hand that weight to somebody else and I have not liked what they became afterwards.
+    Director Magnus Netherton: So carry it. Carry it accurately, which is harder than carrying it heavily. You are responsible for the choice. You are not responsible for the menu.
+    Director Magnus Netherton: The person who wrote the menu is still out there.
+    -> handoff
 
-{total_casualties == 0:
-    "Zero casualties across all four operations. Complete success." #speaker:Director Morgan
-    -> success_reflection
-}
+* [Don't ask me to rank them, sir. I won't do that arithmetic twice.]
+    #set_global:debrief_stance:refused
+    Narrator: Netherton is quiet for a moment. It is not disapproval.
+    Director Magnus Netherton: A vote, a life, and the security floor under every operation we run for the next decade. There is no exchange rate between those and anyone who offers you one is selling something.
+    Director Magnus Netherton: I will note the refusal. I will also note that you did it anyway, tonight, because somebody had to.
+    Director Magnus Netherton: Both of those things are true and you will have to live in the space between them. Most of us do.
+    -> handoff
 
-{total_casualties > 0:
-    "Total casualties: {total_casualties} deaths across all four operations." #speaker:Director Morgan
+* [I want the numbers before he writes them. Next time.]
+    #set_global:debrief_stance:hardened
+    Director Magnus Netherton: Yes. That is the correct lesson and almost nobody gets to it this quickly.
+    Director Magnus Netherton: Every figure you were briefed with tonight came from material we captured. We captured it because he allowed it to be captured. Our threat desk did not derive one of those numbers.
+    Director Magnus Netherton: I will be raising that with the Council on Monday, and it will not be a pleasant meeting, and I intend to have it anyway.
+    -> handoff
 
-    {player_operation_casualties == 0:
-        "Your operation: Zero casualties. You succeeded."
-    }
 
-    {player_operation_casualties > 0:
-        "Your operation: {player_operation_casualties} casualties. The attack succeeded."
-    }
+// ================================================
+=== handoff ===
 
-    "Other operations: {other_operations_casualties} casualties combined."
+Narrator: Netherton closes the tablet cover with one hand and holds it against his chest, which is what he does instead of sighing.
 
-    -> casualty_total
-}
+Director Magnus Netherton: Above expectations, Agent. I do not say that often and I am not going to elaborate on it.
 
-=== architect_status ===
-"The Architect remains at large. Unknown identity. Unknown location." #speaker:Director Morgan
+Director Magnus Netherton: Report back here when your leave ends. Not to this room. Somewhere without windows.
 
-{found_tomb_gamma == true:
-    "But you recovered Tomb Gamma coordinates. That's their command center. We're planning a strike."
-}
+Agent HaX: Sir?
 
-{found_tomb_gamma == false:
-    "We still don't have their location. Tomb Gamma remains unknown."
-}
+Director Magnus Netherton: Somebody told him where we were sending our agent, and they did it before we had decided to send them. Until I know who, every briefing I give is a message to ENTROPY with a delay on it.
 
-"What we DO know: They're planning something bigger. Tonight was a test. A proof-of-concept."
+Director Magnus Netherton: So we stop giving them. And we find out who has been reading.
 
-+ [A test for what?] -> architect_endgame
-+ [What about the mole?] -> mole_status
+Narrator: Eight time zones west, eight point four million people are going about a day with the lights on, and none of them will ever know how close it came.
 
-=== architect_endgame ===
-"We don't know. But coordinating four simultaneous attacks with different cells, different methods, different objectives - that's sophisticated." #speaker:Director Morgan
-
-"It suggests they're building toward something. A larger operation."
-
-"Which is why we need to find Tomb Gamma and stop them before they execute it."
-
-+ [I'm ready for the next mission.] -> mission_conclusion
-+ [What about the mole?] -> mole_status
-
-=== mole_status ===
-{found_mole_evidence == true:
-    "You recovered evidence of communications between someone at SAFETYNET and The Architect." #speaker:Director Morgan
-
-    "Internal Affairs is investigating. We'll find them."
-
-    "Knowing we have a mole is the first step to rooting them out."
-}
-
-{found_mole_evidence == false:
-    "We still don't have concrete evidence. But the operational timing suggests someone inside leaked details to The Architect." #speaker:Director Morgan
-
-    "We're conducting internal review, but without evidence, it's difficult."
-}
-
-+ [What's next for me?] -> next_steps
-
-=== next_steps ===
-"Debrief complete. File your after-action report and take 24 hours rest." #speaker:Director Morgan
-
-{found_tomb_gamma == true:
-    "Then we plan the Tomb Gamma operation. Striking at The Architect's command center."
-
-    "This is far from over."
-}
-
-{found_tomb_gamma == false:
-    "We'll continue investigating The Architect's identity and location."
-
-    "This isn't over. ENTROPY is still active. The Architect is still out there."
-}
-
-"Good work tonight, Agent. Regardless of the outcome, you made impossible choices under extreme pressure."
-
-"Not many operators could have done what you did."
-
-+ [Thank you, Director.] -> mission_conclusion
-
-=== entropy_future ===
-"ENTROPY is damaged but not destroyed. We disrupted their coordinated attack, but the cells remain active." #speaker:Director Morgan
-
-{found_tomb_gamma == true:
-    "Tomb Gamma is our next target. If we can strike The Architect's command center, we can decapitate the entire organization."
-}
-
-"Critical Mass, Ghost Protocol, Social Fabric, Digital Vanguard, Supply Chain Saboteurs, Zero Day Syndicate - all still operational."
-
-"But now we know their methods. Their coordination patterns. Their weaknesses."
-
-"Tonight was the first battle. Not the last."
-
-+ [I'm ready to continue the fight.] -> mission_conclusion
-
-=== mission_conclusion ===
-Director Morgan extends her hand.
-
-"Get some rest, Agent 0x00. You've earned it."
-
-**MISSION 7: THE ARCHITECT'S GAMBIT - COMPLETE**
-
-**YOUR OPERATION: {crisis_choice}**
-**OUTCOME: {player_success: SUCCESS | FAILURE}**
-**TOTAL CASUALTIES: {total_casualties}**
-**TOMB GAMMA DISCOVERED: {found_tomb_gamma: YES | NO}**
-**MOLE EVIDENCE FOUND: {found_mole_evidence: YES | NO}**
-
-The war against ENTROPY continues...
-
--> END
+Narrator: Somewhere else, a man with the same figures on the same tablet is reading them with more satisfaction than he had any right to expect.
 
 -> END

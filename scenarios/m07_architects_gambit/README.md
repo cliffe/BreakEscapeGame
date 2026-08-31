@@ -1,353 +1,165 @@
-# Mission 7: The Architect's Gambit (Part 1 of 2)
+# Mission 7: The Architect's Gambit
 
-**Type:** Crisis Defense - Branching Campaign
-**Duration:** 80-100 minutes
 **Tier:** 3 (Advanced)
-**ENTROPY Cell:** Multiple Cells (Coordinated Attack)
-**SecGen Scenario:** "Putting it together" (NFS shares, netcat, privilege escalation, multi-stage)
+**Type:** Crisis defence
+**Duration:** 80–100 minutes
+**ENTROPY cell on site:** Critical Mass
+**SecGen scenario:** `putting_it_together` (NFS shares, netcat, privilege escalation, multi-stage)
+**Prerequisite:** m06_follow_the_money · **Unlocks:** m08_the_mole
 
-## Mission Overview
+> **Status: being rebuilt.** The mission does not currently run. See [Status](#status) at the
+> bottom before doing anything with this directory.
 
-The Architect's coordinated attack launches simultaneously across four targets. Player must choose which operation to stop personally, knowing other SAFETYNET teams will handle remaining operations—but some will fail. Player's choice determines which cells are disrupted and which succeed.
+## Place in the season
 
-This is a **branching mission** where the player makes a critical choice at the start that determines the entire scenario they will play. All four options share common mechanics but have unique settings, NPCs, and narrative contexts.
+M7 is the season's crisis episode and the point at which The Architect stops being a rumour. He
+appears here only as intercepted communications and intercom taunts — never in person, per
+`story_design/universe_bible/.../masterminds/the_architect.md`. What the mission hands to M8 is the
+mole: evidence that SAFETYNET's deployment was leaked before SAFETYNET made it.
 
-## Single Location: SAFETYNET Crisis Operations Center
+## Premise
 
-**Setting:** SAFETYNET headquarters - Emergency Operations Center (EOC)
-**Layout:** Single floor plan with 4 specialized crisis response zones
-**Context:** All 4 simultaneous attacks are being monitored and coordinated from this central command facility
+Four ENTROPY operations go live inside the same sixty seconds. SAFETYNET has one field agent in
+range and one tactical team.
 
-The player is physically in the SAFETYNET EOC throughout the mission. The "choice" determines which crisis terminal/zone they take direct control of, while other SAFETYNET teams handle the remaining operations from adjacent zones.
+Agent 0x00 is briefed at SAFETYNET headquarters and flown out to the Pacific Northwest Regional Grid
+Control Facility outside Portland, because it is the only target where a person inside the building
+changes the outcome.
+Critical Mass has spent six months installing backdoors in the SCADA control stack, and the cascade
+script fires on a local, hardcoded timer that cannot be reached from outside the walls. 8.4 million
+people across three states are downstream of it.
 
-## Four Crisis Response Zones (Player Chooses ONE to Directly Control)
+The player does not choose where they go. The choice they get is where the tactical team goes.
 
-### Zone A: "Infrastructure Collapse" (Critical Mass Cell)
-**Terminal Focus:** Power grid control systems
-**Remote Target:** Pacific Northwest power grid
-**Threat:** Major city blackout, high civilian casualties (240-385 deaths)
-**Stakes:** Immediate loss of life vs. long-term infrastructure damage
-**SAFETYNET Team:** Team Alpha monitors from adjacent zone
+## The delegation
 
-### Zone B: "Data Apocalypse" (Ghost Protocol + Social Fabric)
-**Terminal Focus:** Election security and data protection systems
-**Remote Target:** Federal voter database and election infrastructure
-**Threat:** Massive data breach + coordinated disinformation targeting elections
-**Stakes:** 187M records stolen, democratic integrity, 20-40 deaths from civil unrest
-**SAFETYNET Team:** Team Bravo monitors from adjacent zone
+The team can reach exactly one of the remaining three operations. **Two go unanswered, and the
+debrief reads out what happened at both.**
 
-### Zone C: "Supply Chain Infection" (Supply Chain Saboteurs)
-**Terminal Focus:** Software distribution and signing infrastructure
-**Remote Target:** TechForge software update platform
-**Threat:** Nationwide software supply chain backdoor insertion (47M systems)
-**Stakes:** Long-term espionage capability, $240-420B damage over 10 years
-**SAFETYNET Team:** Team Charlie monitors from adjacent zone
+| Operation | Cells | The harm |
+|---|---|---|
+| **Fracture** — federal voter registration data centre | Ghost Protocol + Social Fabric | 187M records exfiltrated, with a disinformation package timed to land on top of the breach. Democratic legitimacy, irreversible. |
+| **Trojan Horse** — TechForge update distribution, 840 vendor signing keys | Supply Chain Saboteurs | Backdoors into 47M systems. Briefed as espionage with no body count. |
+| **Meltdown** — 47 zero-days against 12 Fortune 500 firms | Digital Vanguard + Zero Day Syndicate | Markets frozen, 4,200 hospitals ransomwared, deaths on the same clock as the player's own. |
 
-### Zone D: "Corporate Warfare" (Digital Vanguard + Zero Day Syndicate)
-**Terminal Focus:** Corporate security and zero-day defense systems
-**Remote Target:** 12 Fortune 500 corporations via TechCore SOC
-**Threat:** Coordinated zero-day attacks, economic collapse
-**Stakes:** $280-420B economic damage, 140K-220K job losses, 80-140 deaths
-**SAFETYNET Team:** Team Delta monitors from adjacent zone
+There is no exchange rate between deaths tonight, a national election, and the security floor under
+every operation for the rest of the season. The mission never implies one, and Agent HaX never makes
+the call for the player.
 
-## SAFETYNET EOC Floor Plan (Shared Across All Branches)
+**The revision mechanic.** Every projection in the briefing came from ENTROPY, captured because The
+Architect wanted it captured. One brief is understated on purpose. Inside the facility the player can
+find that out from Elena Rodriguez in dialogue, or from the coordination traffic on the NFS share
+(VM flag 1) — two independent sources, so a knockout cannot strand the route. Either opens a redirect
+option on the HaX hub, and the window closes at T-10. Curiosity pays; rushing is never blocked.
 
-**Location:** SAFETYNET headquarters underground facility
-**Single Floor Layout with Common Rooms:**
+**The twist, in two turns.** At the SCADA terminal the coordination traffic shows all four operations
+running off one schedule under one authority; they are one operation with four limbs, and Mercer does
+not know he is a diversion. In the cable vault, and again in the debrief, the reveal is that the
+gambit was never the attack — it was an experiment to learn how SAFETYNET triages when it cannot cover
+everything. The player still saves 8.4 million people, and the debrief says so plainly. The floor that
+drops is that the victory was measured.
 
-### Shared Rooms (All Branches)
-1. **Emergency Briefing Room** - Pre-mission choice presentation, Agent 0x99 coordinates
-2. **Main Operations Floor** - Central hub, see all 4 crisis zones, other teams working
-3. **Server Room** - VM access point, SecGen "Putting it together" challenges
-4. **Communications Center** - The Architect's taunts appear here, intercept ENTROPY comms
-5. **Intelligence Archive** - Discover Tomb Gamma location, SAFETYNET mole evidence
-6. **Debrief Room** - Post-mission outcomes revealed
+Full specification: [`planning/mission_design.md`](planning/mission_design.md) and
+[`planning/delegation_operations.md`](planning/delegation_operations.md).
 
-### Branch-Specific Crisis Terminals (Player Chooses ONE)
-7A. **Infrastructure Crisis Terminal** - Power grid control systems (if player chooses Zone A)
-7B. **Election Security Terminal** - Voter database protection (if player chooses Zone B)
-7C. **Supply Chain Terminal** - Software distribution security (if player chooses Zone C)
-7D. **Corporate Defense Terminal** - Zero-day mitigation systems (if player chooses Zone D)
+## The facility
 
-**Layout Design:**
-```
-┌─────────────────────────────────────────────────┐
-│  Emergency Briefing Room (Choice Presentation)  │
-└──────────────────┬──────────────────────────────┘
-                   │
-┌──────────────────▼──────────────────────────────┐
-│          Main Operations Floor                  │
-│  ┌──────┐  ┌──────┐  ┌──────┐  ┌──────┐       │
-│  │Zone A│  │Zone B│  │Zone C│  │Zone D│       │
-│  │Team  │  │Team  │  │Team  │  │Team  │       │
-│  │Alpha │  │Bravo │  │Charlie│ │Delta │       │
-│  └──────┘  └──────┘  └──────┘  └──────┘       │
-│                                                  │
-│     [Player takes control of ONE zone]          │
-└─────┬──────────────┬──────────────┬─────────────┘
-      │              │              │
-      ▼              ▼              ▼
-┌─────────┐   ┌────────────┐   ┌──────────────┐
-│ Server  │   │Communica-  │   │Intelligence  │
-│  Room   │   │tions Center│   │  Archive     │
-│(VM/CTF) │   │(Architect) │   │(Tomb Gamma)  │
-└─────────┘   └────────────┘   └──────────────┘
-                   │
-                   ▼
-      ┌────────────────────────┐
-      │    Debrief Room        │
-      │ (Outcomes Revealed)    │
-      └────────────────────────┘
-```
+Six rooms, one building. Start at the checkpoint, finish in SCADA control.
 
-**How Branching Works:**
-- Player starts in Emergency Briefing Room (all branches identical)
-- Makes choice → gains access to ONE crisis terminal on Main Operations Floor
-- All shared rooms accessible regardless of choice
-- Player's chosen crisis terminal becomes "active" with unique NPCs and challenges
-- Other 3 zones show SAFETYNET teams working (background activity)
-- Debrief room reveals outcomes of all 4 operations (deterministic based on choice)
+| Room | Type | Contains |
+|---|---|---|
+| Security Checkpoint *(start)* | `room_security` | Morrison, badge printer, visitor log |
+| Operations Floor | `room_office` | Evacuating staff, situation board, 147-substation map, maintenance key |
+| Server Room | `room_servers` | vm-launcher and flag-station, Elena, NFS coordination traffic |
+| SCADA Control Room | `room_control_1x2gu` | Mercer, countdown display, `crisis_control_system`, debrief trigger |
+| Backup Generator Room | `room_battery_hall` | Park's sabotage target, maintenance log |
+| Underground Cable Vault | `room_archive_1x2gu` | How the backdoors went in, Tomb Gamma, mole evidence |
 
-## Shared Mechanics Across All Options
+### Lock chain
 
-### Core Gameplay
-- **Maximum difficulty** - All previous mechanics at highest complexity
-- **30-minute in-game timer** - Real-time pressure
-- **Hostile NPCs** - Multiple ENTROPY operatives who will attack
-- **Multi-stage puzzles** - Complex progression requiring all learned skills
-- **VM integration** - SecGen "Putting it together" scenario
+Five lock types, one per field guide, each with a redundant source so no knockout can strand a run.
 
-### VM Challenge (Shared)
-- Access distributed systems using NFS shares
-- Discover attack timeline via netcat services
-- Privilege escalation to access attack control systems
-- Disable coordinated attack before timer expires
+| Gate | Lock | Primary source | Redundant source |
+|---|---|---|---|
+| Operations Floor → Server Room | `rfid` | Morrison's badge (talk or KO) | Badge printer at the checkpoint |
+| Server Room → Generator Room | `key` + lockpick | Maintenance key on the ops floor | Lockpick in starting inventory |
+| Generator Room → Cable Vault | `pin` | Maintenance log in the generator room | Elena |
+| → SCADA Control Room | `password` | Elena | Netcat C2 channel (VM flag 2) |
+| `crisis_control_system` | `flag` | `station:flag_4` | — (win condition) |
 
-### Narrative Beats (Shared)
-1. **Emergency briefing** - All four attacks detected simultaneously, Agent 0x99 presents crisis
-2. **Choice moment** - Player chooses which crisis terminal to take direct control of
-3. **Race against clock** - 30-minute timer, work with other teams visible in background
-4. **First contact with The Architect** - Taunts via Communications Center throughout
-5. **VM exploitation** - Server Room challenges apply to chosen crisis
-6. **Disable attack** - Crisis terminal-specific sequence with seconds remaining
-7. **Immediate debrief** - Learn outcomes of all 4 operations in Debrief Room
+Plaintext codes, PINs and passwords are not recorded here. They live in `scenario.json.erb` and in the
+`SOLUTION_GUIDE.md` regenerated from the built mission at the end of implementation.
 
-## Branching Structure Design
+Morrison patrols the checkpoint and the ops-floor approach with a directional LOS cone. Park is static
+in the vault and reacts on entry. Hostility is expressed through `#hostile` and engine knockout only.
 
-### Pre-Mission: Emergency Briefing Room
-Player starts in SAFETYNET EOC Emergency Briefing Room:
-- Agent 0x99 explains all four simultaneous crises
-- Display screens show each attack in progress
-- Stakes and consequences outlined for each option
-- Player makes informed choice of which crisis to take direct control
-- Other SAFETYNET teams visible at their crisis terminals
+## VM integration
 
-### During Mission: Single Location, Branching Gameplay
-Player remains in SAFETYNET EOC throughout mission:
-- **Shared rooms:** All players visit same Server Room, Communications Center, Intelligence Archive
-- **Branching element:** Player's chosen crisis terminal determines:
-  - Which NPCs they interact with (ENTROPY operatives appearing on screens/video feeds)
-  - Which technical systems they exploit
-  - Which narrative they experience
-- **Background activity:** Other 3 crisis zones show SAFETYNET teams working (ambient NPCs)
-- **Shared timer:** 30-minute countdown visible on all screens
-- **The Architect:** Taunts appear in Communications Center regardless of choice
+SecGen scenario `putting_it_together`, implemented as a real `vm-launcher` object plus a separate
+`flag-station` with `acceptsVms`, on the m02 pattern
+(`scenarios/m02_ransomed_trust/scenario.json.erb:1735-1760`), with `flagRewards` of type `set_global`.
 
-### Post-Mission: Debrief Room Outcomes
-All players end in same Debrief Room:
-- **Player's operation:** Success or failure (performance-based)
-- **Operation 1 (unchosen):** Full success (Team got lucky)
-- **Operation 2 (unchosen):** Partial success (Mitigated, not stopped)
-- **Operation 3 (unchosen):** Failure (Attack succeeded)
-- Which unchosen operations succeed/fail is **deterministic** based on player's choice
+| Flag | Challenge | What it gives the player |
+|---|---|---|
+| 1 | Mount the misconfigured NFS export, recover the attack timeline | The coordination traffic — four operations, one schedule |
+| 2 | Enumerate services, find the netcat C2 channel | Override codes and the SCADA password (the route past Elena) |
+| 3 | Privilege escalation to root on the attack host | Control of the machine running the countdown |
+| 4 | Identify and terminate the attack processes, lock out remote access | The grid holds; unlocks `crisis_control_system` |
 
-**Example Outcome Matrix:**
-- **If player chose Infrastructure (A):** Data (B) partial success, Supply Chain (C) full success, Corporate (D) failure
-- **If player chose Data (B):** Infrastructure (A) failure, Supply Chain (C) partial success, Corporate (D) full success
-- **If player chose Supply Chain (C):** Infrastructure (A) partial success, Data (B) full success, Corporate (D) failure
-- **If player chose Corporate (D):** Infrastructure (A) full success, Data (B) failure, Supply Chain (C) partial success
+### Field guides
 
-## Key NPCs
+Exposure-gated, offered from the HaX hub on request, never before the player has hit the obstacle they
+explain. Sheets live in `HacktivityLabSheets/_labs/safetynet/`.
 
-### Shared NPCs (All Branches)
-- **Agent 0x99 "Haxolottle"** - Present in Emergency Briefing Room and Debrief Room, coordinates all operations
-- **Director Patricia Morgan** - SAFETYNET Director, appears in Debrief Room to deliver consequences
-- **The Architect** - First direct contact (text messages in Communications Center), taunts throughout
-- **SAFETYNET Team Leads** - Team Alpha/Bravo/Charlie/Delta (3 teams player doesn't control, visible working in background)
-- **Tech Analyst David Chen** - Server Room assistant, helps with VM challenges
+| Guide | Offered when | Lab sheet |
+|---|---|---|
+| RFID cloning | First contact with the badge door | `rfid-cloning.md` |
+| Lockpicking | First contact with the key lock | `lockpicking.md` |
+| Recon & network mapping | `room_entered:server_room` | `reconnaissance-and-network-mapping.md` |
+| Scanning & exploitation | vm-launcher first interacted | `scanning-and-exploitation.md` |
+| Privilege escalation | `flag2_submitted` | `privilege-escalation.md` |
 
-### Branch-Specific NPCs (Via Video Feeds/Screens)
-Each branch features ENTROPY operatives appearing on crisis terminal screens:
-- **Option A:** Marcus "Blackout" Chen (Critical Mass) - at power grid facility
-- **Option B:** "Specter" + Rachel Morrow (Ghost Protocol + Social Fabric) - at election center
-- **Option C:** Adrian Cross (Supply Chain Saboteurs) - at TechForge facility
-- **Option D:** Victoria "V1per" Zhang + Marcus "Shadow" Chen (Digital Vanguard + Zero Day Syndicate) - at TechCore SOC
+## Cast
 
-**Key Design Note:** ENTROPY operatives don't physically infiltrate SAFETYNET EOC. Player interacts with them via video feeds, intercepted communications, and crisis terminal displays. This maintains single-location constraint while preserving distinct antagonists per branch.
+| NPC id | displayName | Role |
+|---|---|---|
+| `james_mercer` | Dr. James Mercer | Critical Mass cell lead, "Blackout". Ex-Department of Energy grid engineer, professorial, has read the casualty projection and signed it. Cold; the player picks a stance, not a negotiation. |
+| `elena_rodriguez` | Elena Rodriguez | Critical Mass electrical engineer who believes she is running a six-hour demonstration blackout with a hospital carve-out. Conflicted, and the mission's intel source. |
+| `jake_morrison` | Jake Morrison | Facility security guard, bought. Renewed Mercer's credentials. Cold, hostile, patrols. |
+| `thomas_park` | Thomas Park | Critical Mass sabotage tech in the cable vault, ready to cut backup power. Cold, hostile, static. |
+| `agent_0x99` | Agent HaX | Handler on the phone. Runs the progress-gated hub: briefs, delegation, redirect window, field guides, VM hints. |
+| `director_netherton` | Director Magnus Netherton | Canon SAFETYNET Director of Field Operations. Delivers the briefing, takes the debrief. |
+| `the_architect` | The Architect | Comms only. Intercom taunts on the countdown, reading `team_assignment`. |
 
-## LORE Opportunities
+Cut from the earlier draft: "Marcus 'Blackout' Chen", Adrian Cross, Victoria "V1per" Zhang, Specter,
+Rachel Morrow, and the invented "Director Patricia Morgan". Rationale in `ALIGNMENT_PLAN.md`.
 
-### MAJOR Revelations
-- **First direct contact with The Architect** - Philosophy revealed
-- **"Entropy is inevitable; I merely accelerate"** - Core ideology
-- **Tomb Gamma discovery** - The Architect's base of operations location found
-- **SAFETYNET mole confirmed** - Someone leaked operation timing
-- **The Architect's identity narrowed to 3 suspects** - Progress toward M9 reveal
+**Open canon issue.** The universe bible gives Blackout's real name as Dr. James Mercer in
+`critical_mass.md` and as Michael Bradford in `09_scenario_design/examples/grid_down.md`. This mission
+uses Mercer; the bible still needs reconciling.
 
-### Campaign Integration
-- The simultaneous attacks are a **distraction** - Real objective achieved during chaos
-- Mystery payload revealed in M8
-- Failed operations have consequences in M8-10 finale
-- Campaign branches based on which cells disrupted vs. succeeded
+## Status
 
-## Moral Complexity
+**The mission is being rebuilt and cannot currently be played.** It was built as four playable
+branches selected by an ERB variable evaluated once at load, which cannot work. The reviews found it
+unstartable, unfinishable and effectively silent: seven NPCs mute because their declared `currentKnot`
+values do not exist, no `#set_global` tags anywhere, no locks of any type, no field guides, and a
+debrief that reports a few hundred dead after a perfect run.
 
-**THE IMPOSSIBLE CHOICE:** Which operation to stop personally?
+Three status documents claiming the mission was complete and validator-clean were deleted, along with
+a solution guide describing paths that will not exist. The solution guide is regenerated from the
+built mission at the end of implementation.
 
-All choices are valid. All have consequences. No "right" answer exists.
+- **The plan, and the authority for this rework:** [`ALIGNMENT_PLAN.md`](ALIGNMENT_PLAN.md) — work
+  packages, state contract, verification steps.
+- **The design:** [`planning/mission_design.md`](planning/mission_design.md) and
+  [`planning/delegation_operations.md`](planning/delegation_operations.md).
+- Everything described above under *The facility*, *VM integration* and *Cast* is the target
+  specification, not the current contents of `scenario.json.erb`.
 
-- **Infrastructure** = Civilian lives (immediate, visible casualties)
-- **Elections** = Democratic integrity (systemic, long-term damage)
-- **Supply Chain** = Future security (invisible compromise, years of espionage)
-- **Corporate** = Economic stability (market crashes, job losses)
-
-Player must choose knowing **someone will suffer** based on their decision.
-
-## Educational Objectives (CyBOK)
-
-### All Options Teach
-- **Security Operations & Incident Management (SO):** Crisis response, triage, resource allocation under pressure
-- **Systems Security (SS):** Multi-vector attack defense, coordinated threat response
-- **Human Factors (HF):** Professional judgment under extreme pressure, ethical decision-making
-
-### Option-Specific Topics
-- **Option A:** Critical infrastructure protection, ICS/SCADA security
-- **Option B:** Data protection, election security, disinformation defense
-- **Option C:** Supply chain security, software integrity, backdoor detection
-- **Option D:** Corporate security, zero-day defense, economic cybersecurity
-
-## Implementation Strategy
-
-### Phase 1: Shared Systems (Priority)
-- Choice sequence briefing (pre-mission)
-- Timer mechanic implementation
-- The Architect communication system (audio/text taunts)
-- Outcomes matrix and consequence tracking
-- Post-mission debrief with variable outcomes
-
-### Phase 2: Individual Options (Parallel Development)
-Each option can be developed independently:
-- Unique scenario.json.erb file
-- Option-specific NPCs and dialogues
-- Unique room layouts and puzzles
-- Cell-specific narrative context
-
-### Phase 3: Integration and Testing
-- Ensure all options share VM challenge structure
-- Verify timer works consistently
-- Test outcome matrix for all choice combinations
-- Validate LORE reveals appear in all paths
-
-## File Structure
-
-**Single Location Design - One Scenario File with Branching Logic:**
+Verification for any work here:
 
 ```
-scenarios/m07_architects_gambit/
-├── README.md (this file - design overview)
-├── mission.json (metadata with CyBOK mappings)
-├── scenario.json.erb (SINGLE scenario file with branching via player choice variable)
-│   # Contains all 7 shared rooms + conditional crisis terminals based on choice
-│   # Rooms 1-6 identical for all players
-│   # Room 7 (crisis terminal) varies: 7A, 7B, 7C, or 7D based on globalVariable "crisis_choice"
-├── ink/
-│   ├── m07_opening_briefing.ink (Emergency Briefing Room - choice presentation)
-│   ├── m07_phone_agent_0x99.ink (agent handler support - all branches)
-│   ├── m07_architect_comms.ink (Communications Center - The Architect taunts)
-│   ├── m07_closing_debrief.ink (Debrief Room - outcomes based on choice and performance)
-│   ├── m07_crisis_terminal_a.ink (Infrastructure Crisis Terminal NPCs - Marcus Chen via video)
-│   ├── m07_crisis_terminal_b.ink (Election Security Terminal NPCs - Specter + Rachel via video)
-│   ├── m07_crisis_terminal_c.ink (Supply Chain Terminal NPCs - Adrian Cross via video)
-│   ├── m07_crisis_terminal_d.ink (Corporate Defense Terminal NPCs - Victoria + Marcus via video)
-│   └── m07_director_morgan.ink (Director Patricia Morgan - debrief authority figure)
-└── planning/
-    ├── stage_0_option_a_infrastructure.md (original design - now adapted)
-    ├── stage_0_option_b_data.md (original design - now adapted)
-    ├── stage_0_option_c_supply_chain.md (original design - now adapted)
-    └── stage_0_option_d_corporate.md (original design - now adapted)
+ruby scripts/validate_scenario.rb scenarios/m07_architects_gambit/scenario.json.erb
+bash scripts/compile-ink.sh m07_architects_gambit
 ```
-
-**How Single-Scenario Branching Works:**
-
-The scenario.json.erb uses conditional logic based on `globalVariables.crisis_choice`:
-
-```json
-{
-  "globalVariables": {
-    "crisis_choice": "",  // Set to "infrastructure", "data", "supply_chain", or "corporate"
-    "crisis_choice_made": false,
-    ...
-  },
-  "rooms": {
-    "emergency_briefing": { /* Choice made here */ },
-    "operations_floor": { /* Shared room */ },
-    "server_room": { /* Shared VM room */ },
-    "communications_center": { /* Shared, Architect appears */ },
-    "intelligence_archive": { /* Shared, Tomb Gamma discovery */ },
-
-    // Conditional crisis terminal - only ONE appears based on choice
-    "crisis_terminal": {
-      "type": "<%= crisis_choice == 'infrastructure' ? 'room_control_center' :
-               crisis_choice == 'data' ? 'room_servers' :
-               crisis_choice == 'supply_chain' ? 'room_office' :
-               'room_office' %>",
-      "npcs": "<%= /* Load appropriate NPC set based on choice */ %>",
-      ...
-    },
-
-    "debrief_room": { /* Shared, outcomes revealed */ }
-  }
-}
-```
-
-This approach:
-- ✅ Single floor plan (all players visit same rooms 1-6)
-- ✅ Branching narrative (crisis terminal content varies)
-- ✅ Maintains 4 distinct story paths
-- ✅ Simpler to develop and test than 4 separate scenarios
-- ✅ Shared VM challenges, timer, and mechanics
-- ✅ Reduces file duplication significantly
-
-## Development Notes
-
-**Complexity Warning:** This is the most complex mission in Season 1. It requires:
-- Single scenario file with branching ERB logic
-- Choice mechanism that sets global variable
-- Shared timer and consequence systems
-- Branching narrative within same location
-- Variable outcome matrix
-- 4 distinct crisis terminal implementations
-
-**Recommended Approach:**
-1. **Phase 1:** Build shared rooms (Emergency Briefing, Operations Floor, Server Room, Communications Center, Intelligence Archive, Debrief Room)
-2. **Phase 2:** Implement choice mechanism in Emergency Briefing Room (set crisis_choice variable)
-3. **Phase 3:** Build ONE crisis terminal completely (e.g., Option A Infrastructure) as template
-4. **Phase 4:** Clone crisis terminal logic for Options B, C, D with unique NPCs and dialogue
-5. **Phase 5:** Implement Debrief Room with deterministic outcomes matrix
-6. **Phase 6:** Test all 4 paths thoroughly
-
-**Technical Considerations:**
-- ERB conditional logic must cleanly switch crisis terminal content based on globalVariable
-- Timer implementation must work consistently regardless of choice
-- Outcome tracking must persist to M8-10 via campaign state
-- The Architect's taunts in Communications Center should reference player's choice contextually
-- NPC dialogues via video feeds must feel present despite remote locations
-- Background SAFETYNET teams should show appropriate activity in unchosen zones
-
-**Single-Location Benefits:**
-- ✅ Drastically reduces development time (1 scenario file vs. 4)
-- ✅ Easier to maintain consistency (shared rooms identical across branches)
-- ✅ VM challenges reusable (same Server Room for all players)
-- ✅ LORE reveals centralized (Intelligence Archive shared)
-- ✅ The Architect presence consistent (same Communications Center)
-- ✅ Simpler testing (test shared rooms once, then test 4 crisis variations)

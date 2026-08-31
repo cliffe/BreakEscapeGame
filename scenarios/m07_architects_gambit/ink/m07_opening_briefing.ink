@@ -1,313 +1,303 @@
-// Mission 7: The Architect's Gambit - Opening Briefing
-// This is the critical choice point where player selects which crisis to handle
+// ================================================
+// Mission 7: The Architect's Gambit
+// Opening briefing cutscene + the delegation
+// Speaker: Director Magnus Netherton (over comms)
+// Entry knot: start   (see CONTRACT.md)
+// ================================================
 
-VAR crisis_choice = ""
-VAR crisis_choice_made = false
+VAR player_name = "Agent 0x00"
+VAR team_assignment = ""
+VAR team_assigned = false
 
-=== opening_briefing ===
-The emergency operations center is in controlled chaos. Multiple screens flash red alerts. Director Morgan stands at the central terminal, face grim.
+// ================================================
+// BEAT 1 - SAFETYNET HQ, OPERATIONS ROOM
+// ================================================
 
-"Agent 0x00. Thank god you're here. We have a Category Five crisis." #speaker:Director Morgan
+=== start ===
+Narrator: 02:41. The operations room at SAFETYNET headquarters, every desk manned, and the wall map carrying the night's traffic across three continents. Four of the pins are red. All four went red inside the same minute.
 
-She brings up four simultaneous threat displays.
+Director Magnus Netherton: Agent 0x00. Sit down. You are wheels-up in twenty minutes and I would rather do this in a room than over a satellite link.
 
-"ENTROPY has launched coordinated attacks on four critical targets. All happening RIGHT NOW. We have 30 minutes before catastrophic damage occurs at each location."
+You: What am I looking at?
 
-She takes a breath, her voice steady but urgent.
+Director Magnus Netherton: Four ENTROPY operations went live inside the same sixty seconds. Not four cells improvising. One schedule.
 
-"We don't have enough assets to cover all four. You need to choose which operation to lead. The other three will be handled by SAFETYNET rapid response teams - but our models show... mixed outcomes."
+Director Magnus Netherton: Washington. Austin. San Francisco. And a grid control facility in an industrial park outside Portland, Oregon.
 
-She gestures to the displays.
+Narrator: The Portland pin stops blinking and goes solid.
 
-"I need you to understand what you're choosing - and what you're accepting."
+Director Magnus Netherton: Pacific Northwest Regional Grid Control. One hundred and forty-seven substations, eight point four million people across Washington, Oregon and Northern California. A script on the SCADA stack fires at twenty to five, their time, and takes the lot down in four steps.
 
-+ [View the four crisis scenarios] -> crisis_overview
-+ [Ask about team capabilities] -> team_capabilities
-+ [Ask about The Architect] -> architect_intel
+Director Magnus Netherton: The timer is local and it is hardcoded. Nobody stops it from outside that building.
 
-=== crisis_overview ===
-Director Morgan brings up detailed tactical displays for each crisis.
+-> briefing_questions
 
-"Here's what we're facing:"
+// ================================================
+// SMALL Q&A BEFORE THE DELEGATION
+// One-shot questions, one sticky way forward
+// ================================================
 
--> option_a_brief
+=== briefing_questions ===
+* [Why me? There must be teams closer.]
+    Director Magnus Netherton: There are teams closer to the other three. We have people on two other continents tonight and not one of them can be in Oregon before that script runs. You can.
+    Director Magnus Netherton: This is not a selection, Agent. It's an assignment. Portland is the only target of the four where a person standing inside the building changes the outcome. So that is where you are going.
+    -> briefing_questions
+* [What happens if the cascade runs?]
+    Director Magnus Netherton: Twenty-three major transformers burn out. Transformers are not a stock item. Restoration runs four to seven days.
+    Director Magnus Netherton: Hospitals hold seventy-two hours on backup. Water treatment fails at forty-eight. It is winter, and the projection on my desk is two hundred and forty to three hundred and eighty-five dead in the first three days.
+    -> briefing_questions
+* [Who's coming in with me?]
+    Director Magnus Netherton: *evenly* Nobody. You'll have Agent HaX on the wire and a lockpick set. That's the deployment.
+    Director Magnus Netherton: The building is mid-evacuation, which will help you and will also mean nobody there knows who you are.
+    -> briefing_questions
+* [Four operations at once. That's not a cell. That's a campaign.]
+    Director Magnus Netherton: It is. And we know the shape of it because the tasking traffic was intercepted — cell assignments, target packages, casualty modelling, all of it.
+    Director Magnus Netherton: The threat desk has had six hours with it. Everything I'm about to read you comes out of that intercept.
+    -> briefing_questions
++ [Understood. Talk to me about the other three.]
+    -> delegation_intro
 
-=== option_a_brief ===
-# OPTION A: INFRASTRUCTURE COLLAPSE
-**Target:** Pacific Northwest Regional Power Grid Control Facility
-**Threat Actor:** Critical Mass cell, led by Marcus "Blackout" Chen
-**Attack:** SCADA system compromise, cascading grid failure
+// ================================================
+// BEAT 2 - THE DELEGATION
+// ================================================
 
-"Critical Mass has infiltrated the Pacific Northwest power grid control facility. In 30 minutes, they'll trigger cascading failures across 147 substations."
+=== delegation_intro ===
+Director Magnus Netherton: We have one tactical team airborne and uncommitted. One. They can reach exactly one of the remaining three targets in time to matter.
 
-**IMMEDIATE CONSEQUENCES IF THEY SUCCEED:**
-* 8.4 million people without power for 4-7 days
-* 240-385 civilian deaths in first 72 hours
-  - 120-180 hospital deaths (life support failures)
-  - 40-65 traffic deaths (signal failures)
-  - 80-140 exposure deaths (winter hypothermia)
-* 23 major transformers destroyed
-* $18 billion economic damage
+You: And the other two?
 
-**YOUR MISSION IF YOU CHOOSE THIS:**
-* Breach the facility
-* Complete VM exploitation to extract shutdown codes
-* Reach SCADA control room before timer expires
-* Confront Marcus Chen and disable the attack
+Director Magnus Netherton: Go unanswered.
 
-+ [Continue to Option B] -> option_b_brief
-+ [I'll take this mission] -> confirm_choice_a
+Narrator: The line holds for a second longer than a bad connection would explain.
 
-=== option_b_brief ===
-# OPTION B: DATA APOCALYPSE
-**Target:** National Voter Registration Database & Election Systems
-**Threat Actors:** Ghost Protocol (data breach) + Social Fabric (disinformation)
-**Attack:** Dual-threat - massive data exfiltration + coordinated disinformation campaign
+Director Magnus Netherton: Fracture, in Washington. Trojan Horse, outside Austin. Meltdown, in San Francisco. I'll read you what the desk has on any of them, in whatever order you want.
 
-"Ghost Protocol is exfiltrating 187 million voter records while Social Fabric prepares to deploy disinformation narratives that exploit the breach."
+Director Magnus Netherton: The team goes where you send them, and they need the call before you're through the gate.
 
-**IMMEDIATE CONSEQUENCES IF THEY SUCCEED:**
-* 187 million Americans' personal data exposed
-* 4-8 million identity theft victims over 5 years
-* 20-40 deaths from civil unrest in first week
-* Democratic institutions permanently delegitimized
-* Election integrity questioned indefinitely
+-> delegation_hub
 
-**YOUR MISSION IF YOU CHOOSE THIS:**
-* Breach the election security facility
-* Complete VM exploitation to extract shutdown codes
-* CRITICAL: Dual timers (exfiltration progress + disinformation deployment)
-* Confront "Specter" and Rachel Morrow
-* Attempt to stop BOTH attacks (extremely difficult)
+// ================================================
+// THE HUB - repeatable topics, no lossy chain
+// ================================================
 
-+ [Continue to Option C] -> option_c_brief
-+ [I'll take this mission] -> confirm_choice_b
+=== delegation_hub ===
++ [Walk me through Fracture.]
+    -> brief_fracture
++ [Walk me through Trojan Horse.]
+    -> brief_trojan_horse
++ [Walk me through Meltdown.]
+    -> brief_meltdown
++ {brief_fracture or brief_trojan_horse or brief_meltdown} [Put them side by side for me.]
+    -> compare_operations
++ {not (brief_fracture and brief_trojan_horse and brief_meltdown)} [Skip the rest. Where do you want them?]
+    -> netherton_declines
++ [I've made the call.]
+    -> commit_menu
 
-=== option_c_brief ===
-# OPTION C: SUPPLY CHAIN INFECTION
-**Target:** TechForge Software Distribution Platform
-**Threat Actor:** Supply Chain Saboteurs, led by Adrian Cross
-**Attack:** Backdoor injection into software updates for 2,400+ vendors
+// ================================================
+// BRIEF 1 - FRACTURE
+// ================================================
 
-"Supply Chain Saboteurs have compromised TechForge's code signing infrastructure. In 30 minutes, they'll inject backdoors into software updates for 47 million systems nationwide."
+=== brief_fracture ===
+Director Magnus Netherton: Operation Fracture. Ghost Protocol, working with Social Fabric. The target is the federal election security data centre outside Washington.
 
-**LONG-TERM CONSEQUENCES IF THEY SUCCEED:**
-* 47 million systems infected (hospitals, banks, government agencies)
-* Backdoors remain dormant for 90 days (stealth)
-* $240-420 billion economic damage over 10 years
-* Foreign adversaries gain access to national infrastructure
-* Software update trust permanently destroyed
+Director Magnus Netherton: Voter registration for forty-three states. One hundred and eighty-seven million people — names, addresses, Social Security numbers, voting history, party affiliation. Ghost Protocol have been inside as IT contractors for months and the exfiltration is already running.
 
-**NOTE:** This option has NO immediate deaths. But choosing this accepts immediate casualties at other targets.
+Director Magnus Netherton: Co-located in the same building, on an old hosting contract nobody revisited, is a content distribution cluster that Social Fabric now controls.
 
-**YOUR MISSION IF YOU CHOOSE THIS:**
-* Breach TechForge facility
-* Complete VM exploitation to extract shutdown codes
-* Disable backdoor injection before updates deploy
-* Confront Adrian Cross (recruitable if shown casualty evidence)
+Director Magnus Netherton: The projection. One hundred and eighty-seven million records exfiltrated. Identity theft wave of four to eight million victims over five years, twelve to twenty-four billion in individual fraud losses.
 
-+ [Continue to Option D] -> option_d_brief
-+ [I'll take this mission] -> confirm_choice_c
+Director Magnus Netherton: Coordinated disinformation deploys on completion — fabricated fraud evidence built out of the genuine stolen records, deepfaked confessions from named officials. The breach is what makes the lie checkable.
 
-=== option_d_brief ===
-# OPTION D: CORPORATE WARFARE
-**Target:** 12 Fortune 500 Corporations (via TechCore SOC)
-**Threat Actors:** Digital Vanguard + Zero Day Syndicate
-**Attack:** 47 zero-day exploits deployed simultaneously
+Director Magnus Netherton: Polling models put forty to sixty per cent of the electorate believing subsequent elections are rigged. Civil disorder in twenty or more cities. Twenty to forty deaths in the first week. Elections delayed or disputed in multiple states.
 
-"Digital Vanguard and Zero Day Syndicate are coordinating the largest corporate cyber attack in history. They'll deploy 47 zero-day exploits against 12 Fortune 500 companies simultaneously."
+* [Nothing happens tonight, then.]
+    Director Magnus Netherton: Nothing you could put on a casualty board tonight, no. The deaths come over the following week, in disorder that tracks the narrative city by city.
+    Director Magnus Netherton: The records cannot be un-leaked. They will be on darknet markets by the weekend and they will stay there.
+    -> brief_fracture_tail
+* [What can the team actually stop at this point?]
+    Director Magnus Netherton: Not the exfiltration. Sixty million records are already gone by the time they land.
+    Director Magnus Netherton: They can take the Social Fabric cluster intact, before deployment. A breach with no story attached is a scandal and a congressional hearing. A breach with the story is a constitutional crisis.
+    -> brief_fracture_tail
++ [Understood.]
+    -> brief_fracture_tail
 
-**IMMEDIATE CONSEQUENCES IF THEY SUCCEED:**
-* Stock market crashes 12-18% ($4.2 trillion destroyed)
-* 80-140 deaths from healthcare ransomware
-* 140,000-220,000 immediate job losses
-* $280-420 billion economic damage in first week
-* Banking systems frozen nationwide
+=== brief_fracture_tail ===
+Director Magnus Netherton: Cell lead is Michael Reeves. Fifteen years an NSA analyst before he decided the honest response to mass surveillance was to make it undeniable. He designs operations and reads the results. He does not attend.
 
-**MORAL COMPLEXITY:** You're protecting corporate wealth while civilians may die at other targets.
+-> delegation_hub
 
-**YOUR MISSION IF YOU CHOOSE THIS:**
-* Breach TechCore Security Operations Center
-* Complete VM exploitation to extract countermeasure codes
-* Deploy emergency patches to 12 corporations
-* Confront Victoria Zhang and Marcus Chen
-* Neutralize 47 zero-days before deployment
+// ================================================
+// BRIEF 2 - TROJAN HORSE (the understated one)
+// ================================================
 
-+ [View deterministic outcomes matrix] -> outcomes_matrix
-+ [I'll take this mission] -> confirm_choice_d
+=== brief_trojan_horse ===
+Director Magnus Netherton: Operation Trojan Horse. Supply Chain Saboteurs, on an industrial campus outside Austin.
 
-=== team_capabilities ===
-Director Morgan pulls up team status displays.
+Director Magnus Netherton: The target is TechForge. You won't have heard of them. Twenty-four hundred enterprise vendors upload patches, TechForge signs them, and the signed updates reach forty-seven million systems. They are the courier.
 
-"We have three rapid response teams on standby:"
+Director Magnus Netherton: The Saboteurs compromised the code-signing hardware and hold private signing keys for eight hundred and forty vendors. The injection run is staged and waiting on a clock.
 
-**TEAM ALPHA:** 6 operators, excellent track record, currently 40 minutes from nearest target
-**TEAM BRAVO:** 4 operators, specialized in data security, 25 minutes from nearest target
-**TEAM CHARLIE:** 5 operators, corporate security focus, 30 minutes from nearest target
+Director Magnus Netherton: The projection. Backdoors injected into signed updates across forty-seven million systems, polymorphic per vendor. Dormant ninety days, then staged activation. Persistent access for espionage and exfiltration across eighteen thousand hospitals, twelve thousand financial institutions, four thousand two hundred government agencies.
 
-"Based on distance, capabilities, and threat complexity, our predictive models show deterministic outcomes for operations you DON'T choose."
+Director Magnus Netherton: ENTROPY revenue eight hundred million to one point two billion over five years. Remediation and intellectual property theft, two hundred and forty to four hundred and twenty billion over a decade.
 
-She looks at you seriously.
+Director Magnus Netherton: No projected fatalities.
 
-"The matrix isn't random. We know exactly what will happen based on your choice."
+* [None at all?]
+    Director Magnus Netherton: That is what the assessment says. It is an espionage platform, not a weapon. Ninety days of nothing, then a very long, very expensive decade.
+    Director Magnus Netherton: The desk graded it strategic rather than urgent.
+    -> brief_trojan_tail
+* [Ninety days is a long time to plan against.]
+    Director Magnus Netherton: It is. That is precisely why it grades the way it does. Ninety days is a horizon we can work inside.
+    -> brief_trojan_tail
+* [Who's running it?]
+    -> brief_trojan_tail
++ [Understood.]
+    -> brief_trojan_tail
 
-+ [View the deterministic outcomes matrix] -> outcomes_matrix
-+ [Back to crisis overview] -> crisis_overview
+=== brief_trojan_tail ===
+Director Magnus Netherton: Cell lead calls herself Trojan Horse. Probably Jennifer Walsh — senior engineer at a major vendor, left after finding flaws in update mechanisms her employer declined to fix.
 
-=== architect_intel ===
-Director Morgan's expression darkens.
+Director Magnus Netherton: She is patient in a way that makes her difficult to model. Her backdoors are well written and well commented. She's proud of them.
 
-"We believe all four attacks are coordinated by someone called 'The Architect.' ENTROPY's true leader."
+Director Magnus Netherton: If the team goes there, the run is stopped before deployment, eight hundred and forty keys get burned and reissued, and ENTROPY loses four months of access it will have to build again the hard way.
 
-"We don't know their identity. But their communication patterns suggest:
-* Deep knowledge of SAFETYNET protocols
-* Intelligence background (possibly former agency)
-* Strategic thinking - these attacks are designed to force impossible choices
-* Philosophy: Accelerating societal entropy through coordinated chaos"
+-> delegation_hub
 
-"They've been taunting us. Sending messages. They WANT you to feel the weight of this choice."
+// ================================================
+// BRIEF 3 - MELTDOWN
+// ================================================
 
-She pauses.
+=== brief_meltdown ===
+Director Magnus Netherton: Operation Meltdown. Digital Vanguard, with Zero Day Syndicate supplying the ordnance.
 
-"Don't let them get in your head. Choose based on your analysis, not their manipulation."
+Director Magnus Netherton: Twelve Fortune 500 companies simultaneously. Three banks, three technology firms, two healthcare groups, two energy majors, two retailers. Eight point four trillion in combined market capitalisation, four point two million employees.
 
-+ [View crisis scenarios] -> crisis_overview
-+ [View outcomes matrix] -> outcomes_matrix
+Director Magnus Netherton: Forty-seven stockpiled zero-days across Windows Server, Oracle, Cisco, Salesforce, SAP and ServiceNow, packaged into one automated framework. Eight months of work and a single button.
 
-=== outcomes_matrix ===
-Director Morgan brings up a large matrix display.
+Director Magnus Netherton: The projection. Trading systems manipulated and frozen. Markets down twelve to eighteen per cent inside twenty-four hours, four point two trillion in value destroyed. Banking transactions frozen. Source code, intellectual property and encryption keys exfiltrated.
 
-"Our predictive models show exactly what happens based on your choice. This isn't guesswork - it's deterministic based on team positioning, capabilities, and threat complexity."
+Director Magnus Netherton: Ransomware across four thousand two hundred hospitals. Roughly eighteen thousand procedures cancelled in the first week. Eighty to one hundred and forty deaths from delayed care. Eighty-seven million patient records taken.
 
-# DETERMINISTIC OUTCOMES MATRIX
+Director Magnus Netherton: Immediate layoffs, one hundred and forty to two hundred and twenty thousand. First-week economic impact, two hundred and eighty to four hundred and twenty billion.
 
-**IF YOU CHOOSE OPTION A (Infrastructure):**
-* YOU: Handle infrastructure attack
-* TEAM ALPHA: Supply Chain - FULL SUCCESS (prevented)
-* TEAM BRAVO: Data Apocalypse - PARTIAL SUCCESS (breach mitigated, disinformation succeeds)
-* TEAM CHARLIE: Corporate - FAILURE (zero-days deploy, economic damage)
+* [Deaths on what timescale?]
+    Director Magnus Netherton: This week. The ransomware lands with the rest of it and the theatre lists stop the same morning.
+    Director Magnus Netherton: Same clock as yours, near enough.
+    -> brief_meltdown_tail
+* [Where would the team even go? That's twelve buildings.]
+    Director Magnus Netherton: One building. TechCore's security operations centre, downtown San Francisco, twenty-fourth floor. The SOC monitors all twelve client networks.
+    Director Magnus Netherton: It's the only place a defence can be coordinated across the whole set inside thirty minutes. Take that floor and you push mitigations to all twelve before deployment.
+    -> brief_meltdown_tail
++ [Understood.]
+    -> brief_meltdown_tail
 
-**IF YOU CHOOSE OPTION B (Data Apocalypse):**
-* YOU: Handle data/disinformation attack
-* TEAM ALPHA: Infrastructure - FAILURE (240-385 deaths, blackout)
-* TEAM BRAVO: Corporate - FULL SUCCESS (prevented)
-* TEAM CHARLIE: Supply Chain - PARTIAL SUCCESS (some backdoors prevented)
+=== brief_meltdown_tail ===
+Director Magnus Netherton: Cell lead calls himself The Liquidator. Probably Marcus Ashford, ex-management consultant. Spent a career fixing companies and watching executives take the proceeds. Now he extracts value in the other direction and cannot resist making it elegant.
 
-**IF YOU CHOOSE OPTION C (Supply Chain):**
-* YOU: Handle supply chain attack
-* TEAM ALPHA: Data Apocalypse - FULL SUCCESS (both attacks prevented)
-* TEAM BRAVO: Infrastructure - PARTIAL SUCCESS (some blackouts, reduced casualties)
-* TEAM CHARLIE: Corporate - FAILURE (zero-days deploy, economic damage)
+-> delegation_hub
 
-**IF YOU CHOOSE OPTION D (Corporate):**
-* YOU: Handle corporate warfare
-* TEAM ALPHA: Infrastructure - FULL SUCCESS (blackout prevented)
-* TEAM BRAVO: Data Apocalypse - FAILURE (both attacks succeed, democracy crisis)
-* TEAM CHARLIE: Supply Chain - PARTIAL SUCCESS (some backdoors prevented)
+// ================================================
+// COMPARISON
+// ================================================
 
-Director Morgan looks at you.
+=== compare_operations ===
+Director Magnus Netherton: Side by side, then. I'll read it flat and you can do what you like with it.
 
-"There's no perfect choice. People will die or suffer regardless. Your job is to minimize total damage based on your assessment of priorities."
+Director Magnus Netherton: Fracture. Harm is to democratic legitimacy. Twenty to forty dead over a week. Irreversible — records do not come back, and neither does a count people have stopped believing in.
 
-+ [Choose Option A - Infrastructure] -> confirm_choice_a
-+ [Choose Option B - Data Apocalypse] -> confirm_choice_b
-+ [Choose Option C - Supply Chain] -> confirm_choice_c
-+ [Choose Option D - Corporate Warfare] -> confirm_choice_d
+Director Magnus Netherton: Trojan Horse. Harm is persistent access across forty-seven million systems. No projected fatalities. Reversible only by rebuilding those systems, which is a decade of work.
 
-=== confirm_choice_a ===
-"Infrastructure. You're prioritizing immediate civilian lives." #speaker:Director Morgan
+Director Magnus Netherton: Meltdown. Harm is immediate. Eighty to one hundred and forty dead this week. Partly reversible — markets recover inside a year. The patients do not.
 
-She inputs your assignment.
+* [So Meltdown. It's the only one killing people tonight.]
+    Director Magnus Netherton: That is one reading of it, and it is the reading the numbers invite.
+    Director Magnus Netherton: I'd only note that it is also the loudest brief of the three, and loud is not the same as worst.
+    -> compare_tail
+* [Where did these projections come from?]
+    Director Magnus Netherton: Threat desk modelling, off the intercepted tasking traffic. Target packages, deployment parameters, ENTROPY's own casualty estimates.
+    Director Magnus Netherton: Six hours old. It is the best picture we have ever had of a live ENTROPY operation.
+    -> compare_tail
+* [What would you do?]
+    -> netherton_declines
++ [Give me a moment.]
+    -> compare_tail
 
-"Team Alpha will handle supply chain. Team Bravo will attempt data/disinformation - expect partial success. Team Charlie will try corporate - they'll likely fail."
+=== compare_tail ===
+Director Magnus Netherton: A life, a vote, and the security floor under every operation we run for the next decade. Those are not the same unit, Agent. There is no arithmetic here that finishes the job for you.
 
-**ACCEPTED CONSEQUENCES:**
-* Corporate zero-day attacks will likely succeed
-* Economic damage estimated $280-420 billion
-* Healthcare ransomware may cause 80-140 additional deaths
+-> delegation_hub
 
-"Transport is waiting. You have 30 minutes. Get to that power grid facility and stop Marcus Chen."
+// ================================================
+// NETHERTON DECLINES TO STEER
+// ================================================
 
-~ crisis_choice = "infrastructure"
-~ crisis_choice_made = true
+=== netherton_declines ===
+Director Magnus Netherton: *pause* You want me to make it.
 
--> mission_start
+You: You've been doing this twenty years. I've had four minutes.
 
-=== confirm_choice_b ===
-"Data Apocalypse. You're prioritizing democratic institutions and data security." #speaker:Director Morgan
+Director Magnus Netherton: And in twenty years the one thing I've learnt is that a director who picks for the agent he is about to put on an aircraft is picking for himself and calling it command.
 
-She inputs your assignment.
+Director Magnus Netherton: The handbook has eleven pages on delegation of force. Not one of them tells you which lot of people to leave.
 
-"Team Alpha will handle infrastructure - they'll fail. Expect 240-385 civilian deaths from the blackout. Team Bravo will take corporate - they'll succeed. Team Charlie on supply chain - partial success."
+Director Magnus Netherton: It's yours to make. I'll log it, I'll defend it, and I won't second-guess it. But I won't take it off you.
 
-**ACCEPTED CONSEQUENCES:**
-* Pacific Northwest blackout (4-7 days)
-* 240-385 deaths from power grid failure
-* $18 billion infrastructure damage
+-> delegation_hub
 
-"Transport is waiting. You have 30 minutes. Dual timers - stop the breach AND the disinformation if you can."
+// ================================================
+// COMMIT
+// ================================================
 
-~ crisis_choice = "data"
-~ crisis_choice_made = true
+=== commit_menu ===
+Director Magnus Netherton: Say the word and their aircraft turns.
 
--> mission_start
++ [Send them to Fracture. Washington.]
+    #set_global:team_assignment:fracture
+    #set_global:team_assigned:true
+    Director Magnus Netherton: Fracture. Confirmed.
+    Narrator: The pin over Washington changes colour. The other two stay red.
+    Director Magnus Netherton: They'll be on the ground in eleven minutes. Reeves won't be there, but his cluster will.
+    -> handoff
++ [Send them to Trojan Horse. Austin.]
+    #set_global:team_assignment:trojan_horse
+    #set_global:team_assigned:true
+    Director Magnus Netherton: Trojan Horse. Confirmed.
+    Narrator: The pin over Austin changes colour. The other two stay red.
+    Director Magnus Netherton: The long game, then. I'll note in the log that you chose the one with no bodies on it.
+    -> handoff
++ [Send them to Meltdown. San Francisco.]
+    #set_global:team_assignment:meltdown
+    #set_global:team_assigned:true
+    Director Magnus Netherton: Meltdown. Confirmed.
+    Narrator: The pin over San Francisco changes colour. The other two stay red.
+    Director Magnus Netherton: Twenty-fourth floor. If they hold it, four thousand two hundred hospitals don't get hit.
+    -> handoff
++ [Not yet. Go back.]
+    Director Magnus Netherton: Quickly, Agent.
+    -> delegation_hub
 
-=== confirm_choice_c ===
-"Supply Chain. You're prioritizing long-term national security over immediate lives." #speaker:Director Morgan
+// ================================================
+// TRANSIT AND HANDOFF TO THE FACILITY
+// ================================================
 
-She inputs your assignment.
+=== handoff ===
+Director Magnus Netherton: That's the team gone. Two operations are now running with nobody in the way of them, and that is on the record as my decision as much as yours.
 
-"Team Alpha will handle data security - full success. Team Bravo on infrastructure - partial success, some casualties. Team Charlie on corporate - they'll fail."
+Director Magnus Netherton: Go. Your aircraft is holding and I will pick you up on the secure channel when you land.
 
-**ACCEPTED CONSEQUENCES:**
-* Partial infrastructure blackout (reduced casualties: 80-120 deaths estimated)
-* Corporate zero-day attacks succeed
-* Combined economic damage: $300+ billion
+Narrator: The flight passes in cloud. Then a wet apron, and an unmarked saloon doing ninety on the airport road into Portland, 04:12 by the dashboard clock and raining hard enough that the wipers can't keep up.
 
-"Transport is waiting. You have 30 minutes. Stop Adrian Cross before those backdoors deploy."
+Narrator: Chain-link, a lowered barrier, three storeys of poured concrete behind it. People are coming out of the front doors into the rain with coats over their heads.
 
-~ crisis_choice = "supply_chain"
-~ crisis_choice_made = true
+Director Magnus Netherton: Building's evacuating. Security checkpoint is manned and one of the guards on that shift is compromised. Assume the badge readers are logging you.
 
--> mission_start
+Director Magnus Netherton: Twenty-eight minutes on the cascade timer. Agent HaX has your channel from here.
 
-=== confirm_choice_d ===
-"Corporate Warfare. You're prioritizing economic stability." #speaker:Director Morgan
+You: Understood.
 
-Her expression is carefully neutral - no judgment.
+Director Magnus Netherton: *quietly* Eight point four million people, Agent. Go and do the part you can actually reach.
 
-"Team Alpha will handle infrastructure - full success. Team Bravo on data - they'll fail, both attacks succeed. Team Charlie on supply chain - partial success."
-
-**ACCEPTED CONSEQUENCES:**
-* Voter database breach (187 million records)
-* Disinformation campaign launches
-* Democratic crisis, 20-40 deaths from civil unrest
-* 4-8 million identity theft victims over 5 years
-
-"Transport is waiting. You have 30 minutes. Deploy those countermeasures and stop Victoria Zhang."
-
-~ crisis_choice = "corporate"
-~ crisis_choice_made = true
-
--> mission_start
-
-=== mission_start ===
-Director Morgan extends her hand.
-
-"Good luck, Agent. No matter what happens tonight, know that you're making the best choice you can with impossible options."
-
-She pauses.
-
-"And 0x00? The Architect is watching. They'll taunt you. Try to make you question your choice. Don't let them."
-
-You nod and head for the exit.
-
-**MISSION CLOCK STARTS: T-MINUS 30 MINUTES**
-
-The weight of your choice settles on your shoulders. Somewhere, at the three targets you didn't choose, SAFETYNET teams are racing against the clock.
-
-Some will succeed. Some will fail.
-
-You chose your battlefield. Now you have to win it.
-
+#exit_conversation
 -> END
