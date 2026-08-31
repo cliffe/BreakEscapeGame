@@ -26,7 +26,11 @@ EXTERNAL player_name()
 // ===========================================
 
 === start ===
-#speaker:agent_0x99
+Narrator: A secure operations room. The wall screen holds a hospital floor plan gone entirely red. A tall man in a creased suit stands at the head of the table; you have heard the name, never shared the room.
+
+Director Magnus Netherton: Agent 0x00. Magnus Netherton -- I run this shop. We have not met, and I would rather it were under better circumstances, but circumstances are rather the point tonight.
+
+Director Magnus Netherton: I am not going to brief you myself. I have a handler who knows this one cold, and a hospital that is running out of time while I make introductions. HaX -- it's yours.
 
 Agent HaX: {player_name()}. I'll be quick -- a hospital doesn't have the patience for me to be slow.
 

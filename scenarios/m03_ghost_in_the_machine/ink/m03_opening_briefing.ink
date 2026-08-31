@@ -11,9 +11,14 @@ VAR asked_cover = false
 VAR asked_learn = false
 
 === start ===
-#speaker:agent_0x99
-[Location: SAFETYNET Secure Communication Channel]
-[Visual: Agent 0x99's avatar - Haxolottle mascot with headset]
+Narrator: A SAFETYNET briefing room. Director Netherton stands by the screen; Agent 0x99 is patched in over comms; and a man in a lab coat sits half-buried in a laptop he clearly built himself.
+
+Director Magnus Netherton: Agent 0x00. Zero Day Syndicate have stopped selling exploits and started deploying them. That is a line I do not let a cell cross. You're going in. HaX runs you, Nightshade runs the technical side. Listen to both.
+
+Agent 0x47 'Nightshade': *not quite looking up from the laptop* Evening. Whatever they've built, I'll take it apart from here. You just get me close to it.
+
+Director Magnus Netherton: HaX. The floor's yours.
+
 Agent 0x99: {player_name()}, thanks for picking up. We have a developing situation.
 Agent 0x99: Zero Day Syndicate. You heard of them?
 * [Refresh my memory]
@@ -157,6 +162,7 @@ Agent 0x99: Smart, charismatic, ideologically committed to "free market vulnerab
 #speaker:agent_0x99
 Agent 0x99: You'll meet Victoria under the cover of a potential recruit. While you're with her, clone her RFID executive keycard - that's your server room access after hours.
 Agent 0x99: We're giving you a pocket-sized RFID cloner. Get within a couple of metres for about ten seconds; it vibrates when the clone's done, then get some distance.
+Agent 0x47 'Nightshade': And it's a straight capture-and-replay -- her card broadcasts, we copy, we impersonate. If you feel a pang about how easy that is, hold onto it. It's the same trick the other side uses on us, and one day it'll be our badge someone clones.
 * [What if she notices?]
     Agent 0x99: Play the curious recruit - you're interested in their research. The cloner stays passive until you trigger it.
     -> briefing_hub

@@ -38,6 +38,10 @@ VAR cover_restored = false
 VAR bernie_vouched = false
 VAR staff_lanyard_obtained = false
 VAR insider_method_confirmed = false
+
+// Seed beat: the recovered ENTROPY PIN-cracker, analysed by Agent Nightshade.
+VAR pin_cracker_found = false
+VAR asked_about_cracker = false
 VAR guard_knocked_out = false
 VAR attacked_guard = false
 
@@ -106,8 +110,20 @@ Agent HaX: {&What do you want to know?|What else?|Anything more before we get to
     -> q_architect
 * {cover_burned and not asked_about_the_call} [Someone in that building took my name off their system in the middle of the job. I want to talk about that.]
     -> q_the_phone_call
+* {pin_cracker_found and not asked_about_cracker} [That PIN-cracker I pulled off the inside asset -- has anyone looked at it?]
+    -> q_pin_cracker
 * [Enough. Walk me through what it cost.]
     -> mission_summary
+
+=== q_pin_cracker ===
+~ asked_about_cracker = true
+Agent HaX: Funny you ask -- I had our hardware man look at it the second it came in. He's still grinning about it. Nightshade, say hello.
+Narrator: A wiry man in a lab coat leans into frame, turning the device over in gloved hands like it is a small, fascinating animal.
+Agent 0x47 'Nightshade': Agent 0x00. Lovely piece of kit you brought me. It's a keypad oracle -- brute-force with a brain. It doesn't guess the PIN blind; it watches the lock's own response timing and lets each wrong attempt narrow the field. Mastermind, in silicon.
+Agent 0x47 'Nightshade': What tells me it's ENTROPY and not some catalogue burglar is the firmware. Signed. Versioned. Built to be handed out, logged out, and handed back. This wasn't improvised. Somebody manufactures these, at scale, for people they trust with buildings.
+Agent 0x47 'Nightshade': I'll write it up properly. But the short version: the people you're chasing have a supply chain. That should worry you more than the one device does.
+Agent HaX: *quietly* He's not wrong. He usually isn't.
+-> debrief_hub
 
 === q_the_phone_call ===
 #speaker:agent_0x99

@@ -353,36 +353,38 @@ flowchart TD
   rc_obj1_1{"Building Directory"}
   rc_obj2_2{"Company Founding Plaque"}
   rc_npc_agent_0x99_3("Agent 0x99")
-  rc_npc_receptionist_4("Receptionist")
-  rc_obj5_5{"Visitor Badge"}
-  rc_obj6_6{"Staff Access Badge"}
-  rc_npc_agent_0x99_7("Agent 0x99")
-  rc_obj8_8{"SAFETYNET Field Guide: RFID Cloning"}
-  rc_obj9_9{"SAFETYNET Field Guide: Lockpicking"}
-  rc_obj10_10{"SAFETYNET Field Guide: Reconnaissance and Network Mapping"}
-  rc_obj11_11{"SAFETYNET Field Guide: distcc Exploitation"}
-  rc_obj12_12{"SAFETYNET Field Guide: Encoding and Decoding with CyberChef"}
-  rc_npc_agent_0x99_13("Agent 0x99")
-  rc_npc_security_guard_14("Security Guard")
-  rc_obj15_15{"Presentation Materials"}
-  rc_obj16_16{"Conference Whiteboard"}
-  rc_npc_victoria_sterling_17("Victoria Sterling")
-  rc_obj18_18{"Executive Keycard"}
-  rc_server_filing_cabinet_19{"Filing Cabinet"}
-  rc_wall_safe_server_20{"Wall Safe"}
-  rc_obj21_21{"Server Room Whiteboard"}
-  rc_vm_launcher_zero_day_22{"VM Access Terminal"}
-  rc_cyberchef_workstation_23{"CyberChef Workstation"}
-  rc_flag_station_dropsite_24{"Drop-Site Terminal"}
-  rc_exec_filing_cabinet_25{"Filing Cabinet"}
-  rc_victoria_computer_26{"Executive Computer"}
-  rc_obj27_27{"Desk Drawer"}
-  rc_obj28_28{"Performance Review"}
-  rc_obj29_29{"Family Photo"}
-  rc_obj30_30{"James's Workstation"}
-  rc_obj31_31{"Certification Wall"}
-  rc_npc_danny_foster_32("Danny Foster")
-  rc_npc_agent_0x99_33("Agent 0x99")
+  rc_npc_director_magnus_netherton_4("Director Magnus Netherton")
+  rc_npc_agent_0x47_nightshade_5("Agent 0x47 'Nightshade'")
+  rc_npc_receptionist_6("Receptionist")
+  rc_obj7_7{"Visitor Badge"}
+  rc_obj8_8{"Staff Access Badge"}
+  rc_npc_agent_0x99_9("Agent 0x99")
+  rc_obj10_10{"SAFETYNET Field Guide: RFID Cloning"}
+  rc_obj11_11{"SAFETYNET Field Guide: Lockpicking"}
+  rc_obj12_12{"SAFETYNET Field Guide: Reconnaissance and Network Mapping"}
+  rc_obj13_13{"SAFETYNET Field Guide: distcc Exploitation"}
+  rc_obj14_14{"SAFETYNET Field Guide: Encoding and Decoding with CyberChef"}
+  rc_npc_agent_0x99_15("Agent 0x99")
+  rc_npc_security_guard_16("Security Guard")
+  rc_obj17_17{"Presentation Materials"}
+  rc_obj18_18{"Conference Whiteboard"}
+  rc_npc_victoria_sterling_19("Victoria Sterling")
+  rc_obj20_20{"Executive Keycard"}
+  rc_server_filing_cabinet_21{"Filing Cabinet"}
+  rc_wall_safe_server_22{"Wall Safe"}
+  rc_obj23_23{"Server Room Whiteboard"}
+  rc_vm_launcher_zero_day_24{"VM Access Terminal"}
+  rc_cyberchef_workstation_25{"CyberChef Workstation"}
+  rc_flag_station_dropsite_26{"Drop-Site Terminal"}
+  rc_exec_filing_cabinet_27{"Filing Cabinet"}
+  rc_victoria_computer_28{"Executive Computer"}
+  rc_obj29_29{"Desk Drawer"}
+  rc_obj30_30{"Performance Review"}
+  rc_obj31_31{"Family Photo"}
+  rc_obj32_32{"James's Workstation"}
+  rc_obj33_33{"Certification Wall"}
+  rc_npc_danny_foster_34("Danny Foster")
+  rc_npc_agent_0x99_35("Agent 0x99")
 
   reception_lobby --> main_hallway
   main_hallway --> conference_room_01
@@ -393,40 +395,42 @@ flowchart TD
   reception_lobby --> rc_obj1_1
   reception_lobby --> rc_obj2_2
   reception_lobby --> rc_npc_agent_0x99_3
-  reception_lobby --> rc_npc_receptionist_4
-  rc_npc_receptionist_4 --> rc_obj5_5
-  rc_npc_receptionist_4 --> rc_obj6_6
-  reception_lobby --> rc_npc_agent_0x99_7
-  rc_npc_agent_0x99_7 --> rc_obj8_8
-  rc_npc_agent_0x99_7 --> rc_obj9_9
-  rc_npc_agent_0x99_7 --> rc_obj10_10
-  rc_npc_agent_0x99_7 --> rc_obj11_11
-  rc_npc_agent_0x99_7 --> rc_obj12_12
-  reception_lobby --> rc_npc_agent_0x99_13
-  main_hallway --> rc_npc_security_guard_14
-  conference_room_01 --> rc_obj15_15
-  conference_room_01 --> rc_obj16_16
-  conference_room_01 --> rc_npc_victoria_sterling_17
-  rc_npc_victoria_sterling_17 --> rc_obj18_18
-  server_room --> rc_server_filing_cabinet_19
-  server_room --> rc_wall_safe_server_20
-  server_room --> rc_obj21_21
-  server_room --> rc_vm_launcher_zero_day_22
-  server_room --> rc_cyberchef_workstation_23
-  server_room --> rc_flag_station_dropsite_24
-  executive_office --> rc_exec_filing_cabinet_25
-  executive_office --> rc_victoria_computer_26
-  executive_office --> rc_obj27_27
-  james_office --> rc_obj28_28
-  james_office --> rc_obj29_29
+  reception_lobby --> rc_npc_director_magnus_netherton_4
+  reception_lobby --> rc_npc_agent_0x47_nightshade_5
+  reception_lobby --> rc_npc_receptionist_6
+  rc_npc_receptionist_6 --> rc_obj7_7
+  rc_npc_receptionist_6 --> rc_obj8_8
+  reception_lobby --> rc_npc_agent_0x99_9
+  rc_npc_agent_0x99_9 --> rc_obj10_10
+  rc_npc_agent_0x99_9 --> rc_obj11_11
+  rc_npc_agent_0x99_9 --> rc_obj12_12
+  rc_npc_agent_0x99_9 --> rc_obj13_13
+  rc_npc_agent_0x99_9 --> rc_obj14_14
+  reception_lobby --> rc_npc_agent_0x99_15
+  main_hallway --> rc_npc_security_guard_16
+  conference_room_01 --> rc_obj17_17
+  conference_room_01 --> rc_obj18_18
+  conference_room_01 --> rc_npc_victoria_sterling_19
+  rc_npc_victoria_sterling_19 --> rc_obj20_20
+  server_room --> rc_server_filing_cabinet_21
+  server_room --> rc_wall_safe_server_22
+  server_room --> rc_obj23_23
+  server_room --> rc_vm_launcher_zero_day_24
+  server_room --> rc_cyberchef_workstation_25
+  server_room --> rc_flag_station_dropsite_26
+  executive_office --> rc_exec_filing_cabinet_27
+  executive_office --> rc_victoria_computer_28
+  executive_office --> rc_obj29_29
   james_office --> rc_obj30_30
   james_office --> rc_obj31_31
-  james_office --> rc_npc_danny_foster_32
-  james_office --> rc_npc_agent_0x99_33
+  james_office --> rc_obj32_32
+  james_office --> rc_obj33_33
+  james_office --> rc_npc_danny_foster_34
+  james_office --> rc_npc_agent_0x99_35
 
   class reception_lobby,main_hallway,executive_wing_hallway,james_office room
   class conference_room_01,server_room,executive_office lock
-  class rc_obj1_1,rc_obj2_2,rc_obj5_5,rc_obj6_6,rc_obj8_8,rc_obj9_9,rc_obj10_10,rc_obj11_11,rc_obj12_12,rc_obj15_15,rc_obj16_16,rc_obj18_18,rc_server_filing_cabinet_19,rc_wall_safe_server_20,rc_obj21_21,rc_vm_launcher_zero_day_22,rc_cyberchef_workstation_23,rc_flag_station_dropsite_24,rc_exec_filing_cabinet_25,rc_victoria_computer_26,rc_obj27_27,rc_obj28_28,rc_obj29_29,rc_obj30_30,rc_obj31_31 item
-  class rc_npc_agent_0x99_3,rc_npc_receptionist_4,rc_npc_agent_0x99_7,rc_npc_agent_0x99_13,rc_npc_security_guard_14,rc_npc_victoria_sterling_17,rc_npc_danny_foster_32,rc_npc_agent_0x99_33 npc
+  class rc_obj1_1,rc_obj2_2,rc_obj7_7,rc_obj8_8,rc_obj10_10,rc_obj11_11,rc_obj12_12,rc_obj13_13,rc_obj14_14,rc_obj17_17,rc_obj18_18,rc_obj20_20,rc_server_filing_cabinet_21,rc_wall_safe_server_22,rc_obj23_23,rc_vm_launcher_zero_day_24,rc_cyberchef_workstation_25,rc_flag_station_dropsite_26,rc_exec_filing_cabinet_27,rc_victoria_computer_28,rc_obj29_29,rc_obj30_30,rc_obj31_31,rc_obj32_32,rc_obj33_33 item
+  class rc_npc_agent_0x99_3,rc_npc_director_magnus_netherton_4,rc_npc_agent_0x47_nightshade_5,rc_npc_receptionist_6,rc_npc_agent_0x99_9,rc_npc_agent_0x99_15,rc_npc_security_guard_16,rc_npc_victoria_sterling_19,rc_npc_danny_foster_34,rc_npc_agent_0x99_35 npc
   class node_start start
 ```

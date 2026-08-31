@@ -23,6 +23,14 @@ EXTERNAL player_name()
 // ===========================================
 
 === start ===
+Narrator: A SAFETYNET operations room. Director Netherton is already on his feet; Agent 0x99 is patching in the technical desk.
+
+Director Magnus Netherton: Agent 0x00. Infrastructure this time -- ENTROPY have stopped stealing and started breaking things people stand under. I want my best in the room and my best on the wire. Nightshade's read the control systems; HaX has the rest.
+
+Agent 0x47 'Nightshade': The physics doesn't lie and neither do I: if they reach the safety interlocks, this stops being a hack and starts being a body count. Get me eyes on the PLCs and I'll tell you how much time we actually have.
+
+Director Magnus Netherton: HaX. Go.
+
 #speaker:agent_0x99
 
 {player_name()}, we've got a critical infrastructure threat. ENTROPY's back.

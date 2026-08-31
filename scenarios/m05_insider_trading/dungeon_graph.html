@@ -432,39 +432,41 @@
   data_center("Data Center")
   rc_obj1_1{"Building Directory"}
   rc_npc_agent_0x99_2("Agent 0x99")
-  rc_npc_agent_0x99_haxolottle_3("Agent 0x99 'Haxolottle'")
-  rc_obj4_4{"SAFETYNET Field Guide: RFID Cloning"}
-  rc_obj5_5{"SAFETYNET Field Guide: Bludit CMS Exploitation"}
-  rc_obj6_6{"SAFETYNET Field Guide: Lockpicking"}
-  rc_obj7_7{"SAFETYNET Field Guide: Reconnaissance and Network Mapping"}
-  rc_npc_the_recruiter_8("The Recruiter")
-  rc_npc_agent_0x99_9("Agent 0x99")
-  rc_entropy_pamphlet_10{"Insider Threat Initiative Pamphlet"}
-  rc_npc_lisa_park_11("Lisa Park")
-  rc_server_password_note_12{"Server Password Sticky Note"}
-  rc_obj13_13{"IT Department Notice"}
-  rc_npc_kevin_park_14("Kevin Park")
-  rc_obj15_15{"Employee Badge"}
-  rc_obj16_16{"Lockpick Set"}
-  rc_obj17_17{"RFID Badge Cloner"}
-  rc_obj18_18{"Torres Office Keycard"}
-  rc_obj19_19{"Cloned Employee Badge"}
-  rc_vm_launcher_bludit_20{"Bludit CMS Server Terminal"}
-  rc_flag_station_evidence_21{"SAFETYNET Drop-Site Terminal"}
-  rc_medical_bills_22{"Medical Bills"}
-  rc_personal_journal_23{"Personal Journal"}
-  rc_npc_david_torres_24("David Torres")
-  rc_npc_dr_sarah_chen_25("Dr. Sarah Chen")
-  rc_obj26_26{"Research Access Badge"}
-  rc_obj27_27{"Research Lab Badge"}
-  rc_security_incident_log_28{"Security Incident Log"}
-  rc_patricia_filing_cabinet_29{"Locked Filing Cabinet"}
-  rc_npc_patricia_morgan_30("Patricia Morgan")
-  rc_obj31_31{"Visitor Badge"}
-  rc_obj32_32{"Employee Financial Records"}
-  rc_obj33_33{"Exfiltration Upload Terminal"}
-  rc_upload_schedule_34{"Upload Schedule"}
-  rc_data_package_manifest_35{"Data Package Manifest"}
+  rc_npc_director_magnus_netherton_3("Director Magnus Netherton")
+  rc_npc_agent_0x47_nightshade_4("Agent 0x47 'Nightshade'")
+  rc_npc_agent_0x99_haxolottle_5("Agent 0x99 'Haxolottle'")
+  rc_obj6_6{"SAFETYNET Field Guide: RFID Cloning"}
+  rc_obj7_7{"SAFETYNET Field Guide: Bludit CMS Exploitation"}
+  rc_obj8_8{"SAFETYNET Field Guide: Lockpicking"}
+  rc_obj9_9{"SAFETYNET Field Guide: Reconnaissance and Network Mapping"}
+  rc_npc_the_recruiter_10("The Recruiter")
+  rc_npc_agent_0x99_11("Agent 0x99")
+  rc_entropy_pamphlet_12{"Insider Threat Initiative Pamphlet"}
+  rc_npc_lisa_park_13("Lisa Park")
+  rc_server_password_note_14{"Server Password Sticky Note"}
+  rc_obj15_15{"IT Department Notice"}
+  rc_npc_kevin_park_16("Kevin Park")
+  rc_obj17_17{"Employee Badge"}
+  rc_obj18_18{"Lockpick Set"}
+  rc_obj19_19{"RFID Badge Cloner"}
+  rc_obj20_20{"Torres Office Keycard"}
+  rc_obj21_21{"Cloned Employee Badge"}
+  rc_vm_launcher_bludit_22{"Bludit CMS Server Terminal"}
+  rc_flag_station_evidence_23{"SAFETYNET Drop-Site Terminal"}
+  rc_medical_bills_24{"Medical Bills"}
+  rc_personal_journal_25{"Personal Journal"}
+  rc_npc_david_torres_26("David Torres")
+  rc_npc_dr_sarah_chen_27("Dr. Sarah Chen")
+  rc_obj28_28{"Research Access Badge"}
+  rc_obj29_29{"Research Lab Badge"}
+  rc_security_incident_log_30{"Security Incident Log"}
+  rc_patricia_filing_cabinet_31{"Locked Filing Cabinet"}
+  rc_npc_patricia_morgan_32("Patricia Morgan")
+  rc_obj33_33{"Visitor Badge"}
+  rc_obj34_34{"Employee Financial Records"}
+  rc_obj35_35{"Exfiltration Upload Terminal"}
+  rc_upload_schedule_36{"Upload Schedule"}
+  rc_data_package_manifest_37{"Data Package Manifest"}
 
   reception_lobby --> main_corridor
   reception_lobby --> patricia_office
@@ -477,44 +479,46 @@
   server_room --> data_center
   reception_lobby --> rc_obj1_1
   reception_lobby --> rc_npc_agent_0x99_2
-  reception_lobby --> rc_npc_agent_0x99_haxolottle_3
-  rc_npc_agent_0x99_haxolottle_3 --> rc_obj4_4
-  rc_npc_agent_0x99_haxolottle_3 --> rc_obj5_5
-  rc_npc_agent_0x99_haxolottle_3 --> rc_obj6_6
-  rc_npc_agent_0x99_haxolottle_3 --> rc_obj7_7
-  reception_lobby --> rc_npc_the_recruiter_8
-  reception_lobby --> rc_npc_agent_0x99_9
-  break_room --> rc_entropy_pamphlet_10
-  break_room --> rc_npc_lisa_park_11
-  open_office_area --> rc_server_password_note_12
-  open_office_area --> rc_obj13_13
-  open_office_area --> rc_npc_kevin_park_14
-  rc_npc_kevin_park_14 --> rc_obj15_15
-  rc_npc_kevin_park_14 --> rc_obj16_16
-  rc_npc_kevin_park_14 --> rc_obj17_17
-  rc_npc_kevin_park_14 --> rc_obj18_18
-  rc_npc_kevin_park_14 --> rc_obj19_19
-  server_room --> rc_vm_launcher_bludit_20
-  server_room --> rc_flag_station_evidence_21
-  torres_office --> rc_medical_bills_22
-  torres_office --> rc_personal_journal_23
-  torres_office --> rc_npc_david_torres_24
-  research_lab --> rc_npc_dr_sarah_chen_25
-  rc_npc_dr_sarah_chen_25 --> rc_obj26_26
-  rc_npc_dr_sarah_chen_25 --> rc_obj27_27
-  patricia_office --> rc_security_incident_log_28
-  patricia_office --> rc_patricia_filing_cabinet_29
-  patricia_office --> rc_npc_patricia_morgan_30
-  rc_npc_patricia_morgan_30 --> rc_obj31_31
-  rc_npc_patricia_morgan_30 --> rc_obj32_32
-  data_center --> rc_obj33_33
-  data_center --> rc_upload_schedule_34
-  data_center --> rc_data_package_manifest_35
+  reception_lobby --> rc_npc_director_magnus_netherton_3
+  reception_lobby --> rc_npc_agent_0x47_nightshade_4
+  reception_lobby --> rc_npc_agent_0x99_haxolottle_5
+  rc_npc_agent_0x99_haxolottle_5 --> rc_obj6_6
+  rc_npc_agent_0x99_haxolottle_5 --> rc_obj7_7
+  rc_npc_agent_0x99_haxolottle_5 --> rc_obj8_8
+  rc_npc_agent_0x99_haxolottle_5 --> rc_obj9_9
+  reception_lobby --> rc_npc_the_recruiter_10
+  reception_lobby --> rc_npc_agent_0x99_11
+  break_room --> rc_entropy_pamphlet_12
+  break_room --> rc_npc_lisa_park_13
+  open_office_area --> rc_server_password_note_14
+  open_office_area --> rc_obj15_15
+  open_office_area --> rc_npc_kevin_park_16
+  rc_npc_kevin_park_16 --> rc_obj17_17
+  rc_npc_kevin_park_16 --> rc_obj18_18
+  rc_npc_kevin_park_16 --> rc_obj19_19
+  rc_npc_kevin_park_16 --> rc_obj20_20
+  rc_npc_kevin_park_16 --> rc_obj21_21
+  server_room --> rc_vm_launcher_bludit_22
+  server_room --> rc_flag_station_evidence_23
+  torres_office --> rc_medical_bills_24
+  torres_office --> rc_personal_journal_25
+  torres_office --> rc_npc_david_torres_26
+  research_lab --> rc_npc_dr_sarah_chen_27
+  rc_npc_dr_sarah_chen_27 --> rc_obj28_28
+  rc_npc_dr_sarah_chen_27 --> rc_obj29_29
+  patricia_office --> rc_security_incident_log_30
+  patricia_office --> rc_patricia_filing_cabinet_31
+  patricia_office --> rc_npc_patricia_morgan_32
+  rc_npc_patricia_morgan_32 --> rc_obj33_33
+  rc_npc_patricia_morgan_32 --> rc_obj34_34
+  data_center --> rc_obj35_35
+  data_center --> rc_upload_schedule_36
+  data_center --> rc_data_package_manifest_37
 
   class reception_lobby,main_corridor,break_room,open_office_area,research_lab,patricia_office,data_center room
   class server_hallway,server_room,torres_office lock
-  class rc_obj1_1,rc_obj4_4,rc_obj5_5,rc_obj6_6,rc_obj7_7,rc_entropy_pamphlet_10,rc_server_password_note_12,rc_obj13_13,rc_obj15_15,rc_obj16_16,rc_obj17_17,rc_obj18_18,rc_obj19_19,rc_vm_launcher_bludit_20,rc_flag_station_evidence_21,rc_medical_bills_22,rc_personal_journal_23,rc_obj26_26,rc_obj27_27,rc_security_incident_log_28,rc_patricia_filing_cabinet_29,rc_obj31_31,rc_obj32_32,rc_obj33_33,rc_upload_schedule_34,rc_data_package_manifest_35 item
-  class rc_npc_agent_0x99_2,rc_npc_agent_0x99_haxolottle_3,rc_npc_the_recruiter_8,rc_npc_agent_0x99_9,rc_npc_lisa_park_11,rc_npc_kevin_park_14,rc_npc_david_torres_24,rc_npc_dr_sarah_chen_25,rc_npc_patricia_morgan_30 npc
+  class rc_obj1_1,rc_obj6_6,rc_obj7_7,rc_obj8_8,rc_obj9_9,rc_entropy_pamphlet_12,rc_server_password_note_14,rc_obj15_15,rc_obj17_17,rc_obj18_18,rc_obj19_19,rc_obj20_20,rc_obj21_21,rc_vm_launcher_bludit_22,rc_flag_station_evidence_23,rc_medical_bills_24,rc_personal_journal_25,rc_obj28_28,rc_obj29_29,rc_security_incident_log_30,rc_patricia_filing_cabinet_31,rc_obj33_33,rc_obj34_34,rc_obj35_35,rc_upload_schedule_36,rc_data_package_manifest_37 item
+  class rc_npc_agent_0x99_2,rc_npc_director_magnus_netherton_3,rc_npc_agent_0x47_nightshade_4,rc_npc_agent_0x99_haxolottle_5,rc_npc_the_recruiter_10,rc_npc_agent_0x99_11,rc_npc_lisa_park_13,rc_npc_kevin_park_16,rc_npc_david_torres_26,rc_npc_dr_sarah_chen_27,rc_npc_patricia_morgan_32 npc
   class node_start start`
     };
     const rendered = {};

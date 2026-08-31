@@ -470,42 +470,44 @@ flowchart TD
   satoshi_office("CEO")
   rc_hashchain_brochure_1{"HashChain Exchange Brochure"}
   rc_npc_agent_hax_2("Agent HaX")
-  rc_npc_agent_hax_3("Agent HaX")
-  rc_obj4_4{"SAFETYNET Field Guide: SSH Access and Password Cracking"}
-  rc_obj5_5{"SAFETYNET Field Guide: Privilege Escalation and Credential Reuse"}
-  rc_obj6_6{"SAFETYNET Field Guide: Reconnaissance and Network Mapping"}
-  rc_obj7_7{"SAFETYNET Field Guide: RFID Cloning"}
-  rc_npc_agent_hax_8("Agent HaX")
-  rc_it_onboarding_checklist_9{"IT New Starter Checklist"}
-  rc_trading_workstation_10{"Trading Workstation"}
-  rc_daily_trading_report_11{"Daily Trading Report"}
-  rc_rfid_cloner_12{"RFID Badge Cloner"}
-  rc_npc_dr_elena_volkov_13("Dr. Elena Volkov")
-  rc_obj14_14{"CTO Access Badge"}
-  rc_obj15_15{"Password Dictionary List"}
-  rc_npc_dani_okonkwo_16("Dani Okonkwo")
-  rc_vm_launcher_hackme_17{"HashChain Backend Server Terminal"}
-  rc_flag_station_financial_18{"SAFETYNET Financial Intelligence Drop"}
-  rc_server_rack_labels_19{"Rack Inventory Sheet"}
-  rc_transaction_server_20[["Financial Transaction Server"]]
-  rc_settlement_log_21{"settlement_exceptions.log"}
-  rc_mixer_config_22{"mixer_pool_config.yml"}
-  rc_cold_storage_index_23{"cold_storage_index.csv"}
-  rc_architects_fund_doc_24{"The Architect's Fund Allocation"}
-  rc_wallet_recovery_keys_25{"Wallet Recovery Keys"}
-  rc_executive_access_badge_26{"Executive Access Badge"}
-  rc_blockchain_workstation_27{"Blockchain Analysis Workstation"}
-  rc_blockchain_evidence_28{"ENTROPY Transaction Network Analysis"}
-  rc_mixing_analysis_29{"Privacy Coin Mixing Analysis"}
-  rc_npc_priya_raghavan_30("Priya Raghavan")
-  rc_elena_workstation_31{"Elena's Secure Workstation"}
-  rc_elena_research_notes_32{"Cryptography Research Notes"}
-  rc_architect_email_33{"Email: From The Architect"}
-  rc_executive_wing_plaque_34{"Framed Press Clipping"}
-  rc_crypto_anarchist_manifesto_35{"Crypto Anarchist Manifesto"}
-  rc_executive_safe_36[["Executive Safe"]]
-  rc_architect_identity_file_37{"The Architect's Identity File"}
-  rc_npc_satoshi_nakamoto_ii_38("Satoshi Nakamoto II")
+  rc_npc_director_magnus_netherton_3("Director Magnus Netherton")
+  rc_npc_agent_0x47_nightshade_4("Agent 0x47 'Nightshade'")
+  rc_npc_agent_hax_5("Agent HaX")
+  rc_obj6_6{"SAFETYNET Field Guide: SSH Access and Password Cracking"}
+  rc_obj7_7{"SAFETYNET Field Guide: Privilege Escalation and Credential Reuse"}
+  rc_obj8_8{"SAFETYNET Field Guide: Reconnaissance and Network Mapping"}
+  rc_obj9_9{"SAFETYNET Field Guide: RFID Cloning"}
+  rc_npc_agent_hax_10("Agent HaX")
+  rc_it_onboarding_checklist_11{"IT New Starter Checklist"}
+  rc_trading_workstation_12{"Trading Workstation"}
+  rc_daily_trading_report_13{"Daily Trading Report"}
+  rc_rfid_cloner_14{"RFID Badge Cloner"}
+  rc_npc_dr_elena_volkov_15("Dr. Elena Volkov")
+  rc_obj16_16{"CTO Access Badge"}
+  rc_obj17_17{"Password Dictionary List"}
+  rc_npc_dani_okonkwo_18("Dani Okonkwo")
+  rc_vm_launcher_hackme_19{"HashChain Backend Server Terminal"}
+  rc_flag_station_financial_20{"SAFETYNET Financial Intelligence Drop"}
+  rc_server_rack_labels_21{"Rack Inventory Sheet"}
+  rc_transaction_server_22[["Financial Transaction Server"]]
+  rc_settlement_log_23{"settlement_exceptions.log"}
+  rc_mixer_config_24{"mixer_pool_config.yml"}
+  rc_cold_storage_index_25{"cold_storage_index.csv"}
+  rc_architects_fund_doc_26{"The Architect's Fund Allocation"}
+  rc_wallet_recovery_keys_27{"Wallet Recovery Keys"}
+  rc_executive_access_badge_28{"Executive Access Badge"}
+  rc_blockchain_workstation_29{"Blockchain Analysis Workstation"}
+  rc_blockchain_evidence_30{"ENTROPY Transaction Network Analysis"}
+  rc_mixing_analysis_31{"Privacy Coin Mixing Analysis"}
+  rc_npc_priya_raghavan_32("Priya Raghavan")
+  rc_elena_workstation_33{"Elena's Secure Workstation"}
+  rc_elena_research_notes_34{"Cryptography Research Notes"}
+  rc_architect_email_35{"Email: From The Architect"}
+  rc_executive_wing_plaque_36{"Framed Press Clipping"}
+  rc_crypto_anarchist_manifesto_37{"Crypto Anarchist Manifesto"}
+  rc_executive_safe_38[["Executive Safe"]]
+  rc_architect_identity_file_39{"The Architect's Identity File"}
+  rc_npc_satoshi_nakamoto_ii_40("Satoshi Nakamoto II")
 
   reception_lobby --> security_checkpoint
   security_checkpoint --> trading_floor
@@ -517,47 +519,49 @@ flowchart TD
   executive_wing --> satoshi_office
   reception_lobby --> rc_hashchain_brochure_1
   reception_lobby --> rc_npc_agent_hax_2
-  reception_lobby --> rc_npc_agent_hax_3
-  rc_npc_agent_hax_3 --> rc_obj4_4
-  rc_npc_agent_hax_3 --> rc_obj5_5
-  rc_npc_agent_hax_3 --> rc_obj6_6
-  rc_npc_agent_hax_3 --> rc_obj7_7
-  reception_lobby --> rc_npc_agent_hax_8
-  security_checkpoint --> rc_it_onboarding_checklist_9
-  trading_floor --> rc_trading_workstation_10
-  trading_floor --> rc_daily_trading_report_11
-  trading_floor --> rc_rfid_cloner_12
-  trading_floor --> rc_npc_dr_elena_volkov_13
-  rc_npc_dr_elena_volkov_13 --> rc_obj14_14
-  rc_npc_dr_elena_volkov_13 --> rc_obj15_15
-  trading_floor --> rc_npc_dani_okonkwo_16
-  server_room --> rc_vm_launcher_hackme_17
-  server_room --> rc_flag_station_financial_18
-  server_room --> rc_server_rack_labels_19
-  data_center --> rc_transaction_server_20
-  rc_transaction_server_20 --> rc_settlement_log_21
-  rc_transaction_server_20 --> rc_mixer_config_22
-  rc_transaction_server_20 --> rc_cold_storage_index_23
-  data_center --> rc_architects_fund_doc_24
-  data_center --> rc_wallet_recovery_keys_25
-  data_center --> rc_executive_access_badge_26
-  blockchain_lab --> rc_blockchain_workstation_27
-  blockchain_lab --> rc_blockchain_evidence_28
-  blockchain_lab --> rc_mixing_analysis_29
-  blockchain_lab --> rc_npc_priya_raghavan_30
-  elena_office --> rc_elena_workstation_31
-  elena_office --> rc_elena_research_notes_32
-  elena_office --> rc_architect_email_33
-  executive_wing --> rc_executive_wing_plaque_34
-  satoshi_office --> rc_crypto_anarchist_manifesto_35
-  satoshi_office --> rc_executive_safe_36
-  rc_executive_safe_36 --> rc_architect_identity_file_37
-  satoshi_office --> rc_npc_satoshi_nakamoto_ii_38
+  reception_lobby --> rc_npc_director_magnus_netherton_3
+  reception_lobby --> rc_npc_agent_0x47_nightshade_4
+  reception_lobby --> rc_npc_agent_hax_5
+  rc_npc_agent_hax_5 --> rc_obj6_6
+  rc_npc_agent_hax_5 --> rc_obj7_7
+  rc_npc_agent_hax_5 --> rc_obj8_8
+  rc_npc_agent_hax_5 --> rc_obj9_9
+  reception_lobby --> rc_npc_agent_hax_10
+  security_checkpoint --> rc_it_onboarding_checklist_11
+  trading_floor --> rc_trading_workstation_12
+  trading_floor --> rc_daily_trading_report_13
+  trading_floor --> rc_rfid_cloner_14
+  trading_floor --> rc_npc_dr_elena_volkov_15
+  rc_npc_dr_elena_volkov_15 --> rc_obj16_16
+  rc_npc_dr_elena_volkov_15 --> rc_obj17_17
+  trading_floor --> rc_npc_dani_okonkwo_18
+  server_room --> rc_vm_launcher_hackme_19
+  server_room --> rc_flag_station_financial_20
+  server_room --> rc_server_rack_labels_21
+  data_center --> rc_transaction_server_22
+  rc_transaction_server_22 --> rc_settlement_log_23
+  rc_transaction_server_22 --> rc_mixer_config_24
+  rc_transaction_server_22 --> rc_cold_storage_index_25
+  data_center --> rc_architects_fund_doc_26
+  data_center --> rc_wallet_recovery_keys_27
+  data_center --> rc_executive_access_badge_28
+  blockchain_lab --> rc_blockchain_workstation_29
+  blockchain_lab --> rc_blockchain_evidence_30
+  blockchain_lab --> rc_mixing_analysis_31
+  blockchain_lab --> rc_npc_priya_raghavan_32
+  elena_office --> rc_elena_workstation_33
+  elena_office --> rc_elena_research_notes_34
+  elena_office --> rc_architect_email_35
+  executive_wing --> rc_executive_wing_plaque_36
+  satoshi_office --> rc_crypto_anarchist_manifesto_37
+  satoshi_office --> rc_executive_safe_38
+  rc_executive_safe_38 --> rc_architect_identity_file_39
+  satoshi_office --> rc_npc_satoshi_nakamoto_ii_40
 
   class reception_lobby,security_checkpoint,trading_floor,data_center,blockchain_lab,satoshi_office room
   class server_room,elena_office,executive_wing lock
-  class rc_hashchain_brochure_1,rc_obj4_4,rc_obj5_5,rc_obj6_6,rc_obj7_7,rc_it_onboarding_checklist_9,rc_trading_workstation_10,rc_daily_trading_report_11,rc_rfid_cloner_12,rc_obj14_14,rc_obj15_15,rc_vm_launcher_hackme_17,rc_flag_station_financial_18,rc_server_rack_labels_19,rc_settlement_log_21,rc_mixer_config_22,rc_cold_storage_index_23,rc_architects_fund_doc_24,rc_wallet_recovery_keys_25,rc_executive_access_badge_26,rc_blockchain_workstation_27,rc_blockchain_evidence_28,rc_mixing_analysis_29,rc_elena_workstation_31,rc_elena_research_notes_32,rc_architect_email_33,rc_executive_wing_plaque_34,rc_crypto_anarchist_manifesto_35,rc_architect_identity_file_37 item
-  class rc_npc_agent_hax_2,rc_npc_agent_hax_3,rc_npc_agent_hax_8,rc_npc_dr_elena_volkov_13,rc_npc_dani_okonkwo_16,rc_npc_priya_raghavan_30,rc_npc_satoshi_nakamoto_ii_38 npc
-  class rc_transaction_server_20,rc_executive_safe_36 container
+  class rc_hashchain_brochure_1,rc_obj6_6,rc_obj7_7,rc_obj8_8,rc_obj9_9,rc_it_onboarding_checklist_11,rc_trading_workstation_12,rc_daily_trading_report_13,rc_rfid_cloner_14,rc_obj16_16,rc_obj17_17,rc_vm_launcher_hackme_19,rc_flag_station_financial_20,rc_server_rack_labels_21,rc_settlement_log_23,rc_mixer_config_24,rc_cold_storage_index_25,rc_architects_fund_doc_26,rc_wallet_recovery_keys_27,rc_executive_access_badge_28,rc_blockchain_workstation_29,rc_blockchain_evidence_30,rc_mixing_analysis_31,rc_elena_workstation_33,rc_elena_research_notes_34,rc_architect_email_35,rc_executive_wing_plaque_36,rc_crypto_anarchist_manifesto_37,rc_architect_identity_file_39 item
+  class rc_npc_agent_hax_2,rc_npc_director_magnus_netherton_3,rc_npc_agent_0x47_nightshade_4,rc_npc_agent_hax_5,rc_npc_agent_hax_10,rc_npc_dr_elena_volkov_15,rc_npc_dani_okonkwo_18,rc_npc_priya_raghavan_32,rc_npc_satoshi_nakamoto_ii_40 npc
+  class rc_transaction_server_22,rc_executive_safe_38 container
   class node_start start
 ```

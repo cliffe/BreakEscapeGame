@@ -736,84 +736,86 @@ flowchart TD
   rc_obj3_3{"Crisis Protocol Notice"}
   rc_reception_terminal_4{"Reception Workstation (Encrypted)"}
   rc_npc_agent_hax_5("Agent HaX")
-  rc_npc_bernie_nwosu_6("Bernie Nwosu")
-  rc_obj7_7{"IT Department Override Key"}
-  rc_npc_agent_hax_8("Agent HaX")
-  rc_obj9_9{"SAFETYNET Field Guide: Reconnaissance and Network Mapping"}
-  rc_obj10_10{"SAFETYNET Field Guide: Vulnerability Analysis and Attack Surface"}
-  rc_obj11_11{"SAFETYNET Field Guide: ProFTPD Exploitation Workflow"}
-  rc_obj12_12{"SAFETYNET Field Guide: Scanning and Exploitation"}
-  rc_obj13_13{"SAFETYNET Field Guide: Lockpicking"}
-  rc_obj14_14{"SAFETYNET Field Guide: SSH Access and Bruteforce"}
-  rc_obj15_15{"SAFETYNET Field Guide: Privilege Escalation"}
-  rc_obj16_16{"SAFETYNET Field Note: Information Leakage & the PIN Oracle"}
-  rc_npc_ghost_17("Ghost")
-  rc_npc_agent_hax_18("Agent HaX")
-  rc_ehr_terminal_ward_19{"EHR Terminal (Offline)"}
-  rc_obj20_20{"Bed 4 Ventilator Panel"}
-  rc_obj21_21{"Paper Patient Chart - Bed 3"}
-  rc_obj22_22{"Emergency Ops Board"}
-  rc_npc_sister_doyle_23("Sister Doyle")
-  rc_obj24_24{"Bank Staff Lanyard"}
-  rc_npc_nurse_raval_25("Nurse Raval")
-  rc_npc_mr_pryce_26("Mr Pryce")
-  rc_npc_mrs_hargreaves_27("Mrs Hargreaves")
-  rc_npc_ms_chen_28("Ms Chen")
-  rc_infected_terminal_29{"Infected Terminal"}
-  rc_gary_workstation_30[["Gary's Workstation"]]
-  rc_obj31_31{"Backup Server SSH Notes"}
-  rc_gary_desk_printouts_32{"Printouts on Gary's Desk"}
-  rc_password_sticky_note_33{"Gary's Password Sticky Note"}
-  rc_obj34_34{"Photo Frame - Emma's Birthday"}
-  rc_it_filing_cabinet_35[["IT Filing Cabinet"]]
-  rc_gary_vindication_email_36{"Gary's Email Archive -- Warning 7 of 7"}
-  rc_kim_deferral_reply_37{"Dr. Kim's Reply -- 21 May"}
-  rc_obj38_38{"CryptoSecure Recovery Services Document"}
-  rc_obj39_39{"Network Diagram Whiteboard"}
-  rc_ghost_terminal_device_40{"Planted Network Device"}
-  rc_npc_gary_whitlock_41("Gary Whitlock")
-  rc_obj42_42{"Server Room Keycard"}
-  rc_obj43_43{"Spare Contractor Lanyard"}
-  rc_vm_launcher_rooting_for_a_win_44{"VM Access Terminal"}
-  rc_flag_station_dropsite_45{"SAFETYNET Drop-Site Terminal"}
-  rc_cyberchef_workstation_46{"CyberChef Workstation"}
-  rc_hospital_recovery_console_47{"Hospital Recovery Console"}
-  rc_obj48_48{"Backup Power Indicator"}
-  rc_obj49_49{"Recovery Instructions (Encoded)"}
-  rc_entropy_staging_cache_50[["ENTROPY Staging Cache"]]
-  rc_ghost_manifesto_51{"Ghost's Operational Manifesto"}
-  rc_obj52_52{"Affiliate Handling Note"}
-  rc_emergency_storage_safe_53[["PIN-Locked Safe"]]
-  rc_offline_backup_encryption_keys_54{"Offline Backup Encryption Keys"}
-  rc_entropy_field_case_55[["Sealed Equipment Case"]]
-  rc_pin_cracker_56{"PIN Cracker"}
-  rc_entropy_asset_tag_57{"ENTROPY Asset Tag"}
-  rc_obj58_58{"Medical Supply Shelves"}
-  rc_kim_office_terminal_59{"CTO Workstation (Encrypted)"}
-  rc_obj60_60{"Dr. Kim's Desk Diary"}
-  rc_obj61_61{"Budget Report"}
-  rc_obj62_62{"Patient Status Report"}
-  rc_obj63_63[["Dr. Kim's Safe"]]
-  rc_obj64_64{"Zero Day Syndicate Invoice"}
-  rc_npc_dr_sarah_kim_65("Dr. Sarah Kim")
-  rc_obj66_66{"Visitor Badge (Countersigned)"}
-  rc_obj67_67{"Dr. Kim's Signed Statement"}
-  rc_obj68_68{"Conference Table Budget Papers"}
-  rc_obj69_69{"Conference Whiteboard"}
-  rc_obj70_70{"Board Liability Email"}
-  rc_obj71_71{"Ransomware Incorporated Proposal"}
-  rc_obj72_72{"Night Security Post Log"}
-  rc_press_terminal_73{"Hospital Communications Terminal"}
-  rc_npc_hospital_comms_terminal_74("Hospital Comms Terminal")
-  rc_npc_graham_reeves_75("Graham Reeves")
-  rc_security_desk_terminal_76{"Security Desk Terminal (Encrypted)"}
-  rc_obj77_77{"Key Cabinet (Empty)"}
-  rc_obj78_78{"Night Rota"}
-  rc_obj79_79{"Val's Chair"}
-  rc_npc_val_okonkwo_80("Val Okonkwo")
-  rc_obj81_81{"Val's Pocket Notebook"}
-  rc_obj82_82{"Ward Board"}
-  rc_obj83_83{"Nurse's Handwritten Note"}
+  rc_npc_director_magnus_netherton_6("Director Magnus Netherton")
+  rc_npc_agent_0x47_nightshade_7("Agent 0x47 'Nightshade'")
+  rc_npc_bernie_nwosu_8("Bernie Nwosu")
+  rc_obj9_9{"IT Department Override Key"}
+  rc_npc_agent_hax_10("Agent HaX")
+  rc_obj11_11{"SAFETYNET Field Guide: Reconnaissance and Network Mapping"}
+  rc_obj12_12{"SAFETYNET Field Guide: Vulnerability Analysis and Attack Surface"}
+  rc_obj13_13{"SAFETYNET Field Guide: ProFTPD Exploitation Workflow"}
+  rc_obj14_14{"SAFETYNET Field Guide: Scanning and Exploitation"}
+  rc_obj15_15{"SAFETYNET Field Guide: Lockpicking"}
+  rc_obj16_16{"SAFETYNET Field Guide: SSH Access and Bruteforce"}
+  rc_obj17_17{"SAFETYNET Field Guide: Privilege Escalation"}
+  rc_obj18_18{"SAFETYNET Field Note: Information Leakage & the PIN Oracle"}
+  rc_npc_ghost_19("Ghost")
+  rc_npc_agent_hax_20("Agent HaX")
+  rc_ehr_terminal_ward_21{"EHR Terminal (Offline)"}
+  rc_obj22_22{"Bed 4 Ventilator Panel"}
+  rc_obj23_23{"Paper Patient Chart - Bed 3"}
+  rc_obj24_24{"Emergency Ops Board"}
+  rc_npc_sister_doyle_25("Sister Doyle")
+  rc_obj26_26{"Bank Staff Lanyard"}
+  rc_npc_nurse_raval_27("Nurse Raval")
+  rc_npc_mr_pryce_28("Mr Pryce")
+  rc_npc_mrs_hargreaves_29("Mrs Hargreaves")
+  rc_npc_ms_chen_30("Ms Chen")
+  rc_infected_terminal_31{"Infected Terminal"}
+  rc_gary_workstation_32[["Gary's Workstation"]]
+  rc_obj33_33{"Backup Server SSH Notes"}
+  rc_gary_desk_printouts_34{"Printouts on Gary's Desk"}
+  rc_password_sticky_note_35{"Gary's Password Sticky Note"}
+  rc_obj36_36{"Photo Frame - Emma's Birthday"}
+  rc_it_filing_cabinet_37[["IT Filing Cabinet"]]
+  rc_gary_vindication_email_38{"Gary's Email Archive -- Warning 7 of 7"}
+  rc_kim_deferral_reply_39{"Dr. Kim's Reply -- 21 May"}
+  rc_obj40_40{"CryptoSecure Recovery Services Document"}
+  rc_obj41_41{"Network Diagram Whiteboard"}
+  rc_ghost_terminal_device_42{"Planted Network Device"}
+  rc_npc_gary_whitlock_43("Gary Whitlock")
+  rc_obj44_44{"Server Room Keycard"}
+  rc_obj45_45{"Spare Contractor Lanyard"}
+  rc_vm_launcher_rooting_for_a_win_46{"VM Access Terminal"}
+  rc_flag_station_dropsite_47{"SAFETYNET Drop-Site Terminal"}
+  rc_cyberchef_workstation_48{"CyberChef Workstation"}
+  rc_hospital_recovery_console_49{"Hospital Recovery Console"}
+  rc_obj50_50{"Backup Power Indicator"}
+  rc_obj51_51{"Recovery Instructions (Encoded)"}
+  rc_entropy_staging_cache_52[["ENTROPY Staging Cache"]]
+  rc_ghost_manifesto_53{"Ghost's Operational Manifesto"}
+  rc_obj54_54{"Affiliate Handling Note"}
+  rc_emergency_storage_safe_55[["PIN-Locked Safe"]]
+  rc_offline_backup_encryption_keys_56{"Offline Backup Encryption Keys"}
+  rc_entropy_field_case_57[["Sealed Equipment Case"]]
+  rc_pin_cracker_58{"PIN Cracker"}
+  rc_entropy_asset_tag_59{"ENTROPY Asset Tag"}
+  rc_obj60_60{"Medical Supply Shelves"}
+  rc_kim_office_terminal_61{"CTO Workstation (Encrypted)"}
+  rc_obj62_62{"Dr. Kim's Desk Diary"}
+  rc_obj63_63{"Budget Report"}
+  rc_obj64_64{"Patient Status Report"}
+  rc_obj65_65[["Dr. Kim's Safe"]]
+  rc_obj66_66{"Zero Day Syndicate Invoice"}
+  rc_npc_dr_sarah_kim_67("Dr. Sarah Kim")
+  rc_obj68_68{"Visitor Badge (Countersigned)"}
+  rc_obj69_69{"Dr. Kim's Signed Statement"}
+  rc_obj70_70{"Conference Table Budget Papers"}
+  rc_obj71_71{"Conference Whiteboard"}
+  rc_obj72_72{"Board Liability Email"}
+  rc_obj73_73{"Ransomware Incorporated Proposal"}
+  rc_obj74_74{"Night Security Post Log"}
+  rc_press_terminal_75{"Hospital Communications Terminal"}
+  rc_npc_hospital_comms_terminal_76("Hospital Comms Terminal")
+  rc_npc_graham_reeves_77("Graham Reeves")
+  rc_security_desk_terminal_78{"Security Desk Terminal (Encrypted)"}
+  rc_obj79_79{"Key Cabinet (Empty)"}
+  rc_obj80_80{"Night Rota"}
+  rc_obj81_81{"Val's Chair"}
+  rc_npc_val_okonkwo_82("Val Okonkwo")
+  rc_obj83_83{"Val's Pocket Notebook"}
+  rc_obj84_84{"Ward Board"}
+  rc_obj85_85{"Nurse's Handwritten Note"}
 
   reception_lobby --> ward_vestibule
   hospital_ward --> ward_approach
@@ -834,89 +836,91 @@ flowchart TD
   reception_lobby --> rc_obj3_3
   reception_lobby --> rc_reception_terminal_4
   reception_lobby --> rc_npc_agent_hax_5
-  reception_lobby --> rc_npc_bernie_nwosu_6
-  rc_npc_bernie_nwosu_6 --> rc_obj7_7
-  reception_lobby --> rc_npc_agent_hax_8
-  rc_npc_agent_hax_8 --> rc_obj9_9
-  rc_npc_agent_hax_8 --> rc_obj10_10
-  rc_npc_agent_hax_8 --> rc_obj11_11
-  rc_npc_agent_hax_8 --> rc_obj12_12
-  rc_npc_agent_hax_8 --> rc_obj13_13
-  rc_npc_agent_hax_8 --> rc_obj14_14
-  rc_npc_agent_hax_8 --> rc_obj15_15
-  rc_npc_agent_hax_8 --> rc_obj16_16
-  reception_lobby --> rc_npc_ghost_17
-  reception_lobby --> rc_npc_agent_hax_18
-  hospital_ward --> rc_ehr_terminal_ward_19
-  hospital_ward --> rc_obj20_20
-  hospital_ward --> rc_obj21_21
+  reception_lobby --> rc_npc_director_magnus_netherton_6
+  reception_lobby --> rc_npc_agent_0x47_nightshade_7
+  reception_lobby --> rc_npc_bernie_nwosu_8
+  rc_npc_bernie_nwosu_8 --> rc_obj9_9
+  reception_lobby --> rc_npc_agent_hax_10
+  rc_npc_agent_hax_10 --> rc_obj11_11
+  rc_npc_agent_hax_10 --> rc_obj12_12
+  rc_npc_agent_hax_10 --> rc_obj13_13
+  rc_npc_agent_hax_10 --> rc_obj14_14
+  rc_npc_agent_hax_10 --> rc_obj15_15
+  rc_npc_agent_hax_10 --> rc_obj16_16
+  rc_npc_agent_hax_10 --> rc_obj17_17
+  rc_npc_agent_hax_10 --> rc_obj18_18
+  reception_lobby --> rc_npc_ghost_19
+  reception_lobby --> rc_npc_agent_hax_20
+  hospital_ward --> rc_ehr_terminal_ward_21
   hospital_ward --> rc_obj22_22
-  hospital_ward --> rc_npc_sister_doyle_23
-  rc_npc_sister_doyle_23 --> rc_obj24_24
-  hospital_ward --> rc_npc_nurse_raval_25
-  hospital_ward --> rc_npc_mr_pryce_26
-  hospital_ward --> rc_npc_mrs_hargreaves_27
-  hospital_ward --> rc_npc_ms_chen_28
-  it_department --> rc_infected_terminal_29
-  it_department --> rc_gary_workstation_30
-  rc_gary_workstation_30 --> rc_obj31_31
-  it_department --> rc_gary_desk_printouts_32
-  it_department --> rc_password_sticky_note_33
-  it_department --> rc_obj34_34
-  it_department --> rc_it_filing_cabinet_35
-  rc_it_filing_cabinet_35 --> rc_gary_vindication_email_36
-  rc_it_filing_cabinet_35 --> rc_kim_deferral_reply_37
-  rc_it_filing_cabinet_35 --> rc_obj38_38
-  it_department --> rc_obj39_39
-  it_department --> rc_ghost_terminal_device_40
-  it_department --> rc_npc_gary_whitlock_41
-  rc_npc_gary_whitlock_41 --> rc_obj42_42
-  rc_npc_gary_whitlock_41 --> rc_obj43_43
-  server_room --> rc_vm_launcher_rooting_for_a_win_44
-  server_room --> rc_flag_station_dropsite_45
-  server_room --> rc_cyberchef_workstation_46
-  server_room --> rc_hospital_recovery_console_47
-  server_room --> rc_obj48_48
-  server_room --> rc_obj49_49
-  server_room --> rc_entropy_staging_cache_50
-  rc_entropy_staging_cache_50 --> rc_ghost_manifesto_51
-  rc_entropy_staging_cache_50 --> rc_obj52_52
-  emergency_equipment_storage --> rc_emergency_storage_safe_53
-  rc_emergency_storage_safe_53 --> rc_offline_backup_encryption_keys_54
-  emergency_equipment_storage --> rc_entropy_field_case_55
-  rc_entropy_field_case_55 --> rc_pin_cracker_56
-  rc_entropy_field_case_55 --> rc_entropy_asset_tag_57
-  emergency_equipment_storage --> rc_obj58_58
-  dr_kim_office --> rc_kim_office_terminal_59
-  dr_kim_office --> rc_obj60_60
-  dr_kim_office --> rc_obj61_61
+  hospital_ward --> rc_obj23_23
+  hospital_ward --> rc_obj24_24
+  hospital_ward --> rc_npc_sister_doyle_25
+  rc_npc_sister_doyle_25 --> rc_obj26_26
+  hospital_ward --> rc_npc_nurse_raval_27
+  hospital_ward --> rc_npc_mr_pryce_28
+  hospital_ward --> rc_npc_mrs_hargreaves_29
+  hospital_ward --> rc_npc_ms_chen_30
+  it_department --> rc_infected_terminal_31
+  it_department --> rc_gary_workstation_32
+  rc_gary_workstation_32 --> rc_obj33_33
+  it_department --> rc_gary_desk_printouts_34
+  it_department --> rc_password_sticky_note_35
+  it_department --> rc_obj36_36
+  it_department --> rc_it_filing_cabinet_37
+  rc_it_filing_cabinet_37 --> rc_gary_vindication_email_38
+  rc_it_filing_cabinet_37 --> rc_kim_deferral_reply_39
+  rc_it_filing_cabinet_37 --> rc_obj40_40
+  it_department --> rc_obj41_41
+  it_department --> rc_ghost_terminal_device_42
+  it_department --> rc_npc_gary_whitlock_43
+  rc_npc_gary_whitlock_43 --> rc_obj44_44
+  rc_npc_gary_whitlock_43 --> rc_obj45_45
+  server_room --> rc_vm_launcher_rooting_for_a_win_46
+  server_room --> rc_flag_station_dropsite_47
+  server_room --> rc_cyberchef_workstation_48
+  server_room --> rc_hospital_recovery_console_49
+  server_room --> rc_obj50_50
+  server_room --> rc_obj51_51
+  server_room --> rc_entropy_staging_cache_52
+  rc_entropy_staging_cache_52 --> rc_ghost_manifesto_53
+  rc_entropy_staging_cache_52 --> rc_obj54_54
+  emergency_equipment_storage --> rc_emergency_storage_safe_55
+  rc_emergency_storage_safe_55 --> rc_offline_backup_encryption_keys_56
+  emergency_equipment_storage --> rc_entropy_field_case_57
+  rc_entropy_field_case_57 --> rc_pin_cracker_58
+  rc_entropy_field_case_57 --> rc_entropy_asset_tag_59
+  emergency_equipment_storage --> rc_obj60_60
+  dr_kim_office --> rc_kim_office_terminal_61
   dr_kim_office --> rc_obj62_62
   dr_kim_office --> rc_obj63_63
-  rc_obj63_63 --> rc_obj64_64
-  dr_kim_office --> rc_npc_dr_sarah_kim_65
-  rc_npc_dr_sarah_kim_65 --> rc_obj66_66
-  rc_npc_dr_sarah_kim_65 --> rc_obj67_67
-  conference_room --> rc_obj68_68
-  conference_room --> rc_obj69_69
+  dr_kim_office --> rc_obj64_64
+  dr_kim_office --> rc_obj65_65
+  rc_obj65_65 --> rc_obj66_66
+  dr_kim_office --> rc_npc_dr_sarah_kim_67
+  rc_npc_dr_sarah_kim_67 --> rc_obj68_68
+  rc_npc_dr_sarah_kim_67 --> rc_obj69_69
   conference_room --> rc_obj70_70
   conference_room --> rc_obj71_71
   conference_room --> rc_obj72_72
-  conference_room --> rc_press_terminal_73
-  conference_room --> rc_npc_hospital_comms_terminal_74
-  conference_room --> rc_npc_graham_reeves_75
-  security_office --> rc_security_desk_terminal_76
-  security_office --> rc_obj77_77
-  security_office --> rc_obj78_78
+  conference_room --> rc_obj73_73
+  conference_room --> rc_obj74_74
+  conference_room --> rc_press_terminal_75
+  conference_room --> rc_npc_hospital_comms_terminal_76
+  conference_room --> rc_npc_graham_reeves_77
+  security_office --> rc_security_desk_terminal_78
   security_office --> rc_obj79_79
-  security_office --> rc_npc_val_okonkwo_80
-  rc_npc_val_okonkwo_80 --> rc_obj81_81
-  office_corridor --> rc_obj82_82
-  ward_approach --> rc_obj83_83
+  security_office --> rc_obj80_80
+  security_office --> rc_obj81_81
+  security_office --> rc_npc_val_okonkwo_82
+  rc_npc_val_okonkwo_82 --> rc_obj83_83
+  office_corridor --> rc_obj84_84
+  ward_approach --> rc_obj85_85
 
   class reception_lobby,hospital_ward,emergency_equipment_storage,dr_kim_office,security_office,office_corridor,office_hall_west,office_hall_mid,office_hall_east,ward_hall,ward_vestibule,ward_approach room
   class it_department,server_room,conference_room lock
-  class rc_reception_visitor_log_1,rc_obj2_2,rc_obj3_3,rc_reception_terminal_4,rc_obj7_7,rc_obj9_9,rc_obj10_10,rc_obj11_11,rc_obj12_12,rc_obj13_13,rc_obj14_14,rc_obj15_15,rc_obj16_16,rc_ehr_terminal_ward_19,rc_obj20_20,rc_obj21_21,rc_obj22_22,rc_obj24_24,rc_infected_terminal_29,rc_obj31_31,rc_gary_desk_printouts_32,rc_password_sticky_note_33,rc_obj34_34,rc_gary_vindication_email_36,rc_kim_deferral_reply_37,rc_obj38_38,rc_obj39_39,rc_ghost_terminal_device_40,rc_obj42_42,rc_obj43_43,rc_vm_launcher_rooting_for_a_win_44,rc_flag_station_dropsite_45,rc_cyberchef_workstation_46,rc_hospital_recovery_console_47,rc_obj48_48,rc_obj49_49,rc_ghost_manifesto_51,rc_obj52_52,rc_offline_backup_encryption_keys_54,rc_pin_cracker_56,rc_entropy_asset_tag_57,rc_obj58_58,rc_kim_office_terminal_59,rc_obj60_60,rc_obj61_61,rc_obj62_62,rc_obj64_64,rc_obj66_66,rc_obj67_67,rc_obj68_68,rc_obj69_69,rc_obj70_70,rc_obj71_71,rc_obj72_72,rc_press_terminal_73,rc_security_desk_terminal_76,rc_obj77_77,rc_obj78_78,rc_obj79_79,rc_obj81_81,rc_obj82_82,rc_obj83_83 item
-  class rc_npc_agent_hax_5,rc_npc_bernie_nwosu_6,rc_npc_agent_hax_8,rc_npc_ghost_17,rc_npc_agent_hax_18,rc_npc_sister_doyle_23,rc_npc_nurse_raval_25,rc_npc_mr_pryce_26,rc_npc_mrs_hargreaves_27,rc_npc_ms_chen_28,rc_npc_gary_whitlock_41,rc_npc_dr_sarah_kim_65,rc_npc_hospital_comms_terminal_74,rc_npc_graham_reeves_75,rc_npc_val_okonkwo_80 npc
-  class rc_gary_workstation_30,rc_it_filing_cabinet_35,rc_entropy_staging_cache_50,rc_emergency_storage_safe_53,rc_entropy_field_case_55,rc_obj63_63 container
+  class rc_reception_visitor_log_1,rc_obj2_2,rc_obj3_3,rc_reception_terminal_4,rc_obj9_9,rc_obj11_11,rc_obj12_12,rc_obj13_13,rc_obj14_14,rc_obj15_15,rc_obj16_16,rc_obj17_17,rc_obj18_18,rc_ehr_terminal_ward_21,rc_obj22_22,rc_obj23_23,rc_obj24_24,rc_obj26_26,rc_infected_terminal_31,rc_obj33_33,rc_gary_desk_printouts_34,rc_password_sticky_note_35,rc_obj36_36,rc_gary_vindication_email_38,rc_kim_deferral_reply_39,rc_obj40_40,rc_obj41_41,rc_ghost_terminal_device_42,rc_obj44_44,rc_obj45_45,rc_vm_launcher_rooting_for_a_win_46,rc_flag_station_dropsite_47,rc_cyberchef_workstation_48,rc_hospital_recovery_console_49,rc_obj50_50,rc_obj51_51,rc_ghost_manifesto_53,rc_obj54_54,rc_offline_backup_encryption_keys_56,rc_pin_cracker_58,rc_entropy_asset_tag_59,rc_obj60_60,rc_kim_office_terminal_61,rc_obj62_62,rc_obj63_63,rc_obj64_64,rc_obj66_66,rc_obj68_68,rc_obj69_69,rc_obj70_70,rc_obj71_71,rc_obj72_72,rc_obj73_73,rc_obj74_74,rc_press_terminal_75,rc_security_desk_terminal_78,rc_obj79_79,rc_obj80_80,rc_obj81_81,rc_obj83_83,rc_obj84_84,rc_obj85_85 item
+  class rc_npc_agent_hax_5,rc_npc_director_magnus_netherton_6,rc_npc_agent_0x47_nightshade_7,rc_npc_bernie_nwosu_8,rc_npc_agent_hax_10,rc_npc_ghost_19,rc_npc_agent_hax_20,rc_npc_sister_doyle_25,rc_npc_nurse_raval_27,rc_npc_mr_pryce_28,rc_npc_mrs_hargreaves_29,rc_npc_ms_chen_30,rc_npc_gary_whitlock_43,rc_npc_dr_sarah_kim_67,rc_npc_hospital_comms_terminal_76,rc_npc_graham_reeves_77,rc_npc_val_okonkwo_82 npc
+  class rc_gary_workstation_32,rc_it_filing_cabinet_37,rc_entropy_staging_cache_52,rc_emergency_storage_safe_55,rc_entropy_field_case_57,rc_obj65_65 container
   class node_start start
 ```

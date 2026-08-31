@@ -19,6 +19,14 @@ VAR player_name = "Agent 0x00"
 // ================================================
 
 === start ===
+Narrator: A SAFETYNET briefing room. Director Netherton drops a thick financial dossier on the table; Nightshade is already pulling the transaction graph apart on a laptop.
+
+Director Magnus Netherton: Agent 0x00. Every cell we've hit is being paid by someone. Tonight we stop chasing the operations and start chasing the money. Nightshade's been mapping the flows; HaX takes you in.
+
+Agent 0x47 'Nightshade': *tracing a line on screen* Money's just another protocol, and this one leaks. Follow enough hops and the mixers stop hiding people and start revealing them. Whoever's funding ENTROPY has left a shape in here. We just have to be patient enough to read it.
+
+Director Magnus Netherton: HaX.
+
 Agent HaX: {player_name}, great work on the previous missions. But now we need to answer the big question.
 
 Agent HaX: Where's the money coming from?

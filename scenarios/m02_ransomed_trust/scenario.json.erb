@@ -552,6 +552,40 @@ boardroom_pin = "0417"
           }
         },
         {
+          "_comment": "SEED NPC (continuity): Director Magnus Netherton, co-speaker in the opening briefing. Hidden, never independently interactable -- exists so 'Director Magnus Netherton:' line prefixes resolve to his portrait + voice in the multi-NPC briefing. Carries no task, no gating global.",
+          "id": "director_netherton",
+          "displayName": "Director Magnus Netherton",
+          "npcType": "person",
+          "position": { "x": 480, "y": 500 },
+          "spriteSheet": "male_spy",
+          "spriteTalk": "assets/characters/male_spy_talk.png",
+          "avatar": "assets/characters/male_spy_headshot.png",
+          "spriteConfig": { "idleFrameRate": 6, "walkFrameRate": 10 },
+          "behavior": { "initiallyHidden": true },
+          "voice": {
+            "name": "Charon",
+            "style": "SAFETYNET's director. Consistent British Received Pronunciation accent throughout -- do not shift to any other accent. Low, deliberate, unhurried; hands off quickly and lets his handler run the detail.",
+            "language": "en-GB"
+          }
+        },
+        {
+          "_comment": "SEED NPC (continuity): Agent 0x47 'Nightshade', SAFETYNET's cryptographic-hardware analyst, a trusted colleague. Co-speaker in the closing debrief where he reads the recovered ENTROPY PIN-cracker. Hidden, no task, no gating global. NO hint of the m08 betrayal -- he is simply good at his job. Same male_scientist sprite he uses in every appearance.",
+          "id": "agent_nightshade",
+          "displayName": "Agent 0x47 'Nightshade'",
+          "npcType": "person",
+          "position": { "x": 520, "y": 500 },
+          "spriteSheet": "male_scientist",
+          "spriteTalk": "assets/characters/male_scientist_talk.png",
+          "avatar": "assets/characters/male_scientist_headshot.png",
+          "spriteConfig": { "idleFrameRate": 6, "walkFrameRate": 10 },
+          "behavior": { "initiallyHidden": true },
+          "voice": {
+            "name": "Enceladus",
+            "style": "SAFETYNET's cryptographic-hardware analyst. Consistent British Received Pronunciation accent throughout -- do not shift to any other accent. Calm, precise, technically fluent, quietly pleased by an interesting device; a colleague you trust.",
+            "language": "en-GB"
+          }
+        },
+        {
           "id": "receptionist",
           "displayName": "Bernie Nwosu",
           "npcType": "person",

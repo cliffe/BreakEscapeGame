@@ -18,6 +18,14 @@ VAR player_name = "Agent 0x00"
 // ===========================================
 
 === start ===
+Narrator: A SAFETYNET briefing room. Director Netherton stands at the head of the table. Beside him, a man in a lab coat -- the service's own insider-threat specialist -- has three monitors of access logs open.
+
+Director Magnus Netherton: Agent 0x00. This one is close to home in a way I dislike. Someone inside a defence contractor is selling secrets from the inside. I've brought Nightshade in because catching a mole is precisely his trade -- learn from him. HaX will run you on the ground.
+
+Agent 0x47 'Nightshade': *pleasantly* Insiders are easy to romanticise and hard to catch, because they don't break in -- they're already trusted. You don't hunt the break-in. You hunt the pattern: the access that's a little too broad, the hours that are a little too odd, the calm of someone who's decided the rules don't apply to them. Find whose behaviour stopped matching their story.
+
+Director Magnus Netherton: Sound advice. HaX -- the detail.
+
 #speaker:agent_0x99
 
 {player_name}, we have a critical situation developing.
